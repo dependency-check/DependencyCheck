@@ -111,6 +111,7 @@ Copyright (c) 2012 - Jeremy Long
         </license>
     </licenses>
     <properties>
+        <maven.compiler.release>11</maven.compiler.release>
         <!--reproducible build-->
         <project.build.outputTimestamp>2024-09-01T11:39:49Z</project.build.outputTimestamp>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -440,9 +441,7 @@ Copyright (c) 2012 - Jeremy Long
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
-                    <forceJavacCompilerUse>true</forceJavacCompilerUse>
                     <showDeprecation>true</showDeprecation>
-                    <release>8</release>
                     <compilerArgs>
                         <arg>-Xlint</arg>
                     </compilerArgs>
@@ -521,7 +520,6 @@ Copyright (c) 2012 - Jeremy Long
                     <sourceFileExcludes>
                         <exclude>**/generated-sources/**/*.java</exclude>
                     </sourceFileExcludes>
-                    <source>8</source>
                     <detectJavaApiLink>false</detectJavaApiLink>
                 </configuration>
             </plugin>
@@ -555,7 +553,7 @@ Copyright (c) 2012 - Jeremy Long
                         <configuration>
                             <rules>
                                 <byteCodeRule implementation="org.owasp.maven.enforcer.rule.ClassFileFormatRule">
-                                    <supportedClassFileFormat>52</supportedClassFileFormat>
+                                    <supportedClassFileFormat>55</supportedClassFileFormat>
                                 </byteCodeRule>
                             </rules>
                         </configuration>
@@ -846,7 +844,6 @@ Copyright (c) 2012 - Jeremy Long
                             <sourceFileExcludes>
                                 <exclude>**/generated-sources/**/*.java</exclude>
                             </sourceFileExcludes>
-                            <source>8</source>
                             <detectJavaApiLink>false</detectJavaApiLink>
                         </configuration>
                     </reportSet>
