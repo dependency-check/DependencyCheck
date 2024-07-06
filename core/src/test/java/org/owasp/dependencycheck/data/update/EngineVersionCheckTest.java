@@ -20,15 +20,15 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalAccessor;
 import java.util.Properties;
 
-import mockit.Injectable;
 import mockit.Mock;
 import mockit.MockUp;
-import mockit.Tested;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.owasp.dependencycheck.BaseTest;
 import org.owasp.dependencycheck.data.nvdcve.CveDB;
 import org.owasp.dependencycheck.data.nvdcve.DatabaseProperties;
@@ -40,9 +40,9 @@ import org.owasp.dependencycheck.utils.DependencyVersion;
  */
 public class EngineVersionCheckTest extends BaseTest {
 
-    @Injectable
+    @Mock
     private CveDB cveDb;
-    @Tested
+    @InjectMocks
     private DatabaseProperties dbProperties;
 
     /**

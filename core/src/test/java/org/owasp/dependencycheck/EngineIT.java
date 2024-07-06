@@ -26,10 +26,10 @@ import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import mockit.Expectations;
-import mockit.Mocked;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
+import org.mockito.Mock;
 import org.owasp.dependencycheck.data.nvdcve.DatabaseException;
 import org.owasp.dependencycheck.exception.ExceptionCollection;
 import org.owasp.dependencycheck.exception.ReportException;
@@ -43,10 +43,10 @@ import org.owasp.dependencycheck.analyzer.Analyzer;
  */
 public class EngineIT extends BaseDBTestCase {
 
-    @Mocked
+    @Mock
     private Analyzer analyzer;
 
-    @Mocked
+    @Mock
     private AnalysisTask analysisTask;
 
     @Test(expected = ExceptionCollection.class)

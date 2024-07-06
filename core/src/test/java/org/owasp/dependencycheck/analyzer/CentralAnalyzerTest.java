@@ -20,7 +20,6 @@ package org.owasp.dependencycheck.analyzer;
 import mockit.Expectations;
 import mockit.Mock;
 import mockit.MockUp;
-import mockit.Mocked;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.owasp.dependencycheck.analyzer.exception.AnalysisException;

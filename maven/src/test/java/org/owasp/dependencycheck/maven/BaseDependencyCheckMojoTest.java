@@ -27,7 +27,6 @@ import java.util.logging.Logger;
 
 import mockit.Mock;
 import mockit.MockUp;
-import mockit.Tested;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
@@ -40,6 +39,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import org.junit.Assume;
 import org.junit.Test;
+import org.mockito.InjectMocks;
 import org.owasp.dependencycheck.Engine;
 import org.owasp.dependencycheck.data.nvdcve.DatabaseException;
 import org.owasp.dependencycheck.exception.ExceptionCollection;
@@ -52,7 +52,7 @@ import org.owasp.dependencycheck.utils.Settings;
  */
 public class BaseDependencyCheckMojoTest extends BaseTest {
 
-    @Tested
+    @InjectMocks
     MavenProject project;
 
     /**
