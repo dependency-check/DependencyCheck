@@ -365,8 +365,9 @@ public class NvdApiDataSource implements CachedWebDataSource {
                         }
                         ctr += 1;
                         if ((ctr % 5) == 0) {
-                            final double percent = (double) (ctr * RESULTS_PER_PAGE) / max * 100;
-                            LOGGER.info(String.format("Downloaded %,d/%,d (%.0f%%)", ctr * RESULTS_PER_PAGE, max, percent));
+                            //TODO get results per page from the API as it could adjust automatically
+                            final double percent = (double) (ctr * resultsPerPage) / max * 100;
+                            LOGGER.info(String.format("Downloaded %,d/%,d (%.0f%%)", ctr * resultsPerPage, max, percent));
                         }
                     }
                     final ZonedDateTime last = api.getLastUpdated();
