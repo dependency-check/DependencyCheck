@@ -126,6 +126,7 @@ Copyright (c) 2012 Jeremy Long. All Rights Reserved.
                             <goal>generate</goal>
                         </goals>
                         <configuration>
+                            <includeGeneratedAnnotation>false</includeGeneratedAnnotation>
                             <sourceDirectory>${basedir}/src/main/resources/schema/external/cisa</sourceDirectory>
                             <outputDirectory>${project.build.directory}/generated-sources/java</outputDirectory>
                             <includeGetters>true</includeGetters>
