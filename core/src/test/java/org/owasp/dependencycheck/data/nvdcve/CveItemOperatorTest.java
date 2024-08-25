@@ -59,7 +59,6 @@ public class CveItemOperatorTest {
         List<Config> configurations = new ArrayList<>();
         List<CpeMatch> matches = new ArrayList<>();
         matches.add(null);
-        
         Node first = new Node(Node.Operator.OR, null, matches);
         List<CpeMatch> cpeMatch = new ArrayList<>();
         //cpe:2.3:o:microsoft:windows:-:*:*:*:*:*:*:*
@@ -67,10 +66,12 @@ public class CveItemOperatorTest {
             "versionStartIncluding", "versionEndExcluding", "versionEndIncluding");
         cpeMatch.add(match);
         Node second = new Node(Node.Operator.OR, Boolean.FALSE, cpeMatch);
+        Node third = new Node(Node.Operator.OR, null, null);
         List<Node> nodes = new ArrayList<>();
         nodes.add(null);
         nodes.add(first);
         nodes.add(second);
+        nodes.add(third);
         
         Config c = new Config(Config.Operator.AND, null, nodes);
         configurations.add(c);
