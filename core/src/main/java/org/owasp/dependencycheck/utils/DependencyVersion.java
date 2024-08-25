@@ -78,7 +78,7 @@ public class DependencyVersion implements Iterable<String>, Comparable<Dependenc
         versionParts = new ArrayList<>();
         if (version != null) {
             final Pattern rx = Pattern
-                    .compile("(\\d+[a-z]{1,3}$|[a-z]{1,3}[_-]?\\d+|\\d+|(rc|release|snapshot|beta|alpha)$)",
+                    .compile("(\\d{1,100}[a-z]{1,3}$|[a-z]{1,3}[_-]?\\d{1,100}|\\d{1,100}|(rc|release|snapshot|beta|alpha)$)",
                             Pattern.CASE_INSENSITIVE);
             final Matcher matcher = rx.matcher(version.toLowerCase());
             while (matcher.find()) {
