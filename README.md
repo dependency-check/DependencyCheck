@@ -71,10 +71,7 @@ dependencies {
 
 ### Java Version
 
-Minimum Java Version: Java 8 update 251
-
-While dependency-check 9.0.0 and higher will still run on Java 8 - the update version
-must be higher then 251.
+Minimum Java Version: Java 11
 
 ### Internet Access
 
@@ -318,7 +315,7 @@ docker run --rm ^
 Building From Source
 --------------------
 
-To build dependency-check (using Java 8) run the command:
+To build dependency-check (using Java 11) run the command:
 
 ```
 mvn -s settings.xml install
