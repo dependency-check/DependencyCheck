@@ -18,54 +18,39 @@
 package org.owasp.dependencycheck.maven;
 
 import java.io.File;
-import java.net.URISyntaxException;
-import java.util.HashSet;
 import java.util.Locale;
-import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
-import mockit.Mock;
-import mockit.MockUp;
-import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
-import org.apache.maven.plugin.testing.stubs.ArtifactStub;
 import org.apache.maven.project.MavenProject;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import org.junit.Assume;
+import static org.mockito.Mockito.doReturn;
+
 import org.junit.Test;
-import org.mockito.InjectMocks;
+import org.junit.runner.RunWith;
+import org.mockito.Spy;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.owasp.dependencycheck.Engine;
-import org.owasp.dependencycheck.data.nvdcve.DatabaseException;
 import org.owasp.dependencycheck.exception.ExceptionCollection;
-import org.owasp.dependencycheck.utils.InvalidSettingException;
-import org.owasp.dependencycheck.utils.Settings;
 
 /**
  *
  * @author Jeremy Long
  */
+@RunWith(MockitoJUnitRunner.class)
 public class BaseDependencyCheckMojoTest extends BaseTest {
 
-    @InjectMocks
+    @Spy
     MavenProject project;
-    
+
     @Test
     public void should_newDependency_get_pom_from_base_dir() {
         // Given
         BaseDependencyCheckMojo instance = new BaseDependencyCheckMojoImpl();
 
-        new MockUp<MavenProject>() {
-            @Mock
-            public File getBasedir() {
-                return new File("src/test/resources/maven_project_base_dir");
-            }
-        };
+        doReturn(new File("src/test/resources/maven_project_base_dir")).when(project).getBasedir();
 
         String expectOutput = "pom.xml";
 
@@ -81,17 +66,8 @@ public class BaseDependencyCheckMojoTest extends BaseTest {
         // Given
         BaseDependencyCheckMojo instance = new BaseDependencyCheckMojoImpl();
 
-        new MockUp<MavenProject>() {
-            @Mock
-            public File getBasedir() {
-                return new File("src/test/resources/dir_without_pom");
-            }
-
-            @Mock
-            public File getFile() {
-                return new File("src/test/resources/dir_without_pom");
-            }
-        };
+        doReturn(new File("src/test/resources/dir_without_pom")).when(project).getBasedir();
+        doReturn(new File("src/test/resources/dir_without_pom")).when(project).getFile();
 
         // When
         String output = instance.newDependency(project).getFileName();
@@ -105,17 +81,8 @@ public class BaseDependencyCheckMojoTest extends BaseTest {
         // Given
         BaseDependencyCheckMojo instance = new BaseDependencyCheckMojoImpl();
 
-        new MockUp<MavenProject>() {
-            @Mock
-            public File getBasedir() {
-                return new File("src/test/resources/dir_containing_maven_poms_declared_as_modules_in_another_pom");
-            }
-
-            @Mock
-            public File getFile() {
-                return new File("src/test/resources/dir_containing_maven_poms_declared_as_modules_in_another_pom/serverlibs.pom");
-            }
-        };
+        doReturn(new File("src/test/resources/dir_containing_maven_poms_declared_as_modules_in_another_pom")).when(project).getBasedir();
+        doReturn(new File("src/test/resources/dir_containing_maven_poms_declared_as_modules_in_another_pom/serverlibs.pom")).when(project).getFile();
 
         String expectOutput = "serverlibs.pom";
 
@@ -138,12 +105,12 @@ public class BaseDependencyCheckMojoTest extends BaseTest {
 
         @Override
         public String getName(Locale locale) {
-            return "test implementation";
+            throw new UnsupportedOperationException("Operation not supported");
         }
 
         @Override
         public String getDescription(Locale locale) {
-            return "test implementation";
+            throw new UnsupportedOperationException("Operation not supported");
         }
 
         @Override

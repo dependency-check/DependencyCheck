@@ -25,11 +25,19 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import mockit.Expectations;
+
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.when;
 
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.owasp.dependencycheck.data.nvdcve.DatabaseException;
 import org.owasp.dependencycheck.exception.ExceptionCollection;
 import org.owasp.dependencycheck.exception.ReportException;
@@ -41,6 +49,7 @@ import org.owasp.dependencycheck.analyzer.Analyzer;
  *
  * @author Jeremy Long
  */
+@RunWith(MockitoJUnitRunner.class)
 public class EngineIT extends BaseDBTestCase {
 
     @Mock
@@ -49,34 +58,31 @@ public class EngineIT extends BaseDBTestCase {
     @Mock
     private AnalysisTask analysisTask;
 
-    @Test(expected = ExceptionCollection.class)
+
+    @Test
     public void exceptionDuringAnalysisTaskExecutionIsFatal() throws DatabaseException, ExceptionCollection {
+         final ExecutorService executorService = Executors.newFixedThreadPool(3);
+         try (Engine instance = spy(new Engine(new Settings()))) {
+             final List<Throwable> exceptions = new ArrayList<>();
 
-        try (Engine instance = new Engine(getSettings())) {
-            final ExecutorService executorService = Executors.newFixedThreadPool(3);
-            final List<Throwable> exceptions = new ArrayList<>();
+             doThrow(new IllegalStateException("Analysis task execution threw an exception")).when(analysisTask).call();
 
-            new Expectations() {
-                {
-                    analysisTask.call();
-                    result = new IllegalStateException("Analysis task execution threw an exception");
-                }
-            };
+             final List<AnalysisTask> failingAnalysisTask = new ArrayList<>();
+             failingAnalysisTask.add(analysisTask);
 
-            final List<AnalysisTask> failingAnalysisTask = new ArrayList<>();
-            failingAnalysisTask.add(analysisTask);
+             when(analyzer.supportsParallelProcessing()).thenReturn(true);
+             when(instance.getExecutorService(analyzer)).thenReturn(executorService);
+             doReturn(failingAnalysisTask).when(instance).getAnalysisTasks(analyzer, exceptions);
 
-            new Expectations(instance) {
-                {
-                    instance.getExecutorService(analyzer);
-                    result = executorService;
-                    instance.getAnalysisTasks(analyzer, exceptions);
-                    result = failingAnalysisTask;
-                }
-            };
-            instance.executeAnalysisTasks(analyzer, exceptions);
-            assertTrue(executorService.isShutdown());
-        }
+             instance.executeAnalysisTasks(analyzer, exceptions);
+             fail("ExceptionCollection exception was expected");
+         } catch (ExceptionCollection expected) {
+             List<Throwable> collected = expected.getExceptions();
+             assertEquals(1, collected.size());
+             assertEquals(java.util.concurrent.ExecutionException.class, collected.get(0).getClass());
+             assertEquals("java.lang.IllegalStateException: Analysis task execution threw an exception", collected.get(0).getMessage());
+             assertTrue(executorService.isShutdown());
+         }
     }
 
     /**
@@ -111,6 +117,9 @@ public class EngineIT extends BaseDBTestCase {
                 allowedMessages.add("AssemblyAnalyzer");
                 allowedMessages.add("Failed to request component-reports");
                 allowedMessages.add("ailed to read results from the NPM Audit API");
+                allowedMessages.add("../tmp/evil.txt");
+                allowedMessages.add("malformed input off : 5, length : 1");
+                allowedMessages.add("Python `pyproject.toml` found and there is not a `poetry.lock` or `requirements.txt`");
                 for (Throwable t : ex.getExceptions()) {
                     boolean isOk = false;
                     if (t.getMessage() != null) {

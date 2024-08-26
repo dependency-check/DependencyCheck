@@ -20,7 +20,10 @@ package org.owasp.dependencycheck.analyzer;
 import com.github.packageurl.MalformedPackageURLException;
 import java.io.File;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Answers;
 import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.owasp.dependencycheck.BaseTest;
 import org.owasp.dependencycheck.Engine;
 import org.owasp.dependencycheck.dependency.Dependency;
@@ -37,9 +40,10 @@ import org.owasp.dependencycheck.dependency.naming.PurlIdentifier;
 /**
  * @author Jeremy Long
  */
+@RunWith(MockitoJUnitRunner.class)
 public class DependencyBundlingAnalyzerTest extends BaseTest {
 
-    @Mock
+    @Mock(answer = Answers.RETURNS_SMART_NULLS)
     private Engine engineMock;
 
     /**

@@ -1,7 +1,9 @@
 package org.owasp.dependencycheck;
 
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.owasp.dependencycheck.analyzer.FileTypeAnalyzer;
 import org.owasp.dependencycheck.analyzer.HintAnalyzer;
 import org.owasp.dependencycheck.dependency.Dependency;
@@ -10,8 +12,11 @@ import java.io.File;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.times;
 
+@RunWith(MockitoJUnitRunner.class)
 public class AnalysisTaskTest extends BaseTest {
 
     @Mock
@@ -58,7 +63,7 @@ public class AnalysisTaskTest extends BaseTest {
     @Test
     public void taskAnalyzes() throws Exception {
         final AnalysisTask analysisTask = new AnalysisTask(fileTypeAnalyzer, dependency, engine, null);
-        when(analysisTask.shouldAnalyze()).thenReturn(true);
+        when(fileTypeAnalyzer.accept(dependency.getActualFile())).thenReturn(true);
 
         analysisTask.call();
 
@@ -68,7 +73,7 @@ public class AnalysisTaskTest extends BaseTest {
     @Test
     public void taskDoesNothingIfItShouldNotAnalyze() throws Exception {
         final AnalysisTask analysisTask = new AnalysisTask(fileTypeAnalyzer, dependency, engine, null);
-        when(analysisTask.shouldAnalyze()).thenReturn(false);
+        when(fileTypeAnalyzer.accept(dependency.getActualFile())).thenReturn(false);
 
         analysisTask.call();
 
