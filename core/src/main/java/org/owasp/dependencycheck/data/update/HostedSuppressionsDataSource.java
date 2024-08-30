@@ -35,7 +35,7 @@ import java.net.URL;
 import java.nio.file.Files;
 import org.owasp.dependencycheck.data.nvdcve.DatabaseProperties;
 
-public class HostedSuppressionsDataSource implements CachedWebDataSource {
+public class HostedSuppressionsDataSource extends LocalDataSource {
 
     /**
      * Static logger.
@@ -85,9 +85,7 @@ public class HostedSuppressionsDataSource implements CachedWebDataSource {
             if (proceed) {
                 LOGGER.debug("Begin Hosted Suppressions file update");
                 fetchHostedSuppressions(settings, url, repoFile);
-                if (dbProperties != null) {
-                    dbProperties.save(DatabaseProperties.HOSTED_SUPPRESSION_LAST_CHECKED, Long.toString(System.currentTimeMillis() / 1000));
-                }
+                saveLastUpdated(repoFile, System.currentTimeMillis() / 1000);
             }
         } catch (UpdateException ex) {
             // only emit a warning, DependencyCheck will continue without taking the latest hosted suppressions into account.
@@ -114,10 +112,7 @@ public class HostedSuppressionsDataSource implements CachedWebDataSource {
         boolean proceed = true;
         if (repo != null && repo.isFile()) {
             final int validForHours = settings.getInt(Settings.KEYS.HOSTED_SUPPRESSIONS_VALID_FOR_HOURS, 2);
-            long lastUpdatedOn = 0;
-            if (dbProperties != null) {
-                lastUpdatedOn = dbProperties.getPropertyInSeconds(DatabaseProperties.HOSTED_SUPPRESSION_LAST_CHECKED);
-            }
+            long lastUpdatedOn = getLastUpdated(repo, dbProperties, DatabaseProperties.HOSTED_SUPPRESSION_LAST_CHECKED);
             if (lastUpdatedOn <= 0) {
                 //fall back on conversion from file last modified to storing in the db.
                 lastUpdatedOn = repo.lastModified();

@@ -41,7 +41,7 @@ import org.slf4j.LoggerFactory;
  * @author Jeremy Long
  */
 @ThreadSafe
-public class RetireJSDataSource implements CachedWebDataSource {
+public class RetireJSDataSource extends LocalDataSource {
 
     /**
      * Static logger.
@@ -93,7 +93,7 @@ public class RetireJSDataSource implements CachedWebDataSource {
             if (proceed) {
                 LOGGER.debug("Begin RetireJS Update");
                 initializeRetireJsRepo(settings, url, repoFile);
-                dbProperties.save(DatabaseProperties.RETIRE_LAST_CHECKED, Long.toString(System.currentTimeMillis() / 1000));
+                saveLastUpdated(repoFile, System.currentTimeMillis() / 1000);
             }
         } catch (MalformedURLException ex) {
             throw new UpdateException(String.format("Invalid URL for RetireJS repository (%s)", configuredUrl), ex);
@@ -116,7 +116,7 @@ public class RetireJSDataSource implements CachedWebDataSource {
         boolean proceed = true;
         if (repo != null && repo.isFile()) {
             final int validForHours = settings.getInt(Settings.KEYS.ANALYZER_RETIREJS_REPO_VALID_FOR_HOURS, 0);
-            long lastUpdatedOn = dbProperties.getPropertyInSeconds(DatabaseProperties.RETIRE_LAST_CHECKED);
+            long lastUpdatedOn = getLastUpdated(repo, dbProperties, DatabaseProperties.RETIRE_LAST_CHECKED);
             if (lastUpdatedOn <= 0) {
                 //fall back on conversion from file last modified to storing in the db.
                 lastUpdatedOn = repo.lastModified();
@@ -132,6 +132,7 @@ public class RetireJSDataSource implements CachedWebDataSource {
         }
         return proceed;
     }
+
 
     /**
      * Initializes the local RetireJS repository
