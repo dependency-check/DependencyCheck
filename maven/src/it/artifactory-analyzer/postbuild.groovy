@@ -16,7 +16,7 @@
  * Copyright (c) 2018 Nicolas Henneaux. All Rights Reserved.
  */
 
-import org.apache.commons.lang.StringUtils
+import org.apache.commons.lang3.StringUtils
 
 String log = new File(basedir, "build.log").text
 int count = StringUtils.countMatches(log, "There was an issue connecting to Artifactory . Disabling analyzer.");

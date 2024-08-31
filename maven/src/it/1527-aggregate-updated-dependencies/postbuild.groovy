@@ -16,7 +16,7 @@
  * Copyright (c) 2014 Jeremy Long. All Rights Reserved.
  */
 
-import org.apache.commons.lang.StringUtils
+import org.apache.commons.lang3.StringUtils
 
 String oldReport = new File(basedir, "old/target/dependency-check-report.xml").text
 int count = StringUtils.countMatches(oldReport, "pkg:maven/org.slf4j/slf4j-api@1.7.30");

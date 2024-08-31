@@ -16,7 +16,7 @@
  * Copyright (c) 2014 Jeremy Long. All Rights Reserved.
  */
 
-import org.apache.commons.lang.StringUtils
+import org.apache.commons.lang3.StringUtils
  
 String log = new File(basedir, "build.log").text
 int count = StringUtils.countMatches(log, "Download Started for NVD CVE - 2020");

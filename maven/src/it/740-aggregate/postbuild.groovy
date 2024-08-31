@@ -16,7 +16,7 @@
  * Copyright (c) 2014 Jeremy Long. All Rights Reserved.
  */
 
-import org.apache.commons.lang.StringUtils
+import org.apache.commons.lang3.StringUtils
 
 import java.nio.charset.StandardCharsets
 import java.nio.file.Files;

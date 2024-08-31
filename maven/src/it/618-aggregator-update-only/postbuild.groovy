@@ -16,7 +16,7 @@
  * Copyright (c) 2014 Jeremy Long. All Rights Reserved.
  */
 
-import org.apache.commons.lang.StringUtils
+import org.apache.commons.lang3.StringUtils
 
 // Analyse number of "Checking for updates"
 String log = new File(basedir, "build.log").text

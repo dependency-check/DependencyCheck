@@ -16,7 +16,7 @@
  * Copyright (c) 2014 Jeremy Long. All Rights Reserved.
  */
 
-import org.apache.commons.lang.StringUtils
+import org.apache.commons.lang3.StringUtils
 
 // Check to see if jackson-dataformat-xml-2.4.5.jar was identified.
 //TODO change this to xpath and check for CVE-2018-11307

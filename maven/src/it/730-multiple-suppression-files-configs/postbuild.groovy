@@ -16,7 +16,7 @@
  * Copyright (c) 2017 The OWASP Foundation. All Rights Reserved.
  */
 
-import org.apache.commons.lang.StringUtils
+import org.apache.commons.lang3.StringUtils
 
 // Check that suppression worked.
 String log = new File(basedir, "build.log").text
