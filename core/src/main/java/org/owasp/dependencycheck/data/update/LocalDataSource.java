@@ -56,15 +56,12 @@ public abstract class LocalDataSource implements CachedWebDataSource {
 
     /**
      * Retrieves the last updated date from the local file system (in a file
-     * next to the repo file). If this fails, the database properties are
-     * checked to see if the timestamp can be obtained there.
+     * next to the repo file).
      *
      * @param repo the local file data source
-     * @param dbProperties the database properties
-     * @param dbPropertyName the property key for the timestamp
      * @return the epoch timestamp of the last updated date/time
      */
-    protected long getLastUpdated(File repo, DatabaseProperties dbProperties, String dbPropertyName) {
+    protected long getLastUpdated(File repo) {
         long lastUpdatedOn = 0;
         File timestampFile = new File(repo + ".properties");
         if (timestampFile.isFile()) {
@@ -75,11 +72,6 @@ public abstract class LocalDataSource implements CachedWebDataSource {
             } catch (IOException | NumberFormatException ex) {
                 LOGGER.debug("error reading timestamp file", ex);
                 lastUpdatedOn = repo.lastModified();
-            }
-        } else {
-            //fall back for conversion from storing in the DB to storing locally
-            if (dbProperties != null) {
-                lastUpdatedOn = dbProperties.getPropertyInSeconds(dbPropertyName);
             }
         }
         return lastUpdatedOn;

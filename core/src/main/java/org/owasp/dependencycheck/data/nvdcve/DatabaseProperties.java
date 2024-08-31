@@ -74,14 +74,6 @@ public class DatabaseProperties {
      */
     public static final String KEV_LAST_CHECKED = "kev.checked";
     /**
-     * The key for the last check time for the Retire JS repository.
-     */
-    public static final String RETIRE_LAST_CHECKED = "retirejs.checked";
-    /**
-     * The key for the last check time for the hosted suppression file.
-     */
-    public static final String HOSTED_SUPPRESSION_LAST_CHECKED = "hosted.suppression.checked";
-    /**
      * The key for the version the Known Exploited Vulnerabilities.
      */
     public static final String KEV_VERSION = "kev.version";

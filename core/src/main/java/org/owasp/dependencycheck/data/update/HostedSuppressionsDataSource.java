@@ -47,10 +47,6 @@ public class HostedSuppressionsDataSource extends LocalDataSource {
      */
     private Settings settings;
     /**
-     * The properties obtained from the database.
-     */
-    private DatabaseProperties dbProperties = null;
-    /**
      * The default URL to the Hosted Suppressions file.
      */
     public static final String DEFAULT_SUPPRESSIONS_URL = "https://jeremylong.github.io/DependencyCheck/suppressions/publishedSuppressions.xml";
@@ -66,10 +62,6 @@ public class HostedSuppressionsDataSource extends LocalDataSource {
     @Override
     public boolean update(Engine engine) throws UpdateException {
         this.settings = engine.getSettings();
-        if (engine.getMode() != Engine.Mode.EVIDENCE_COLLECTION) {
-            //note this conditional is only to support test cases.
-            this.dbProperties = engine.getDatabase().getDatabaseProperties();
-        }
         final String configuredUrl = settings.getString(Settings.KEYS.HOSTED_SUPPRESSIONS_URL, DEFAULT_SUPPRESSIONS_URL);
         final boolean autoupdate = settings.getBoolean(Settings.KEYS.AUTO_UPDATE, true);
         final boolean forceupdate = settings.getBoolean(Settings.KEYS.HOSTED_SUPPRESSIONS_FORCEUPDATE, false);
@@ -112,7 +104,7 @@ public class HostedSuppressionsDataSource extends LocalDataSource {
         boolean proceed = true;
         if (repo != null && repo.isFile()) {
             final int validForHours = settings.getInt(Settings.KEYS.HOSTED_SUPPRESSIONS_VALID_FOR_HOURS, 2);
-            long lastUpdatedOn = getLastUpdated(repo, dbProperties, DatabaseProperties.HOSTED_SUPPRESSION_LAST_CHECKED);
+            long lastUpdatedOn = getLastUpdated(repo);
             if (lastUpdatedOn <= 0) {
                 //fall back on conversion from file last modified to storing in the db.
                 lastUpdatedOn = repo.lastModified();
