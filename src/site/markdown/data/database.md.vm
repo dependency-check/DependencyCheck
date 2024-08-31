@@ -27,11 +27,13 @@ To setup a centralized database the following generalized steps can be used:
        instance of the dependency-check client should be setup with updates enabled and the account
        used during the update process will need to be granted update rights on the tables.
      </li></ul>
-</li><li>Dependency-check clients running scans will need to be configured to use the central database:
-   <ul><li>The database driver will need to be specified using the dbDriver and if the driver is not
-         already in the classpath the dbDriverPath options will need to be set (see the specific configuration
-         options for Maven, Gradle, Ant, CLI, and Jenkins).</li>
-       <li>The connection string, database user name, and the database user's password will also need to be configured.</li>
+</li><li>Dependency-check clients running scans will need to be configured to use the central database (see the specific configuration
+         options for Maven, Gradle, Ant, CLI, and Jenkins):
+   <ul>
+     <li>The connection string, database user name, and the database user's password will need to be configured.</li>
+     <li>If the database driver is not JDBC 4 compliant and/or the driver is not already in the classpath the
+         database driver will need to be specified using the dbDriver option</li>
+       <li>If the driver is not already in the classpath the dbDriverPath option will need to be set.</li>
    </ul>
 </li></ol>
 Depending on the database being used, you may need to customize the <a href="https://github.com/jeremylong/DependencyCheck/blob/main/core/src/main/resources/data/dbStatements.properties">dbStatements.properties</a>.
@@ -61,11 +63,10 @@ The following example shows how to use the Maven plugin with MariaDB:
                     <dependency>
                         <groupId>org.mariadb.jdbc</groupId>
                         <artifactId>mariadb-java-client</artifactId>
-                        <version>1.4.6</version>
+                        <version>3.4.1</version>
                     </dependency>
                 </dependencies>
                 <configuration>
-                    <databaseDriverName>org.mariadb.jdbc.Driver</databaseDriverName>
                     <connectionString>jdbc:mariadb://my.cvedb.host/cvedb</connectionString>
                     <databaseUser>depscan</databaseUser>
                     <databasePassword>NotReallyMyDbPassword</databasePassword>
