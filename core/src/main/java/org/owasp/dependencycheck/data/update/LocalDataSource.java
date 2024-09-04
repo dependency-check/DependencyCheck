@@ -71,6 +71,9 @@ public abstract class LocalDataSource implements CachedWebDataSource {
                 lastUpdatedOn = Integer.parseInt(props.getProperty("LAST_UPDATED", "0"));
             } catch (IOException | NumberFormatException ex) {
                 LOGGER.debug("error reading timestamp file", ex);
+            }
+            if (lastUpdatedOn <= 0) {
+                //fall back on conversion from file last modified to storing in the db.
                 lastUpdatedOn = repo.lastModified();
             }
         }
