@@ -47,7 +47,6 @@ public class ArchiveAnalyzerTest extends BaseTest {
      */
     @Test
     public void testZippableExtensions() throws Exception {
-        assumeFalse(isPreviouslyLoaded("org.owasp.dependencycheck.analyzer.ArchiveAnalyzer"));
         ArchiveAnalyzer instance = new ArchiveAnalyzer();
         instance.initialize(getSettings());
         assertTrue(instance.getFileFilter().accept(new File("c:/test.zip")));
@@ -61,21 +60,9 @@ public class ArchiveAnalyzerTest extends BaseTest {
      */
     @Test
     public void testRpmExtension() throws Exception {
-        assumeFalse(isPreviouslyLoaded("org.owasp.dependencycheck.analyzer.ArchiveAnalyzer"));
         ArchiveAnalyzer instance = new ArchiveAnalyzer();
         instance.initialize(getSettings());
         assertTrue(instance.getFileFilter().accept(new File("/srv/struts-1.2.9-162.35.1.uyuni.noarch.rpm")));
     }
 
-    private boolean isPreviouslyLoaded(String className) {
-        try {
-            Method m = ClassLoader.class.getDeclaredMethod("findLoadedClass", String.class);
-            m.setAccessible(true);
-            Object t = m.invoke(Thread.currentThread().getContextClassLoader(), className);
-            return t != null;
-        } catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
-            Logger.getLogger(ArchiveAnalyzerTest.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return false;
-    }
 }
