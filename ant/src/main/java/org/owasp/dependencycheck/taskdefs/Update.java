@@ -71,6 +71,11 @@ public class Update extends Purge {
     private int nvdApiDelay = 0;
 
     /**
+     * The number of records per page of NVD API data.
+     */
+    private Integer nvdApiResultsPerPage;
+
+    /**
      * The Proxy Server.
      */
     private String proxyServer;
@@ -285,6 +290,24 @@ public class Update extends Purge {
      */
     public void setNvdApiDelay(int nvdApiDelay) {
         this.nvdApiDelay = nvdApiDelay;
+    }
+
+    /**
+     * Get the value of nvdApiResultsPerPage.
+     *
+     * @return the value of nvdApiResultsPerPage
+     */
+    public int getNvdApiResultsPerPage() {
+        return nvdApiResultsPerPage;
+    }
+
+    /**
+     * Set the value of nvdApiResultsPerPage.
+     *
+     * @param nvdApiResultsPerPage new value of nvdApiResultsPerPage
+     */
+    public void setApiResultsPerPage(int nvdApiResultsPerPage) {
+        this.nvdApiResultsPerPage = nvdApiResultsPerPage;
     }
 
     /**
@@ -620,6 +643,7 @@ public class Update extends Purge {
         getSettings().setStringIfNotEmpty(Settings.KEYS.NVD_API_KEY, nvdApiKey);
         getSettings().setStringIfNotEmpty(Settings.KEYS.NVD_API_ENDPOINT, nvdApiEndpoint);
         getSettings().setIntIfNotNull(Settings.KEYS.NVD_API_DELAY, nvdApiDelay);
+        getSettings().setIntIfNotNull(Settings.KEYS.NVD_API_RESULTS_PER_PAGE, nvdApiResultsPerPage);
         getSettings().setStringIfNotEmpty(Settings.KEYS.NVD_API_DATAFEED_URL, nvdDatafeedUrl);
         getSettings().setStringIfNotEmpty(Settings.KEYS.NVD_API_DATAFEED_USER, nvdUser);
         getSettings().setStringIfNotEmpty(Settings.KEYS.NVD_API_DATAFEED_PASSWORD, nvdPassword);

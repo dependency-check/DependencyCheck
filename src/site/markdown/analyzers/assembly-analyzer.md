@@ -7,6 +7,6 @@ is internally referred to as evidence and is grouped into vendor, product, and v
 buckets. Other analyzers later use this evidence to identify any Common Platform
 Enumeration (CPE) identifiers that apply.
 
-.NET core 6.x needs to be installed for this analyzer to work.
+.NET core 8.x needs to be installed for this analyzer to work.
 
 Files Types Scanned: EXE, DLL

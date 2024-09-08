@@ -20,7 +20,7 @@ Copyright (c) 2012 Jeremy Long. All Rights Reserved.
     <parent>
         <groupId>org.owasp</groupId>
         <artifactId>dependency-check-parent</artifactId>
-        <version>9.2.1-SNAPSHOT</version>
+        <version>11.0.0-SNAPSHOT</version>
     </parent>
 
     <artifactId>dependency-check-core</artifactId>
@@ -126,6 +126,7 @@ Copyright (c) 2012 Jeremy Long. All Rights Reserved.
                             <goal>generate</goal>
                         </goals>
                         <configuration>
+                            <includeGeneratedAnnotation>false</includeGeneratedAnnotation>
                             <sourceDirectory>${basedir}/src/main/resources/schema/external/cisa</sourceDirectory>
                             <outputDirectory>${project.build.directory}/generated-sources/java</outputDirectory>
                             <includeGetters>true</includeGetters>

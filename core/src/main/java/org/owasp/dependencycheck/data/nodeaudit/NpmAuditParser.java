@@ -132,13 +132,13 @@ public class NpmAuditParser {
             }
             if (baseScore >= 0.0) {
                 final String vector = jsonCvss.optString("vectorString");
-                if (vector != null) {
+                if (vector != null && !"null".equals(vector)) {
                     if (vector.startsWith("CVSS:3") && baseScore >= 0.0) {
                         try {
                             final CvssV3 cvss = CvssUtil.vectorToCvssV3(vector, baseScore);
                             advisory.setCvssV3(cvss);
                         } catch (IllegalArgumentException iae) {
-                            LOGGER.warn("Invalid CVSS vector format encountered in NPM Audit results '{}' ", vector, iae);
+                            LOGGER.warn("Invalid CVSS vector format encountered in NPM Audit results '{}': {} ", vector, iae.getMessage());
                         }
                     } else {
                         LOGGER.warn("Unsupported CVSS vector format in NPM Audit results, please file a feature "

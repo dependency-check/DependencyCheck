@@ -111,7 +111,8 @@ public class PomParser {
             final XMLReader xmlReader = saxParser.getXMLReader();
             xmlReader.setContentHandler(handler);
 
-            final BOMInputStream bomStream = new BOMInputStream(new XmlInputStream(new PomProjectInputStream(inputStream)));
+            final BOMInputStream bomStream = BOMInputStream.builder()
+                    .setInputStream(new XmlInputStream(new PomProjectInputStream(inputStream))).get();
             final ByteOrderMark bom = bomStream.getBOM();
             final String defaultEncoding = StandardCharsets.UTF_8.name();
             final String charsetName = bom == null ? defaultEncoding : bom.getCharsetName();
@@ -141,7 +142,7 @@ public class PomParser {
             final XMLReader xmlReader = saxParser.getXMLReader();
             xmlReader.setContentHandler(handler);
 
-            final BOMInputStream bomStream = new BOMInputStream(new XmlInputStream(inputStream));
+            final BOMInputStream bomStream = BOMInputStream.builder().setInputStream(new XmlInputStream(inputStream)).get();
             final ByteOrderMark bom = bomStream.getBOM();
             final String defaultEncoding = StandardCharsets.UTF_8.name();
             final String charsetName = bom == null ? defaultEncoding : bom.getCharsetName();

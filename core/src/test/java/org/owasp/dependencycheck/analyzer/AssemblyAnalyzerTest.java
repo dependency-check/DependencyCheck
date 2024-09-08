@@ -163,7 +163,7 @@ public class AssemblyAnalyzerTest extends BaseTest {
             aanalyzer.prepare(null);
             fail("Expected an InitializationException");
         } catch (InitializationException ae) {
-            assertEquals("An error occurred with the .NET AssemblyAnalyzer, is the dotnet 6.0 runtime or sdk installed?", ae.getMessage());
+            assertEquals("An error occurred with the .NET AssemblyAnalyzer, is the dotnet 8.0 runtime or sdk installed?", ae.getMessage());
         } finally {
             System.setProperty(LOG_KEY, oldProp);
             // Recover the logger

@@ -184,6 +184,11 @@ public final class Settings {
          */
         public static final String NVD_API_VALID_FOR_HOURS = "nvd.api.check.validforhours";
         /**
+         * The properties key to control the results per page lower than NVD's default of 2000
+         * See #6863 for the rationale on allowing lower configurations.
+         */
+        public static final String NVD_API_RESULTS_PER_PAGE = "nvd.api.results.per.page";
+        /**
          * The properties key that indicates how often the NVD API data feed
          * needs to be updated before a full refresh is evaluated.
          */

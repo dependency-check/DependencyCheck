@@ -661,6 +661,7 @@ public class App {
         settings.setStringIfNotEmpty(Settings.KEYS.NVD_API_ENDPOINT,
                 cli.getStringArgument(CliParser.ARGUMENT.NVD_API_ENDPOINT));
         settings.setIntIfNotNull(Settings.KEYS.NVD_API_DELAY, cli.getIntegerValue(CliParser.ARGUMENT.NVD_API_DELAY));
+        settings.setIntIfNotNull(Settings.KEYS.NVD_API_RESULTS_PER_PAGE, cli.getIntegerValue(CliParser.ARGUMENT.NVD_API_RESULTS_PER_PAGE));
         settings.setStringIfNotEmpty(Settings.KEYS.NVD_API_DATAFEED_URL, cli.getStringArgument(CliParser.ARGUMENT.NVD_API_DATAFEED_URL));
         settings.setStringIfNotEmpty(Settings.KEYS.NVD_API_DATAFEED_USER, cli.getStringArgument(CliParser.ARGUMENT.NVD_API_DATAFEED_USER));
         settings.setStringIfNotEmpty(Settings.KEYS.NVD_API_DATAFEED_PASSWORD, cli.getStringArgument(CliParser.ARGUMENT.NVD_API_DATAFEED_PASSWORD));

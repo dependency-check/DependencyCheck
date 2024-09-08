@@ -15,34 +15,38 @@
  */
 package org.owasp.dependencycheck.data.update;
 
-import java.time.*;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalAccessor;
-import java.util.Properties;
-
-import mockit.Injectable;
-import mockit.Mock;
-import mockit.MockUp;
-import mockit.Tested;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doAnswer;
 
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Spy;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.owasp.dependencycheck.BaseTest;
 import org.owasp.dependencycheck.data.nvdcve.CveDB;
 import org.owasp.dependencycheck.data.nvdcve.DatabaseProperties;
-import org.owasp.dependencycheck.data.update.exception.UpdateException;
 import org.owasp.dependencycheck.utils.DependencyVersion;
 
 /**
  * @author Jeremy Long
  */
+@RunWith(MockitoJUnitRunner.class)
 public class EngineVersionCheckTest extends BaseTest {
 
-    @Injectable
+    @Mock
     private CveDB cveDb;
-    @Tested
+
+    @InjectMocks
+    @Spy
     private DatabaseProperties dbProperties;
 
     /**
@@ -50,24 +54,8 @@ public class EngineVersionCheckTest extends BaseTest {
      */
     @Test
     public void testShouldUpdate() throws Exception {
-        new MockUp<DatabaseProperties>() {
-            private final Properties properties = new Properties();
 
-            @Mock
-            public void $init(CveDB db) {
-                //empty
-            }
-
-            @Mock
-            public void save(String key, String value) throws UpdateException {
-                properties.setProperty(key, value);
-            }
-
-            @Mock
-            public String getProperty(String key) {
-                return properties.getProperty(key);
-            }
-        };
+        doAnswer(invocation -> null).when(dbProperties).save(anyString(), anyString());
 
         String updateToVersion = "1.2.6";
         String currentVersion = "1.2.6";
@@ -89,7 +77,6 @@ public class EngineVersionCheckTest extends BaseTest {
         instance.setUpdateToVersion(updateToVersion);
         result = instance.shouldUpdate(lastChecked, now, dbProperties, currentVersion);
         assertEquals(expResult, result);
-        //System.out.println(properties.getProperty(CURRENT_ENGINE_RELEASE));
 
         updateToVersion = "1.2.5";
         currentVersion = "1.2.5";

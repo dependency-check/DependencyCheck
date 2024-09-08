@@ -147,6 +147,7 @@ public final class DatabaseManager {
                         driver = DriverLoader.load(driverName, driverPath);
                     } else {
                         driver = DriverLoader.load(driverName);
+                        LOGGER.warn("Explicitly loaded driver {} from classpath; if JDBCv4 service loading is supported by the driver you should remove the dbDriver configuration", driverName);
                     }
                 } catch (DriverLoadException ex) {
                     LOGGER.debug("Unable to load database driver", ex);

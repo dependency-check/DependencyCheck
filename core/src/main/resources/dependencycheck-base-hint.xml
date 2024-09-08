@@ -447,4 +447,13 @@
             <evidence type="vendor" source="hint analyzer" name="vendor" value="itextpdf" confidence="HIGH"/>
         </add>
     </hint>
+    <hint>
+        <!-- false negative per issue #6789 -->
+        <given>
+            <evidence type="product" source="msbuild" name="id" value="Newtonsoft.Json"/>
+        </given>
+        <add>
+            <evidence type="product" source="hint analyzer" name="vendor" value="net" confidence="MEDIUM"/>
+        </add>
+    </hint>
 </hints>

@@ -82,10 +82,11 @@ public class CveEcosystemMapper {
      * <code>null</code>
      */
     private boolean hasMultipleVendorProductConfigurations(DefCveItem cve) {
-        if (cve.getCve().getConfigurations() != null) {
+        if (cve.getCve().getConfigurations() != null && !cve.getCve().getConfigurations().isEmpty()) {
             final List<CpeMatch> cpeEntries = cve.getCve().getConfigurations().stream()
                     .map(Config::getNodes)
                     .flatMap(List::stream)
+                    .filter(cpe -> cpe.getCpeMatch() != null)
                     .map(Node::getCpeMatch)
                     .flatMap(List::stream)
                     .filter(match -> match.getCriteria() != null)

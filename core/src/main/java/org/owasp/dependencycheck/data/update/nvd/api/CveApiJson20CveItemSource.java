@@ -45,7 +45,7 @@ public class CveApiJson20CveItemSource implements CveItemSource<DefCveItem> {
         do {
             token = jsonParser.nextToken();
             if (token == JsonToken.FIELD_NAME) {
-                String fieldName = jsonParser.getCurrentName();
+                String fieldName = jsonParser.currentName();
                 if (fieldName.equals("vulnerabilities") && (jsonParser.nextToken() == JsonToken.START_ARRAY)) {
                     nextItem = readItem(jsonParser);
                 }

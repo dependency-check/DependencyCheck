@@ -20,7 +20,7 @@ Copyright (c) 2012 - Jeremy Long
 
     <groupId>org.owasp</groupId>
     <artifactId>dependency-check-parent</artifactId>
-    <version>9.2.1-SNAPSHOT</version>
+    <version>11.0.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <modules>
@@ -111,8 +111,9 @@ Copyright (c) 2012 - Jeremy Long
         </license>
     </licenses>
     <properties>
+        <maven.compiler.release>11</maven.compiler.release>
         <!--reproducible build-->
-        <project.build.outputTimestamp>2024-05-15T09:29:26Z</project.build.outputTimestamp>
+        <project.build.outputTimestamp>2024-09-01T11:39:49Z</project.build.outputTimestamp>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <github.global.server>github</github.global.server>
@@ -124,12 +125,12 @@ Copyright (c) 2012 - Jeremy Long
         <slf4j.version>1.7.36</slf4j.version>
         <logback.version>1.2.11</logback.version>
         
-        <maven.api.version>3.1.0</maven.api.version>
-        <reporting.checkstyle-plugin.version>3.3.1</reporting.checkstyle-plugin.version>
+        <maven.api.version>3.6.3</maven.api.version>
+        <reporting.checkstyle-plugin.version>3.4.0</reporting.checkstyle-plugin.version>
         <reporting.checkstyle.tool.version>9.3</reporting.checkstyle.tool.version>
         <doxia-module-markdown.version>1.12.0</doxia-module-markdown.version>
         <maven-antrun-plugin.version>3.1.0</maven-antrun-plugin.version>
-        <maven-dependency-plugin.version>3.7.0</maven-dependency-plugin.version>
+        <maven-dependency-plugin.version>3.7.1</maven-dependency-plugin.version>
         <maven-javadoc-plugin.version>3.7.0</maven-javadoc-plugin.version>
         <!-- upgrading beyond 2.5 breaks maven site-->
         <maven-jxr-plugin.version>2.5</maven-jxr-plugin.version>
@@ -137,9 +138,9 @@ Copyright (c) 2012 - Jeremy Long
         <maven-surefire-report-plugin.version>3.2.5</maven-surefire-report-plugin.version>
         <jacoco-maven-plugin.version>0.8.12</jacoco-maven-plugin.version>
         <spotbugs.version>4.8.5</spotbugs.version>
-        <spotbugs.maven.plugin.version>4.8.5.0</spotbugs.maven.plugin.version>
-        <taglist-maven-plugin.version>3.0.0</taglist-maven-plugin.version>
-        <versions-maven-plugin.version>2.16.2</versions-maven-plugin.version>
+        <spotbugs.maven.plugin.version>4.8.6.2</spotbugs.maven.plugin.version>
+        <taglist-maven-plugin.version>3.1.0</taglist-maven-plugin.version>
+        <versions-maven-plugin.version>2.17.1</versions-maven-plugin.version>
         <jetbrains.annotations.version>24.1.0</jetbrains.annotations.version>
         <com.h2database.version>2.2.224</com.h2database.version>
         <commons-cli.version>1.8.0</commons-cli.version>
@@ -153,10 +154,9 @@ Copyright (c) 2012 - Jeremy Long
         <aho-corasick-double-array-trie.version>1.2.3</aho-corasick-double-array-trie.version>
         <junit.version>4.13.2</junit.version>
         <hamcrest.version>2.2</hamcrest.version>
-        <jmockit.version>1.49</jmockit.version>
-        <mockito-core.version>4.11.0</mockito-core.version>
+        <mockito-core.version>5.12.0</mockito-core.version>
         <jsoup.version>1.17.2</jsoup.version>
-        <commons-compress.version>1.26.2</commons-compress.version>
+        <commons-compress.version>1.27.0</commons-compress.version>
         <org.apache.maven.shared.file-management.version>3.1.0</org.apache.maven.shared.file-management.version>
         <maven-plugin-testing-harness.version>3.3.0</maven-plugin-testing-harness.version>
         <maven-plugin-annotations.version>3.13.1</maven-plugin-annotations.version>
@@ -169,7 +169,7 @@ Copyright (c) 2012 - Jeremy Long
         <groovy-all.version>2.4.21</groovy-all.version>
         <gmavenplus-plugin.version>3.0.2</gmavenplus-plugin.version>
         <com.h3xstream.retirejs.core.version>3.0.4</com.h3xstream.retirejs.core.version>
-        <jackson.version>2.17.1</jackson.version>
+        <jackson.version>2.17.2</jackson.version>
         <!--necassary for some IDEs to be able to execute test cases (Netbeans)-->
         <surefireArgLine />
         
@@ -243,11 +243,6 @@ Copyright (c) 2012 - Jeremy Long
                     <version>3.5.0</version>
                 </plugin>
                 <plugin>
-                    <groupId>org.codehaus.mojo</groupId>
-                    <artifactId>animal-sniffer-maven-plugin</artifactId>
-                    <version>1.23</version>
-                </plugin>
-                <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-deploy-plugin</artifactId>
                     <version>3.1.2</version>
@@ -255,7 +250,7 @@ Copyright (c) 2012 - Jeremy Long
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-failsafe-plugin</artifactId>
-                    <version>3.3.0</version>
+                    <version>3.5.0</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -275,7 +270,7 @@ Copyright (c) 2012 - Jeremy Long
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-release-plugin</artifactId>
-                    <version>3.0.1</version>
+                    <version>3.1.1</version>
                 </plugin>
                 <plugin>
                     <groupId>org.sonatype.plugins</groupId>
@@ -302,7 +297,7 @@ Copyright (c) 2012 - Jeremy Long
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-surefire-plugin</artifactId>
-                    <version>3.3.0</version>
+                    <version>3.3.1</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -440,10 +435,7 @@ Copyright (c) 2012 - Jeremy Long
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
-                    <forceJavacCompilerUse>true</forceJavacCompilerUse>
                     <showDeprecation>true</showDeprecation>
-                    <source>1.8</source>
-                    <target>1.8</target>
                     <compilerArgs>
                         <arg>-Xlint</arg>
                     </compilerArgs>
@@ -522,7 +514,6 @@ Copyright (c) 2012 - Jeremy Long
                     <sourceFileExcludes>
                         <exclude>**/generated-sources/**/*.java</exclude>
                     </sourceFileExcludes>
-                    <source>8</source>
                     <detectJavaApiLink>false</detectJavaApiLink>
                 </configuration>
             </plugin>
@@ -556,7 +547,7 @@ Copyright (c) 2012 - Jeremy Long
                         <configuration>
                             <rules>
                                 <byteCodeRule implementation="org.owasp.maven.enforcer.rule.ClassFileFormatRule">
-                                    <supportedClassFileFormat>52</supportedClassFileFormat>
+                                    <supportedClassFileFormat>55</supportedClassFileFormat>
                                 </byteCodeRule>
                             </rules>
                         </configuration>
@@ -576,26 +567,6 @@ Copyright (c) 2012 - Jeremy Long
                                 </requireMavenVersion>
                             </rules>
                             <fail>true</fail>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>animal-sniffer-maven-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>signature-check</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>check</goal>
-                        </goals>
-                        <configuration>
-                            <signature>
-                                <groupId>org.codehaus.mojo.signature</groupId>
-                                <artifactId>java18</artifactId>
-                                <version>1.0</version>
-                            </signature>
                         </configuration>
                     </execution>
                 </executions>
@@ -655,7 +626,7 @@ Copyright (c) 2012 - Jeremy Long
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
-                    <argLine>@{surefireArgLine} -Dfile.encoding=UTF-8 -javaagent:${settings.localRepository}/org/jmockit/jmockit/${jmockit.version}/jmockit-${jmockit.version}.jar</argLine>
+                    <argLine>@{surefireArgLine} -Dfile.encoding=UTF-8</argLine>
                     <systemPropertyVariables>
                         <data.directory>${project.build.directory}/data</data.directory>
                         <temp.directory>${project.build.directory}/temp</temp.directory>
@@ -667,7 +638,7 @@ Copyright (c) 2012 - Jeremy Long
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-failsafe-plugin</artifactId>
                 <configuration>
-                    <argLine>@{failsafeArgLine} -javaagent:${settings.localRepository}/org/jmockit/jmockit/${jmockit.version}/jmockit-${jmockit.version}.jar</argLine>
+                    <argLine>@{failsafeArgLine}</argLine>
                     <systemPropertyVariables>
                         <data.directory>${project.build.directory}/data</data.directory>
                         <temp.directory>${project.build.directory}/temp</temp.directory>
@@ -689,7 +660,7 @@ Copyright (c) 2012 - Jeremy Long
             <plugin>
                 <groupId>org.sonarsource.scanner.maven</groupId>
                 <artifactId>sonar-maven-plugin</artifactId>
-                <version>3.11.0.3922</version>
+                <version>4.0.0.4121</version>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -847,7 +818,6 @@ Copyright (c) 2012 - Jeremy Long
                             <sourceFileExcludes>
                                 <exclude>**/generated-sources/**/*.java</exclude>
                             </sourceFileExcludes>
-                            <source>8</source>
                             <detectJavaApiLink>false</detectJavaApiLink>
                         </configuration>
                     </reportSet>
@@ -972,7 +942,7 @@ Copyright (c) 2012 - Jeremy Long
             <dependency>
                 <groupId>io.github.jeremylong</groupId>
                 <artifactId>open-vulnerability-clients</artifactId>
-                <version>6.0.1</version>
+                <version>6.1.7</version>
             </dependency>
             <dependency>
                 <groupId>org.anarres.jdiagnostics</groupId>
@@ -989,12 +959,6 @@ Copyright (c) 2012 - Jeremy Long
                 <groupId>org.mock-server</groupId>
                 <artifactId>mockserver-junit-rule</artifactId>
                 <version>5.15.0</version>
-                <scope>test</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.jmockit</groupId>
-                <artifactId>jmockit</artifactId>
-                <version>${jmockit.version}</version>
                 <scope>test</scope>
             </dependency>
             <dependency>
@@ -1076,9 +1040,13 @@ Copyright (c) 2012 - Jeremy Long
                 <version>4.0.1</version>
             </dependency>
             <dependency>
+                <!--
+                    https://github.com/codehaus-plexus/plexus-utils/blob/master/README.md
+                    for Maven 3 compatibility plexus-xml should be at version 3.x
+                    -->
                 <groupId>org.codehaus.plexus</groupId>
                 <artifactId>plexus-xml</artifactId>
-                <version>4.0.4</version>
+                <version>3.0.1</version>
             </dependency>
             <dependency>
                 <groupId>com.fasterxml.jackson</groupId>
@@ -1180,7 +1148,7 @@ Copyright (c) 2012 - Jeremy Long
             <dependency>
                 <groupId>commons-codec</groupId>
                 <artifactId>commons-codec</artifactId>
-                <version>1.17.0</version>
+                <version>1.17.1</version>
             </dependency>
             <dependency>
                 <groupId>com.h3xstream.retirejs</groupId>
@@ -1309,6 +1277,10 @@ Copyright (c) 2012 - Jeremy Long
                         <groupId>com.google.guava</groupId>
                         <artifactId>guava</artifactId>
                     </exclusion>
+                    <exclusion>
+                        <groupId>org.slf4j</groupId>
+                        <artifactId>jcl-over-slf4j</artifactId>
+                    </exclusion>
                 </exclusions>
             </dependency>
             <dependency>
@@ -1347,11 +1319,6 @@ Copyright (c) 2012 - Jeremy Long
         <dependency>
             <groupId>org.hamcrest</groupId>
             <artifactId>hamcrest</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.jmockit</groupId>
-            <artifactId>jmockit</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>

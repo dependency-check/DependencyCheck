@@ -142,23 +142,24 @@ Advanced Configuration
 ====================
 The following properties can be configured in the plugin. However, they are less frequently changed.
 
-Property             | Description                                                                                                  | Default Value
----------------------|--------------------------------------------------------------------------------------------------------------|------------------
-nvdApiKey            | The API Key to access the NVD API; obtained from https://nvd.nist.gov/developers/request-an-api-key          | &nbsp;
-nvdApiEndpoint       | The NVD API endpoint URL; setting this is uncommon.                                                          | https://services.nvd.nist.gov/rest/json/cves/2.0
-nvdMaxRetryCount     | The maximum number of retry requests for a single call to the NVD API.                                       | 10
-nvdApiDelay          | The number of milliseconds to wait between calls to the NVD API.                                             | 3500 with an NVD API Key or 8000 without an API Key
+Property             | Description                                                                                                                                                                                                                        | Default Value
+---------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------------
+nvdApiKey            | The API Key to access the NVD API; obtained from https://nvd.nist.gov/developers/request-an-api-key                                                                                                                                | &nbsp;
+nvdApiEndpoint       | The NVD API endpoint URL; setting this is uncommon.                                                                                                                                                                                | https://services.nvd.nist.gov/rest/json/cves/2.0
+nvdMaxRetryCount     | The maximum number of retry requests for a single call to the NVD API.                                                                                                                                                             | 10
+nvdApiDelay          | The number of milliseconds to wait between calls to the NVD API.                                                                                                                                                                   | 3500 with an NVD API Key or 8000 without an API Key
+nvdApiResultsPerPage | The number records for a single page from NVD API (must be <=2000).                                                                                                                                                                | 2000
 nvdDatafeedUrl       | The URL for the NVD API Data feed that can be generated using https://github.com/jeremylong/Open-Vulnerability-Project/tree/main/vulnz#caching-the-nvd-cve-data - example value `https://internal.server/cache/nvdcve-{0}.json.gz` | &nbsp;
-nvdUser              | Credentials used for basic authentication for the NVD API Data feed.                                         | &nbsp;
-nvdPassword          | Credentials used for basic authentication for the NVD API Data feed.                                         | &nbsp;
-nvdValidForHours     | The number of hours to wait before checking for new updates from the NVD. The default is 4 hours.            | 4
-dataDirectory        | Data directory that is used to store the local copy of the NVD. This should generally not be changed.        | data
-databaseDriverName   | The name of the database driver. Example: org.h2.Driver.                                                     | &nbsp;
-databaseDriverPath   | The path to the database driver JAR file; only used if the driver is not in the class path.                  | &nbsp;
-connectionString     | The connection string used to connect to the database. See using a [database server](../data/database.html). | &nbsp;
-databaseUser         | The username used when connecting to the database.                                                           | &nbsp;
-databasePassword     | The password used when connecting to the database.                                                           | &nbsp;
-hostedSuppressionsEnabled | Whether the hosted suppression file will be used.                                                       | true
-hostedSuppressionsUrl | The URL to a mirrored copy of the hosted suppressions file for internet-constrained environments            | https://jeremylong.github.io/DependencyCheck/suppressions/publishedSuppressions.xml
-hostedSuppressionsValidForHours | Sets the number of hours to wait before checking for new updates of the hosted suppressions file  | 2
-hostedSuppressionsForceUpdate | Sets whether the hosted suppressions file should update regardless of the `autoupdate` and validForHours settings | false
+nvdUser              | Credentials used for basic authentication for the NVD API Data feed.                                                                                                                                                               | &nbsp;
+nvdPassword          | Credentials used for basic authentication for the NVD API Data feed.                                                                                                                                                               | &nbsp;
+nvdValidForHours     | The number of hours to wait before checking for new updates from the NVD. The default is 4 hours.                                                                                                                                  | 4
+dataDirectory        | Data directory that is used to store the local copy of the NVD. This should generally not be changed.                                                                                                                              | data
+databaseDriverName   | The database driver full classname; note, only needs to be set if the driver is not JDBC4 compliant or the JAR is outside of the class path.                                                                                       | &nbsp;
+databaseDriverPath   | The path to the database driver JAR file; only needs to be set if the driver is not in the class path.                                                                                                                             | &nbsp;
+connectionString     | The connection string used to connect to the database. See using a [database server](../data/database.html).                                                                                                                       | &nbsp;
+databaseUser         | The username used when connecting to the database.                                                                                                                                                                                 | &nbsp;
+databasePassword     | The password used when connecting to the database.                                                                                                                                                                                 | &nbsp;
+hostedSuppressionsEnabled | Whether the hosted suppression file will be used.                                                                                                                                                                                  | true
+hostedSuppressionsUrl | The URL to a mirrored copy of the hosted suppressions file for internet-constrained environments                                                                                                                                   | https://jeremylong.github.io/DependencyCheck/suppressions/publishedSuppressions.xml
+hostedSuppressionsValidForHours | Sets the number of hours to wait before checking for new updates of the hosted suppressions file                                                                                                                                   | 2
+hostedSuppressionsForceUpdate | Sets whether the hosted suppressions file should update regardless of the `autoupdate` and validForHours settings                                                                                                                  | false

@@ -20,14 +20,14 @@ Copyright (c) 2017 Jeremy Long. All Rights Reserved.
     <parent>
         <groupId>org.owasp</groupId>
         <artifactId>dependency-check-parent</artifactId>
-        <version>9.2.1-SNAPSHOT</version>
+        <version>11.0.0-SNAPSHOT</version>
     </parent>
     <artifactId>dependency-check-plugin</artifactId>
     <name>Dependency-Check Plugin Archetype</name>
     <packaging>jar</packaging>
     <properties>
         <!--reproducible build-->
-        <project.build.outputTimestamp>2024-05-15T09:29:26Z</project.build.outputTimestamp>
+        <project.build.outputTimestamp>2024-09-01T11:39:49Z</project.build.outputTimestamp>
     </properties>
     <scm>
         <connection>scm:git:https://github.com/jeremylong/DependencyCheck.git</connection>
@@ -37,13 +37,6 @@ Copyright (c) 2017 Jeremy Long. All Rights Reserved.
   </scm>
     <build>
         <plugins>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>animal-sniffer-maven-plugin</artifactId>
-                <configuration>
-                    <skip>true</skip>
-                </configuration>
-            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-resources-plugin</artifactId>

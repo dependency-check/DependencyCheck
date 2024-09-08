@@ -41,7 +41,7 @@ jobs:
         with:
           issue-body: ${{ github.event.issue.body }}
           template-path: odc/.github/ISSUE_TEMPLATE/false-positive-report.yml
-      - uses: actions/setup-node@v4.0.2
+      - uses: actions/setup-node@v4.0.3
         with:
           node-version: 14
       - name: Initialize npm
@@ -111,9 +111,9 @@ jobs:
           cd ..
       - name: Setup dotnet
         if: ${{ fromJSON(steps.purl-parser.outputs.result).type == 'nuget' }}
-        uses: actions/setup-dotnet@v4.0.0
+        uses: actions/setup-dotnet@v4.0.1
         with:
-          dotnet-version: '6.0.x'
+          dotnet-version: '8.0.x'
       - name: Setup dotnet fp-project
         if: ${{ fromJSON(steps.purl-parser.outputs.result).type == 'nuget' }}
         env:

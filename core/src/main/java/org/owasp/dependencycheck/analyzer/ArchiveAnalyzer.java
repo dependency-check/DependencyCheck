@@ -28,7 +28,7 @@ import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
 import org.apache.commons.compress.compressors.bzip2.BZip2Utils;
 import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
 import org.apache.commons.compress.compressors.gzip.GzipUtils;
-import org.apache.commons.compress.utils.IOUtils;
+import org.apache.commons.io.IOUtils;
 import org.eclipse.packager.rpm.RpmTag;
 import org.eclipse.packager.rpm.parse.RpmInputStream;
 import org.owasp.dependencycheck.Engine;
@@ -460,7 +460,7 @@ public class ArchiveAnalyzer extends AbstractFileTypeAnalyzer {
                     tin = new TarArchiveInputStream(in);
                     extractArchive(tin, destination, engine);
                 } else if ("gz".equals(archiveExt) || "tgz".equals(archiveExt)) {
-                    final String uncompressedName = GzipUtils.getUncompressedFilename(archive.getName());
+                    final String uncompressedName = GzipUtils.getUncompressedFileName(archive.getName());
                     final File f = new File(destination, uncompressedName);
                     if (engine.accept(f)) {
                         final String destPath = destination.getCanonicalPath();
@@ -475,7 +475,7 @@ public class ArchiveAnalyzer extends AbstractFileTypeAnalyzer {
                         decompressFile(gin, f);
                     }
                 } else if ("bz2".equals(archiveExt) || "tbz2".equals(archiveExt)) {
-                    final String uncompressedName = BZip2Utils.getUncompressedFilename(archive.getName());
+                    final String uncompressedName = BZip2Utils.getUncompressedFileName(archive.getName());
                     final File f = new File(destination, uncompressedName);
                     if (engine.accept(f)) {
                         final String destPath = destination.getCanonicalPath();
@@ -728,7 +728,7 @@ public class ArchiveAnalyzer extends AbstractFileTypeAnalyzer {
         boolean isJar = false;
         ZipFile zip = null;
         try {
-            zip = new ZipFile(dependency.getActualFilePath());
+            zip = ZipFile.builder().setFile(dependency.getActualFilePath()).get();
             if (zip.getEntry("META-INF/MANIFEST.MF") != null
                     || zip.getEntry("META-INF/maven") != null) {
                 final Enumeration<ZipArchiveEntry> entries = zip.getEntries();

@@ -106,7 +106,7 @@ public class SuppressionParser {
                 InputStream schemaStream11 = FileUtils.getResourceAsStream(SUPPRESSION_SCHEMA_1_1);
                 InputStream schemaStream10 = FileUtils.getResourceAsStream(SUPPRESSION_SCHEMA_1_0)) {
 
-            final BOMInputStream bomStream = new BOMInputStream(inputStream);
+            final BOMInputStream bomStream = BOMInputStream.builder().setInputStream(inputStream).get();
             final ByteOrderMark bom = bomStream.getBOM();
             final String defaultEncoding = StandardCharsets.UTF_8.name();
             final String charsetName = bom == null ? defaultEncoding : bom.getCharsetName();

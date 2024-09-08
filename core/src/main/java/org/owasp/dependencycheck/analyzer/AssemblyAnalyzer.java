@@ -355,7 +355,7 @@ public class AssemblyAnalyzer extends AbstractFileTypeAnalyzer {
                     + "'exe' or 'dll' was scanned. The 'dotnet' executable could not be found on "
                     + "the path; either disable the Assembly Analyzer or add the path to dotnet "
                     + "core in the configuration.");
-            LOGGER.error("The dotnet 6.0 core runtime or SDK is required to analyze assemblies");
+            LOGGER.error("The dotnet 8.0 core runtime or SDK is required to analyze assemblies");
             LOGGER.error("----------------------------------------------------");
             return;
         }
@@ -367,28 +367,28 @@ public class AssemblyAnalyzer extends AbstractFileTypeAnalyzer {
                 final String error = processReader.getError();
                 if (p.exitValue() != 1 || !StringUtils.isBlank(error)) {
                     LOGGER.warn("An error occurred with the .NET AssemblyAnalyzer, please see the log for more details.\n"
-                    + "dependency-check requires dotnet 6.0 core runtime or sdk to be installed to analyze assemblies.");
+                    + "dependency-check requires dotnet 8.0 core runtime or sdk to be installed to analyze assemblies.");
                     LOGGER.debug("GrokAssembly.dll is not working properly");
                     grokAssembly = null;
                     setEnabled(false);
-                    throw new InitializationException("Could not execute .NET AssemblyAnalyzer, is the dotnet 6.0 runtime or sdk installed?");
+                    throw new InitializationException("Could not execute .NET AssemblyAnalyzer, is the dotnet 8.0 runtime or sdk installed?");
                 }
             }
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             LOGGER.warn("An error occurred with the .NET AssemblyAnalyzer;\n"
-                    + "dependency-check requires dotnet 6.0 core runtime or sdk to be installed to analyze assemblies;\n"
+                    + "dependency-check requires dotnet 8.0 core runtime or sdk to be installed to analyze assemblies;\n"
                     + "this can be ignored unless you are scanning .NET DLLs. Please see the log for more details.");
             LOGGER.debug("Could not execute GrokAssembly {}", e.getMessage());
             setEnabled(false);
             throw new InitializationException("An error occurred with the .NET AssemblyAnalyzer", e);
         } catch (IOException e) {
             LOGGER.warn("An error occurred with the .NET AssemblyAnalyzer;\n"
-                    + "dependency-check requires dotnet 6.0 core to be installed to analyze assemblies;\n"
+                    + "dependency-check requires dotnet 8.0 core to be installed to analyze assemblies;\n"
                     + "this can be ignored unless you are scanning .NET DLLs. Please see the log for more details.");
             LOGGER.debug("Could not execute GrokAssembly {}", e.getMessage());
             setEnabled(false);
-            throw new InitializationException("An error occurred with the .NET AssemblyAnalyzer, is the dotnet 6.0 runtime or sdk installed?", e);
+            throw new InitializationException("An error occurred with the .NET AssemblyAnalyzer, is the dotnet 8.0 runtime or sdk installed?", e);
         }
     }
 

@@ -1,5 +1,67 @@
 # Change Log
 
+## [Version 10.0.4](https://github.com/jeremylong/DependencyCheck/releases/tag/v10.0.4) (2024-09-01)
+
+ - build(deps): exclude unused dependency (#6916)
+ - fix: improve regex (#6917)
+ - fix: correctly handle null values in cpeMatch (#6915)
+ - fix(site): Update Fluido skin to resolve broken fork-me-on-github image (#6914)
+ - fix: do not report over 100% download complete (#6899)
+ - fix: Correct spelling of occurring in NvdApiDataSource.java (#6883)
+ - fix: skip blank lines in requirements.txt (#6867)
+ - fix: correct percentage calculation (#6868)
+ - docs: remove old recommendation (#6860)
+
+See the full listing of [changes](https://github.com/jeremylong/DependencyCheck/milestone/88?closed=1). 
+
+## [Version 10.0.3](https://github.com/jeremylong/DependencyCheck/releases/tag/v10.0.3) (2024-07-16)
+
+- feat: Enable configuration of a lower resultsPerPage on NVD API (#6843)
+- build(deps): bump open-vulnerability-clients from 6.1.6 to 6.1.7 (#6848)
+- build(deps): bump JamesIves/github-pages-deploy-action from 4.6.1 to 4.6.3 (#6814)
+- build(deps): bump org.codehaus.mojo:versions-maven-plugin from 2.16.2 to 2.17.0 (#6762)
+- build(deps): bump org.apache.maven.plugins:maven-checkstyle-plugin from 3.3.1 to 3.4.0 (#6815)
+- build(deps): bump golang from 1.22.4-alpine to 1.22.5-alpine (#6805)
+
+See the full listing of [changes](https://github.com/jeremylong/DependencyCheck/milestone/84?closed=1). 
+
+## [Version 10.0.2](https://github.com/jeremylong/DependencyCheck/releases/tag/v10.0.2) (2024-07-06)
+
+**Mandatory Upgrade** - due to older versions of dependency-check causing numerous, spurious requests that end in processing failures, this upgrade is mandatory so that the NVD can differentiate valid requests and block the old clients.
+
+- build(deps): bump open-vulnerability-clients (#6810)
+- fix(db): #6788 removing redundant db index "idxVulnerability" on "vulnerability.cve" (#6807)
+- docs: Further improve formatting and docs of H2 database caching strats (#6804)
+- fix: update_vulnerability in dbStatements_oracle.properties (#6803)
+- fix: fix NPE  (#6778)
+- fix: add hint to resolve false negative (#6802)
+- chore: update configure (#6794)
+
+See the full listing of [changes](https://github.com/jeremylong/DependencyCheck/milestone/86?closed=1). 
+
+## [Version 10.0.1](https://github.com/jeremylong/DependencyCheck/releases/tag/v10.0.1) (2024-07-02)
+
+- build(deps): bump open-vulnerability-client (#6772)
+- fix: remove debug logging (#6770)
+- fix: postgresql column count error (#6773)
+- fix: mssql column name and version (#6761)
+- docs: update supported versions (#6771)
+
+See the full listing of [changes](https://github.com/jeremylong/DependencyCheck/milestone/85?closed=1). 
+
+## [Version 10.0.0](https://github.com/jeremylong/DependencyCheck/releases/tag/v10.0.0) (2024-07-01)
+
+- **breaking change**: upgrade to dotnet 8.0 (#6580)
+  - Users of the AssemblyAnalyzer must upgrade/utilize dotnet 8 to analyze assemblies
+- feat: fix the NVD API related errors by adding cvssV4 support (#6756)
+   - **breaking changes**: anyone utilizing a centralized database will need to upgrade the schema; see changes in [PR #6756](https://github.com/jeremylong/DependencyCheck/pull/6756/files#diff-ca432c4b41d39caa84d140e06694b09c7e6394c8a2db72ba27516dc77ee3bd67)
+- fix: avoid escaping unnecessary chars in HTML report suppression regexes (#6749)
+- fix: #6688 Trim version number when parsin POM (#6705)
+- fix: change request if lockfile is file v3 (#6690)
+- fix: skip pyproject.toml unless it contains `tool.poetry` before ensuring lockfiles (#6681)
+
+See the full listing of [changes](https://github.com/jeremylong/DependencyCheck/milestone/83?closed=1). 
+
 ## [Version 9.2.0](https://github.com/jeremylong/DependencyCheck/releases/tag/v9.2.0) (2024-05-15)
 
  - docs: update logo per intellj (#6660)

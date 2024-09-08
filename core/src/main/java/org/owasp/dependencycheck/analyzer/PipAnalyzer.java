@@ -38,10 +38,11 @@ import javax.annotation.concurrent.ThreadSafe;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
+import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  * Used to analyze pip dependency files named requirements.txt.
@@ -174,7 +175,7 @@ public class PipAnalyzer extends AbstractFileTypeAnalyzer {
     }
 
     /**
-     * Retrieves the contents of a given file.
+     * Retrieves the contents of a given file without blank lines.
      *
      * @param actualFile the file to read
      * @return the contents of the file
@@ -182,7 +183,9 @@ public class PipAnalyzer extends AbstractFileTypeAnalyzer {
      */
     private String getFileContents(final File actualFile) throws AnalysisException {
         try {
-            return new String(Files.readAllBytes(actualFile.toPath()), StandardCharsets.UTF_8).trim();
+             return Files.lines(actualFile.toPath(), Charset.defaultCharset())
+                     .filter(line -> !line.trim().isEmpty())
+                     .collect(Collectors.joining("\n"));
         } catch (IOException e) {
             throw new AnalysisException("Problem occurred while reading dependency file.", e);
         }

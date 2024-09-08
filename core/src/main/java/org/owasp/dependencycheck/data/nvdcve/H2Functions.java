@@ -178,6 +178,47 @@ public final class H2Functions {
      * @param v3BaseScore the CVSS v3 base score
      * @param v3BaseSeverity the CVSS v3 base severity
      * @param v3Version the CVSS v3 version
+     * @param v4version CVSS v4 data
+     * @param v4attackVector CVSS v4 data
+     * @param v4attackComplexity CVSS v4 data
+     * @param v4attackRequirements CVSS v4 data
+     * @param v4privilegesRequired CVSS v4 data
+     * @param v4userInteraction CVSS v4 data
+     * @param v4vulnConfidentialityImpact CVSS v4 data
+     * @param v4vulnIntegrityImpact CVSS v4 data
+     * @param v4vulnAvailabilityImpact CVSS v4 data
+     * @param v4subConfidentialityImpact CVSS v4 data
+     * @param v4subIntegrityImpact CVSS v4 data
+     * @param v4subAvailabilityImpact CVSS v4 data
+     * @param v4exploitMaturity CVSS v4 data
+     * @param v4confidentialityRequirement CVSS v4 data
+     * @param v4integrityRequirement CVSS v4 data
+     * @param v4availabilityRequirement CVSS v4 data
+     * @param v4modifiedAttackVector CVSS v4 data
+     * @param v4modifiedAttackComplexity CVSS v4 data
+     * @param v4modifiedAttackRequirements CVSS v4 data
+     * @param v4modifiedPrivilegesRequired CVSS v4 data
+     * @param v4modifiedUserInteraction CVSS v4 data
+     * @param v4modifiedVulnConfidentialityImpact CVSS v4 data
+     * @param v4modifiedVulnIntegrityImpact CVSS v4 data
+     * @param v4modifiedVulnAvailabilityImpact CVSS v4 data
+     * @param v4modifiedSubConfidentialityImpact CVSS v4 data
+     * @param v4modifiedSubIntegrityImpact CVSS v4 data
+     * @param v4modifiedSubAvailabilityImpact CVSS v4 data
+     * @param v4safety CVSS v4 data
+     * @param v4automatable CVSS v4 data
+     * @param v4recovery CVSS v4 data
+     * @param v4valueDensity CVSS v4 data
+     * @param v4vulnerabilityResponseEffort CVSS v4 data
+     * @param v4providerUrgency CVSS v4 data
+     * @param v4baseScore CVSS v4 data
+     * @param v4baseSeverity CVSS v4 data
+     * @param v4threatScore CVSS v4 data
+     * @param v4threatSeverity CVSS v4 data
+     * @param v4environmentalScore CVSS v4 data
+     * @param v4environmentalSeverity CVSS v4 data
+     * @param v4source CVSS v4 data
+     * @param v4type CVSS v4 data
      * @return a result set containing the vulnerability id
      * @throws SQLException thrown if there is an error updating or inserting
      * the vulnerability
@@ -192,7 +233,20 @@ public final class H2Functions {
             Float v3ImpactScore, String v3AttackVector, String v3AttackComplexity,
             String v3PrivilegesRequired, String v3UserInteraction, String v3Scope,
             String v3ConfidentialityImpact, String v3IntegrityImpact, String v3AvailabilityImpact,
-            Float v3BaseScore, String v3BaseSeverity, String v3Version) throws SQLException {
+            Float v3BaseScore, String v3BaseSeverity, String v3Version, String v4version, 
+            String v4attackVector, String v4attackComplexity, String v4attackRequirements, 
+            String v4privilegesRequired, String v4userInteraction, String v4vulnConfidentialityImpact, 
+            String v4vulnIntegrityImpact, String v4vulnAvailabilityImpact, String v4subConfidentialityImpact, 
+            String v4subIntegrityImpact, String v4subAvailabilityImpact, String v4exploitMaturity,
+            String v4confidentialityRequirement, String v4integrityRequirement, String v4availabilityRequirement,
+            String v4modifiedAttackVector, String v4modifiedAttackComplexity, String v4modifiedAttackRequirements,
+            String v4modifiedPrivilegesRequired, String v4modifiedUserInteraction, String v4modifiedVulnConfidentialityImpact,
+            String v4modifiedVulnIntegrityImpact, String v4modifiedVulnAvailabilityImpact, String v4modifiedSubConfidentialityImpact,
+            String v4modifiedSubIntegrityImpact, String v4modifiedSubAvailabilityImpact, String v4safety,
+            String v4automatable, String v4recovery, String v4valueDensity, String v4vulnerabilityResponseEffort,
+            String v4providerUrgency, Float v4baseScore, String v4baseSeverity, Float v4threatScore,
+            String v4threatSeverity, Float v4environmentalScore, String v4environmentalSeverity, 
+            String v4source, String v4type) throws SQLException {
 
         final SimpleResultSet ret = new SimpleResultSet();
         ret.addColumn("id", Types.INTEGER, 10, 0);
@@ -240,7 +294,22 @@ public final class H2Functions {
                         + "v3ImpactScore=?, v3AttackVector=?, v3AttackComplexity=?, "
                         + "v3PrivilegesRequired=?, v3UserInteraction=?, v3Scope=?, "
                         + "v3ConfidentialityImpact=?, v3IntegrityImpact=?, v3AvailabilityImpact=?, "
-                        + "v3BaseScore=?, v3BaseSeverity=?, v3Version=? "
+                        + "v3BaseScore=?, v3BaseSeverity=?, v3Version=?, v4version=?, v4attackVector=?, "
+                        + "v4attackComplexity=?, v4attackRequirements=?, v4privilegesRequired=?, "
+                        + "v4userInteraction=?, v4vulnConfidentialityImpact=?, v4vulnIntegrityImpact=?, "
+                        + "v4vulnAvailabilityImpact=?, v4subConfidentialityImpact=?, v4subIntegrityImpact=?, "
+                        + "v4subAvailabilityImpact=?, v4exploitMaturity=?, "
+                        + "v4confidentialityRequirement=?, v4integrityRequirement=?, "
+                        + "v4availabilityRequirement=?, v4modifiedAttackVector=?, "
+                        + "v4modifiedAttackComplexity=?, v4modifiedAttackRequirements=?, "
+                        + "v4modifiedPrivilegesRequired=?, v4modifiedUserInteraction=?, "
+                        + "v4modifiedVulnConfidentialityImpact=?, v4modifiedVulnIntegrityImpact=?, "
+                        + "v4modifiedVulnAvailabilityImpact=?, v4modifiedSubConfidentialityImpact=?, "
+                        + "v4modifiedSubIntegrityImpact=?, v4modifiedSubAvailabilityImpact=?, "
+                        + "v4safety=?, v4automatable=?, v4recovery=?, v4valueDensity=?, "
+                        + "v4vulnerabilityResponseEffort=?, v4providerUrgency=?, v4baseScore=?, "
+                        + "v4baseSeverity=?, v4threatScore=?, v4threatSeverity=?, v4environmentalScore=?, "
+                        + "v4environmentalSeverity=?, v4source=?, v4type=?"
                         + "WHERE id=?");
             } else {
                 //just do insert
@@ -255,8 +324,22 @@ public final class H2Functions {
                         + "v3ImpactScore, v3AttackVector, v3AttackComplexity, "
                         + "v3PrivilegesRequired, v3UserInteraction, v3Scope, "
                         + "v3ConfidentialityImpact, v3IntegrityImpact, v3AvailabilityImpact, "
-                        + "v3BaseScore, v3BaseSeverity, v3Version, cve) VALUES (?, ?, ?, ?, ?, ?, "
-                        + "?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                        + "v3BaseScore, v3BaseSeverity, v3Version, v4version, v4attackVector, "
+                        + "v4attackComplexity, v4attackRequirements, v4privilegesRequired, "
+                        + "v4userInteraction, v4vulnConfidentialityImpact, v4vulnIntegrityImpact, "
+                        + "v4vulnAvailabilityImpact, v4subConfidentialityImpact, v4subIntegrityImpact, "
+                        + "v4subAvailabilityImpact, v4exploitMaturity,v4confidentialityRequirement, "
+                        + "v4integrityRequirement, v4availabilityRequirement,v4modifiedAttackVector, "
+                        + "v4modifiedAttackComplexity, v4modifiedAttackRequirements,v4modifiedPrivilegesRequired, "
+                        + "v4modifiedUserInteraction, v4modifiedVulnConfidentialityImpact,v4modifiedVulnIntegrityImpact, "
+                        + "v4modifiedVulnAvailabilityImpact, v4modifiedSubConfidentialityImpact,v4modifiedSubIntegrityImpact, "
+                        + "v4modifiedSubAvailabilityImpact, v4safety, v4automatable, v4recovery, v4valueDensity, "
+                        + "v4vulnerabilityResponseEffort, v4providerUrgency, v4baseScore, v4baseSeverity, "
+                        + "v4threatScore,v4threatSeverity, v4environmentalScore, v4environmentalSeverity, "
+                        + "v4source, v4type, cve) VALUES (?, ?, ?, ?, ?, ?, "
+                        + "?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, "
+                        + "?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, "
+                        + "?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
                         returnedColumns);
             }
 
@@ -291,12 +374,58 @@ public final class H2Functions {
             setFloatOrNull(merge, 28, v3BaseScore);
             setStringOrNull(merge, 29, v3BaseSeverity);
             setStringOrNull(merge, 30, v3Version);
+            
+            
 
+            setStringOrNull(merge, 31, v4version);
+            setStringOrNull(merge, 32, v4attackVector);
+            setStringOrNull(merge, 33, v4attackComplexity);
+            setStringOrNull(merge, 34, v4attackRequirements);
+            setStringOrNull(merge, 35, v4privilegesRequired);
+            setStringOrNull(merge, 36, v4userInteraction);
+            setStringOrNull(merge, 37, v4vulnConfidentialityImpact);
+            setStringOrNull(merge, 38, v4vulnIntegrityImpact);
+            setStringOrNull(merge, 39, v4vulnAvailabilityImpact);
+            setStringOrNull(merge, 40, v4subConfidentialityImpact);
+            setStringOrNull(merge, 41, v4subIntegrityImpact);
+            setStringOrNull(merge, 42, v4subAvailabilityImpact);
+            setStringOrNull(merge, 43, v4exploitMaturity);
+            setStringOrNull(merge, 44, v4confidentialityRequirement);
+            setStringOrNull(merge, 45, v4integrityRequirement);
+            setStringOrNull(merge, 46, v4availabilityRequirement);
+            setStringOrNull(merge, 47, v4modifiedAttackVector);
+            setStringOrNull(merge, 48, v4modifiedAttackComplexity);
+            setStringOrNull(merge, 49, v4modifiedAttackRequirements);
+            setStringOrNull(merge, 50, v4modifiedPrivilegesRequired);
+            setStringOrNull(merge, 51, v4modifiedUserInteraction);
+            setStringOrNull(merge, 52, v4modifiedVulnConfidentialityImpact);
+            setStringOrNull(merge, 53, v4modifiedVulnIntegrityImpact);
+            setStringOrNull(merge, 54, v4modifiedVulnAvailabilityImpact);
+            setStringOrNull(merge, 55, v4modifiedSubConfidentialityImpact);
+            setStringOrNull(merge, 56, v4modifiedSubIntegrityImpact);
+            setStringOrNull(merge, 57, v4modifiedSubAvailabilityImpact);
+            setStringOrNull(merge, 58, v4safety);
+            setStringOrNull(merge, 59, v4automatable);
+            setStringOrNull(merge, 60, v4recovery);
+            setStringOrNull(merge, 61, v4valueDensity);
+            setStringOrNull(merge, 62, v4vulnerabilityResponseEffort);
+            setStringOrNull(merge, 63, v4providerUrgency);
+            setFloatOrNull(merge, 64, v4baseScore);
+            setStringOrNull(merge, 65, v4baseSeverity);
+            setFloatOrNull(merge, 66, v4threatScore);
+            setStringOrNull(merge, 67, v4threatSeverity);
+            setFloatOrNull(merge, 68, v4environmentalScore);
+            setStringOrNull(merge, 69, v4environmentalSeverity);
+            setStringOrNull(merge, 70, v4source);
+            setStringOrNull(merge, 71, v4type);
+
+            //cve must be the last entry
             if (vulnerabilityId == 0) {
-                merge.setString(31, cve);
+                merge.setString(72, cve);
             } else {
-                merge.setInt(31, vulnerabilityId);
+                merge.setInt(72, vulnerabilityId);
             }
+            
             final int count = merge.executeUpdate();
             if (vulnerabilityId == 0) {
                 try (ResultSet rs = merge.getGeneratedKeys()) {

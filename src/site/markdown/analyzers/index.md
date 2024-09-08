@@ -6,7 +6,7 @@ to extract identification information from the files analyzed.
 | Analyzer | File Types Scanned | Analysis Method |
 | -------- | ------------------ | --------------- |
 | [Archive](./archive-analyzer.html) | Zip archive format (\*.zip, \*.ear, \*.war, \*.jar, \*.sar, \*.apk, \*.nupkg); Tape Archive Format (\*.tar); Gzip format (\*.gz, \*.tgz); Bzip2 format (\*.bz2, \*.tbz2); RPM format (\*.rpm) | Extracts archive contents, then scans contents with all available analyzers. |
-| [Assembly](./assembly-analyzer.html) | .NET Assemblies (\*.exe, \*.dll) | Uses [GrokAssembly.exe](https://github.com/colezlaw/GrokAssembly); requires the dotnet core 6.0 runtime to be installed. |
+| [Assembly](./assembly-analyzer.html) | .NET Assemblies (\*.exe, \*.dll) | Uses [GrokAssembly.exe](https://github.com/colezlaw/GrokAssembly); requires the dotnet core 8.0 runtime to be installed. |
 | [Jar](./jar-analyzer.html) | Java archive files (\*.jar); Web application archive (\*.war) | Examines archive manifest metadata, and Maven Project Object Model files (pom.xml). |
 | [RetireJS](./retirejs-analyzer.html) | JavaScript files | Analyzes JavaScript files using the [RetireJS](https://github.com/RetireJS/retire.js) database. |
 | [Node.js](./nodejs.html) | NPM package specification files (package.json) | Parses the package.json to gather a bill-of-materials for a Node JS project. |

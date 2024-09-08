@@ -148,6 +148,17 @@ public final class CliParser {
                     throw new ParseException("Invalid Setting: nvdApiDelay must be a number greater than or equal to 0.");
                 }
             }
+            value = line.getOptionValue(ARGUMENT.NVD_API_RESULTS_PER_PAGE);
+            if (value != null) {
+                try {
+                    final int i = Integer.parseInt(value);
+                    if (i <= 0 || i > 2000) {
+                        throw new ParseException("Invalid Setting: nvdApiResultsPerPage must be a number in the range [1, 2000].");
+                    }
+                } catch (NumberFormatException ex) {
+                    throw new ParseException("Invalid Setting: nvdApiResultsPerPage must be a number in the range [1, 2000].");
+                }
+            }
         }
         if (isRunScan()) {
             validatePathExists(getScanFiles(), ARGUMENT.SCAN);
@@ -353,6 +364,8 @@ public final class CliParser {
                         "Only update the local NVD data cache; no scan will be executed."))
                 .addOption(newOptionWithArg(ARGUMENT.NVD_API_DELAY, "milliseconds",
                         "Time in milliseconds to wait between downloading from the NVD."))
+                .addOption(newOptionWithArg(ARGUMENT.NVD_API_RESULTS_PER_PAGE, "count",
+                        "The number records for a single page from NVD API (must be <=2000)."))
                 .addOption(newOptionWithArg(ARGUMENT.NVD_API_ENDPOINT, "endpoint",
                         "The NVD API Endpoint - setting this is rare."))
                 .addOption(newOptionWithArg(ARGUMENT.NVD_API_DATAFEED_URL, "url",
@@ -1163,6 +1176,10 @@ public final class CliParser {
          * The time in milliseconds to wait between downloading NVD API data.
          */
         public static final String NVD_API_DELAY = "nvdApiDelay";
+        /**
+         * The number records for a single page from NVD API.
+         */
+        public static final String NVD_API_RESULTS_PER_PAGE = "nvdApiResultsPerPage";
         /**
          * The short CLI argument name for setting the location of the data
          * directory.

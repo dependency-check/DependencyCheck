@@ -148,7 +148,7 @@ public class HintParser {
                 InputStream schemaStream12 = FileUtils.getResourceAsStream(HINT_SCHEMA_1_2);
                 InputStream schemaStream11 = FileUtils.getResourceAsStream(HINT_SCHEMA_1_1)) {
 
-            final BOMInputStream bomStream = new BOMInputStream(inputStream);
+            final BOMInputStream bomStream = BOMInputStream.builder().setInputStream(inputStream).get();
             final ByteOrderMark bom = bomStream.getBOM();
             final String defaultEncoding = StandardCharsets.UTF_8.name();
             final String charsetName = bom == null ? defaultEncoding : bom.getCharsetName();

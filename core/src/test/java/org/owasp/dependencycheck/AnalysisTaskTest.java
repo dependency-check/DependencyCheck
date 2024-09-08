@@ -1,9 +1,9 @@
 package org.owasp.dependencycheck;
 
-import mockit.Expectations;
-import mockit.Mocked;
-import mockit.Verifications;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.owasp.dependencycheck.analyzer.FileTypeAnalyzer;
 import org.owasp.dependencycheck.analyzer.HintAnalyzer;
 import org.owasp.dependencycheck.dependency.Dependency;
@@ -12,16 +12,20 @@ import java.io.File;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.times;
 
+@RunWith(MockitoJUnitRunner.class)
 public class AnalysisTaskTest extends BaseTest {
 
-    @Mocked
+    @Mock
     private FileTypeAnalyzer fileTypeAnalyzer;
 
-    @Mocked
+    @Mock
     private Dependency dependency;
 
-    @Mocked
+    @Mock
     private Engine engine;
 
 
@@ -35,13 +39,8 @@ public class AnalysisTaskTest extends BaseTest {
     @Test
     public void shouldAnalyzeReturnsTrueIfTheFileTypeAnalyzersAcceptsTheDependency() {
         final File dependencyFile = new File("");
-        new Expectations() {{
-            dependency.getActualFile();
-            result = dependencyFile;
-
-            fileTypeAnalyzer.accept(dependencyFile);
-            result = true;
-        }};
+        when(dependency.getActualFile()).thenReturn(dependencyFile);
+        when(fileTypeAnalyzer.accept(dependencyFile)).thenReturn(true);
 
         AnalysisTask analysisTask = new AnalysisTask(fileTypeAnalyzer, dependency, null, null);
 
@@ -52,13 +51,8 @@ public class AnalysisTaskTest extends BaseTest {
     @Test
     public void shouldAnalyzeReturnsFalseIfTheFileTypeAnalyzerDoesNotAcceptTheDependency() {
         final File dependencyFile = new File("");
-        new Expectations() {{
-            dependency.getActualFile();
-            result = dependencyFile;
-
-            fileTypeAnalyzer.accept(dependencyFile);
-            result = false;
-        }};
+        when(dependency.getActualFile()).thenReturn(dependencyFile);
+        when(fileTypeAnalyzer.accept(dependencyFile)).thenReturn(false);
 
         AnalysisTask analysisTask = new AnalysisTask(fileTypeAnalyzer, dependency, null, null);
 
@@ -69,32 +63,20 @@ public class AnalysisTaskTest extends BaseTest {
     @Test
     public void taskAnalyzes() throws Exception {
         final AnalysisTask analysisTask = new AnalysisTask(fileTypeAnalyzer, dependency, engine, null);
-        new Expectations(analysisTask) {{
-            analysisTask.shouldAnalyze();
-            result = true;
-        }};
+        when(fileTypeAnalyzer.accept(dependency.getActualFile())).thenReturn(true);
 
         analysisTask.call();
 
-        new Verifications() {{
-            fileTypeAnalyzer.analyze(dependency, engine);
-            times = 1;
-        }};
+        verify(fileTypeAnalyzer, times(1)).analyze(dependency, engine);
     }
 
     @Test
     public void taskDoesNothingIfItShouldNotAnalyze() throws Exception {
         final AnalysisTask analysisTask = new AnalysisTask(fileTypeAnalyzer, dependency, engine, null);
-        new Expectations(analysisTask) {{
-            analysisTask.shouldAnalyze();
-            result = false;
-        }};
+        when(fileTypeAnalyzer.accept(dependency.getActualFile())).thenReturn(false);
 
         analysisTask.call();
 
-        new Verifications() {{
-            fileTypeAnalyzer.analyze(dependency, engine);
-            times = 0;
-        }};
+        verify(fileTypeAnalyzer, times(0)).analyze(dependency, engine);
     }
 }

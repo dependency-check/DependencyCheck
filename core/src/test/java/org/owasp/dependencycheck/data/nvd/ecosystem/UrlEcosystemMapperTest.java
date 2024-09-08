@@ -27,7 +27,7 @@ public class UrlEcosystemMapperTest {
         List<Reference> references  = new ArrayList<>();
         Reference ref = new Reference(url, null, null);
         references.add(ref);
-        CveItem cveItem = new CveItem(null, null, null, null, null, null, null, null, null, null, null, null, null, references, null, null, null, null);
+        CveItem cveItem = new CveItem(null, null, null, null, null, null, null, null, null, null, null, null, null, null, references, null, null, null, null);
         DefCveItem defCveItem = new DefCveItem(cveItem);
         
         return defCveItem;

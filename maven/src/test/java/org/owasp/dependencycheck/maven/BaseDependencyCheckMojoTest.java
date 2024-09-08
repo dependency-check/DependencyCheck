@@ -18,127 +18,39 @@
 package org.owasp.dependencycheck.maven;
 
 import java.io.File;
-import java.net.URISyntaxException;
-import java.util.HashSet;
 import java.util.Locale;
-import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
-import mockit.Mock;
-import mockit.MockUp;
-import mockit.Tested;
-import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
-import org.apache.maven.plugin.testing.stubs.ArtifactStub;
 import org.apache.maven.project.MavenProject;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import org.junit.Assume;
+import static org.mockito.Mockito.doReturn;
+
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Spy;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.owasp.dependencycheck.Engine;
-import org.owasp.dependencycheck.data.nvdcve.DatabaseException;
 import org.owasp.dependencycheck.exception.ExceptionCollection;
-import org.owasp.dependencycheck.utils.InvalidSettingException;
-import org.owasp.dependencycheck.utils.Settings;
 
 /**
  *
  * @author Jeremy Long
  */
+@RunWith(MockitoJUnitRunner.class)
 public class BaseDependencyCheckMojoTest extends BaseTest {
 
-    @Tested
+    @Spy
     MavenProject project;
-
-    /**
-     * Checks if the test can be run. The test in this class fail, presumable
-     * due to jmockit, if the JDK is 1.8+.
-     *
-     * @return true if the JDK is below 1.8.
-     */
-    public boolean canRun() {
-        String version = System.getProperty("java.version");
-        int firstDot = version.indexOf('.');
-        if (firstDot < 0) {
-            // new java.version format, so Java 9 or above
-            return false;
-        }
-        int secondDot = version.indexOf('.', firstDot+1);
-        if (secondDot < 0) {
-            // new java.version format, so Java 9 or above
-            return false;
-        }
-        version = version.substring(0, secondDot);
-
-        double v = Double.parseDouble(version);
-        return v == 1.7;
-    }
-
-    /**
-     * Test of scanArtifacts method, of class BaseDependencyCheckMojo.
-     */
-    @Test
-    public void testScanArtifacts() throws DatabaseException, InvalidSettingException {
-        new MockUp<MavenProject>() {
-            @Mock
-            public Set<Artifact> getArtifacts() {
-                Set<Artifact> artifacts = new HashSet<>();
-                Artifact a = new ArtifactStub();
-                try {
-                    File file = new File(Test.class.getProtectionDomain().getCodeSource().getLocation().toURI());
-                    a.setFile(file);
-                    artifacts.add(a);
-                } catch (URISyntaxException ex) {
-                    Logger.getLogger(BaseDependencyCheckMojoTest.class.getName()).log(Level.SEVERE, null, ex);
-                }
-                //File file = new File(this.getClass().getClassLoader().getResource("daytrader-ear-2.1.7.ear").getPath());
-
-                return artifacts;
-            }
-
-            @SuppressWarnings("SameReturnValue")
-            @Mock
-            public String getName() {
-                return "test-project";
-            }
-        };
-
-        if (canRun()) {
-            boolean autoUpdate = getSettings().getBoolean(Settings.KEYS.AUTO_UPDATE);
-            getSettings().setBoolean(Settings.KEYS.AUTO_UPDATE, false);
-            try (Engine engine = new Engine(getSettings())) {
-                getSettings().setBoolean(Settings.KEYS.AUTO_UPDATE, autoUpdate);
-
-                assertTrue(engine.getDependencies().length == 0);
-                BaseDependencyCheckMojoImpl instance = new BaseDependencyCheckMojoImpl();
-                ExceptionCollection exCol = null;
-                try { //the mock above fails under some JDKs
-                    exCol = instance.scanArtifacts(project, engine);
-                } catch (NullPointerException ex) {
-                    Assume.assumeNoException(ex);
-                }
-                assertNull(exCol);
-                assertFalse(engine.getDependencies().length == 0);
-            }
-        }
-    }
 
     @Test
     public void should_newDependency_get_pom_from_base_dir() {
         // Given
         BaseDependencyCheckMojo instance = new BaseDependencyCheckMojoImpl();
 
-        new MockUp<MavenProject>() {
-            @Mock
-            public File getBasedir() {
-                return new File("src/test/resources/maven_project_base_dir");
-            }
-        };
+        doReturn(new File("src/test/resources/maven_project_base_dir")).when(project).getBasedir();
 
         String expectOutput = "pom.xml";
 
@@ -154,17 +66,8 @@ public class BaseDependencyCheckMojoTest extends BaseTest {
         // Given
         BaseDependencyCheckMojo instance = new BaseDependencyCheckMojoImpl();
 
-        new MockUp<MavenProject>() {
-            @Mock
-            public File getBasedir() {
-                return new File("src/test/resources/dir_without_pom");
-            }
-
-            @Mock
-            public File getFile() {
-                return new File("src/test/resources/dir_without_pom");
-            }
-        };
+        doReturn(new File("src/test/resources/dir_without_pom")).when(project).getBasedir();
+        doReturn(new File("src/test/resources/dir_without_pom")).when(project).getFile();
 
         // When
         String output = instance.newDependency(project).getFileName();
@@ -178,17 +81,8 @@ public class BaseDependencyCheckMojoTest extends BaseTest {
         // Given
         BaseDependencyCheckMojo instance = new BaseDependencyCheckMojoImpl();
 
-        new MockUp<MavenProject>() {
-            @Mock
-            public File getBasedir() {
-                return new File("src/test/resources/dir_containing_maven_poms_declared_as_modules_in_another_pom");
-            }
-
-            @Mock
-            public File getFile() {
-                return new File("src/test/resources/dir_containing_maven_poms_declared_as_modules_in_another_pom/serverlibs.pom");
-            }
-        };
+        doReturn(new File("src/test/resources/dir_containing_maven_poms_declared_as_modules_in_another_pom")).when(project).getBasedir();
+        doReturn(new File("src/test/resources/dir_containing_maven_poms_declared_as_modules_in_another_pom/serverlibs.pom")).when(project).getFile();
 
         String expectOutput = "serverlibs.pom";
 
@@ -211,12 +105,12 @@ public class BaseDependencyCheckMojoTest extends BaseTest {
 
         @Override
         public String getName(Locale locale) {
-            return "test implementation";
+            throw new UnsupportedOperationException("Operation not supported");
         }
 
         @Override
         public String getDescription(Locale locale) {
-            return "test implementation";
+            throw new UnsupportedOperationException("Operation not supported");
         }
 
         @Override

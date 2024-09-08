@@ -8,15 +8,22 @@ Dependency-Check is a Software Composition Analysis (SCA) tool that attempts to 
 
 Documentation and links to production binary releases can be found on the [github pages](http://jeremylong.github.io/DependencyCheck/). Additionally, more information about the architecture and ways to extend dependency-check can be found on the [wiki].
 
-## 9.0.0 Upgrade Notice
+## Notice
 
-**Upgrading to 9.0.0 or later is mandatory**; previous versions of dependency-check
-utilize the NVD data feeds which will be deprecated on Dec 15th, 2023. Versions
-earlier then 9.0.0 are no longer supported and could fail to work after Dec 15th, 2023.
+This product uses the NVD API but is not endorsed or certified by the NVD.
+
+## Mandatory Upgrade Notice
+
+**Upgrading to 10.0.2 or later is mandatory**
+
+Older versions of dependency-check are causing numerous, duplicative requests that
+end in processing failures are causing unnecassary load on the NVD API. Dependency-check
+10.0.2 uses an updated `User-Agent` header that will allow the NVD to block calls
+from the older client.
 
 ### NVD API Key Highly Recommended
 
-With 9.0.0 dependency-check has moved from using the NVD data-feed to the NVD API.
+Dependency-check has moved from using the NVD data-feed to the NVD API.
 Users of dependency-check are **highly** encouraged to obtain an NVD API Key; see https://nvd.nist.gov/developers/request-an-api-key
 Without an NVD API Key dependency-check's updates will be **extremely slow**.
 Please see the documentation for the cli, maven, gradle, or ant integrations on
@@ -64,10 +71,7 @@ dependencies {
 
 ### Java Version
 
-Minimum Java Version: Java 8 update 251
-
-While dependency-check 9.0.0 and higher will still run on Java 8 - the update version
-must be higher then 251.
+Minimum Java Version: Java 11
 
 ### Internet Access
 
@@ -80,8 +84,8 @@ In order to analyze some technology stacks dependency-check may require other
 development tools to be installed. Some of the analysis listed below may be
 experimental and require the experimental analyzers to be enabled.
 
-1. To analyze .NET Assemblies the dotnet 6 run time or SDK must be installed.
-   - Assemblies targeting other run times can be analyzed - but 6 is required to run the analysis.
+1. To analyze .NET Assemblies the dotnet 8 run time or SDK must be installed.
+   - Assemblies targeting other run times can be analyzed - but 8 is required to run the analysis.
 2. If analyzing GoLang projects `go` must be installed.
 3. The analysis of `Elixir` projects requires `mix_audit`.
 4. The analysis of `npm`, `pnpm`, and `yarn` projects requires `npm`, `pnpm`, or `yarn` to be installed.
@@ -171,7 +175,7 @@ For installation to pass, you must have the following components installed:
 * Maven: `mvn -version` 3.5.0 and higher
 
 Tests cases require:
-* dotnet core version 6.0
+* dotnet core version 8.0
 * Go: `go version` 1.12 and higher
 * Ruby [bundler-audit](https://github.com/rubysec/bundler-audit#install)
 * [Yarn](https://classic.yarnpkg.com/en/docs/install/)
@@ -311,7 +315,7 @@ docker run --rm ^
 Building From Source
 --------------------
 
-To build dependency-check (using Java 8) run the command:
+To build dependency-check (using Java 11) run the command:
 
 ```
 mvn -s settings.xml install

@@ -24,7 +24,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
-import org.apache.commons.compress.utils.IOUtils;
+import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.owasp.dependencycheck.data.nvdcve.DatabaseManager;
 import org.owasp.dependencycheck.utils.WriteLock;

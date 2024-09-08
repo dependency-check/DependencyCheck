@@ -64,7 +64,7 @@ public class CveEcosystemMapperTest {
         Node node = new Node(Node.Operator.OR, Boolean.FALSE, cpeMatch);
         nodes.add(node);
         Config conf = new Config(Config.Operator.AND, Boolean.FALSE, nodes);
-        CveItem cveItem = new CveItem(null, null, null, null, null, null, null, null, null, null, null, null, d, null, null, null, configurations, null);
+        CveItem cveItem = new CveItem(null, null, null, null, null, null, null, null, null, null, null, null, null, d, null, null, null, configurations, null);
         DefCveItem defCveItem = new DefCveItem(cveItem);
 
         return defCveItem;

@@ -993,6 +993,13 @@ public abstract class BaseDependencyCheckMojo extends AbstractMojo implements Ma
     private Integer nvdApiDelay;
 
     /**
+     * The number records for a single page from NVD API (must be <=2000).
+     */
+    @SuppressWarnings("CanBeFinal")
+    @Parameter(property = "nvdApiResultsPerPage")
+    private Integer nvdApiResultsPerPage;
+
+    /**
      * The path to dotnet core.
      */
     @SuppressWarnings("CanBeFinal")
@@ -2354,6 +2361,7 @@ public abstract class BaseDependencyCheckMojo extends AbstractMojo implements Ma
         settings.setStringIfNotEmpty(Settings.KEYS.DB_FILE_NAME, dbFilename);
         settings.setStringIfNotNull(Settings.KEYS.NVD_API_ENDPOINT, nvdApiEndpoint);
         settings.setIntIfNotNull(Settings.KEYS.NVD_API_DELAY, nvdApiDelay);
+        settings.setIntIfNotNull(Settings.KEYS.NVD_API_RESULTS_PER_PAGE, nvdApiResultsPerPage);
         settings.setStringIfNotEmpty(Settings.KEYS.NVD_API_DATAFEED_URL, nvdDatafeedUrl);
         settings.setIntIfNotNull(Settings.KEYS.NVD_API_VALID_FOR_HOURS, nvdValidForHours);
         settings.setIntIfNotNull(Settings.KEYS.NVD_API_MAX_RETRY_COUNT, nvdMaxRetryCount);

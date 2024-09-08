@@ -45,14 +45,14 @@ jobs:
         with:
           path: core/target/data
           key: odc-data
-      - uses: actions/setup-dotnet@v4.0.0
+      - uses: actions/setup-dotnet@v4.0.1
         with:
-          dotnet-version: '6.0.x'
-      - name: Set up JDK 1.8
-        id: jdk-8
+          dotnet-version: '8.0.x'
+      - name: Set up JDK 11
+        id: jdk-11
         uses: actions/setup-java@v4
         with:
-          java-version: 8
+          java-version: 11
           distribution: 'zulu'
           server-id: ossrh
           server-username: ${{ secrets.OSSRH_USERNAME }}
@@ -255,7 +255,7 @@ jobs:
         run: ls -R
         working-directory: target
       - name: Deploy gh-pages
-        uses: JamesIves/github-pages-deploy-action@v4.6.1
+        uses: JamesIves/github-pages-deploy-action@v4.6.4
         with:
           branch: gh-pages
           folder: target/staging

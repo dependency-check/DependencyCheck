@@ -319,7 +319,10 @@ public class NvdApiDataSource implements CachedWebDataSource {
                     + "an NVD API key as the update can take a VERY long time without an API Key");
             builder.withDelay(10000);
         }
-        builder.withResultsPerPage(RESULTS_PER_PAGE);
+
+        final int resultsPerPage = Math.min(settings.getInt(Settings.KEYS.NVD_API_RESULTS_PER_PAGE, RESULTS_PER_PAGE), RESULTS_PER_PAGE);
+
+        builder.withResultsPerPage(resultsPerPage);
         //removed due to the virtualMatch filter causing overhead with the NVD API
         //final String virtualMatch = settings.getString(Settings.KEYS.CVE_CPE_STARTS_WITH_FILTER);
         //if (virtualMatch != null) {
@@ -362,8 +365,11 @@ public class NvdApiDataSource implements CachedWebDataSource {
                         }
                         ctr += 1;
                         if ((ctr % 5) == 0) {
-                            final double percent = (double) (ctr * RESULTS_PER_PAGE) / max * 100;
-                            LOGGER.info(String.format("Downloaded %,d/%,d (%.0f%%)", ctr * RESULTS_PER_PAGE, max, percent));
+                            //TODO get results per page from the API as it could adjust automatically
+                            final double percent = (double) (ctr * resultsPerPage) / max * 100;
+                            if (percent < 100) {
+                                LOGGER.info(String.format("Downloaded %,d/%,d (%.0f%%)", ctr * resultsPerPage, max, percent));
+                            }
                         }
                     }
                     final ZonedDateTime last = api.getLastUpdated();
@@ -379,7 +385,7 @@ public class NvdApiDataSource implements CachedWebDataSource {
                         msg = "Error updating the NVD Data; the NVD returned a 403 or 404 error\n\nPlease ensure your API Key is valid; "
                                 + "see https://github.com/jeremylong/Open-Vulnerability-Project/tree/main/vulnz#api-key-is-used-and-a-403-or-404-error-occurs\n\n"
                                 + "If your NVD API Key is valid try increasing the NVD API Delay.\n\n"
-                                + "If this is ocurring in a CI environment";
+                                + "If this is occurring in a CI environment";
                     } else {
                         msg = "Error updating the NVD Data; the NVD returned a 403 or 404 error\n\nConsider using an NVD API Key; "
                                 + "see https://github.com/jeremylong/DependencyCheck?tab=readme-ov-file#nvd-api-key-highly-recommended";

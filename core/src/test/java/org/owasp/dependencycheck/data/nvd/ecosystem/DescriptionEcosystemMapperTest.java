@@ -104,7 +104,7 @@ public class DescriptionEcosystemMapperTest {
         List<LangString> descriptions = new ArrayList<>();
         LangString desc = new LangString("en",description);
         descriptions.add(desc);
-        CveItem cveItem = new CveItem(null, null, null, null, null, null, null, null, null, null, null, null, descriptions, null, null, null, null, null);
+        CveItem cveItem = new CveItem(null, null, null, null, null, null, null, null, null, null, null, null, null, descriptions, null, null, null, null, null);
         DefCveItem defCveItem = new DefCveItem(cveItem);
 
         return defCveItem;

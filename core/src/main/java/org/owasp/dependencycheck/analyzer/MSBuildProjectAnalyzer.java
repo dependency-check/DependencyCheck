@@ -150,7 +150,7 @@ public class MSBuildProjectAnalyzer extends AbstractFileTypeAnalyzer {
             final List<NugetPackageReference> packages;
 
             try (FileInputStream fis = new FileInputStream(dependency.getActualFilePath());
-                    BOMInputStream bis = new BOMInputStream(fis)) {
+                    BOMInputStream bis = BOMInputStream.builder().setInputStream(fis).get()) {
                 //skip BOM if it exists
                 bis.getBOM();
                 packages = parser.parse(bis, props, centrallyManaged);
@@ -315,7 +315,7 @@ public class MSBuildProjectAnalyzer extends AbstractFileTypeAnalyzer {
         if (directoryProps != null && directoryProps.isFile()) {
             final DirectoryBuildPropsParser parser = new DirectoryBuildPropsParser();
             try (FileInputStream fis = new FileInputStream(directoryProps);
-                    BOMInputStream bis = new BOMInputStream(fis)) {
+                    BOMInputStream bis = BOMInputStream.builder().setInputStream(fis).get()) {
                 //skip BOM if it exists
                 bis.getBOM();
                 entries = parser.parse(bis);
@@ -344,7 +344,7 @@ public class MSBuildProjectAnalyzer extends AbstractFileTypeAnalyzer {
         if (packages != null && packages.isFile()) {
             final DirectoryPackagesPropsParser parser = new DirectoryPackagesPropsParser();
             try (FileInputStream fis = new FileInputStream(packages);
-                    BOMInputStream bis = new BOMInputStream(fis)) {
+                    BOMInputStream bis = BOMInputStream.builder().setInputStream(fis).get()) {
                 //skip BOM if it exists
                 bis.getBOM();
                 return parser.parse(bis, props);

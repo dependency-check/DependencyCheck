@@ -24,7 +24,6 @@ import java.net.URL;
 import javax.annotation.concurrent.ThreadSafe;
 
 import org.owasp.dependencycheck.Engine;
-import org.owasp.dependencycheck.data.nvdcve.DatabaseProperties;
 import org.owasp.dependencycheck.data.update.exception.UpdateException;
 import org.owasp.dependencycheck.exception.WriteLockException;
 import org.owasp.dependencycheck.utils.Downloader;
@@ -41,7 +40,7 @@ import org.slf4j.LoggerFactory;
  * @author Jeremy Long
  */
 @ThreadSafe
-public class RetireJSDataSource implements CachedWebDataSource {
+public class RetireJSDataSource extends LocalDataSource {
 
     /**
      * Static logger.
@@ -55,10 +54,6 @@ public class RetireJSDataSource implements CachedWebDataSource {
      * The configured settings.
      */
     private Settings settings;
-    /**
-     * The properties obtained from the database.
-     */
-    private DatabaseProperties dbProperties = null;
     /**
      * The default URL to the RetireJS JavaScript repository.
      */
@@ -80,7 +75,6 @@ public class RetireJSDataSource implements CachedWebDataSource {
     @Override
     public boolean update(Engine engine) throws UpdateException {
         this.settings = engine.getSettings();
-        this.dbProperties = engine.getDatabase().getDatabaseProperties();
         final String configuredUrl = settings.getString(Settings.KEYS.ANALYZER_RETIREJS_REPO_JS_URL, DEFAULT_JS_URL);
         final boolean autoupdate = settings.getBoolean(Settings.KEYS.AUTO_UPDATE, true);
         final boolean forceupdate = settings.getBoolean(Settings.KEYS.ANALYZER_RETIREJS_FORCEUPDATE, false);
@@ -93,7 +87,7 @@ public class RetireJSDataSource implements CachedWebDataSource {
             if (proceed) {
                 LOGGER.debug("Begin RetireJS Update");
                 initializeRetireJsRepo(settings, url, repoFile);
-                dbProperties.save(DatabaseProperties.RETIRE_LAST_CHECKED, Long.toString(System.currentTimeMillis() / 1000));
+                saveLastUpdated(repoFile, System.currentTimeMillis() / 1000);
             }
         } catch (MalformedURLException ex) {
             throw new UpdateException(String.format("Invalid URL for RetireJS repository (%s)", configuredUrl), ex);
@@ -116,11 +110,7 @@ public class RetireJSDataSource implements CachedWebDataSource {
         boolean proceed = true;
         if (repo != null && repo.isFile()) {
             final int validForHours = settings.getInt(Settings.KEYS.ANALYZER_RETIREJS_REPO_VALID_FOR_HOURS, 0);
-            long lastUpdatedOn = dbProperties.getPropertyInSeconds(DatabaseProperties.RETIRE_LAST_CHECKED);
-            if (lastUpdatedOn <= 0) {
-                //fall back on conversion from file last modified to storing in the db.
-                lastUpdatedOn = repo.lastModified();
-            }
+            long lastUpdatedOn = getLastUpdated(repo);
             final long now = System.currentTimeMillis();
             LOGGER.debug("Last updated: {}", lastUpdatedOn);
             LOGGER.debug("Now: {}", now);
@@ -132,6 +122,7 @@ public class RetireJSDataSource implements CachedWebDataSource {
         }
         return proceed;
     }
+
 
     /**
      * Initializes the local RetireJS repository
