@@ -1,6 +1,6 @@
 FROM golang:1.23.1-alpine AS go
 
-FROM azul/zulu-openjdk-alpine:22 AS jlink
+FROM azul/zulu-openjdk-alpine:23 AS jlink
 
 RUN "$JAVA_HOME/bin/jlink" --compress=2 --module-path /opt/java/openjdk/jmods --add-modules java.base,java.compiler,java.datatransfer,jdk.crypto.ec,java.desktop,java.instrument,java.logging,java.management,java.naming,java.rmi,java.scripting,java.security.sasl,java.sql,java.transaction.xa,java.xml,jdk.unsupported --output /jlinked
 
