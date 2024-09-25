@@ -12,7 +12,7 @@ Installation
 3. Verify the cryptographic integrity of your download: `gpg --verify dependency-check-ant-${project.version}-release.zip.asc`.
 4. Unzip the archive
 5. Add the taskdef to your build.xml:
-
+#[[
     ```xml
     <!-- Set the value to the installation directory's path -->
     <property name="dependency-check.home" value="C:/tools/dependency-check-ant"/>
@@ -26,6 +26,7 @@ Installation
        <classpath refid="dependency-check.path" />
     </taskdef>
     ```
+]]#
 6. Use the defined taskdefs:
     * [dependency-check](configuration.html) - the primary task used to check the project dependencies.
     * [dependency-check-purge](config-purge.html) - deletes the local copy of the NVD; this should rarely be used (if ever).

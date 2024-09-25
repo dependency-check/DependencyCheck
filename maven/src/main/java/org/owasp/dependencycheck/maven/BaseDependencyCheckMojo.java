@@ -917,7 +917,7 @@ public abstract class BaseDependencyCheckMojo extends AbstractMojo implements Ma
     @Parameter(property = "serverId")
     private String serverId;
     /**
-     * The NVD API Key. The parameters {@link #nvdApiKeyEnvironmentVariable} or {@link #nvdApiServerId} should be used instead otherwise 
+     * The NVD API Key. The parameters {@link #nvdApiKeyEnvironmentVariable} or {@link #nvdApiServerId} should be used instead otherwise
      * Maven debug logging could expose the API Key (see <a href="https://github.com/advisories/GHSA-qqhq-8r2c-c3f5">GHSA-qqhq-8r2c-c3f5</a>).
      * This takes precedence over {@link #nvdApiServerId} and {@link #nvdApiKeyEnvironmentVariable}.
      */
@@ -1149,21 +1149,6 @@ public abstract class BaseDependencyCheckMojo extends AbstractMojo implements Ma
             project.setContextValue("dependency-check-output-dir", this.outputDirectory);
             runCheck();
         }
-    }
-
-    /**
-     * Generates the Dependency-Check Site Report.
-     *
-     * @param sink the sink to write the report to
-     * @param locale the locale to use when generating the report
-     * @throws MavenReportException if a maven report exception occurs
-     * @deprecated use
-     * {@link #generate(org.apache.maven.doxia.sink.Sink, java.util.Locale)}
-     * instead.
-     */
-    @Deprecated
-    public final void generate(@SuppressWarnings("deprecation") org.codehaus.doxia.sink.Sink sink, Locale locale) throws MavenReportException {
-        generate((Sink) sink, locale);
     }
 
     /**
