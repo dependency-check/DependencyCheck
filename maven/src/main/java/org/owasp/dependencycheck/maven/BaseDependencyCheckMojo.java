@@ -2159,6 +2159,8 @@ public abstract class BaseDependencyCheckMojo extends AbstractMojo implements Ma
      *
      * @return a newly instantiated <code>Engine</code>
      * @throws DatabaseException thrown if there is a database exception
+     * @throws MojoExecutionException on configuration errors when failOnError is true
+     * @throws MojoFailureException on configuration errors when failOnError is false
      */
     protected Engine initializeEngine() throws DatabaseException, MojoExecutionException, MojoFailureException {
         populateSettings();
