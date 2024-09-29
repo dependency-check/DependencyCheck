@@ -110,9 +110,8 @@ public class DatabaseProperties {
      *
      * @param key the property key
      * @param value the property value
-     * @throws UpdateException is thrown if there is an update exception
      */
-    public synchronized void save(String key, String value) throws UpdateException {
+    public synchronized void save(String key, String value) {
         properties.put(key, value);
         cveDB.saveProperty(key, value);
     }
@@ -194,7 +193,7 @@ public class DatabaseProperties {
      * @param key the property key
      * @param timestamp the zoned date time
      */
-    public void save(String key, ZonedDateTime timestamp) throws UpdateException {
+    public void save(String key, ZonedDateTime timestamp) {
         final DateTimeFormatter dtf = DateTimeFormatter.ofPattern("uuuu-MM-dd'T'HH:mm:ssX");
         save(key, dtf.format(timestamp));
     }
@@ -206,7 +205,7 @@ public class DatabaseProperties {
      * @param key the property key
      * @param timestamp the zoned date time
      */
-    public static void setTimestamp(Properties properties, String key, ZonedDateTime timestamp) throws UpdateException {
+    public static void setTimestamp(Properties properties, String key, ZonedDateTime timestamp) {
         final DateTimeFormatter dtf = DateTimeFormatter.ofPattern("uuuu-MM-dd'T'HH:mm:ssX");
         properties.put(key, dtf.format(timestamp));
     }

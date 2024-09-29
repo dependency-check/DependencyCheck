@@ -128,7 +128,7 @@ public final class SeverityUtil {
      * @param severity The textual severity, may be null
      * @return A float that can be used to numerically sort vulnerabilities in
      * approximated severity (highest float represents highest severity).
-     * @see #sortAdjustedCVSSv3BaseScore(float)
+     * @see #sortAdjustedCVSSv3BaseScore(Double)
      */
     public static Double estimatedSortAdjustedCVSSv3(final String severity) {
         switch (Severity.forUnscored(severity)) {

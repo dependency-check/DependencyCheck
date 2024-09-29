@@ -64,6 +64,7 @@ public final class PyPACoreMetadataParser {
      *         The Wheel metadata of a Python package as a File
      *
      * @return The metadata properties read from the file
+     * @throws AnalysisException thrown if there is an analysis exception
      */
     public static Properties getProperties(File file) throws AnalysisException {
         try (BufferedReader utf8Reader = Files.newBufferedReader(file.toPath(), StandardCharsets.UTF_8)) {

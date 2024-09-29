@@ -350,7 +350,7 @@ public class Model implements Serializable {
     /**
      * Replaces the group/artifact/version obtained from the `pom.xml` which may
      * contain variable references with the interpolated values of the
-     * <a href="https://maven.apache.org/shared/maven-archiver/#pom-properties-content>pom.properties</a>
+     * <a href="https://maven.apache.org/shared/maven-archiver/#pom-properties-content">pom.properties</a>
      * content (when present). Validates that at least the documented properties
      * for the G/A/V coordinates are all present. If not it will leave the model
      * unmodified as the property-source was apparently not a valid

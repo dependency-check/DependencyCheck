@@ -458,7 +458,7 @@ public final class H2Functions {
      * @param requiredAction the action required
      * @param dueDate the due date
      * @param notes notes
-     * @throws SQLException
+     * @throws SQLException thrown if there is a database error merging the Known Exploited information to the database
      */
     public static void mergeKnownExploited(final Connection conn, String cveId,
             String vendorProject, String product, String vulnerabilityName,

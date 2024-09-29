@@ -28,9 +28,10 @@ import org.apache.lucene.analysis.tokenattributes.PositionIncrementAttribute;
 /**
  * A simple alphanumeric filter that removes non-alphanumeric characters from
  * the terms. If a term contains a non-alphanumeric character it may be split
- * into multiple terms:
+ * into multiple terms.
  *
- * <table summary="Example filtering">
+ * <table>
+ * <caption>Filtering examples</caption>
  * <tr><th>term</th><th>results in</th></tr>
  * <tr><td>bob</td><td>bob</td></tr>
  * <tr><td>bob-cat</td><td>bob cat</td></tr>
