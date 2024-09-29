@@ -67,6 +67,10 @@ import java.util.Locale;
 
 import static java.lang.String.format;
 
+/**
+ * A Utility class to centralize download logic like HTTP(S) proxy configuration and proxy- and server credential handling.
+ * @author Jeremy Long, Hans Aikema
+ */
 public final class Downloader {
 
     /**
@@ -267,10 +271,10 @@ public final class Downloader {
      *
      * @param url        the URL of the file to download
      * @param outputPath the path to the save the file to
-     * @throws org.owasp.dependencycheck.utils.DownloadFailedException is thrown
-     *                                                                 if there is an error downloading the file
-     * @throws TooManyRequestsException                                thrown when a 429 is received
-     * @throws ResourceNotFoundException                               thrown when a 404 is received
+     * @throws DownloadFailedException       is thrown if there is an error downloading the file
+     * @throws URLConnectionFailureException is thrown when certificate-chain trust errors occur downloading the file
+     * @throws TooManyRequestsException      thrown when a 429 is received
+     * @throws ResourceNotFoundException     thrown when a 404 is received
      */
     public void fetchFile(URL url, File outputPath)
             throws DownloadFailedException, TooManyRequestsException, ResourceNotFoundException, URLConnectionFailureException {
@@ -284,10 +288,10 @@ public final class Downloader {
      * @param outputPath the path to the save the file to
      * @param useProxy   whether to use the configured proxy when downloading
      *                   files
-     * @throws org.owasp.dependencycheck.utils.DownloadFailedException is thrown
-     *                                                                 if there is an error downloading the file
-     * @throws TooManyRequestsException                                thrown when a 429 is received
-     * @throws ResourceNotFoundException                               thrown when a 404 is received
+     * @throws DownloadFailedException       is thrown if there is an error downloading the file
+     * @throws URLConnectionFailureException is thrown when certificate-chain trust errors occur downloading the file
+     * @throws TooManyRequestsException      thrown when a 429 is received
+     * @throws ResourceNotFoundException     thrown when a 404 is received
      */
     public void fetchFile(URL url, File outputPath, boolean useProxy) throws DownloadFailedException,
             TooManyRequestsException, ResourceNotFoundException, URLConnectionFailureException {
@@ -342,10 +346,10 @@ public final class Downloader {
      *                    files
      * @param userKey     the settings key for the username to be used
      * @param passwordKey the settings key for the password to be used
-     * @throws org.owasp.dependencycheck.utils.DownloadFailedException is thrown
-     *                                                                 if there is an error downloading the file
-     * @throws TooManyRequestsException                                thrown when a 429 is received
-     * @throws ResourceNotFoundException                               thrown when a 404 is received
+     * @throws DownloadFailedException       is thrown if there is an error downloading the file
+     * @throws URLConnectionFailureException is thrown when certificate-chain trust errors occur downloading the file
+     * @throws TooManyRequestsException      thrown when a 429 is received
+     * @throws ResourceNotFoundException     thrown when a 404 is received
      * @implNote This method should only be used in cases where the target host cannot be determined beforehand from settings, so that ad-hoc
      * Credentials needs to be constructed for the target URL when the user/password keys point to configured credentials. The method delegates to
      * {@link #fetchFile(URL, File, boolean)} when credentials are not configured for the given keys or the resource points to a file.
@@ -393,15 +397,15 @@ public final class Downloader {
     /**
      * Posts a payload to the URL and returns the response as a string.
      *
-     * @param url     the URL to POST to
-     * @param payload the Payload to post
+     * @param url         the URL to POST to
+     * @param payload     the Payload to post
      * @param payloadType the string describing the payload's mime-type
-     * @param hdr Additional headers to add to the HTTP request
+     * @param hdr         Additional headers to add to the HTTP request
      * @return the content of the response
-     * @throws DownloadFailedException   is thrown if there is an error
-     *                                   downloading the file
-     * @throws TooManyRequestsException  thrown when a 429 is received
-     * @throws ResourceNotFoundException thrown when a 404 is received
+     * @throws DownloadFailedException       is thrown if there is an error downloading the file
+     * @throws URLConnectionFailureException is thrown when certificate-chain trust errors occur downloading the file
+     * @throws TooManyRequestsException      thrown when a 429 is received
+     * @throws ResourceNotFoundException     thrown when a 404 is received
      */
     public String postBasedFetchContent(URI url, String payload, ContentType payloadType, List<Header> hdr)
             throws DownloadFailedException, TooManyRequestsException, ResourceNotFoundException, URLConnectionFailureException {

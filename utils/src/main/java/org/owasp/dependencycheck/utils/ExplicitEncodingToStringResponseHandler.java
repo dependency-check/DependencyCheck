@@ -24,6 +24,11 @@ import org.apache.hc.core5.http.io.entity.EntityUtils;
 import java.io.IOException;
 import java.nio.charset.Charset;
 
+/**
+ * A responseHandler that uses an explicit client-defined characterset to interpret the response payload as a string.
+ *
+ * @author Hans Aikema
+ */
 public class ExplicitEncodingToStringResponseHandler extends AbstractHttpClientResponseHandler<String> {
 
     /**
