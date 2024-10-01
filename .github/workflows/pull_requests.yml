@@ -85,32 +85,36 @@ jobs:
           name: it-test-logs
           retention-days: 7
           path: maven/target/it/**/build.log
-# this action has been failing - so I'm disabling it; we never really found anything anyways
-#  audit:
-#    runs-on: ubuntu-latest
-#    permissions: 
-#      contents: read
-#      pull-requests: write
-#    name: Audit
-#    steps:
-#      - uses: actions/checkout@v4
-#      - name: Check Maven Cache
-#        id: maven-cache
-#        uses: actions/cache@v4
-#        with:
-#          path: ~/.m2/repository/
-#          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
-#          restore-keys: |
-#            ${{ runner.os }}-maven-
-#      - name: Semgrep
-#        id: semgrep
-#        run: |
-#            docker run --rm -v "${PWD}:/src" returntocorp/semgrep semgrep --config "p/ci" --sarif > semgrep.sarif
-#      - name: Maven Site
-#        if: always()
-#        run: |
-#            mvn -s settings.xml package site -DskipTests=true --no-transfer-progress --batch-mode
-#      - name: Publish Comments
-#        if: always()
-#        run: |
-#            mvn se.bjurr.violations:violation-comments-to-github-maven-plugin:violation-comments --no-transfer-progress --batch-mode -DpullRequestId=${{ github.event.pull_request.number }} -DoAuth2Token=${{ secrets.GITHUB_TOKEN }}
+
+
+  checkstyle:
+    name: Checkstyle Validation
+    permissions:
+      security-events: write
+      contents: read
+    runs-on: ubuntu-latest 
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check Maven Cache
+        id: maven-cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.m2/repository/
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
+      - name: Set up JDK 11
+        id: jdk-11
+        uses: actions/setup-java@v4
+        with:
+          java-version: 11
+          distribution: 'zulu'
+      - name: Checkstyle
+        id: checkstyle
+        run: |
+            mvn -V -s settings.xml checkstyle:checkstyle-aggregate --no-transfer-progress --batch-mode
+      - name: Upload SARIF file
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: target/checkstyle-result.sarif
+          category: checkstyle

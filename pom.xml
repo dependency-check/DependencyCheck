@@ -761,50 +761,28 @@ Copyright (c) 2012 - Jeremy Long
                 </configuration>
             </plugin>
             <plugin>
-                <groupId>se.bjurr.violations</groupId>
-                <artifactId>violation-comments-to-github-maven-plugin</artifactId>
-                <dependencies>
-                    <dependency>
-                        <groupId>se.bjurr.violations</groupId>
-                        <artifactId>violation-comments-to-github-lib</artifactId>
-                        <version>1.83.1</version>
-                    </dependency>
-                    <dependency>
-                        <groupId>se.bjurr.violations</groupId>
-                        <artifactId>violations-lib</artifactId>
-                        <version>1.157.1</version>
-                    </dependency>
-                </dependencies>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-checkstyle-plugin</artifactId>
+                <version>${reporting.checkstyle-plugin.version}</version>
+                <executions>
+                    <execution>
+                        <inherited>false</inherited>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>checkstyle-aggregate</goal>
+                        </goals>
+                    </execution>
+                </executions>
                 <configuration>
-                    <inherited>false</inherited>
-                    <repositoryOwner>jeremylong</repositoryOwner>
-                    <repositoryName>DependencyCheck</repositoryName>
-                    <gitHubUrl>https://api.github.com/</gitHubUrl>
-                    <createCommentWithAllSingleFileComments>false</createCommentWithAllSingleFileComments>
-                    <createSingleFileComments>true</createSingleFileComments>
-                    <commentOnlyChangedContent>true</commentOnlyChangedContent>
-                    <!-- INFO, WARN, ERROR //-->
-                    <minSeverity>INFO</minSeverity>
-                    <violations>
-                        <violation>
-                            <parser>FINDBUGS</parser>
-                            <reporter>Spotbugs</reporter>
-                            <folder>.</folder>
-                            <pattern>.*/spotbugsXml.xml$</pattern>
-                        </violation>
-                        <violation>
-                            <parser>CHECKSTYLE</parser>
-                            <reporter>Checkstyle</reporter>
-                            <folder>.</folder>
-                            <pattern>.*/checkstyle-result.xml$</pattern>
-                        </violation>
-                        <violation>
-                            <parser>SARIF</parser>
-                            <reporter>Sarif</reporter>
-                            <folder>.</folder>
-                            <pattern>.*/semgrep.sarif$</pattern>
-                        </violation>
-                    </violations>
+                    <outputFile>${project.build.directory}/checkstyle-result.sarif</outputFile>
+                    <outputFileFormat>sarif</outputFileFormat>
+                    <enableRulesSummary>false</enableRulesSummary>
+                    <enableFilesSummary>false</enableFilesSummary>
+                    <excludes>**/HelpMojo.java</excludes>
+                    <configLocation>${project.basedir}/src/main/config/checkstyle-checks.xml</configLocation>
+                    <headerLocation>${project.basedir}/src/main/config/checkstyle-header.txt</headerLocation>
+                    <suppressionsLocation>${project.basedir}/src/main/config/checkstyle-suppressions.xml</suppressionsLocation>
+                    <suppressionsFileExpression>checkstyle.suppressions.file</suppressionsFileExpression>
                 </configuration>
             </plugin>
         </plugins>
