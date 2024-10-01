@@ -10,6 +10,7 @@ jobs:
   test:
     name: Build and Test
     permissions: 
+      security-events: write
       contents: read
     runs-on: ubuntu-latest 
     steps:
@@ -72,6 +73,7 @@ jobs:
   maven:
     name: Regression Test Maven Plugin
     permissions: 
+      security-events: write
       contents: read
     runs-on: ubuntu-latest 
     steps:
