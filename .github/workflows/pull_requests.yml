@@ -43,6 +43,31 @@ jobs:
         with:
           # Command to be sent to SARIF Multitool
           command: 'validate core/target/test-reports/Report.sarif'
+      - name: Upload SARIF file
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: utils/target/spotbugsSarif.json
+          category: spotbugs-utils
+      - name: Upload SARIF file
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: core/target/spotbugsSarif.json
+          category: spotbugs-core
+      - name: Upload SARIF file
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: cli/target/spotbugsSarif.json
+          category: spotbugs-cli
+      - name: Upload SARIF file
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: ant/target/spotbugsSarif.json
+          category: spotbugs-ant
+      - name: Upload SARIF file
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: archetype/target/spotbugsSarif.json
+          category: spotbugs-archetype
           
   maven:
     name: Regression Test Maven Plugin
@@ -76,7 +101,7 @@ jobs:
         env:
           NVD_API_KEY: ${{ secrets.NVD_API_KEY }}
         run: |
-            mvn -V -s settings.xml -pl utils,core,maven -am compile verify -DtestMavenPlugin -DreleaseTesting --no-transfer-progress --batch-mode
+            mvn -V -s settings.xml -pl maven -am compile verify -DtestMavenPlugin -DreleaseTesting --no-transfer-progress --batch-mode
       - name: Archive IT test logs
         id: archive-logs
         if: always()
@@ -85,7 +110,11 @@ jobs:
           name: it-test-logs
           retention-days: 7
           path: maven/target/it/**/build.log
-
+      - name: Upload SARIF file
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: maven/target/spotbugsSarif.json
+          category: spotbugs-maven
 
   checkstyle:
     name: Checkstyle Validation

@@ -785,6 +785,23 @@ Copyright (c) 2012 - Jeremy Long
                     <suppressionsFileExpression>checkstyle.suppressions.file</suppressionsFileExpression>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>com.github.spotbugs</groupId>
+                <artifactId>spotbugs-maven-plugin</artifactId>
+                <version>${spotbugs.maven.plugin.version}</version>
+                <executions>
+                    <execution>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>spotbugs</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <sarifOutput>true</sarifOutput>
+                    <excludeFilterFile>${odc.config}/spotbugs_excludes.xml</excludeFilterFile>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
     <reporting>
@@ -806,7 +823,7 @@ Copyright (c) 2012 - Jeremy Long
                         </reports>
                         <configuration>
                             <failOnError>false</failOnError>
-                            <bottom>Copyright© 2012-21 Jeremy Long. All Rights Reserved.</bottom>
+                            <bottom>Copyright© 2012-24 Jeremy Long. All Rights Reserved.</bottom>
                             <sourceFileExcludes>
                                 <exclude>**/generated-sources/**/*.java</exclude>
                             </sourceFileExcludes>
