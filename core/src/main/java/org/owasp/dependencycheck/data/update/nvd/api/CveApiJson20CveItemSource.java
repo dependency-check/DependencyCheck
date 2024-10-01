@@ -29,12 +29,34 @@ import java.io.InputStream;
 
 public class CveApiJson20CveItemSource implements CveItemSource<DefCveItem> {
 
+    /**
+     * The object mapper.
+     */
     private final ObjectMapper mapper;
+    /**
+     * The input stream.
+     */
     private final InputStream inputStream;
+    /**
+     * The JSON Parser
+     */
     private final JsonParser jsonParser;
+    /**
+     * The current item.
+     */
     private DefCveItem currentItem;
+    /**
+     * The next item.
+     */
     private DefCveItem nextItem;
 
+    /**
+     * Constructs a CVE Item Source record.
+     *
+     * @param inputStream the input source to read from
+     * @throws IOException thrown if there is an issue reading from the input
+     * stream
+     */
     public CveApiJson20CveItemSource(InputStream inputStream) throws IOException {
         mapper = new ObjectMapper();
         mapper.registerModule(new JavaTimeModule());
@@ -45,8 +67,8 @@ public class CveApiJson20CveItemSource implements CveItemSource<DefCveItem> {
         do {
             token = jsonParser.nextToken();
             if (token == JsonToken.FIELD_NAME) {
-                String fieldName = jsonParser.currentName();
-                if (fieldName.equals("vulnerabilities") && (jsonParser.nextToken() == JsonToken.START_ARRAY)) {
+                final String fieldName = jsonParser.currentName();
+                if ("vulnerabilities".equals(fieldName) && (jsonParser.nextToken() == JsonToken.START_ARRAY)) {
                     nextItem = readItem(jsonParser);
                 }
             }

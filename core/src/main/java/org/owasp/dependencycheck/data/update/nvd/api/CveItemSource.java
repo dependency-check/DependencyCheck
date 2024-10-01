@@ -23,7 +23,19 @@ import java.io.IOException;
 
 public interface CveItemSource<T extends DefCveItem> extends AutoCloseable {
 
+    /**
+     * Returns whether there is another item.
+     *
+     * @return <code>true</code if there is another item; otherwise
+     * <code>false</code>.
+     */
     boolean hasNext();
 
+    /**
+     * Returns the next item.
+     *
+     * @return the next item
+     * @throws IOException thrown if there is an error reading from the source
+     */
     T next() throws IOException;
 }

@@ -124,10 +124,10 @@ public class ReportGenerator {
          */
         JUNIT,
         /**
-         * Generate Report in GitLab dependency check format:
+         * Generate Report in GitLab dependency check format.
          *
          * @see <a href="https://gitlab.com/gitlab-org/security-products/security-report-schemas/-/blob/master/dist/dependency-scanning-report-format.json">format definition</a>
-         * @see <a href="https://docs.gitlab.com/ee/development/integrations/secure.html">additional explantions on the format</a>
+         * @see <a href="https://docs.gitlab.com/ee/development/integrations/secure.html">additional explanations on the format</a>
          */
         GITLAB
     }

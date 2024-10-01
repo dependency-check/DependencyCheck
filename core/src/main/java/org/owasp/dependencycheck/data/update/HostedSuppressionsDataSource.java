@@ -33,7 +33,6 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Files;
-import org.owasp.dependencycheck.data.nvdcve.DatabaseProperties;
 
 public class HostedSuppressionsDataSource extends LocalDataSource {
 
@@ -104,7 +103,7 @@ public class HostedSuppressionsDataSource extends LocalDataSource {
         boolean proceed = true;
         if (repo != null && repo.isFile()) {
             final int validForHours = settings.getInt(Settings.KEYS.HOSTED_SUPPRESSIONS_VALID_FOR_HOURS, 2);
-            long lastUpdatedOn = getLastUpdated(repo);
+            final long lastUpdatedOn = getLastUpdated(repo);
             final long now = System.currentTimeMillis();
             LOGGER.debug("Last updated: {}", lastUpdatedOn);
             LOGGER.debug("Now: {}", now);

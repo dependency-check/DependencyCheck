@@ -63,7 +63,7 @@ public final class Utils {
      */
     public static int getJavaUpdateVersion() {
         //"1.8.0_144" "11.0.2+9" "17.0.8.1"
-        String runtimeVersion = System.getProperty("java.version");
+        final String runtimeVersion = System.getProperty("java.version");
         return parseUpdate(runtimeVersion);
     }
 
@@ -76,7 +76,7 @@ public final class Utils {
     protected static int parseUpdate(String runtimeVersion) {
         LOGGER.debug(runtimeVersion);
         try {
-            String[] parts = runtimeVersion.split("\\.");
+            final String[] parts = runtimeVersion.split("\\.");
             if (parts.length == 4 && isNumeric(parts)) {
                 return Integer.parseInt(parts[2]);
             }
@@ -116,12 +116,5 @@ public final class Utils {
             }
         }
         return true;
-    }
-
-    public static void main(String[] args) {
-        System.out.println("Java runtime : " + System.getProperty("java.runtime.version"));
-        System.out.println("Java version : " + getJavaVersion());
-        System.out.println("Java update  : " + getJavaUpdateVersion());
-
     }
 }

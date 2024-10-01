@@ -304,6 +304,7 @@ public class BundlerAuditProcessor extends Processor<InputStream> {
      * Creates the dependency based off of the gem.
      *
      * @param engine the engine used for scanning
+     * @param gemFile the gem file
      * @param parentName the gem parent
      * @param fileName the file name
      * @param filePath the file path
@@ -311,7 +312,8 @@ public class BundlerAuditProcessor extends Processor<InputStream> {
      * @return the dependency to add
      * @throws IOException thrown if a temporary gem file could not be written
      */
-    private Dependency createDependencyForGem(Engine engine, File gemFile, String parentName, String fileName, String filePath, String gem) throws IOException {
+    private Dependency createDependencyForGem(Engine engine, File gemFile, String parentName, String fileName,
+            String filePath, String gem) throws IOException {
         final String displayFileName = String.format("%s%c%s:%s", parentName, File.separatorChar, fileName, gem);
         final Dependency dependency = new Dependency(gemFile, true);
         dependency.setSha1sum(Checksum.getSHA1Checksum(displayFileName));

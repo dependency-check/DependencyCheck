@@ -219,7 +219,7 @@ public class CveItemOperator {
     boolean testCveCpeStartWithFilter(final DefCveItem cve) {
         if (cve.getCve().getConfigurations() != null) {
             //cycle through to see if this is a CPE we care about (use the CPE filters
-            boolean result = cve.getCve().getConfigurations().stream()
+            final boolean result = cve.getCve().getConfigurations().stream()
                     .map(Config::getNodes)
                     .flatMap(List::stream)
                     .filter(node -> node != null)

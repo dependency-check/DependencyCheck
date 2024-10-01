@@ -147,7 +147,8 @@ public final class DatabaseManager {
                         driver = DriverLoader.load(driverName, driverPath);
                     } else {
                         driver = DriverLoader.load(driverName);
-                        LOGGER.warn("Explicitly loaded driver {} from classpath; if JDBCv4 service loading is supported by the driver you should remove the dbDriver configuration", driverName);
+                        LOGGER.warn("Explicitly loaded driver {} from classpath; if JDBCv4 service loading is supported "
+                                + "by the driver you should remove the dbDriver configuration", driverName);
                     }
                 } catch (DriverLoadException ex) {
                     LOGGER.debug("Unable to load database driver", ex);
@@ -199,7 +200,8 @@ public final class DatabaseManager {
                         throw new DatabaseException("Unable to connect to the database", ex);
                     }
                 } else if (isH2 && ex.getMessage().contains("file version or invalid file header")) {
-                    LOGGER.error("Incompatible or corrupt database found. To resolve this issue please remove the existing database by running purge");
+                    LOGGER.error("Incompatible or corrupt database found. To resolve this issue please remove the existing "
+                            + "database by running purge");
                     throw new DatabaseException("Incompatible or corrupt database found; run the purge command to resolve the issue");
                 } else {
                     LOGGER.debug("Unable to connect to the database", ex);

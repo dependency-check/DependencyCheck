@@ -22,19 +22,40 @@ import com.fasterxml.jackson.core.JsonToken;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import io.github.jeremylong.openvulnerability.client.nvd.DefCveItem;
-import org.apache.commons.io.IOUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
 
 public class JsonArrayCveItemSource implements CveItemSource<DefCveItem> {
 
+    /**
+     * The object mapper.
+     */
     private final ObjectMapper mapper;
+    /**
+     * The input stream.
+     */
     private final InputStream inputStream;
+    /**
+     * The JSON parser.
+     */
     private final JsonParser jsonParser;
+    /**
+     * The current item.
+     */
     private DefCveItem currentItem;
+    /**
+     * The next item.
+     */
     private DefCveItem nextItem;
 
+    /**
+     * Constructs a new Item Source.
+     *
+     * @param inputStream the input stream to read from
+     * @throws IOException thrown if there is a problem reading from the input
+     * stream
+     */
     public JsonArrayCveItemSource(InputStream inputStream) throws IOException {
         mapper = new ObjectMapper();
         mapper.registerModule(new JavaTimeModule());

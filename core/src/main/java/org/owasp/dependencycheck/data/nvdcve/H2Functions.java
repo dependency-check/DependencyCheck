@@ -233,10 +233,10 @@ public final class H2Functions {
             Float v3ImpactScore, String v3AttackVector, String v3AttackComplexity,
             String v3PrivilegesRequired, String v3UserInteraction, String v3Scope,
             String v3ConfidentialityImpact, String v3IntegrityImpact, String v3AvailabilityImpact,
-            Float v3BaseScore, String v3BaseSeverity, String v3Version, String v4version, 
-            String v4attackVector, String v4attackComplexity, String v4attackRequirements, 
-            String v4privilegesRequired, String v4userInteraction, String v4vulnConfidentialityImpact, 
-            String v4vulnIntegrityImpact, String v4vulnAvailabilityImpact, String v4subConfidentialityImpact, 
+            Float v3BaseScore, String v3BaseSeverity, String v3Version, String v4version,
+            String v4attackVector, String v4attackComplexity, String v4attackRequirements,
+            String v4privilegesRequired, String v4userInteraction, String v4vulnConfidentialityImpact,
+            String v4vulnIntegrityImpact, String v4vulnAvailabilityImpact, String v4subConfidentialityImpact,
             String v4subIntegrityImpact, String v4subAvailabilityImpact, String v4exploitMaturity,
             String v4confidentialityRequirement, String v4integrityRequirement, String v4availabilityRequirement,
             String v4modifiedAttackVector, String v4modifiedAttackComplexity, String v4modifiedAttackRequirements,
@@ -245,7 +245,7 @@ public final class H2Functions {
             String v4modifiedSubIntegrityImpact, String v4modifiedSubAvailabilityImpact, String v4safety,
             String v4automatable, String v4recovery, String v4valueDensity, String v4vulnerabilityResponseEffort,
             String v4providerUrgency, Float v4baseScore, String v4baseSeverity, Float v4threatScore,
-            String v4threatSeverity, Float v4environmentalScore, String v4environmentalSeverity, 
+            String v4threatSeverity, Float v4environmentalScore, String v4environmentalSeverity,
             String v4source, String v4type) throws SQLException {
 
         final SimpleResultSet ret = new SimpleResultSet();
@@ -374,8 +374,6 @@ public final class H2Functions {
             setFloatOrNull(merge, 28, v3BaseScore);
             setStringOrNull(merge, 29, v3BaseSeverity);
             setStringOrNull(merge, 30, v3Version);
-            
-            
 
             setStringOrNull(merge, 31, v4version);
             setStringOrNull(merge, 32, v4attackVector);
@@ -425,7 +423,7 @@ public final class H2Functions {
             } else {
                 merge.setInt(72, vulnerabilityId);
             }
-            
+
             final int count = merge.executeUpdate();
             if (vulnerabilityId == 0) {
                 try (ResultSet rs = merge.getGeneratedKeys()) {
@@ -458,7 +456,8 @@ public final class H2Functions {
      * @param requiredAction the action required
      * @param dueDate the due date
      * @param notes notes
-     * @throws SQLException thrown if there is a database error merging the Known Exploited information to the database
+     * @throws SQLException thrown if there is a database error merging the
+     * Known Exploited information to the database
      */
     public static void mergeKnownExploited(final Connection conn, String cveId,
             String vendorProject, String product, String vulnerabilityName,

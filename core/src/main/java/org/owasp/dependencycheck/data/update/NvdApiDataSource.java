@@ -139,7 +139,7 @@ public class NvdApiDataSource implements CachedWebDataSource {
             dbProperties = cveDb.getDatabaseProperties();
             if (checkUpdate()) {
                 final UrlData data = extractUrlData(nvdDataFeedUrl);
-                String url = data.getUrl();
+                final String url = data.getUrl();
                 String pattern = data.getPattern();
                 final Properties cacheProperties = getRemoteCacheProperties(url, pattern);
                 if (pattern == null) {
@@ -220,7 +220,7 @@ public class NvdApiDataSource implements CachedWebDataSource {
     private void storeLastModifiedDates(final ZonedDateTime now, final Properties cacheProperties,
             final Map<String, String> updateable) throws UpdateException {
 
-        ZonedDateTime lastModifiedRequest = DatabaseProperties.getTimestamp(cacheProperties,
+        final ZonedDateTime lastModifiedRequest = DatabaseProperties.getTimestamp(cacheProperties,
                 NVD_API_CACHE_MODIFIED_DATE + ".modified");
         dbProperties.save(DatabaseProperties.NVD_CACHE_LAST_CHECKED, now);
         dbProperties.save(DatabaseProperties.NVD_CACHE_LAST_MODIFIED, lastModifiedRequest);
@@ -350,7 +350,7 @@ public class NvdApiDataSource implements CachedWebDataSource {
             int ctr = 0;
             try (NvdCveClient api = builder.build()) {
                 while (api.hasNext()) {
-                    Collection<DefCveItem> items = api.next();
+                    final Collection<DefCveItem> items = api.next();
                     max = api.getTotalAvailable();
                     if (ctr == 0) {
                         LOGGER.info(String.format("NVD API has %,d records in this update", max));
@@ -380,7 +380,8 @@ public class NvdApiDataSource implements CachedWebDataSource {
                 }
 
             } catch (Exception e) {
-                if (e instanceof NvdApiException && (e.getMessage().equals("NVD Returned Status Code: 404") || e.getMessage().equals("NVD Returned Status Code: 403"))) {
+                if (e instanceof NvdApiException && (e.getMessage().equals("NVD Returned Status Code: 404")
+                        || e.getMessage().equals("NVD Returned Status Code: 403"))) {
                     final String msg;
                     if (key != null) {
                         msg = "Error updating the NVD Data; the NVD returned a 403 or 404 error\n\nPlease ensure your API Key is valid; "
@@ -607,7 +608,7 @@ public class NvdApiDataSource implements CachedWebDataSource {
         } catch (URISyntaxException ex) {
             throw new UpdateException("Invalid NVD Cache URL", ex);
         } catch (DownloadFailedException | ResourceNotFoundException ex) {
-            String metaPattern;
+            final String metaPattern;
             if (pattern == null) {
                 metaPattern = "nvdcve-{0}.meta";
             } else {
@@ -616,7 +617,7 @@ public class NvdApiDataSource implements CachedWebDataSource {
             try {
                 URL metaUrl = new URI(url + MessageFormat.format(metaPattern, "modified")).toURL();
                 String content = Downloader.getInstance().fetchContent(metaUrl, StandardCharsets.UTF_8);
-                Properties props = new Properties();
+                final Properties props = new Properties();
                 props.load(new StringReader(content));
                 ZonedDateTime lmd = DatabaseProperties.getIsoTimestamp(props, "lastModifiedDate");
                 DatabaseProperties.setTimestamp(properties, "lastModifiedDate.modified", lmd);
@@ -645,8 +646,14 @@ public class NvdApiDataSource implements CachedWebDataSource {
 
     protected static class UrlData {
 
+        /**
+         * The URL to download resources from.
+         */
         private final String url;
 
+        /**
+         * The pattern to construct the file names for resources from.
+         */
         private final String pattern;
 
         public UrlData(String url, String pattern) {

@@ -40,6 +40,7 @@ import org.apache.commons.collections4.MultiValuedMap;
  */
 @ThreadSafe
 public final class NpmPayloadBuilder {
+
     /**
      * Private constructor for utility class.
      */
@@ -119,12 +120,12 @@ public final class NpmPayloadBuilder {
 
                 //After Version 3, dependencies can't be taken directly from package-lock.json
                 if (lockJsonVersion > 2 && dep.containsKey("dependencies") && dep.get("dependencies") instanceof JsonObject) {
-                    JsonObjectBuilder depBuilder = Json.createObjectBuilder(dep);
+                    final JsonObjectBuilder depBuilder = Json.createObjectBuilder(dep);
                     depBuilder.remove("dependencies");
                     depBuilder.add("requires", dep.get("dependencies"));
                     dep = depBuilder.build();
                 }
-                
+
                 final String version = dep.getString("version", "");
                 final boolean isDev = dep.getBoolean("dev", false);
                 if (skipDevDependencies && isDev) {
@@ -154,7 +155,7 @@ public final class NpmPayloadBuilder {
      * @return the JSON payload for NPN Audit
      */
     public static JsonObject build(JsonObject packageJson, MultiValuedMap<String, String> dependencyMap,
-                                   final boolean skipDevDependencies) {
+            final boolean skipDevDependencies) {
         final JsonObjectBuilder payloadBuilder = Json.createObjectBuilder();
         addProjectInfo(packageJson, payloadBuilder);
 
@@ -246,8 +247,8 @@ public final class NpmPayloadBuilder {
     private static JsonObject buildDependencies(JsonObject dep, MultiValuedMap<String, String> dependencyMap) {
         final JsonObjectBuilder depBuilder = Json.createObjectBuilder();
         Optional.ofNullable(dep.getJsonString("version"))
-                        .map(JsonString::getString)
-                        .ifPresent(version -> depBuilder.add("version", version));
+                .map(JsonString::getString)
+                .ifPresent(version -> depBuilder.add("version", version));
 
         //not installed package (like, dependency of an optional dependency) doesn't contains integrity
         if (dep.containsKey("integrity")) {

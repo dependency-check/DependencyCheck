@@ -110,7 +110,7 @@ public class RetireJSDataSource extends LocalDataSource {
         boolean proceed = true;
         if (repo != null && repo.isFile()) {
             final int validForHours = settings.getInt(Settings.KEYS.ANALYZER_RETIREJS_REPO_VALID_FOR_HOURS, 0);
-            long lastUpdatedOn = getLastUpdated(repo);
+            final long lastUpdatedOn = getLastUpdated(repo);
             final long now = System.currentTimeMillis();
             LOGGER.debug("Last updated: {}", lastUpdatedOn);
             LOGGER.debug("Now: {}", now);

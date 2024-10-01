@@ -51,7 +51,6 @@ import org.owasp.dependencycheck.analyzer.exception.UnexpectedAnalysisException;
 import org.owasp.dependencycheck.data.cache.DataCache;
 import org.owasp.dependencycheck.data.cache.DataCacheFactory;
 import org.owasp.dependencycheck.utils.Checksum;
-import org.owasp.dependencycheck.utils.URLConnectionFailureException;
 
 /**
  * Class of methods to search via Node Audit API.
@@ -163,7 +162,8 @@ public class NodeAuditSearch {
         additionalHeaders.add(new BasicHeader("npm-session", generateRandomSession()));
 
         try {
-            final String response = Downloader.getInstance().postBasedFetchContent(nodeAuditUrl.toURI(), packageJson.toString(), ContentType.APPLICATION_JSON, additionalHeaders);
+            final String response = Downloader.getInstance().postBasedFetchContent(nodeAuditUrl.toURI(),
+                    packageJson.toString(), ContentType.APPLICATION_JSON, additionalHeaders);
             final JSONObject jsonResponse = new JSONObject(response);
             final NpmAuditParser parser = new NpmAuditParser();
             final List<Advisory> advisories = parser.parse(jsonResponse);

@@ -114,7 +114,7 @@ public class NvdApiProcessor implements Callable<NvdApiProcessor> {
 
     private void updateCveDb(CveItemSource<DefCveItem> itemSource) throws IOException {
         while (itemSource.hasNext()) {
-            DefCveItem entry = itemSource.next();
+            final DefCveItem entry = itemSource.next();
             try {
                 cveDB.updateVulnerability(entry, mapper.getEcosystem(entry));
             } catch (Exception ex) {

@@ -17,8 +17,6 @@
  */
 package org.owasp.dependencycheck.data.nvdcve;
 
-import java.time.Instant;
-import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Map;
@@ -27,7 +25,6 @@ import java.util.Properties;
 import java.util.TreeMap;
 import javax.annotation.concurrent.ThreadSafe;
 
-import org.owasp.dependencycheck.data.update.exception.UpdateException;
 import org.owasp.dependencycheck.utils.DateUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

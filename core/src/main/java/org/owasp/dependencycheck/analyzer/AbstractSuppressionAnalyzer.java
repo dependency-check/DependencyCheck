@@ -346,12 +346,14 @@ public abstract class AbstractSuppressionAnalyzer extends AbstractAnalyzer {
                 file = getSettings().getTempFile("suppression", "xml");
                 final URL url = new URL(suppressionFilePath);
                 try {
-                    Downloader.getInstance().fetchFile(url, file, false, Settings.KEYS.SUPPRESSION_FILE_USER, Settings.KEYS.SUPPRESSION_FILE_PASSWORD);
+                    Downloader.getInstance().fetchFile(url, file, false, Settings.KEYS.SUPPRESSION_FILE_USER,
+                            Settings.KEYS.SUPPRESSION_FILE_PASSWORD);
                 } catch (DownloadFailedException ex) {
                     LOGGER.trace("Failed download suppression file - first attempt", ex);
                     try {
                         Thread.sleep(500);
-                        Downloader.getInstance().fetchFile(url, file, true, Settings.KEYS.SUPPRESSION_FILE_USER, Settings.KEYS.SUPPRESSION_FILE_PASSWORD);
+                        Downloader.getInstance().fetchFile(url, file, true, Settings.KEYS.SUPPRESSION_FILE_USER,
+                                Settings.KEYS.SUPPRESSION_FILE_PASSWORD);
                     } catch (TooManyRequestsException ex1) {
                         throw new SuppressionParseException("Unable to download supression file `" + file
                                 + "`; received 429 - too many requests", ex1);

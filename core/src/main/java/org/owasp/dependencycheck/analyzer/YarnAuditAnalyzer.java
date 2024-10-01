@@ -280,7 +280,7 @@ public class YarnAuditAnalyzer extends AbstractNpmAnalyzer {
             final JsonObject lockJson = fetchYarnAuditJson(dependency, skipDevDependencies);
             // Retrieves the contents of package-lock.json from the Dependency
             final JsonObject packageJson;
-            try (final JsonReader packageReader = Json.createReader(Files.newInputStream(packageFile.toPath()))) {
+            try (JsonReader packageReader = Json.createReader(Files.newInputStream(packageFile.toPath()))) {
                 packageJson = packageReader.readObject();
             }
             // Modify the payload to meet the NPM Audit API requirements

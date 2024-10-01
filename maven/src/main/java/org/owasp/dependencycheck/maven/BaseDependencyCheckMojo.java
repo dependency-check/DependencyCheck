@@ -919,7 +919,7 @@ public abstract class BaseDependencyCheckMojo extends AbstractMojo implements Ma
     @Parameter(property = "serverId")
     private String serverId;
     /**
-     * The NVD API Key. The parameters {@link #nvdApiKeyEnvironmentVariable} or {@link #nvdApiServerId} should be used instead otherwise 
+     * The NVD API Key. The parameters {@link #nvdApiKeyEnvironmentVariable} or {@link #nvdApiServerId} should be used instead otherwise
      * Maven debug logging could expose the API Key (see <a href="https://github.com/advisories/GHSA-qqhq-8r2c-c3f5">GHSA-qqhq-8r2c-c3f5</a>).
      * This takes precedence over {@link #nvdApiServerId} and {@link #nvdApiKeyEnvironmentVariable}.
      */

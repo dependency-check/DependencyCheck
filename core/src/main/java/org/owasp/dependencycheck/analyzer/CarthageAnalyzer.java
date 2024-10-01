@@ -86,15 +86,16 @@ public class CarthageAnalyzer extends AbstractFileTypeAnalyzer {
     private static final FileFilter CARTHAGE_FILTER = FileFilterBuilder.newInstance().addFilenames(CARTFILE_RESOLVED).build();
 
     /**
-     * The capture group #1 is the dependency type, #2 is the name, #3 is dependency version.
-     * The version can be a commit ref, so we can't assume it's a number
+     * The capture group #1 is the dependency type, #2 is the name, #3 is
+     * dependency version. The version can be a commit ref, so we can't assume
+     * it's a number
      *
-     * Example values:
-     * - binary "https://dl.google.com/geosdk/GoogleMaps.json" "7.2.0"
-     * - git "https://gitlab.matrix.org/matrix-org/olm.git" "3.2.16"
-     * - github "alinradut/SwiftEntryKit" "95f4a08f41ddcf2c02e2b22789038774c8c94df5""
-     * - github "CocoaLumberjack/CocoaLumberjack" "3.8.5"
-     * - github "realm/realm-swift" "v10.44.0"
+     * Example values: - binary "https://dl.google.com/geosdk/GoogleMaps.json"
+     * "7.2.0" - git "https://gitlab.matrix.org/matrix-org/olm.git" "3.2.16" -
+     * github "alinradut/SwiftEntryKit"
+     * "95f4a08f41ddcf2c02e2b22789038774c8c94df5"" - github
+     * "CocoaLumberjack/CocoaLumberjack" "3.8.5" - github "realm/realm-swift"
+     * "v10.44.0"
      */
     private static final Pattern CARTFILE_RESOLVED_DEPENDENCY_PATTERN = Pattern.compile("(github|git|binary) \"([^\"]+)\" \"([^\"]+)\"");
 
@@ -106,9 +107,8 @@ public class CarthageAnalyzer extends AbstractFileTypeAnalyzer {
     /**
      * Capture group #1 is the dependency name.
      *
-     * Example values:
-     * - robbiehanson/XMPPFramework
-     * - CocoaLumberjack/CocoaLumberjack
+     * Example values: - robbiehanson/XMPPFramework -
+     * CocoaLumberjack/CocoaLumberjack
      */
     private static final Pattern CARTFILE_RESOLVED_GITHUB_DEPENDENCY = Pattern.compile("[a-zA-Z0-9-_]+/([a-zA-Z0-9\\-_\\.]+)");
 
@@ -120,11 +120,9 @@ public class CarthageAnalyzer extends AbstractFileTypeAnalyzer {
     /**
      * Capture group #1 is the dependency name.
      *
-     * Example values:
-     * - https://my.domain.com/release/MyFramework.json
-     * - file:///some/Path/MyFramework.json
-     * - relative/path/MyFramework.json
-     * - /absolute/path/MyFramework.json
+     * Example values: - https://my.domain.com/release/MyFramework.json -
+     * file:///some/Path/MyFramework.json - relative/path/MyFramework.json -
+     * /absolute/path/MyFramework.json
      */
     private static final Pattern CARTFILE_RESOLVED_BINARY_DEPENDENCY = Pattern.compile("([a-zA-Z0-9\\-_\\.]+).json");
 
@@ -186,6 +184,7 @@ public class CarthageAnalyzer extends AbstractFileTypeAnalyzer {
      * Analyzes the Cartfile.resolved and adds the evidence to the dependency.
      *
      * @param cartfileResolved the dependency
+     * @param engine a reference to the dependency-check engine
      * @throws AnalysisException thrown if there is an error analyzing the
      * Cartfile
      */
@@ -210,8 +209,7 @@ public class CarthageAnalyzer extends AbstractFileTypeAnalyzer {
             final Matcher versionMatcher = CARTFILE_VERSION_PATTERN.matcher(version);
             if (versionMatcher.find()) {
                 version = versionMatcher.group(1);
-            }
-            else {
+            } else {
                 // this is probably a git commit reference, so we'll default to 0.0.0.
                 // this will probably bubble up a ton of CVEs, but serves you right for
                 // not using semantic versioning.
@@ -224,15 +222,13 @@ public class CarthageAnalyzer extends AbstractFileTypeAnalyzer {
                     continue;
                 }
                 name = nameMatcher.group(1);
-            }
-            else if (type.contentEquals("github")) {
+            } else if (type.contentEquals("github")) {
                 final Matcher nameMatcher = CARTFILE_RESOLVED_GITHUB_DEPENDENCY.matcher(name);
                 if (!nameMatcher.find()) {
                     continue;
                 }
                 name = nameMatcher.group(1);
-            }
-            else if (type.contentEquals("binary")) {
+            } else if (type.contentEquals("binary")) {
                 final Matcher nameMatcher = CARTFILE_RESOLVED_BINARY_DEPENDENCY.matcher(name);
                 if (!nameMatcher.find()) {
                     continue;

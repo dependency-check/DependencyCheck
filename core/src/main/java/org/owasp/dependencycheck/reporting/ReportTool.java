@@ -122,6 +122,11 @@ public class ReportTool {
         return "unknown";
     }
 
+    /**
+     * Map severity names from various sources to a standard set of severity names.
+     * @param sev the severity name
+     * @return the standardized severity name (critical, high, medium, low, unknown)
+     */
     public String normalizeSeverity(String sev) {
         switch (sev.toLowerCase()) {
             case "critical":

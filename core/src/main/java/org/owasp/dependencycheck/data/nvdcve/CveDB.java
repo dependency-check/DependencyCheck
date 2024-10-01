@@ -799,21 +799,21 @@ public final class CveDB implements AutoCloseable {
                         final CvssV3 cvss = new CvssV3(null, null, cvssData, rsV.getDouble(19), rsV.getDouble(20));
                         vuln.setCvssV3(cvss);
                     }
-//                    32.v4version, 33.v4attackVector, 34.v4attackComplexity, 35.v4attackRequirements, 36.v4privilegesRequired, 
-//                    37.v4userInteraction, 38.v4vulnConfidentialityImpact, 39.v4vulnIntegrityImpact, 40.v4vulnAvailabilityImpact, 
-//                    41.v4subConfidentialityImpact, 42.v4subIntegrityImpact, 43.v4subAvailabilityImpact, 44.v4exploitMaturity, 
-//                    45.v4confidentialityRequirement, 46.v4integrityRequirement, 47.v4availabilityRequirement, 48.v4modifiedAttackVector, 
-//                    49.v4modifiedAttackComplexity, 50.v4modifiedAttackRequirements, 51.v4modifiedPrivilegesRequired, 52.v4modifiedUserInteraction, 
-//                    53.v4modifiedVulnConfidentialityImpact, 54.v4modifiedVulnIntegrityImpact, 55.v4modifiedVulnAvailabilityImpact, 
-//                    56.v4modifiedSubConfidentialityImpact, 57.v4modifiedSubIntegrityImpact, 58.v4modifiedSubAvailabilityImpact, 
-//                    59.v4safety, 60.v4automatable, 61.v4recovery, 62.v4valueDensity, 63.v4vulnerabilityResponseEffort, 64.v4providerUrgency, 
+//                    32.v4version, 33.v4attackVector, 34.v4attackComplexity, 35.v4attackRequirements, 36.v4privilegesRequired,
+//                    37.v4userInteraction, 38.v4vulnConfidentialityImpact, 39.v4vulnIntegrityImpact, 40.v4vulnAvailabilityImpact,
+//                    41.v4subConfidentialityImpact, 42.v4subIntegrityImpact, 43.v4subAvailabilityImpact, 44.v4exploitMaturity,
+//                    45.v4confidentialityRequirement, 46.v4integrityRequirement, 47.v4availabilityRequirement, 48.v4modifiedAttackVector,
+//                    49.v4modifiedAttackComplexity, 50.v4modifiedAttackRequirements, 51.v4modifiedPrivilegesRequired, 52.v4modifiedUserInteraction,
+//                    53.v4modifiedVulnConfidentialityImpact, 54.v4modifiedVulnIntegrityImpact, 55.v4modifiedVulnAvailabilityImpact,
+//                    56.v4modifiedSubConfidentialityImpact, 57.v4modifiedSubIntegrityImpact, 58.v4modifiedSubAvailabilityImpact,
+//                    59.v4safety, 60.v4automatable, 61.v4recovery, 62.v4valueDensity, 63.v4vulnerabilityResponseEffort, 64.v4providerUrgency,
 //                    65.v4baseScore, 66.v4baseSeverity, 67.v4threatScore, 68.v4threatSeverity, 69.v4environmentalScore, 70.v4environmentalSeverity
 //                    71.v4source, 72.v4type
                     if (rsV.getObject(33) != null) {
                         String vectorString = null;
-                        
+
                         String value = rsV.getString(32);
-                        CvssV4Data.Version version = CvssV4Data.Version.fromValue(value);                        
+                        final CvssV4Data.Version version = CvssV4Data.Version.fromValue(value);
                         CvssV4Data.AttackVectorType attackVector = null;
                         value = rsV.getString(33);
                         if (value != null) {
@@ -1002,35 +1002,33 @@ public final class CveDB implements AutoCloseable {
                             environmentalSeverity = CvssV4Data.SeverityType.fromValue(value);
                         }
                         //initializing data twice to get the vector string. I really should have designed the object better...
-                        CvssV4Data data = new CvssV4Data(version, vectorString, attackVector, attackComplexity, attackRequirements, privilegesRequired, 
-                                userInteraction, vulnConfidentialityImpact, vulnIntegrityImpact, vulnAvailabilityImpact, subConfidentialityImpact, 
-                                subIntegrityImpact, subAvailabilityImpact, exploitMaturity, confidentialityRequirement, integrityRequirement, 
-                                availabilityRequirement, modifiedAttackVector, modifiedAttackComplexity, modifiedAttackRequirements, 
-                                modifiedPrivilegesRequired, modifiedUserInteraction, modifiedVulnConfidentialityImpact, modifiedVulnIntegrityImpact, 
-                                modifiedVulnAvailabilityImpact, modifiedSubConfidentialityImpact, modifiedSubIntegrityImpact, modifiedSubAvailabilityImpact, 
-                                safety, automatable, recovery, valueDensity, vulnerabilityResponseEffort, providerUrgency, baseScore, baseSeverity, 
-                                threatScore, threatSeverity, environmentalScore, environmentalSeverity);
+                        CvssV4Data data = new CvssV4Data(version, vectorString, attackVector, attackComplexity, attackRequirements, privilegesRequired,
+                                userInteraction, vulnConfidentialityImpact, vulnIntegrityImpact, vulnAvailabilityImpact, subConfidentialityImpact,
+                                subIntegrityImpact, subAvailabilityImpact, exploitMaturity, confidentialityRequirement, integrityRequirement,
+                                availabilityRequirement, modifiedAttackVector, modifiedAttackComplexity, modifiedAttackRequirements,
+                                modifiedPrivilegesRequired, modifiedUserInteraction, modifiedVulnConfidentialityImpact, modifiedVulnIntegrityImpact,
+                                modifiedVulnAvailabilityImpact, modifiedSubConfidentialityImpact, modifiedSubIntegrityImpact,
+                                modifiedSubAvailabilityImpact, safety, automatable, recovery, valueDensity, vulnerabilityResponseEffort,
+                                providerUrgency, baseScore, baseSeverity, threatScore, threatSeverity, environmentalScore, environmentalSeverity);
                         vectorString = data.toString();
-                        data = new CvssV4Data(version, vectorString, attackVector, attackComplexity, attackRequirements, privilegesRequired, 
-                                userInteraction, vulnConfidentialityImpact, vulnIntegrityImpact, vulnAvailabilityImpact, subConfidentialityImpact, 
-                                subIntegrityImpact, subAvailabilityImpact, exploitMaturity, confidentialityRequirement, integrityRequirement, 
-                                availabilityRequirement, modifiedAttackVector, modifiedAttackComplexity, modifiedAttackRequirements, 
-                                modifiedPrivilegesRequired, modifiedUserInteraction, modifiedVulnConfidentialityImpact, modifiedVulnIntegrityImpact, 
-                                modifiedVulnAvailabilityImpact, modifiedSubConfidentialityImpact, modifiedSubIntegrityImpact, modifiedSubAvailabilityImpact, 
-                                safety, automatable, recovery, valueDensity, vulnerabilityResponseEffort, providerUrgency, baseScore, baseSeverity, 
-                                threatScore, threatSeverity, environmentalScore, environmentalSeverity);
-                        
-                        String source = rsV.getString(71);
+                        data = new CvssV4Data(version, vectorString, attackVector, attackComplexity, attackRequirements, privilegesRequired,
+                                userInteraction, vulnConfidentialityImpact, vulnIntegrityImpact, vulnAvailabilityImpact, subConfidentialityImpact,
+                                subIntegrityImpact, subAvailabilityImpact, exploitMaturity, confidentialityRequirement, integrityRequirement,
+                                availabilityRequirement, modifiedAttackVector, modifiedAttackComplexity, modifiedAttackRequirements,
+                                modifiedPrivilegesRequired, modifiedUserInteraction, modifiedVulnConfidentialityImpact, modifiedVulnIntegrityImpact,
+                                modifiedVulnAvailabilityImpact, modifiedSubConfidentialityImpact, modifiedSubIntegrityImpact,
+                                modifiedSubAvailabilityImpact, safety, automatable, recovery, valueDensity, vulnerabilityResponseEffort,
+                                providerUrgency, baseScore, baseSeverity, threatScore, threatSeverity, environmentalScore, environmentalSeverity);
+
+                        final String source = rsV.getString(71);
                         CvssV4.Type cvssType = null;
                         value = rsV.getString(72);
                         if (value != null) {
                             cvssType = CvssV4.Type.fromValue(value);
                         }
-                        
-                        CvssV4 cvssv4 = new CvssV4(source, cvssType, data);
+                        final CvssV4 cvssv4 = new CvssV4(source, cvssType, data);
                         vuln.setCvssV4(cvssv4);
                     }
-                    
                 } else {
                     LOGGER.debug(cve + " does not exist in the database");
                     return null;
@@ -1183,9 +1181,9 @@ public final class CveDB implements AutoCloseable {
 //            String 23.v3PrivilegesRequired, String 24.v3UserInteraction, String 25.v3Scope,
 //            String 26.v3ConfidentialityImpact, String 27.v3IntegrityImpact, String 28.v3AvailabilityImpact,
 //            Float 29.v3BaseScore, String 30.v3BaseSeverity, String 31.v3Version
-// .          String 32.v4version, String 33.v4attackVector, String 34.v4attackComplexity, String 35.v4attackRequirements, 
-//            String 36.v4privilegesRequired, String 37.v4userInteraction, String 38.v4vulnConfidentialityImpact, 
-//            String 39.v4vulnIntegrityImpact, String 40.v4vulnAvailabilityImpact, String 41.v4subConfidentialityImpact, 
+// .          String 32.v4version, String 33.v4attackVector, String 34.v4attackComplexity, String 35.v4attackRequirements,
+//            String 36.v4privilegesRequired, String 37.v4userInteraction, String 38.v4vulnConfidentialityImpact,
+//            String 39.v4vulnIntegrityImpact, String 40.v4vulnAvailabilityImpact, String 41.v4subConfidentialityImpact,
 //            String 42.v4subIntegrityImpact, String 43.v4subAvailabilityImpact, String 44.v4exploitMaturity,
 //            String 45.v4confidentialityRequirement, String 46.v4integrityRequirement, String 47.v4availabilityRequirement,
 //            String 48.v4modifiedAttackVector, String 49.v4modifiedAttackComplexity, String 50.v4modifiedAttackRequirements,
@@ -1297,7 +1295,7 @@ public final class CveDB implements AutoCloseable {
                 optCvssv4 = cve.getCve().getMetrics().getCvssMetricV40().stream().sorted(Comparator.comparing(CvssV4::getType)).findFirst();
             }
             if (optCvssv4 != null && optCvssv4.isPresent()) {
-                CvssV4 cvssv4 = optCvssv4.get();
+                final CvssV4 cvssv4 = optCvssv4.get();
                 setUpdateColumn(callUpdate, 32, cvssv4.getCvssData().getVersion());
                 setUpdateColumn(callUpdate, 33, cvssv4.getCvssData().getAttackVector());
                 setUpdateColumn(callUpdate, 34, cvssv4.getCvssData().getAttackComplexity());
@@ -1993,7 +1991,7 @@ public final class CveDB implements AutoCloseable {
             ps.setString(i, value);
         }
     }
-    
+
     private void setUpdateColumn(PreparedStatement ps, int i, CvssV4.Type value) throws SQLException {
         if (value == null) {
             ps.setNull(i, java.sql.Types.VARCHAR);
