@@ -16,13 +16,13 @@ limitations under the License.
 
 Copyright (c) 2013 Jeremy Long. All Rights Reserved.
 -->
-<project xmlns="http://maven.apache.org/DECORATION/1.7.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/DECORATION/1.7.0 http://maven.apache.org/xsd/decoration-1.7.0.xsd"
-  name="dependency-check">
+<site xmlns="http://maven.apache.org/SITE/2.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="http://maven.apache.org/SITE/2.0.0 https://maven.apache.org/xsd/site-2.0.0.xsd"
+      name="dependency-check-maven">
     <skin>
         <groupId>org.apache.maven.skins</groupId>
         <artifactId>maven-fluido-skin</artifactId>
-        <version>2.0.0-M10</version>
+        <version>2.0.0-M11</version>
     </skin>
     <custom>
         <fluidoSkin>
@@ -43,22 +43,22 @@ Copyright (c) 2013 Jeremy Long. All Rights Reserved.
         </fluidoSkin>
     </custom>
     <bannerLeft>
-        <name>OWASP dependency-check</name>
-        <alt>OWASP dependency-check</alt>
-        <src>./images/dc.svg</src>
+        <image src="./images/dc.svg" alt="OWASP dependency-check"/>
     </bannerLeft>
 
     <publishDate position="right" />
     <version position="right" />
     <poweredBy>
-        <logo name="JProfiler" href="https://www.ej-technologies.com/products/jprofiler/overview.html"
-              title="JProfiler Java Profiler" width="170px"
-              alt="JProfiler Java Profiler"
-              img="https://jeremylong.github.io/DependencyCheck/images/logos/jprofiler.png"/>
-        <logo name="IntelliJ" href="http://www.jetbrains.com/idea/"
-              title="developed using IntelliJ" width="170px"
-              alt="developed using IntelliJ"
-              img="https://jeremylong.github.io/DependencyCheck/images/logos/logo_intellij_idea.png"/>
+        <logo
+            href="https://www.ej-technologies.com/products/jprofiler/overview.html">
+            <image alt="JProfiler Java Profiler" width="170px"
+                   src="https://jeremylong.github.io/DependencyCheck/images/logos/jprofiler.png"/>
+        </logo>
+        <logo
+            href="http://www.jetbrains.com/idea/">
+            <image alt="developed using IntelliJ" width="170px"
+                   src="https://jeremylong.github.io/DependencyCheck/images/logos/logo_intellij_idea.png"/>
+        </logo>
     </poweredBy>
 
     <body>
@@ -77,18 +77,10 @@ Copyright (c) 2013 Jeremy Long. All Rights Reserved.
 
         <menu name="OWASP dependency-check">
             <item collapse="true" name="General" href="./index.html">
-                <item name="How it Works" href="./general/internals.html">
-                    <description>How does dependency-check work?</description>
-                </item>
-                <item name="Reading the Report" href="./general/thereport.html">
-                    <description>How to read the report</description>
-                </item>
-                <item name="False Positives" href="./general/suppression.html">
-                    <description>Suppressing False Positives</description>
-                </item>
-                <item name="False Negatives" href="./general/hints.html">
-                    <description>Resolving False Negatives</description>
-                </item>
+                <item name="How it Works" href="./general/internals.html"/>
+                <item name="Reading the Report" href="./general/thereport.html"/>
+                <item name="False Positives" href="./general/suppression.html"/>
+                <item name="False Negatives" href="./general/hints.html"/>
                 <item collapse="true" name="Internet Access Required" href="./data/index.html">
                     <item name="Proxy" href="./data/proxy.html" />
                     <item name="Mirroring NVD" href="./data/mirrornvd.html" />
@@ -97,99 +89,44 @@ Copyright (c) 2013 Jeremy Long. All Rights Reserved.
                     <item name="Central DB" href="./data/database.html" />
                     <item name="Sonatype OSS Index" href="./data/ossindex.html" />
                 </item>
-                <item name="Related Work" href="./related.html">
-                    <description>A listing of both FOSS and commercial tools in this space.</description>
-                </item>
-                <item name="Project Presentation (pptx)" href="./general/dependency-check.pptx">
-                    <description>PowerPoint Deck</description>
-                </item>
-                <item name="Project Presentation (pdf)" href="./general/dependency-check.pdf">
-                    <description>PowerPoint Deck</description>
-                </item>
-                <item name="Sample Report" href="./general/SampleReport.html">
-                    <description>Sample Report</description>
-                </item>
-                <item name="How to Scan an ISO Image" href="./general/scan_iso.html">
-                    <description>How to Scan an ISO Image</description>
-                </item>
+                <item name="Related Work" href="./related.html"/>
+                <item name="Project Presentation (pptx)" href="./general/dependency-check.pptx"/>
+                <item name="Project Presentation (pdf)" href="./general/dependency-check.pdf"/>
+                <item name="Sample Report" href="./general/SampleReport.html"/>
+                <item name="How to Scan an ISO Image" href="./general/scan_iso.html"/>
             </item>
             <item collapse="true" name="File Type Analyzers" href="./analyzers/index.html">
-                <item name="Archive" href="./analyzers/archive-analyzer.html">
-                    <description>Archive Analyzer</description>
-                </item>
-                <item name="Assembly" href="./analyzers/assembly-analyzer.html">
-                    <description>Assembly Analyzer</description>
-                </item>
-                <item name="Autoconf" href="./analyzers/autoconf.html">
-                    <description>Autoconf Analyzer</description>
-                </item>
-                <item name="Central" href="./analyzers/central-analyzer.html">
-                    <description>Central Analyzer</description>
-                </item>
-                <item name="CMake" href="./analyzers/cmake.html">
-                    <description>CMake Analyzer</description>
-                </item>
-                <item name="CocoaPods" href="./analyzers/cocoapods.html">
-                    <description>CocoaPods Analyzer</description>
-                </item>
-                <item name="Carthage" href="./analyzers/carthage.html">
-                    <description>Carthage Analyzer</description>
-                </item>
-                <item name="Jar" href="./analyzers/jar-analyzer.html">
-                    <description>Jar Analyzer</description>
-                </item>
-                <item name="Nexus" href="./analyzers/nexus-analyzer.html">
-                    <description>Nexus Analyzer</description>
-                </item>
-                <item name="Node.js" href="./analyzers/nodejs.html">
-                    <description>Node.js Analyzer</description>
-                </item>
-                <item name="Nuspec" href="./analyzers/nuspec-analyzer.html">
-                    <description>Nuspec Analyzer</description>
-                </item>
-                <item name="OpenSSL" href="./analyzers/openssl.html">
-                    <description>OpenSSL Analyzer</description>
-                </item>
-                <item name="Python" href="./analyzers/python.html">
-                    <description>Python Analyzer</description>
-                </item>
-                <item name="Ruby Gemspec" href="./analyzers/ruby-gemspec.html">
-                    <description>Ruby Gemspec Analyzer</description>
-                </item>
-                <item name="Swift" href="./analyzers/swift.html">
-                    <description>Swift Package Manager Analyzer</description>
-                </item>
+                <item name="Archive" href="./analyzers/archive-analyzer.html"/>
+                <item name="Assembly" href="./analyzers/assembly-analyzer.html"/>
+                <item name="Autoconf" href="./analyzers/autoconf.html"/>
+                <item name="Central" href="./analyzers/central-analyzer.html"/>
+                <item name="CMake" href="./analyzers/cmake.html"/>
+                <item name="CocoaPods" href="./analyzers/cocoapods.html"/>
+                <item name="Carthage" href="./analyzers/carthage.html"/>
+                <item name="Jar" href="./analyzers/jar-analyzer.html"/>
+                <item name="Nexus" href="./analyzers/nexus-analyzer.html"/>
+                <item name="Node.js" href="./analyzers/nodejs.html"/>
+                <item name="Nuspec" href="./analyzers/nuspec-analyzer.html"/>
+                <item name="OpenSSL" href="./analyzers/openssl.html"/>
+                <item name="Python" href="./analyzers/python.html"/>
+                <item name="Ruby Gemspec" href="./analyzers/ruby-gemspec.html"/>
+                <item name="Swift" href="./analyzers/swift.html"/>
             </item>
             <item collapse="true" name="Modules" href="./modules.html">
-                <item name="CLI" href="./dependency-check-cli/index.html">
-                    <description>The command line interface for OWASP dependency-check.</description>
-                </item>
-                <item name="Ant Task" href="./dependency-check-ant/index.html">
-                    <description>Ant task to run OWASP dependency-check.</description>
-                </item>
-                <item name="Maven Plugin" href="./dependency-check-maven/index.html">
-                    <description>Maven plugin for OWASP dependency-check.</description>
-                </item>
+                <item name="CLI" href="./dependency-check-cli/index.html"/>
+                <item name="Ant Task" href="./dependency-check-ant/index.html"/>
+                <item name="Maven Plugin" href="./dependency-check-maven/index.html"/>
                 <item collapse="true" name="Gradle Plugin" href="./dependency-check-gradle/index.html">
-                    <description>Gradle plugin for OWASP dependency-check.</description>
                     <item name="Analyze Task" href="./dependency-check-gradle/configuration.html" />
                     <item name="Update Task" href="./dependency-check-gradle/configuration-update.html" />
                     <item name="Purge Task" href="./dependency-check-gradle/configuration-purge.html" />
                 </item>
-                <item name="Jenkins Plugin" href="./dependency-check-jenkins/index.html">
-                    <description>A Jenkins plugin for OWASP dependency-check.</description>
-                </item>
-                <item name="Core" href="./dependency-check-core/index.html">
-                    <description>The core OWASP dependency-check engine and reporting tool.</description>
-                </item>
-                <item name="Utils" href="./dependency-check-utils/index.html">
-                    <description>A set of utility classes used by OWASP dependency-check.</description>
-                </item>
-                <item name="Archetype" href="./dependency-check-plugin/index.html">
-                    <description>An archetype for generating an OWASP dependency-check plugin.</description>
-                </item>
+                <item name="Jenkins Plugin" href="./dependency-check-jenkins/index.html"/>
+                <item name="Core" href="./dependency-check-core/index.html"/>
+                <item name="Utils" href="./dependency-check-utils/index.html"/>
+                <item name="Archetype" href="./dependency-check-plugin/index.html"/>
             </item>
         </menu>
         <menu ref="reports" />
     </body>
-</project>
+</site>
