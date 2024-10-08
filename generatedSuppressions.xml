@@ -1556,9 +1556,9 @@
 </suppress>
 <suppress base="true">
    <notes><![CDATA[
-   FP per issue #6626
+   hand-curated better suppression for FP per issues #6626 and #7015
    ]]></notes>
-   <packageUrl regex="true">^pkg:maven/org\.glassfish\.expressly/expressly@.*$</packageUrl>
+   <packageUrl regex="true">^pkg:maven/org\.glassfish\.(?!main).*$</packageUrl>
    <cpe>cpe:/a:eclipse:glassfish</cpe>
 </suppress>
 <suppress base="true">
