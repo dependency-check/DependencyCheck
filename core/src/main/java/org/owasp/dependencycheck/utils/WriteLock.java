@@ -143,63 +143,59 @@ public class WriteLock implements AutoCloseable {
         if (!isLockable) {
             return;
         }
-        try {
-            final File dir = settings.getDataDirectory();
-            lockFile = new File(dir, lockFileName);
-            checkState();
-            int ctr = 0;
-            do {
-                try {
-                    if (!lockFile.exists() && lockFile.createNewFile()) {
-                        file = new RandomAccessFile(lockFile, "rw");
-                        lock = file.getChannel().lock();
-                        file.writeBytes(magic);
-                        file.getChannel().force(true);
-                        Thread.sleep(20);
-                        file.seek(0);
-                        final String current = file.readLine();
-                        if (current != null && !current.equals(magic)) {
-                            lock.close();
-                            lock = null;
-                            LOGGER.debug("Another process obtained a lock first ({})", Thread.currentThread().getName());
-                        } else {
-                            addShutdownHook();
-                            final Timestamp timestamp = new Timestamp(System.currentTimeMillis());
-                            LOGGER.debug("Lock file created ({}) {} @ {}", Thread.currentThread().getName(), magic, timestamp);
-                        }
-                    }
-                } catch (InterruptedException ex) {
-                    Thread.currentThread().interrupt();
-                    LOGGER.trace("Expected error as another thread has likely locked the file", ex);
-                } catch (IOException ex) {
-                    LOGGER.trace("Expected error as another thread has likely locked the file", ex);
-                } finally {
-                    if (lock == null && file != null) {
-                        try {
-                            file.close();
-                            file = null;
-                        } catch (IOException ex) {
-                            LOGGER.trace("Unable to close the lock file", ex);
-                        }
-                    }
-                }
-                if (lock == null || !lock.isValid()) {
-                    try {
+        final File dir = new File(System.getProperty("java.io.tmpdir"));
+        lockFile = new File(dir, lockFileName);
+        checkState();
+        int ctr = 0;
+        do {
+            try {
+                if (!lockFile.exists() && lockFile.createNewFile()) {
+                    file = new RandomAccessFile(lockFile, "rw");
+                    lock = file.getChannel().lock();
+                    file.writeBytes(magic);
+                    file.getChannel().force(true);
+                    Thread.sleep(20);
+                    file.seek(0);
+                    final String current = file.readLine();
+                    if (current != null && !current.equals(magic)) {
+                        lock.close();
+                        lock = null;
+                        LOGGER.debug("Another process obtained a lock first ({})", Thread.currentThread().getName());
+                    } else {
+                        addShutdownHook();
                         final Timestamp timestamp = new Timestamp(System.currentTimeMillis());
-                        LOGGER.debug("Sleeping thread {} ({}) for {} seconds because an exclusive lock on the database could not be obtained ({})",
-                                Thread.currentThread().getName(), magic, SLEEP_DURATION / 1000, timestamp);
-                        Thread.sleep(SLEEP_DURATION);
-                    } catch (InterruptedException ex) {
-                        LOGGER.debug("sleep was interrupted.", ex);
-                        Thread.currentThread().interrupt();
+                        LOGGER.debug("Lock file created ({}) {} @ {}", Thread.currentThread().getName(), magic, timestamp);
                     }
                 }
-            } while (++ctr < MAX_SLEEP_COUNT && (lock == null || !lock.isValid()));
-            if (lock == null || !lock.isValid()) {
-                throw new WriteLockException("Unable to obtain the update lock, skipping the database update. Skipping the database update.");
+            } catch (InterruptedException ex) {
+                Thread.currentThread().interrupt();
+                LOGGER.trace("Expected error as another thread has likely locked the file", ex);
+            } catch (IOException ex) {
+                LOGGER.trace("Expected error as another thread has likely locked the file", ex);
+            } finally {
+                if (lock == null && file != null) {
+                    try {
+                        file.close();
+                        file = null;
+                    } catch (IOException ex) {
+                        LOGGER.trace("Unable to close the lock file", ex);
+                    }
+                }
             }
-        } catch (IOException ex) {
-            throw new WriteLockException(ex.getMessage(), ex);
+            if (lock == null || !lock.isValid()) {
+                try {
+                    final Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+                    LOGGER.debug("Sleeping thread {} ({}) for {} seconds because an exclusive lock on the database could not be obtained ({})",
+                            Thread.currentThread().getName(), magic, SLEEP_DURATION / 1000, timestamp);
+                    Thread.sleep(SLEEP_DURATION);
+                } catch (InterruptedException ex) {
+                    LOGGER.debug("sleep was interrupted.", ex);
+                    Thread.currentThread().interrupt();
+                }
+            }
+        } while (++ctr < MAX_SLEEP_COUNT && (lock == null || !lock.isValid()));
+        if (lock == null || !lock.isValid()) {
+            throw new WriteLockException("Unable to obtain the update lock, skipping the database update. Skipping the database update.");
         }
     }
 
