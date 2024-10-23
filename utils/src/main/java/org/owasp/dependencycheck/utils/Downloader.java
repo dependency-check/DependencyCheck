@@ -49,6 +49,7 @@ import javax.net.ssl.SSLHandshakeException;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.InetSocketAddress;
 import java.net.MalformedURLException;
 import java.net.Proxy;
 import java.net.ProxySelector;
@@ -61,6 +62,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
@@ -150,7 +152,16 @@ public final class Downloader {
             // So don't rely on the system properties for proxy; use the legacy settings configuration
             final String proxyHost = settings.getString(Settings.KEYS.PROXY_SERVER);
             final int proxyPort = settings.getInt(Settings.KEYS.PROXY_PORT, -1);
-            httpClientBuilder.setProxy(new HttpHost(proxyHost, proxyPort));
+            final String nonProxyHosts = settings.getString(Settings.KEYS.PROXY_NON_PROXY_HOSTS);
+            if (nonProxyHosts != null && !nonProxyHosts.isEmpty()) {
+                final ProxySelector selector = new SelectiveProxySelector(
+                        new Proxy(Proxy.Type.HTTP, new InetSocketAddress(proxyHost, proxyPort)),
+                        nonProxyHosts.split("\\|")
+                );
+                httpClientBuilder.setProxySelector(selector);
+            } else {
+                httpClientBuilder.setProxy(new HttpHost(proxyHost, proxyPort));
+            }
             if (settings.getString(Settings.KEYS.PROXY_USERNAME) != null) {
                 final String proxyuser = settings.getString(Settings.KEYS.PROXY_USERNAME);
                 final char[] proxypass = settings.getString(Settings.KEYS.PROXY_PASSWORD).toCharArray();
@@ -582,6 +593,53 @@ public final class Downloader {
         } catch (RuntimeException | URISyntaxException ex) {
             final String msg = format("Download failed, unable to retrieve and parse '%s'; %s", url, ex.getMessage());
             throw new IOException(msg, ex);
+        }
+    }
+
+    private static class SelectiveProxySelector extends ProxySelector {
+
+        /**
+         * The suffix-match entries from the nonProxyHosts (those starting with a {@code *}).
+         */
+        private final List<String> suffixMatch = new ArrayList<>();
+        /**
+         * The full host entries from the nonProxyHosts (those <em>not</em> starting with a {@code *}).
+         */
+        private final List<String> fullmatch = new ArrayList<>();
+        /**
+         * The proxy use when no proxy-exception is found.
+         */
+        private final Proxy configuredProxy;
+
+        SelectiveProxySelector(Proxy httpHost, String[] nonProxyHostsPatterns) {
+            for (String nonProxyHostPattern : nonProxyHostsPatterns) {
+                if (nonProxyHostPattern.startsWith("*")) {
+                    suffixMatch.add(nonProxyHostPattern.substring(1));
+                } else {
+                    fullmatch.add(nonProxyHostPattern);
+                }
+            }
+            this.configuredProxy = httpHost;
+        }
+
+        @Override
+        public List<Proxy> select(URI uri) {
+            final String theHost = uri.getHost();
+            if (fullmatch.contains(theHost)) {
+                return Collections.singletonList(Proxy.NO_PROXY);
+            } else {
+                for (String suffix : suffixMatch) {
+                    if (theHost.endsWith(suffix)) {
+                        return Collections.singletonList(Proxy.NO_PROXY);
+                    }
+                }
+            }
+            return List.of(configuredProxy);
+        }
+
+        @Override
+        public void connectFailed(URI uri, SocketAddress sa, IOException ioe) {
+            // nothing to be done for this single proxy proxy-selector
         }
     }
 }
