@@ -309,6 +309,10 @@ public class Check extends Update {
      */
     private Boolean composerAnalyzerEnabled;
     /**
+     * Whether or not the PHP Composer Analyzer will skip "packages-dev".
+     */
+    private Boolean composerAnalyzerSkipDev;
+    /**
      * Whether or not the Perl CPAN File Analyzer is enabled.
      */
     private Boolean cpanfileAnalyzerEnabled;
@@ -942,6 +946,24 @@ public class Check extends Update {
      */
     public void setComposerAnalyzerEnabled(Boolean composerAnalyzerEnabled) {
         this.composerAnalyzerEnabled = composerAnalyzerEnabled;
+    }
+    
+    /**
+     * Get the value of composerAnalyzerSkipDev.
+     *
+     * @return the value of composerAnalyzerSkipDev
+     */
+    public Boolean isComposerAnalyzerSkipDev() {
+        return composerAnalyzerSkipDev;
+    }
+
+    /**
+     * Set the value of composerAnalyzerSkipDev.
+     *
+     * @param composerAnalyzerSkipDev new value of composerAnalyzerSkipDev
+     */
+    public void setComposerAnalyzerSkipDev(Boolean composerAnalyzerSkipDev) {
+        this.composerAnalyzerSkipDev = composerAnalyzerSkipDev;
     }
 
     /**
@@ -2183,6 +2205,7 @@ public class Check extends Update {
         getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_PIPFILE_ENABLED, pipfileAnalyzerEnabled);
         getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_POETRY_ENABLED, poetryAnalyzerEnabled);
         getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_COMPOSER_LOCK_ENABLED, composerAnalyzerEnabled);
+        getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_COMPOSER_LOCK_SKIP_DEV, composerAnalyzerSkipDev);
         getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_CPANFILE_ENABLED, cpanfileAnalyzerEnabled);
         getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_NODE_PACKAGE_ENABLED, nodeAnalyzerEnabled);
         getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_NODE_PACKAGE_SKIPDEV, nodePackageSkipDevDependencies);

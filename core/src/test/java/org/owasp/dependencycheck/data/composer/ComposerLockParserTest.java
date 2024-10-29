@@ -43,30 +43,42 @@ public class ComposerLockParserTest extends BaseTest  {
 
     @Test
     public void testValidComposerLock() {
-        ComposerLockParser clp = new ComposerLockParser(inputStream);
+        ComposerLockParser clp = new ComposerLockParser(inputStream, false);
         clp.process();
         assertEquals(30, clp.getDependencies().size());
         assertTrue(clp.getDependencies().contains(new ComposerDependency("symfony", "translation", "2.7.3")));
+        assertTrue(clp.getDependencies().contains(new ComposerDependency("vlucas", "phpdotenv", "1.1.1")));
+    }
+    
+    
+    @Test
+    public void testComposerLockSkipDev() {
+        ComposerLockParser clp = new ComposerLockParser(inputStream, true);
+        clp.process();
+        assertEquals(29, clp.getDependencies().size());
+        assertTrue(clp.getDependencies().contains(new ComposerDependency("symfony", "translation", "2.7.3")));
+        //vlucas/phpdotenv is in packages-dev
+        assertFalse(clp.getDependencies().contains(new ComposerDependency("vlucas", "phpdotenv", "1.1.1")));
     }
 
     @Test(expected = ComposerException.class)
     public void testNotJSON() throws Exception {
         String input = "NOT VALID JSON";
-        ComposerLockParser clp = new ComposerLockParser(new ByteArrayInputStream(input.getBytes(Charset.defaultCharset())));
+        ComposerLockParser clp = new ComposerLockParser(new ByteArrayInputStream(input.getBytes(Charset.defaultCharset())), false);
         clp.process();
     }
 
     @Test(expected = ComposerException.class)
     public void testNotComposer() throws Exception {
         String input = "[\"ham\",\"eggs\"]";
-        ComposerLockParser clp = new ComposerLockParser(new ByteArrayInputStream(input.getBytes(Charset.defaultCharset())));
+        ComposerLockParser clp = new ComposerLockParser(new ByteArrayInputStream(input.getBytes(Charset.defaultCharset())), false);
         clp.process();
     }
 
     @Test(expected = ComposerException.class)
     public void testNotPackagesArray() throws Exception {
         String input = "{\"packages\":\"eleventy\"}";
-        ComposerLockParser clp = new ComposerLockParser(new ByteArrayInputStream(input.getBytes(Charset.defaultCharset())));
+        ComposerLockParser clp = new ComposerLockParser(new ByteArrayInputStream(input.getBytes(Charset.defaultCharset())), false);
         clp.process();
     }
 }

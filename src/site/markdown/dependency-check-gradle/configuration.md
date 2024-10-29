@@ -123,6 +123,7 @@ analyzers    | pathToDotnet          | The path to dotnet core - needed on some 
 analyzers    | cmakeEnabled          | Sets whether the [experimental](../analyzers/index.html) CMake Analyzer should be used. `experimentalEnabled` must be set to true. | true
 analyzers    | autoconfEnabled       | Sets whether the [experimental](../analyzers/index.html) autoconf Analyzer should be used. `experimentalEnabled` must be set to true. | true
 analyzers    | composerEnabled       | Sets whether the [experimental](../analyzers/index.html) PHP Composer Lock File Analyzer should be used. `experimentalEnabled` must be set to true. | true
+analyzers    | composerSkipDev       | Sets whether the [experimental](../analyzers/index.html) PHP Composer Lock File Analyzer should skip "packages-dev". | false
 analyzers    | cpanEnabled           | Sets whether the [experimental](../analyzers/index.html) Perl CPAN File Analyzer should be used. `experimentalEnabled` must be set to true. | true
 analyzers    | nodeEnabled           | Sets whether the Node.js Analyzer should be used.                                                          | true
 analyzers    | cocoapodsEnabled      | Sets whether the [experimental](../analyzers/index.html) Cocoapods Analyzer should be used. `experimentalEnabled` must be set to true. | true

@@ -450,6 +450,11 @@ public final class Settings {
          */
         public static final String ANALYZER_COMPOSER_LOCK_ENABLED = "analyzer.composer.lock.enabled";
         /**
+         * The properties key for whether the PHP composer lock file analyzer 
+         * should skip dev packages.
+         */
+        public static final String ANALYZER_COMPOSER_LOCK_SKIP_DEV = "analyzer.composer.lock.skipdev";
+        /**
          * The properties key for whether the Perl CPAN file file analyzer is
          * enabled.
          */
