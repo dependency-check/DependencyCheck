@@ -33,6 +33,7 @@ import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.Test;
+
 import static org.junit.Assert.*;
 
 /**
@@ -87,6 +88,33 @@ public class CveItemOperatorTest {
         boolean result = instance.testCveCpeStartWithFilter(cve);
         assertEquals(expResult, result);
 
+    }
+
+    @Test
+    public void testTestCveCpeStartWithFilterForConfigurationWithoutCpeMatches() {
+        ZonedDateTime published = ZonedDateTime.now();
+        ZonedDateTime lastModified = ZonedDateTime.now();
+        LocalDate cisaExploitAdd = null;
+        LocalDate cisaActionDue = null;
+        List<CveTag> cveTags = null;
+        List<LangString> descriptions = null;
+        List<Reference> references = null;
+        Metrics metrics = null;
+        List<Weakness> weaknesses = null;
+
+        Node noCpeMatches = new Node(Node.Operator.OR, null, null);
+        Config c = new Config(Config.Operator.AND, null, List.of(noCpeMatches));
+        List<VendorComment> vendorComments = null;
+        CveItem cveItem = new CveItem("id", "sourceIdentifier", "vulnStatus", published, lastModified,
+                "evaluatorComment", "evaluatorSolution", "evaluatorImpact", cisaExploitAdd, cisaActionDue,
+                "cisaRequiredAction", "cisaVulnerabilityName", cveTags, descriptions, references, metrics,
+                weaknesses, List.of(c), vendorComments);
+
+        DefCveItem cve = new DefCveItem(cveItem);
+        CveItemOperator instance = new CveItemOperator("cpe:2.3:o:");
+        boolean expResult = false;
+        boolean result = instance.testCveCpeStartWithFilter(cve);
+        assertEquals(expResult, result);
     }
 
 }

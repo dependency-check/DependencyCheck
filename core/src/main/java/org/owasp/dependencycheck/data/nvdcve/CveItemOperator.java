@@ -18,6 +18,8 @@
 package org.owasp.dependencycheck.data.nvdcve;
 
 import io.github.jeremylong.openvulnerability.client.nvd.Config;
+
+import java.util.Objects;
 import java.util.stream.Collectors;
 import org.owasp.dependencycheck.data.nvd.ecosystem.Ecosystem;
 
@@ -219,15 +221,15 @@ public class CveItemOperator {
     boolean testCveCpeStartWithFilter(final DefCveItem cve) {
         if (cve.getCve().getConfigurations() != null) {
             //cycle through to see if this is a CPE we care about (use the CPE filters
-            final boolean result = cve.getCve().getConfigurations().stream()
+            return cve.getCve().getConfigurations().stream()
                     .map(Config::getNodes)
                     .flatMap(List::stream)
-                    .filter(node -> node != null)
+                    .filter(Objects::nonNull)
                     .map(Node::getCpeMatch)
+                    .filter(Objects::nonNull)
                     .flatMap(List::stream)
                     .filter(cpe -> cpe != null && cpe.getCriteria() != null)
                     .anyMatch(cpe -> cpe.getCriteria().startsWith(cpeStartsWithFilter));
-            return result;
         }
         return false;
     }
