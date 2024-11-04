@@ -6,12 +6,20 @@ body:
   - type: markdown
     attributes:
       value: |
-        False Positive identified.
+        **Automation is used to process most false positives reports**; failure to follow these guidelines will delay the process:
+        
+          - Only enter a **single (1) Package URL**.
+          - Only enter a **single (1) CPE or CVE**.
+          - If filing a CPE report you do not need to add the CVEs. Note that **most reports should be for incorrectly matched CPEs**.
+        
+        If reporting false positives for multiple PURL and/or CPE please file multiple reports.
+        
+        Thank you for filing a false positive report!
   - type: input
     id: purl
     attributes:
       label: Package URl
-      description: The identified package URL as identified in the HTML Report.
+      description: Please enter the single identified package URL as identified in the HTML Report. Only a **single PURL** can be specified, if you are reporting more then one - please open two issues using this template.
       placeholder: ex. pkg:maven/org.apache.logging.log4j/log4j-slf4j-impl@2.12.1 
     validations:
       required: true
@@ -19,7 +27,7 @@ body:
     id: cpe
     attributes:
       label: CPE
-      description: The Common Platform enumeration (CPE) as identified in the HTML Report. Please put backtic characters around the CPE to ensure it displays correctly.
+      description: Please enter the single Common Platform enumeration (CPE) as identified in the HTML Report. Only a **single CPE** can be specified. **Please put backtic characters around the CPE to ensure it displays correctly**.
       placeholder: ex. `cpe:2.3:a:apache:log4j:2.12.1:*:*:*:*:*:*:*`
     validations:
       required: true
@@ -27,7 +35,7 @@ body:
     id: cve
     attributes:
       label: CVE
-      description: The vulnerability name as identified in the HTML Report. This is optional and may not be needed as most FP reports are due to an incorrect CPE.
+      description: The vulnerability name as identified in the HTML Report. If specifying a CPE this is not necassary; if entered please enter only a **signle CVE**; if multiple CVE should be suppressed please enter multiple FP reports. This is optional and may not be needed as most FP reports are due to an incorrect CPE.
       placeholder: ex. CVE-2021-44228
     validations:
       required: false
