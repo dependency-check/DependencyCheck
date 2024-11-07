@@ -49,8 +49,6 @@ data         | directory         | Sets the data directory to hold SQL CVEs cont
 #### Example
 ```groovy
 dependencyCheck {
-    data {
-        directory='d:/nvd'
-    }
+    data.directory='d:/nvd'
 }
 ```

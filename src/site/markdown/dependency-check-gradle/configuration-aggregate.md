@@ -69,10 +69,8 @@ proxy        | nonProxyHosts     | The list of hosts that do not use a proxy. | 
 #### Example
 ```groovy
 dependencyCheck {
-    proxy {
-        server=some.proxy.server
-        port=8989
-    }
+    proxy.server=some.proxy.server
+    proxy.port=8989
 }
 ```
 
@@ -103,9 +101,7 @@ data         | password          | The password used when connecting to the data
 #### Example
 ```groovy
 dependencyCheck {
-    data {
-        directory='d:/nvd'
-    }
+    data.directory='d:/nvd'
 }
 ```
 
@@ -192,15 +188,9 @@ hostedSuppressions | validForHours   | The number of hours to wait before checki
 #### Example
 ```groovy
 dependencyCheck {
-    analyzers {
-        assemblyEnabled=false
-        artifactory {
-            enabled=true
-            url='https://internal.artifactory.url'
-        }
-        retirejs {
-            filters = ['(i)copyright Jeremy Long']
-        }
-    }
+    analyzers.assemblyEnabled=false
+    analyzers.artifactory.enabled=true
+    analyzers.artifactory.url='https://internal.artifactory.url'
+    analyzers.retirejs.filters = ['(i)copyright Jeremy Long']
 }
 ```

@@ -49,10 +49,8 @@ proxy        | nonProxyHosts     | The list of hosts that do not use a proxy. | 
 #### Example
 ```groovy
 dependencyCheck {
-    proxy {
-        server=some.proxy.server
-        port=8989
-    }
+    proxy.server=some.proxy.server
+    proxy.port=8989
 }
 ```
 
@@ -85,8 +83,6 @@ hostedSuppressions | validForHours   | The number of hours to wait before checki
 #### Example
 ```groovy
 dependencyCheck {
-    data {
-        directory='d:/nvd'
-    }
+    data.directory='d:/nvd'
 }
 ```

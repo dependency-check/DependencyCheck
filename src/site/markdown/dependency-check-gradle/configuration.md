@@ -85,9 +85,7 @@ data         | password          | The password used when connecting to the data
 #### Example
 ```groovy
 dependencyCheck {
-    data {
-        directory='d:/nvd'
-    }
+    data.directory='d:/nvd'
 }
 ```
 
