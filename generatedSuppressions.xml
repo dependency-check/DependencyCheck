@@ -1907,13 +1907,6 @@ only pkg:maven/org.clojure:clojure@.* is the CPE cpe:/a:clojure:clojure
 <cpe regex="true">^cpe:/a:apache:mina:.*</cpe>
 </suppress>
 <suppress base="true">
-   <notes><![CDATA[
-   FP per issue #6981
-   ]]></notes>
-   <packageUrl regex="true">^pkg:maven/io\.etcd/jetcd-core@.*$</packageUrl>
-   <cpe>cpe:/a:etcd:etcd</cpe>
-</suppress>
-<suppress base="true">
 <notes><![CDATA[
    FP per issue #6981 - manual addition prometheus java_client libraries
    seen as the prometheus server, but they would receive product client_java
@@ -1978,15 +1971,15 @@ only pkg:maven/org.clojure:clojure@.* is the CPE cpe:/a:clojure:clojure
    <packageUrl regex="true">^pkg:maven/com\.azure/azure-core-amqp@.*$</packageUrl>
    <cpe>cpe:/a:microsoft:azure_cli</cpe>
 </suppress>
-<suppress>
+<suppress base="true">
    <notes><![CDATA[
-   FP per issue #7123
+   FP per issue #6981 and #7123
    ]]></notes>
-   <packageUrl regex="true">^pkg:maven/io\.etcd/jetcd-[a-z]*@.*$</packageUrl>
+   <packageUrl regex="true">^pkg:maven/io\.etcd/jetcd-.*@.*$</packageUrl>
    <cpe>cpe:/a:redhat:etcd</cpe>
    <cpe>cpe:/a:etcd:etcd</cpe>
 </suppress>
-<suppress>
+<suppress base="true">
    <notes><![CDATA[
    FP per issue #7123
    ]]></notes>
