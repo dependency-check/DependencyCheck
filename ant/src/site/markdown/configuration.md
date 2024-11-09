@@ -138,6 +138,7 @@ pathToCore                          | The path to dotnet core .NET assembly anal
 golangDepEnabled                    | Sets whether the [experimental](../analyzers/index.html) Golang Dependency Analyzer should be used. `enableExperimental` must be set to true. | true
 golangModEnabled                    | Sets whether the [experimental](../analyzers/index.html) Goland Module Analyzer should be used; requires `go` to be installed. `enableExperimental` must be set to true. | true
 pathToGo                            | The path to `go`.                                                                                          | &nbsp;
+versionCheckEnabled                 | Whether dependency-check should check if a new version of dependency-check-maven exists.                   | true
 
 Advanced Configuration
 ====================

@@ -430,6 +430,10 @@ public class Check extends Update {
      * The Artifactory bearer token.
      */
     private String artifactoryAnalyzerBearerToken;
+    /**
+     * Whether the version check is enabled
+     */
+    private Boolean versionCheckEnabled;
 
     //The following code was copied Apache Ant PathConvert
     //BEGIN COPY from org.apache.tools.ant.taskdefs.PathConvert
@@ -441,6 +445,25 @@ public class Check extends Update {
      * Reference to path/file set to convert
      */
     private Reference refId = null;
+
+    /**
+     * Returns whether the version check is enabled.
+     *
+     * @return true if the version check is enabled; otherwise false.
+     */
+    public Boolean getVersionCheckEnabled() {
+        return versionCheckEnabled;
+    }
+
+    /**
+     * Sets whether the version check is enabled.
+     *
+     * @param versionCheckEnabled a Boolean indicating if the version check is
+     * enabled.
+     */
+    public void setVersionCheckEnabled(Boolean versionCheckEnabled) {
+        this.versionCheckEnabled = versionCheckEnabled;
+    }
 
     /**
      * Add an arbitrary ResourceCollection.
@@ -947,7 +970,7 @@ public class Check extends Update {
     public void setComposerAnalyzerEnabled(Boolean composerAnalyzerEnabled) {
         this.composerAnalyzerEnabled = composerAnalyzerEnabled;
     }
-    
+
     /**
      * Get the value of composerAnalyzerSkipDev.
      *
@@ -2173,6 +2196,7 @@ public class Check extends Update {
         super.populateSettings();
         getSettings().setBooleanIfNotNull(Settings.KEYS.AUTO_UPDATE, autoUpdate);
         getSettings().setArrayIfNotEmpty(Settings.KEYS.SUPPRESSION_FILE, suppressionFiles);
+        getSettings().setBooleanIfNotNull(Settings.KEYS.UPDATE_VERSION_CHECK_ENABLED, versionCheckEnabled);
         getSettings().setStringIfNotEmpty(Settings.KEYS.HINTS_FILE, hintsFile);
         getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_EXPERIMENTAL_ENABLED, enableExperimental);
         getSettings().setBooleanIfNotNull(Settings.KEYS.PRETTY_PRINT, prettyPrint);

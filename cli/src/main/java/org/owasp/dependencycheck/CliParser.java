@@ -341,6 +341,7 @@ public final class CliParser {
                         "The file path to write verbose logging information."))
                 .addOptionGroup(newOptionGroup(newOptionWithArg(ARGUMENT.SUPPRESSION_FILES, "file",
                         "The file path to the suppression XML file. This can be specified more then once to utilize multiple suppression files")))
+                .addOption(newOption(ARGUMENT.DISABLE_VERSION_CHECK, "Disables the dependency-check version check"))
                 .addOption(newOption(ARGUMENT.EXPERIMENTAL, "Enables the experimental analyzers."))
                 .addOption(newOptionWithArg(ARGUMENT.NVD_API_KEY, "apiKey", "The API Key to access the NVD API."))
                 .addOption(newOptionWithArg(ARGUMENT.FAIL_ON_CVSS, "score",
@@ -1038,6 +1039,11 @@ public final class CliParser {
          * should not be automatically updated.
          */
         public static final String DISABLE_AUTO_UPDATE = "noupdate";
+        /**
+         * The long CLI argument name specifying that the version check should
+         * not be performed.
+         */
+        public static final String DISABLE_VERSION_CHECK = "disableVersionCheck";
         /**
          * The short CLI argument name specifying that the CPE/CVE/etc. data
          * should not be automatically updated.

@@ -513,6 +513,8 @@ public class App {
                 cli.hasOption(CliParser.ARGUMENT.RETIREJS_FILTER_NON_VULNERABLE));
         settings.setBoolean(Settings.KEYS.ANALYZER_JAR_ENABLED,
                 !cli.isDisabled(CliParser.ARGUMENT.DISABLE_JAR, Settings.KEYS.ANALYZER_JAR_ENABLED));
+        settings.setBoolean(Settings.KEYS.UPDATE_VERSION_CHECK_ENABLED,
+                !cli.isDisabled(CliParser.ARGUMENT.DISABLE_VERSION_CHECK, Settings.KEYS.UPDATE_VERSION_CHECK_ENABLED));
         settings.setBoolean(Settings.KEYS.ANALYZER_MSBUILD_PROJECT_ENABLED,
                 !cli.isDisabled(CliParser.ARGUMENT.DISABLE_MSBUILD, Settings.KEYS.ANALYZER_MSBUILD_PROJECT_ENABLED));
         settings.setBoolean(Settings.KEYS.ANALYZER_ARCHIVE_ENABLED,
