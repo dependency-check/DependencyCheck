@@ -1361,6 +1361,14 @@ public final class CliParser {
          */
         public static final String CENTRAL_URL = "centralUrl";
         /**
+         * The username for the alternative Maven Central Search.
+         */
+        public static final String CENTRAL_USERNAME = "centralUsername";
+        /**
+         * The password for the alternative Maven Central Search.
+         */
+        public static final String CENTRAL_PASSWORD = "centralPassword";
+        /**
          * Disables the Nexus Analyzer.
          */
         public static final String ENABLE_NEXUS = "enableNexus";

@@ -604,6 +604,10 @@ public class App {
                 cli.hasOption(CliParser.ARGUMENT.ENABLE_NEXUS));
         settings.setStringIfNotEmpty(Settings.KEYS.ANALYZER_CENTRAL_URL,
                 cli.getStringArgument(CliParser.ARGUMENT.CENTRAL_URL));
+        settings.setStringIfNotEmpty(Settings.KEYS.ANALYZER_CENTRAL_USER,
+                cli.getStringArgument(CliParser.ARGUMENT.CENTRAL_USERNAME));
+        settings.setStringIfNotEmpty(Settings.KEYS.ANALYZER_CENTRAL_PASSWORD,
+                cli.getStringArgument(CliParser.ARGUMENT.CENTRAL_PASSWORD));
         settings.setStringIfNotEmpty(Settings.KEYS.ANALYZER_OSSINDEX_URL,
                 cli.getStringArgument(CliParser.ARGUMENT.OSSINDEX_URL));
         settings.setStringIfNotEmpty(Settings.KEYS.ANALYZER_OSSINDEX_USER,

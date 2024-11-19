@@ -621,6 +621,14 @@ public final class Settings {
          */
         public static final String CENTRAL_CONTENT_URL = "central.content.url";
         /**
+         * Key for the Username to obtain content from Maven Central.
+         */
+        public static final String CENTRAL_CONTENT_USER = "central.content.username";
+        /**
+         * Key for the Password to obtain content from Maven Central.
+         */
+        public static final String CENTRAL_CONTENT_PASSWORD = "central.content.password";
+        /**
          * The properties key for whether the Central analyzer should use
          * parallel processing.
          */
@@ -656,6 +664,14 @@ public final class Settings {
          * The properties key for the Central search URL.
          */
         public static final String ANALYZER_CENTRAL_URL = "analyzer.central.url";
+        /**
+         * The properties key for the Central search username.
+         */
+        public static final String ANALYZER_CENTRAL_USER = "analyzer.central.username";
+        /**
+         * The properties key for the Central search password.
+         */
+        public static final String ANALYZER_CENTRAL_PASSWORD = "analyzer.central.password";
         /**
          * The properties key for the Central search query.
          */

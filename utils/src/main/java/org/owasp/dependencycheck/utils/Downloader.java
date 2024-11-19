@@ -175,6 +175,8 @@ public final class Downloader {
         tryAddHostedSuppressionCredentials(settings, credentialsProvider);
         tryAddKEVCredentials(settings, credentialsProvider);
         tryAddNexusAnalyzerCredentials(settings, credentialsProvider);
+        tryAddCentralAnalyzerCredentials(settings, credentialsProvider);
+        tryAddCentralContentCredentials(settings, credentialsProvider);
         tryAddNVDApiDatafeed(settings, credentialsProvider);
         httpClientBuilder.setDefaultCredentialsProvider(credentialsProvider);
         httpClientBuilderExplicitNoproxy.setDefaultCredentialsProvider(credentialsProvider);
@@ -217,6 +219,26 @@ public final class Downloader {
                     Settings.KEYS.ANALYZER_NEXUS_URL,
                     Settings.KEYS.ANALYZER_NEXUS_PASSWORD,
                     "Nexus Analyzer");
+        }
+    }
+
+    private void tryAddCentralAnalyzerCredentials(Settings settings, CredentialsStore credentialsStore) throws InvalidSettingException {
+        if (settings.getString(Settings.KEYS.ANALYZER_CENTRAL_PASSWORD) != null) {
+            addUserPasswordCreds(settings, credentialsStore,
+                    Settings.KEYS.ANALYZER_CENTRAL_USER,
+                    Settings.KEYS.ANALYZER_CENTRAL_URL,
+                    Settings.KEYS.ANALYZER_CENTRAL_PASSWORD,
+                    "Central Analyzer");
+        }
+    }
+
+    private void tryAddCentralContentCredentials(Settings settings, CredentialsStore credentialsStore) throws InvalidSettingException {
+        if (settings.getString(Settings.KEYS.CENTRAL_CONTENT_PASSWORD) != null) {
+            addUserPasswordCreds(settings, credentialsStore,
+                    Settings.KEYS.CENTRAL_CONTENT_USER,
+                    Settings.KEYS.CENTRAL_CONTENT_URL,
+                    Settings.KEYS.CENTRAL_CONTENT_PASSWORD,
+                    "Central Content");
         }
     }
 
