@@ -505,16 +505,13 @@ public abstract class AbstractNpmAnalyzer extends AbstractFileTypeAnalyzer {
      * @param vuln the vulnerability to add
      */
     protected void replaceOrAddVulnerability(Dependency dependency, Vulnerability vuln) {
-        boolean found = false;
-        for (Vulnerability existing : dependency.getVulnerabilities()) {
-            for (Reference ref : existing.getReferences()) {
-                if (ref.getName() != null
-                        && vuln.getSource().toString().equals("NPM")
-                        && ref.getName().equals("https://nodesecurity.io/advisories/" + vuln.getName())) {
-                    found = true;
-                }
-            }
-        }
+        boolean found = vuln.getSource() == Vulnerability.Source.NPM && 
+                dependency.getVulnerabilities().stream().anyMatch(existing -> {
+            return existing.getReferences().stream().anyMatch(ref ->{
+                    return ref.getName() != null
+                            && ref.getName().equals("https://nodesecurity.io/advisories/" + vuln.getName());
+            });
+        });
         if (!found) {
             dependency.addVulnerability(vuln);
         }
