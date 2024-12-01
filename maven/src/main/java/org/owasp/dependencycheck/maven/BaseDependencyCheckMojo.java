@@ -2636,7 +2636,7 @@ public abstract class BaseDependencyCheckMojo extends AbstractMojo implements Ma
      *
      * @param dependencies the list of dependency objects
      * @throws MojoFailureException thrown if a CVSS score is found that is
-     * higher then the threshold set
+     * higher than the threshold set
      */
     protected void checkForFailure(Dependency[] dependencies) throws MojoFailureException {
         final StringBuilder ids = new StringBuilder();
@@ -2645,15 +2645,19 @@ public abstract class BaseDependencyCheckMojo extends AbstractMojo implements Ma
             for (Vulnerability v : d.getVulnerabilities()) {
                 final Double cvssV2 = v.getCvssV2() != null && v.getCvssV2().getCvssData() != null && v.getCvssV2().getCvssData().getBaseScore() != null ? v.getCvssV2().getCvssData().getBaseScore() : -1;
                 final Double cvssV3 = v.getCvssV3() != null && v.getCvssV3().getCvssData() != null && v.getCvssV3().getCvssData().getBaseScore() != null ? v.getCvssV3().getCvssData().getBaseScore() : -1;
+                final Double cvssV4 = v.getCvssV4() != null && v.getCvssV4().getCvssData() != null && v.getCvssV4().getCvssData().getBaseScore() != null ? v.getCvssV4().getCvssData().getBaseScore() : -1;
                 final Double unscoredCvss = v.getUnscoredSeverity() != null ? SeverityUtil.estimateCvssV2(v.getUnscoredSeverity()) : -1;
 
                 if (failBuildOnAnyVulnerability || cvssV2 >= failBuildOnCVSS
                         || cvssV3 >= failBuildOnCVSS
+                        || cvssV4 >= failBuildOnCVSS
                         || unscoredCvss >= failBuildOnCVSS
                         //safety net to fail on any if for some reason the above misses on 0
                         || (failBuildOnCVSS <= 0.0)) {
                     String name = v.getName();
-                    if (cvssV3 >= 0.0) {
+                    if (cvssV4 >= 0.0) {
+                        name += "(" + cvssV4 + ")";
+                    } else if (cvssV3 >= 0.0) {
                         name += "(" + cvssV3 + ")";
                     } else if (cvssV2 >= 0.0) {
                         name += "(" + cvssV2 + ")";

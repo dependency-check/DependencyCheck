@@ -314,15 +314,20 @@ public class App {
                         && v.getCvssV2().getCvssData().getBaseScore() != null ? v.getCvssV2().getCvssData().getBaseScore() : -1;
                 final Double cvssV3 = v.getCvssV3() != null && v.getCvssV3().getCvssData() != null
                         && v.getCvssV3().getCvssData().getBaseScore() != null ? v.getCvssV3().getCvssData().getBaseScore() : -1;
+                final Double cvssV4 = v.getCvssV4() != null && v.getCvssV4().getCvssData() != null
+                        && v.getCvssV4().getCvssData().getBaseScore() != null ? v.getCvssV4().getCvssData().getBaseScore() : -1;
                 final Double unscoredCvss = v.getUnscoredSeverity() != null ? SeverityUtil.estimateCvssV2(v.getUnscoredSeverity()) : -1;
 
                 if (cvssV2 >= cvssFailScore
                         || cvssV3 >= cvssFailScore
+                        || cvssV4 >= cvssFailScore
                         || unscoredCvss >= cvssFailScore
                         //safety net to fail on any if for some reason the above misses on 0
                         || (cvssFailScore <= 0.0f)) {
                     double score = 0.0;
-                    if (cvssV3 >= 0.0) {
+                    if (cvssV4 >= 0.0) {
+                        score = cvssV4;
+                    } else if (cvssV3 >= 0.0) {
                         score = cvssV3;
                     } else if (cvssV2 >= 0.0) {
                         score = cvssV2;

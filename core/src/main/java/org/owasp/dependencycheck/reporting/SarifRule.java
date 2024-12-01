@@ -19,6 +19,7 @@ package org.owasp.dependencycheck.reporting;
 
 import io.github.jeremylong.openvulnerability.client.nvd.CvssV2;
 import io.github.jeremylong.openvulnerability.client.nvd.CvssV3;
+import io.github.jeremylong.openvulnerability.client.nvd.CvssV4;
 
 /**
  *
@@ -139,6 +140,14 @@ public class SarifRule {
      */
     private String cvssv3Version;
     /**
+     * CVSS V4 field.
+     */
+    private String cvssv4BaseScore;
+    /**
+     * CVSS V4 Vector.
+     */
+    private String cvssv4Vector;
+    /**
      * The source of the rule.
      */
     private String source;
@@ -154,7 +163,7 @@ public class SarifRule {
      * @param cvssV3 the CVSS v3 score
      */
     public SarifRule(String name, String shortDescription, String fullDescription,
-            String source, CvssV2 cvssV2, CvssV3 cvssV3) {
+                     String source, CvssV2 cvssV2, CvssV3 cvssV3, CvssV4 cvssV4) {
         this.id = name;
         this.name = name;
         this.shortDescription = shortDescription;
@@ -231,6 +240,12 @@ public class SarifRule {
                 this.cvssv3ImpactScore = cvssV3.getImpactScore().toString();
             }
             this.cvssv3Version = cvssV3.getCvssData().getVersion().name();
+        }
+        if (cvssV4 != null && cvssV4.getCvssData() != null) {
+            if (cvssV4.getCvssData().getBaseScore() != null) {
+                this.cvssv4BaseScore = cvssV4.getCvssData().getBaseScore().toString();
+            }
+            this.cvssv4Vector = cvssV4.toString();
         }
     }
 
@@ -757,4 +772,36 @@ public class SarifRule {
         this.id = id;
     }
 
+    /**
+     * Get the value of CVSS4 Base Score.
+     *
+     * @return the value of CVSS4 Base Score
+     */
+    public String getCvssv4BaseScore() {
+        return cvssv4BaseScore;
+    }
+
+    /**
+     * Set the value of CVSS4 Base Score.
+     * @param cvssv4BaseScore new value of CVSS4 Base Score
+     */
+    public void setCvssv4BaseScore(String cvssv4BaseScore) {
+        this.cvssv4BaseScore = cvssv4BaseScore;
+    }
+
+    /**
+     * Get the Cvssv4 Vector.
+     * @return the Cvssv4 Vector
+     */
+    public String getCvssv4Vector() {
+        return cvssv4Vector;
+    }
+
+    /**
+     * Set the Cvssv4 Vector.
+     * @param cvssv4Vector new value of Cvssv4 Vector
+     */
+    public void setCvssv4Vector(String cvssv4Vector) {
+        this.cvssv4Vector = cvssv4Vector;
+    }
 }

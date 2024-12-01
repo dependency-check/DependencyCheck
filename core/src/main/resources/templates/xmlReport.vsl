@@ -1,5 +1,5 @@
 #**
-This file is part of Dependency-Check. 
+This file is part of Dependency-Check.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@ Copyright (c) 2018 Jeremy Long. All Rights Reserved.
 @version 2.0
 
 *#<?xml version="1.0"?>
-<analysis xmlns="https://jeremylong.github.io/DependencyCheck/dependency-check.4.0.xsd">
+<analysis xmlns="https://jeremylong.github.io/DependencyCheck/dependency-check.4.1.xsd">
     <scanInfo>
         <engineVersion>$version</engineVersion>
 #foreach($prop in $properties.getMetaData().entrySet())
@@ -229,6 +229,8 @@ Copyright (c) 2018 Jeremy Long. All Rights Reserved.
 #end
 #if($vuln.unscoredSeverity)
                     <severity unscored="true">#if($vuln.unscoredSeverity.equals("0.0"))Unknown#else$enc.xml($vuln.unscoredSeverity)#end</severity>
+#elseif($vuln.cvssV4 && $vuln.cvssV4.cvssData.baseSeverity)
+    <severity>$enc.xml($vuln.cvssV4.cvssData.baseSeverity)</severity>
 #elseif($vuln.cvssV3 && $vuln.cvssV3.cvssData.baseSeverity)
                     <severity>$enc.xml($vuln.cvssV3.cvssData.baseSeverity)</severity>
 #elseif($vuln.cvssV2 && $vuln.cvssV2.cvssData.baseSeverity)
@@ -270,6 +272,132 @@ Copyright (c) 2018 Jeremy Long. All Rights Reserved.
 #if($vuln.cvssV3.impactScore)<impactScore>$enc.xml($vuln.cvssV3.impactScore)</impactScore>#end
 #if($vuln.cvssV3.cvssData.version)<version>$enc.xml($vuln.cvssV3.cvssData.version)</version>#end
                     </cvssV3>
+#end
+#if($vuln.cvssV4)
+                    <cvssV4>
+                            <source>$enc.xml($vuln.cvssV4.source)</source>
+                            <type>$enc.xml($vuln.cvssV4.type)</type>
+#if($vuln.cvssV4.cvssData.version)
+                            <version>$enc.xml($vuln.cvssV4.cvssData.version)</version>
+#end
+#if($vuln.cvssV4.cvssData.vectorString)
+                            <vectorString>$enc.xml($vuln.cvssV4.cvssData.vectorString)</vectorString>
+#end
+#if($vuln.cvssV4.cvssData.attackVector)
+                            <attackVector>$enc.xml($vuln.cvssV4.cvssData.attackVector)</attackVector>
+#end
+#if($vuln.cvssV4.cvssData.attackComplexity)
+                            <attackComplexity>$enc.xml($vuln.cvssV4.cvssData.attackComplexity)</attackComplexity>
+#end
+#if($vuln.cvssV4.cvssData.attackRequirements)
+                            <attackRequirements>$enc.xml($vuln.cvssV4.cvssData.attackRequirements)</attackRequirements>
+#end
+#if($vuln.cvssV4.cvssData.privilegesRequired)
+                            <privilegesRequired>$enc.xml($vuln.cvssV4.cvssData.privilegesRequired)</privilegesRequired>
+#end
+#if($vuln.cvssV4.cvssData.userInteraction)
+                            <userInteraction>$enc.xml($vuln.cvssV4.cvssData.userInteraction)</userInteraction>
+#end
+#if($vuln.cvssV4.cvssData.vulnerableSystemConfidentiality)
+                            <vulnerableSystemConfidentiality>$enc.xml($vuln.cvssV4.cvssData.vulnerableSystemConfidentiality)</vulnerableSystemConfidentiality>
+#end
+#if($vuln.cvssV4.cvssData.vulnerableSystemIntegrity)
+                            <vulnerableSystemIntegrity>$enc.xml($vuln.cvssV4.cvssData.vulnerableSystemIntegrity)</vulnerableSystemIntegrity>
+#end
+#if($vuln.cvssV4.cvssData.vulnerableSystemAvailability)
+                            <vulnerableSystemAvailability>$enc.xml($vuln.cvssV4.cvssData.vulnerableSystemAvailability)</vulnerableSystemAvailability>
+#end
+#if($vuln.cvssV4.cvssData.subsequentSystemConfidentiality)
+                            <subsequentSystemConfidentiality>$enc.xml($vuln.cvssV4.cvssData.subsequentSystemConfidentiality)</subsequentSystemConfidentiality>
+#end
+#if($vuln.cvssV4.cvssData.subsequentSystemIntegrity)
+                            <subsequentSystemIntegrity>$enc.xml($vuln.cvssV4.cvssData.subsequentSystemIntegrity)</subsequentSystemIntegrity>
+#end
+#if($vuln.cvssV4.cvssData.subsequentSystemAvailability)
+                            <subsequentSystemAvailability>$enc.xml($vuln.cvssV4.cvssData.subsequentSystemAvailability)</subsequentSystemAvailability>
+#end
+#if($vuln.cvssV4.cvssData.exploitMaturity)
+                            <exploitMaturity>$enc.xml($vuln.cvssV4.cvssData.exploitMaturity)</exploitMaturity>
+#end
+#if($vuln.cvssV4.cvssData.confidentialityRequirements)
+                            <confidentialityRequirements>$enc.xml($vuln.cvssV4.cvssData.confidentialityRequirements)</confidentialityRequirements>
+#end
+#if($vuln.cvssV4.cvssData.integrityRequirements)
+                            <integrityRequirements>$enc.xml($vuln.cvssV4.cvssData.integrityRequirements)</integrityRequirements>
+#end
+#if($vuln.cvssV4.cvssData.availabilityRequirements)
+                            <availabilityRequirements>$enc.xml($vuln.cvssV4.cvssData.availabilityRequirements)</availabilityRequirements>
+#end
+#if($vuln.cvssV4.cvssData.modifiedAttackVector)
+                            <modifiedAttackVector>$enc.xml($vuln.cvssV4.cvssData.modifiedAttackVector)</modifiedAttackVector>
+#end
+#if($vuln.cvssV4.cvssData.modifiedAttackComplexity)
+                            <modifiedAttackComplexity>$enc.xml($vuln.cvssV4.cvssData.modifiedAttackComplexity)</modifiedAttackComplexity>
+#end
+#if($vuln.cvssV4.cvssData.modifiedAttackRequirements)
+                            <modifiedAttackRequirements>$enc.xml($vuln.cvssV4.cvssData.modifiedAttackRequirements)</modifiedAttackRequirements>
+#end
+#if($vuln.cvssV4.cvssData.modifiedPrivilegesRequired)
+                            <modifiedPrivilegesRequired>$enc.xml($vuln.cvssV4.cvssData.modifiedPrivilegesRequired)</modifiedPrivilegesRequired>
+#end
+#if($vuln.cvssV4.cvssData.modifiedUserInteraction)
+                            <modifiedUserInteraction>$enc.xml($vuln.cvssV4.cvssData.modifiedUserInteraction)</modifiedUserInteraction>
+#end
+#if($vuln.cvssV4.cvssData.modifiedVulnerableSystemConfidentiality)
+                            <modifiedVulnerableSystemConfidentiality>$enc.xml($vuln.cvssV4.cvssData.modifiedVulnerableSystemConfidentiality)</modifiedVulnerableSystemConfidentiality>
+#end
+#if($vuln.cvssV4.cvssData.modifiedVulnerableSystemIntegrity)
+                            <modifiedVulnerableSystemIntegrity>$enc.xml($vuln.cvssV4.cvssData.modifiedVulnerableSystemIntegrity)</modifiedVulnerableSystemIntegrity>
+#end
+#if($vuln.cvssV4.cvssData.modifiedVulnerableSystemAvailability)
+                            <modifiedVulnerableSystemAvailability>$enc.xml($vuln.cvssV4.cvssData.modifiedVulnerableSystemAvailability)</modifiedVulnerableSystemAvailability>
+#end
+#if($vuln.cvssV4.cvssData.modifiedSubsequentSystemConfidentiality)
+                            <modifiedSubsequentSystemConfidentiality>$enc.xml($vuln.cvssV4.cvssData.modifiedSubsequentSystemConfidentiality)</modifiedSubsequentSystemConfidentiality>
+#end
+#if($vuln.cvssV4.cvssData.modifiedSubsequentSystemIntegrity)
+                            <modifiedSubsequentSystemIntegrity>$enc.xml($vuln.cvssV4.cvssData.modifiedSubsequentSystemIntegrity)</modifiedSubsequentSystemIntegrity>
+#end
+#if($vuln.cvssV4.cvssData.modifiedSubsequentSystemAvailability)
+                            <modifiedSubsequentSystemAvailability>$enc.xml($vuln.cvssV4.cvssData.modifiedSubsequentSystemAvailability)</modifiedSubsequentSystemAvailability>
+#end
+#if($vuln.cvssV4.cvssData.safety)
+                            <safety>$enc.xml($vuln.cvssV4.cvssData.safety)</safety>
+#end
+#if($vuln.cvssV4.cvssData.automatable)
+                            <automatable>$enc.xml($vuln.cvssV4.cvssData.automatable)</automatable>
+#end
+#if($vuln.cvssV4.cvssData.recovery)
+                            <recovery>$enc.xml($vuln.cvssV4.cvssData.recovery)</recovery>
+#end
+#if($vuln.cvssV4.cvssData.valueDensity)
+                            <valueDensity>$enc.xml($vuln.cvssV4.cvssData.valueDensity)</valueDensity>
+#end
+#if($vuln.cvssV4.cvssData.vulnerabilityResponseEffort)
+                            <vulnerabilityResponseEffort>$enc.xml($vuln.cvssV4.cvssData.vulnerabilityResponseEffort)</vulnerabilityResponseEffort>
+#end
+#if($vuln.cvssV4.cvssData.providerUrgency)
+                            <providerUrgency>$enc.xml($vuln.cvssV4.cvssData.providerUrgency)</providerUrgency>
+#end
+#if($vuln.cvssV4.cvssData.baseScore)
+                            <baseScore>$enc.xml($vuln.cvssV4.cvssData.baseScore)</baseScore>
+#end
+#if($vuln.cvssV4.cvssData.baseSeverity)
+                            <baseSeverity>$enc.xml($vuln.cvssV4.cvssData.baseSeverity)</baseSeverity>
+#end
+#if($vuln.cvssV4.cvssData.threatScore)
+                            <threatScore>$enc.xml($vuln.cvssV4.cvssData.threatScore)</threatScore>
+#end
+#if($vuln.cvssV4.cvssData.threatSeverity)
+                            <threatSeverity>$enc.xml($vuln.cvssV4.cvssData.threatSeverity)</threatSeverity>
+#end
+#if($vuln.cvssV4.cvssData.environmentalScore)
+                            <environmentalScore>$enc.xml($vuln.cvssV4.cvssData.environmentalScore)</environmentalScore>
+#end
+#if($vuln.cvssV4.cvssData.environmentalSeverity)
+                            <environmentalSeverity>$enc.xml($vuln.cvssV4.cvssData.environmentalSeverity)</environmentalSeverity>
+#end
+                    </cvssV4>
 #end
 #if (!$vuln.cwes.isEmpty())
                     <cwes>
@@ -343,6 +471,132 @@ Copyright (c) 2018 Jeremy Long. All Rights Reserved.
 #if($vuln.cvssV3.cvssData.impactScore)<impactScore>$enc.xml($vuln.cvssV3.cvssData.impactScore)</impactScore>#end
 #if($vuln.cvssV3.cvssData.version)<version>$enc.xml($vuln.cvssV3.cvssData.version)</version>#end
                     </cvssV3>
+#end
+#if($vuln.cvssV4)
+                    <cvssV4>
+                            <source>$enc.xml($vuln.cvssV4.source)</source>
+                            <type>$enc.xml($vuln.cvssV4.type)</type>
+#if($vuln.cvssV4.cvssData.version)
+                            <version>$enc.xml($vuln.cvssV4.cvssData.version)</version>
+#end
+#if($vuln.cvssV4.cvssData.vectorString)
+                            <vectorString>$enc.xml($vuln.cvssV4.cvssData.vectorString)</vectorString>
+#end
+#if($vuln.cvssV4.cvssData.attackVector)
+                            <attackVector>$enc.xml($vuln.cvssV4.cvssData.attackVector)</attackVector>
+#end
+#if($vuln.cvssV4.cvssData.attackComplexity)
+                            <attackComplexity>$enc.xml($vuln.cvssV4.cvssData.attackComplexity)</attackComplexity>
+#end
+#if($vuln.cvssV4.cvssData.attackRequirements)
+                            <attackRequirements>$enc.xml($vuln.cvssV4.cvssData.attackRequirements)</attackRequirements>
+#end
+#if($vuln.cvssV4.cvssData.privilegesRequired)
+                            <privilegesRequired>$enc.xml($vuln.cvssV4.cvssData.privilegesRequired)</privilegesRequired>
+#end
+#if($vuln.cvssV4.cvssData.userInteraction)
+                            <userInteraction>$enc.xml($vuln.cvssV4.cvssData.userInteraction)</userInteraction>
+#end
+#if($vuln.cvssV4.cvssData.vulnerableSystemConfidentiality)
+                            <vulnerableSystemConfidentiality>$enc.xml($vuln.cvssV4.cvssData.vulnerableSystemConfidentiality)</vulnerableSystemConfidentiality>
+#end
+#if($vuln.cvssV4.cvssData.vulnerableSystemIntegrity)
+                            <vulnerableSystemIntegrity>$enc.xml($vuln.cvssV4.cvssData.vulnerableSystemIntegrity)</vulnerableSystemIntegrity>
+#end
+#if($vuln.cvssV4.cvssData.vulnerableSystemAvailability)
+                            <vulnerableSystemAvailability>$enc.xml($vuln.cvssV4.cvssData.vulnerableSystemAvailability)</vulnerableSystemAvailability>
+#end
+#if($vuln.cvssV4.cvssData.subsequentSystemConfidentiality)
+                            <subsequentSystemConfidentiality>$enc.xml($vuln.cvssV4.cvssData.subsequentSystemConfidentiality)</subsequentSystemConfidentiality>
+#end
+#if($vuln.cvssV4.cvssData.subsequentSystemIntegrity)
+                            <subsequentSystemIntegrity>$enc.xml($vuln.cvssV4.cvssData.subsequentSystemIntegrity)</subsequentSystemIntegrity>
+#end
+#if($vuln.cvssV4.cvssData.subsequentSystemAvailability)
+                            <subsequentSystemAvailability>$enc.xml($vuln.cvssV4.cvssData.subsequentSystemAvailability)</subsequentSystemAvailability>
+#end
+#if($vuln.cvssV4.cvssData.exploitMaturity)
+                            <exploitMaturity>$enc.xml($vuln.cvssV4.cvssData.exploitMaturity)</exploitMaturity>
+#end
+#if($vuln.cvssV4.cvssData.confidentialityRequirements)
+                            <confidentialityRequirements>$enc.xml($vuln.cvssV4.cvssData.confidentialityRequirements)</confidentialityRequirements>
+#end
+#if($vuln.cvssV4.cvssData.integrityRequirements)
+                            <integrityRequirements>$enc.xml($vuln.cvssV4.cvssData.integrityRequirements)</integrityRequirements>
+#end
+#if($vuln.cvssV4.cvssData.availabilityRequirements)
+                            <availabilityRequirements>$enc.xml($vuln.cvssV4.cvssData.availabilityRequirements)</availabilityRequirements>
+#end
+#if($vuln.cvssV4.cvssData.modifiedAttackVector)
+                            <modifiedAttackVector>$enc.xml($vuln.cvssV4.cvssData.modifiedAttackVector)</modifiedAttackVector>
+#end
+#if($vuln.cvssV4.cvssData.modifiedAttackComplexity)
+                            <modifiedAttackComplexity>$enc.xml($vuln.cvssV4.cvssData.modifiedAttackComplexity)</modifiedAttackComplexity>
+#end
+#if($vuln.cvssV4.cvssData.modifiedAttackRequirements)
+                            <modifiedAttackRequirements>$enc.xml($vuln.cvssV4.cvssData.modifiedAttackRequirements)</modifiedAttackRequirements>
+#end
+#if($vuln.cvssV4.cvssData.modifiedPrivilegesRequired)
+                            <modifiedPrivilegesRequired>$enc.xml($vuln.cvssV4.cvssData.modifiedPrivilegesRequired)</modifiedPrivilegesRequired>
+#end
+#if($vuln.cvssV4.cvssData.modifiedUserInteraction)
+                            <modifiedUserInteraction>$enc.xml($vuln.cvssV4.cvssData.modifiedUserInteraction)</modifiedUserInteraction>
+#end
+#if($vuln.cvssV4.cvssData.modifiedVulnerableSystemConfidentiality)
+                            <modifiedVulnerableSystemConfidentiality>$enc.xml($vuln.cvssV4.cvssData.modifiedVulnerableSystemConfidentiality)</modifiedVulnerableSystemConfidentiality>
+#end
+#if($vuln.cvssV4.cvssData.modifiedVulnerableSystemIntegrity)
+                            <modifiedVulnerableSystemIntegrity>$enc.xml($vuln.cvssV4.cvssData.modifiedVulnerableSystemIntegrity)</modifiedVulnerableSystemIntegrity>
+#end
+#if($vuln.cvssV4.cvssData.modifiedVulnerableSystemAvailability)
+                            <modifiedVulnerableSystemAvailability>$enc.xml($vuln.cvssV4.cvssData.modifiedVulnerableSystemAvailability)</modifiedVulnerableSystemAvailability>
+#end
+#if($vuln.cvssV4.cvssData.modifiedSubsequentSystemConfidentiality)
+                            <modifiedSubsequentSystemConfidentiality>$enc.xml($vuln.cvssV4.cvssData.modifiedSubsequentSystemConfidentiality)</modifiedSubsequentSystemConfidentiality>
+#end
+#if($vuln.cvssV4.cvssData.modifiedSubsequentSystemIntegrity)
+                            <modifiedSubsequentSystemIntegrity>$enc.xml($vuln.cvssV4.cvssData.modifiedSubsequentSystemIntegrity)</modifiedSubsequentSystemIntegrity>
+#end
+#if($vuln.cvssV4.cvssData.modifiedSubsequentSystemAvailability)
+                            <modifiedSubsequentSystemAvailability>$enc.xml($vuln.cvssV4.cvssData.modifiedSubsequentSystemAvailability)</modifiedSubsequentSystemAvailability>
+#end
+#if($vuln.cvssV4.cvssData.safety)
+                            <safety>$enc.xml($vuln.cvssV4.cvssData.safety)</safety>
+#end
+#if($vuln.cvssV4.cvssData.automatable)
+                            <automatable>$enc.xml($vuln.cvssV4.cvssData.automatable)</automatable>
+#end
+#if($vuln.cvssV4.cvssData.recovery)
+                            <recovery>$enc.xml($vuln.cvssV4.cvssData.recovery)</recovery>
+#end
+#if($vuln.cvssV4.cvssData.valueDensity)
+                            <valueDensity>$enc.xml($vuln.cvssV4.cvssData.valueDensity)</valueDensity>
+#end
+#if($vuln.cvssV4.cvssData.vulnerabilityResponseEffort)
+                            <vulnerabilityResponseEffort>$enc.xml($vuln.cvssV4.cvssData.vulnerabilityResponseEffort)</vulnerabilityResponseEffort>
+#end
+#if($vuln.cvssV4.cvssData.providerUrgency)
+                            <providerUrgency>$enc.xml($vuln.cvssV4.cvssData.providerUrgency)</providerUrgency>
+#end
+#if($vuln.cvssV4.cvssData.baseScore)
+                            <baseScore>$enc.xml($vuln.cvssV4.cvssData.baseScore)</baseScore>
+#end
+#if($vuln.cvssV4.cvssData.baseSeverity)
+                            <baseSeverity>$enc.xml($vuln.cvssV4.cvssData.baseSeverity)</baseSeverity>
+#end
+#if($vuln.cvssV4.cvssData.threatScore)
+                            <threatScore>$enc.xml($vuln.cvssV4.cvssData.threatScore)</threatScore>
+#end
+#if($vuln.cvssV4.cvssData.threatSeverity)
+                            <threatSeverity>$enc.xml($vuln.cvssV4.cvssData.threatSeverity)</threatSeverity>
+#end
+#if($vuln.cvssV4.cvssData.environmentalScore)
+                            <environmentalScore>$enc.xml($vuln.cvssV4.cvssData.environmentalScore)</environmentalScore>
+#end
+#if($vuln.cvssV4.cvssData.environmentalSeverity)
+                            <environmentalSeverity>$enc.xml($vuln.cvssV4.cvssData.environmentalSeverity)</environmentalSeverity>
+#end
+                    </cvssV4>
 #end
 #if (!$vuln.cwes.isEmpty())
                     <cwes>

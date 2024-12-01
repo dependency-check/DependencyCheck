@@ -1006,6 +1006,7 @@ public class DependencyCheckScanAgent {
             for (Vulnerability v : d.getVulnerabilities()) {
                 if ((v.getCvssV2() != null && v.getCvssV2().getCvssData().getBaseScore() >= failBuildOnCVSS)
                         || (v.getCvssV3() != null && v.getCvssV3().getCvssData().getBaseScore() >= failBuildOnCVSS)
+                        || (v.getCvssV4() != null && v.getCvssV4().getCvssData().getBaseScore() >= failBuildOnCVSS)
                         || (v.getUnscoredSeverity() != null && SeverityUtil.estimateCvssV2(v.getUnscoredSeverity()) >= failBuildOnCVSS)
                         //safety net to fail on any if for some reason the above misses on 0
                         || (failBuildOnCVSS <= 0.0f)) {
