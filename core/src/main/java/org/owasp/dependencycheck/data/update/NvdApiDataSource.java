@@ -307,7 +307,7 @@ public class NvdApiDataSource implements CachedWebDataSource {
         }
         if (lastModifiedRequest != null) {
             // make it UTC as required by NvdCveClientBuilder#withLastModifiedFilter
-            lastModifiedRequest=lastModifiedRequest.withZoneSameInstant(ZoneId.of("UTC"));
+            lastModifiedRequest = lastModifiedRequest.withZoneSameInstant(ZoneId.of("UTC"));
             final ZonedDateTime end = lastModifiedRequest.plusDays(120);
             builder.withLastModifiedFilter(lastModifiedRequest, end);
         }
