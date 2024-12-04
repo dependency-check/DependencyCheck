@@ -338,7 +338,7 @@ public class App {
                            .append(Stream.concat(d.getSoftwareIdentifiers().stream(), d.getVulnerableSoftwareIdentifiers().stream())
                                          .map(Identifier::getValue)
                                          .collect(Collectors.joining(", ")))
-                           .append(") : ");
+                           .append("): ");
                         ids.append(v.getName()).append('(').append(score).append(')');
                     } else {
                         ids.append(", ").append(v.getName()).append('(').append(score).append(')');
