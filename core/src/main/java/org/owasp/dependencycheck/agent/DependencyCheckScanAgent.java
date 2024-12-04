@@ -1015,8 +1015,8 @@ public class DependencyCheckScanAgent {
                            .append(Stream.concat(d.getSoftwareIdentifiers().stream(), d.getVulnerableSoftwareIdentifiers().stream())
                                          .map(Identifier::getValue)
                                          .collect(Collectors.joining(", ")))
-                           .append("): ");
-                        ids.append(v.getName());
+                           .append("): ")
+                           .append(v.getName());
                     } else {
                         ids.append(", ").append(v.getName());
                     }

@@ -2668,8 +2668,8 @@ public abstract class BaseDependencyCheckMojo extends AbstractMojo implements Ma
                            .append(Stream.concat(d.getSoftwareIdentifiers().stream(), d.getVulnerableSoftwareIdentifiers().stream())
                                          .map(Identifier::getValue)
                                          .collect(Collectors.joining(", ")))
-                           .append("): ");
-                        ids.append(name);
+                           .append("): ")
+                           .append(name);
                     } else {
                         ids.append(", ").append(name);
                     }
