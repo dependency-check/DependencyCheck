@@ -24,6 +24,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.apache.commons.cli.ParseException;
 import org.apache.tools.ant.DirectoryScanner;
 import org.owasp.dependencycheck.data.nvdcve.DatabaseException;
@@ -31,6 +33,7 @@ import org.owasp.dependencycheck.dependency.Dependency;
 import org.owasp.dependencycheck.dependency.Vulnerability;
 import org.apache.tools.ant.types.LogLevel;
 import org.owasp.dependencycheck.data.update.exception.UpdateException;
+import org.owasp.dependencycheck.dependency.naming.Identifier;
 import org.owasp.dependencycheck.exception.ExceptionCollection;
 import org.owasp.dependencycheck.exception.ReportException;
 import org.owasp.dependencycheck.utils.Downloader;
@@ -331,7 +334,11 @@ public class App {
                     }
                     if (addName) {
                         addName = false;
-                        ids.append(NEW_LINE).append(d.getFileName()).append(": ");
+                        ids.append(NEW_LINE).append(d.getFileName()).append(" (")
+                           .append(Stream.concat(d.getSoftwareIdentifiers().stream(), d.getVulnerableSoftwareIdentifiers().stream())
+                                         .map(Identifier::getValue)
+                                         .collect(Collectors.joining(", ")))
+                           .append(") : ");
                         ids.append(v.getName()).append('(').append(score).append(')');
                     } else {
                         ids.append(", ").append(v.getName()).append('(').append(score).append(')');

@@ -20,6 +20,8 @@ package org.owasp.dependencycheck.taskdefs;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import javax.annotation.concurrent.NotThreadSafe;
 
 import org.apache.tools.ant.BuildException;
@@ -35,6 +37,7 @@ import org.owasp.dependencycheck.agent.DependencyCheckScanAgent;
 import org.owasp.dependencycheck.data.nvdcve.DatabaseException;
 import org.owasp.dependencycheck.dependency.Dependency;
 import org.owasp.dependencycheck.dependency.Vulnerability;
+import org.owasp.dependencycheck.dependency.naming.Identifier;
 import org.owasp.dependencycheck.exception.ExceptionCollection;
 import org.owasp.dependencycheck.exception.ReportException;
 import org.owasp.dependencycheck.reporting.ReportGenerator.Format;
@@ -2301,7 +2304,11 @@ public class Check extends Update {
                         || (failBuildOnCVSS <= 0.0f)) {
                     if (addName) {
                         addName = false;
-                        ids.append(NEW_LINE).append(d.getFileName()).append(": ");
+                        ids.append(NEW_LINE).append(d.getFileName()).append(" (")
+                           .append(Stream.concat(d.getSoftwareIdentifiers().stream(), d.getVulnerableSoftwareIdentifiers().stream())
+                                         .map(Identifier::getValue)
+                                         .collect(Collectors.joining(", ")))
+                           .append(") : ");
                         ids.append(v.getName());
                     } else {
                         ids.append(", ").append(v.getName());

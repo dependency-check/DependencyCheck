@@ -21,6 +21,8 @@ import com.github.packageurl.MalformedPackageURLException;
 import com.github.packageurl.PackageURL.StandardTypes;
 import com.github.packageurl.PackageURL;
 import io.github.jeremylong.jcs3.slf4j.Slf4jAdapter;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.DefaultArtifact;
 import org.apache.maven.artifact.handler.DefaultArtifactHandler;
@@ -2662,8 +2664,12 @@ public abstract class BaseDependencyCheckMojo extends AbstractMojo implements Ma
                     }
                     if (addName) {
                         addName = false;
-                        ids.append(NEW_LINE).append(d.getFileName()).append(": ");
-                        ids.append(name);
+                        ids.append(NEW_LINE).append(d.getFileName()).append(" (")
+                           .append(Stream.concat(d.getSoftwareIdentifiers().stream(), d.getVulnerableSoftwareIdentifiers().stream())
+                                         .map(Identifier::getValue)
+                                         .collect(Collectors.joining(", ")))
+                           .append(") : ");
+                        ids.append(v.getName());
                     } else {
                         ids.append(", ").append(name);
                     }
