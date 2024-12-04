@@ -1,5 +1,20 @@
 # Change Log
 
+## [Version 11.1.1](https://github.com/jeremylong/DependencyCheck/releases/tag/v11.1.1) (2024-12-04)
+
+- fix: re-enable issue locking (#7220)
+- fix: add username/password properties to be able to authenticate for central.content.url and analyzer.central.url again (#7169)
+- fix: rework replaceOrAddVulnerability (#7177)
+- fix: do not log loading of JDBC driver (#7155)
+- fix: expose flag to disable version check (#7147)
+- fix: Gracefully handle CVEs with bad configuration nodes missing CPE match expressions (#7125)
+- chore: cleanup base suppression (#7138)
+- docs: update gradle configuration documentation (#7176)
+- docs: update documentation for Gradle plugin (#7143)
+- docs: improve false positive issue templat (#7130)
+
+See the full listing of [changes](https://github.com/jeremylong/DependencyCheck/milestone/90?closed=1). 
+
 ## [Version 11.1.0](https://github.com/jeremylong/DependencyCheck/releases/tag/v11.1.0) (2024-10-30)
 
 - feat: PHP Composer Analyzer now scans packages-dev by default (#7114)
