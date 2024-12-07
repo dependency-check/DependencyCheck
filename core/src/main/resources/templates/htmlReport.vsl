@@ -1020,20 +1020,20 @@ Getting Help: <a href="https://github.com/jeremylong/DependencyCheck/issues" tar
                             #if ($vuln.notes)
                                 Notes: $enc.html($vuln.notes)<br/><br/>
                             #end
-                            #if($vuln.getCvssV2())
-                            CVSSv2:
-                            <ul><li>Base Score: $enc.html($vuln.getCvssV2().getCvssData().getBaseSeverity()) ($vuln.getCvssV2().getCvssData().getBaseScore())</li>
-                                <li>Vector: $enc.html($vuln.getCvssV2().toString())</li></ul>
+                            #if($vuln.getCvssV4())
+                                CVSSv4:
+                                <ul><li>Base Score: $enc.html($vuln.getCvssV4().getCvssData().getBaseSeverity()) ($vuln.getCvssV4().getCvssData().getBaseScore())</li>
+                                    <li>Vector: $enc.html($vuln.getCvssV4().toString())</li></ul>
                             #end
                             #if($vuln.getCvssV3())
                             CVSSv3:
                             <ul><li>Base Score: $enc.html($vuln.getCvssV3().getCvssData().getBaseSeverity()) ($vuln.getCvssV3().getCvssData().getBaseScore())</li>
                                 <li>Vector: $enc.html($vuln.getCvssV3().toString())</li></ul>
                             #end
-                            #if($vuln.getCvssV4())
-                                CVSSv4:
-                                <ul><li>Base Score: $enc.html($vuln.getCvssV4().getCvssData().getBaseSeverity()) ($vuln.getCvssV4().getCvssData().getBaseScore())</li>
-                                    <li>Vector: $enc.html($vuln.getCvssV4().toString())</li></ul>
+                            #if($vuln.getCvssV2())
+                            CVSSv2:
+                            <ul><li>Base Score: $enc.html($vuln.getCvssV2().getCvssData().getBaseSeverity()) ($vuln.getCvssV2().getCvssData().getBaseScore())</li>
+                                <li>Vector: $enc.html($vuln.getCvssV2().toString())</li></ul>
                             #end
                             #if ($vuln.unscoredSeverity)
                             Unscored:
@@ -1227,20 +1227,20 @@ Getting Help: <a href="https://github.com/jeremylong/DependencyCheck/issues" tar
                                     #if ($vuln.notes)
                                         Notes: $enc.html($vuln.notes)<br/><br/>
                                     #end
-                                    #if($vuln.getCvssV2())
-                                    CVSSv2:
-                                    <ul><li>Base Score: $enc.html($vuln.getCvssV2().getCvssData().getBaseSeverity()) ($vuln.getCvssV2().getCvssData().getBaseScore())</li>
-                                        <li>Vector: $enc.html($vuln.getCvssV2().toString())</li></ul>
+                                    #if($vuln.getCvssV4())
+                                        CVSSv4:
+                                        <ul><li>$enc.html($vuln.getCvssV4().getCvssData().getBaseSeverity()) ($vuln.getCvssV4().getCvssData().getBaseScore())</li>
+                                            <li>$enc.html($vuln.getCvssV4().toString())</li></ul>
                                     #end
                                     #if($vuln.getCvssV3())
                                     CVSSv3:
                                     <ul><li>$enc.html($vuln.getCvssV3().getCvssData().getBaseSeverity()) ($vuln.getCvssV3().getCvssData().getBaseScore())</li>
                                         <li>$enc.html($vuln.getCvssV3().toString())</li></ul>
                                     #end
-                                    #if($vuln.getCvssV4())
-                                        CVSSv4:
-                                        <ul><li>$enc.html($vuln.getCvssV4().getCvssData().getBaseSeverity()) ($vuln.getCvssV4().getCvssData().getBaseScore())</li>
-                                            <li>$enc.html($vuln.getCvssV4().toString())</li></ul>
+                                    #if($vuln.getCvssV2())
+                                    CVSSv2:
+                                    <ul><li>Base Score: $enc.html($vuln.getCvssV2().getCvssData().getBaseSeverity()) ($vuln.getCvssV2().getCvssData().getBaseScore())</li>
+                                        <li>Vector: $enc.html($vuln.getCvssV2().toString())</li></ul>
                                     #end
                                     #if ($vuln.unscoredSeverity)
                                     Unscored:
