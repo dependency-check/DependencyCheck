@@ -537,6 +537,11 @@ public class SuppressionRule {
                             removeVulns.add(v);
                             break;
                         }
+                        if (v.getCvssV4() != null && v.getCvssV4().getCvssData().getBaseScore().compareTo(cvss) < 0) {
+                            remove = true;
+                            removeVulns.add(v);
+                            break;
+                        }
                     }
                 }
                 if (remove && !isBase()) {

@@ -24,6 +24,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.apache.commons.cli.ParseException;
 import org.apache.tools.ant.DirectoryScanner;
 import org.owasp.dependencycheck.data.nvdcve.DatabaseException;
@@ -31,6 +33,7 @@ import org.owasp.dependencycheck.dependency.Dependency;
 import org.owasp.dependencycheck.dependency.Vulnerability;
 import org.apache.tools.ant.types.LogLevel;
 import org.owasp.dependencycheck.data.update.exception.UpdateException;
+import org.owasp.dependencycheck.dependency.naming.Identifier;
 import org.owasp.dependencycheck.exception.ExceptionCollection;
 import org.owasp.dependencycheck.exception.ReportException;
 import org.owasp.dependencycheck.utils.Downloader;
@@ -314,15 +317,20 @@ public class App {
                         && v.getCvssV2().getCvssData().getBaseScore() != null ? v.getCvssV2().getCvssData().getBaseScore() : -1;
                 final Double cvssV3 = v.getCvssV3() != null && v.getCvssV3().getCvssData() != null
                         && v.getCvssV3().getCvssData().getBaseScore() != null ? v.getCvssV3().getCvssData().getBaseScore() : -1;
+                final Double cvssV4 = v.getCvssV4() != null && v.getCvssV4().getCvssData() != null
+                        && v.getCvssV4().getCvssData().getBaseScore() != null ? v.getCvssV4().getCvssData().getBaseScore() : -1;
                 final Double unscoredCvss = v.getUnscoredSeverity() != null ? SeverityUtil.estimateCvssV2(v.getUnscoredSeverity()) : -1;
 
                 if (cvssV2 >= cvssFailScore
                         || cvssV3 >= cvssFailScore
+                        || cvssV4 >= cvssFailScore
                         || unscoredCvss >= cvssFailScore
                         //safety net to fail on any if for some reason the above misses on 0
                         || (cvssFailScore <= 0.0f)) {
                     double score = 0.0;
-                    if (cvssV3 >= 0.0) {
+                    if (cvssV4 >= 0.0) {
+                        score = cvssV4;
+                    } else if (cvssV3 >= 0.0) {
                         score = cvssV3;
                     } else if (cvssV2 >= 0.0) {
                         score = cvssV2;
@@ -331,7 +339,11 @@ public class App {
                     }
                     if (addName) {
                         addName = false;
-                        ids.append(NEW_LINE).append(d.getFileName()).append(": ");
+                        ids.append(NEW_LINE).append(d.getFileName()).append(" (")
+                           .append(Stream.concat(d.getSoftwareIdentifiers().stream(), d.getVulnerableSoftwareIdentifiers().stream())
+                                         .map(Identifier::getValue)
+                                         .collect(Collectors.joining(", ")))
+                           .append("): ");
                         ids.append(v.getName()).append('(').append(score).append(')');
                     } else {
                         ids.append(", ").append(v.getName()).append('(').append(score).append(')');

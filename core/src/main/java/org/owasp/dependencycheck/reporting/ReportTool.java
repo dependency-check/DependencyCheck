@@ -99,7 +99,8 @@ public class ReportTool {
                             buildDescription(v.getDescription(), v.getKnownExploitedVulnerability()),
                             v.getSource().name(),
                             v.getCvssV2(),
-                            v.getCvssV3());
+                            v.getCvssV3(),
+                            v.getCvssV4());
                     rules.put(v.getName(), r);
                 }
             }
@@ -114,6 +115,8 @@ public class ReportTool {
             } else {
                 return normalizeSeverity(vuln.getUnscoredSeverity().toLowerCase());
             }
+        } else if (vuln.getCvssV4() != null && vuln.getCvssV4().getCvssData().getBaseSeverity() != null) {
+            return normalizeSeverity(vuln.getCvssV4().getCvssData().getBaseSeverity().value().toLowerCase());
         } else if (vuln.getCvssV3() != null && vuln.getCvssV3().getCvssData().getBaseSeverity() != null) {
             return normalizeSeverity(vuln.getCvssV3().getCvssData().getBaseSeverity().value().toLowerCase());
         } else if (vuln.getCvssV2() != null && vuln.getCvssV2().getCvssData().getBaseSeverity() != null) {

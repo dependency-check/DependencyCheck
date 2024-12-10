@@ -55,6 +55,11 @@ For more information see [How dependency-check works](https://jeremylong.github.
                     #if($rule.cvssv3ImpactScore)"cvssv3_impactScore": "$enc.json($rule.cvssv3ImpactScore)",#end
                     #if($rule.cvssv3Version)"cvssv3_version": "$enc.json($rule.cvssv3Version)",#end
                 #end
+                #if($rule.cvssv4Vector)
+                "cvssv4_baseScore": $rule.cvssv4BaseScore,
+                "security-severity": "$rule.cvssv4BaseScore",
+                "cvssv4_vector": "$enc.json($rule.cvssv4Vector)",
+                #end
                 "source": "$enc.json($rule.getSource())"
               }
             }#end

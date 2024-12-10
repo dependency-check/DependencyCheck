@@ -106,6 +106,8 @@
                             #else
                                 #set($severity = $rpt.normalizeSeverity($vulnerability.unscoredSeverity))
                             #end
+                        #elseif($vulnerability.cvssV4 && $vulnerability.cvssV4.cvssData && $vulnerability.cvssV4.cvssData.baseSeverity)
+                            #set($severity = $rpt.normalizeSeverity($vulnerability.cvssV4.cvssData.baseSeverity))
                         #elseif($vulnerability.cvssV3 && $vulnerability.cvssV3.cvssData && $vulnerability.cvssV3.cvssData.baseSeverity)
                             #set($severity = $rpt.normalizeSeverity($vulnerability.cvssV3.cvssData.baseSeverity))
                         #elseif($vulnerability.cvssV2 && $vulnerability.cvssV2.cvssData && $vulnerability.cvssV2.cvssData.baseSeverity)

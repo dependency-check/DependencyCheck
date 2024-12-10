@@ -1,0 +1,339 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema id="analysis"
+           xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           elementFormDefault="qualified"
+           targetNamespace="https://jeremylong.github.io/DependencyCheck/dependency-check.4.1.xsd"
+           xmlns:dc="https://jeremylong.github.io/DependencyCheck/dependency-check.4.1.xsd">
+    <xs:complexType name="exception">
+        <xs:sequence>
+            <xs:element name="message" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="stackTrace" minOccurs="0" maxOccurs="unbounded">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="trace" minOccurs="0" maxOccurs="unbounded"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="cause" type="dc:exception" minOccurs="0" maxOccurs="1"/>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="scanInfo">
+        <xs:sequence minOccurs="1" maxOccurs="1">
+            <xs:element name="engineVersion" type="xs:string" minOccurs="1" maxOccurs="1"/>
+            <xs:sequence minOccurs="0" maxOccurs="unbounded">
+                <xs:element name="dataSource">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name="name" type="xs:string" minOccurs="1" maxOccurs="1"/>
+                            <xs:element name="timestamp" type="xs:string" minOccurs="1" maxOccurs="1"/>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+            </xs:sequence>
+            <xs:element name="analysisExceptions" minOccurs="0" maxOccurs="1">
+                <xs:complexType>
+                    <xs:sequence minOccurs="0" maxOccurs="unbounded">
+                        <xs:element name="exception" type="dc:exception"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="projectInfo">
+        <xs:sequence>
+            <xs:element name="name" type="xs:string" minOccurs="1" maxOccurs="1"/>
+            <xs:element name="groupID" type="xs:string" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="artifactID" type="xs:string" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="version" type="xs:string" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="reportDate" type="xs:string" minOccurs="1" maxOccurs="1"/>
+            <xs:element name="credits" type="xs:string" minOccurs="1" maxOccurs="1"/>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="identifier">
+        <xs:sequence>
+            <xs:element name="id" type="xs:string" minOccurs="1" maxOccurs="1"/>
+            <xs:element name="url" type="xs:string" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="description" type="xs:string" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="notes" type="xs:string" minOccurs="0" maxOccurs="1"/>
+        </xs:sequence>
+        <xs:attribute name="confidence" type="xs:string" use="optional"/>
+    </xs:complexType>
+    <xs:complexType name="relatedDependency">
+        <xs:sequence>
+            <xs:element name="fileName" type="xs:string" minOccurs="1" maxOccurs="1"/>
+            <xs:element name="filePath" type="xs:string" minOccurs="1" maxOccurs="1"/>
+            <xs:element name="sha256" type="xs:string" minOccurs="1" maxOccurs="1"/>
+            <xs:element name="sha1" type="xs:string" minOccurs="1" maxOccurs="1"/>
+            <xs:element name="md5" type="xs:string" minOccurs="1" maxOccurs="1"/>
+            <xs:element name="identifiers" minOccurs="0" maxOccurs="1">
+                <xs:complexType>
+                    <xs:sequence minOccurs="0" maxOccurs="unbounded">
+                        <xs:element name="package" type="dc:identifier"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+        </xs:sequence>
+        <xs:attribute name="isVirtual" type="xs:boolean" use="optional"/>
+    </xs:complexType>
+    <xs:complexType name="evidence">
+        <xs:sequence>
+            <xs:element name="source" type="xs:string" minOccurs="1" maxOccurs="1"/>
+            <xs:element name="name" type="xs:string" minOccurs="1" maxOccurs="1"/>
+            <xs:element name="value" type="xs:string" minOccurs="1" maxOccurs="1"/>
+        </xs:sequence>
+        <xs:attribute name="type" type="xs:string" use="required"/>
+        <xs:attribute name="confidence" type="xs:string" use="required"/>
+    </xs:complexType>
+    <xs:complexType name="cvssV2">
+        <xs:sequence>
+            <xs:element name="score" type="xs:decimal" minOccurs="1" maxOccurs="1"/>
+            <xs:element name="accessVector" type="xs:string" minOccurs="1" maxOccurs="1"/>
+            <xs:element name="accessComplexity" type="xs:string" minOccurs="1" maxOccurs="1"/>
+            <xs:element name="authenticationr" type="xs:string" minOccurs="1" maxOccurs="1"/>
+            <xs:element name="confidentialityImpact" type="xs:string" minOccurs="1" maxOccurs="1"/>
+            <xs:element name="integrityImpact" type="xs:string" minOccurs="1" maxOccurs="1"/>
+            <xs:element name="availabilityImpact" type="xs:string" minOccurs="1" maxOccurs="1"/>
+            <xs:element name="severity" type="xs:string" minOccurs="1" maxOccurs="1"/>
+            <xs:element name="version" type="xs:decimal" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="exploitabilityScore" type="xs:decimal" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="impactScore" type="xs:decimal" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="acInsufInfo" type="xs:boolean" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="obtainAllPrivilege" type="xs:boolean" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="obtainUserPrivilege" type="xs:boolean" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="obtainOtherPrivilege" type="xs:boolean" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="userInteractionRequired" type="xs:boolean" minOccurs="0" maxOccurs="1"/>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="cvssV3">
+        <xs:sequence>
+            <xs:element name="baseScore" type="xs:decimal" minOccurs="1" maxOccurs="1"/>
+            <xs:element name="attackVector" type="xs:string" minOccurs="1" maxOccurs="1"/>
+            <xs:element name="attackComplexity" type="xs:string" minOccurs="1" maxOccurs="1"/>
+            <xs:element name="privilegesRequired" type="xs:string" minOccurs="1" maxOccurs="1"/>
+            <xs:element name="userInteraction" type="xs:string" minOccurs="1" maxOccurs="1"/>
+            <xs:element name="scope" type="xs:string" minOccurs="1" maxOccurs="1"/>
+            <xs:element name="confidentialityImpact" type="xs:string" minOccurs="1" maxOccurs="1"/>
+            <xs:element name="integrityImpact" type="xs:string" minOccurs="1" maxOccurs="1"/>
+            <xs:element name="availabilityImpact" type="xs:string" minOccurs="1" maxOccurs="1"/>
+            <xs:element name="baseSeverity" type="xs:string" minOccurs="1" maxOccurs="1"/>
+            <xs:element name="exploitabilityScore" type="xs:decimal" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="impactScore" type="xs:decimal" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="version" type="xs:decimal" minOccurs="0" maxOccurs="1"/>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="cvssV4">
+        <xs:sequence>
+            <xs:element name="source" type="xs:string" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="type" minOccurs="0" maxOccurs="1">
+                <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                        <xs:enumeration value="Primary"/>
+                        <xs:enumeration value="Secondary"/>
+                    </xs:restriction>
+                </xs:simpleType>
+            </xs:element>
+            <xs:element name="version" type="xs:string" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="vectorString" type="xs:string" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="attackVector" type="xs:string" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="attackComplexity" type="xs:string" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="attackRequirements" type="xs:string" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="privilegesRequired" type="xs:string" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="userInteraction" type="xs:string" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="vulnerableSystemConfidentiality" type="xs:string" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="vulnerableSystemIntegrity" type="xs:string" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="vulnerableSystemAvailability" type="xs:string" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="subsequentSystemConfidentiality" type="xs:string" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="subsequentSystemIntegrity" type="xs:string" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="subsequentSystemAvailability" type="xs:string" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="exploitMaturity" type="xs:string" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="confidentialityRequirements" type="xs:string" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="integrityRequirements" type="xs:string" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="availabilityRequirements" type="xs:string" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="modifiedAttackVector" type="xs:string" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="modifiedAttackComplexity" type="xs:string" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="modifiedAttackRequirements" type="xs:string" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="modifiedPrivilegesRequired" type="xs:string" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="modifiedUserInteraction" type="xs:string" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="modifiedVulnerableSystemConfidentiality" type="xs:string" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="modifiedVulnerableSystemIntegrity" type="xs:string" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="modifiedVulnerableSystemAvailability" type="xs:string" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="modifiedSubsequentSystemConfidentiality" type="xs:string" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="modifiedSubsequentSystemIntegrity" type="xs:string" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="modifiedSubsequentSystemAvailability" type="xs:string" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="safety" type="xs:string" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="automatable" type="xs:string" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="recovery" type="xs:string" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="valueDensity" type="xs:string" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="vulnerabilityResponseEffort" type="xs:string" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="providerUrgency" type="xs:string" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="baseScore" type="xs:decimal" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="baseSeverity" type="xs:string" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="threatScore" type="xs:decimal" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="threatSeverity" type="xs:string" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="environmentalScore" type="xs:decimal" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="environmentalSeverity" type="xs:string" minOccurs="0" maxOccurs="1"/>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="reference">
+        <xs:sequence>
+            <xs:element name="source" type="xs:string" minOccurs="1" maxOccurs="1"/>
+            <xs:element name="url" type="xs:string" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="name" type="xs:string" minOccurs="1" maxOccurs="1"/>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="software">
+        <xs:simpleContent>
+            <xs:extension base="xs:string">
+                <xs:attribute name="vulnerabilityIdMatched" type="xs:boolean"/>
+                <xs:attribute name="versionStartIncluding" type="xs:string"/>
+                <xs:attribute name="versionStartExcluding" type="xs:string"/>
+                <xs:attribute name="versionEndIncluding" type="xs:string"/>
+                <xs:attribute name="versionEndExcluding" type="xs:string"/>
+                <xs:attribute name="vulnerable" type="xs:boolean"/>
+            </xs:extension>
+        </xs:simpleContent>
+    </xs:complexType>
+    <xs:complexType name="severity">
+        <xs:simpleContent>
+            <xs:extension base="xs:string">
+                <xs:attribute name="unscored" type="xs:boolean"/>
+            </xs:extension>
+        </xs:simpleContent>
+    </xs:complexType>
+    <xs:complexType name="knownExploitedVulnerability">
+        <xs:sequence>
+            <xs:element name="vendorProject" type="xs:string" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="product" type="xs:string" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="name" type="xs:string" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="dateAdded" type="xs:string" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="description" type="xs:string" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="requiredAction" type="xs:string" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="dueDate" type="xs:string" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="notes" type="xs:string" minOccurs="0" maxOccurs="1"/>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="vulnerability">
+        <xs:sequence>
+            <xs:element name="name" type="xs:string" minOccurs="1" maxOccurs="1"/>
+            <xs:element name="knownExploitedVulnerability" type="dc:knownExploitedVulnerability" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="severity" type="dc:severity" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="cvssV2" type="dc:cvssV2" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="cvssV3" type="dc:cvssV3" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="cvssV4" type="dc:cvssV4" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="cwes" minOccurs="0" maxOccurs="1">
+                <xs:complexType>
+                    <xs:sequence minOccurs="0" maxOccurs="unbounded">
+                        <xs:element name="cwe" type="xs:string" minOccurs="0" maxOccurs="1"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="description" type="xs:string" minOccurs="1" maxOccurs="1"/>
+            <xs:element name="notes" type="xs:string" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="references" minOccurs="0" maxOccurs="1">
+                <xs:complexType>
+                    <xs:sequence minOccurs="0" maxOccurs="unbounded">
+                        <xs:element name="reference" type="dc:reference"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="vulnerableSoftware" minOccurs="0" maxOccurs="1">
+                <xs:complexType>
+                    <xs:sequence minOccurs="0" maxOccurs="unbounded">
+                        <xs:element name="software" type="dc:software"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+        </xs:sequence>
+        <xs:attribute name="source" type="xs:string" use="required"/>
+    </xs:complexType>
+    <xs:complexType name="dependency">
+        <xs:sequence>
+            <xs:element name="fileName" type="xs:string" minOccurs="1" maxOccurs="1"/>
+            <xs:element name="filePath" type="xs:string" minOccurs="1" maxOccurs="1"/>
+            <xs:element name="md5" type="xs:string" minOccurs="1" maxOccurs="1"/>
+            <xs:element name="sha1" type="xs:string" minOccurs="1" maxOccurs="1"/>
+            <xs:element name="sha256" type="xs:string" minOccurs="1" maxOccurs="1"/>
+            <xs:element name="description" type="xs:string" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="license" type="xs:string" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="projectReferences" minOccurs="0" maxOccurs="1">
+                <xs:complexType>
+                    <xs:sequence minOccurs="0" maxOccurs="unbounded">
+                        <xs:element name="projectReference" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="includedBy" minOccurs="0" maxOccurs="1">
+                <xs:complexType>
+                    <xs:sequence minOccurs="0" maxOccurs="unbounded">
+                        <xs:element name="reference" minOccurs="0" maxOccurs="unbounded">
+                            <xs:complexType>
+                                <xs:simpleContent>
+                                    <xs:extension base="xs:string">
+                                        <xs:attribute name="type" type="xs:string"/>
+                                    </xs:extension>
+                                </xs:simpleContent>
+                            </xs:complexType>
+                        </xs:element>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="relatedDependencies" minOccurs="0" maxOccurs="1">
+                <xs:complexType>
+                    <xs:sequence minOccurs="0" maxOccurs="unbounded">
+                        <xs:element name="relatedDependency" type="dc:relatedDependency"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="evidenceCollected" minOccurs="0" maxOccurs="1">
+                <xs:complexType>
+                    <xs:sequence minOccurs="0" maxOccurs="unbounded">
+                        <xs:element name="evidence" type="dc:evidence"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="identifiers" minOccurs="0" maxOccurs="1">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:sequence minOccurs="0" maxOccurs="unbounded">
+                            <xs:element name="package" type="dc:identifier"/>
+                        </xs:sequence>
+                        <xs:sequence minOccurs="0" maxOccurs="unbounded">
+                            <xs:element name="vulnerabilityIds" type="dc:identifier"/>
+                        </xs:sequence>
+                        <xs:sequence minOccurs="0" maxOccurs="unbounded">
+                            <xs:element name="suppressedVulnerabilityIds" type="dc:identifier"/>
+                        </xs:sequence>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="vulnerabilities" minOccurs="0" maxOccurs="1">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:sequence minOccurs="0" maxOccurs="unbounded">
+                            <xs:element name="vulnerability" type="dc:vulnerability"/>
+                        </xs:sequence>
+                        <xs:sequence minOccurs="0" maxOccurs="unbounded">
+                            <xs:element name="suppressedVulnerability" type="dc:vulnerability"/>
+                        </xs:sequence>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+        </xs:sequence>
+        <xs:attribute name="isVirtual" type="xs:boolean" use="required"/>
+    </xs:complexType>
+    <xs:element name="analysis">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="scanInfo" type="dc:scanInfo"/>
+                <xs:element name="projectInfo" type="dc:projectInfo"/>
+                <xs:element name="dependencies">
+                    <xs:complexType>
+                        <xs:sequence minOccurs="0" maxOccurs="unbounded">
+                            <xs:element name="dependency" type="dc:dependency"/>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+</xs:schema>
