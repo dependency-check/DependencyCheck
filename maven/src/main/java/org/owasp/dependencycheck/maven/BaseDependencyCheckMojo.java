@@ -686,6 +686,12 @@ public abstract class BaseDependencyCheckMojo extends AbstractMojo implements Ma
     @Parameter(property = "artifactoryAnalyzerParallelAnalysis", defaultValue = "true")
     private Boolean artifactoryAnalyzerParallelAnalysis;
     /**
+     * Whether the Unused Suppression Rule analyzer should fail if there are unused rules.
+     */
+    @SuppressWarnings("CanBeFinal")
+    @Parameter(property = "failBuildOnUnusedSuppressionRule", defaultValue = "false")
+    private Boolean failBuildOnUnusedSuppressionRule;
+    /**
      * Whether or not the Nexus Analyzer is enabled.
      */
     @SuppressWarnings("CanBeFinal")
@@ -2268,6 +2274,7 @@ public abstract class BaseDependencyCheckMojo extends AbstractMojo implements Ma
         settings.setStringIfNotNull(Settings.KEYS.ANALYZER_ARTIFACTORY_URL, artifactoryAnalyzerUrl);
         settings.setBooleanIfNotNull(Settings.KEYS.ANALYZER_ARTIFACTORY_USES_PROXY, artifactoryAnalyzerUseProxy);
         settings.setBooleanIfNotNull(Settings.KEYS.ANALYZER_ARTIFACTORY_PARALLEL_ANALYSIS, artifactoryAnalyzerParallelAnalysis);
+        settings.setBooleanIfNotNull(Settings.KEYS.FAIL_ON_UNUSED_SUPPRESSION_RULE, failBuildOnUnusedSuppressionRule);
         if (Boolean.TRUE.equals(artifactoryAnalyzerEnabled)) {
             if (artifactoryAnalyzerServerId != null) {
                 configureServerCredentials(artifactoryAnalyzerServerId, Settings.KEYS.ANALYZER_ARTIFACTORY_API_USERNAME,
