@@ -178,6 +178,10 @@ public class DependencyCheckScanAgent {
      */
     private boolean centralAnalyzerEnabled = true;
     /**
+     * Whether the build should fail if there are unused suppression rules.
+     */
+    private boolean failOnUnusedSuppressionRule = false;
+    /**
      * The URL of Maven Central.
      */
     private String centralUrl;
@@ -620,6 +624,24 @@ public class DependencyCheckScanAgent {
     }
 
     /**
+     * Get the value of failOnUnusedSuppressionRule.
+     *
+     * @return the value of failOnUnusedSuppressionRule
+     */
+    public boolean isFailOnUnusedSuppressionRule() {
+        return failOnUnusedSuppressionRule;
+    }
+
+    /**
+     * Set the value of failOnUnusedSuppressionRule.
+     *
+     * @param failOnUnusedSuppressionRule new value of failOnUnusedSuppressionRule
+     */
+    public void setFailOnUnusedSuppressionRule(boolean failOnUnusedSuppressionRule) {
+        this.failOnUnusedSuppressionRule = failOnUnusedSuppressionRule;
+    }
+
+    /**
      * Get the value of centralAnalyzerEnabled.
      *
      * @return the value of centralAnalyzerEnabled
@@ -952,6 +974,7 @@ public class DependencyCheckScanAgent {
         settings.setStringIfNotEmpty(Settings.KEYS.ADDITIONAL_ZIP_EXTENSIONS, zipExtensions);
         settings.setStringIfNotEmpty(Settings.KEYS.NVD_API_KEY, nvdApiKey);
         settings.setStringIfNotEmpty(Settings.KEYS.ANALYZER_ASSEMBLY_DOTNET_PATH, pathToCore);
+        settings.setBoolean(Settings.KEYS.FAIL_ON_UNUSED_SUPPRESSION_RULE, failOnUnusedSuppressionRule);
     }
 
     /**

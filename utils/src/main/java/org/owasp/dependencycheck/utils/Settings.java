@@ -861,6 +861,10 @@ public final class Settings {
          * query results; append the ecosystem to obtain the default query size.
          */
         public static final String MAX_QUERY_SIZE_PREFIX = "odc.ecosystem.maxquerylimit.";
+        /**
+         * The properties key for whether the build should fail if there are unused suppression rules.
+         */
+        public static final String FAIL_ON_UNUSED_SUPPRESSION_RULE = "analyzer.suppression.unused.fail";
 
         /**
          * private constructor because this is a "utility" class containing

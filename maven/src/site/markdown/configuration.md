@@ -12,34 +12,35 @@ Configuration
 ====================
 The following properties can be set on the dependency-check-maven plugin.
 
-Property                    | Description                        | Default Value
-----------------------------|------------------------------------|------------------
-autoUpdate                  | Sets whether auto-updating of the NVD CVE/CPE, retireJS and hosted suppressions data is enabled. It is not recommended that this be turned to false. | true
-format                      | The report format to be generated (HTML, XML, CSV, JSON, JUNIT, SARIF, JENKINS, GITLAB, ALL). This configuration is ignored if `formats` is defined. This configuration option has no affect if using this within the Site plugin unless the externalReport is set to true. | HTML
-formats                     | A list of report formats to be generated (HTML, XML, CSV, JSON, JUNIT, SARIF, JENKINS, GITLAB, ALL). This configuration overrides the value from `format`. This configuration option has no affect if using this within the Site plugin unless the externalReport is set to true. | &nbsp;
-junitFailOnCVSS             | If using the JUNIT report format the junitFailOnCVSS sets the CVSS score threshold that is considered a failure.   | 0
-prettyPrint                 | Whether the XML and JSON formatted reports should be pretty printed.                                               | false
-failBuildOnCVSS             | Specifies if the build should be failed if a CVSS score equal to or above a specified level is identified. The default is 11 which means since the CVSS scores are 0-10, by default the build will never fail. More information on CVSS scores can be found at the [NVD](https://nvd.nist.gov/vuln-metrics/cvss) | 11
-failBuildOnAnyVulnerability | Specific that if any vulnerability is identified, the build will fail. | false
-failOnError                 | Whether the build should fail if there is an error executing the dependency-check analysis. | true
-name                        | The name of the report in the site. | dependency-check or dependency-check:aggregate
-outputDirectory             | The location to write the report(s). This can be specified on the command line via `-Dodc.outputDirectory`. Note, this is not used if generating the report as part of a `mvn site` build. | 'target'
-scanSet                     | An optional collection of file sets that specify additional files and/or directories to analyze as part of the scan. If not specified, defaults to standard Maven conventions. This cannot be configured via the command line parameters (e.g. `-DscanSet=./path`) - use the below `scanDirectory` instead. Note that the scan sets specified should be relative from the base directory - do not use Maven project variable substitution (e.g. `${project.basedir}/src/webpack`). Using Maven project variable substitution can cause directories to be missed especially when using an aggregate build. | ['src/main/resources', 'src/main/filters', 'src/main/webapp', './package.json', './package-lock.json', './npm-shrinkwrap.json', './Gopkg.lock', './go.mod']
-scanDirectory               | An optional collection of directories to include in the scan. This configuration should only be used via the command line - if configuring the scan directories within the `pom.xml` please consider using the above `scanSet`. | &nbsp;
-scanDependencies            | Sets whether the dependencies should be scanned.                   | true
-scanPlugins                 | Sets whether the plugins and their dependencies should be scanned. | false
-skip                        | Skips the dependency-check analysis.                       | false
-skipProvidedScope           | Skip analysis for artifacts with Provided Scope.           | false
-skipRuntimeScope            | Skip analysis for artifacts with Runtime Scope.            | false
-skipSystemScope             | Skip analysis for artifacts with System Scope.             | false
-skipTestScope               | Skip analysis for artifacts with Test Scope.               | true
-skipDependencyManagement    | Skip analysis for dependencyManagement sections.           | true
-skipArtifactType            | A regular expression used to filter/skip artifact types.  This filters on the `type` of dependency as defined in the dependency section: jar, pom, test-jar, etc. | &nbsp;
-suppressionFiles            | The file paths to the XML suppression files \- used to suppress [false positives](../general/suppression.html). The configuration value can be a local file path, a URL to a suppression file, or even a reference to a file on the class path (see https://github.com/jeremylong/DependencyCheck/issues/1878#issuecomment-487533799) | &nbsp;
-hintsFile                   | The file path to the XML hints file \- used to resolve [false negatives](../general/hints.html).       | &nbsp;
-enableExperimental          | Enable the [experimental analyzers](../analyzers/index.html). If not enabled the experimental analyzers (see below) will not be loaded or used. | false
-enableRetired               | Enable the [retired analyzers](../analyzers/index.html). If not enabled the retired analyzers (see below) will not be loaded or used. | false
-versionCheckEnabled         | Whether dependency-check should check if a new version of dependency-check-maven exists. | true
+Property                         | Description                        | Default Value
+---------------------------------|------------------------------------|------------------
+autoUpdate                       | Sets whether auto-updating of the NVD CVE/CPE, retireJS and hosted suppressions data is enabled. It is not recommended that this be turned to false. | true
+format                           | The report format to be generated (HTML, XML, CSV, JSON, JUNIT, SARIF, JENKINS, GITLAB, ALL). This configuration is ignored if `formats` is defined. This configuration option has no affect if using this within the Site plugin unless the externalReport is set to true. | HTML
+formats                          | A list of report formats to be generated (HTML, XML, CSV, JSON, JUNIT, SARIF, JENKINS, GITLAB, ALL). This configuration overrides the value from `format`. This configuration option has no affect if using this within the Site plugin unless the externalReport is set to true. | &nbsp;
+junitFailOnCVSS                  | If using the JUNIT report format the junitFailOnCVSS sets the CVSS score threshold that is considered a failure.   | 0
+prettyPrint                      | Whether the XML and JSON formatted reports should be pretty printed.                                               | false
+failBuildOnCVSS                  | Specifies if the build should be failed if a CVSS score equal to or above a specified level is identified. The default is 11 which means since the CVSS scores are 0-10, by default the build will never fail. More information on CVSS scores can be found at the [NVD](https://nvd.nist.gov/vuln-metrics/cvss) | 11
+failBuildOnAnyVulnerability      | Specifies that if any vulnerability is identified, the build will fail. | false
+failOnError                      | Whether the build should fail if there is an error executing the dependency-check analysis. | true
+name                             | The name of the report in the site. | dependency-check or dependency-check:aggregate
+outputDirectory                  | The location to write the report(s). This can be specified on the command line via `-Dodc.outputDirectory`. Note, this is not used if generating the report as part of a `mvn site` build. | 'target'
+scanSet                          | An optional collection of file sets that specify additional files and/or directories to analyze as part of the scan. If not specified, defaults to standard Maven conventions. This cannot be configured via the command line parameters (e.g. `-DscanSet=./path`) - use the below `scanDirectory` instead. Note that the scan sets specified should be relative from the base directory - do not use Maven project variable substitution (e.g. `${project.basedir}/src/webpack`). Using Maven project variable substitution can cause directories to be missed especially when using an aggregate build. | ['src/main/resources', 'src/main/filters', 'src/main/webapp', './package.json', './package-lock.json', './npm-shrinkwrap.json', './Gopkg.lock', './go.mod']
+scanDirectory                    | An optional collection of directories to include in the scan. This configuration should only be used via the command line - if configuring the scan directories within the `pom.xml` please consider using the above `scanSet`. | &nbsp;
+scanDependencies                 | Sets whether the dependencies should be scanned.                   | true
+scanPlugins                      | Sets whether the plugins and their dependencies should be scanned. | false
+skip                             | Skips the dependency-check analysis.                       | false
+skipProvidedScope                | Skip analysis for artifacts with Provided Scope.           | false
+skipRuntimeScope                 | Skip analysis for artifacts with Runtime Scope.            | false
+skipSystemScope                  | Skip analysis for artifacts with System Scope.             | false
+skipTestScope                    | Skip analysis for artifacts with Test Scope.               | true
+skipDependencyManagement         | Skip analysis for dependencyManagement sections.           | true
+skipArtifactType                 | A regular expression used to filter/skip artifact types.  This filters on the `type` of dependency as defined in the dependency section: jar, pom, test-jar, etc. | &nbsp;
+suppressionFiles                 | The file paths to the XML suppression files \- used to suppress [false positives](../general/suppression.html). The configuration value can be a local file path, a URL to a suppression file, or even a reference to a file on the class path (see https://github.com/jeremylong/DependencyCheck/issues/1878#issuecomment-487533799) | &nbsp;
+hintsFile                        | The file path to the XML hints file \- used to resolve [false negatives](../general/hints.html).       | &nbsp;
+enableExperimental               | Enable the [experimental analyzers](../analyzers/index.html). If not enabled the experimental analyzers (see below) will not be loaded or used. | false
+enableRetired                    | Enable the [retired analyzers](../analyzers/index.html). If not enabled the retired analyzers (see below) will not be loaded or used. | false
+versionCheckEnabled              | Whether dependency-check should check if a new version of dependency-check-maven exists. | true
+failBuildOnUnusedSuppressionRule | Specifies that if any unused suppression rule is found, the build will fail. | false
 
 Analyzer Configuration
 ====================
