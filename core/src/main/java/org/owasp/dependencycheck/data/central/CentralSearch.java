@@ -146,11 +146,8 @@ public class CentralSearch {
         }
         if (cache != null) {
             final List<MavenArtifact> cached = cache.get(sha1);
-            if (cached != null) {
+            if (cached != null && !cached.isEmpty()) {
                 LOGGER.debug("cache hit for Central: " + sha1);
-                if (cached.isEmpty()) {
-                    throw new FileNotFoundException("Artifact not found in Central");
-                }
                 return cached;
             }
         }
@@ -177,6 +174,9 @@ public class CentralSearch {
         };
         try {
             final Document doc = Downloader.getInstance().fetchAndHandle(url, handler, List.of(acceptHeader), useProxy);
+            if (doc == null) {
+                return new ArrayList<>();
+            }
             final boolean missing = addMavenArtifacts(doc, result);
 
             if (missing) {
@@ -210,17 +210,17 @@ public class CentralSearch {
     private boolean addMavenArtifacts(Document doc, List<MavenArtifact> result) throws XPathExpressionException {
         boolean missing = false;
         final XPath xpath = XPathFactory.newInstance().newXPath();
-        final String numFound = xpath.evaluate("/response/result/@numFound", doc);
+        final String numFound = xpath.evaluate("/SolrWrappedResponse/response/numFound", doc);
         if ("0".equals(numFound)) {
             missing = true;
         } else {
-            final NodeList docs = (NodeList) xpath.evaluate("/response/result/doc", doc, XPathConstants.NODESET);
+            final NodeList docs = (NodeList) xpath.evaluate("/SolrWrappedResponse/response/docs/docs", doc, XPathConstants.NODESET);
             for (int i = 0; i < docs.getLength(); i++) {
-                final String g = xpath.evaluate("./str[@name='g']", docs.item(i));
+                final String g = xpath.evaluate("./g", docs.item(i));
                 LOGGER.trace("GroupId: {}", g);
-                final String a = xpath.evaluate("./str[@name='a']", docs.item(i));
+                final String a = xpath.evaluate("./a", docs.item(i));
                 LOGGER.trace("ArtifactId: {}", a);
-                final String v = xpath.evaluate("./str[@name='v']", docs.item(i));
+                final String v = xpath.evaluate("./v", docs.item(i));
                 final NodeList attributes = (NodeList) xpath.evaluate("./arr[@name='ec']/str", docs.item(i), XPathConstants.NODESET);
                 boolean pomAvailable = false;
                 boolean jarAvailable = false;

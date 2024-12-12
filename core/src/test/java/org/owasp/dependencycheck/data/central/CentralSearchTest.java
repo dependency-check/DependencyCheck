@@ -44,11 +44,11 @@ public class CentralSearchTest extends BaseTest {
     @Test
     public void testValidSha1() throws Exception {
         try {
-        List<MavenArtifact> ma = searcher.searchSha1("9977a8d04e75609cf01badc4eb6a9c7198c4c5ea");
-        assertEquals("Incorrect group", "org.apache.maven.plugins", ma.get(0).getGroupId());
-        assertEquals("Incorrect artifact", "maven-compiler-plugin", ma.get(0).getArtifactId());
-        assertEquals("Incorrect version", "3.1", ma.get(0).getVersion());
-                } catch (IOException ex) {
+            List<MavenArtifact> ma = searcher.searchSha1("9977a8d04e75609cf01badc4eb6a9c7198c4c5ea");
+            assertEquals("Incorrect group", "org.apache.maven.plugins", ma.get(0).getGroupId());
+            assertEquals("Incorrect artifact", "maven-compiler-plugin", ma.get(0).getArtifactId());
+            assertEquals("Incorrect version", "3.1", ma.get(0).getVersion());
+        } catch (IOException ex) {
             //we hit a failure state on the CI
             Assume.assumeFalse(StringUtils.contains(ex.getMessage(), "Could not connect to MavenCentral"));
             throw ex;
@@ -61,8 +61,9 @@ public class CentralSearchTest extends BaseTest {
     @Test(expected = IOException.class)
     public void testMissingSha1() throws Exception {
         try {
-        searcher.searchSha1("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
-                } catch (IOException ex) {
+            List<MavenArtifact> results = searcher.searchSha1("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
+            assertTrue(results.isEmpty());
+        } catch (IOException ex) {
             //we hit a failure state on the CI
             Assume.assumeFalse(StringUtils.contains(ex.getMessage(), "Could not connect to MavenCentral"));
             throw ex;
@@ -73,7 +74,8 @@ public class CentralSearchTest extends BaseTest {
     @Test
     public void testMultipleReturns() throws Exception {
         try {
-            List<MavenArtifact> ma = searcher.searchSha1("94A9CE681A42D0352B3AD22659F67835E560D107");
+
+            List<MavenArtifact> ma = searcher.searchSha1("94a9ce681a42d0352b3ad22659f67835e560d107");
             assertTrue(ma.size() > 1);
         } catch (IOException ex) {
             //we hit a failure state on the CI
