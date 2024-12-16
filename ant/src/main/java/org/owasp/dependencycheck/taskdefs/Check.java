@@ -450,6 +450,11 @@ public class Check extends Update {
     private Reference refId = null;
 
     /**
+     * whether an unsused suppression rule should get force the build to fail
+     */
+    private boolean failBuildOnUnusedSuppressionRule = false;
+
+    /**
      * Returns whether the version check is enabled.
      *
      * @return true if the version check is enabled; otherwise false.
@@ -2092,6 +2097,13 @@ public class Check extends Update {
     public void setArtifactoryAnalyzerBearerToken(String artifactoryAnalyzerBearerToken) {
         this.artifactoryAnalyzerBearerToken = artifactoryAnalyzerBearerToken;
     }
+	
+    /**
+     * @return whether an unsused suppression rule should get force the build to fail
+     */
+	public boolean failBuildOnUnusedSuppressionRule() {
+		return failBuildOnUnusedSuppressionRule;
+	}
 
     //see note on `dealWithReferences()` for information on this suppression
     @SuppressWarnings("squid:RedundantThrowsDeclarationCheck")
@@ -2280,6 +2292,7 @@ public class Check extends Update {
         getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_OSSINDEX_USE_CACHE, ossindexAnalyzerUseCache);
         getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_OSSINDEX_WARN_ONLY_ON_REMOTE_ERRORS, ossIndexAnalyzerWarnOnlyOnRemoteErrors);
         getSettings().setFloat(Settings.KEYS.JUNIT_FAIL_ON_CVSS, junitFailOnCVSS);
+        getSettings().setBooleanIfNotNull(Settings.KEYS.FAIL_ON_UNUSED_SUPPRESSION_RULE, failBuildOnUnusedSuppressionRule);
     }
 
     /**
