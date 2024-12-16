@@ -175,8 +175,8 @@ retirejs     | retireJsUrl           | The URL to the Retire JS repository.     
 retirejs     | filterNonVulnerable   | Configures the RetireJS Analyzer to remove non-vulnerable JS dependencies from the report.                        | false
 retirejs     | filters               | Configures the list of regular expessions used to filter JS files based on content.                               | &nbsp;
 ossIndex     | enabled               | Sets whether [OSS Index Analyzer](../analyzers/oss-index-analyzer.html) will be used. This analyzer requires an internet connection. | true
-ossIndex     | username              | The optional user name to connect to Sonatype's OSS Index.                                                        | &nbsp;
-ossIndex     | password              | The password or API token to connect to Sonatype's OSS Index.                                                     | &nbsp;
+ossIndex     | username              | To authenticate Sonatype OSS Index requests and profit from higher rate limits, provide the OSS account email address as username. Provide both a username _and_ a password (see below) or none. | &nbsp;
+ossIndex     | password              | Password or API token to connect to Sonatype's OSS Index. Provide both a username (see above) _and_ a password or none. | &nbsp;
 ossIndex     | warnOnlyOnRemoteErrors| Sets whether remote errors from the OSS Index (e.g. BAD GATEWAY, RATE LIMIT EXCEEDED) will result in warnings only instead of failing execution. | false
 slack        | enabled               | Whether or not slack notifications are enabled.                                                                   | false
 slack        | webhookUrl            | The custom incoming webhook URL to receive notifications.                                                         | &nbsp;
