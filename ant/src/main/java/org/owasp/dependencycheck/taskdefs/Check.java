@@ -2102,9 +2102,9 @@ public class Check extends Update {
      * Returns the value of failBuildOnUnusedSuppressionRule.
      * @return whether an unsused suppression rule should get force the build to fail
      */
-	public boolean failBuildOnUnusedSuppressionRule() {
-		return failBuildOnUnusedSuppressionRule;
-	}
+    public boolean getFailBuildOnUnusedSuppressionRule() {
+        return failBuildOnUnusedSuppressionRule;
+    }
 
     /**
      * Set the value of failBuildOnUnusedSuppressionRule.
