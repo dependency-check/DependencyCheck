@@ -2099,11 +2099,22 @@ public class Check extends Update {
     }
 	
     /**
+     * Returns the value of failBuildOnUnusedSuppressionRule.
      * @return whether an unsused suppression rule should get force the build to fail
      */
 	public boolean failBuildOnUnusedSuppressionRule() {
 		return failBuildOnUnusedSuppressionRule;
 	}
+
+    /**
+     * Set the value of failBuildOnUnusedSuppressionRule.
+     *
+     * @param failBuildOnUnusedSuppressionRule new value of
+     * failBuildOnUnusedSuppressionRule
+     */
+    public void setFailBuildOnUnusedSuppressionRule(boolean failBuildOnUnusedSuppressionRule) {
+        this.failBuildOnUnusedSuppressionRule = failBuildOnUnusedSuppressionRule;
+    }
 
     //see note on `dealWithReferences()` for information on this suppression
     @SuppressWarnings("squid:RedundantThrowsDeclarationCheck")
