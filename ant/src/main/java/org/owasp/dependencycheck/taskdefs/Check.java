@@ -224,6 +224,11 @@ public class Check extends Update {
      */
     private String reportOutputDirectory = ".";
     /**
+     * Specifies a prefix of the filename for the generated Dependency-Check
+     * report.
+     */
+    private String reportPrefixName = "dependency-check";
+    /**
      * If using the JUNIT report format the junitFailOnCVSS sets the CVSS score
      * threshold that is considered a failure. The default is 0.
      */
@@ -608,6 +613,24 @@ public class Check extends Update {
      */
     public void setReportOutputDirectory(String reportOutputDirectory) {
         this.reportOutputDirectory = reportOutputDirectory;
+    }
+
+    /**
+     * Get the value of reportPrefixName.
+     *
+     * @return the value of reportPrefixName
+     */
+    public String getReportPrefixName() {
+        return reportPrefixName;
+    }
+
+    /**
+     * Set the value of reportPrefixName.
+     *
+     * @param reportPrefixName new value of reportPrefixName
+     */
+    public void setReportPrefixName(String reportPrefixName) {
+        this.reportPrefixName = reportPrefixName;
     }
 
     /**
@@ -2118,7 +2141,7 @@ public class Check extends Update {
             final ExceptionCollection exceptions = callExecuteAnalysis(engine);
             if (exceptions == null || !exceptions.isFatal()) {
                 for (String format : getReportFormats()) {
-                    engine.writeReports(getProjectName(), new File(reportOutputDirectory), format, exceptions);
+                    engine.writeReports(getProjectName(), new File(reportOutputDirectory), reportPrefixName, format, exceptions);
                 }
                 if (this.failBuildOnCVSS <= 10) {
                     checkForFailure(engine.getDependencies());

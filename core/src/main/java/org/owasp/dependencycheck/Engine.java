@@ -1190,11 +1190,11 @@ public class Engine implements FileFilter, AutoCloseable {
      * @param format the report format (see {@link ReportGenerator.Format})
      * @throws ReportException thrown if there is an error generating the report
      * @deprecated use
-     * {@link #writeReports(java.lang.String, java.io.File, java.lang.String, org.owasp.dependencycheck.exception.ExceptionCollection)}
+     * {@link #writeReports(java.lang.String, java.io.File, java.lang.String, java.lang.String, org.owasp.dependencycheck.exception.ExceptionCollection)}
      */
     @Deprecated
     public void writeReports(String applicationName, File outputDir, String format) throws ReportException {
-        writeReports(applicationName, null, null, null, outputDir, format, null);
+        writeReports(applicationName, null, null, null, outputDir, "dependency-check", format, null);
     }
 
     //CSOFF: LineLength
@@ -1204,13 +1204,14 @@ public class Engine implements FileFilter, AutoCloseable {
      * @param applicationName the name of the application/project
      * @param outputDir the path to the output directory (can include the full
      * file name if the format is not ALL)
+     * @param reportPrefixName the prefix of the report filename
      * @param format the report format (see {@link ReportGenerator.Format})
      * @param exceptions a collection of exceptions that may have occurred
      * during the analysis
      * @throws ReportException thrown if there is an error generating the report
      */
-    public void writeReports(String applicationName, File outputDir, String format, ExceptionCollection exceptions) throws ReportException {
-        writeReports(applicationName, null, null, null, outputDir, format, exceptions);
+    public void writeReports(String applicationName, File outputDir, String reportPrefixName, String format, ExceptionCollection exceptions) throws ReportException {
+        writeReports(applicationName, null, null, null, outputDir, reportPrefixName, format, exceptions);
     }
     //CSON: LineLength
 
@@ -1226,13 +1227,13 @@ public class Engine implements FileFilter, AutoCloseable {
      * @param format the report format (see {@link ReportGenerator.Format})
      * @throws ReportException thrown if there is an error generating the report
      * @deprecated use
-     * {@link #writeReports(String, String, String, String, File, String, ExceptionCollection)}
+     * {@link #writeReports(String, String, String, String, File, String, String, ExceptionCollection)}
      */
     @Deprecated
     public synchronized void writeReports(String applicationName, @Nullable final String groupId,
             @Nullable final String artifactId, @Nullable final String version,
             @NotNull final File outputDir, String format) throws ReportException {
-        writeReports(applicationName, groupId, artifactId, version, outputDir, format, null);
+        writeReports(applicationName, groupId, artifactId, version, outputDir, "dependency-check", format, null);
     }
 
     //CSOFF: LineLength
@@ -1245,6 +1246,7 @@ public class Engine implements FileFilter, AutoCloseable {
      * @param version the Maven version
      * @param outputDir the path to the output directory (can include the full
      * file name if the format is not ALL)
+     * @param reportPrefixName the prefix of the report filename
      * @param format the report format  (see {@link ReportGenerator.Format})
      * @param exceptions a collection of exceptions that may have occurred
      * during the analysis
@@ -1252,7 +1254,8 @@ public class Engine implements FileFilter, AutoCloseable {
      */
     public synchronized void writeReports(String applicationName, @Nullable final String groupId,
             @Nullable final String artifactId, @Nullable final String version,
-            @NotNull final File outputDir, String format, ExceptionCollection exceptions) throws ReportException {
+            @NotNull final File outputDir, @NotNull String reportPrefixName,
+            String format, ExceptionCollection exceptions) throws ReportException {
         if (mode == Mode.EVIDENCE_COLLECTION) {
             throw new UnsupportedOperationException("Cannot generate report in evidence collection mode.");
         }
@@ -1261,7 +1264,7 @@ public class Engine implements FileFilter, AutoCloseable {
         final ReportGenerator r = new ReportGenerator(applicationName, groupId, artifactId, version,
                 dependencies, getAnalyzers(), prop, settings, exceptions);
         try {
-            r.write(outputDir.getAbsolutePath(), format);
+            r.write(outputDir.getAbsolutePath(), reportPrefixName, format);
         } catch (ReportException ex) {
             final String msg = String.format("Error generating the report for %s", applicationName);
             LOGGER.debug(msg, ex);

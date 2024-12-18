@@ -22,6 +22,7 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.WordUtils;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
@@ -308,13 +309,14 @@ public class ReportGenerator {
      * Writes the dependency-check report to the given output location.
      *
      * @param outputLocation the path where the reports should be written
+     * @param reportPrefixName the prefix of the report filename
      * @param format the format the report should be written in (a valid member
      * of {@link Format}) or even the path to a custom velocity template
      * (either fully qualified or the template name on the class path).
      * @throws ReportException is thrown if there is an error creating out the
      * reports
      */
-    public void write(String outputLocation, String format) throws ReportException {
+    public void write(String outputLocation, String reportPrefixName, String format) throws ReportException {
         Format reportFormat = null;
         try {
             reportFormat = Format.valueOf(format.toUpperCase());
@@ -323,9 +325,9 @@ public class ReportGenerator {
         }
 
         if (reportFormat != null) {
-            write(outputLocation, reportFormat);
+            write(outputLocation, reportPrefixName, reportFormat);
         } else {
-            File out = getReportFile(outputLocation, null);
+            File out = getReportFile(outputLocation, reportPrefixName, null);
             if (out.isDirectory()) {
                 out = new File(out, FilenameUtils.getBaseName(format));
                 LOGGER.warn("Writing non-standard VSL output to a directory using template name as file name.");
@@ -340,20 +342,21 @@ public class ReportGenerator {
      * Writes the dependency-check report(s).
      *
      * @param outputLocation the path where the reports should be written
+     * @param reportPrefixName the prefix of the report filename
      * @param format the format the report should be written in (see
      * {@link Format})
      * @throws ReportException is thrown if there is an error creating out the
      * reports
      */
-    public void write(String outputLocation, Format format) throws ReportException {
+    public void write(String outputLocation, String reportPrefixName, Format format) throws ReportException {
         if (format == Format.ALL) {
             for (Format f : Format.values()) {
                 if (f != Format.ALL) {
-                    write(outputLocation, f);
+                    write(outputLocation, reportPrefixName, f);
                 }
             }
         } else {
-            final File out = getReportFile(outputLocation, format);
+            final File out = getReportFile(outputLocation, reportPrefixName, format);
             final String templateName = format.toString().toLowerCase() + "Report";
             LOGGER.info("Writing {} report to: {}", format, out.getAbsolutePath());
             processTemplate(templateName, out);
@@ -375,38 +378,39 @@ public class ReportGenerator {
      * will generate the correct name for the given output format.
      *
      * @param outputLocation the specified output location
+     * @param reportPrefixName the prefix of the report filename
      * @param format the report format
      * @return the report File
      */
-    public static File getReportFile(String outputLocation, Format format) {
+    public static File getReportFile(String outputLocation, String reportPrefixName, Format format) {
         File outFile = new File(outputLocation);
         if (outFile.getParentFile() == null) {
             outFile = new File(".", outputLocation);
         }
         final String pathToCheck = outputLocation.toLowerCase();
         if (format == Format.XML && !pathToCheck.endsWith(".xml")) {
-            return new File(outFile, "dependency-check-report.xml");
+            return new File(outFile, reportPrefixName + "-report.xml");
         }
         if (format == Format.HTML && !pathToCheck.endsWith(".html") && !pathToCheck.endsWith(".htm")) {
-            return new File(outFile, "dependency-check-report.html");
+            return new File(outFile, reportPrefixName + "-report.html");
         }
         if (format == Format.JENKINS && !pathToCheck.endsWith(".html") && !pathToCheck.endsWith(".htm")) {
-            return new File(outFile, "dependency-check-jenkins.html");
+            return new File(outFile, reportPrefixName + "-jenkins.html");
         }
         if (format == Format.JSON && !pathToCheck.endsWith(".json")) {
-            return new File(outFile, "dependency-check-report.json");
+            return new File(outFile, reportPrefixName + "-report.json");
         }
         if (format == Format.CSV && !pathToCheck.endsWith(".csv")) {
-            return new File(outFile, "dependency-check-report.csv");
+            return new File(outFile, reportPrefixName + "-report.csv");
         }
         if (format == Format.JUNIT && !pathToCheck.endsWith(".xml")) {
-            return new File(outFile, "dependency-check-junit.xml");
+            return new File(outFile, reportPrefixName + "-report.xml");
         }
         if (format == Format.SARIF && !pathToCheck.endsWith(".sarif")) {
-            return new File(outFile, "dependency-check-report.sarif");
+            return new File(outFile, reportPrefixName + "-report.sarif");
         }
         if (format == Format.GITLAB && !pathToCheck.endsWith(".json")) {
-            return new File(outFile, "dependency-check-gitlab.json");
+            return new File(outFile, reportPrefixName + "-gitlab.json");
         }
         return outFile;
     }
