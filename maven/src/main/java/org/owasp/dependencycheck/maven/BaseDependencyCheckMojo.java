@@ -1027,6 +1027,12 @@ public abstract class BaseDependencyCheckMojo extends AbstractMojo implements Ma
     @Parameter(property = "hostedSuppressionsUrl")
     private String hostedSuppressionsUrl;
     /**
+     * The hosted suppressions authorization header.
+     */
+    @SuppressWarnings("CanBeFinal")
+    @Parameter(property = "hostedSuppressionsAuthHeader")
+    private String hostedSuppressionsAuthHeader;
+    /**
      * Whether the hosted suppressions file will be updated regardless of the
      * `autoupdate` settings.
      */
@@ -2379,6 +2385,7 @@ public abstract class BaseDependencyCheckMojo extends AbstractMojo implements Ma
         }
         settings.setIntIfNotNull(Settings.KEYS.HOSTED_SUPPRESSIONS_VALID_FOR_HOURS, hostedSuppressionsValidForHours);
         settings.setStringIfNotNull(Settings.KEYS.HOSTED_SUPPRESSIONS_URL, hostedSuppressionsUrl);
+        settings.setStringIfNotNull(Settings.KEYS.HOSTED_SUPPRESSIONS_AUTH_HEADER, hostedSuppressionsAuthHeader);
         settings.setBooleanIfNotNull(Settings.KEYS.HOSTED_SUPPRESSIONS_FORCEUPDATE, hostedSuppressionsForceUpdate);
         settings.setBooleanIfNotNull(Settings.KEYS.HOSTED_SUPPRESSIONS_ENABLED, hostedSuppressionsEnabled);
     }

@@ -23,6 +23,7 @@ Advanced Configuration
 ====================
 The following properties can be configured in the plugin. However, they are less frequently changed.
 
-Property              | Description                                                                                      | Default Value
-----------------------|--------------------------------------------------------------------------------------------------|------------------
-hostedSuppressionsUrl | The URL to a mirrored copy of the hosted suppressions file for internet-constrained environments | https://jeremylong.github.io/DependencyCheck/suppressions/publishedSuppressions.xml
+Property                     | Description                                                                                      | Default Value
+-----------------------------|--------------------------------------------------------------------------------------------------|------------------
+hostedSuppressionsUrl        | The URL to a mirrored copy of the hosted suppressions file for internet-constrained environments | https://jeremylong.github.io/DependencyCheck/suppressions/publishedSuppressions.xml
+hostedSuppressionsAuthHeader | The authorization header to a mirrored copy of the hosted suppressions file for internet-constrained environments | 

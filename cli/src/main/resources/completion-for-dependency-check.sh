@@ -78,6 +78,7 @@ _odc_completions()
             --hostedSuppressionsForceUpdate
             --hostedSuppressionsValidForHours <hours>
             --hostedSuppressionsUrl <url>
+            --hostedSuppressionsAuthHeader <authorization header>
             --junitFailOnCVSS <score>
         -l --log
         -n --noupdate

@@ -328,6 +328,12 @@ public final class Settings {
         public static final String HOSTED_SUPPRESSIONS_PASSWORD = "hosted.suppressions.password";
 
         /**
+         * The properties key for the hosted suppressions authorization header value.
+         * For use when hosted suppressions are mirrored locally on a site requiring authentication
+         */
+        public static final String HOSTED_SUPPRESSIONS_AUTH_HEADER = "hosted.suppressions.auth.header";
+
+        /**
          * The properties key for defining whether the hosted suppressions file
          * will be updated regardless of the autoupdate settings.
          */
@@ -1504,6 +1510,15 @@ public final class Settings {
         }
         return connStr;
     }
+
+    /**
+     * @return whether the proxy should be used
+     */
+	public boolean useProxy() {
+		String proxyServer = getString(Settings.KEYS.PROXY_SERVER, "");
+		return proxyServer!=null && !proxyServer.isEmpty();
+	}
+
 
     /**
      * Retrieves the primary data directory that is used for caching web

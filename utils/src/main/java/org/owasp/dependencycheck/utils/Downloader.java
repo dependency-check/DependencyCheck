@@ -66,6 +66,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
+import java.util.UUID;
 
 import static java.lang.String.format;
 
@@ -74,6 +75,10 @@ import static java.lang.String.format;
  * @author Jeremy Long, Hans Aikema
  */
 public final class Downloader {
+    /**
+     * No defined key for this property
+     */
+    public static final String NO_PROPERTY_DEFINED =  UUID.randomUUID().toString();
 
     /**
      * The builder to use for a HTTP Client that uses the configured proxy-settings
@@ -164,7 +169,7 @@ public final class Downloader {
             }
             if (settings.getString(Settings.KEYS.PROXY_USERNAME) != null) {
                 final String proxyuser = settings.getString(Settings.KEYS.PROXY_USERNAME);
-                final char[] proxypass = settings.getString(Settings.KEYS.PROXY_PASSWORD).toCharArray();
+                final char[] proxypass = settings.getString(Settings.KEYS.PROXY_PASSWORD, "").toCharArray();
                 credentialsProvider.setCredentials(
                         new AuthScope(null, proxyHost, proxyPort, null, null),
                         new UsernamePasswordCredentials(proxyuser, proxypass)
@@ -184,7 +189,7 @@ public final class Downloader {
 
     private void tryAddRetireJSCredentials(Settings settings, CredentialsStore credentialsStore) throws InvalidSettingException {
         if (settings.getString(Settings.KEYS.ANALYZER_RETIREJS_REPO_JS_PASSWORD) != null) {
-            addUserPasswordCreds(settings, credentialsStore,
+            addConfiguredCredentials(settings, credentialsStore,
                     Settings.KEYS.ANALYZER_RETIREJS_REPO_JS_USER,
                     Settings.KEYS.ANALYZER_RETIREJS_REPO_JS_URL,
                     Settings.KEYS.ANALYZER_RETIREJS_REPO_JS_PASSWORD,
@@ -193,18 +198,21 @@ public final class Downloader {
     }
 
     private void tryAddHostedSuppressionCredentials(Settings settings, CredentialsStore credentialsStore) throws InvalidSettingException {
-        if (settings.getString(Settings.KEYS.HOSTED_SUPPRESSIONS_PASSWORD) != null) {
-            addUserPasswordCreds(settings, credentialsStore,
+        if (settings.getString(Settings.KEYS.HOSTED_SUPPRESSIONS_PASSWORD) != null 
+                || settings.getString(Settings.KEYS.HOSTED_SUPPRESSIONS_AUTH_HEADER) != null) {
+            addConfiguredCredentials(settings, credentialsStore,
                     Settings.KEYS.HOSTED_SUPPRESSIONS_USER,
                     Settings.KEYS.HOSTED_SUPPRESSIONS_URL,
                     Settings.KEYS.HOSTED_SUPPRESSIONS_PASSWORD,
+                    NO_PROPERTY_DEFINED,
+                    Settings.KEYS.HOSTED_SUPPRESSIONS_AUTH_HEADER,
                     "Hosted suppressions");
         }
     }
 
     private void tryAddKEVCredentials(Settings settings, CredentialsStore credentialsStore) throws InvalidSettingException {
         if (settings.getString(Settings.KEYS.KEV_PASSWORD) != null) {
-            addUserPasswordCreds(settings, credentialsStore,
+            addConfiguredCredentials(settings, credentialsStore,
                     Settings.KEYS.KEV_USER,
                     Settings.KEYS.KEV_URL,
                     Settings.KEYS.KEV_PASSWORD,
@@ -214,7 +222,7 @@ public final class Downloader {
 
     private void tryAddNexusAnalyzerCredentials(Settings settings, CredentialsStore credentialsStore) throws InvalidSettingException {
         if (settings.getString(Settings.KEYS.ANALYZER_NEXUS_PASSWORD) != null) {
-            addUserPasswordCreds(settings, credentialsStore,
+            addConfiguredCredentials(settings, credentialsStore,
                     Settings.KEYS.ANALYZER_NEXUS_USER,
                     Settings.KEYS.ANALYZER_NEXUS_URL,
                     Settings.KEYS.ANALYZER_NEXUS_PASSWORD,
@@ -224,7 +232,7 @@ public final class Downloader {
 
     private void tryAddCentralAnalyzerCredentials(Settings settings, CredentialsStore credentialsStore) throws InvalidSettingException {
         if (settings.getString(Settings.KEYS.ANALYZER_CENTRAL_PASSWORD) != null) {
-            addUserPasswordCreds(settings, credentialsStore,
+            addConfiguredCredentials(settings, credentialsStore,
                     Settings.KEYS.ANALYZER_CENTRAL_USER,
                     Settings.KEYS.ANALYZER_CENTRAL_URL,
                     Settings.KEYS.ANALYZER_CENTRAL_PASSWORD,
@@ -234,7 +242,7 @@ public final class Downloader {
 
     private void tryAddCentralContentCredentials(Settings settings, CredentialsStore credentialsStore) throws InvalidSettingException {
         if (settings.getString(Settings.KEYS.CENTRAL_CONTENT_PASSWORD) != null) {
-            addUserPasswordCreds(settings, credentialsStore,
+            addConfiguredCredentials(settings, credentialsStore,
                     Settings.KEYS.CENTRAL_CONTENT_USER,
                     Settings.KEYS.CENTRAL_CONTENT_URL,
                     Settings.KEYS.CENTRAL_CONTENT_PASSWORD,
@@ -244,7 +252,7 @@ public final class Downloader {
 
     private void tryAddNVDApiDatafeed(Settings settings, CredentialsStore credentialsStore) throws InvalidSettingException {
         if (settings.getString(Settings.KEYS.NVD_API_DATAFEED_PASSWORD) != null) {
-            addUserPasswordCreds(settings, credentialsStore,
+            addConfiguredCredentials(settings, credentialsStore,
                     Settings.KEYS.NVD_API_DATAFEED_USER,
                     Settings.KEYS.NVD_API_DATAFEED_URL,
                     Settings.KEYS.NVD_API_DATAFEED_PASSWORD,
@@ -253,48 +261,95 @@ public final class Downloader {
     }
 
     /**
-     * Add user/password credentials for the host/port of the URL, all configured in the settings, to the credential-store.
+     * Add credentials for the host/port of the URL, all configured in the settings, to the credential-store.
      *
      * @param settings The settings to retrieve the values from
      * @param store The credentialStore
      * @param userKey The key for a configured username credential part
-     * @param passwordKey The key for a configured password credential part
      * @param urlKey The key for a configured url for which the credentials hold
+     * @param passwordKey The key for a configured password credential part
+     * @param tokenKey The key for a configured token credential part
+     * @param authKey The key for a configured auth header credential part
      * @param desc A descriptive text for use in error messages for this credential
      * @throws InvalidSettingException When the password is empty or one of the other keys are not found in the settings.
      */
-    private void addUserPasswordCreds(Settings settings, CredentialsStore store, String userKey, String urlKey, String passwordKey, String desc)
+    private void addConfiguredCredentials(Settings settings, CredentialsStore store, 
+            String userKey, String urlKey, String passwordKey,
+            String desc)
+            throws InvalidSettingException {
+        addConfiguredCredentials(settings, store, 
+                userKey, urlKey, passwordKey,
+                NO_PROPERTY_DEFINED, NO_PROPERTY_DEFINED,
+                desc);
+    }
+
+    /**
+     * Add credentials for the host/port of the URL, all configured in the settings, to the credential-store.
+     *
+     * @param settings The settings to retrieve the values from
+     * @param store The credentialStore
+     * @param userKey The key for a configured username credential part
+     * @param urlKey The key for a configured url for which the credentials hold
+     * @param passwordKey The key for a configured password credential part
+     * @param tokenKey The key for a configured token credential part
+     * @param authKey The key for a configured auth header credential part
+     * @param desc A descriptive text for use in error messages for this credential
+     * @throws InvalidSettingException When the password is empty or one of the other keys are not found in the settings.
+     */
+    private void addConfiguredCredentials(Settings settings, CredentialsStore store, 
+            String userKey, String urlKey, String passwordKey,
+            String tokenKey, String authKey,
+            String desc)
             throws InvalidSettingException {
         final String theUser = settings.getString(userKey);
         final String theURL = settings.getString(urlKey);
         final char[] thePass = settings.getString(passwordKey, "").toCharArray();
-        if (theUser == null || theURL == null || thePass.length == 0) {
+        final char[] theToken = settings.getString(tokenKey, "").toCharArray();
+        final char[] theAuth = settings.getString(authKey, "").toCharArray();
+        
+        if (thePass.length > 0 && (theUser == null || theURL == null)) {
             throw new InvalidSettingException(desc + " URL and username are required when setting " + desc + " password");
+        }
+        if (theToken.length > 0 && theURL == null) {
+            throw new InvalidSettingException(desc + " URL is required when setting " + desc + " token");
+        }
+        if (theAuth.length > 0 && theURL == null) {
+            throw new InvalidSettingException(desc + " URL is required when setting " + desc + " authorization header");
         }
         try {
             final URL parsedURL = new URL(theURL);
-            addCredentials(store, desc, parsedURL, theUser, thePass);
+            Credentials creds = CredentialHelper.getCredentials(parsedURL.toString(), theUser, thePass, theToken, theAuth);
+            addCredentials(store, desc, parsedURL, creds);
         } catch (MalformedURLException e) {
             throw new InvalidSettingException(desc + " URL must be a valid URL", e);
         }
     }
 
-    private static void addCredentials(CredentialsStore credentialsStore, String messageScope, URL parsedURL, String theUser, char[] thePass)
-            throws InvalidSettingException {
+    
+     protected static void addCredentials(CredentialsStore credentialsStore, String messageScope, 
+            URL parsedURL, Credentials creds)
+                throws InvalidSettingException {
         final String theProtocol = parsedURL.getProtocol();
         if ("file".equals(theProtocol)) {
             LOGGER.warn("Credentials are not supported for file-protocol, double-check your configuration options for {}.", messageScope);
             return;
         } else if ("http".equals(theProtocol)) {
-            LOGGER.warn("Insecure configuration: Basic Credentials are configured to be used over a plain http connection for {}. "
-                    + "Consider migrating to https to guard the credentials.", messageScope);
+            LOGGER.warn("Insecure configuration: Credentials are configured to be used over a plain http connection for {}. "
+                   + "Consider migrating to https to guard the credentials.", messageScope);
         } else if (!"https".equals(theProtocol)) {
             throw new InvalidSettingException("Unsupported protocol in the " + messageScope
-                    + " URL; only file, http and https are supported");
+                   + " URL; only file, http and https are supported");
         }
+        
         final String theHost = parsedURL.getHost();
         final int thePort = parsedURL.getPort();
-        final Credentials creds = new UsernamePasswordCredentials(theUser, thePass);
+        
+        // add credentials to store
+        if(creds == null) {
+            LOGGER.info("No credentials passed for {}", messageScope);
+            return;
+        }
+        LOGGER.info("Adding {} credentials for {}", creds.getClass().getSimpleName(), messageScope);
         final AuthScope scope = new AuthScope(theProtocol, theHost, thePort, null, null);
         credentialsStore.setCredentials(scope, creds);
     }
@@ -328,6 +383,7 @@ public final class Downloader {
      */
     public void fetchFile(URL url, File outputPath, boolean useProxy) throws DownloadFailedException,
             TooManyRequestsException, ResourceNotFoundException, URLConnectionFailureException {
+        LOGGER.trace("Fetching {}",url);
         try {
             if ("file".equals(url.getProtocol())) {
                 final Path p = Paths.get(url.toURI());
@@ -368,7 +424,7 @@ public final class Downloader {
                 throw new DownloadFailedException(String.format(messageFormat, url, hre.getStatusCode(), hre.getReasonPhrase()), hre);
         }
     }
-
+    
     /**
      * Retrieves a file from a given URL using an ad-hoc created CredentialsProvider if needed
      * and saves it to the outputPath.
@@ -387,16 +443,49 @@ public final class Downloader {
      * Credentials needs to be constructed for the target URL when the user/password keys point to configured credentials. The method delegates to
      * {@link #fetchFile(URL, File, boolean)} when credentials are not configured for the given keys or the resource points to a file.
      */
-    public void fetchFile(URL url, File outputPath, boolean useProxy, String userKey, String passwordKey) throws DownloadFailedException,
+    public void fetchFile(URL url, File outputPath, boolean useProxy, 
+            String userKey, String passwordKey) throws DownloadFailedException,
             TooManyRequestsException, ResourceNotFoundException, URLConnectionFailureException {
-        if ("file".equals(url.getProtocol())
-                || userKey == null || settings.getString(userKey) == null
-                || passwordKey == null || settings.getString(passwordKey) == null
-        ) {
+        fetchFile(url, outputPath, useProxy, userKey, passwordKey, 
+                NO_PROPERTY_DEFINED, NO_PROPERTY_DEFINED);
+    }
+
+    /**
+     * Retrieves a file from a given URL using an ad-hoc created CredentialsProvider if needed
+     * and saves it to the outputPath.
+     *
+     * @param url         the URL of the file to download
+     * @param outputPath  the path to the save the file to
+     * @param useProxy    whether to use the configured proxy when downloading
+     *                    files
+     * @param userKey     the settings key for the username to be used
+     * @param passwordKey the settings key for the password to be used
+     * @param tokenKey the settings key for the token to be used
+     * @param authKey the settings key for the authorization header to be used
+     * @throws DownloadFailedException       is thrown if there is an error downloading the file
+     * @throws URLConnectionFailureException is thrown when certificate-chain trust errors occur downloading the file
+     * @throws TooManyRequestsException      thrown when a 429 is received
+     * @throws ResourceNotFoundException     thrown when a 404 is received
+     * @implNote This method should only be used in cases where the target host cannot be determined beforehand from settings, so that ad-hoc
+     * Credentials needs to be constructed for the target URL when the user/password keys point to configured credentials. The method delegates to
+     * {@link #fetchFile(URL, File, boolean)} when credentials are not configured for the given keys or the resource points to a file.
+     */
+    public void fetchFile(URL url, File outputPath, boolean useProxy, 
+            String userKey, String passwordKey,
+            String tokenKey, String authKey) throws DownloadFailedException,
+            TooManyRequestsException, ResourceNotFoundException, URLConnectionFailureException {
+        boolean hasCredentials = settings != null && (
+                   !settings.getString(passwordKey, "").isBlank() 
+                || !settings.getString(tokenKey, "").isBlank()
+                || !settings.getString(authKey, "").isBlank());
+        LOGGER.debug("credentials defined for {}: {}", url, hasCredentials);
+        
+        if ("file".equals(url.getProtocol()) || !hasCredentials) {
             // no credentials configured, so use the default fetchFile
             fetchFile(url, outputPath, useProxy);
             return;
         }
+        LOGGER.trace("Fetching {} userkey={}, passwordKey={}, tokenKey={}, authKey={}",url, userKey, passwordKey, tokenKey, authKey);
         final String theProtocol = url.getProtocol();
         if (!("http".equals(theProtocol) || "https".equals(theProtocol))) {
             throw new DownloadFailedException("Unsupported protocol in the URL; only file, http and https are supported");
@@ -404,7 +493,9 @@ public final class Downloader {
         try {
             final HttpClientContext context = HttpClientContext.create();
             final BasicCredentialsProvider localCredentials = new BasicCredentialsProvider();
-            addCredentials(localCredentials, url.toString(), url, settings.getString(userKey), settings.getString(passwordKey).toCharArray());
+            Credentials creds = CredentialHelper.getCredentials(url.toString(),settings.getString(userKey), settings.getString(passwordKey, "").toCharArray(),
+                    settings.getString(tokenKey, "").toCharArray(), settings.getString(authKey, "").toCharArray());
+            addCredentials(localCredentials, url.toString(), url, creds);
             context.setCredentialsProvider(localCredentials);
             try (CloseableHttpClient hc = useProxy ? httpClientBuilder.build() : httpClientBuilderExplicitNoproxy.build()) {
                 final BasicClassicHttpRequest req = new BasicClassicHttpRequest(Method.GET, url.toURI());

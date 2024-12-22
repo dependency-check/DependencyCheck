@@ -530,7 +530,10 @@ public final class CliParser {
                 .addOption(newOptionWithArg(ARGUMENT.HOSTED_SUPPRESSIONS_VALID_FOR_HOURS, "hours",
                         "The number of hours to wait before checking for new updates of the the hosted suppressions file."))
                 .addOption(newOptionWithArg(ARGUMENT.HOSTED_SUPPRESSIONS_URL, "url",
-                        "The URL for a mirrored hosted suppressions file"));
+                        "The URL for a mirrored hosted suppressions file"))
+                .addOption(newOptionWithArg(ARGUMENT.HOSTED_SUPPRESSIONS_AUTH_HEADER, "authorization header",
+                        "The authorization header for a mirrored hosted suppressions file"))
+                ;
 
     }
 
@@ -1600,5 +1603,10 @@ public final class CliParser {
          * suppressions file .
          */
         public static final String HOSTED_SUPPRESSIONS_URL = "hostedSuppressionsUrl";
+        /**
+         * The CLI argument to set the location of a mirrored hosted
+         * suppressions file authorization header.
+         */
+        public static final String HOSTED_SUPPRESSIONS_AUTH_HEADER = "hostedSuppressionsAuthHeader";
     }
 }

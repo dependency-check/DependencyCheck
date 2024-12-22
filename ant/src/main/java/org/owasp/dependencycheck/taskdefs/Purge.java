@@ -63,6 +63,11 @@ public class Purge extends Task {
     private String hostedSuppressionsUrl = null;
 
     /**
+     * The authorization header to hosted suppressions file with base FP suppressions.
+     */
+    private String hostedSuppressionsAuthHeader = null;
+
+    /**
      * Construct a new DependencyCheckTask.
      */
     public Purge() {
@@ -129,6 +134,24 @@ public class Purge extends Task {
      */
     public void setHostedSuppressionsUrl(final String hostedSuppressionsUrl) {
         this.hostedSuppressionsUrl = hostedSuppressionsUrl;
+    }
+
+    /**
+     * Get the value of hostedSuppressionsAuthHeader.
+     *
+     * @return the value of hostedSuppressionsAuthHeader
+     */
+    public String getHostedSuppressionsAuthHeader() {
+        return hostedSuppressionsAuthHeader;
+    }
+
+    /**
+     * Set the value of hostedSuppressionsAuthHeader.
+     *
+     * @param hostedSuppressionsUrl new value of hostedSuppressionsAuthHeader
+     */
+    public void setHostedSuppressionsAuthHeader(final String hostedSuppressionsAuthHeader) {
+        this.hostedSuppressionsAuthHeader = hostedSuppressionsAuthHeader;
     }
 
     /**
@@ -214,6 +237,7 @@ public class Purge extends Task {
             log(msg, ex, Project.MSG_WARN);
         }
         settings.setStringIfNotEmpty(Settings.KEYS.HOSTED_SUPPRESSIONS_URL, hostedSuppressionsUrl);
+        settings.setStringIfNotEmpty(Settings.KEYS.HOSTED_SUPPRESSIONS_AUTH_HEADER, hostedSuppressionsAuthHeader);
         if (dataDirectory != null) {
             settings.setString(Settings.KEYS.DATA_DIRECTORY, dataDirectory);
         } else {
