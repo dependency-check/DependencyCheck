@@ -13,15 +13,16 @@ import org.apache.hc.client5.http.auth.StandardAuthScheme;
 import org.apache.hc.client5.http.auth.UsernamePasswordCredentials;
 
 public class CredentialHelper {
-	/**
-	 * Get credentials from the provided settings
-	 * @param theUser	Username for a Basic auth
-	 * @param thePass	Password for a Basic auth
-	 * @param theToken	Token for a Bearer auth, takes precedence over user/password
-	 * @param theAuth Authorization header value, e.g. 'Basic dXNlcjpwYXNzd29yZA==', takes precedence over user/password or token
-	 * 
-	 * @return credentials
-	 */
+    /**
+     * Get credentials from the provided settings
+     * @param theUser    Username for a Basic auth
+     * @param thePass    Password for a Basic auth
+     * @param theToken    Token for a Bearer auth, takes precedence over user/password
+     * @param theAuth Authorization header value, e.g. 'Basic dXNlcjpwYXNzd29yZA==', takes precedence over user/password or token
+     * 
+     * @return credentials
+     * @throws InvalidSettingException
+     */
     public static Credentials getCredentials(String theUser, char[] thePass, char[] theToken, char[] theAuth) throws InvalidSettingException {
         Credentials _creds = null;
          
