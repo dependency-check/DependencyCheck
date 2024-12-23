@@ -13,21 +13,21 @@ import org.apache.hc.client5.http.auth.StandardAuthScheme;
 import org.apache.hc.client5.http.auth.UsernamePasswordCredentials;
 
 public class CredentialHelper {
-    public static Credentials getCredentials(String messageScope, String theUser, char[] thePass, char[] theToken, char[] theAuth) throws InvalidSettingException {
+    public static Credentials getCredentials(String theUser, char[] thePass, char[] theToken, char[] theAuth) throws InvalidSettingException {
         Credentials _creds = null;
          
         // create a basic auth for user and password, if provided
         if (theUser != null && !theUser.isBlank()) {
             if(thePass == null || thePass.length == 0)
-                throw new InvalidSettingException("No password provided for user " + theUser + " for " + messageScope);
+                throw new InvalidSettingException("no password provided for user " + theUser);
                try {
                    _creds = new UsernamePasswordCredentials(theUser, thePass);
                } catch (Exception e) {
-                throw new InvalidSettingException("Invalid authentication provided: invalid user or password");                               
+                throw new InvalidSettingException("invalid user or password");                               
                }
         }
         
-        // create a bearer token, if provided, takes precedence over user/password/token
+        // create a bearer token, if provided, takes precedence over user/password
         if (theToken != null && theToken.length > 0) {
             _creds = new BearerToken(new String(theToken));
         }
@@ -39,8 +39,8 @@ public class CredentialHelper {
             } else if(startsWith(theAuth, StandardAuthScheme.BEARER)) {
                 _creds = getBearerCredentialsFromAuthHeader(theAuth);
             } else
-                throw new InvalidSettingException("Invalid authentication provided: unknown authentication scheme. "
-                        + "Supported authentication schemes: " 
+                throw new InvalidSettingException("unknown authentication scheme. "
+                        + "Supported authentication schemes are " 
                         + StandardAuthScheme.BASIC + " and " + StandardAuthScheme.BEARER);                               
         }
         return _creds;
@@ -65,7 +65,7 @@ public class CredentialHelper {
                 throw new InvalidSettingException("empty bearer token");
             return new BearerToken(token);
         } catch (Exception e) {
-            throw new InvalidSettingException("Invalid authentication provided: " + e.getMessage());                               
+            throw new InvalidSettingException(e.getMessage());                               
         }
     }
 
@@ -86,7 +86,7 @@ public class CredentialHelper {
                     getBasicPassword(authHeader, StandardAuthScheme.BASIC.length() + 1)
                     );
         } catch (Exception e) {
-            throw new InvalidSettingException("Invalid authentication provided: " + e.getMessage());                               
+            throw new InvalidSettingException(e.getMessage());                               
         }
     }
 
@@ -101,9 +101,9 @@ public class CredentialHelper {
      */
     protected static byte[] toBytes(char[] in, int start) throws InvalidSettingException {
         if (in == null || in.length == 0)
-            throw new InvalidSettingException("Invalid authentication provided");
+            throw new InvalidSettingException("empty authentication provided");
         if(start >= in.length)
-            throw new InvalidSettingException("Invalid authentication provided");
+            throw new InvalidSettingException("invalid authentication provided - too short");
         char[] chars = new char[in.length - start];
         for(int i = start; i < in.length; i++) {
             chars[i-start] = in[i];
@@ -125,9 +125,9 @@ public class CredentialHelper {
      */
     protected static String getBasicUser(char[] in, int start) throws InvalidSettingException {
         if (in == null || in.length == 0)
-            throw new InvalidSettingException("Invalid authentication string");
+            throw new InvalidSettingException("invalid authentication string for the username");
         if(start >= in.length)
-            throw new InvalidSettingException("authentication string too short");
+            throw new InvalidSettingException("authentication string too short for the username");
         byte[] src = toBytes(in, start);
         if(src == null || src.length ==0)
             return null;
@@ -137,7 +137,7 @@ public class CredentialHelper {
             if(decoded[i]!=':') user += (char) decoded[i];
             else return user;
         }
-        throw new InvalidSettingException("unable to find user");
+        throw new InvalidSettingException("unable to find the username");
     }
     
     /**
@@ -149,9 +149,9 @@ public class CredentialHelper {
      */
     protected static char[] getBasicPassword(char[] in, int start) throws InvalidSettingException {
         if (in == null || in.length == 0)
-            throw new InvalidSettingException("Invalid authentication string");
+            throw new InvalidSettingException("invalid authentication string for the pasword");
         if(start >= in.length)
-            throw new InvalidSettingException("authentication string too short");
+            throw new InvalidSettingException("authentication string too short for the password");
         byte[] src = toBytes(in, start);
         if(src == null || src.length ==0)
             return null;
@@ -161,7 +161,7 @@ public class CredentialHelper {
             if(decoded[i] == ':') start = i + 1;
         }
         if(start == 0 || start >= decoded.length)
-            throw new InvalidSettingException("unable to find password");
+            throw new InvalidSettingException("unable to find the password");
         
         char[] password = new char[decoded.length - start];
         for(int i = start; i < decoded.length; i++) {

@@ -318,10 +318,12 @@ public final class Downloader {
         }
         try {
             final URL parsedURL = new URL(theURL);
-            Credentials creds = CredentialHelper.getCredentials(parsedURL.toString(), theUser, thePass, theToken, theAuth);
+            Credentials creds = CredentialHelper.getCredentials(theUser, thePass, theToken, theAuth);
             addCredentials(store, desc, parsedURL, creds);
         } catch (MalformedURLException e) {
             throw new InvalidSettingException(desc + " URL must be a valid URL", e);
+        } catch (InvalidSettingException e) {
+            throw new InvalidSettingException("Invalid configuration for " + desc, e);
         }
     }
 
@@ -493,7 +495,7 @@ public final class Downloader {
         try {
             final HttpClientContext context = HttpClientContext.create();
             final BasicCredentialsProvider localCredentials = new BasicCredentialsProvider();
-            Credentials creds = CredentialHelper.getCredentials(url.toString(),settings.getString(userKey), settings.getString(passwordKey, "").toCharArray(),
+            Credentials creds = CredentialHelper.getCredentials(settings.getString(userKey), settings.getString(passwordKey, "").toCharArray(),
                     settings.getString(tokenKey, "").toCharArray(), settings.getString(authKey, "").toCharArray());
             addCredentials(localCredentials, url.toString(), url, creds);
             context.setCredentialsProvider(localCredentials);

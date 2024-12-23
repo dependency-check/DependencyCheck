@@ -5,7 +5,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import java.net.URL;
 import java.util.Base64;
 import java.util.UUID;
 
@@ -79,35 +78,28 @@ public class CredentialHelperTest {
 		String password = "P1-" + UUID.randomUUID().toString();
 		
 		// no auth
-		URL url = new URL("http://127.0.0.1/index.cgi");
-		checkBasicCreds(url, user, password, "", "", user, password); 
-		url = new URL("https://127.0.0.1/index.cgi");
-		checkBasicCreds(url, user, password, "", "", user, password); 
+		checkBasicCreds(user, password, "", "", user, password); 
+		checkBasicCreds(user, password, "", "", user, password); 
 
 		// user, password and auth
 		String user2 = "U2-" + UUID.randomUUID().toString();
 		String password2 = "P2-" + UUID.randomUUID().toString();
 		String b64 = StandardAuthScheme.BASIC + " " 
 				+ Base64.getEncoder().encodeToString((user2+":"+password2).getBytes());
-		url = new URL("http://127.0.0.1/index.cgi");
-		checkBasicCreds(url, user, password, "", b64, user2, password2); 
-		url = new URL("https://127.0.0.1/index.cgi");
-		checkBasicCreds(url, user, password, "", b64, user2, password2); 
+		checkBasicCreds(user, password, "", b64, user2, password2); 
+		checkBasicCreds(user, password, "", b64, user2, password2); 
 
 		// only auth
-		url = new URL("http://127.0.0.1/index.cgi");
-		checkBasicCreds(url, null, null, "", b64, user2, password2); 
-		url = new URL("https://127.0.0.1/index.cgi");
-		checkBasicCreds(url, null, null, "", b64, user2, password2); 
+		checkBasicCreds(null, null, "", b64, user2, password2); 
+		checkBasicCreds(null, null, "", b64, user2, password2); 
 	}
 	
 	@Test
 	public void testCredsBasicException() throws Exception {
 		// no password
-		URL url = new URL("https://127.0.0.1/index.cgi");
 		String pfx = "U-";
-		checkException(url, pfx+UUID.randomUUID().toString(), null, null, "no password", pfx);
-		checkException(url, null, null, UUID.randomUUID().toString(),
+		checkException(pfx+UUID.randomUUID().toString(), null, null, "no password", pfx);
+		checkException(null, null, UUID.randomUUID().toString(),
 				"supported", StandardAuthScheme.BASIC, StandardAuthScheme.BEARER);
 	}
 
@@ -144,37 +136,29 @@ public class CredentialHelperTest {
 		String auth = StandardAuthScheme.BEARER + " " + token;
 		
 		// with user / password
-		URL url = new URL("http://127.0.0.1/index.cgi");
-		checkTokenCreds(url, user, password, "", auth, token); 
-		url = new URL("https://127.0.0.1/index.cgi");
-		checkTokenCreds(url, user, password, "", auth, token); 
+		checkTokenCreds(user, password, "", auth, token); 
+		checkTokenCreds(user, password, "", auth, token); 
 		
 		// without user / password
-		url = new URL("http://127.0.0.1/index.cgi");
-		checkTokenCreds(url, null, null, "", auth, token); 
-		url = new URL("https://127.0.0.1/index.cgi");
-		checkTokenCreds(url, null, null, "", auth, token); 
+		checkTokenCreds(null, null, "", auth, token); 
+		checkTokenCreds(null, null, "", auth, token); 
 	}
 
 	
 	@Test
 	public void testCredsToken() throws Exception {
 		String token = "token-" + UUID.randomUUID();
-		URL url;
-		
+	
 		// without user / password
-		url = new URL("http://127.0.0.1/index.cgi");
-		checkTokenCreds(url, null, null, token, "",	token); 
-		url = new URL("https://127.0.0.1/index.cgi");
-		checkTokenCreds(url, null, null, token, "", token); 
+		checkTokenCreds(null, null, token, "",	token); 
+		checkTokenCreds(null, null, token, "", token); 
 	}
 
 	@Test
 	public void testCredsTokenException() throws Exception {
 		String auth = StandardAuthScheme.BEARER + " ";
-		URL url = new URL("https://127.0.0.1/index.cgi");
-		checkException(url, null, null, null, auth, "empty bearer token");		
-		checkException(url, null, null, null, StandardAuthScheme.BEARER, "should start with");		
+		checkException(null, null, null, auth, "empty bearer token");		
+		checkException(null, null, null, StandardAuthScheme.BEARER, "should start with");		
 	}
 
 	
@@ -184,14 +168,13 @@ public class CredentialHelperTest {
 	// private test methods
 	///////////////////////////////////////////////////
 
-	private void checkException(URL url, String user, String password, String token,
+	private void checkException(String user, String password, String token,
 			String auth, String ... messages) throws Exception {
         if(password == null) password = "";
         if(auth == null) auth = "";
         if(token == null) token = "";
         try {
-            CredentialHelper.getCredentials(url.toString(), 
-            		user, password.toCharArray(),
+            CredentialHelper.getCredentials(user, password.toCharArray(),
             		token.toCharArray(), auth.toCharArray());
             throw new Exception("should have thrown an InvalidSettingException");
         } catch(InvalidSettingException ok) {
@@ -206,15 +189,12 @@ public class CredentialHelperTest {
 	}
 
 
-
-
-	private void checkTokenCreds(URL url, String user, String password, String token, String auth, 
+	private void checkTokenCreds(String user, String password, String token, String auth, 
 			String expectedToken) throws Exception {
         if(password == null) password = "";
         if(auth == null) auth = "";
         if(token == null) token = "";
-        Credentials creds = CredentialHelper.getCredentials(url.toString(), 
-        		user, password.toCharArray(),
+        Credentials creds = CredentialHelper.getCredentials(user, password.toCharArray(),
         		token.toCharArray(), auth.toCharArray());
 
 		assertTrue(creds instanceof BearerToken);
@@ -223,13 +203,12 @@ public class CredentialHelperTest {
 	}
 
 	
-	private void checkBasicCreds(URL url, String user, String password, 
+	private void checkBasicCreds(String user, String password, 
 			String token, String auth, 
 			String expectedUser, String expectedPassword) throws Exception {
         if(password == null) password = "";
         if(token == null) token = "";
-        Credentials creds = CredentialHelper.getCredentials(url.toString(), 
-        		 user, password.toCharArray(),
+        Credentials creds = CredentialHelper.getCredentials(user, password.toCharArray(),
         		token.toCharArray(), auth.toCharArray());
         
 		assertTrue(creds instanceof UsernamePasswordCredentials);
