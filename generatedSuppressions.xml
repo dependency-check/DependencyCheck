@@ -1680,11 +1680,20 @@ only pkg:maven/org.clojure:clojure@.* is the CPE cpe:/a:clojure:clojure
 </suppress>
 <suppress base="true">
    <notes><![CDATA[
-   FP per issue #6757 + manual improvement for related
+   FP per issue #6757 + manual improvement for related.
+   NOTE: the additional colon in the CPE is required to not match on prefix
    ]]></notes>
    <packageUrl regex="true">^pkg:maven/org\.apache\.sandesha2/sandesha2.*$</packageUrl>
-   <cpe>cpe:/a:apache:axis2</cpe>
-   <cpe>cpe:/a:apache:axis</cpe>
+   <cpe>cpe:/a:apache:axis2:</cpe>
+   <cpe>cpe:/a:apache:axis:</cpe>
+</suppress>
+<suppress base="true">
+<notes><![CDATA[
+   FP per issue #5945 + manual improvement for related
+   NOTE: the additional colon in the CPE is required to not match on prefix
+   ]]></notes>
+<packageUrl regex="true">^pkg:maven/org\.apache\.axis2.*$</packageUrl>
+<cpe>cpe:/a:apache:axis:</cpe>
 </suppress>
 <suppress base="true">
    <notes><![CDATA[
