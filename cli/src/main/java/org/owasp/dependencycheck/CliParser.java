@@ -375,6 +375,14 @@ public final class CliParser {
                         "Credentials for basic authentication to the NVD API Datafeed."))
                 .addOption(newOptionWithArg(ARGUMENT.NVD_API_DATAFEED_PASSWORD, "password",
                         "Credentials for basic authentication to the NVD API Datafeed."))
+                .addOption(newOptionWithArg(ARGUMENT.NVD_API_DATAFEED_BEARER_TOKEN, "token",
+                        "Credentials for bearer authentication to the NVD API Datafeed."))
+                .addOption(newOptionWithArg(ARGUMENT.SUPPRESSION_FILE_USER, "user",
+                        "Credentials for basic authentication to web-hosted suppression files."))
+                .addOption(newOptionWithArg(ARGUMENT.SUPPRESSION_FILE_PASSWORD, "password",
+                        "Credentials for basic authentication to web-hosted suppression files."))
+                .addOption(newOptionWithArg(ARGUMENT.SUPPRESSION_FILE_BEARER_TOKEN, "token",
+                        "Credentials for bearer authentication to web-hosted suppression files."))
                 .addOption(newOptionWithArg(ARGUMENT.NVD_API_MAX_RETRY_COUNT, "count",
                         "The maximum number of retry requests for a single call to the NVD API."))
                 .addOption(newOptionWithArg(ARGUMENT.NVD_API_VALID_FOR_HOURS, "hours",
@@ -416,6 +424,12 @@ public final class CliParser {
                         + "doing Gem bundle analysis."))
                 .addOption(newOptionWithArg(ARGUMENT.CENTRAL_URL, "url",
                         "Alternative URL for Maven Central Search. If not set the public Sonatype Maven Central will be used."))
+                .addOption(newOptionWithArg(ARGUMENT.CENTRAL_USERNAME, "username",
+                        "Credentials for basic auth towards the --centralUrl."))
+                .addOption(newOptionWithArg(ARGUMENT.CENTRAL_PASSWORD, "password",
+                        "Credentials for basic auth towards the --centralUrl"))
+                .addOption(newOptionWithArg(ARGUMENT.CENTRAL_BEARER_TOKEN, "token",
+                        "Token for bearer auth towards the --centralUrl"))
                 .addOption(newOptionWithArg(ARGUMENT.OSSINDEX_URL, "url",
                         "Alternative URL for the OSS Index. If not set the public Sonatype OSS Index will be used."))
                 .addOption(newOptionWithArg(ARGUMENT.OSSINDEX_USERNAME, "username",
@@ -433,6 +447,8 @@ public final class CliParser {
                 .addOption(newOptionWithArg(ARGUMENT.RETIREJS_URL_USER, "username",
                         "The password to authenticate to Retire JS Repository URL"))
                 .addOption(newOptionWithArg(ARGUMENT.RETIREJS_URL_PASSWORD, "password",
+                        "The password to authenticate to Retire JS Repository URL"))
+                .addOption(newOptionWithArg(ARGUMENT.RETIREJS_URL_BEARER_TOKEN, "token",
                         "The password to authenticate to Retire JS Repository URL"))
                 .addOption(newOption(ARGUMENT.RETIREJS_FILTER_NON_VULNERABLE, "Specifies that the Retire JS "
                         + "Analyzer should filter out non-vulnerable JS files from the report."))
@@ -482,6 +498,9 @@ public final class CliParser {
                 .addOption(newOption(ARGUMENT.DISABLE_ARCHIVE, "Disable the Archive Analyzer."))
                 .addOption(newOption(ARGUMENT.DISABLE_KEV, "Disable the Known Exploited Vulnerability Analyzer."))
                 .addOption(newOptionWithArg(ARGUMENT.KEV_URL, "url", "The url to the CISA Known Exploited Vulnerabilities JSON data feed"))
+                .addOption(newOptionWithArg(ARGUMENT.KEV_USER, "user", "The user for basic authentication towards the CISA Known Exploited Vulnerabilities JSON data feed"))
+                .addOption(newOptionWithArg(ARGUMENT.KEV_PASSWORD, "password", "The password for basic authentication towards the CISA Known Exploited Vulnerabilities JSON data feed"))
+                .addOption(newOptionWithArg(ARGUMENT.KEV_BEARER_TOKEN, "token", "The token for bearer authentication towards the CISA Known Exploited Vulnerabilities JSON data feed"))
                 .addOption(newOption(ARGUMENT.DISABLE_ASSEMBLY, "Disable the .NET Assembly Analyzer."))
                 .addOption(newOption(ARGUMENT.DISABLE_PY_DIST, "Disable the Python Distribution Analyzer."))
                 .addOption(newOption(ARGUMENT.DISABLE_CMAKE, "Disable the Cmake Analyzer."))
@@ -530,7 +549,13 @@ public final class CliParser {
                 .addOption(newOptionWithArg(ARGUMENT.HOSTED_SUPPRESSIONS_VALID_FOR_HOURS, "hours",
                         "The number of hours to wait before checking for new updates of the the hosted suppressions file."))
                 .addOption(newOptionWithArg(ARGUMENT.HOSTED_SUPPRESSIONS_URL, "url",
-                        "The URL for a mirrored hosted suppressions file"));
+                        "The URL for a mirrored hosted suppressions file"))
+                .addOption(newOptionWithArg(ARGUMENT.HOSTED_SUPPRESSIONS_USER, "user",
+                        "The user for basic auth to a mirrored hosted suppressions file"))
+                .addOption(newOptionWithArg(ARGUMENT.HOSTED_SUPPRESSIONS_PASSWORD, "password",
+                        "The password for basic auth to a mirrored hosted suppressions file"))
+                .addOption(newOptionWithArg(ARGUMENT.HOSTED_SUPPRESSIONS_BEARER_TOKEN, "token",
+                        "The token for bearer auth to  a mirrored hosted suppressions file"));
 
     }
 
@@ -1181,6 +1206,22 @@ public final class CliParser {
          */
         public static final String NVD_API_DATAFEED_PASSWORD = "nvdPassword";
         /**
+         * The token for bearer auth to the CVE data.
+         */
+        public static final String NVD_API_DATAFEED_BEARER_TOKEN = "nvdBearerToken";
+        /**
+         * The username for basic auth to web-hosted suppression files.
+         */
+        public static final String SUPPRESSION_FILE_USER = "suppressionUser";
+        /**
+         * The passwored for basic auth to web-hosted suppression files.
+         */
+        public static final String SUPPRESSION_FILE_PASSWORD = "suppressionPassword";
+        /**
+         * The toke for bearer auth to web-hosted suppression files.
+         */
+        public static final String SUPPRESSION_FILE_BEARER_TOKEN = "suppressionBearerToken";
+        /**
          * The time in milliseconds to wait between downloading NVD API data.
          */
         public static final String NVD_API_DELAY = "nvdApiDelay";
@@ -1236,6 +1277,18 @@ public final class CliParser {
          * The URL to the CISA Known Exploited Vulnerability JSON datafeed.
          */
         public static final String KEV_URL = "kevURL";
+        /**
+         * The user for basic auth towards a CISA Known Exploited Vulnerability JSON datafeed mirror.
+         */
+        public static final String KEV_USER = "kevUser";
+        /**
+         * The password for basic auth towards a CISA Known Exploited Vulnerability JSON datafeed mirror.
+         */
+        public static final String KEV_PASSWORD = "kevPassword";
+        /**
+         * The token for bearer auth towards a CISA Known Exploited Vulnerability JSON datafeed mirror.
+         */
+        public static final String KEV_BEARER_TOKEN = "kevBearerToken";
         /**
          * Disables the Python Distribution Analyzer.
          */
@@ -1361,13 +1414,17 @@ public final class CliParser {
          */
         public static final String CENTRAL_URL = "centralUrl";
         /**
-         * The username for the alternative Maven Central Search.
+         * The username for basic authentication to the alternative Maven Central Search.
          */
         public static final String CENTRAL_USERNAME = "centralUsername";
         /**
-         * The password for the alternative Maven Central Search.
+         * The password for basic authentication to the alternative Maven Central Search.
          */
         public static final String CENTRAL_PASSWORD = "centralPassword";
+        /**
+         * The token for bearer authentication to the alternative Maven Central Search.
+         */
+        public static final String CENTRAL_BEARER_TOKEN = "centralBearerToken";
         /**
          * Disables the Nexus Analyzer.
          */
@@ -1443,13 +1500,17 @@ public final class CliParser {
          */
         public static final String RETIREJS_URL = "retireJsUrl";
         /**
-         * The username to the retire JS repository.
+         * The username for basic auth to the retire JS repository.
          */
         public static final String RETIREJS_URL_USER = "retireJsUrlUser";
         /**
-         * The password to the retire JS repository.
+         * The password for basic auth to the retire JS repository.
          */
         public static final String RETIREJS_URL_PASSWORD = "retireJsUrlPass";
+        /**
+         * The token for bearer auth to the retire JS repository.
+         */
+        public static final String RETIREJS_URL_BEARER_TOKEN = "retireJsUrlBearerToken";
         /**
          * The URL of the nexus server.
          */
@@ -1600,5 +1661,17 @@ public final class CliParser {
          * suppressions file .
          */
         public static final String HOSTED_SUPPRESSIONS_URL = "hostedSuppressionsUrl";
+        /**
+         * The username for basic auth to a mirrored hosted suppressions file.
+         */
+        public static final String HOSTED_SUPPRESSIONS_USER = "hostedSuppressionsUser";
+        /**
+         * The passwored for basic auth to a mirrored hosted suppressions file.
+         */
+        public static final String HOSTED_SUPPRESSIONS_PASSWORD = "hostedSuppressionsPassword";
+        /**
+         * The toke for bearer auth to  a mirrored hosted suppressions file.
+         */
+        public static final String HOSTED_SUPPRESSIONS_BEARER_TOKEN = "hostedSuppressionsBearerToken";
     }
 }

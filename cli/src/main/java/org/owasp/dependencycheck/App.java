@@ -498,6 +498,12 @@ public class App {
                 cli.getStringArgument(CliParser.ARGUMENT.HINTS_FILE));
         settings.setArrayIfNotEmpty(Settings.KEYS.SUPPRESSION_FILE,
                 cli.getStringArguments(CliParser.ARGUMENT.SUPPRESSION_FILES));
+        settings.setStringIfNotEmpty(Settings.KEYS.SUPPRESSION_FILE_USER,
+                cli.getStringArgument(CliParser.ARGUMENT.SUPPRESSION_FILE_USER));
+        settings.setStringIfNotEmpty(Settings.KEYS.SUPPRESSION_FILE_PASSWORD,
+                cli.getStringArgument(CliParser.ARGUMENT.SUPPRESSION_FILE_PASSWORD));
+        settings.setStringIfNotEmpty(Settings.KEYS.SUPPRESSION_FILE_BEARER_TOKEN,
+                cli.getStringArgument(CliParser.ARGUMENT.SUPPRESSION_FILE_BEARER_TOKEN));
         //File Type Analyzer Settings
         settings.setBooleanIfNotNull(Settings.KEYS.ANALYZER_EXPERIMENTAL_ENABLED,
                 cli.hasOption(CliParser.ARGUMENT.EXPERIMENTAL));
@@ -517,6 +523,8 @@ public class App {
                 cli.getStringArgument(CliParser.ARGUMENT.RETIREJS_URL_USER));
         settings.setStringIfNotNull(Settings.KEYS.ANALYZER_RETIREJS_REPO_JS_PASSWORD,
                 cli.getStringArgument(CliParser.ARGUMENT.RETIREJS_URL_PASSWORD));
+        settings.setStringIfNotNull(Settings.KEYS.ANALYZER_RETIREJS_REPO_JS_BEARER_TOKEN,
+                cli.getStringArgument(CliParser.ARGUMENT.RETIREJS_URL_BEARER_TOKEN));
         settings.setBooleanIfNotNull(Settings.KEYS.ANALYZER_RETIREJS_FORCEUPDATE,
                 cli.hasOption(CliParser.ARGUMENT.RETIRE_JS_FORCEUPDATE));
         settings.setStringIfNotNull(Settings.KEYS.ANALYZER_RETIREJS_FILTERS,
@@ -535,6 +543,12 @@ public class App {
                 !cli.isDisabled(CliParser.ARGUMENT.DISABLE_KEV, Settings.KEYS.ANALYZER_KNOWN_EXPLOITED_ENABLED));
         settings.setStringIfNotNull(Settings.KEYS.KEV_URL,
                 cli.getStringArgument(CliParser.ARGUMENT.KEV_URL));
+        settings.setStringIfNotNull(Settings.KEYS.KEV_USER,
+                cli.getStringArgument(CliParser.ARGUMENT.KEV_USER));
+        settings.setStringIfNotNull(Settings.KEYS.KEV_PASSWORD,
+                cli.getStringArgument(CliParser.ARGUMENT.KEV_PASSWORD));
+        settings.setStringIfNotNull(Settings.KEYS.KEV_BEARER_TOKEN,
+                cli.getStringArgument(CliParser.ARGUMENT.KEV_BEARER_TOKEN));
         settings.setBoolean(Settings.KEYS.ANALYZER_PYTHON_DISTRIBUTION_ENABLED,
                 !cli.isDisabled(CliParser.ARGUMENT.DISABLE_PY_DIST, Settings.KEYS.ANALYZER_PYTHON_DISTRIBUTION_ENABLED));
         settings.setBoolean(Settings.KEYS.ANALYZER_PYTHON_PACKAGE_ENABLED,
@@ -620,6 +634,8 @@ public class App {
                 cli.getStringArgument(CliParser.ARGUMENT.CENTRAL_USERNAME));
         settings.setStringIfNotEmpty(Settings.KEYS.ANALYZER_CENTRAL_PASSWORD,
                 cli.getStringArgument(CliParser.ARGUMENT.CENTRAL_PASSWORD));
+        settings.setStringIfNotEmpty(Settings.KEYS.ANALYZER_CENTRAL_BEARER_TOKEN,
+                cli.getStringArgument(CliParser.ARGUMENT.CENTRAL_BEARER_TOKEN));
         settings.setStringIfNotEmpty(Settings.KEYS.ANALYZER_OSSINDEX_URL,
                 cli.getStringArgument(CliParser.ARGUMENT.OSSINDEX_URL));
         settings.setStringIfNotEmpty(Settings.KEYS.ANALYZER_OSSINDEX_USER,
@@ -689,11 +705,18 @@ public class App {
         settings.setStringIfNotEmpty(Settings.KEYS.NVD_API_DATAFEED_URL, cli.getStringArgument(CliParser.ARGUMENT.NVD_API_DATAFEED_URL));
         settings.setStringIfNotEmpty(Settings.KEYS.NVD_API_DATAFEED_USER, cli.getStringArgument(CliParser.ARGUMENT.NVD_API_DATAFEED_USER));
         settings.setStringIfNotEmpty(Settings.KEYS.NVD_API_DATAFEED_PASSWORD, cli.getStringArgument(CliParser.ARGUMENT.NVD_API_DATAFEED_PASSWORD));
+        settings.setStringIfNotEmpty(Settings.KEYS.NVD_API_DATAFEED_BEARER_TOKEN, cli.getStringArgument(CliParser.ARGUMENT.NVD_API_DATAFEED_BEARER_TOKEN));
         settings.setIntIfNotNull(Settings.KEYS.NVD_API_MAX_RETRY_COUNT, cli.getIntegerValue(CliParser.ARGUMENT.NVD_API_MAX_RETRY_COUNT));
         settings.setIntIfNotNull(Settings.KEYS.NVD_API_VALID_FOR_HOURS, cli.getIntegerValue(CliParser.ARGUMENT.NVD_API_VALID_FOR_HOURS));
 
         settings.setStringIfNotNull(Settings.KEYS.HOSTED_SUPPRESSIONS_URL,
                 cli.getStringArgument(CliParser.ARGUMENT.HOSTED_SUPPRESSIONS_URL));
+        settings.setStringIfNotNull(Settings.KEYS.HOSTED_SUPPRESSIONS_USER,
+                cli.getStringArgument(CliParser.ARGUMENT.HOSTED_SUPPRESSIONS_USER));
+        settings.setStringIfNotNull(Settings.KEYS.HOSTED_SUPPRESSIONS_PASSWORD,
+                cli.getStringArgument(CliParser.ARGUMENT.HOSTED_SUPPRESSIONS_PASSWORD));
+        settings.setStringIfNotNull(Settings.KEYS.HOSTED_SUPPRESSIONS_BEARER_TOKEN,
+                cli.getStringArgument(CliParser.ARGUMENT.HOSTED_SUPPRESSIONS_BEARER_TOKEN));
         settings.setBoolean(Settings.KEYS.HOSTED_SUPPRESSIONS_ENABLED,
                 !cli.isDisabled(CliParser.ARGUMENT.DISABLE_HOSTED_SUPPRESSIONS, Settings.KEYS.HOSTED_SUPPRESSIONS_ENABLED));
         settings.setBooleanIfNotNull(Settings.KEYS.HOSTED_SUPPRESSIONS_FORCEUPDATE,
