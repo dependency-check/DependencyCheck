@@ -414,6 +414,19 @@ public class Check extends Update {
      */
     private boolean failBuildOnUnusedSuppressionRule = false;
 
+    /**
+     * The username to download user-authored suppression files from an HTTP Basic auth protected location.
+     */
+    private String suppressionFileUser;
+    /**
+     * The password to download user-authored suppression files from an HTTP Basic auth protected location.
+     */
+    private String suppressionFilePassword;
+    /**
+     * The token to download user-authored suppression files from an HTTP Bearer auth protected location.
+     */
+    private String suppressionFileBearerToken;
+
     //region Code copied from org.apache.tools.ant.taskdefs.PathConvert
     //The following code was copied Apache Ant PathConvert
     /**
@@ -633,6 +646,33 @@ public class Check extends Update {
      */
     public void setSuppressionFile(String suppressionFile) {
         suppressionFiles.add(suppressionFile);
+    }
+
+    /**
+     * Sets the username to download user-authored suppression files from an HTTP Basic auth protected location.
+     *
+     * @param suppressionFileUser The username
+     */
+    public void setSuppressionFileUser(String suppressionFileUser) {
+        this.suppressionFileUser = suppressionFileUser;
+    }
+
+    /**
+     * Sets the password/token to download user-authored suppression files from an HTTP Basic auth protected location.
+     *
+     * @param suppressionFilePassword The password/token
+     */
+    public void setSuppressionFilePassword(String suppressionFilePassword) {
+        this.suppressionFilePassword = suppressionFilePassword;
+    }
+
+    /**
+     * Sets the token to download user-authored suppression files from an HTTP Bearer auth protected location.
+     *
+     * @param suppressionFileBearerToken The token
+     */
+    public void setSuppressionFileBearerToken(String suppressionFileBearerToken) {
+        this.suppressionFileBearerToken = suppressionFileBearerToken;
     }
 
     /**
@@ -1389,6 +1429,9 @@ public class Check extends Update {
         super.populateSettings();
         getSettings().setBooleanIfNotNull(Settings.KEYS.AUTO_UPDATE, autoUpdate);
         getSettings().setArrayIfNotEmpty(Settings.KEYS.SUPPRESSION_FILE, suppressionFiles);
+        getSettings().setStringIfNotEmpty(Settings.KEYS.SUPPRESSION_FILE_USER, suppressionFileUser);
+        getSettings().setStringIfNotEmpty(Settings.KEYS.SUPPRESSION_FILE_PASSWORD, suppressionFilePassword);
+        getSettings().setStringIfNotEmpty(Settings.KEYS.SUPPRESSION_FILE_BEARER_TOKEN, suppressionFileBearerToken);
         getSettings().setBooleanIfNotNull(Settings.KEYS.UPDATE_VERSION_CHECK_ENABLED, versionCheckEnabled);
         getSettings().setStringIfNotEmpty(Settings.KEYS.HINTS_FILE, hintsFile);
         getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_EXPERIMENTAL_ENABLED, enableExperimental);

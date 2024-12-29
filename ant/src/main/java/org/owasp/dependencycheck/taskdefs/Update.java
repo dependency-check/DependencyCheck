@@ -19,6 +19,7 @@ package org.owasp.dependencycheck.taskdefs;
 
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
+import org.jetbrains.annotations.Nullable;
 import org.owasp.dependencycheck.Engine;
 import org.owasp.dependencycheck.data.nvdcve.DatabaseException;
 import org.owasp.dependencycheck.data.update.exception.UpdateException;
@@ -40,17 +41,21 @@ import org.slf4j.impl.StaticLoggerBinder;
 public class Update extends Purge {
 
     /**
-     * The URL to the RetireJS JSON data.
+     * The URL to (a mirror of) the RetireJS JSON data.
      */
     private String retireJsUrl;
     /**
-     * The user to download URL to the RetireJS JSON data.
+     * The user to download the RetireJS JSON data from an HTTP Basic auth protected location.
      */
     private String retireJsUrlUser;
     /**
-     * The password to download URL to the RetireJS JSON data.
+     * The password to download the RetireJS JSON data from an HTTP Basic auth protected location.
      */
     private String retireJsUrlPassword;
+    /**
+     * The token to download the RetireJS JSON data from an HTTP Bearer auth protected location.
+     */
+    private String retireJsUrlBearerToken;
     /**
      * Whether or not the RetireJS JSON repository will be updated regardless of the
      * `autoupdate` settings. Defaults to false.
@@ -69,13 +74,17 @@ public class Update extends Purge {
      */
     private Integer knownExploitedValidForHours;
     /**
-     * The user to download the known exploited vulnerabilities JSON datafeed.
+     * The user to download the known exploited vulnerabilities JSON datafeed from an HTTP Basic auth protected location.
      */
     private String knownExploitedUser;
     /**
-     * The password to download the known exploited vulnerabilities JSON datafeed.
+     * The password to download the known exploited vulnerabilities JSON datafeed from an HTTP Basic auth protected location.
      */
     private String knownExploitedPassword;
+    /**
+     * The token to download the known exploited vulnerabilities JSON datafeed from an HTTP Bearer auth protected location.
+     */
+    private String knownExploitedBearerToken;
     /**
      * The NVD API endpoint.
      */
@@ -97,13 +106,17 @@ public class Update extends Purge {
      */
     private String nvdDatafeedUrl;
     /**
-     * The username for basic auth to the NVD Data Feed.
+     * The username to download the NVD Data feed from an HTTP Basic auth protected location.
      */
     private String nvdUser;
     /**
-     * The password for basic auth to the NVD Data Feed.
+     * The password to download the NVD Data feed from an HTTP Basic auth protected location.
      */
     private String nvdPassword;
+    /**
+     * The token to download the NVD Data feed from an HTTP Bearer auth protected location.
+     */
+    private String nvdBearerToken;
     /**
      * The time in milliseconds to wait between downloading NVD API data.
      */
@@ -170,15 +183,21 @@ public class Update extends Purge {
     /**
      * The userid for the hostedSuppressions file.
      * <br/>
-     * Only needs configuration if you customized the hostedSuppressionsUrl to a custom server that requires login
+     * Only needs configuration if you customized the hostedSuppressionsUrl to a custom server that requires Basic Auth
      */
     private String hostedSuppressionsUser;
     /**
      * The password for the hostedSuppressions file.
      * <br/>
-     * Only needs configuration if you customized the hostedSuppressionsUrl to a custom server that requires login
+     * Only needs configuration if you customized the hostedSuppressionsUrl to a custom server that requires Basic Auth
      */
     private String hostedSuppressionsPassword;
+    /**
+     * The (Bearer authentication) API Token for the hostedSuppressions file.
+     * <br/>
+     * Only needs configuration if you customized the hostedSuppressionsUrl to a custom server that requires Bearer Auth
+     */
+    private String hostedSuppressionsBearerToken;
     /**
      * Whether the hosted suppressions file will be updated regardless of the
      * `autoupdate` settings. Defaults to false.
@@ -276,6 +295,14 @@ public class Update extends Purge {
      */
     public void setNvdPassword(String nvdPassword) {
         this.nvdPassword = nvdPassword;
+    }
+
+    /**
+     * Sets the token to download the NVD Data feed from an HTTP Bearer auth protected location.
+     * @param nvdBearerToken The bearer token
+     */
+    public void setNvdBearerToken(String nvdBearerToken) {
+        this.nvdBearerToken = nvdBearerToken;
     }
 
     /**
@@ -422,6 +449,10 @@ public class Update extends Purge {
         this.hostedSuppressionsPassword = hostedSuppressionsPassword;
     }
 
+    public void setHostedSuppressionsBearerToken(String hostedSuppressionsBearerToken) {
+        this.hostedSuppressionsBearerToken = hostedSuppressionsBearerToken;
+    }
+
     /**
      * Set the value of hostedSuppressionsForceUpdate.
      *
@@ -464,7 +495,7 @@ public class Update extends Purge {
     }
 
     /**
-     * Sets the user for downloading the knownExploitedUrl.
+     * Sets the user for downloading the knownExploitedUrl from a HTTP Basic auth protected location.
      *
      * @param knownExploitedUser the user
      */
@@ -473,12 +504,21 @@ public class Update extends Purge {
     }
 
     /**
-     * Sets the password for downloading the knownExploitedUrl.
+     * Sets the password for downloading the knownExploitedUrl from a HTTP Basic auth protected location..
      *
      * @param knownExploitedPassword the password
      */
     public void setKnownExploitedPassword(String knownExploitedPassword) {
         this.knownExploitedPassword = knownExploitedPassword;
+    }
+
+    /**
+     * Sets the token for downloading the knownExploitedUrl from an HTTP Bearer auth protected location..
+     *
+     * @param knownExploitedBearerToken the token
+     */
+    public void setKnownExploitedBearerToken(String knownExploitedBearerToken) {
+        this.knownExploitedBearerToken = knownExploitedBearerToken;
     }
 
     /**
@@ -500,7 +540,7 @@ public class Update extends Purge {
     }
 
     /**
-     * Set the value of the User Retire JS repository URL.
+     * Sets the user to download the RetireJS JSON data from an HTTP Basic auth protected location.
      *
      * @param retireJsUrlUser new value of retireJsUrlUser
      */
@@ -509,12 +549,21 @@ public class Update extends Purge {
     }
 
     /**
-     * Set the value of the Password Retire JS repository URL.
+     * Sets the password to download the RetireJS JSON data from an HTTP Basic auth protected location.
      *
      * @param retireJsUrlPassword new value of retireJsUrlPassword
      */
     public void setRetireJsUrlPassword(String retireJsUrlPassword) {
         this.retireJsUrlPassword = retireJsUrlPassword;
+    }
+
+    /**
+     * Sets the token to download the RetireJS JSON data from an HTTP Bearer auth protected location.
+     *
+     * @param retireJsUrlBearerToken new value of retireJsUrlBearerToken
+     */
+    public void setRetireJsUrlBearerToken(String retireJsUrlBearerToken) {
+        this.retireJsUrlBearerToken = retireJsUrlBearerToken;
     }
 
     /**
@@ -599,12 +648,14 @@ public class Update extends Purge {
         getSettings().setStringIfNotEmpty(Settings.KEYS.KEV_URL, knownExploitedUrl);
         getSettings().setStringIfNotEmpty(Settings.KEYS.KEV_USER, knownExploitedUser);
         getSettings().setStringIfNotEmpty(Settings.KEYS.KEV_PASSWORD, knownExploitedPassword);
+        getSettings().setStringIfNotEmpty(Settings.KEYS.KEV_BEARER_TOKEN, knownExploitedBearerToken);
         getSettings().setIntIfNotNull(Settings.KEYS.KEV_CHECK_VALID_FOR_HOURS, knownExploitedValidForHours);
         getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_KNOWN_EXPLOITED_ENABLED, knownExploitedEnabled);
 
         getSettings().setStringIfNotNull(Settings.KEYS.ANALYZER_RETIREJS_REPO_JS_URL, retireJsUrl);
         getSettings().setStringIfNotNull(Settings.KEYS.ANALYZER_RETIREJS_REPO_JS_USER, retireJsUrlUser);
         getSettings().setStringIfNotNull(Settings.KEYS.ANALYZER_RETIREJS_REPO_JS_PASSWORD, retireJsUrlPassword);
+        getSettings().setStringIfNotNull(Settings.KEYS.ANALYZER_RETIREJS_REPO_JS_BEARER_TOKEN, retireJsUrlBearerToken);
         getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_RETIREJS_FORCEUPDATE, retireJsForceUpdate);
         getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_RETIREJS_ENABLED, retireJsAnalyzerEnabled);
 
@@ -612,6 +663,7 @@ public class Update extends Purge {
         getSettings().setIntIfNotNull(Settings.KEYS.HOSTED_SUPPRESSIONS_VALID_FOR_HOURS, hostedSuppressionsValidForHours);
         getSettings().setStringIfNotNull(Settings.KEYS.HOSTED_SUPPRESSIONS_USER, hostedSuppressionsUser);
         getSettings().setStringIfNotNull(Settings.KEYS.HOSTED_SUPPRESSIONS_PASSWORD, hostedSuppressionsPassword);
+        getSettings().setStringIfNotNull(Settings.KEYS.HOSTED_SUPPRESSIONS_BEARER_TOKEN, hostedSuppressionsBearerToken);
         getSettings().setBooleanIfNotNull(Settings.KEYS.HOSTED_SUPPRESSIONS_FORCEUPDATE, hostedSuppressionsForceUpdate);
         getSettings().setBooleanIfNotNull(Settings.KEYS.HOSTED_SUPPRESSIONS_ENABLED, hostedSuppressionsEnabled);
 
@@ -622,6 +674,7 @@ public class Update extends Purge {
         getSettings().setStringIfNotEmpty(Settings.KEYS.NVD_API_DATAFEED_URL, nvdDatafeedUrl);
         getSettings().setStringIfNotEmpty(Settings.KEYS.NVD_API_DATAFEED_USER, nvdUser);
         getSettings().setStringIfNotEmpty(Settings.KEYS.NVD_API_DATAFEED_PASSWORD, nvdPassword);
+        getSettings().setStringIfNotEmpty(Settings.KEYS.NVD_API_DATAFEED_BEARER_TOKEN, nvdBearerToken);
         getSettings().setIntIfNotNull(Settings.KEYS.NVD_API_MAX_RETRY_COUNT, nvdMaxRetryCount);
         getSettings().setIntIfNotNull(Settings.KEYS.NVD_API_VALID_FOR_HOURS, nvdValidForHours);
     }
