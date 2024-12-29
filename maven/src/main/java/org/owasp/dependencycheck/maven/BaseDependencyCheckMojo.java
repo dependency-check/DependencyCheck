@@ -67,6 +67,7 @@ import org.owasp.dependencycheck.dependency.EvidenceType;
 import org.owasp.dependencycheck.dependency.Vulnerability;
 import org.owasp.dependencycheck.exception.DependencyNotFoundException;
 import org.owasp.dependencycheck.exception.ExceptionCollection;
+import org.owasp.dependencycheck.exception.InitializationException;
 import org.owasp.dependencycheck.exception.ReportException;
 import org.owasp.dependencycheck.utils.Checksum;
 import org.owasp.dependencycheck.utils.Filter;
@@ -131,7 +132,13 @@ public abstract class BaseDependencyCheckMojo extends AbstractMojo implements Ma
      * Pattern to include all files in a FileSet.
      */
     private static final String INCLUDE_ALL = "**/*";
+    /**
+     * Constant for the HTTPS protocol string.
+     */
     public static final String PROTOCOL_HTTPS = "https";
+    /**
+     * Constant for the HTTP protocol string.
+     */
     public static final String PROTOCOL_HTTP = "http";
     /**
      * A flag indicating whether or not the Maven site is being generated.
@@ -373,10 +380,15 @@ public abstract class BaseDependencyCheckMojo extends AbstractMojo implements Ma
     @Parameter(property = "suppressionFileUser")
     private String suppressionFileUser;
     /**
-     * The password used when connecting to the suppressionFiles. The `suppressionFileServerId` should be used instead otherwise maven debug logging could expose the password.
+     * The password used for Basic auth to the suppressionFiles. The `suppressionFileServerId` with user/password should be used instead otherwise maven debug logging could expose the password.
      */
     @Parameter(property = "suppressionFilePassword")
     private String suppressionFilePassword;
+    /**
+     * The token used for Bearer auth to the suppressionFiles. The `suppressionFileServerId` with only password should be used instead otherwise maven debug logging could expose the token.
+     */
+    @Parameter(property = "suppressionFileBearerToken")
+    private String suppressionFileBearerToken;
     /**
      * The server id in the settings.xml; used to retrieve encrypted passwords
      * from the settings.xml for suppressionFile(s).
@@ -430,6 +442,32 @@ public abstract class BaseDependencyCheckMojo extends AbstractMojo implements Ma
     @SuppressWarnings("CanBeFinal")
     @Parameter(property = "knownExploitedUrl")
     private String knownExploitedUrl;
+    /**
+     * The server id in the settings.xml; used to retrieve encrypted passwords
+     * from the settings.xml for mirror of CISA Known Exploited Vulnerabilities JSON datafeed.
+     * Credentials with only a password will be used for Bearer auth, credentials with both user and password for Basic auth.
+     */
+    @SuppressWarnings("CanBeFinal")
+    @Parameter(property = "knownExploitedServerId")
+    private String knownExploitedServerId;
+    /**
+     * The username for basic auth mirror of CISA Known Exploited Vulnerabilities JSON datafeed. A `knownExploitedServerId` with user/password set should be used instead otherwise maven debug logging could expose the password.
+     */
+    @SuppressWarnings("CanBeFinal")
+    @Parameter(property = "knownExploitedUser")
+    private String knownExploitedUser;
+    /**
+     * The password for basic auth mirror of CISA Known Exploited Vulnerabilities JSON datafeed. A `knownExploitedServerId` with user/password set should be used instead otherwise maven debug logging could expose the password.
+     */
+    @SuppressWarnings("CanBeFinal")
+    @Parameter(property = "knownExploitedPassword")
+    private String knownExploitedPassword;
+    /**
+     * The token for bearer auth mirror of CISA Known Exploited Vulnerabilities JSON datafeed. A `knownExploitedServerId` with only password set should be used instead otherwise maven debug logging could expose the token.
+     */
+    @SuppressWarnings("CanBeFinal")
+    @Parameter(property = "knownExploitedBearerToken")
+    private String knownExploitedBearerToken;
     /**
      * Sets whether the Python Distribution Analyzer will be used.
      */
@@ -569,18 +607,23 @@ public abstract class BaseDependencyCheckMojo extends AbstractMojo implements Ma
     @Parameter(property = "retireJsUrl")
     private String retireJsUrl;
     /**
-     * The username to use when connecting to the CVE-URL.
+     * The username for Basic auth to the retireJsUrl.
      */
     @Parameter(property = "retireJsUser")
     private String retireJsUser;
     /**
-     * The password to authenticate to the CVE-URL. The `retireJsUrlServerId` should be used instead otherwise maven debug logging could expose the password.
+     * The password for Basic auth to the retireJsUrl. The `retireJsUrlServerId` with user/password set should be used instead otherwise maven debug logging could expose the password.
      */
     @Parameter(property = "retireJsPassword")
     private String retireJsPassword;
     /**
+     * The token for Bearer auth to the retireJsUrl. The `retireJsUrlServerId` with only password set should be used instead otherwise maven debug logging could expose the token.
+     */
+    @Parameter(property = "retireJsBearerToken")
+    private String retireJsBearerToken;
+    /**
      * The server id in the settings.xml; used to retrieve encrypted passwords
-     * from the settings.xml for cve-URLs.
+     * from the settings.xml for retireJsUrl.
      */
     @SuppressWarnings("CanBeFinal")
     @Parameter(property = "retireJsUrlServerId")
@@ -984,24 +1027,31 @@ public abstract class BaseDependencyCheckMojo extends AbstractMojo implements Ma
     private String nvdDatafeedUrl;
 
     /**
-     * The server id in the settings.xml; used to retrieve encrypted passwords
-     * from the settings.xml for the NVD Data Feed.
+     * The server id in the settings.xml; used to retrieve encrypted credentials
+     * from the settings.xml for the NVD Data Feed.<br/>
+     * Credentials with only a password will be used for Bearer auth, credentials with both user and password for Basic auth.
      */
     @SuppressWarnings("CanBeFinal")
     @Parameter(property = "nvdDatafeedServerId")
     private String nvdDatafeedServerId;
     /**
-     * The username for basic auth to the NVD Data Feed.
+     * The username for basic auth to the NVD Data Feed. A `nvdDatafeedServerId` with user/password set should be used instead otherwise maven debug logging could expose the password.
      */
     @SuppressWarnings("CanBeFinal")
     @Parameter(property = "nvdUser")
     private String nvdUser;
     /**
-     * The password for basic auth to the NVD Data Feed.
+     * The password for basic auth to the NVD Data Feed. A `nvdDatafeedServerId` with user/password set should be used instead otherwise maven debug logging could expose the password.
      */
     @SuppressWarnings("CanBeFinal")
     @Parameter(property = "nvdPassword")
     private String nvdPassword;
+    /**
+     * The token for bearer auth to the NVD Data Feed. A `nvdDatafeedServerId` with only password set should be used instead otherwise maven debug logging could expose the token.
+     */
+    @SuppressWarnings("CanBeFinal")
+    @Parameter(property = "nvdBearerToken")
+    private String nvdBearerToken;
     /**
      * The time in milliseconds to wait between downloading NVD API data.
      */
@@ -1028,6 +1078,31 @@ public abstract class BaseDependencyCheckMojo extends AbstractMojo implements Ma
     @SuppressWarnings("CanBeFinal")
     @Parameter(property = "hostedSuppressionsUrl")
     private String hostedSuppressionsUrl;
+    /**
+     * The password used for Basic auth to the suppressionFiles.
+     */
+    @SuppressWarnings("CanBeFinal")
+    @Parameter(property = "hostedSuppressionsUser")
+    private String hostedSuppressionsUser;
+    /**
+     * The password used for Basic auth to the suppressionFiles. The `hostedSuppressionsServerId` with user/password should be used instead otherwise maven debug logging could expose the password.
+     */
+    @SuppressWarnings("CanBeFinal")
+    @Parameter(property = "hostedSuppressionsPassword")
+    private String hostedSuppressionsPassword;
+    /**
+     * The token used for Bearer auth to the suppressionFiles. The `hostedSuppressionsServerId` with only password should be used instead otherwise maven debug logging could expose the token.
+     */
+    @SuppressWarnings("CanBeFinal")
+    @Parameter(property = "hostedSuppressionsBearerToken")
+    private String hostedSuppressionsBearerToken;
+    /**
+     * The server id in the settings.xml used to retrieve encrypted passwords
+     * from the settings.xml for a mirror of the HostedSuppressions XML file.
+     */
+    @SuppressWarnings("CanBeFinal")
+    @Parameter(property = "hostedSuppressionsServerId")
+    private String hostedSuppressionsServerId;
     /**
      * Whether the hosted suppressions file will be updated regardless of the
      * `autoupdate` settings.
@@ -2182,7 +2257,7 @@ public abstract class BaseDependencyCheckMojo extends AbstractMojo implements Ma
      * Additionally, this sets the system properties required to change the
      * proxy URL, port, and connection timeout.
      */
-    protected void populateSettings() {
+    protected void populateSettings() throws MojoFailureException, MojoExecutionException {
         settings = new Settings();
         InputStream mojoProperties = null;
         try {
@@ -2273,6 +2348,16 @@ public abstract class BaseDependencyCheckMojo extends AbstractMojo implements Ma
         settings.setBooleanIfNotNull(Settings.KEYS.ANALYZER_ARCHIVE_ENABLED, archiveAnalyzerEnabled);
         settings.setBooleanIfNotNull(Settings.KEYS.ANALYZER_KNOWN_EXPLOITED_ENABLED, knownExploitedEnabled);
         settings.setStringIfNotEmpty(Settings.KEYS.KEV_URL, knownExploitedUrl);
+        try {
+            configureCredentials(knownExploitedServerId, knownExploitedUser, knownExploitedPassword, knownExploitedBearerToken,
+                    Settings.KEYS.KEV_USER, Settings.KEYS.KEV_PASSWORD, Settings.KEYS.KEV_BEARER_TOKEN);
+        } catch (InitializationException ex) {
+            if (this.failOnError) {
+                throw new MojoFailureException("Invalid plugin configuration specified for Known Exploited data feed authentication", ex);
+            } else {
+                throw new MojoExecutionException("Invalid plugin configuration specified for Known Exploited data feed authentication", ex);
+            }
+        }
         settings.setStringIfNotEmpty(Settings.KEYS.ADDITIONAL_ZIP_EXTENSIONS, zipExtensions);
         settings.setStringIfNotEmpty(Settings.KEYS.ANALYZER_ASSEMBLY_DOTNET_PATH, pathToCore);
         settings.setStringIfNotEmpty(Settings.KEYS.ANALYZER_NEXUS_URL, nexusUrl);
@@ -2316,11 +2401,16 @@ public abstract class BaseDependencyCheckMojo extends AbstractMojo implements Ma
         settings.setBooleanIfNotNull(Settings.KEYS.ANALYZER_RETIREJS_ENABLED, retireJsAnalyzerEnabled);
         settings.setStringIfNotNull(Settings.KEYS.ANALYZER_RETIREJS_REPO_JS_URL, retireJsUrl);
         settings.setBooleanIfNotNull(Settings.KEYS.ANALYZER_RETIREJS_FORCEUPDATE, retireJsForceUpdate);
-        if (retireJsUser == null && retireJsPassword == null && retireJsUrlServerId != null) {
-            configureServerCredentials(retireJsUrlServerId, Settings.KEYS.ANALYZER_RETIREJS_REPO_JS_USER, Settings.KEYS.ANALYZER_RETIREJS_REPO_JS_PASSWORD);
-        } else {
-            settings.setStringIfNotEmpty(Settings.KEYS.ANALYZER_RETIREJS_REPO_JS_USER, retireJsUser);
-            settings.setStringIfNotEmpty(Settings.KEYS.ANALYZER_RETIREJS_REPO_JS_PASSWORD, retireJsPassword);
+
+        try {
+            configureCredentials(retireJsUrlServerId, retireJsUser, retireJsPassword, retireJsBearerToken,
+                    Settings.KEYS.ANALYZER_RETIREJS_REPO_JS_USER, Settings.KEYS.ANALYZER_RETIREJS_REPO_JS_PASSWORD, Settings.KEYS.ANALYZER_RETIREJS_REPO_JS_BEARER_TOKEN);
+        } catch (InitializationException ex) {
+            if (this.failOnError) {
+                throw new MojoFailureException("Invalid plugin configuration specified for retireJsUrl authentication", ex);
+            } else {
+                throw new MojoExecutionException("Invalid plugin configuration specified for retireJsUrl authentication", ex);
+            }
         }
         settings.setBooleanIfNotNull(Settings.KEYS.ANALYZER_MIX_AUDIT_ENABLED, mixAuditAnalyzerEnabled);
         settings.setStringIfNotNull(Settings.KEYS.ANALYZER_MIX_AUDIT_PATH, mixAuditPath);
@@ -2363,33 +2453,136 @@ public abstract class BaseDependencyCheckMojo extends AbstractMojo implements Ma
                 settings.setStringIfNotEmpty(Settings.KEYS.NVD_API_KEY, System.getenv(nvdApiKeyEnvironmentVariable));
                 getLog().debug("Using NVD API key from environment variable " + nvdApiKeyEnvironmentVariable);
             } else if (nvdApiServerId != null) {
-                configureServerCredentialsApiKey(nvdApiServerId, Settings.KEYS.NVD_API_KEY);
+                try {
+                    configureServerCredentialsApiKey(nvdApiServerId, Settings.KEYS.NVD_API_KEY);
+                } catch (InitializationException ex) {
+                    if (this.failOnError) {
+                        throw new MojoFailureException("Invalid plugin configuration specified for NVD API authentication", ex);
+                    } else {
+                        throw new MojoExecutionException("Invalid plugin configuration specified for NVD API authentication", ex);
+                    }
+                }
                 getLog().debug("Using NVD API key from server's password with id " + nvdApiServerId + " in settings.xml");
             }
         } else {
             settings.setStringIfNotEmpty(Settings.KEYS.NVD_API_KEY, nvdApiKey);
         }
-        if (nvdUser == null && nvdPassword == null && nvdDatafeedServerId != null) {
-            configureServerCredentials(nvdDatafeedServerId, Settings.KEYS.NVD_API_DATAFEED_USER, Settings.KEYS.NVD_API_DATAFEED_PASSWORD);
-        } else {
-            settings.setStringIfNotEmpty(Settings.KEYS.NVD_API_DATAFEED_USER, nvdUser);
-            settings.setStringIfNotEmpty(Settings.KEYS.NVD_API_DATAFEED_PASSWORD, nvdPassword);
+        try {
+            configureCredentials(nvdDatafeedServerId, nvdUser, nvdPassword, nvdBearerToken,
+                    Settings.KEYS.NVD_API_DATAFEED_USER, Settings.KEYS.NVD_API_DATAFEED_PASSWORD, Settings.KEYS.NVD_API_DATAFEED_BEARER_TOKEN);
+        } catch (InitializationException ex) {
+            if (this.failOnError) {
+                throw new MojoFailureException("Invalid plugin configuration specified for NVD Datafeed authentication", ex);
+            } else {
+                throw new MojoExecutionException("Invalid plugin configuration specified for NVD Datafeed authentication", ex);
+            }
         }
         settings.setBooleanIfNotNull(Settings.KEYS.PRETTY_PRINT, prettyPrint);
         artifactScopeExcluded = new ArtifactScopeExcluded(skipTestScope, skipProvidedScope, skipSystemScope, skipRuntimeScope);
         artifactTypeExcluded = new ArtifactTypeExcluded(skipArtifactType);
-        if (suppressionFileUser == null && suppressionFilePassword == null && suppressionFileServerId != null) {
-            configureServerCredentials(suppressionFileServerId, Settings.KEYS.SUPPRESSION_FILE_USER, Settings.KEYS.SUPPRESSION_FILE_PASSWORD);
-        } else {
-            settings.setStringIfNotEmpty(Settings.KEYS.SUPPRESSION_FILE_USER, suppressionFileUser);
-            settings.setStringIfNotEmpty(Settings.KEYS.SUPPRESSION_FILE_PASSWORD, suppressionFilePassword);
+        try {
+            configureCredentials(suppressionFileServerId, suppressionFileUser, suppressionFilePassword, suppressionFileBearerToken,
+                    Settings.KEYS.SUPPRESSION_FILE_USER, Settings.KEYS.SUPPRESSION_FILE_PASSWORD, Settings.KEYS.SUPPRESSION_FILE_BEARER_TOKEN);
+        } catch (InitializationException ex) {
+            if (this.failOnError) {
+                throw new MojoFailureException("Invalid plugin configuration specified for suppression file authentication", ex);
+            } else {
+                throw new MojoExecutionException("Invalid plugin configuration specified for suppression file authentication", ex);
+            }
         }
+
         settings.setIntIfNotNull(Settings.KEYS.HOSTED_SUPPRESSIONS_VALID_FOR_HOURS, hostedSuppressionsValidForHours);
         settings.setStringIfNotNull(Settings.KEYS.HOSTED_SUPPRESSIONS_URL, hostedSuppressionsUrl);
         settings.setBooleanIfNotNull(Settings.KEYS.HOSTED_SUPPRESSIONS_FORCEUPDATE, hostedSuppressionsForceUpdate);
         settings.setBooleanIfNotNull(Settings.KEYS.HOSTED_SUPPRESSIONS_ENABLED, hostedSuppressionsEnabled);
+        try {
+            configureCredentials(hostedSuppressionsServerId, hostedSuppressionsUser, hostedSuppressionsPassword, hostedSuppressionsBearerToken,
+                    Settings.KEYS.HOSTED_SUPPRESSIONS_USER, Settings.KEYS.HOSTED_SUPPRESSIONS_PASSWORD, Settings.KEYS.HOSTED_SUPPRESSIONS_BEARER_TOKEN);
+        } catch (InitializationException ex) {
+            if (this.failOnError) {
+                throw new MojoFailureException("Invalid plugin configuration specified for hostedSuppressions authentication", ex);
+            } else {
+                throw new MojoExecutionException("Invalid plugin configuration specified for hostedSuppressions authentication", ex);
+            }
+        }
     }
     //CSON: MethodLength
+
+    /**
+     * Configure the credentials in the settings for a certain connection.<br/>
+     * <p>
+     * When a serverId is given, then its values are used instead of the less secure direct values.<br />
+     * A serverId with username/password will fill the `userKey` and `passwordKey` settings for Basic Auth. A serverId with only password
+     * filled will fill the `tokenKey` fro Bearer Auth.<br/>
+     * In absence of the serverId any non-null value will be transferred to the settings.
+     *
+     * @param serverId      The serverId specified for the connection or {@code null}
+     * @param usernameValue The username specified for the connection or {@code null}
+     * @param passwordValue The password specified for the connection or {@code null}
+     * @param tokenValue    The token specified for the connection or {@code null}
+     * @param userKey       The settings key that configures the user or {@code null} when Basic auth is not configurable for the connection
+     * @param passwordKey   The settings key that configures the password or {@code null} when Basic auth is not configurable for the connection
+     * @param tokenKey      The settings key that configures the token or {@code null} when Bearer auth is not configurable for the connection
+     * @throws InitializationException When both serverId and at least one other property value are filled.
+     */
+    private void configureCredentials(String serverId, String usernameValue, String passwordValue, String tokenValue,
+                                      String userKey, String passwordKey, String tokenKey) throws InitializationException {
+        if (serverId != null) {
+            if (usernameValue != null || passwordValue != null || tokenValue != null) {
+                throw new InitializationException(
+                        "Username/password/token configurations should be left out when a serverId (" + serverId + ") is configured");
+            }
+            final Server server = settingsXml.getServer(serverId);
+            if (server != null) {
+                configureFromServer(server, userKey, passwordKey, tokenKey, serverId);
+            } else {
+                getLog().error(String.format("Server '%s' not found in the settings.xml file", serverId));
+            }
+        } else {
+            settings.setStringIfNotEmpty(userKey, usernameValue);
+            settings.setStringIfNotEmpty(passwordKey, passwordValue);
+            settings.setStringIfNotEmpty(tokenKey, tokenValue);
+        }
+    }
+
+    /**
+     * Configure the credentials in the settings for a certain connection from a settings Server object.<br/>
+     * <p>
+     * A serverId with username/password will fill the `userKey` and `passwordKey` settings for Basic Auth.<br/>
+     * A serverId with only password filled will fill the `tokenKey` fro Bearer Auth.<br/>
+     *
+     * @param server        The server entry from the settings to configure authentication
+     * @param userKey       The settings key that configures the user or {@code null} when Basic auth is not configurable for the connection
+     * @param passwordKey   The settings key that configures the password or {@code null} when Basic auth is not configurable for the connection
+     * @param tokenKey      The settings key that configures the token or {@code null} when Bearer auth is not configurable for the connection
+     * @param serverId      The serverId specified for the connection or {@code null}
+     * @throws InitializationException When both serverId and at least one other property value are filled.
+     */
+    private void configureFromServer(Server server, String userKey, String passwordKey, String tokenKey, String serverId) throws InitializationException {
+        final String username = server.getUsername();
+        String password = server.getPassword();
+        try {
+            password = decryptPasswordFromSettings(password);
+        } catch (SecDispatcherException ex) {
+            password = handleSecDispatcherException("server", serverId, server.getPassword(), ex);
+        }
+        if (username != null) {
+            if (userKey != null && passwordKey != null) {
+                settings.setStringIfNotEmpty(userKey, username);
+                settings.setStringIfNotEmpty(passwordKey, password);
+            } else {
+                throw new InitializationException(
+                        "Basic type serverId encountered in " + serverId + ", but userKey or passwordKey is null");
+            }
+        } else {
+            if (tokenKey != null) {
+                settings.setStringIfNotEmpty(tokenKey, password);
+            } else {
+                throw new InitializationException(
+                        "Bearer type serverId encountered in " + serverId + ", but tokenKey is null");
+            }
+        }
+    }
 
     private String mergeNonProxyHosts(String existingNonProxyHosts, String httpNonProxyHosts, String httpsNonProxyHosts) {
         final HashSet<String> mergedNonProxyHosts = new HashSet<>();
@@ -2427,21 +2620,14 @@ public abstract class BaseDependencyCheckMojo extends AbstractMojo implements Ma
      * @param userSettingKey the property name for the username
      * @param passwordSettingKey the property name for the password
      */
-    private void configureServerCredentials(String serverId, String userSettingKey, String passwordSettingKey) {
-        if (serverId != null) {
-            final Server server = settingsXml.getServer(serverId);
-            if (server != null) {
-                final String username = server.getUsername();
-                String password = null;
-                try {
-                    password = decryptPasswordFromSettings(server.getPassword());
-                } catch (SecDispatcherException ex) {
-                    password = handleSecDispatcherException("server", serverId, server.getPassword(), ex);
-                }
-                settings.setStringIfNotEmpty(userSettingKey, username);
-                settings.setStringIfNotEmpty(passwordSettingKey, password);
+    private void configureServerCredentials(String serverId, String userSettingKey, String passwordSettingKey) throws MojoFailureException, MojoExecutionException {
+        try {
+            configureCredentials(serverId, null, null, null, userSettingKey, passwordSettingKey, null);
+        } catch (InitializationException ex) {
+            if (this.failOnError) {
+                throw new MojoFailureException(String.format("Error setting credentials (%s, %s) from serverId %s", userSettingKey, passwordSettingKey, serverId), ex);
             } else {
-                getLog().error(String.format("Server '%s' not found in the settings.xml file", serverId));
+                throw new MojoExecutionException(String.format("Error setting credentials (%s, %s) from serverId %s", userSettingKey, passwordSettingKey, serverId), ex);
             }
         }
     }
@@ -2454,21 +2640,8 @@ public abstract class BaseDependencyCheckMojo extends AbstractMojo implements Ma
      * @param serverId the server id
      * @param apiKeySetting the property name for the API key
      */
-    private void configureServerCredentialsApiKey(String serverId, String apiKeySetting) {
-        if (serverId != null) {
-            final Server server = settingsXml.getServer(serverId);
-            if (server != null) {
-                String password = null;
-                try {
-                    password = decryptPasswordFromSettings(server.getPassword());
-                } catch (SecDispatcherException ex) {
-                    password = handleSecDispatcherException("server", serverId, server.getPassword(), ex);
-                }
-                settings.setStringIfNotEmpty(apiKeySetting, password);
-            } else {
-                getLog().error(String.format("Server '%s' not found in the settings.xml file", serverId));
-            }
-        }
+    private void configureServerCredentialsApiKey(String serverId, String apiKeySetting) throws InitializationException {
+        configureCredentials(serverId, null, null, null, null, null, apiKeySetting);
     }
 
     /**
@@ -2569,7 +2742,8 @@ public abstract class BaseDependencyCheckMojo extends AbstractMojo implements Ma
     /**
      * Returns the maven proxy.
      *
-     * @return the maven proxy
+     * @param protocol The protocol of the target URL.
+     * @return the maven proxy configured for that protocol
      */
     private Proxy getMavenProxy(String protocol) {
         if (mavenSettings != null) {

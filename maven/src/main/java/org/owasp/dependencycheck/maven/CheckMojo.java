@@ -20,6 +20,7 @@ package org.owasp.dependencycheck.maven;
 import java.util.Locale;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
@@ -57,7 +58,11 @@ public class CheckMojo extends BaseDependencyCheckMojo {
      */
     @Override
     public boolean canGenerateReport() {
-        populateSettings();
+        try {
+            populateSettings();
+        } catch (MojoFailureException | MojoExecutionException e) {
+            return false;
+        }
         boolean isCapable = false;
         for (Artifact a : getProject().getArtifacts()) {
             if (!getArtifactScopeExcluded().passes(a.getScope())) {
