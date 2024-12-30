@@ -199,12 +199,19 @@ public final class Settings {
         public static final String NVD_API_DATAFEED_URL = "nvd.api.datafeed.url";
         /**
          * The username to use when connecting to the NVD Data feed.
+         * For use when NVD API Data is hosted as datafeeds locally on a site requiring HTTP-Basic-authentication.
          */
         public static final String NVD_API_DATAFEED_USER = "nvd.api.datafeed.user";
         /**
          * The password to authenticate to the NVD Data feed.
+         * For use when NVD API Data is hosted as datafeeds locally on a site requiring HTTP-Basic-authentication.
          */
         public static final String NVD_API_DATAFEED_PASSWORD = "nvd.api.datafeed.password";
+        /**
+         * The token to authenticate to the NVD Data feed.
+         * For use when NVD API Data is hosted as datafeeds locally on a site requiring HTTP-Bearer-authentication.
+         */
+        public static final String NVD_API_DATAFEED_BEARER_TOKEN = "nvd.api.datafeed.bearertoken";
         /**
          * The starting year for the NVD CVE Data feed cache.
          */
@@ -231,15 +238,21 @@ public final class Settings {
 
         /**
          * The properties key for the hosted suppressions username.
-         * For use when hosted suppressions are mirrored locally on a site requiring authentication
+         * For use when hosted suppressions are mirrored locally on a site requiring HTTP-Basic-authentication
          */
         public static final String KEV_USER = "kev.user";
 
         /**
          * The properties key for the hosted suppressions password.
-         * For use when hosted suppressions are mirrored locally on a site requiring authentication
+         * For use when hosted suppressions are mirrored locally on a site requiring HTTP-Basic-authentication
          */
         public static final String KEV_PASSWORD = "kev.password";
+
+        /**
+         * The properties key for the hosted suppressions bearertoken.
+         * For use when hosted suppressions are mirrored locally on a site requiring HTTP-Bearer-authentication
+         */
+        public static final String KEV_BEARER_TOKEN = "kev.bearertoken";
 
         /**
          * The properties key to control the skipping of the check for Known
@@ -298,13 +311,20 @@ public final class Settings {
          */
         public static final String SUPPRESSION_FILE = "suppression.file";
         /**
-         * The username used when connecting to the suppressionFiles.
+         * The properties key for the username used when connecting to the suppressionFiles.
+         * For use when your suppressionFiles are hosted on a site requiring HTTP-Basic-authentication.
          */
         public static final String SUPPRESSION_FILE_USER = "suppression.file.user";
         /**
-         * The password used when connecting to the suppressionFiles.
+         * The properties key for the password used when connecting to the suppressionFiles.
+         * For use when your suppressionFiles are hosted on a site requiring HTTP-Basic-authentication.
          */
         public static final String SUPPRESSION_FILE_PASSWORD = "suppression.file.password";
+        /**
+         * The properties key for the token used when connecting to the suppressionFiles.
+         * For use when your suppressionFiles are hosted on a site requiring HTTP-Bearer-authentication.
+         */
+        public static final String SUPPRESSION_FILE_BEARER_TOKEN = "suppression.file.bearertoken";
         /**
          * The key for the whether the hosted suppressions file datasource is
          * enabled.
@@ -317,15 +337,21 @@ public final class Settings {
 
         /**
          * The properties key for the hosted suppressions username.
-         * For use when hosted suppressions are mirrored locally on a site requiring authentication
+         * For use when hosted suppressions are mirrored locally on a site requiring HTTP-Basic-authentication
          */
         public static final String HOSTED_SUPPRESSIONS_USER = "hosted.suppressions.user";
 
         /**
          * The properties key for the hosted suppressions password.
-         * For use when hosted suppressions are mirrored locally on a site requiring authentication
+         * For use when hosted suppressions are mirrored locally on a site requiring HTTP-Basic-authentication
          */
         public static final String HOSTED_SUPPRESSIONS_PASSWORD = "hosted.suppressions.password";
+
+        /**
+         * The properties key for the hosted suppressions bearer token.
+         * For use when hosted suppressions are mirrored locally on a site requiring HTTP-Bearer-authentication
+         */
+        public static final String HOSTED_SUPPRESSIONS_BEARER_TOKEN = "hosted.suppressions.bearertoken";
 
         /**
          * The properties key for defining whether the hosted suppressions file
@@ -427,13 +453,20 @@ public final class Settings {
          */
         public static final String ANALYZER_RETIREJS_REPO_JS_URL = "analyzer.retirejs.repo.js.url";
         /**
-         * The properties key for the Nexus search credentials username.
+         * The properties key for the RetireJS Repository username.
+         * For use when the RetireJS Repository is mirrored on a site requiring HTTP-Basic-authentication.
          */
         public static final String ANALYZER_RETIREJS_REPO_JS_USER = "analyzer.retirejs.repo.js.username";
         /**
-         * The properties key for the Nexus search credentials password.
+         * The properties key for the RetireJS Repository password.
+         * For use when the RetireJS Repository is mirrored on a site requiring HTTP-Basic-authentication.
          */
         public static final String ANALYZER_RETIREJS_REPO_JS_PASSWORD = "analyzer.retirejs.repo.js.password";
+        /**
+         * The properties key for the token to download the RetireJS JSON data from an HTTP-Bearer-auth protected location.
+         * For use when the RetireJS Repository is mirrored on a site requiring HTTP-Bearer-authentication.
+         */
+        public static final String ANALYZER_RETIREJS_REPO_JS_BEARER_TOKEN = "analyzer.retirejs.repo.js.bearertoken";
         /**
          * The properties key for defining whether the RetireJS repository will
          * be updated regardless of the autoupdate settings.
@@ -622,12 +655,19 @@ public final class Settings {
         public static final String CENTRAL_CONTENT_URL = "central.content.url";
         /**
          * Key for the Username to obtain content from Maven Central.
+         * For use when the central content URL is reconfigured to a site requiring HTTP-Basic-authentication.
          */
         public static final String CENTRAL_CONTENT_USER = "central.content.username";
         /**
          * Key for the Password to obtain content from Maven Central.
+         * For use when the central content URL is reconfigured to a site requiring HTTP-Basic-authentication.
          */
         public static final String CENTRAL_CONTENT_PASSWORD = "central.content.password";
+        /**
+         * Key for the token to obtain content from Maven Central from an HTTP-Bearer-auth protected location.
+         * For use when the central content URL is reconfigured to a site requiring HTTP-Bearer-authentication.
+         */
+        public static final String CENTRAL_CONTENT_BEARER_TOKEN = "central.content.bearertoken";
         /**
          * The properties key for whether the Central analyzer should use
          * parallel processing.
@@ -666,12 +706,19 @@ public final class Settings {
         public static final String ANALYZER_CENTRAL_URL = "analyzer.central.url";
         /**
          * The properties key for the Central search username.
+         * For use when Central search is reconfigured to a site requiring HTTP-Basic-authentication.
          */
         public static final String ANALYZER_CENTRAL_USER = "analyzer.central.username";
         /**
          * The properties key for the Central search password.
+         * For use when Central search is reconfigured to a site requiring HTTP-Basic-authentication.
          */
         public static final String ANALYZER_CENTRAL_PASSWORD = "analyzer.central.password";
+        /**
+         * The properties key for the token for a HTTP Bearer protected Central search URL.
+         * For use when Central search is reconfigured to a site requiring HTTP-Bearer-authentication.
+         */
+        public static final String ANALYZER_CENTRAL_BEARER_TOKEN = "analyzer.central.bearertoken";
         /**
          * The properties key for the Central search query.
          */
