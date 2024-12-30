@@ -202,100 +202,90 @@ public final class Downloader {
                 tryConfigureProxyCredentials(credentialsProvider, authCache);
             }
         }
-        tryAddRetireJSCredentials(settings, credentialsProvider, authCache);
-        tryAddHostedSuppressionCredentials(settings, credentialsProvider, authCache);
-        tryAddKEVCredentials(settings, credentialsProvider, authCache);
-        tryAddNexusAnalyzerCredentials(settings, credentialsProvider, authCache);
-        tryAddCentralAnalyzerCredentials(settings, credentialsProvider, authCache);
-        tryAddCentralContentCredentials(settings, credentialsProvider, authCache);
-        tryAddNVDApiDatafeed(settings, credentialsProvider, authCache);
+        tryAddRetireJSCredentials();
+        tryAddHostedSuppressionCredentials();
+        tryAddKEVCredentials();
+        tryAddNexusAnalyzerCredentials();
+        tryAddCentralAnalyzerCredentials();
+        tryAddCentralContentCredentials();
+        tryAddNVDApiDatafeed();
         httpClientBuilder.setDefaultCredentialsProvider(credentialsProvider);
         httpClientBuilderExplicitNoproxy.setDefaultCredentialsProvider(credentialsProvider);
     }
 
-    private void tryAddRetireJSCredentials(Settings settings, CredentialsStore credentialsStore, AuthCache authCache) throws InvalidSettingException {
+    private void tryAddRetireJSCredentials() throws InvalidSettingException {
         if (settings.getString(Settings.KEYS.ANALYZER_RETIREJS_REPO_JS_PASSWORD) != null) {
-            addUserPasswordCreds(settings, credentialsStore,
-                    authCache, Settings.KEYS.ANALYZER_RETIREJS_REPO_JS_USER,
-                    Settings.KEYS.ANALYZER_RETIREJS_REPO_JS_URL,
-                    Settings.KEYS.ANALYZER_RETIREJS_REPO_JS_PASSWORD,
-                    "RetireJS repo.js");
+            addUserPasswordCreds(Settings.KEYS.ANALYZER_RETIREJS_REPO_JS_URL, "RetireJS repo.js",
+                    Settings.KEYS.ANALYZER_RETIREJS_REPO_JS_USER,
+                    Settings.KEYS.ANALYZER_RETIREJS_REPO_JS_PASSWORD
+            );
         }
     }
 
-    private void tryAddHostedSuppressionCredentials(Settings settings, CredentialsStore credentialsStore, AuthCache authCache) throws InvalidSettingException {
+    private void tryAddHostedSuppressionCredentials() throws InvalidSettingException {
         if (settings.getString(Settings.KEYS.HOSTED_SUPPRESSIONS_PASSWORD) != null) {
-            addUserPasswordCreds(settings, credentialsStore,
-                    authCache, Settings.KEYS.HOSTED_SUPPRESSIONS_USER,
-                    Settings.KEYS.HOSTED_SUPPRESSIONS_URL,
-                    Settings.KEYS.HOSTED_SUPPRESSIONS_PASSWORD,
-                    "Hosted suppressions");
+            addUserPasswordCreds(Settings.KEYS.HOSTED_SUPPRESSIONS_URL, "Hosted suppressions",
+                    Settings.KEYS.HOSTED_SUPPRESSIONS_USER,
+                    Settings.KEYS.HOSTED_SUPPRESSIONS_PASSWORD
+            );
         }
     }
 
-    private void tryAddKEVCredentials(Settings settings, CredentialsStore credentialsStore, AuthCache authCache) throws InvalidSettingException {
+    private void tryAddKEVCredentials() throws InvalidSettingException {
         if (settings.getString(Settings.KEYS.KEV_PASSWORD) != null) {
-            addUserPasswordCreds(settings, credentialsStore,
-                    authCache, Settings.KEYS.KEV_USER,
-                    Settings.KEYS.KEV_URL,
-                    Settings.KEYS.KEV_PASSWORD,
-                    "Known Exploited Vulnerabilities");
+            addUserPasswordCreds(Settings.KEYS.KEV_URL, "Known Exploited Vulnerabilities",
+                    Settings.KEYS.KEV_USER,
+                    Settings.KEYS.KEV_PASSWORD
+            );
         }
     }
 
-    private void tryAddNexusAnalyzerCredentials(Settings settings, CredentialsStore credentialsStore, AuthCache authCache) throws InvalidSettingException {
+    private void tryAddNexusAnalyzerCredentials() throws InvalidSettingException {
         if (settings.getString(Settings.KEYS.ANALYZER_NEXUS_PASSWORD) != null) {
-            addUserPasswordCreds(settings, credentialsStore,
-                    authCache, Settings.KEYS.ANALYZER_NEXUS_USER,
-                    Settings.KEYS.ANALYZER_NEXUS_URL,
-                    Settings.KEYS.ANALYZER_NEXUS_PASSWORD,
-                    "Nexus Analyzer");
+            addUserPasswordCreds(Settings.KEYS.ANALYZER_NEXUS_URL, "Nexus Analyzer",
+                    Settings.KEYS.ANALYZER_NEXUS_USER,
+                    Settings.KEYS.ANALYZER_NEXUS_PASSWORD
+            );
         }
     }
 
-    private void tryAddCentralAnalyzerCredentials(Settings settings, CredentialsStore credentialsStore, AuthCache authCache) throws InvalidSettingException {
+    private void tryAddCentralAnalyzerCredentials() throws InvalidSettingException {
         if (settings.getString(Settings.KEYS.ANALYZER_CENTRAL_PASSWORD) != null) {
-            addUserPasswordCreds(settings, credentialsStore,
-                    authCache, Settings.KEYS.ANALYZER_CENTRAL_USER,
-                    Settings.KEYS.ANALYZER_CENTRAL_URL,
-                    Settings.KEYS.ANALYZER_CENTRAL_PASSWORD,
-                    "Central Analyzer");
+            addUserPasswordCreds(Settings.KEYS.ANALYZER_CENTRAL_URL, "Central Analyzer",
+                    Settings.KEYS.ANALYZER_CENTRAL_USER,
+                    Settings.KEYS.ANALYZER_CENTRAL_PASSWORD
+            );
         }
     }
 
-    private void tryAddCentralContentCredentials(Settings settings, CredentialsStore credentialsStore, AuthCache authCache) throws InvalidSettingException {
+    private void tryAddCentralContentCredentials() throws InvalidSettingException {
         if (settings.getString(Settings.KEYS.CENTRAL_CONTENT_PASSWORD) != null) {
-            addUserPasswordCreds(settings, credentialsStore,
-                    authCache, Settings.KEYS.CENTRAL_CONTENT_USER,
-                    Settings.KEYS.CENTRAL_CONTENT_URL,
-                    Settings.KEYS.CENTRAL_CONTENT_PASSWORD,
-                    "Central Content");
+            addUserPasswordCreds(Settings.KEYS.CENTRAL_CONTENT_URL, "Central Content",
+                    Settings.KEYS.CENTRAL_CONTENT_USER,
+                    Settings.KEYS.CENTRAL_CONTENT_PASSWORD
+            );
         }
     }
 
-    private void tryAddNVDApiDatafeed(Settings settings, CredentialsStore credentialsStore, AuthCache authCache) throws InvalidSettingException {
+    private void tryAddNVDApiDatafeed() throws InvalidSettingException {
         if (settings.getString(Settings.KEYS.NVD_API_DATAFEED_PASSWORD) != null) {
-            addUserPasswordCreds(settings, credentialsStore, authCache,
+            addUserPasswordCreds(Settings.KEYS.NVD_API_DATAFEED_URL, "NVD API Datafeed",
                     Settings.KEYS.NVD_API_DATAFEED_USER,
-                    Settings.KEYS.NVD_API_DATAFEED_URL,
-                    Settings.KEYS.NVD_API_DATAFEED_PASSWORD,
-                    "NVD API Datafeed");
+                    Settings.KEYS.NVD_API_DATAFEED_PASSWORD
+            );
         }
     }
 
     /**
      * Add user/password credentials for the host/port of the URL, all configured in the settings, to the credential-store.
      *
-     * @param settings    The settings to retrieve the values from
-     * @param store       The credentialStore
-     * @param authCache   The authCache to register the authentication for the host of the url
-     * @param userKey     The key for a configured username credential part
      * @param urlKey      The key for a configured url for which the credentials hold
-     * @param passwordKey The key for a configured password credential part
      * @param desc        A descriptive text for use in error messages for this credential
+     * @param userKey     The key for a configured username credential part
+     * @param passwordKey The key for a configured password credential part
      * @throws InvalidSettingException When the password is empty or one of the other keys are not found in the settings.
      */
-    private void addUserPasswordCreds(Settings settings, CredentialsStore store, AuthCache authCache, String userKey, String urlKey, String passwordKey, String desc)
+    private void addUserPasswordCreds(String urlKey, String desc, String userKey, String passwordKey)
             throws InvalidSettingException {
         final String theUser = settings.getString(userKey);
         final String theURL = settings.getString(urlKey);
@@ -306,7 +296,7 @@ public final class Downloader {
         try {
             final URL parsedURL = new URL(theURL);
             final HttpHost scopeHost = new HttpHost(parsedURL.getProtocol(), parsedURL.getHost(), parsedURL.getPort());
-            addCredentials(store, scopeHost, desc, theUser, thePass, authCache);
+            addCredentials(credentialsProvider, scopeHost, desc, theUser, thePass, authCache);
         } catch (MalformedURLException e) {
             throw new InvalidSettingException(desc + " URL must be a valid URL", e);
         }
