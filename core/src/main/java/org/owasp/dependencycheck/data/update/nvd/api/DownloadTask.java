@@ -85,7 +85,8 @@ public class DownloadTask implements Callable<Future<NvdApiProcessor>> {
             LOGGER.info("Download Started for NVD Cache - {}", url);
             final long startDownload = System.currentTimeMillis();
             final File outputFile = settings.getTempFile("nvd-datafeed-", "json.gz");
-            Downloader.getInstance().fetchFile(u, outputFile, true, Settings.KEYS.NVD_API_DATAFEED_USER, Settings.KEYS.NVD_API_DATAFEED_PASSWORD);
+            Downloader.getInstance().fetchFile(u, outputFile, true, Settings.KEYS.NVD_API_DATAFEED_USER, Settings.KEYS.NVD_API_DATAFEED_PASSWORD,
+                    Settings.KEYS.NVD_API_DATAFEED_BEARER_TOKEN);
             if (this.processorService == null) {
                 return null;
             }
