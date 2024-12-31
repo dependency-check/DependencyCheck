@@ -32,6 +32,7 @@ import org.owasp.dependencycheck.Engine.Mode;
 import org.owasp.dependencycheck.analyzer.exception.AnalysisException;
 import org.owasp.dependencycheck.dependency.Dependency;
 import org.owasp.dependencycheck.exception.InitializationException;
+import org.owasp.dependencycheck.utils.Downloader;
 import org.owasp.dependencycheck.utils.Settings;
 import org.owasp.dependencycheck.utils.Settings.KEYS;
 import org.owasp.dependencycheck.xml.suppression.SuppressionRule;
@@ -152,6 +153,7 @@ public class AbstractSuppressionAnalyzerTest extends BaseTest {
         getSettings().setString(KEYS.SUPPRESSION_FILE, path);
         final AbstractSuppressionAnalyzerImpl fileAnalyzer = new AbstractSuppressionAnalyzerImpl();
         fileAnalyzer.initialize(getSettings());
+        Downloader.getInstance().configure(getSettings());
         Engine engine = new Engine(Mode.EVIDENCE_COLLECTION, getSettings());
         fileAnalyzer.prepare(engine);
         int count = AbstractSuppressionAnalyzer.getRuleCount(engine);
