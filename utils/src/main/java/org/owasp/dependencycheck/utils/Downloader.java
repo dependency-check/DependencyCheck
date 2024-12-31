@@ -433,10 +433,10 @@ public final class Downloader {
      */
     public void fetchFile(URL url, File outputPath, boolean useProxy, String userKey, String passwordKey, String tokenKey)
             throws DownloadFailedException, TooManyRequestsException, ResourceNotFoundException, URLConnectionFailureException {
-        if ("file".equals(url.getProtocol())
-                || userKey == null || settings.getString(userKey) == null
-                || passwordKey == null || settings.getString(passwordKey) == null
-        ) {
+        final boolean basicConfigured = userKey != null && settings.getString(userKey) != null
+                && passwordKey != null && settings.getString(passwordKey) != null;
+        final boolean tokenConfigured = tokenKey != null && settings.getString(tokenKey) != null;
+        if ("file".equals(url.getProtocol()) || (!basicConfigured && !tokenConfigured)) {
             // no credentials configured, so use the default fetchFile
             fetchFile(url, outputPath, useProxy);
             return;
