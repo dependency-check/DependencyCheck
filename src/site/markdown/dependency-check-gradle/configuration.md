@@ -66,6 +66,9 @@ The following properties can be configured in the dependencyCheck task. However,
 
 Config Group | Property          | Description                                                                                                                                                     | Default Value
 -------------|-------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------|------------------
+&nbsp;       | suppressionFileUser        | Credentials used for basic authentication for web-hosted suppression files                                                                             | &nbsp; |
+&nbsp;       | suppressionFilePassword    | Credentials used for basic authentication for web-hosted suppression files                                                                             | &nbsp; |
+&nbsp;       | suppressionFileBearerToken | Credentials used for bearer authentication for web-hosted suppression files                                                                            | &nbsp; |
 nvd          | apiKey            | The API Key to access the NVD API; obtained from https://nvd.nist.gov/developers/request-an-api-key                                                             | &nbsp;                                                              |
 nvd          | endpoint          | The NVD API endpoint URL; setting this is uncommon.                                                                                                             | https://services.nvd.nist.gov/rest/json/cves/2.0                            |
 nvd          | maxRetryCount     | The maximum number of retry requests for a single call to the NVD API.                                                                                          | 10                                                                  |
@@ -74,6 +77,7 @@ nvd          | resultsPerPage    | The number records for a single page from NVD
 nvd          | datafeedUrl       | The URL for the NVD API Data feed that can be generated using https://github.com/jeremylong/Open-Vulnerability-Project/tree/main/vulnz#caching-the-nvd-cve-data | &nbsp;                   |
 nvd          | datafeedUser      | Credentials used for basic authentication for the NVD API Data feed.                                                                                            | &nbsp;                                                              |
 nvd          | datafeedPassword  | Credentials used for basic authentication for the NVD API Data feed.                                                                                            | &nbsp;                                                              |
+nvd          | datafeedBearerToken  | Credentials used for bearer authentication for the NVD API Data feed.                                                                                        | &nbsp;                                                              |
 nvd          | validForHours     | The number of hours to wait before checking for new updates from the NVD. The default is 4 hours.                                                               | 4                                                                   |
 data         | directory         | Sets the data directory to hold SQL CVEs contents. This should generally not be changed.                                                                        | &nbsp;                                                              |
 data         | driver            | The database driver full classname; note, only needs to be set if the driver is not JDBC4 compliant or the JAR is outside of the class path.                    | &nbsp;                                                              |
@@ -81,6 +85,15 @@ data         | driverPath        | The path to the database driver JAR file; onl
 data         | connectionString  | The connection string used to connect to the database. See using a [database server](../data/database.html).                                                    | &nbsp;                                                              |
 data         | username          | The username used when connecting to the database.                                                                                                              | &nbsp;                                                              |
 data         | password          | The password used when connecting to the database.                                                                                                              | &nbsp;                                                              |
+slack        | enabled               | Whether or not slack notifications are enabled.                                                                   | false
+slack        | webhookUrl            | The custom incoming webhook URL to receive notifications.                                                         | &nbsp;
+hostedSuppressions | enabled         | Whether the hosted suppressions file will be used.                                                                | true
+hostedSuppressions | forceupdate     | Sets whether hosted suppressions file will update regardless of the `autoupdate` setting.                         | false
+hostedSuppressions | url             | The URL to a mirrored copy of the hosted suppressions file for internet-constrained environments.                 | https://jeremylong.github.io/DependencyCheck/suppressions/publishedSuppressions.xml
+hostedSuppressions | user            | Credentials used for basic authentication for the hosted suppressions file.                                                                                     | &nbsp;                                                              |
+hostedSuppressions | password        | Credentials used for basic authentication for the hosted suppressions file.                                                                                     | &nbsp;                                                              |
+hostedSuppressions | bearerToken     | Credentials used for bearer authentication for the hosted suppressions file.                                                                                    | &nbsp;                                                              |
+hostedSuppressions | validForHours   | The number of hours to wait before checking for new updates of the hosted suppressions file .                     | 2
 
 #### Example
 ```groovy
@@ -100,8 +113,6 @@ Config Group | Property              | Description                              
 -------------|-----------------------|-------------------------------------------------------------------------------------------------------------------|------------------
 analyzers    | experimentalEnabled   | Sets whether the [experimental analyzers](../analyzers/index.html) will be used. If not set to true the analyzers marked as experimental (see below) will not be used | false
 analyzers    | archiveEnabled        | Sets whether the Archive Analyzer will be used.                                                                   | true
-analyzers    | knownExploitedEnabled | Sets whether the Known Exploited Vulnerability update and analyzer are enabled.                                   | true
-analyzers    | knownExploitedURL     | Sets URL to the CISA Known Exploited Vulnerabilities JSON data feed.                                              | https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json
 analyzers    | zipExtensions         | A comma-separated list of additional file extensions to be treated like a ZIP file, the contents will be extracted and analyzed. | &nbsp;
 analyzers    | jarEnabled            | Sets whether Jar Analyzer will be used.                                                                           | true
 analyzers    | dartEnabled           | Sets whether the [experimental](../analyzers/index.html) Dart Analyzer will be used.                              | true
@@ -145,9 +156,17 @@ artifactory  | parallelAnalysis      | Whether the Artifactory analyzer should b
 artifactory  | username              | The user name (only used with API token) to connect to Artifactory instance.                                      | &nbsp;
 artifactory  | apiToken              | The API token to connect to Artifactory instance, only used if the username or the API key are not defined by artifactoryAnalyzerServerId,artifactoryAnalyzerUsername or artifactoryAnalyzerApiToken | &nbsp;
 artifactory  | bearerToken           | The bearer token to connect to Artifactory instance                                                               | &nbsp;
+kev          | enabled               | Sets whether the Known Exploited Vulnerability update and analyzer are enabled.                                   | true                                                                                     |
+kev          | url                   | The URL to (a mirror of) the CISA Known Exploited Vulnerabilities JSON data feed.                                 | https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json      |
+kev          | user                  | Credentials used for basic authentication for the CISA Known Exploited Vulnerabilities JSON data feed.            | &nbsp;                                                                                   |
+kev          | password              | Credentials used for basic authentication for the CISA Known Exploited Vulnerabilities JSON data feed.            | &nbsp;                                                                                   |
+kev          | bearerToken           | Credentials used for bearer authentication for the CISA Known Exploited Vulnerabilities JSON data feed.           | &nbsp;                                                                                   |
+kev          | validForHours         | The number of hours to wait before checking for new updates of the hosted suppressions file .                     | 2                                                                                        |
 nodeAudit    | enabled               | Sets whether the Node Audit Analyzer should be used. This analyzer requires an internet connection.               | true
 nodeAudit    | useCache              | Sets whether the Node Audit Analyzer should cache results locally.                                                | true
 nodeAudit    | skipDevDependencies   | Sets whether the Node Audit Analyzer should skip devDependencies.                                                 | false
+nodeAudit    | pnpmEnabled           | Sets whether the Pnpm Audit Analyzer should be used. This analyzer requires yarn and an internet connection.      | true
+nodeAudit    | pnpmPath              | Sets the path to the `pnpm` executable.                                                                           | &nbsp;
 nodeAudit    | yarnEnabled           | Sets whether the Yarn Audit Analyzer should be used. This analyzer requires yarn and an internet connection.      | true
 nodeAudit    | yarnPath              | Sets the path to the `yarn` executable.                                                                           | &nbsp;
 nodeAudit    | pnpmEnabled           | Sets whether the Pnpm Audit Analyzer should be used. This analyzer requires pnpm and an internet connection.      | true
@@ -156,18 +175,15 @@ nodeAudit    | url                   | The node audit API url to use.           
 retirejs     | enabled               | Sets whether the RetireJS Analyzer should be used.                                                                | true
 retirejs     | forceupdate           | Sets whether the RetireJS Analyzer should update regardless of the `autoupdate` setting.                          | false
 retirejs     | retireJsUrl           | The URL to the Retire JS repository.                                                                              | https://raw.githubusercontent.com/Retirejs/retire.js/master/repository/jsrepository.json
+retirejs     | user                  | Credentials used for basic authentication for the Retire JS repository URL.                                       | &nbsp;                                                                                   |
+retirejs     | password              | Credentials used for basic authentication for the Retire JS repository URL.                                       | &nbsp;                                                                                   |
+retirejs     | bearerToken           | Credentials used for bearer authentication for the Retire JS repository URL.                                      | &nbsp;                                                                                   |
 retirejs     | filterNonVulnerable   | Configures the RetireJS Analyzer to remove non-vulnerable JS dependencies from the report.                        | false
 retirejs     | filters               | Configures the list of regular expessions used to filter JS files based on content.                               | &nbsp;
 ossIndex     | enabled               | Sets whether Sonatype's [OSS Index Analyzer](../analyzers/oss-index-analyzer.html) will be used. This analyzer requires an internet connection.                                                                  | true
 ossIndex     | username              | The optional user name to connect to Sonatype's OSS Index.                                                        | &nbsp;
 ossIndex     | password              | The optional passwod or API token to connect to Sonatype's OSS Index,                                             | &nbsp;
 ossIndex     | warnOnlyOnRemoteErrors| Sets whether remote errors from the OSS Index (e.g. BAD GATEWAY, RATE LIMIT EXCEEDED) will result in warnings only instead of failing execution. | false
-slack        | enabled               | Whether or not slack notifications are enabled.                                                                   | false
-slack        | webhookUrl            | The custom incoming webhook URL to receive notifications.                                                         | &nbsp;
-hostedSuppressions | enabled         | Whether the hosted suppressions file will be used.                                                                | true
-hostedSuppressions | forceupdate     | Sets whether hosted suppressions file will update regardless of the `autoupdate` setting.                         | false
-hostedSuppressions | url             | The URL to a mirrored copy of the hosted suppressions file for internet-constrained environments.                 | https://jeremylong.github.io/DependencyCheck/suppressions/publishedSuppressions.xml
-hostedSuppressions | validForHours   | The number of hours to wait before checking for new updates of the hosted suppressions file .                     | 2
 
 #### Example
 ```groovy
