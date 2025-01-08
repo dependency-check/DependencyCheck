@@ -204,6 +204,7 @@ Copyright (c) 2012 Jeremy Long. All Rights Reserved.
         <dependency>
             <groupId>io.github.jeremylong</groupId>
             <artifactId>jcs3-slf4j</artifactId>
+            <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>com.github.package-url</groupId>
@@ -340,13 +341,56 @@ Copyright (c) 2012 Jeremy Long. All Rights Reserved.
             <groupId>commons-validator</groupId>
             <artifactId>commons-validator</artifactId>
         </dependency>
-        <dependency><!--upgrade transitive dependency of commons-validator due to reported vulns-->
-            <groupId>commons-beanutils</groupId>
-            <artifactId>commons-beanutils</artifactId>
-        </dependency>
         <dependency>
             <groupId>org.eclipse.packager</groupId>
             <artifactId>packager-rpm</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.httpcomponents.core5</groupId>
+            <artifactId>httpcore5</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.httpcomponents.client5</groupId>
+            <artifactId>httpclient5</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-annotations</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.sonatype.goodies</groupId>
+            <artifactId>package-url-java</artifactId>
+            <version>1.1.1</version>
+        </dependency>
+        <dependency>
+            <groupId>joda-time</groupId>
+            <artifactId>joda-time</artifactId>
+            <version>2.10.4</version>
+        </dependency>
+        <dependency>
+            <groupId>org.sonatype.ossindex</groupId>
+            <artifactId>ossindex-service-api</artifactId>
+            <version>1.8.2</version>
+        </dependency>
+        <dependency>
+            <groupId>com.esotericsoftware</groupId>
+            <artifactId>minlog</artifactId>
+            <version>1.3.1</version>
+        </dependency>
+        <dependency>
+            <groupId>com.vaadin.external.google</groupId>
+            <artifactId>android-json</artifactId>
+            <version>0.0.20131108.vaadin1</version>
+        </dependency>
+        <dependency>
+            <groupId>xml-apis</groupId>
+            <artifactId>xml-apis</artifactId>
+            <version>1.3.03</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
     <profiles>
@@ -457,6 +501,48 @@ Copyright (c) 2012 Jeremy Long. All Rights Reserved.
             <activation>
                 <activeByDefault>true</activeByDefault>
             </activation>
+            <build>
+                <pluginManagement>
+                    <plugins>
+                        <plugin>
+                            <groupId>org.apache.maven.plugins</groupId>
+                            <artifactId>maven-dependency-plugin</artifactId>
+                            <version>${maven-dependency-plugin.version}</version>
+                            <configuration>
+                                <usedDependencies combine.children="append">
+                                    <!-- logback is our logging implementation during test and is test-scoped due to a lack of a
+                                    test-runtime scope - it should be considered 'used' in the context of dependency:analyze-report -->
+                                    <usedDependency>ch.qos.logback:logback-classic</usedDependency>
+                                    <!-- dependencies to be copied for use in unit/integration testcases are, due to
+                                    lack of a test-runtime scope, configured as test-scoped / optional and should be
+                                    considered used for dependency:analyze-report -->
+                                    <usedDependency>org.springframework:spring-webmvc</usedDependency>
+                                    <usedDependency>org.mortbay.jetty:jetty</usedDependency>
+                                    <usedDependency>net.sf.ehcache:ehcache-core</usedDependency>
+                                    <usedDependency>com.google.inject:guice</usedDependency>
+                                    <usedDependency>org.apache.struts:struts2-core</usedDependency>
+                                    <usedDependency>xalan:xalan</usedDependency>
+                                    <usedDependency>com.hazelcast:hazelcast</usedDependency>
+                                    <usedDependency>commons-fileupload:commons-fileupload</usedDependency>
+                                    <usedDependency>org.jslipc:jslipc</usedDependency>
+                                    <usedDependency>com.thoughtworks.xstream:xstream</usedDependency>
+                                    <usedDependency>org.dojotoolkit:dojo-war</usedDependency>
+                                    <usedDependency>org.apache.openjpa:openjpa</usedDependency>
+                                    <usedDependency>uk.ltd.getahead:dwr</usedDependency>
+                                    <usedDependency>org.glassfish.main.admingui:war</usedDependency>
+                                    <usedDependency>org.springframework.retry:spring-retry</usedDependency>
+                                    <usedDependency>io.github.faob-dev:aar</usedDependency>
+                                    <usedDependency>org.apache.maven.scm:maven-scm-provider-cvsexe</usedDependency>
+                                    <usedDependency>org.apache.axis2:axis2-spring</usedDependency>
+                                    <usedDependency>org.apache.geronimo.daytrader:daytrader-ear</usedDependency>
+                                    <usedDependency>org.springframework.security:spring-security-web</usedDependency>
+                                    <usedDependency>org.apache.axis2:axis2-adb</usedDependency>
+                                </usedDependencies>
+                            </configuration>
+                        </plugin>
+                    </plugins>
+                </pluginManagement>
+            </build>
             <dependencies>
                 <!-- The following dependencies are only used during testing
                 and must not be converted to a properties based version number -->

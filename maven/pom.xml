@@ -92,6 +92,17 @@ Copyright (c) 2013 Jeremy Long. All Rights Reserved.
             </plugin>
         </plugins>
     </reporting>
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.apache.maven</groupId>
+                <artifactId>maven-resolver-provider</artifactId>
+                <version>${maven.api.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
     <dependencies>
         <dependency>
             <groupId>org.owasp</groupId>
@@ -102,10 +113,6 @@ Copyright (c) 2013 Jeremy Long. All Rights Reserved.
             <groupId>org.owasp</groupId>
             <artifactId>dependency-check-utils</artifactId>
             <version>${project.parent.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-jcs3-core</artifactId>
         </dependency>
         <dependency>
             <groupId>org.mockito</groupId>
@@ -130,6 +137,10 @@ Copyright (c) 2013 Jeremy Long. All Rights Reserved.
             <groupId>org.apache.maven</groupId>
             <artifactId>maven-core</artifactId>
             <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.maven.doxia</groupId>
+            <artifactId>doxia-sink-api</artifactId>
         </dependency>
         <dependency>
             <groupId>org.apache.maven.shared</groupId>
@@ -178,6 +189,27 @@ Copyright (c) 2013 Jeremy Long. All Rights Reserved.
             <groupId>org.apache.maven</groupId>
             <artifactId>maven-artifact</artifactId>
             <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.maven.resolver</groupId>
+            <artifactId>maven-resolver-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.maven.shared</groupId>
+            <artifactId>maven-common-artifact-filters</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.github.jeremylong</groupId>
+            <artifactId>open-vulnerability-clients</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.github.package-url</groupId>
+            <artifactId>packageurl-java</artifactId>
         </dependency>
     </dependencies>
     <profiles>

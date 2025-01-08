@@ -128,7 +128,7 @@ Copyright (c) 2012 - Jeremy Long
         <maven.api.version>3.6.3</maven.api.version>
         <reporting.checkstyle-plugin.version>3.6.0</reporting.checkstyle-plugin.version>
         <reporting.checkstyle.tool.version>9.3</reporting.checkstyle.tool.version>
-        <doxia-module-markdown.version>2.0.0</doxia-module-markdown.version>
+        <doxia-base.version>2.0.0</doxia-base.version>
         <maven-antrun-plugin.version>3.1.0</maven-antrun-plugin.version>
         <maven-dependency-plugin.version>3.8.1</maven-dependency-plugin.version>
         <maven-javadoc-plugin.version>3.11.2</maven-javadoc-plugin.version>
@@ -142,12 +142,14 @@ Copyright (c) 2012 - Jeremy Long
         <taglist-maven-plugin.version>3.2.1</taglist-maven-plugin.version>
         <versions-maven-plugin.version>2.18.0</versions-maven-plugin.version>
         <jetbrains.annotations.version>26.0.1</jetbrains.annotations.version>
+        <findbugs-jsr305.version>3.0.2</findbugs-jsr305.version>
         <com.h2database.version>2.3.232</com.h2database.version>
         <commons-cli.version>1.9.0</commons-cli.version>
         <commons-io.version>2.18.0</commons-io.version>
         <commons-lang3.version>3.17.0</commons-lang3.version>
         <commons-text.version>1.13.0</commons-text.version>
-        <httpcomponents.version>5.4.1</httpcomponents.version>
+        <httpcomponents.client.version>5.4.1</httpcomponents.client.version>
+        <httpcomponents.core.version>5.3.1</httpcomponents.core.version>
         <!-- note that logging will be noisy and broken until we upgrade to 3.2
             See https://issues.apache.org/jira/browse/JCS-232 and
             https://github.com/apache/commons-jcs/pull/120 -->
@@ -167,12 +169,14 @@ Copyright (c) 2012 - Jeremy Long
         <maven-dependency-tree.version>3.3.0</maven-dependency-tree.version>
         <org.glassfish.javax.json.version>1.1.4</org.glassfish.javax.json.version>
         <maven-artifact-transfer.version>0.13.1</maven-artifact-transfer.version>
+        <maven-common-artifact-filters.version>3.4.0</maven-common-artifact-filters.version>
         <groovy-all.version>2.4.21</groovy-all.version>
         <gmavenplus-plugin.version>4.1.1</gmavenplus-plugin.version>
         <com.h3xstream.retirejs.core.version>3.0.4</com.h3xstream.retirejs.core.version>
         <jackson.version>2.18.2</jackson.version>
         <!--necassary for some IDEs to be able to execute test cases (Netbeans)-->
         <surefireArgLine />
+        <mock-server.version>5.15.0</mock-server.version>
     </properties>
     <distributionManagement>
         <snapshotRepository>
@@ -688,13 +692,6 @@ Copyright (c) 2012 - Jeremy Long
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-site-plugin</artifactId>
-                <dependencies>
-                    <dependency>
-                        <groupId>org.apache.maven.doxia</groupId>
-                        <artifactId>doxia-module-markdown</artifactId>
-                        <version>${doxia-module-markdown.version}</version>
-                    </dependency>
-                </dependencies>
                 <configuration>
                     <skipDeploy>true</skipDeploy>
                 </configuration>
@@ -945,14 +942,20 @@ Copyright (c) 2012 - Jeremy Long
             </dependency>
             <dependency>
                 <groupId>org.mock-server</groupId>
-                <artifactId>mockserver-netty</artifactId>
-                <version>5.15.0</version>
+                <artifactId>mockserver-core</artifactId>
+                <version>${mock-server.version}</version>
                 <scope>test</scope>
             </dependency>
             <dependency>
                 <groupId>org.mock-server</groupId>
+                <artifactId>mockserver-client-java</artifactId>
+                <scope>test</scope>
+                <version>${mock-server.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.mock-server</groupId>
                 <artifactId>mockserver-junit-rule</artifactId>
-                <version>5.15.0</version>
+                <version>${mock-server.version}</version>
                 <scope>test</scope>
             </dependency>
             <dependency>
@@ -969,7 +972,12 @@ Copyright (c) 2012 - Jeremy Long
             <dependency>
                 <groupId>org.apache.httpcomponents.client5</groupId>
                 <artifactId>httpclient5</artifactId>
-                <version>${httpcomponents.version}</version>
+                <version>${httpcomponents.client.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.httpcomponents.core5</groupId>
+                <artifactId>httpcore5</artifactId>
+                <version>${httpcomponents.core.version}</version>
             </dependency>
             <dependency>
                 <groupId>io.github.jeremylong</groupId>
@@ -1027,11 +1035,6 @@ Copyright (c) 2012 - Jeremy Long
                 <groupId>commons-cli</groupId>
                 <artifactId>commons-cli</artifactId>
                 <version>${commons-cli.version}</version>
-            </dependency>
-            <dependency><!--upgrade transitive dependency due to reported vulns-->
-                <groupId>commons-beanutils</groupId>
-                <artifactId>commons-beanutils</artifactId>
-                <version>1.9.4</version>
             </dependency>
             <dependency><!--upgrade transitive dependency due to reported vulns-->
                 <groupId>org.codehaus.plexus</groupId>
@@ -1260,6 +1263,21 @@ Copyright (c) 2012 - Jeremy Long
                 <version>${maven-artifact-transfer.version}</version>
             </dependency>
             <dependency>
+                <groupId>org.apache.maven.shared</groupId>
+                <artifactId>maven-common-artifact-filters</artifactId>
+                <version>${maven-common-artifact-filters.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.maven.doxia</groupId>
+                <artifactId>doxia-sink-api</artifactId>
+                <version>${doxia-base.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.google.code.findbugs</groupId>
+                <artifactId>jsr305</artifactId>
+                <version>${findbugs-jsr305.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>org.sonatype.ossindex</groupId>
                 <artifactId>ossindex-service-client</artifactId>
                 <version>1.8.2</version>
@@ -1310,6 +1328,7 @@ Copyright (c) 2012 - Jeremy Long
         </dependencies>
     </dependencyManagement>
     <dependencies>
+        <!-- region generic test dependencies -->
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
@@ -1320,9 +1339,17 @@ Copyright (c) 2012 - Jeremy Long
             <artifactId>hamcrest</artifactId>
             <scope>test</scope>
         </dependency>
+        <!-- endregion -->
+        <!-- region generic annotation libraries for compile / codereview relevant annotations -->
         <dependency>
             <groupId>org.jetbrains</groupId>
             <artifactId>annotations</artifactId>
+            <scope>compile</scope>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>com.google.code.findbugs</groupId>
+            <artifactId>jsr305</artifactId>
             <scope>compile</scope>
             <optional>true</optional>
         </dependency>
@@ -1332,6 +1359,7 @@ Copyright (c) 2012 - Jeremy Long
             <scope>compile</scope>
             <optional>true</optional>
         </dependency>
+        <!-- endregion -->
     </dependencies>
     <profiles>
         <profile>

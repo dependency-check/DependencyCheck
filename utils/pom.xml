@@ -54,8 +54,17 @@ Copyright (c) 2014 - Jeremy Long. All Rights Reserved.
             <artifactId>httpclient5</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.apache.httpcomponents.core5</groupId>
+            <artifactId>httpcore5</artifactId>
+        </dependency>
+        <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
+            <version>${jackson.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-core</artifactId>
             <version>${jackson.version}</version>
         </dependency>
         <dependency>
@@ -75,7 +84,18 @@ Copyright (c) 2014 - Jeremy Long. All Rights Reserved.
         </dependency>
         <dependency>
             <groupId>org.mock-server</groupId>
-            <artifactId>mockserver-netty</artifactId>
+            <artifactId>mockserver-core</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mock-server</groupId>
+            <artifactId>mockserver-client-java</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-codec-http</artifactId>
+            <version>4.1.115.Final</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -84,6 +104,26 @@ Copyright (c) 2014 - Jeremy Long. All Rights Reserved.
             <scope>test</scope>
         </dependency>
     </dependencies>
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-dependency-plugin</artifactId>
+                    <version>${maven-dependency-plugin.version}</version>
+                    <configuration>
+                        <usedDependencies combine.children="append">
+                            <!-- logback is our logging implementation during test and is test-scoped due to a lack of a
+                            test-runtime scope - it should be considered 'used' in the context of dependency:analyze-report -->
+                            <usedDependency>ch.qos.logback:logback-classic</usedDependency>
+                            <usedDependency>ch.qos.logback:logback-core</usedDependency>
+                        </usedDependencies>
+                    </configuration>
+                </plugin>
+
+            </plugins>
+        </pluginManagement>
+    </build>
     <profiles>
         <profile>
             <id>utils</id>
