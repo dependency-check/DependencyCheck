@@ -206,6 +206,7 @@ public final class Downloader {
         tryAddHostedSuppressionCredentials();
         tryAddKEVCredentials();
         tryAddNexusAnalyzerCredentials();
+        tryAddArtifactoryCredentials();
         tryAddCentralAnalyzerCredentials();
         tryAddCentralContentCredentials();
         tryAddNVDApiDatafeed();
@@ -254,6 +255,15 @@ public final class Downloader {
             configureCredentials(Settings.KEYS.ANALYZER_CENTRAL_URL, "Central Analyzer",
                     Settings.KEYS.ANALYZER_CENTRAL_USER, Settings.KEYS.ANALYZER_CENTRAL_PASSWORD,
                     Settings.KEYS.ANALYZER_CENTRAL_BEARER_TOKEN
+            );
+        }
+    }
+
+    private void tryAddArtifactoryCredentials() throws InvalidSettingException {
+        if (!settings.getString(Settings.KEYS.ANALYZER_ARTIFACTORY_URL, "").isBlank()) {
+            configureCredentials(Settings.KEYS.ANALYZER_ARTIFACTORY_URL, "Artifactory Analyzer",
+                    Settings.KEYS.ANALYZER_ARTIFACTORY_API_USERNAME, Settings.KEYS.ANALYZER_ARTIFACTORY_API_TOKEN,
+                    Settings.KEYS.ANALYZER_ARTIFACTORY_BEARER_TOKEN
             );
         }
     }
