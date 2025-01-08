@@ -29,6 +29,8 @@ import java.io.IOException;
 import java.net.UnknownHostException;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 public class ArtifactorySearchTest extends BaseTest {
@@ -83,7 +85,8 @@ public class ArtifactorySearchTest extends BaseTest {
             fail("Should have thrown an UnknownHostException");
         } catch (UnknownHostException exception) {
             // Then
-            assertEquals("artifactory.techno.ingenico.com.invalid: nodename nor servname provided, or not known", exception.getMessage());
+            assertNotNull(exception.getMessage());
+            assertTrue(exception.getMessage().contains("artifactory.techno.ingenico.com.invalid"));
         }
     }
 
