@@ -43,7 +43,6 @@ public class DownloaderIT extends BaseTest {
     @Override
     public void setUp() {
         super.setUp();
-        applyHackFix();
     }
 
     /**
@@ -84,21 +83,4 @@ public class DownloaderIT extends BaseTest {
         Downloader.getInstance().fetchAndHandle(url, versionHandler);
     }
 
-    /**
-     * Upgrading to org.mock-server:mockserver-netty:5.8.0 caused this test case
-     * to fail as netty does not allow TLSv1.3 to be "used" in Java 1.8. Under
-     * 1.8 for some reason `https.protocols` includes TLSv1.3 even though it is
-     * not supported in most implementations. Thus, we need to explicitly remove
-     * it for this test case to work.
-     */
-    private void applyHackFix() {
-        String httpProtocols = System.getProperty("https.protocols");
-        if (httpProtocols != null && httpProtocols.contains(",TLSv1.3")) {
-            httpProtocols = httpProtocols.replace(",TLSv1.3", "");
-            System.setProperty("https.protocols", httpProtocols);
-        } else if (httpProtocols != null && httpProtocols.contains("TLSv1.3,")) {
-            httpProtocols = httpProtocols.replace("TLSv1.3,", "");
-            System.setProperty("https.protocols", httpProtocols);
-        }
-    }
 }

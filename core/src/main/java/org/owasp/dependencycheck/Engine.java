@@ -86,7 +86,6 @@ import static org.owasp.dependencycheck.analyzer.AnalysisPhase.PRE_IDENTIFIER_AN
 import static org.owasp.dependencycheck.analyzer.AnalysisPhase.PRE_INFORMATION_COLLECTION;
 import org.owasp.dependencycheck.analyzer.DependencyBundlingAnalyzer;
 import org.owasp.dependencycheck.dependency.naming.Identifier;
-import org.owasp.dependencycheck.utils.Utils;
 
 /**
  * Scans files, directories, etc. for Dependencies. Analyzers are loaded and
@@ -190,8 +189,6 @@ public class Engine implements FileFilter, AutoCloseable {
         this.serviceClassLoader = serviceClassLoader;
         this.mode = mode;
         this.accessExternalSchema = System.getProperty("javax.xml.accessExternalSchema");
-
-        checkRuntimeVersion();
 
         initializeEngine();
     }
@@ -1284,19 +1281,6 @@ public class Engine implements FileFilter, AutoCloseable {
             return count == left.size();
         }
         return false;
-    }
-
-    /**
-     * Checks that if Java 8 is being used, it is at least update 251. This is
-     * required as a new method was introduced that is used by Apache HTTP
-     * Client. See
-     * https://stackoverflow.com/questions/76226322/exception-in-thread-httpclient-dispatch-1-java-lang-nosuchmethoderror-javax-n#comment134427003_76226322
-     */
-    private void checkRuntimeVersion() {
-        if (Utils.getJavaVersion() == 8 && Utils.getJavaUpdateVersion() < 251) {
-            LOGGER.error("Non-supported Java Runtime: dependency-check requires at least Java 8 update 251 or higher.");
-            throw new RuntimeException("dependency-check requires Java 8 update 251 or higher");
-        }
     }
 
     /**
