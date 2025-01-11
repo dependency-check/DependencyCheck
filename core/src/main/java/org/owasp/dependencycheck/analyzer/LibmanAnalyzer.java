@@ -208,8 +208,10 @@ public class LibmanAnalyzer extends AbstractFileTypeAnalyzer {
                 child.setName(name);
                 child.setVersion(version);
 
-                child.addEvidence(EvidenceType.VENDOR, FILE_NAME, "vendor", (vendor != null ? vendor : name),
-                        Confidence.HIGHEST);
+                if (vendor != null) {
+                    child.addEvidence(EvidenceType.VENDOR, FILE_NAME, "vendor", vendor, Confidence.HIGHEST);    
+                }
+                child.addEvidence(EvidenceType.VENDOR, FILE_NAME, "name", name, Confidence.HIGH);
                 child.addEvidence(EvidenceType.PRODUCT, FILE_NAME, "name", name, Confidence.HIGHEST);
                 child.addEvidence(EvidenceType.VERSION, FILE_NAME, "version", version, Confidence.HIGHEST);
 

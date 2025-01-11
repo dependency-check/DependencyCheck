@@ -166,6 +166,7 @@ public class MixAuditProcessor extends Processor<InputStream> {
 
         dep.addEvidence(EvidenceType.VERSION, "mix_audit", "Version", version, Confidence.HIGHEST);
         dep.addEvidence(EvidenceType.PRODUCT, "mix_audit", "Package", packageName, Confidence.HIGHEST);
+        dep.addEvidence(EvidenceType.VENDOR, "mix_audit", "Package", packageName, Confidence.HIGH);
 
         try {
             final PackageURL purl = PackageURLBuilder.aPackageURL().withType("hex").withName(packageName)

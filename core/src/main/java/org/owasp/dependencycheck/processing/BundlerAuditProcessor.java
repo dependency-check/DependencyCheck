@@ -319,6 +319,7 @@ public class BundlerAuditProcessor extends Processor<InputStream> {
         dependency.setSha1sum(Checksum.getSHA1Checksum(displayFileName));
         dependency.setEcosystem(DEPENDENCY_ECOSYSTEM);
         dependency.addEvidence(EvidenceType.PRODUCT, "bundler-audit", "Name", gem, Confidence.HIGHEST);
+        dependency.addEvidence(EvidenceType.VENDOR, "bundler-audit", "Name", gem, Confidence.HIGH);
         //TODO add package URL - note, this may require parsing the gemfile.lock and getting the version for each entry
 
         dependency.setDisplayFileName(displayFileName);

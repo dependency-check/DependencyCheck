@@ -260,6 +260,7 @@ public class CocoaPodsAnalyzer extends AbstractFileTypeAnalyzer {
             final String summary = determineEvidence(contents, blockVariable, "summary");
             if (!summary.isEmpty()) {
                 dependency.addEvidence(EvidenceType.PRODUCT, PODSPEC, "summary", summary, Confidence.HIGHEST);
+                dependency.addEvidence(EvidenceType.VENDOR, PODSPEC, "summary", summary, Confidence.MEDIUM);
             }
 
             final String author = determineEvidence(contents, blockVariable, "authors?");
@@ -269,6 +270,7 @@ public class CocoaPodsAnalyzer extends AbstractFileTypeAnalyzer {
             final String homepage = determineEvidence(contents, blockVariable, "homepage");
             if (!homepage.isEmpty()) {
                 dependency.addEvidence(EvidenceType.VENDOR, PODSPEC, "homepage", homepage, Confidence.HIGHEST);
+                dependency.addEvidence(EvidenceType.PRODUCT, PODSPEC, "homepage", homepage, Confidence.LOW);
             }
             final String license = determineEvidence(contents, blockVariable, "licen[cs]es?");
             if (!license.isEmpty()) {

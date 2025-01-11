@@ -207,6 +207,7 @@ public class PinnedMavenInstallAnalyzer extends AbstractFileTypeAnalyzer {
             d.setEcosystem(Ecosystem.JAVA);
             d.addEvidence(EvidenceType.VENDOR, "project", "groupid", group, Confidence.HIGHEST);
             d.addEvidence(EvidenceType.PRODUCT, "project", "artifactid", artifact, Confidence.HIGHEST);
+            d.addEvidence(EvidenceType.VENDOR, "project", "artifactid", artifact, Confidence.HIGH);
             d.addEvidence(EvidenceType.VERSION, "project", "version", version, Confidence.HIGHEST);
             d.setName(String.format("%s:%s", group, artifact));
             d.setFilePath(String.format("%s>>%s", dependency.getActualFile(), dep.getCoord()));

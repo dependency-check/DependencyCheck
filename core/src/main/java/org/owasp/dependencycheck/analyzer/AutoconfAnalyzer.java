@@ -195,12 +195,15 @@ public class AutoconfAnalyzer extends AbstractFileTypeAnalyzer {
             if (!value.isEmpty()) {
                 if (variable.endsWith("NAME")) {
                     dependency.addEvidence(EvidenceType.PRODUCT, name, variable, value, Confidence.HIGHEST);
+                    dependency.addEvidence(EvidenceType.VENDOR, name, variable, value, Confidence.MEDIUM);
                 } else if ("VERSION".equals(variable)) {
                     dependency.addEvidence(EvidenceType.VERSION, name, variable, value, Confidence.HIGHEST);
                 } else if ("BUGREPORT".equals(variable)) {
                     dependency.addEvidence(EvidenceType.VENDOR, name, variable, value, Confidence.HIGH);
+                    dependency.addEvidence(EvidenceType.PRODUCT, name, variable, value, Confidence.MEDIUM);
                 } else if ("URL".equals(variable)) {
                     dependency.addEvidence(EvidenceType.VENDOR, name, variable, value, Confidence.HIGH);
+                    dependency.addEvidence(EvidenceType.PRODUCT, name, variable, value, Confidence.MEDIUM);
                 }
             }
         }

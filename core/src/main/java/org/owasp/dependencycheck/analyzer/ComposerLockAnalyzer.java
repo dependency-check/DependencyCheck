@@ -133,7 +133,9 @@ public class ComposerLockAnalyzer extends AbstractFileTypeAnalyzer {
                 d.setSha256sum(Checksum.getSHA256Checksum(filePath));
                 d.setMd5sum(Checksum.getMD5Checksum(filePath));
                 d.addEvidence(EvidenceType.VENDOR, COMPOSER_LOCK, "vendor", dep.getGroup(), Confidence.HIGHEST);
+                d.addEvidence(EvidenceType.PRODUCT, COMPOSER_LOCK, "vendor", dep.getGroup(), Confidence.MEDIUM);
                 d.addEvidence(EvidenceType.PRODUCT, COMPOSER_LOCK, "product", dep.getProject(), Confidence.HIGHEST);
+                d.addEvidence(EvidenceType.VENDOR, COMPOSER_LOCK, "product", dep.getProject(), Confidence.HIGH);
                 d.addEvidence(EvidenceType.VERSION, COMPOSER_LOCK, "version", dep.getVersion(), Confidence.HIGHEST);
                 return d;
             }).forEach((d) -> {

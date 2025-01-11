@@ -120,6 +120,7 @@ public class EngineIT extends BaseDBTestCase {
                 allowedMessages.add("../tmp/evil.txt");
                 allowedMessages.add("malformed input off : 5, length : 1");
                 allowedMessages.add("Python `pyproject.toml` found and there is not a `poetry.lock` or `requirements.txt`");
+                allowedMessages.add("file from the NPM Audit API (PnpmAuditAnalyzer)");
                 for (Throwable t : ex.getExceptions()) {
                     boolean isOk = false;
                     if (t.getMessage() != null) {

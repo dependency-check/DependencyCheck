@@ -185,6 +185,7 @@ public class PEAnalyzer extends AbstractFileTypeAnalyzer {
                             break;
                         case "InternalName":
                             dependency.addEvidence(EvidenceType.PRODUCT, "PE Header", "InternalName", value, Confidence.MEDIUM);
+                            dependency.addEvidence(EvidenceType.VENDOR, "PE Header", "InternalName", value, Confidence.LOW);
                             determineDependencyName(dependency, value);
                             break;
                         case "LegalCopyright":
@@ -201,6 +202,7 @@ public class PEAnalyzer extends AbstractFileTypeAnalyzer {
                             break;
                         case "ProductName":
                             dependency.addEvidence(EvidenceType.PRODUCT, "PE Header", "ProductName", value, Confidence.HIGHEST);
+                            dependency.addEvidence(EvidenceType.VENDOR, "PE Header", "ProductName", value, Confidence.MEDIUM);
                             determineDependencyName(dependency, value);
                             break;
                         default:

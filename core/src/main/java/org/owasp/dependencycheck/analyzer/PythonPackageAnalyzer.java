@@ -211,6 +211,7 @@ public class PythonPackageAnalyzer extends AbstractFileTypeAnalyzer {
             //"The __init__.py files are required to make Python treat the directories as containing packages"
             //see section "6.4 Packages" from https://docs.python.org/2/tutorial/modules.html;
             dependency.addEvidence(EvidenceType.PRODUCT, file.getName(), "PackageName", parentName, Confidence.HIGHEST);
+            dependency.addEvidence(EvidenceType.VENDOR, file.getName(), "PackageName", parentName, Confidence.MEDIUM);
             dependency.setName(parentName);
 
             final File[] fileList = parent.listFiles(PY_FILTER);

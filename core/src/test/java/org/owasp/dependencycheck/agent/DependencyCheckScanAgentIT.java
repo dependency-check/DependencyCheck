@@ -80,6 +80,7 @@ public class DependencyCheckScanAgentIT extends BaseDBTestCase {
         }
         if (name != null) {
             dependency.addEvidence(EvidenceType.PRODUCT, "dependency-track", "name", name, Confidence.HIGHEST);
+            dependency.addEvidence(EvidenceType.VENDOR, "dependency-track", "name", name, Confidence.HIGH);
             dependency.addProductWeighting(name);
         }
         if (version != null) {

@@ -185,6 +185,7 @@ public class MSBuildProjectAnalyzer extends AbstractFileTypeAnalyzer {
                 child.setMd5sum(Checksum.getMD5Checksum(String.format("%s:%s", id, version)));
 
                 child.addEvidence(EvidenceType.PRODUCT, "msbuild", "id", id, Confidence.HIGHEST);
+                child.addEvidence(EvidenceType.VENDOR, "msbuild", "id", id, Confidence.MEDIUM);
                 child.addEvidence(EvidenceType.VERSION, "msbuild", "version", version, Confidence.HIGHEST);
 
                 if (id.indexOf('.') > 0) {
@@ -193,10 +194,12 @@ public class MSBuildProjectAnalyzer extends AbstractFileTypeAnalyzer {
                     // example: Microsoft.EntityFrameworkCore
                     child.addEvidence(EvidenceType.VENDOR, "msbuild", "id", parts[0], Confidence.MEDIUM);
                     child.addEvidence(EvidenceType.PRODUCT, "msbuild", "id", parts[1], Confidence.MEDIUM);
+                    child.addEvidence(EvidenceType.VENDOR, "msbuild", "id", parts[1], Confidence.LOW);
 
                     if (parts.length > 2) {
                         final String rest = id.substring(id.indexOf('.') + 1);
                         child.addEvidence(EvidenceType.PRODUCT, "msbuild", "id", rest, Confidence.MEDIUM);
+                        child.addEvidence(EvidenceType.VENDOR, "msbuild", "id", rest, Confidence.LOW);
                     }
                 } else {
                     // example: jQuery

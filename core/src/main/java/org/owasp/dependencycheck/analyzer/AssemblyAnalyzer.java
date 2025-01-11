@@ -284,20 +284,24 @@ public class AssemblyAnalyzer extends AbstractFileTypeAnalyzer {
 
         if (!StringUtils.isBlank(data.getCompanyName())) {
             dependency.addEvidence(EvidenceType.VENDOR, "grokassembly", "CompanyName", data.getCompanyName(), Confidence.HIGHEST);
+            dependency.addEvidence(EvidenceType.PRODUCT, "grokassembly", "CompanyName", data.getCompanyName(), Confidence.LOW);
             addMatchingValues(data.getNamespaces(), data.getCompanyName(), dependency, EvidenceType.VENDOR);
         }
         if (!StringUtils.isBlank(data.getProductName())) {
             dependency.addEvidence(EvidenceType.PRODUCT, "grokassembly", "ProductName", data.getProductName(), Confidence.HIGHEST);
+            dependency.addEvidence(EvidenceType.VENDOR, "grokassembly", "ProductName", data.getProductName(), Confidence.MEDIUM);
             addMatchingValues(data.getNamespaces(), data.getProductName(), dependency, EvidenceType.PRODUCT);
         }
         if (!StringUtils.isBlank(data.getFileDescription())) {
             dependency.addEvidence(EvidenceType.PRODUCT, "grokassembly", "FileDescription", data.getFileDescription(), Confidence.HIGH);
+            dependency.addEvidence(EvidenceType.VENDOR, "grokassembly", "FileDescription", data.getFileDescription(), Confidence.LOW);
             addMatchingValues(data.getNamespaces(), data.getFileDescription(), dependency, EvidenceType.PRODUCT);
         }
 
         final String internalName = data.getInternalName();
         if (!StringUtils.isBlank(internalName)) {
             dependency.addEvidence(EvidenceType.PRODUCT, "grokassembly", "InternalName", internalName, Confidence.MEDIUM);
+            dependency.addEvidence(EvidenceType.VENDOR, "grokassembly", "InternalName", internalName, Confidence.LOW);
             addMatchingValues(data.getNamespaces(), internalName, dependency, EvidenceType.PRODUCT);
             addMatchingValues(data.getNamespaces(), internalName, dependency, EvidenceType.VENDOR);
             if (dependency.getName() == null && StringUtils.containsIgnoreCase(dependency.getActualFile().getName(), internalName)) {
@@ -313,6 +317,7 @@ public class AssemblyAnalyzer extends AbstractFileTypeAnalyzer {
         final String originalFilename = data.getOriginalFilename();
         if (!StringUtils.isBlank(originalFilename)) {
             dependency.addEvidence(EvidenceType.PRODUCT, "grokassembly", "OriginalFilename", originalFilename, Confidence.MEDIUM);
+            dependency.addEvidence(EvidenceType.VENDOR, "grokassembly", "OriginalFilename", originalFilename, Confidence.LOW);
             addMatchingValues(data.getNamespaces(), originalFilename, dependency, EvidenceType.PRODUCT);
             if (dependency.getName() == null && StringUtils.containsIgnoreCase(dependency.getActualFile().getName(), originalFilename)) {
                 final String ext = FileUtils.getFileExtension(originalFilename);

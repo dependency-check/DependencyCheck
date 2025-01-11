@@ -182,6 +182,7 @@ public class NugetconfAnalyzer extends AbstractFileTypeAnalyzer {
                 child.setMd5sum(Checksum.getMD5Checksum(String.format("%s:%s", id, version)));
                 child.addEvidence(EvidenceType.VERSION, "packages.config", "version", np.getVersion(), Confidence.HIGHEST);
                 child.addEvidence(EvidenceType.PRODUCT, "packages.config", "id", np.getId(), Confidence.HIGHEST);
+                child.addEvidence(EvidenceType.VENDOR, "packages.config", "id", np.getId(), Confidence.MEDIUM);
 
                 // handle package names the same way as the MSBuild analyzer
                 if (id.indexOf('.') > 0) {
@@ -190,10 +191,12 @@ public class NugetconfAnalyzer extends AbstractFileTypeAnalyzer {
                     // example: Microsoft.EntityFrameworkCore
                     child.addEvidence(EvidenceType.VENDOR, "packages.config", "id", parts[0], Confidence.MEDIUM);
                     child.addEvidence(EvidenceType.PRODUCT, "packages.config", "id", parts[1], Confidence.MEDIUM);
+                    child.addEvidence(EvidenceType.VENDOR, "packages.config", "id", parts[1], Confidence.LOW);
 
                     if (parts.length > 2) {
                         final String rest = id.substring(id.indexOf('.') + 1);
                         child.addEvidence(EvidenceType.PRODUCT, "packages.config", "id", rest, Confidence.MEDIUM);
+                        child.addEvidence(EvidenceType.VENDOR, "packages.config", "id", rest, Confidence.LOW);
                     }
                 } else {
                     // example: jQuery
