@@ -42,6 +42,10 @@ import org.apache.maven.reporting.MavenReport;
 import org.apache.maven.reporting.MavenReportException;
 import org.apache.maven.settings.Proxy;
 import org.apache.maven.settings.Server;
+import org.apache.maven.settings.building.SettingsProblem;
+import org.apache.maven.settings.crypto.DefaultSettingsDecryptionRequest;
+import org.apache.maven.settings.crypto.SettingsDecrypter;
+import org.apache.maven.settings.crypto.SettingsDecryptionResult;
 import org.apache.maven.shared.transfer.artifact.DefaultArtifactCoordinate;
 import org.apache.maven.shared.transfer.artifact.resolve.ArtifactResolver;
 import org.apache.maven.shared.transfer.artifact.resolve.ArtifactResolverException;
@@ -74,12 +78,8 @@ import org.owasp.dependencycheck.utils.Filter;
 import org.owasp.dependencycheck.utils.Downloader;
 import org.owasp.dependencycheck.utils.InvalidSettingException;
 import org.owasp.dependencycheck.utils.Settings;
-import org.sonatype.plexus.components.sec.dispatcher.DefaultSecDispatcher;
-import org.sonatype.plexus.components.sec.dispatcher.SecDispatcher;
-import org.sonatype.plexus.components.sec.dispatcher.SecDispatcherException;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -885,11 +885,13 @@ public abstract class BaseDependencyCheckMojo extends AbstractMojo implements Ma
     @SuppressWarnings("CanBeFinal")
     @Parameter(defaultValue = "${settings}", readonly = true, required = true)
     private org.apache.maven.settings.Settings settingsXml;
+
     /**
-     * The security dispatcher that can decrypt passwords in the settings.xml.
+     * The settingsDecryptor from Maven to decrypt passwords from Settings.xml servers section
      */
-    @Component(role = SecDispatcher.class, hint = "default")
-    private SecDispatcher securityDispatcher;
+    @Component
+    private SettingsDecrypter settingsDecrypter;
+
     /**
      * The database user name.
      */
@@ -2559,12 +2561,15 @@ public abstract class BaseDependencyCheckMojo extends AbstractMojo implements Ma
      * @throws InitializationException When both serverId and at least one other property value are filled.
      */
     private void configureFromServer(Server server, String userKey, String passwordKey, String tokenKey, String serverId) throws InitializationException {
+        final SettingsDecryptionResult result = settingsDecrypter.decrypt(new DefaultSettingsDecryptionRequest(server));
         final String username = server.getUsername();
-        String password = server.getPassword();
-        try {
-            password = decryptPasswordFromSettings(password);
-        } catch (SecDispatcherException ex) {
-            password = handleSecDispatcherException("server", serverId, server.getPassword(), ex);
+        final String password;
+        if (result.getProblems().isEmpty()) {
+            password = result.getServer().getPassword();
+        } else {
+            logProblems(result.getProblems(), "server setting for " + serverId);
+            getLog().debug("Using raw password from settings.xml for server " + serverId);
+            password = server.getPassword();
         }
         if (username != null) {
             if (userKey != null && passwordKey != null) {
@@ -2600,13 +2605,16 @@ public abstract class BaseDependencyCheckMojo extends AbstractMojo implements Ma
         if (mavenProxy.getUsername() != null && !mavenProxy.getUsername().isEmpty()) {
             System.setProperty(protocol + ".proxyUser", mavenProxy.getUsername());
         }
-        String password = mavenProxy.getPassword();
+        final SettingsDecryptionResult result = settingsDecrypter.decrypt(new DefaultSettingsDecryptionRequest(mavenProxy));
+        final String password;
+        if (result.getProblems().isEmpty()) {
+            password = result.getProxy().getPassword();
+        } else {
+            logProblems(result.getProblems(), "proxy settings for " + mavenProxy.getId());
+            getLog().debug("Using raw password from settings.xml for proxy " + mavenProxy.getId());
+            password = mavenProxy.getPassword();
+        }
         if (password != null && !password.isEmpty()) {
-            try {
-                password = decryptPasswordFromSettings(password);
-            } catch (SecDispatcherException ex) {
-                password = handleSecDispatcherException("proxy", mavenProxy.getId(), password, ex);
-            }
             System.setProperty(protocol + ".proxyPassword", password);
         }
     }
@@ -2645,62 +2653,27 @@ public abstract class BaseDependencyCheckMojo extends AbstractMojo implements Ma
     }
 
     /**
-     * Decrypts a password from the Maven settings if it needs to be decrypted.
-     * If it's not encrypted the input password will be returned unchanged.
+     * Logs the problems encountered during settings decryption of a {@code <}server>} or {@code <proxy>} config
+     * from the maven settings.<br/>
+     * Logs a generic message about decryption problems at WARN level. If debug logging is enabled a additional message is logged at DEBUG level
+     * detailing all the encountered problems and their underlying exceptions.
      *
-     * @param password the original password value from the settings.xml
-     * @return the decrypted password from the Maven configuration
-     * @throws SecDispatcherException thrown if there is an error decrypting the
-     * password
+     * @param problems The problems as reported by the settingsDecrypter.
+     * @param credentialDesc an identification of what was attempted to be decrypted
      */
-    private String decryptPasswordFromSettings(String password) throws SecDispatcherException {
-        //The following fix was copied from:
-        //   https://github.com/bsorrentino/maven-confluence-plugin/blob/master/maven-confluence-reporting-plugin/src/main/java/org/bsc/maven/confluence/plugin/AbstractBaseConfluenceMojo.java
-        //
-        // FIX to resolve
-        // org.sonatype.plexus.components.sec.dispatcher.SecDispatcherException:
-        // java.io.FileNotFoundException: ~/.settings-security.xml (No such file or directory)
-        //
-        if (securityDispatcher instanceof DefaultSecDispatcher) {
-            ((DefaultSecDispatcher) securityDispatcher).setConfigurationFile("~/.m2/settings-security.xml");
-        }
-
-        return securityDispatcher.decrypt(password);
-    }
-
-    /**
-     * Handles a SecDispatcherException that was thrown at an attempt to decrypt
-     * an encrypted password from the Maven settings.
-     *
-     * @param settingsElementName - "server" or "proxy"
-     * @param settingsElementId - value of the id attribute of the proxy resp.
-     * server element to which the password belongs
-     * @param passwordValueFromSettings - original, undecrypted password value
-     * from the settings
-     * @param ex - the Exception to handle
-     * @return the password fallback value to go on with, might be a not working
-     * one.
-     */
-    private String handleSecDispatcherException(String settingsElementName, String settingsElementId, String passwordValueFromSettings,
-            SecDispatcherException ex) {
-        String password = passwordValueFromSettings;
-        if (ex.getCause() instanceof FileNotFoundException
-                || (ex.getCause() != null && ex.getCause().getCause() instanceof FileNotFoundException)) {
-            //maybe its not encrypted?
-            final String tmp = passwordValueFromSettings;
-            if (tmp.startsWith("{") && tmp.endsWith("}")) {
-                getLog().error(String.format(
-                        "Unable to decrypt the %s password for %s id '%s' in settings.xml%n\tCause: %s",
-                        settingsElementName, settingsElementName, settingsElementId, ex.getMessage()));
-            } else {
-                password = tmp;
+    private void logProblems(List<SettingsProblem> problems, String credentialDesc) {
+        final String message = "Problems while decrypting " + credentialDesc;
+        getLog().warn(message);
+        if (getLog().isDebugEnabled()) {
+            final StringBuilder dbgMessage = new StringBuilder("Problems while decrypting ").append(credentialDesc).append(": ");
+            boolean first = true;
+            for (SettingsProblem problem : problems) {
+                dbgMessage.append(first ? "" : ", ").append(problem.getMessage());
+                dbgMessage.append("caused by ").append(problem.getException());
+                first = false;
             }
-        } else {
-            getLog().error(String.format(
-                    "Unable to decrypt the %s password for %s id '%s' in settings.xml%n\tCause: %s",
-                    settingsElementName, settingsElementName, settingsElementId, ex.getMessage()));
+            getLog().debug(dbgMessage.toString());
         }
-        return password;
     }
 
     /**

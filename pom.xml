@@ -165,7 +165,6 @@ Copyright (c) 2012 - Jeremy Long
         <maven-plugin-annotations.version>3.15.1</maven-plugin-annotations.version>
         <maven-reporting-api.version>4.0.0</maven-reporting-api.version>
         <org.apache.velocity.version>2.4.1</org.apache.velocity.version>
-        <plexus-sec-dispatcher.version>1.4</plexus-sec-dispatcher.version>
         <maven-dependency-tree.version>3.3.0</maven-dependency-tree.version>
         <org.glassfish.javax.json.version>1.1.4</org.glassfish.javax.json.version>
         <maven-artifact-transfer.version>0.13.1</maven-artifact-transfer.version>
@@ -1150,7 +1149,7 @@ Copyright (c) 2012 - Jeremy Long
             <dependency>
                 <groupId>commons-codec</groupId>
                 <artifactId>commons-codec</artifactId>
-                <version>1.17.1</version>
+                <version>1.17.2</version>
             </dependency>
             <dependency>
                 <groupId>com.h3xstream.retirejs</groupId>
@@ -1195,6 +1194,12 @@ Copyright (c) 2012 - Jeremy Long
                 <scope>provided</scope>
             </dependency>
             <dependency>
+                <groupId>org.apache.maven</groupId>
+                <artifactId>maven-settings-builder</artifactId>
+                <version>${maven.api.version}</version>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
                 <groupId>org.apache.maven.plugin-testing</groupId>
                 <artifactId>maven-plugin-testing-harness</artifactId>
                 <version>${maven-plugin-testing-harness.version}</version>
@@ -1219,11 +1224,6 @@ Copyright (c) 2012 - Jeremy Long
                 <groupId>org.apache.velocity</groupId>
                 <artifactId>velocity-engine-core</artifactId>
                 <version>${org.apache.velocity.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.sonatype.plexus</groupId>
-                <artifactId>plexus-sec-dispatcher</artifactId>
-                <version>${plexus-sec-dispatcher.version}</version>
             </dependency>
             <!-- upgrading beyond 2.2 requires reworking the dependency resolution -->
             <dependency>
