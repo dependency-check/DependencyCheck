@@ -2591,9 +2591,15 @@ public abstract class BaseDependencyCheckMojo extends AbstractMojo implements Ma
 
     private String mergeNonProxyHosts(String existingNonProxyHosts, String httpNonProxyHosts, String httpsNonProxyHosts) {
         final HashSet<String> mergedNonProxyHosts = new HashSet<>();
-        mergedNonProxyHosts.addAll(Arrays.asList(existingNonProxyHosts.split("\\|")));
-        mergedNonProxyHosts.addAll(Arrays.asList(httpNonProxyHosts.split("\\|")));
-        mergedNonProxyHosts.addAll(Arrays.asList(httpsNonProxyHosts.split("\\|")));
+        if (existingNonProxyHosts != null) {
+            mergedNonProxyHosts.addAll(Arrays.asList(existingNonProxyHosts.split("\\|")));
+        }
+        if (httpNonProxyHosts != null) {
+            mergedNonProxyHosts.addAll(Arrays.asList(httpNonProxyHosts.split("\\|")));
+        }
+        if (httpsNonProxyHosts != null) {
+            mergedNonProxyHosts.addAll(Arrays.asList(httpsNonProxyHosts.split("\\|")));
+        }
         return String.join("|", mergedNonProxyHosts);
     }
 
