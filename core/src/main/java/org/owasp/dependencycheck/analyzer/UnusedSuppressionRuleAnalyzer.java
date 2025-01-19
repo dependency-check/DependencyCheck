@@ -33,8 +33,12 @@ import org.slf4j.LoggerFactory;
  * @author Jeremy Long
  */
 public class UnusedSuppressionRuleAnalyzer extends AbstractAnalyzer {
-	protected static final String EXCEPTION_MSG = "There are %d unused suppression rule(s): check logs.";
-	
+
+    /**
+     * Exception message.
+     */
+    protected static final String EXCEPTION_MSG = "There are %d unused suppression rule(s): check logs.";
+
     /**
      * The Logger for use throughout the class.
      */
@@ -56,21 +60,21 @@ public class UnusedSuppressionRuleAnalyzer extends AbstractAnalyzer {
     @Override
     public synchronized void initialize(Settings settings) {
         super.initialize(settings);
-		if (settings.getBoolean(Settings.KEYS.FAIL_ON_UNUSED_SUPPRESSION_RULE, false)) {
-			this.shouldFailForUnusedSuppressionRule = true;
-		}
-	}
+        if (settings.getBoolean(Settings.KEYS.FAIL_ON_UNUSED_SUPPRESSION_RULE, false)) {
+            this.shouldFailForUnusedSuppressionRule = true;
+        }
+    }
 
     @Override
     protected void analyzeDependency(Dependency dependency, Engine engine) throws AnalysisException {
         if (!reported) {
-			checkUnusedRules(engine);
-			reported = true;
-			if(unusedSuppressionRuleCount > 0 && failsForUnusedSuppressionRule()) {
-				final String message = String.format(EXCEPTION_MSG, unusedSuppressionRuleCount);
-				LOGGER.error(message);
-				throw new AnalysisException(message);
-			}
+            checkUnusedRules(engine);
+            reported = true;
+            if (unusedSuppressionRuleCount > 0 && failsForUnusedSuppressionRule()) {
+                final String message = String.format(EXCEPTION_MSG, unusedSuppressionRuleCount);
+                LOGGER.error(message);
+                throw new AnalysisException(message);
+            }
         }
     }
 
@@ -85,13 +89,13 @@ public class UnusedSuppressionRuleAnalyzer extends AbstractAnalyzer {
             final List<SuppressionRule> rules = (List<SuppressionRule>) engine.getObject(SUPPRESSION_OBJECT_KEY);
             rules.forEach((rule) -> {
                 if (!rule.isMatched() && !rule.isBase()) {
-					final String message = String.format("Suppression Rule had zero matches: %s", rule);
-                    if(failsForUnusedSuppressionRule()) {
-						LOGGER.error(message);
-					} else {
-						LOGGER.info(message);
-					}
-					increaseUnusedSuppressionRuleCount();
+                    final String message = String.format("Suppression Rule had zero matches: %s", rule);
+                    if (failsForUnusedSuppressionRule()) {
+                        LOGGER.error(message);
+                    } else {
+                        LOGGER.info(message);
+                    }
+                    increaseUnusedSuppressionRuleCount();
                 }
             });
         }
@@ -117,25 +121,25 @@ public class UnusedSuppressionRuleAnalyzer extends AbstractAnalyzer {
     public boolean supportsParallelProcessing() {
         return false;
     }
-	
-	/**
-	* increases the count of unused suppression rules
-	*/
-	public void increaseUnusedSuppressionRuleCount() {
-		unusedSuppressionRuleCount++;
-	}
-	
-	/**
-	* @return the count of unused suppression rules
-	*/
-	public int getUnusedSuppressionRuleCount() {
-		return unusedSuppressionRuleCount;
-	}
-	
-	/**
-	* @return whether the analyzer will fail for a unused suppression rule
-	*/
-	public boolean failsForUnusedSuppressionRule() {
-		return shouldFailForUnusedSuppressionRule;
-	}
+
+    /**
+     * increases the count of unused suppression rules.
+     */
+    public void increaseUnusedSuppressionRuleCount() {
+        unusedSuppressionRuleCount++;
+    }
+
+    /**
+     * @return the count of unused suppression rules.
+     */
+    public int getUnusedSuppressionRuleCount() {
+        return unusedSuppressionRuleCount;
+    }
+
+    /**
+     * @return whether the analyzer will fail for a unused suppression rule.
+     */
+    public boolean failsForUnusedSuppressionRule() {
+        return shouldFailForUnusedSuppressionRule;
+    }
 }

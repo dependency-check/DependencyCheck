@@ -161,6 +161,7 @@ public class SarifRule {
      * @param source the source
      * @param cvssV2 the CVSS v2 score
      * @param cvssV3 the CVSS v3 score
+     * @param cvssV4 the CVSS v4 score
      */
     public SarifRule(String name, String shortDescription, String fullDescription,
                      String source, CvssV2 cvssV2, CvssV3 cvssV3, CvssV4 cvssV4) {

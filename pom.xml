@@ -142,7 +142,7 @@ Copyright (c) 2012 - Jeremy Long
         <taglist-maven-plugin.version>3.2.1</taglist-maven-plugin.version>
         <versions-maven-plugin.version>2.18.0</versions-maven-plugin.version>
         <jetbrains.annotations.version>26.0.1</jetbrains.annotations.version>
-        <findbugs-jsr305.version>3.0.2</findbugs-jsr305.version>
+        <findbugs.spotbugs.version>4.9.0</findbugs.spotbugs.version>
         <com.h2database.version>2.3.232</com.h2database.version>
         <commons-cli.version>1.9.0</commons-cli.version>
         <commons-io.version>2.18.0</commons-io.version>
@@ -1273,9 +1273,9 @@ Copyright (c) 2012 - Jeremy Long
                 <version>${doxia-base.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.google.code.findbugs</groupId>
-                <artifactId>jsr305</artifactId>
-                <version>${findbugs-jsr305.version}</version>
+                <groupId>com.github.spotbugs</groupId>
+                <artifactId>spotbugs-annotations</artifactId>
+                <version>${findbugs.spotbugs.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.sonatype.ossindex</groupId>
@@ -1348,8 +1348,8 @@ Copyright (c) 2012 - Jeremy Long
             <optional>true</optional>
         </dependency>
         <dependency>
-            <groupId>com.google.code.findbugs</groupId>
-            <artifactId>jsr305</artifactId>
+            <groupId>com.github.spotbugs</groupId>
+            <artifactId>spotbugs-annotations</artifactId>
             <scope>compile</scope>
             <optional>true</optional>
         </dependency>

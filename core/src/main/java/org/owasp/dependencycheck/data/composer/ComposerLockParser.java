@@ -61,6 +61,7 @@ public class ComposerLockParser {
      * Creates a ComposerLockParser from a JsonReader and an InputStream.
      *
      * @param inputStream the InputStream to parse
+     * @param skipDev whether to skip dev dependencies
      */
     public ComposerLockParser(InputStream inputStream, boolean skipDev) {
         LOGGER.debug("Creating a ComposerLockParser");

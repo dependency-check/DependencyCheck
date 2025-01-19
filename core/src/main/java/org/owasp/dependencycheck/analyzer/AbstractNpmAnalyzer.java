@@ -28,7 +28,6 @@ import org.owasp.dependencycheck.data.nodeaudit.Advisory;
 import org.owasp.dependencycheck.data.nodeaudit.NodeAuditSearch;
 import org.owasp.dependencycheck.dependency.Confidence;
 import org.owasp.dependencycheck.dependency.Dependency;
-import org.owasp.dependencycheck.dependency.Reference;
 import org.owasp.dependencycheck.dependency.Vulnerability;
 import org.owasp.dependencycheck.dependency.VulnerableSoftware;
 import org.owasp.dependencycheck.dependency.VulnerableSoftwareBuilder;
@@ -505,13 +504,13 @@ public abstract class AbstractNpmAnalyzer extends AbstractFileTypeAnalyzer {
      * @param vuln the vulnerability to add
      */
     protected void replaceOrAddVulnerability(Dependency dependency, Vulnerability vuln) {
-        boolean found = vuln.getSource() == Vulnerability.Source.NPM && 
-                dependency.getVulnerabilities().stream().anyMatch(existing -> {
-            return existing.getReferences().stream().anyMatch(ref ->{
-                    return ref.getName() != null
-                            && ref.getName().equals("https://nodesecurity.io/advisories/" + vuln.getName());
-            });
-        });
+        final boolean found = vuln.getSource() == Vulnerability.Source.NPM
+                && dependency.getVulnerabilities().stream().anyMatch(existing -> {
+                    return existing.getReferences().stream().anyMatch(ref -> {
+                        return ref.getName() != null
+                                && ref.getName().equals("https://nodesecurity.io/advisories/" + vuln.getName());
+                    });
+                });
         if (!found) {
             dependency.addVulnerability(vuln);
         }

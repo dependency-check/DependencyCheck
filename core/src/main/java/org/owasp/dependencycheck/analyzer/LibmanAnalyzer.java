@@ -148,7 +148,7 @@ public class LibmanAnalyzer extends AbstractFileTypeAnalyzer {
      * Performs the analysis.
      *
      * @param dependency the dependency to analyze
-     * @param engine     the engine
+     * @param engine the engine
      * @throws AnalysisException when there's an exception during analysis
      */
     @Override
@@ -209,7 +209,7 @@ public class LibmanAnalyzer extends AbstractFileTypeAnalyzer {
                 child.setVersion(version);
 
                 if (vendor != null) {
-                    child.addEvidence(EvidenceType.VENDOR, FILE_NAME, "vendor", vendor, Confidence.HIGHEST);    
+                    child.addEvidence(EvidenceType.VENDOR, FILE_NAME, "vendor", vendor, Confidence.HIGHEST);
                 }
                 child.addEvidence(EvidenceType.VENDOR, FILE_NAME, "name", name, Confidence.HIGH);
                 child.addEvidence(EvidenceType.PRODUCT, FILE_NAME, "name", name, Confidence.HIGHEST);
