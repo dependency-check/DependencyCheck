@@ -32,7 +32,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
-import javax.json.stream.JsonParsingException;
+import jakarta.json.stream.JsonParsingException;
 import org.apache.commons.lang3.StringUtils;
 import org.owasp.dependencycheck.data.nvd.ecosystem.Ecosystem;
 import org.owasp.dependencycheck.processing.GoModProcessor;
