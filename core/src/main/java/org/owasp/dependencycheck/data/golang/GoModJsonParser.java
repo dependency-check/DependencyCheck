@@ -23,13 +23,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.concurrent.ThreadSafe;
-import javax.json.Json;
-import javax.json.JsonArray;
-import javax.json.JsonException;
-import javax.json.JsonObject;
-import javax.json.JsonReader;
-import javax.json.JsonReaderFactory;
-import javax.json.stream.JsonParsingException;
+import jakarta.json.Json;
+import jakarta.json.JsonArray;
+import jakarta.json.JsonException;
+import jakarta.json.JsonObject;
+import jakarta.json.JsonReader;
+import jakarta.json.JsonReaderFactory;
+import jakarta.json.stream.JsonParsingException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
