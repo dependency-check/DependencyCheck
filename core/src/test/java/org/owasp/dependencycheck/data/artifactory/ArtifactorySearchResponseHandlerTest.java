@@ -17,6 +17,10 @@
  */
 package org.owasp.dependencycheck.data.artifactory;
 
+import ch.qos.logback.classic.Level;
+import ch.qos.logback.classic.Logger;
+import ch.qos.logback.classic.spi.ILoggingEvent;
+import ch.qos.logback.core.read.ListAppender;
 import org.apache.hc.core5.http.ClassicHttpResponse;
 import org.apache.hc.core5.http.HttpEntity;
 import org.junit.Before;
@@ -24,6 +28,7 @@ import org.junit.Test;
 import org.owasp.dependencycheck.BaseTest;
 import org.owasp.dependencycheck.data.nexus.MavenArtifact;
 import org.owasp.dependencycheck.dependency.Dependency;
+import org.slf4j.LoggerFactory;
 
 import java.io.ByteArrayInputStream;
 import java.io.FileNotFoundException;
@@ -135,6 +140,66 @@ public class ArtifactorySearchResponseHandlerTest extends BaseTest {
                 artifact2.getPomUrl());
     }
 
+    /**
+     * Tests the correct working for responses that are sent by Artifactory when the {@code X-Result-Detail} HTTP-Header is missing (e.g. when it
+     * gets stripped by an intermediate WebApplicationFirewall configured to only allow a defined subset of HTTP-headers).
+     * @throws IOException
+     */
+    @Test
+    public void shouldProcessCorrectlyForMissingXResultDetailHeader() throws IOException {
+        // Inject logback ListAppender to capture test-logs from ArtifactorySearchResponseHandler
+        final Logger sutLogger = (Logger) LoggerFactory.getLogger(ArtifactorySearchResponseHandler.class);
+        final ListAppender<ILoggingEvent> listAppender = new ListAppender<>();
+        listAppender.start();
+        sutLogger.addAppender(listAppender);
+
+        // Given
+        final Dependency dependency = new Dependency();
+        dependency.setFileName("freemarker-2.3.33.jar");
+        dependency.setSha256sum("ab829182363e747a1530a368436242f4cca7ff309dd29bfca638a1fdc7b6771d");
+        dependency.setSha1sum("fecaeb606993fc9fd0f95fe5a644048a69c39474");
+        dependency.setMd5sum("4ec135628fd640a201c1d4f8670cc020");
+        final ClassicHttpResponse response = mock(ClassicHttpResponse.class);
+        final HttpEntity responseEntity = mock(HttpEntity.class);
+        final byte[] payload = noXResultDetailHeaderResponse();
+        when(response.getEntity()).thenReturn(responseEntity);
+        when(responseEntity.getContent()).thenReturn(new ByteArrayInputStream(payload));
+
+
+        // When
+        final ArtifactorySearchResponseHandler handler = new ArtifactorySearchResponseHandler(dependency);
+        try {
+            handler.handleResponse(response);
+            fail("Result with no details due to missing X-Result-Detail header, should throw an exception!");
+        } catch (FileNotFoundException e) {
+            // Then
+            assertEquals("Artifact Dependency{ fileName='freemarker-2.3.33.jar', actualFilePath='null', filePath='null', packagePath='null'} not found in Artifactory; discovered sha1 hits not recognized as matching maven artifacts",
+                    e.getMessage());
+
+            // There should be a WARN-log for for each of the results regarding the absence of X-Result-Detail header driven attributes
+            final List<ILoggingEvent> logsList = listAppender.list;
+            assertEquals("Number of log entries for the ArtifactorySearchResponseHandler", 2, logsList.size());
+
+            ILoggingEvent logEvent = logsList.get(0);
+            assertEquals(Level.WARN, logEvent.getLevel());
+            assertEquals("No checksums found in artifactory search result of uri {}. Please make sure that header X-Result-Detail is retained on any (reverse)-proxy, loadbalancer or WebApplicationFirewall in the network path to your Artifactory Server", logEvent.getMessage());
+            Object[] args = logEvent.getArgumentArray();
+            assertEquals(1, args.length);
+            assertEquals("https://artifactory.example.com:443/artifactory/api/storage/maven-central-cache/org/freemarker/freemarker/2.3.33/freemarker-2.3.33.jar", args[0]);
+
+            logEvent = logsList.get(1);
+            assertEquals(Level.WARN, logEvent.getLevel());
+            assertEquals("No checksums found in artifactory search result of uri {}. Please make sure that header X-Result-Detail is retained on any (reverse)-proxy, loadbalancer or WebApplicationFirewall in the network path to your Artifactory Server", logEvent.getMessage());
+            args = logEvent.getArgumentArray();
+            assertEquals(1, args.length);
+            assertEquals("https://artifactory.example.com:443/artifactory/api/storage/gradle-plugins-extended-cache/org/freemarker/freemarker/2.3.33/freemarker-2.3.33.jar", args[0]);
+
+            // Remove our manually injected additional appender
+            sutLogger.detachAppender(listAppender);
+            listAppender.stop();
+        }
+    }
+
     @Test
     public void shouldHandleNoMatches() throws IOException {
         // Given
@@ -208,6 +273,19 @@ public class ArtifactorySearchResponseHandlerTest extends BaseTest {
                 "    },\n" +
                 "    \"uri\" : \"https://artifactory.techno.ingenico.com/artifactory/api/storage/gradle-libs-cache/org/apache/axis/axis/1.4/axis-1.4.jar\"\n" +
                 "  } ]}").getBytes(StandardCharsets.UTF_8);
+    }
+
+    private byte[] noXResultDetailHeaderResponse() {
+        return ("{\n" +
+                "  \"results\": [\n" +
+                "    {\n" +
+                "      \"uri\": \"https://artifactory.example.com:443/artifactory/api/storage/maven-central-cache/org/freemarker/freemarker/2.3.33/freemarker-2.3.33.jar\"\n" +
+                "    },\n" +
+                "    {\n" +
+                "      \"uri\": \"https://artifactory.example.com:443/artifactory/api/storage/gradle-plugins-extended-cache/org/freemarker/freemarker/2.3.33/freemarker-2.3.33.jar\"\n" +
+                "    }\n" +
+                "  ]\n" +
+                "}").getBytes(StandardCharsets.UTF_8);
     }
 
     @Test

@@ -148,6 +148,12 @@ class ArtifactorySearchResponseHandler implements HttpClientResponseHandler<List
                 do {
                     final FileImpl file = fileImplReader.readValue(parser);
 
+                    if (file.getChecksums() == null) {
+                        LOGGER.warn("No checksums found in artifactory search result of uri {}. Please make sure that header X-Result-Detail is retained on any (reverse)-proxy, loadbalancer or WebApplicationFirewall in the network path to your Artifactory Server",
+                                file.getUri());
+                        continue;
+                    }
+
                     final Optional<Matcher> validationResult = validateUsability(file);
                     if (validationResult.isEmpty()) {
                         continue;
