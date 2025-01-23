@@ -98,8 +98,10 @@
                         },
 
                         ## optional properties
-                        "name": "$enc.json($vulnerability.name)",
+                        "name": "$enc.json($StringUtils.truncate($vulnerability.name, 255))",
+                        #if($vulnerability.description)
                         "description": "$enc.json($vulnerability.description)",
+                        #end
                         #if($vulnerability.unscoredSeverity)
                             #if($vulnerability.unscoredSeverity.equals("0.0"))
                                 #set($severity = "Unknown")
@@ -116,15 +118,24 @@
                         "severity": "$severity.substring(0,1).toUpperCase()$severity.substring(1)",
                         ## "solution": "" --> not implemented
                         "links": [
+                            #set($prepend_comma = false)
                             #foreach( $ref in $vulnerability.getReferences(true) )
-                                {
-                                #if($ref.name)
-                                    ## optional property
-                                    "name": "$enc.json($ref.name)",
+                                #if($ref.url)
+                                    #if($prepend_comma) 
+                                        ,
+                                        #set($prepend_comma = false)
+                                    #end
+                                    {
+                                    #if($ref.name)
+                                        ## optional property
+                                        "name": "$enc.json($ref.name)",
+                                    #end
+                                        "url": "$enc.json($ref.url)"
+                                    }
+                                    #if( $foreach.hasNext )
+                                        #set($prepend_comma = true)
+                                    #end
                                 #end
-                                    "url": "$enc.json($ref.url)"
-                                }
-                                #if( $foreach.hasNext ),#end
                             #end
                         ]
                         ## "details": [], --> not implemented

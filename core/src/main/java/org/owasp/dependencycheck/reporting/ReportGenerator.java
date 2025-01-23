@@ -23,6 +23,7 @@ import com.fasterxml.jackson.core.JsonParser;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.text.WordUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.context.Context;
@@ -273,6 +274,7 @@ public class ReportGenerator {
         ctxt.put("rpt", new ReportTool());
         ctxt.put("checksum", Checksum.class);
         ctxt.put("WordUtils", new WordUtils());
+        ctxt.put("StringUtils", new StringUtils());
         ctxt.put("VENDOR", EvidenceType.VENDOR);
         ctxt.put("PRODUCT", EvidenceType.PRODUCT);
         ctxt.put("VERSION", EvidenceType.VERSION);
