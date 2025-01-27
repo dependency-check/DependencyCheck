@@ -21,7 +21,9 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import javax.annotation.concurrent.ThreadSafe;
+
 import org.owasp.dependencycheck.Engine;
 import org.owasp.dependencycheck.data.nvdcve.CveDB;
 import org.owasp.dependencycheck.data.nvdcve.DatabaseException;
@@ -167,13 +169,21 @@ public class EngineVersionCheck implements CachedWebDataSource {
      * github documentation site or accessing the local database.
      */
     protected boolean shouldUpdate(final long lastChecked, final long now, final DatabaseProperties properties,
-            String currentVersion) throws UpdateException {
+                                   String currentVersion) throws UpdateException {
         //check every 30 days if we know there is an update, otherwise check every 7 days
         final int checkRange = 30;
         if (!DateUtil.withinDateRange(lastChecked, now, checkRange)) {
             LOGGER.debug("Checking web for new version.");
-            final String currentRelease = getCurrentReleaseVersion();
-            if (currentRelease != null) {
+            final String publishedData = getCurrentReleaseVersion();
+            if (publishedData != null) {
+                final String[] parts = publishedData.split("\n");
+                if (parts.length > 1) {
+                    final String message = String.join("\n", Arrays.copyOfRange(parts, 1, parts.length)).trim();
+                    LOGGER.warn("\n\n*********************************************************\n"
+                            + message
+                            + "\n*********************************************************\n");
+                }
+                final String currentRelease = parts[0].trim();
                 final DependencyVersion v = new DependencyVersion(currentRelease);
                 if (v.getVersionParts() != null && v.getVersionParts().size() >= 3) {
                     updateToVersion = v.toString();

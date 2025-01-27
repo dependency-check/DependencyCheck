@@ -46,6 +46,7 @@ public class DependencyVersionTest extends BaseTest {
         assertEquals("2", parts.get(1));
         assertEquals("r1", parts.get(2));
 
+        version = "x6.0";
         instance.parseVersion("x6.0");
         parts = instance.getVersionParts();
         assertEquals(2, parts.size());
@@ -54,6 +55,15 @@ public class DependencyVersionTest extends BaseTest {
         // TODO(code review): should this be here/do something?
         //assertEquals("0", parts.get(2));
 
+
+        version = "1.2.3\nThis is a test message";
+        instance = new DependencyVersion();
+        instance.parseVersion(version);
+        parts = instance.getVersionParts();
+        assertEquals(3, parts.size());
+        assertEquals("1", parts.get(0));
+        assertEquals("2", parts.get(1));
+        assertEquals("3", parts.get(2));
     }
 
     /**
