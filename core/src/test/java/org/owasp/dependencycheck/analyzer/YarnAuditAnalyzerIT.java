@@ -26,20 +26,29 @@ import org.owasp.dependencycheck.dependency.Dependency;
 import org.owasp.dependencycheck.dependency.EvidenceType;
 import org.owasp.dependencycheck.exception.InitializationException;
 import org.owasp.dependencycheck.utils.InvalidSettingException;
+
 import static org.junit.Assert.assertTrue;
 
 public class YarnAuditAnalyzerIT extends BaseTest {
 
     @Test
-    public void testAnalyzePackageYarn() throws AnalysisException, InitializationException, InvalidSettingException {
+    public void testAnalyzePackageYarnClassic() throws AnalysisException, InitializationException, InvalidSettingException {
+        testAnalyzePackageYarn("yarn-classic-audit/yarn.lock");
+    }
 
+    @Test
+    public void testAnalyzePackageYarnBerry() throws AnalysisException, InitializationException, InvalidSettingException {
+        testAnalyzePackageYarn("yarn-berry-audit/yarn.lock");
+    }
+
+    private void testAnalyzePackageYarn(String yarnLockFile) throws AnalysisException {
         //Assume.assumeThat(getSettings().getBoolean(Settings.KEYS.ANALYZER_YARN_AUDIT_ENABLED), is(true));
         try (Engine engine = new Engine(getSettings())) {
-            YarnAuditAnalyzer analyzer = new YarnAuditAnalyzer();
+            var analyzer = new YarnAuditAnalyzer();
             analyzer.setFilesMatched(true);
             analyzer.initialize(getSettings());
             analyzer.prepare(engine);
-            final Dependency toScan = new Dependency(BaseTest.getResourceAsFile(this, "yarnaudit/yarn.lock"));
+            final Dependency toScan = new Dependency(BaseTest.getResourceAsFile(this, yarnLockFile));
             analyzer.analyze(toScan, engine);
             boolean found = false;
             assertTrue("More then 1 dependency should be identified", 1 < engine.getDependencies().length);
