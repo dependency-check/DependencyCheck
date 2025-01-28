@@ -41,7 +41,7 @@ jobs:
         with:
           issue-body: ${{ github.event.issue.body }}
           template-path: odc/.github/ISSUE_TEMPLATE/false-positive-report.yml
-      - uses: actions/setup-node@v4.1.0
+      - uses: actions/setup-node@v4.2.0
         with:
           node-version: 14
       - name: Initialize npm
