@@ -8,6 +8,8 @@
 - chore: allow messages via EngineVersionCheck (#7353)
 - chore: switch from javax.json to jakarta.json (#7326)
 
+See the full listing of [changes](https://github.com/jeremylong/DependencyCheck/milestone/93?closed=1).
+
 ## [Version 12.0.1](https://github.com/jeremylong/DependencyCheck/releases/tag/v12.0.1) (2025-01-19)
 
 - docs: Fix OSS Index Maven config documentation (#7322)
