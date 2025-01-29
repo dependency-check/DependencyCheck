@@ -1,6 +1,6 @@
 # Change Log
 
-## [Version 12.0.2](https://github.com/jeremylong/DependencyCheck/releases/tag/v12.0.1) (2025-01-29)
+## [Version 12.0.2](https://github.com/jeremylong/DependencyCheck/releases/tag/v12.0.2) (2025-01-29)
 
 - fix: correct JSON report error (#7350)
 - fix: some compatability issues in the gitlab report (#7349)
