@@ -201,7 +201,7 @@ public class BundlerAuditProcessor extends Processor<InputStream> {
             ref.setName(vulnerability.getName());
             ref.setSource("bundle-audit");
             ref.setUrl(url);
-            vulnerability.getReferences().add(ref);
+            vulnerability.addReference(ref);
         }
         LOGGER.debug("bundle-audit ({}): {}", parentName, nextLine);
     }

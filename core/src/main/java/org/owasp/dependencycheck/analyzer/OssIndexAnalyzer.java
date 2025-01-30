@@ -271,7 +271,7 @@ public class OssIndexAnalyzer extends AbstractAnalyzer {
                                             .orElse(null);
                                     if (existing != null) {
                                         //TODO - can we enhance anything other than the references?
-                                        existing.getReferences().addAll(v.getReferences());
+                                        existing.addReferences(v.getReferences());
                                     } else {
                                         dependency.addVulnerability(v);
                                     }

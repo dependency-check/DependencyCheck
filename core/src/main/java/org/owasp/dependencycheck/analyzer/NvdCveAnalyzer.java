@@ -18,7 +18,9 @@
 package org.owasp.dependencycheck.analyzer;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import javax.annotation.concurrent.ThreadSafe;
 
 import org.owasp.dependencycheck.Engine;
@@ -150,17 +152,17 @@ public class NvdCveAnalyzer extends AbstractAnalyzer {
         final List<Vulnerability> remove = new ArrayList<>();
         vulnerabilities.forEach((v) -> {
             boolean found = false;
-            final List<VulnerableSoftware> removeSoftare = new ArrayList<>();
+            final Set<VulnerableSoftware> removeSoftware = new HashSet<>();
             for (VulnerableSoftware s : v.getVulnerableSoftware()) {
                 if (ecosystemMatchesTargetSoftware(ecosystem, s.getTargetSw())) {
                     found = true;
                 } else {
-                    removeSoftare.add(s);
+                    removeSoftware.add(s);
                 }
             }
             if (found) {
-                if (!removeSoftare.isEmpty()) {
-                    removeSoftare.forEach(v.getVulnerableSoftware()::remove);
+                if (!removeSoftware.isEmpty()) {
+                    v.removeVulnerableSoftware(removeSoftware);
                 }
             } else {
                 remove.add(v);
