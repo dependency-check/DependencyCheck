@@ -645,8 +645,8 @@ public class Engine implements FileFilter, AutoCloseable {
                 + "or its use. Any use of the tool and the reporting provided is at the user's risk. In no event shall the copyright holder "
                 + "or OWASP be held liable for any damages whatsoever arising out of or in connection with the use of this tool, the analysis "
                 + "performed, or the resulting report.\n\n\n"
-                + "   About ODC: https://jeremylong.github.io/DependencyCheck/general/internals.html\n"
-                + "   False Positives: https://jeremylong.github.io/DependencyCheck/general/suppression.html\n"
+                + "   About ODC: https://dependency-check.github.io/DependencyCheck/general/internals.html\n"
+                + "   False Positives: https://dependency-check.github.io/DependencyCheck/general/suppression.html\n"
                 + "\n"
                 + "💖 Sponsor: https://github.com/sponsors/jeremylong\n\n");
         LOGGER.debug("\n----------------------------------------------------\nBEGIN ANALYSIS\n----------------------------------------------------");

@@ -41,10 +41,10 @@ export JAVA_TOOL_OPTIONS="-Dhttps.proxyHost=my-proxy.internal -Dhttps.proxyPort=
 Legacy proxy configuration can be configured in any of the dependency-check integrations 
 (CLI, Maven, Gradle, Ant, Jenkins). See the configuration settings for each:
 
-* [Maven Plugin](https://jeremylong.github.io/DependencyCheck/dependency-check-maven/configuration.html)
-* [Gradle Plugin](https://jeremylong.github.io/DependencyCheck/dependency-check-gradle/configuration.html)
-* [Ant Task](https://jeremylong.github.io/DependencyCheck/dependency-check-ant/configuration.html)
-* [Command Line](https://jeremylong.github.io/DependencyCheck/dependency-check-cli/arguments.html)
+* [Maven Plugin](https://dependency-check.github.io/DependencyCheck/dependency-check-maven/configuration.html)
+* [Gradle Plugin](https://dependency-check.github.io/DependencyCheck/dependency-check-gradle/configuration.html)
+* [Ant Task](https://dependency-check.github.io/DependencyCheck/dependency-check-ant/configuration.html)
+* [Command Line](https://dependency-check.github.io/DependencyCheck/dependency-check-cli/arguments.html)
 
 Certificate Errors
 ------------------

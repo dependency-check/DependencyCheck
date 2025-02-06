@@ -48,7 +48,7 @@ public class HostedSuppressionsDataSource extends LocalDataSource {
     /**
      * The default URL to the Hosted Suppressions file.
      */
-    public static final String DEFAULT_SUPPRESSIONS_URL = "https://jeremylong.github.io/DependencyCheck/suppressions/publishedSuppressions.xml";
+    public static final String DEFAULT_SUPPRESSIONS_URL = "https://dependency-check.github.io/DependencyCheck/suppressions/publishedSuppressions.xml";
 
     /**
      * Downloads the current Hosted suppressions file.

@@ -217,7 +217,7 @@ public class EngineVersionCheck implements CachedWebDataSource {
      */
     protected String getCurrentReleaseVersion() {
         try {
-            final String str = settings.getString(Settings.KEYS.ENGINE_VERSION_CHECK_URL, "https://jeremylong.github.io/DependencyCheck/current.txt");
+            final String str = settings.getString(Settings.KEYS.ENGINE_VERSION_CHECK_URL, "https://dependency-check.github.io/DependencyCheck/current.txt");
             final URL url = new URL(str);
             String releaseVersion = null;
             releaseVersion = Downloader.getInstance().fetchContent(url, StandardCharsets.UTF_8);

@@ -52,7 +52,7 @@ public class DownloaderIT extends BaseTest {
      */
     @Test
     public void testFetchFile() throws Exception {
-        final String str = getSettings().getString(Settings.KEYS.ENGINE_VERSION_CHECK_URL, "https://jeremylong.github.io/DependencyCheck/current.txt");
+        final String str = getSettings().getString(Settings.KEYS.ENGINE_VERSION_CHECK_URL, "https://dependency-check.github.io/DependencyCheck/current.txt");
         URL url = new URL(str);
         File outputPath = new File("target/current.txt");
         Downloader.getInstance().configure(getSettings());

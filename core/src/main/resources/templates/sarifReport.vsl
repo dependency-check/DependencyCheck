@@ -7,7 +7,7 @@
         "driver": {
           "name": "dependency-check",
           "version": "$version",
-          "informationUri": "https://jeremylong.github.io/DependencyCheck/",
+          "informationUri": "https://dependency-check.github.io/DependencyCheck/",
         "rules": [
             #foreach($rule in $rpt.convertToSarifRules($dependencies))#if($foreach.count > 1),#end{
               "id": "$enc.json($rule.id)",
@@ -23,9 +23,9 @@
 #elseif($rule.getSource().equals("NPM"))For more information see [$enc.json($rule.name)](https://github.com/advisories/$enc.url($rule.name))\n#end
 \n\n
 If this is a false positive - consider using the HTML report to generate a suppression file. 
-For more information see [How dependency-check works](https://jeremylong.github.io/DependencyCheck/general/internals.html), 
-[How to read the HTML report](https://jeremylong.github.io/DependencyCheck/general/thereport.html), and 
-[Suppressing false positives](https://jeremylong.github.io/DependencyCheck/general/suppression.html).
+For more information see [How dependency-check works](https://dependency-check.github.io/DependencyCheck/general/internals.html),
+[How to read the HTML report](https://dependency-check.github.io/DependencyCheck/general/thereport.html), and
+[Suppressing false positives](https://dependency-check.github.io/DependencyCheck/general/suppression.html).
 "
               },
               "properties": {

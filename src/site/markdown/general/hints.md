@@ -4,7 +4,7 @@ Due to how dependency-check identifies libraries, false negatives may occur (a C
 
 A possible reason for false negatives is re-naming of either the vendor or library name over time. Another case is when an artifact has missing info (manifest with no vendor).
 
-Dependency Check has a built in [hints](https://github.com/jeremylong/DependencyCheck/blob/main/core/src/main/resources/dependencycheck-base-hint.xml) file that is used in every check to help correct well known false negatives.
+Dependency Check has a built in [hints](https://github.com/dependency-check/DependencyCheck/blob/main/core/src/main/resources/dependencycheck-base-hint.xml) file that is used in every check to help correct well known false negatives.
 
 A sample hints file that add a product name and possible vendors for Spring framework dependencies would look like:
 
@@ -59,7 +59,7 @@ The following shows some other ways to add evidence
 ```
 
 
-The full schema for hints files can be found here: [dependency-hint.xsd](https://github.com/jeremylong/DependencyCheck/blob/main/core/src/main/resources/schema/dependency-hint.1.1.xsd "Hint Schema")
+The full schema for hints files can be found here: [dependency-hint.xsd](https://github.com/dependency-check/DependencyCheck/blob/main/core/src/main/resources/schema/dependency-hint.1.1.xsd "Hint Schema")
 
 Please see the appropriate configuration option in each interfaces configuration guide:
 

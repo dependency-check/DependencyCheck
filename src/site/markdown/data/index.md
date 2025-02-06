@@ -42,9 +42,9 @@ must either mirror the [JS Repository](./mirrornvd.html) or disable the Retire J
 
 For a faster roundtrip time ([issue #4723](https://github.com/dependency-check/DependencyCheck/issues/4723)) to get false-positive report 
 solution out to the users dependency-check starting from version 8.0.0 is using an online hosted 
-[suppressions file](https://jeremylong.github.io/DependencyCheck/suppressions/publishedSuppressions.xml). 
+[suppressions file](https://dependency-check.github.io/DependencyCheck/suppressions/publishedSuppressions.xml). 
 For environments with constraints to internet access this file can be locally mirrored by customizing the hostedsuppressions file URL.
-See the tool-specific configuration documentation on the [github pages](https://jeremylong.github.io/DependencyCheck/index.html) 
+See the tool-specific configuration documentation on the [github pages](https://dependency-check.github.io/DependencyCheck/index.html) 
 for the exact advanced configuration flag to specify the custom location.
 Failure to download the hosted suppressions file will result in only a warning from the tool, but may result in false positives 
 being reported by your scan that have already been mitigated by the hosted suppressions file.

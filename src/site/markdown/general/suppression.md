@@ -109,7 +109,7 @@ It is also possible to set an expiration date for a suppression rule:
 </suppressions>
 ```
 
-The full schema for suppression files can be found here: [suppression.xsd](https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.3.xsd "Suppression Schema")
+The full schema for suppression files can be found here: [suppression.xsd](https://dependency-check.github.io/DependencyCheck/dependency-suppression.1.3.xsd "Suppression Schema")
 
 Please see the appropriate configuration option in each interfaces configuration guide:
 

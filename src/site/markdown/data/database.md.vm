@@ -4,7 +4,7 @@ Using a Database Server
 
 Out of the box dependency-check uses a local H2 database. The location of the database
 file is configured using the data directory configuration option (see
-[CLI](https://jeremylong.github.io/DependencyCheck/dependency-check-cli/arguments.html)).
+[CLI](https://dependency-check.github.io/DependencyCheck/dependency-check-cli/arguments.html)).
 
 Some organizations may want to use a more robust centralized database. Currently, [H2 in
 server mode](http://www.h2database.com/html/tutorial.html#using_server), MySQL, MariaDB, PostgreSQL,
@@ -18,7 +18,7 @@ see the note about Central [here](./index.html).
 To setup a centralized database the following generalized steps can be used:
 
 <ol><li>Create the database and tables using either <a href="https://github.com/dependency-check/DependencyCheck/blob/main/core/src/main/resources/data/initialize.sql">initialize.sql</a>
-   or one of the other initialization scripts <a href="https://github.com/jeremylong/DependencyCheck/tree/main/core/src/main/resources/data">found here</a>. <b>Note that some of the
+   or one of the other initialization scripts <a href="https://github.com/dependency-check/DependencyCheck/tree/main/core/src/main/resources/data">found here</a>. <b>Note that some of the
    scripts may need to be updated to correctly create the database and/or add users.</b>
     <ul><li>If you are using H2 in server mode, as of version 6.0.0, the dependency-check-core JAR file needs to be available in the H2 path due to how functions/stored procedures work in H2.</li></ul>
 </li>
@@ -36,9 +36,9 @@ To setup a centralized database the following generalized steps can be used:
        <li>If the driver is not already in the classpath the dbDriverPath option will need to be set.</li>
    </ul>
 </li></ol>
-Depending on the database being used, you may need to customize the <a href="https://github.com/jeremylong/DependencyCheck/blob/main/core/src/main/resources/data/dbStatements.properties">dbStatements.properties</a>.
+Depending on the database being used, you may need to customize the <a href="https://github.com/dependency-check/DependencyCheck/blob/main/core/src/main/resources/data/dbStatements.properties">dbStatements.properties</a>.
 Alternatively to modifying the dbStatements.properties it is possible to use a dialect file to support other databases.
-See <a href="https://github.com/jeremylong/DependencyCheck/blob/main/core/src/main/resources/data/dbStatements_h2.properties">dbStatements_h2.properties</a>
+See <a href="https://github.com/dependency-check/DependencyCheck/blob/main/core/src/main/resources/data/dbStatements_h2.properties">dbStatements_h2.properties</a>
 as an example.
 
 Also, if using an external database you will need to manually upgrade the schema. See [database upgrades](./upgrade.html) for more information.
@@ -86,4 +86,4 @@ The following example shows how to use the Maven plugin with MariaDB:
 
 Support
 -------
-As always, feel free to open an [issue](https://github.com/jeremylong/DependencyCheck/issues).
+As always, feel free to open an [issue](https://github.com/dependency-check/DependencyCheck/issues).
