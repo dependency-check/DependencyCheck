@@ -929,20 +929,20 @@ public final class CveDB implements AutoCloseable {
                         if (value != null) {
                             modifiedVulnAvailabilityImpact = CvssV4Data.ModifiedCiaType.fromValue(value);
                         }
-                        CvssV4Data.ModifiedCiaType modifiedSubConfidentialityImpact = null;
+                        CvssV4Data.ModifiedSubCType modifiedSubConfidentialityImpact = null;
                         value = rsV.getString(56);
                         if (value != null) {
-                            modifiedSubConfidentialityImpact = CvssV4Data.ModifiedCiaType.fromValue(value);
+                            modifiedSubConfidentialityImpact = CvssV4Data.ModifiedSubCType.fromValue(value);
                         }
-                        CvssV4Data.ModifiedCiaType modifiedSubIntegrityImpact = null;
+                        CvssV4Data.ModifiedSubIaType modifiedSubIntegrityImpact = null;
                         value = rsV.getString(57);
                         if (value != null) {
-                            modifiedSubIntegrityImpact = CvssV4Data.ModifiedCiaType.fromValue(value);
+                            modifiedSubIntegrityImpact = CvssV4Data.ModifiedSubIaType.fromValue(value);
                         }
-                        CvssV4Data.ModifiedCiaType modifiedSubAvailabilityImpact = null;
+                        CvssV4Data.ModifiedSubIaType modifiedSubAvailabilityImpact = null;
                         value = rsV.getString(58);
                         if (value != null) {
-                            modifiedSubAvailabilityImpact = CvssV4Data.ModifiedCiaType.fromValue(value);
+                            modifiedSubAvailabilityImpact = CvssV4Data.ModifiedSubIaType.fromValue(value);
                         }
                         CvssV4Data.SafetyType safety = null;
                         value = rsV.getString(59);
@@ -2191,6 +2191,22 @@ public final class CveDB implements AutoCloseable {
     }
 
     private void setUpdateColumn(PreparedStatement ps, int i, CvssV4Data.ModifiedCiaType value) throws SQLException  {
+        if (value == null) {
+            ps.setNull(i, java.sql.Types.VARCHAR);
+        } else {
+            ps.setString(i, value.value());
+        }
+    }
+
+    private void setUpdateColumn(PreparedStatement ps, int i, CvssV4Data.ModifiedSubCType value) throws SQLException  {
+        if (value == null) {
+            ps.setNull(i, java.sql.Types.VARCHAR);
+        } else {
+            ps.setString(i, value.value());
+        }
+    }
+
+    private void setUpdateColumn(PreparedStatement ps, int i, CvssV4Data.ModifiedSubIaType value) throws SQLException  {
         if (value == null) {
             ps.setNull(i, java.sql.Types.VARCHAR);
         } else {
