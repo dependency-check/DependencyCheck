@@ -7,6 +7,9 @@ assignees: ''
 
 ---
 
+**Precondition**
+- [ ] I checked the issues list for existing open or closed reports of the same problem.
+
 **Describe the bug**
 A clear and concise description of what the bug is.
 
