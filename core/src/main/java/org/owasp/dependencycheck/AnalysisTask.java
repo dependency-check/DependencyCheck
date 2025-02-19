@@ -87,7 +87,7 @@ public class AnalysisTask implements Callable<Void> {
             try {
                 analyzer.analyze(dependency, engine);
             } catch (AnalysisException ex) {
-                LOGGER.warn("An error occurred while analyzing '{}' ({}).", dependency.getActualFilePath(), analyzer.getName());
+                LOGGER.warn("An error occurred while analyzing '{}' ({}): {}", dependency.getActualFilePath(), analyzer.getName(), ex.getMessage());
                 LOGGER.debug("", ex);
                 exceptions.add(ex);
             } catch (Throwable ex) {
