@@ -23,6 +23,7 @@ import org.apache.hc.client5.http.auth.AuthScope;
 import org.apache.hc.client5.http.auth.Credentials;
 import org.apache.hc.client5.http.auth.CredentialsStore;
 import org.apache.hc.client5.http.auth.UsernamePasswordCredentials;
+import org.apache.hc.client5.http.config.ConnectionConfig;
 import org.apache.hc.client5.http.impl.auth.BasicAuthCache;
 import org.apache.hc.client5.http.impl.auth.BasicScheme;
 import org.apache.hc.client5.http.impl.auth.SystemDefaultCredentialsProvider;
@@ -69,6 +70,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.TimeUnit;
 
 import static java.lang.String.format;
 
@@ -87,6 +89,11 @@ public final class Downloader {
      * The builder to use for a HTTP Client that explicitly opts out of proxy-usage
      */
     private final HttpClientBuilder httpClientBuilderExplicitNoproxy;
+
+    /**
+     * The connectionmanager for HTTP connection pooling shared by the client builders.
+     */
+    private final PoolingHttpClientConnectionManager connectionManager;
 
     /**
      * The Authentication cache for pre-emptive authentication.
@@ -133,7 +140,7 @@ public final class Downloader {
 
     private Downloader() {
         // Singleton class
-        final PoolingHttpClientConnectionManager connectionManager = new PoolingHttpClientConnectionManager();
+        connectionManager = new PoolingHttpClientConnectionManager();
         //TODO: ensure proper closure and eviction policy
         httpClientBuilder = HttpClientBuilder.create()
                 .useSystemProperties()
@@ -175,7 +182,17 @@ public final class Downloader {
      */
     public void configure(Settings settings) throws InvalidSettingException {
         this.settings = settings;
+        final long connectionTimeout = settings.getLong(Settings.KEYS.CONNECTION_TIMEOUT, 10_000);
+        // set a conservatively long default timeout to compensate for MITM-proxies that return the (final) bytes only
+        // after all security checks passed
+        final int readTimeout = settings.getInt(Settings.KEYS.CONNECTION_READ_TIMEOUT, 60_000);
 
+        connectionManager.setDefaultConnectionConfig(
+                ConnectionConfig.custom()
+                        .setConnectTimeout(connectionTimeout, TimeUnit.MILLISECONDS)
+                        .setSocketTimeout(readTimeout, TimeUnit.MILLISECONDS)
+                        .build()
+        );
         if (settings.getString(Settings.KEYS.PROXY_SERVER) != null) {
             // Legacy proxy configuration present
             // So don't rely on the system properties for proxy; use the legacy settings configuration
