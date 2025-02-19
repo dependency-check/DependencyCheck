@@ -7,8 +7,8 @@ RUN "$JAVA_HOME/bin/jlink" --compress=2 --module-path /opt/java/openjdk/jmods --
 FROM mcr.microsoft.com/dotnet/runtime:8.0-alpine3.18
 
 ARG VERSION
-ARG POSTGRES_DRIVER_VERSION= 42.7.5
-ARG MYSQL_DRIVER_VERSION=9.2.0
+ARG POSTGRES_DRIVER_VERSION=42.2.19
+ARG MYSQL_DRIVER_VERSION=8.0.23
 ARG UID=1000
 ARG GID=1000
 
