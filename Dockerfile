@@ -7,8 +7,8 @@ RUN "$JAVA_HOME/bin/jlink" --compress=2 --module-path /opt/java/openjdk/jmods --
 FROM mcr.microsoft.com/dotnet/runtime:8.0-alpine3.18
 
 ARG VERSION
-ARG POSTGRES_DRIVER_VERSION=42.2.19
-ARG MYSQL_DRIVER_VERSION=8.0.23
+ARG POSTGRES_DRIVER_VERSION=42.7.5
+ARG MYSQL_DRIVER_VERSION=9.2.0
 ARG UID=1000
 ARG GID=1000
 
@@ -34,9 +34,9 @@ RUN apk update                                                                  
     rm dependency-check-${VERSION}-release.zip                                                       && \
     cd /usr/share/dependency-check/plugins                                                           && \
     curl -Os "https://jdbc.postgresql.org/download/postgresql-${POSTGRES_DRIVER_VERSION}.jar"        && \
-    curl -Ls "https://dev.mysql.com/get/Downloads/Connector-J/mysql-connector-java-${MYSQL_DRIVER_VERSION}.tar.gz" \
+    curl -Ls "https://dev.mysql.com/get/Downloads/Connector-J/mysql-connector-j-${MYSQL_DRIVER_VERSION}.tar.gz" \
         | tar -xz --directory "/usr/share/dependency-check/plugins" --strip-components=1 --no-same-owner \
-            "mysql-connector-java-${MYSQL_DRIVER_VERSION}/mysql-connector-java-${MYSQL_DRIVER_VERSION}.jar" && \
+            "mysql-connector-j-${MYSQL_DRIVER_VERSION}/mysql-connector-j-${MYSQL_DRIVER_VERSION}.jar" && \
     addgroup -S -g ${GID} ${user} && adduser -S -D -u ${UID} -G ${user} ${user}                      && \
     mkdir /usr/share/dependency-check/data                                                           && \
     chown -R ${user}:0 /usr/share/dependency-check                                                   && \
