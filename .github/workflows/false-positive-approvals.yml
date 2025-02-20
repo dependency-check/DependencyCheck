@@ -151,7 +151,7 @@ jobs:
             } 
       - name: Publish Updated Suppressions
         if: ${{ steps.fp-ops-commit.outputs.publish == 'true' }}
-        uses: JamesIves/github-pages-deploy-action@v4.7.2
+        uses: JamesIves/github-pages-deploy-action@v4.7.3
         with:
           branch: gh-pages
           folder: suppressions
