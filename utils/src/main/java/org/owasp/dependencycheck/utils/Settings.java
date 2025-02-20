@@ -1455,6 +1455,31 @@ public final class Settings {
     }
 
     /**
+     * Returns a long value from the properties file. If the value was specified
+     * as a system property or passed in via the -Dprop=value argument - this
+     * method will return the value from the system properties before the values
+     * in the contained configuration file.
+     *
+     * @param key the key to lookup within the properties file
+     * @param defaultValue the default value to return
+     * @return the property from the properties file or the defaultValue if the
+     * property does not exist or cannot be converted to an integer
+     */
+    public long getLong(@NotNull final String key, long defaultValue) {
+        long value;
+        try {
+            value = Long.parseLong(getString(key));
+        } catch (NumberFormatException ex) {
+            if (!getString(key, "").isEmpty()) {
+                LOGGER.debug("Could not convert property '{}={}' to a long; using {} instead.",
+                        key, getPrintableValue(key, getString(key)), defaultValue);
+            }
+            value = defaultValue;
+        }
+        return value;
+    }
+
+    /**
      * Returns a boolean value from the properties file. If the value was
      * specified as a system property or passed in via the
      * <code>-Dprop=value</code> argument this method will return the value from
