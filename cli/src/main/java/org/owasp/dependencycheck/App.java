@@ -381,8 +381,8 @@ public class App {
             final int pos = getLastFileSeparator(include);
             final String tmpBase = include.substring(0, pos);
             //fix for windows style paths scanning c:/temp.
-            if (tmpBase.endsWith(':')) {
-                tmpBase += '/';
+            if (tmpBase.endsWith(":")) {
+                tmpBase += "/";
             }
             final String tmpInclude = include.substring(pos + 1);
             if (tmpInclude.indexOf('*') >= 0 || tmpInclude.indexOf('?') >= 0
