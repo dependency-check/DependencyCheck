@@ -379,7 +379,7 @@ public class App {
             String include = file.replace('\\', '/');
             final File baseDir;
             final int pos = getLastFileSeparator(include);
-            final String tmpBase = include.substring(0, pos);
+            String tmpBase = include.substring(0, pos);
             //fix for windows style paths scanning c:/temp.
             if (tmpBase.endsWith(":")) {
                 tmpBase += "/";
