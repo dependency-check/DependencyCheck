@@ -2703,7 +2703,7 @@ public abstract class BaseDependencyCheckMojo extends AbstractMojo implements Ma
     /**
      * Hacky method of muting the noisy logging from JCS
      */
-    private void muteNoisyLoggers() {
+    protected void muteNoisyLoggers() {
         System.setProperty("jcs.logSystem", "slf4j");
         if (!getLog().isDebugEnabled()) {
             Slf4jAdapter.muteLogging(true);

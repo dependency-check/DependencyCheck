@@ -67,6 +67,7 @@ public class UpdateMojo extends BaseDependencyCheckMojo {
      */
     @Override
     protected void runCheck() throws MojoExecutionException, MojoFailureException {
+        muteNoisyLoggers();
         try (Engine engine = initializeEngine()) {
             try {
                 if (!engine.getSettings().getBoolean(Settings.KEYS.AUTO_UPDATE)) {
