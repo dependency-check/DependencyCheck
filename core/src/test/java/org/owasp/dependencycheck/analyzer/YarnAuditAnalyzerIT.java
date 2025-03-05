@@ -33,12 +33,12 @@ public class YarnAuditAnalyzerIT extends BaseTest {
 
     @Test
     public void testAnalyzePackageYarnClassic() throws AnalysisException, InitializationException, InvalidSettingException {
-        testAnalyzePackageYarn("yarn-classic-audit/yarn.lock");
+        testAnalyzePackageYarn("yarn/yarn-classic-audit/yarn.lock");
     }
 
     @Test
     public void testAnalyzePackageYarnBerry() throws AnalysisException, InitializationException, InvalidSettingException {
-        testAnalyzePackageYarn("yarn-berry-audit/yarn.lock");
+        testAnalyzePackageYarn("yarn/yarn-berry-audit/yarn.lock");
     }
 
     private void testAnalyzePackageYarn(String yarnLockFile) throws AnalysisException {
