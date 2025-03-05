@@ -54,6 +54,7 @@ import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Stream;
 
 @ThreadSafe
 public class YarnAuditAnalyzer extends AbstractNpmAnalyzer {
@@ -388,7 +389,9 @@ public class YarnAuditAnalyzer extends AbstractNpmAnalyzer {
         final String advisoriesJsons = startAndReadStdoutToString(builder);
 
         LOGGER.debug("Advisories JSON: {}", advisoriesJsons);
-        String[] advisoriesJsonArray = advisoriesJsons.split("\n");
+        String[] advisoriesJsonArray = Stream.of(advisoriesJsons.split("\n"))
+                .filter(s -> !s.isBlank())
+                .toArray(String[]::new);
         try {
             List<JSONObject> advisories = new ArrayList<>();
             for (String advisoriesJson : advisoriesJsonArray) {
