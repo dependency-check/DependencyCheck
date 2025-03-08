@@ -144,10 +144,12 @@ public final class Downloader {
         //TODO: ensure proper closure and eviction policy
         httpClientBuilder = HttpClientBuilder.create()
                 .useSystemProperties()
+                .disableContentCompression()
                 .setConnectionManager(connectionManager)
                 .setConnectionManagerShared(true);
         httpClientBuilderExplicitNoproxy = HttpClientBuilder.create()
                 .useSystemProperties()
+                .disableContentCompression()
                 .setConnectionManager(connectionManager)
                 .setConnectionManagerShared(true)
                 .setProxySelector(new ProxySelector() {
