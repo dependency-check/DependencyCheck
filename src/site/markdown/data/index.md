@@ -1,6 +1,6 @@
 # Internet Access Required
 
-Dependency-check requires access, by default, to several externally
+Dependency-check, by default, requires access to several externally
 hosted resources.
 
 ## The NVD Database
