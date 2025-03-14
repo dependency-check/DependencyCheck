@@ -114,7 +114,7 @@ public class YarnAuditAnalyzer extends AbstractNpmAnalyzer {
     private int getYarnMajorVersion(Dependency dependency) {
         var yarnVersion = getYarnVersion(dependency);
         try {
-            var semver = new Semver(yarnVersion);
+            var semver = Semver.coerce(yarnVersion);
             return semver.getMajor();
         } catch (SemverException e) {
             throw new IllegalStateException("Invalid version string format", e);
