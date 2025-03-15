@@ -313,13 +313,14 @@ public class App {
         for (Dependency d : engine.getDependencies()) {
             boolean addName = true;
             for (Vulnerability v : d.getVulnerabilities()) {
-                final Double cvssV2 = v.getCvssV2() != null && v.getCvssV2().getCvssData() != null
+                final double cvssV2 = v.getCvssV2() != null && v.getCvssV2().getCvssData() != null
                         && v.getCvssV2().getCvssData().getBaseScore() != null ? v.getCvssV2().getCvssData().getBaseScore() : -1;
-                final Double cvssV3 = v.getCvssV3() != null && v.getCvssV3().getCvssData() != null
+                final double cvssV3 = v.getCvssV3() != null && v.getCvssV3().getCvssData() != null
                         && v.getCvssV3().getCvssData().getBaseScore() != null ? v.getCvssV3().getCvssData().getBaseScore() : -1;
-                final Double cvssV4 = v.getCvssV4() != null && v.getCvssV4().getCvssData() != null
+                final double cvssV4 = v.getCvssV4() != null && v.getCvssV4().getCvssData() != null
                         && v.getCvssV4().getCvssData().getBaseScore() != null ? v.getCvssV4().getCvssData().getBaseScore() : -1;
-                final Double unscoredCvss = v.getUnscoredSeverity() != null ? SeverityUtil.estimateCvssV2(v.getUnscoredSeverity()) : -1;
+                final boolean useUnscored = cvssV2 == -1 && cvssV3 == -1 && cvssV4 == -1;
+                final double unscoredCvss = (useUnscored && v.getUnscoredSeverity() != null) ? SeverityUtil.estimateCvssV2(v.getUnscoredSeverity()) : -1;
 
                 if (cvssV2 >= cvssFailScore
                         || cvssV3 >= cvssFailScore
