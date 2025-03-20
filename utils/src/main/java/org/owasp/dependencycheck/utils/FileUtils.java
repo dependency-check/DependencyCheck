@@ -27,6 +27,8 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Comparator;
+import java.util.Enumeration;
+import java.util.Iterator;
 import java.util.UUID;
 import java.util.stream.Stream;
 
@@ -151,6 +153,19 @@ public final class FileUtils {
                 LOGGER.trace("", ex);
             }
         }
+    }
+
+    /** Gets the {@link java.util.Iterator<java.net.URL>} for this resource
+     *
+     * @param resource path
+     * @return iterator of each resource URL
+     * @throws IOException if I/O error occurs
+     */
+    public static Iterator<URL> getResources(@NotNull String resource) throws IOException {
+        final ClassLoader classLoader = FileUtils.class.getClassLoader();
+        return classLoader != null
+            ? classLoader.getResources(resource).asIterator()
+            : ClassLoader.getSystemResources(resource).asIterator();
     }
 
     /**

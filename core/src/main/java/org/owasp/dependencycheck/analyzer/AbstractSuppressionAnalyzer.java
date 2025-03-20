@@ -26,6 +26,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.regex.Pattern;
@@ -195,15 +196,24 @@ public abstract class AbstractSuppressionAnalyzer extends AbstractAnalyzer {
      * @throws SuppressionParseException thrown if the XML cannot be parsed.
      */
     private void loadPackagedSuppressionBaseData(final SuppressionParser parser, final Engine engine) throws SuppressionParseException {
-        final List<SuppressionRule> ruleList;
-        try (InputStream in = FileUtils.getResourceAsStream(BASE_SUPPRESSION_FILE)) {
-            if (in == null) {
-                throw new SuppressionParseException("Suppression rules `" + BASE_SUPPRESSION_FILE + "` could not be found");
+        final List<SuppressionRule> ruleList = new ArrayList<>();
+        try {
+            Iterator<URL> urls = FileUtils.getResources(BASE_SUPPRESSION_FILE);
+            while (urls.hasNext()) {
+                URL url = urls.next();
+                try (InputStream in = url.openStream()) {
+                    if (in == null) {
+                        throw new SuppressionParseException("Suppression rules `" + url + "` could not be found");
+                    }
+                    ruleList.addAll(parser.parseSuppressionRules(in));
+                } catch (SAXException | IOException ex) {
+                    throw new SuppressionParseException("Unable to parse the base suppression data file", ex);
+                }
             }
-            ruleList = parser.parseSuppressionRules(in);
-        } catch (SAXException | IOException ex) {
-            throw new SuppressionParseException("Unable to parse the base suppression data file", ex);
+        } catch (IOException ex) {
+            throw new SuppressionParseException("Unable to find base suppression data files", ex);
         }
+
         if (!ruleList.isEmpty()) {
             if (engine.hasObject(SUPPRESSION_OBJECT_KEY)) {
                 @SuppressWarnings("unchecked")
