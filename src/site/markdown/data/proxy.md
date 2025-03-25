@@ -26,14 +26,14 @@ And in case of legacy URLs that are not (yet) exposing on https:
 As example configuration would be:
 
 ```bash
-export JAVA_TOOL_OPTIONS="-Dhttps.proxyHost=my-proxy.internal -Dhttps.proxyPort=8083"
+export JAVA_TOOL_OPTIONS=-Dhttps.proxyHost=my-proxy.internal -Dhttps.proxyPort=8083
 ```
 
 If you have some custom internal URLs that are on plain http, but do require use of the proxy you should also add
 the `http.*` properties for the proxy.
 
 ```bash
-export JAVA_TOOL_OPTIONS="-Dhttps.proxyHost=my-proxy.internal -Dhttps.proxyPort=8083 -Dhttp.proxyHost=my-proxy.internal -Dhttp.proxyPort=8083"
+export JAVA_TOOL_OPTIONS=-Dhttps.proxyHost=my-proxy.internal -Dhttps.proxyPort=8083 -Dhttp.proxyHost=my-proxy.internal -Dhttp.proxyPort=8083
 ```
 
 ## Legacy configuration
