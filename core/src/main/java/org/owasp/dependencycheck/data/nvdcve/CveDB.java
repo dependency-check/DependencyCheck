@@ -1090,7 +1090,7 @@ public final class CveDB implements AutoCloseable {
         clearCache();
         final String cveId = cve.getCve().getId();
         try {
-            if (cve.getCve().getVulnStatus().toUpperCase().startsWith("REJECT")) {
+            if (cve.getCve().getVulnStatus() != null && cve.getCve().getVulnStatus().toUpperCase().startsWith("REJECT")) {
                 deleteVulnerability(cveId);
             } else {
                 if (cveItemConverter.testCveCpeStartWithFilter(cve)) {
