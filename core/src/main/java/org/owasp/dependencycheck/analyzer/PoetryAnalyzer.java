@@ -147,7 +147,7 @@ public class PoetryAnalyzer extends AbstractFileTypeAnalyzer {
         //do not report on the build file itself
         engine.removeDependency(dependency);
 
-        Optional<Toml> potentiallyParsedToml = parseDependencyFile(dependency);
+        final Optional<Toml> potentiallyParsedToml = parseDependencyFile(dependency);
         if (potentiallyParsedToml.isEmpty()) {
             LOGGER.warn("toml file skipped: {} could not be parsed", dependency.getActualFilePath());
             return;
@@ -207,16 +207,16 @@ public class PoetryAnalyzer extends AbstractFileTypeAnalyzer {
 
     private Optional<Toml> parseDependencyFile(Dependency dependency) {
         try {
-            Toml toml = new Toml().read(dependency.getActualFile());
+            final Toml toml = new Toml().read(dependency.getActualFile());
             return Optional.of(toml);
         } catch (RuntimeException e) {
-            Optional<String> unparsableFileErrorMessage = Optional.ofNullable(e.getCause())
+            final Optional<String> unparsableFileErrorMessage = Optional.ofNullable(e.getCause())
                     .filter(c -> c instanceof IllegalStateException)
                     .map(Throwable::getMessage)
                     .filter(PoetryAnalyzer::isInvalidKeyErrorMessage);
 
             if (unparsableFileErrorMessage.isPresent()) {
-                String message = String.format("Invalid toml file, cannot parse '%s'", dependency.getActualFile());
+                final String message = String.format("Invalid toml file, cannot parse '%s'", dependency.getActualFile());
                 LOGGER.debug(message, e);
                 return Optional.empty();
             }

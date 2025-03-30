@@ -172,7 +172,7 @@ public final class CliParser {
                     if (!isValidFormat(validating)
                             && !isValidFilePath(validating, "format")) {
                         final String msg = String.format("An invalid 'format' of '%s' was specified. "
-                                + "Supported output formats are %s, and custom template files.",
+                                        + "Supported output formats are %s, and custom template files.",
                                 validating, SUPPORTED_FORMATS);
                         throw new ParseException(msg);
                     }
@@ -321,14 +321,14 @@ public final class CliParser {
         //This is an option group because it can be specified more then once.
 
         options.addOptionGroup(newOptionGroup(newOptionWithArg(ARGUMENT.SCAN_SHORT, ARGUMENT.SCAN, "path",
-                "The path to scan - this option can be specified multiple times. Ant style paths are supported (e.g. 'path/**/*.jar'); "
-                + "if using Ant style paths it is highly recommended to quote the argument value.")))
+                        "The path to scan - this option can be specified multiple times. Ant style paths are supported (e.g. 'path/**/*.jar'); "
+                                + "if using Ant style paths it is highly recommended to quote the argument value.")))
                 .addOptionGroup(newOptionGroup(newOptionWithArg(ARGUMENT.EXCLUDE, "pattern", "Specify an exclusion pattern. This option "
                         + "can be specified multiple times and it accepts Ant style exclusions.")))
                 .addOption(newOptionWithArg(ARGUMENT.PROJECT, "name", "The name of the project being scanned."))
                 .addOption(newOptionWithArg(ARGUMENT.OUT_SHORT, ARGUMENT.OUT, "path",
                         "The folder to write reports to. This defaults to the current directory. It is possible to set this to a specific "
-                        + "file name if the format argument is not set to ALL."))
+                                + "file name if the format argument is not set to ALL."))
                 .addOption(newOptionWithArg(ARGUMENT.OUTPUT_FORMAT_SHORT, ARGUMENT.OUTPUT_FORMAT, "format",
                         "The report format (" + SUPPORTED_FORMATS + "). The default is HTML. Multiple format parameters can be specified."))
                 .addOption(newOption(ARGUMENT.PRETTY_PRINT, "When specified the JSON and XML report formats will be pretty printed."))
@@ -346,7 +346,7 @@ public final class CliParser {
                 .addOption(newOptionWithArg(ARGUMENT.NVD_API_KEY, "apiKey", "The API Key to access the NVD API."))
                 .addOption(newOptionWithArg(ARGUMENT.FAIL_ON_CVSS, "score",
                         "Specifies if the build should be failed if a CVSS score above a specified level is identified. The default is 11; "
-                        + "since the CVSS scores are 0-10, by default the build will never fail."))
+                                + "since the CVSS scores are 0-10, by default the build will never fail."))
                 .addOption(newOptionWithArg(ARGUMENT.FAIL_JUNIT_ON_CVSS, "score",
                         "Specifies the CVSS score that is considered a failure when generating the junit report. The default is 0."));
     }
@@ -397,7 +397,7 @@ public final class CliParser {
                         "The proxy password to use when downloading resources."))
                 .addOption(newOptionWithArg(ARGUMENT.NON_PROXY_HOSTS, "list",
                         "The proxy exclusion list: hostnames (or patterns) for which proxy should not be used. "
-                        + "Use pipe, comma or colon as list separator."))
+                                + "Use pipe, comma or colon as list separator."))
                 .addOption(newOptionWithArg(ARGUMENT.CONNECTION_TIMEOUT_SHORT, ARGUMENT.CONNECTION_TIMEOUT, "timeout",
                         "The connection timeout (in milliseconds) to use when downloading resources."))
                 .addOption(newOptionWithArg(ARGUMENT.CONNECTION_READ_TIMEOUT, "timeout",
@@ -414,14 +414,14 @@ public final class CliParser {
                         "The database driver name."))
                 .addOption(newOptionWithArg(ARGUMENT.DB_DRIVER_PATH, "path",
                         "The path to the database driver; note, this does not need to be set unless the JAR is "
-                        + "outside of the classpath."))
+                                + "outside of the classpath."))
                 .addOption(newOptionWithArg(ARGUMENT.SYM_LINK_DEPTH, "depth",
                         "Sets how deep nested symbolic links will be followed; 0 indicates symbolic links will not be followed."))
                 .addOption(newOptionWithArg(ARGUMENT.PATH_TO_BUNDLE_AUDIT, "path",
                         "The path to bundle-audit for Gem bundle analysis."))
                 .addOption(newOptionWithArg(ARGUMENT.PATH_TO_BUNDLE_AUDIT_WORKING_DIRECTORY, "path",
                         "The path to working directory that the bundle-audit command should be executed from when "
-                        + "doing Gem bundle analysis."))
+                                + "doing Gem bundle analysis."))
                 .addOption(newOptionWithArg(ARGUMENT.CENTRAL_URL, "url",
                         "Alternative URL for Maven Central Search. If not set the public Sonatype Maven Central will be used."))
                 .addOption(newOptionWithArg(ARGUMENT.CENTRAL_USERNAME, "username",
@@ -434,7 +434,7 @@ public final class CliParser {
                         "Alternative URL for the OSS Index. If not set the public Sonatype OSS Index will be used."))
                 .addOption(newOptionWithArg(ARGUMENT.OSSINDEX_USERNAME, "username",
                         "The username to authenticate to Sonatype's OSS Index. If not set the Sonatype OSS Index "
-                        + "Analyzer will use an unauthenticated connection."))
+                                + "Analyzer will use an unauthenticated connection."))
                 .addOption(newOptionWithArg(ARGUMENT.OSSINDEX_PASSWORD, "password", ""
                         + "The password to authenticate to Sonatype's OSS Index. If not set the Sonatype OSS "
                         + "Index Analyzer will use an unauthenticated connection."))
@@ -472,23 +472,23 @@ public final class CliParser {
                         "The path to the `pnpm` executable."))
                 .addOption(newOptionWithArg(ARGUMENT.RETIREJS_FILTERS, "pattern",
                         "Specify Retire JS content filter used to exclude files from analysis based on their content; "
-                        + "most commonly used to exclude based on your applications own copyright line. This "
-                        + "option can be specified multiple times."))
+                                + "most commonly used to exclude based on your applications own copyright line. This "
+                                + "option can be specified multiple times."))
                 .addOption(newOptionWithArg(ARGUMENT.NEXUS_URL, "url",
                         "The url to the Nexus Server's REST API Endpoint (http://domain/nexus/service/local). If not "
-                        + "set the Nexus Analyzer will be disabled."))
+                                + "set the Nexus Analyzer will be disabled."))
                 .addOption(newOptionWithArg(ARGUMENT.NEXUS_USERNAME, "username",
                         "The username to authenticate to the Nexus Server's REST API Endpoint. If not set the Nexus "
-                        + "Analyzer will use an unauthenticated connection."))
+                                + "Analyzer will use an unauthenticated connection."))
                 .addOption(newOptionWithArg(ARGUMENT.NEXUS_PASSWORD, "password",
                         "The password to authenticate to the Nexus Server's REST API Endpoint. If not set the Nexus "
-                        + "Analyzer will use an unauthenticated connection."))
+                                + "Analyzer will use an unauthenticated connection."))
                 //TODO remove as this should be covered by non-proxy hosts
                 .addOption(newOptionWithArg(ARGUMENT.NEXUS_USES_PROXY, "true/false",
                         "Whether or not the configured proxy should be used when connecting to Nexus."))
                 .addOption(newOptionWithArg(ARGUMENT.ADDITIONAL_ZIP_EXTENSIONS, "extensions",
                         "A comma separated list of additional extensions to be scanned as ZIP files (ZIP, EAR, WAR "
-                        + "are already treated as zip files)"))
+                                + "are already treated as zip files)"))
                 .addOption(newOptionWithArg(ARGUMENT.PROP_SHORT, ARGUMENT.PROP, "file", "A property file to load."))
                 .addOption(newOptionWithArg(ARGUMENT.PATH_TO_CORE, "path", "The path to dotnet core."))
                 .addOption(newOptionWithArg(ARGUMENT.HINTS_FILE, "file", "The file path to the hints XML file."))
@@ -498,9 +498,12 @@ public final class CliParser {
                 .addOption(newOption(ARGUMENT.DISABLE_ARCHIVE, "Disable the Archive Analyzer."))
                 .addOption(newOption(ARGUMENT.DISABLE_KEV, "Disable the Known Exploited Vulnerability Analyzer."))
                 .addOption(newOptionWithArg(ARGUMENT.KEV_URL, "url", "The url to the CISA Known Exploited Vulnerabilities JSON data feed"))
-                .addOption(newOptionWithArg(ARGUMENT.KEV_USER, "user", "The user for basic authentication towards the CISA Known Exploited Vulnerabilities JSON data feed"))
-                .addOption(newOptionWithArg(ARGUMENT.KEV_PASSWORD, "password", "The password for basic authentication towards the CISA Known Exploited Vulnerabilities JSON data feed"))
-                .addOption(newOptionWithArg(ARGUMENT.KEV_BEARER_TOKEN, "token", "The token for bearer authentication towards the CISA Known Exploited Vulnerabilities JSON data feed"))
+                .addOption(newOptionWithArg(ARGUMENT.KEV_USER, "user", "The user for basic authentication towards the CISA Known Exploited "
+                        + "Vulnerabilities JSON data feed"))
+                .addOption(newOptionWithArg(ARGUMENT.KEV_PASSWORD, "password", "The password for basic authentication towards the CISA Known "
+                        + "Exploited Vulnerabilities JSON data feed"))
+                .addOption(newOptionWithArg(ARGUMENT.KEV_BEARER_TOKEN, "token", "The token for bearer authentication towards the CISA Known "
+                        + "Exploited Vulnerabilities JSON data feed"))
                 .addOption(newOption(ARGUMENT.DISABLE_ASSEMBLY, "Disable the .NET Assembly Analyzer."))
                 .addOption(newOption(ARGUMENT.DISABLE_PY_DIST, "Disable the Python Distribution Analyzer."))
                 .addOption(newOption(ARGUMENT.DISABLE_CMAKE, "Disable the Cmake Analyzer."))
@@ -783,8 +786,8 @@ public final class CliParser {
             addAdvancedOptions(options);
         }
         final String helpMsg = String.format("%n%s"
-                + " can be used to identify if there are any known CVE vulnerabilities in libraries utilized by an application. "
-                + "%s will automatically update required data from the Internet, such as the CVE and CPE data files from nvd.nist.gov.%n%n",
+                        + " can be used to identify if there are any known CVE vulnerabilities in libraries utilized by an application. "
+                        + "%s will automatically update required data from the Internet, such as the CVE and CPE data files from nvd.nist.gov.%n%n",
                 settings.getString(Settings.KEYS.APPLICATION_NAME, "DependencyCheck"),
                 settings.getString(Settings.KEYS.APPLICATION_NAME, "DependencyCheck"));
 

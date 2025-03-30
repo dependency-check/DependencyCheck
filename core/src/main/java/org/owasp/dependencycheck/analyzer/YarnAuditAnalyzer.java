@@ -45,6 +45,7 @@ import jakarta.json.Json;
 import jakarta.json.JsonException;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonReader;
+
 import javax.annotation.concurrent.ThreadSafe;
 import java.io.File;
 import java.io.FileFilter;
@@ -59,8 +60,14 @@ import java.util.stream.Stream;
 @ThreadSafe
 public class YarnAuditAnalyzer extends AbstractNpmAnalyzer {
 
+    /**
+     * The Logger for use throughout the class.
+     */
     private static final Logger LOGGER = LoggerFactory.getLogger(YarnAuditAnalyzer.class);
 
+    /**
+     * The major version of the Yarn Classic CLI.
+     */
     private static final int YARN_CLASSIC_MAJOR_VERSION = 1;
 
     /**
@@ -109,12 +116,13 @@ public class YarnAuditAnalyzer extends AbstractNpmAnalyzer {
     /**
      * Extracts the major version from a version string.
      *
+     * @param dependency the dependency to extract the yarn version from
      * @return the major version (e.g., `4` from "4.2.1")
      */
     private int getYarnMajorVersion(Dependency dependency) {
-        var yarnVersion = getYarnVersion(dependency);
+        final var yarnVersion = getYarnVersion(dependency);
         try {
-            var semver = Semver.coerce(yarnVersion);
+            final var semver = Semver.coerce(yarnVersion);
             return semver.getMajor();
         } catch (SemverException e) {
             throw new IllegalStateException("Invalid version string format", e);
@@ -136,7 +144,7 @@ public class YarnAuditAnalyzer extends AbstractNpmAnalyzer {
                 if (exitValue != 0) {
                     throw new IllegalStateException("Unable to determine yarn version, unexpected response.");
                 }
-                var yarnVersion = processReader.getOutput();
+                final var yarnVersion = processReader.getOutput();
                 if (StringUtils.isBlank(yarnVersion)) {
                     throw new IllegalStateException("Unable to determine yarn version, blank output.");
                 }
@@ -146,7 +154,6 @@ public class YarnAuditAnalyzer extends AbstractNpmAnalyzer {
             throw new IllegalStateException("Unable to determine yarn version.", ex);
         }
     }
-
 
 
     /**
@@ -221,6 +228,9 @@ public class YarnAuditAnalyzer extends AbstractNpmAnalyzer {
     /**
      * Workaround 64k limitation of InputStream, redirect stdout to a file that we will read later
      * instead of reading directly stdout from Process's InputStream which is topped at 64k
+     *
+     * @param builder a reference to the process builder
+     * @return returns the standard out from the process
      */
     private String startAndReadStdoutToString(ProcessBuilder builder) throws AnalysisException {
         try {
@@ -250,7 +260,7 @@ public class YarnAuditAnalyzer extends AbstractNpmAnalyzer {
      * yarn audit --offline to generate the payload to be sent to the NPM API.
      *
      * @param dependency the yarn lock file
-     * @param engine     the analysis engine
+     * @param engine the analysis engine
      * @throws AnalysisException thrown if there is an error analyzing the file
      */
     @Override
@@ -265,7 +275,7 @@ public class YarnAuditAnalyzer extends AbstractNpmAnalyzer {
         final File packageJson = new File(packageLock.getParentFile(), "package.json");
         final List<Advisory> advisories;
         final MultiValuedMap<String, String> dependencyMap = new HashSetValuedHashMap<>();
-        var yarnMajorVersion = getYarnMajorVersion(dependency);
+        final var yarnMajorVersion = getYarnMajorVersion(dependency);
         if (YARN_CLASSIC_MAJOR_VERSION < yarnMajorVersion) {
             LOGGER.info("Analyzing using Yarn Berry audit");
             advisories = analyzePackageWithYarnBerry(dependency);
@@ -335,7 +345,7 @@ public class YarnAuditAnalyzer extends AbstractNpmAnalyzer {
      * submitting the npm audit API payload
      */
     private List<Advisory> analyzePackageWithYarnClassic(final File lockFile, final File packageFile,
-                                                           Dependency dependency, MultiValuedMap<String, String> dependencyMap)
+                                                         Dependency dependency, MultiValuedMap<String, String> dependencyMap)
             throws AnalysisException {
         try {
             final boolean skipDevDependencies = getSettings().getBoolean(Settings.KEYS.ANALYZER_NODE_AUDIT_SKIPDEV, false);
@@ -389,11 +399,11 @@ public class YarnAuditAnalyzer extends AbstractNpmAnalyzer {
         final String advisoriesJsons = startAndReadStdoutToString(builder);
 
         LOGGER.debug("Advisories JSON: {}", advisoriesJsons);
-        String[] advisoriesJsonArray = Stream.of(advisoriesJsons.split("\n"))
+        final String[] advisoriesJsonArray = Stream.of(advisoriesJsons.split("\n"))
                 .filter(s -> !s.isBlank())
                 .toArray(String[]::new);
         try {
-            List<JSONObject> advisories = new ArrayList<>();
+            final List<JSONObject> advisories = new ArrayList<>();
             for (String advisoriesJson : advisoriesJsonArray) {
                 advisories.add(new JSONObject(advisoriesJson));
             }
@@ -428,18 +438,18 @@ public class YarnAuditAnalyzer extends AbstractNpmAnalyzer {
     private static List<Advisory> parseAdvisoryJsons(List<JSONObject> advisoryJsons) throws JSONException {
         final List<Advisory> advisories = new ArrayList<>();
         for (JSONObject advisoryJson : advisoryJsons) {
-            var advisory = new Advisory();
-            var object = advisoryJson.getJSONObject("children");
-            var moduleName = advisoryJson.optString("value", null);
-            var id = object.getString("ID");
-            var url = object.optString("URL", null);
-            var ghsaId = extractGhsaId(url);
-            var issue = object.optString("Issue", null);
-            var severity = object.optString("Severity", null);
-            var vulnerableVersions = object.optString("Vulnerable Versions", null);
-            var treeVersions = object.optJSONArray("Tree Versions");
-            var treeVersionsLength = treeVersions == null ? 0 : treeVersions.length();
-            var versions = new ArrayList<String>();
+            final var advisory = new Advisory();
+            final var object = advisoryJson.getJSONObject("children");
+            final var moduleName = advisoryJson.optString("value", null);
+            final var id = object.getString("ID");
+            final var url = object.optString("URL", null);
+            final var ghsaId = extractGhsaId(url);
+            final var issue = object.optString("Issue", null);
+            final var severity = object.optString("Severity", null);
+            final var vulnerableVersions = object.optString("Vulnerable Versions", null);
+            final var treeVersions = object.optJSONArray("Tree Versions");
+            final var treeVersionsLength = treeVersions == null ? 0 : treeVersions.length();
+            final var versions = new ArrayList<String>();
             for (int i = 0; i < treeVersionsLength; i++) {
                 versions.add(treeVersions.getString(i));
             }
@@ -461,11 +471,11 @@ public class YarnAuditAnalyzer extends AbstractNpmAnalyzer {
         return advisories;
     }
 
-    public static String extractGhsaId(String url) {
+    private static String extractGhsaId(String url) {
         if (url == null || url.isEmpty()) {
             return null;
         }
-        int lastSlashIndex = url.lastIndexOf('/');
+        final int lastSlashIndex = url.lastIndexOf('/');
         if (lastSlashIndex == -1 || lastSlashIndex == url.length() - 1) {
             return null;
         }
