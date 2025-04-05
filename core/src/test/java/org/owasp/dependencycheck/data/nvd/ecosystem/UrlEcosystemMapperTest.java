@@ -38,7 +38,7 @@ public class UrlEcosystemMapperTest {
         // Given
         UrlEcosystemMapper mapper = new UrlEcosystemMapper();
 
-        CveItem cveItem = new CveItem();
+        CveItem cveItem = new CveItem(null,null,null,null,null);
         DefCveItem defCveItem = new DefCveItem(cveItem);
 
         // When
@@ -53,7 +53,7 @@ public class UrlEcosystemMapperTest {
         // Given
         UrlEcosystemMapper mapper = new UrlEcosystemMapper();
 
-        DefCveItem cveItem = new DefCveItem();
+        DefCveItem cveItem = new DefCveItem(null);
 
         // When
         String output = mapper.getEcosystem(cveItem);

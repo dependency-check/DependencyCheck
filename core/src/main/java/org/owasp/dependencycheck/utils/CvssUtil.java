@@ -115,7 +115,6 @@ public final class CvssUtil {
                             vectorString));
         }
 
-        final String version = CvssV2Data.Version._2_0.value();
         //"AV:L/AC:L/Au:N/C:N/I:N/A:C"
         final CvssV2Data.AccessVectorType accessVector = CvssV2Data.AccessVectorType.fromValue(metrics.get("AV"));
         final CvssV2Data.AccessComplexityType attackComplexity = CvssV2Data.AccessComplexityType.fromValue(metrics.get("AC"));
@@ -125,7 +124,7 @@ public final class CvssUtil {
         final CvssV2Data.CiaType availabilityImpact = CvssV2Data.CiaType.fromValue(metrics.get("A"));
 
         final String baseSeverity = cvssV2ScoreToSeverity(baseScore);
-        final CvssV2Data data = new CvssV2Data(version, vectorString, accessVector, attackComplexity,
+        final CvssV2Data data = new CvssV2Data(CvssV2Data.Version._2_0, vectorString, accessVector, attackComplexity,
                 authentication, confidentialityImpact, integrityImpact, availabilityImpact, baseScore, baseSeverity,
                 null, null, null, null, null, null, null, null, null, null);
         final CvssV2 cvss = new CvssV2(null, null, data, baseSeverity, null, null, null, null, null, null, null);

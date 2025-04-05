@@ -359,7 +359,7 @@ public class OssIndexAnalyzer extends AbstractAnalyzer {
                         availabilityImpact = CvssV2Data.CiaType.fromValue(tmp);
                     }
                     final String severity = Cvss2Severity.of((float) cvssScore).name().toUpperCase();
-                    final CvssV2Data cvssData = new CvssV2Data("2.0", source.getCvssVector(), accessVector,
+                    final CvssV2Data cvssData = new CvssV2Data(CvssV2Data.Version._2_0, source.getCvssVector(), accessVector,
                             accessComplexity, authentication, confidentialityImpact,
                             integrityImpact, availabilityImpact, cvssScore,
                             severity, null, null, null, null, null, null, null, null, null, null);

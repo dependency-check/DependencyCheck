@@ -741,12 +741,7 @@ public final class CveDB implements AutoCloseable {
                                 integrityImpact == null ? "" : integrityImpact.value().substring(0, 1),
                                 availabilityImpact == null ? "" : availabilityImpact.value().substring(0, 1));
 
-                        //some older test data may not correctly have the version set.
-                        String cveVersion = "2.0";
-                        if (rsV.getString(18) != null) {
-                            cveVersion = rsV.getString(18);
-                        }
-                        final CvssV2Data cvssData = new CvssV2Data(cveVersion, vector, accessVector,
+                        final CvssV2Data cvssData = new CvssV2Data(CvssV2Data.Version._2_0, vector, accessVector,
                                 accessComplexity, authentication, confidentialityImpact,
                                 integrityImpact, availabilityImpact, rsV.getDouble(11), rsV.getString(3),
                                 null, null, null, null, null, null, null, null, null, null);
