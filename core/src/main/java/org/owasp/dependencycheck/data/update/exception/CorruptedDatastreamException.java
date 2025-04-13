@@ -27,6 +27,8 @@ import javax.annotation.concurrent.ThreadSafe;
 @ThreadSafe
 public class CorruptedDatastreamException extends Exception {
 
+    private static final long serialVersionUID = 1L;
+
     /**
      * Create a new CorruptedDatastreamException.
      */

@@ -22,6 +22,8 @@ import java.io.IOException;
 
 public class ForbiddenException extends IOException {
 
+    private static final long serialVersionUID = 1L;
+
     public ForbiddenException(String message) {
         super(message);
     }
