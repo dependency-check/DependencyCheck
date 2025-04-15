@@ -2251,3 +2251,10 @@ only pkg:maven/org.clojure:clojure@.* is the CPE cpe:/a:clojure:clojure
    <packageUrl regex="true">^pkg:composer/phpunit/php-text-template@.*$</packageUrl>
    <cpe>cpe:/a:phpunit_project:phpunit</cpe>
 </suppress>
+<suppress base="true">
+   <notes><![CDATA[
+   FP per issue #7602
+   ]]></notes>
+   <packageUrl regex="true">^pkg:composer/spatie/laravel-.*$</packageUrl>
+   <cpe>cpe:/a:laravel:laravel</cpe>
+</suppress>
