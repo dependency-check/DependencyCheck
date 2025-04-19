@@ -5,10 +5,13 @@ libraries; creating a report of known vulnerable components that are included in
 
 It is important to understand that the first time this task is executed it may
 take 5-20 minutes as it downloads and processes the data from the National
-Vulnerability Database (NVD) hosted by NIST: https://nvd.nist.gov
+Vulnerability Database (NVD) hosted by NIST: https://nvd.nist.gov.
 
 After the first batch download, as long as the plugin is executed at least once every
 seven days the update will only take a few seconds.
+
+The Dependency-Check team strongly recommends to [mirror the NVD database](../data/mirrornvd.html) for any operational
+integration. If not done, any service disruption of the NVD database will make the usage of Dependency-Check difficult.
 
 #set( $H = '#' )
 

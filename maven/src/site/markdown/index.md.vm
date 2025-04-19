@@ -5,10 +5,13 @@ plug-in or as part of the site plug-in. The plug-in requires Maven 3.6.3 or high
 
 It is important to understand that the first time this task is executed it may
 take 20 minutes or more as it downloads and processes the data from the National
-Vulnerability Database (NVD) hosted by NIST: https://nvd.nist.gov
+Vulnerability Database (NVD) hosted by NIST: https://nvd.nist.gov.
 
 After the first batch download, as long as the plug-in is executed at least once every
 seven days the update will only take a few seconds.
+
+The Dependency-Check team strongly recommends to [mirror the NVD database](../data/mirrornvd.html) for any operational
+integration. If not done, any service disruption of the NVD database will make the usage of Dependency-Check difficult.
 
 ### Default Phase
 The dependency-check plugin is, by default, tied to the `verify` or `site` phase
