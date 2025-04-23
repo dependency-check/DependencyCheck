@@ -773,6 +773,26 @@ public abstract class BaseDependencyCheckMojo extends AbstractMojo implements Ma
     private String ossIndexServerId;
 
     /**
+     * The username to connect to Sonatype's OSS Index.
+     */
+    @Parameter(property = "ossIndexUsername")
+    private String ossIndexUsername;
+
+    /**
+     * The password or API token to connect to Sonatype's OSS Index.
+     *
+     * <p>WARNING: do not hardcode your password into this configuration option so it does not leak. You should
+     * instead inject the value when executing Dependency-Check. For example:</p>
+     *
+     * <blockquote><pre>mvn -U org.owasp:dependency-check-maven:$ODC_VERSION:aggregate
+     * -DossIndexPassword=$OSS_INDEX_PASSWORD</pre></blockquote>
+     *
+     * The actual value of <code>$OSS_INDEX_PASSWORD</code> would be stored as a CI env variable with your project.</p>
+     */
+    @Parameter(property = "ossIndexPassword")
+    private String ossIndexPassword;
+
+    /**
      * Whether we should only warn about Sonatype OSS Index remote errors
      * instead of failing the goal completely.
      */
@@ -2428,6 +2448,8 @@ public abstract class BaseDependencyCheckMojo extends AbstractMojo implements Ma
         settings.setBooleanIfNotNull(Settings.KEYS.ANALYZER_OSSINDEX_ENABLED, ossindexAnalyzerEnabled);
         settings.setStringIfNotEmpty(Settings.KEYS.ANALYZER_OSSINDEX_URL, ossindexAnalyzerUrl);
         configureServerCredentials(ossIndexServerId, Settings.KEYS.ANALYZER_OSSINDEX_USER, Settings.KEYS.ANALYZER_OSSINDEX_PASSWORD);
+        settings.setStringIfNotEmpty(Settings.KEYS.ANALYZER_OSSINDEX_USER, ossIndexUsername);
+        settings.setStringIfNotEmpty(Settings.KEYS.ANALYZER_OSSINDEX_PASSWORD, ossIndexPassword);
         settings.setBooleanIfNotNull(Settings.KEYS.ANALYZER_OSSINDEX_USE_CACHE, ossindexAnalyzerUseCache);
         settings.setBooleanIfNotNull(Settings.KEYS.ANALYZER_OSSINDEX_WARN_ONLY_ON_REMOTE_ERRORS, ossIndexWarnOnlyOnRemoteErrors);
         if (retirejs != null) {
