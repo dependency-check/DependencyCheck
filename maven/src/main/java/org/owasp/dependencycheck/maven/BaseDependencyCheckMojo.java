@@ -2447,9 +2447,17 @@ public abstract class BaseDependencyCheckMojo extends AbstractMojo implements Ma
         settings.setBooleanIfNotNull(Settings.KEYS.ANALYZER_SWIFT_PACKAGE_RESOLVED_ENABLED, swiftPackageResolvedAnalyzerEnabled);
         settings.setBooleanIfNotNull(Settings.KEYS.ANALYZER_OSSINDEX_ENABLED, ossindexAnalyzerEnabled);
         settings.setStringIfNotEmpty(Settings.KEYS.ANALYZER_OSSINDEX_URL, ossindexAnalyzerUrl);
-        configureServerCredentials(ossIndexServerId, Settings.KEYS.ANALYZER_OSSINDEX_USER, Settings.KEYS.ANALYZER_OSSINDEX_PASSWORD);
-        settings.setStringIfNotEmpty(Settings.KEYS.ANALYZER_OSSINDEX_USER, ossIndexUsername);
-        settings.setStringIfNotEmpty(Settings.KEYS.ANALYZER_OSSINDEX_PASSWORD, ossIndexPassword);
+        try {
+            configureCredentials(ossIndexServerId, ossIndexUsername, ossIndexPassword, null,
+                    Settings.KEYS.ANALYZER_OSSINDEX_USER,
+                    Settings.KEYS.ANALYZER_OSSINDEX_PASSWORD, null);
+        } catch (InitializationException ex) {
+            if (failOnError) {
+                throw new MojoFailureException("Invalid plugin configuration specified for Sonatype OSS Index authentication", ex);
+            } else {
+                throw new MojoExecutionException("Invalid plugin configuration specified for Sonatype OSS Index authentication", ex);
+            }
+        }
         settings.setBooleanIfNotNull(Settings.KEYS.ANALYZER_OSSINDEX_USE_CACHE, ossindexAnalyzerUseCache);
         settings.setBooleanIfNotNull(Settings.KEYS.ANALYZER_OSSINDEX_WARN_ONLY_ON_REMOTE_ERRORS, ossIndexWarnOnlyOnRemoteErrors);
         if (retirejs != null) {
