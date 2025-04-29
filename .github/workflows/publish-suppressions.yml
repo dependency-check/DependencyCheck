@@ -16,6 +16,21 @@ jobs:
         with:
           ref: generatedSuppressions
       - uses: actions/setup-node@v4.4.0
+      - run: |
+          npm install fs
+      - name: Create Generated Suppressions XML
+        uses: actions/github-script@v7.0.1
+        with:
+          script: |
+            const fs = require('fs');
+            const generatedSuppressions = fs.readFileSync('generatedSuppressions.xml', 'utf8');
+            if (!fs.existsSync('./suppressions')){
+                fs.mkdirSync('./suppressions');
+            }
+            fs.appendFileSync('suppressions/publishedSuppressions.xml', '<?xml version="1.0" encoding="UTF-8"?>\n<suppressions xmlns="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.3.xsd">' + generatedSuppressions + '\n</suppressions>', function (err) {
+              if (err) throw err;
+              console.log('publishedSuppressions.xml created');
+            });
       - name: Publish Updated Suppressions
         uses: JamesIves/github-pages-deploy-action@v4.7.3
         with:
