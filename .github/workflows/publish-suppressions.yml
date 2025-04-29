@@ -1,0 +1,26 @@
+name: Publish Suppressions
+
+on:
+  workflow_dispatch:
+
+permissions: {}
+jobs:
+  update_suppression:
+    permissions:
+      contents: write # to push changes in repo (jamesives/github-pages-deploy-action)
+
+    name: Publish Suppressions
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: generatedSuppressions
+      - uses: actions/setup-node@v4.4.0
+      - name: Publish Updated Suppressions
+        if: ${{ steps.fp-ops-commit.outputs.publish == 'true' }}
+        uses: JamesIves/github-pages-deploy-action@v4.7.3
+        with:
+          branch: gh-pages
+          folder: suppressions
+          target-folder: suppressions
+
