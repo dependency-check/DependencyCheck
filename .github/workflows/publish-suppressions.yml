@@ -17,7 +17,6 @@ jobs:
           ref: generatedSuppressions
       - uses: actions/setup-node@v4.4.0
       - name: Publish Updated Suppressions
-        if: ${{ steps.fp-ops-commit.outputs.publish == 'true' }}
         uses: JamesIves/github-pages-deploy-action@v4.7.3
         with:
           branch: gh-pages
