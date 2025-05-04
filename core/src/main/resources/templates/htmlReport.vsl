@@ -211,7 +211,14 @@ Copyright (c) 2012 Jeremy Long. All Rights Reserved.
             } else {
                 dependenciesHeader.text(dependenciesHeaderAllText);
             }
-            return toggleDisplay(event.target, '.notvulnerable', 'Vulnerable Dependencies (click to show all)', 'All Dependencies (click to show less)');
+            const plainCaptionPart = $('#tablecaption-plain');
+            const plainCaptionPartAllText = 'Summary of All Dependencies';
+            if (plainCaptionPart.text() == plainCaptionPartAllText) {
+                plainCaptionPart.text('Summary of Vulnerable Dependencies');
+            } else {
+                plainCaptionPart.text(plainCaptionPartAllText);
+            }
+            return toggleDisplay(event.target, '.notvulnerable', '(click to show all)', '(click to show less)');
           });
           $( ".versionToggle" ).bind( "click", function( event ) {
             var lnk = event.target;
@@ -278,9 +285,6 @@ Copyright (c) 2012 Jeremy Long. All Rights Reserved.
             }
             #modal-text:focus {
                 outline: none;
-            }
-            #summaryTable > caption {
-                text-align: left;
             }
             .suppresstype {
                 display: none;
@@ -756,10 +760,9 @@ Getting Help: <a href="https://github.com/dependency-check/DependencyCheck/issue
         <br/>
 #end
 <h2>Summary</h2>
-
+                <p><span id="tablecaption-plain">Summary of Vulnerable Dependencies </span><a href="#" title="Click to toggle display" id="vulnerabilityDisplayToggle">(click to show all)</a></p>
                 #set($lnkcnt=0)
-                <table id="summaryTable" class="lined" summary="">
-                    <caption>Summary of&nbsp;<a href="#" title="Click to toggle display" id="vulnerabilityDisplayToggle">Vulnerable Dependencies (click to show all)</a><br/><br/></caption>
+                <table id="summaryTable" class="lined" aria-labelledby="tablecaption-plain">
                     <thead><tr style="text-align:left">
                         <th class="sortable" data-sort="string" title="The name of the dependency">Dependency</th>
                         <th class="sortable" data-sort="string" title="The Common Platform Enumeration">Vulnerability&nbsp;IDs</th>
