@@ -17,22 +17,24 @@
  */
 package org.owasp.dependencycheck.analyzer;
 
+import org.junit.jupiter.api.Test;
+
 import java.util.ArrayList;
 import java.util.Collection;
-import org.junit.Test;
-import static org.junit.Assert.*;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  *
  * @author jeremy long
  */
-public class AbstractNpmAnalyzerIT {
+class AbstractNpmAnalyzerIT {
 
     /**
      * Test of determineVersionFromMap method, of class AbstractNpmAnalyzer.
      */
     @Test
-    public void testDetermineVersionFromMap() {
+    void testDetermineVersionFromMap() {
         String versionRange = ">2.1.1 <5.0.1";
         Collection<String> availableVersions = new ArrayList<>();
         availableVersions.add("2.0.2");
@@ -49,7 +51,7 @@ public class AbstractNpmAnalyzerIT {
     }
 
     @Test
-    public void testDetermineVersionFromMap_1() {
+    void testDetermineVersionFromMap_1() {
         String versionRange = ">2.1.1 <5.0.1";
         Collection<String> availableVersions = new ArrayList<>();
         availableVersions.add("10.1.0");
@@ -59,7 +61,7 @@ public class AbstractNpmAnalyzerIT {
     }
 
     @Test
-    public void testDetermineVersionFromMap_2() {
+    void testDetermineVersionFromMap_2() {
         String versionRange = ">2.1.1 <5.0.1";
         Collection<String> availableVersions = new ArrayList<>();
         availableVersions.add("2.0.2");

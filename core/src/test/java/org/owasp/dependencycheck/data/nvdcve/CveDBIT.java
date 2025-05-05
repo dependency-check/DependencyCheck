@@ -17,37 +17,38 @@
  */
 package org.owasp.dependencycheck.data.nvdcve;
 
-import java.sql.SQLException;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.owasp.dependencycheck.BaseDBTestCase;
+import org.owasp.dependencycheck.data.update.cpe.CpePlus;
 import org.owasp.dependencycheck.dependency.Vulnerability;
 import org.owasp.dependencycheck.dependency.VulnerableSoftware;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import org.junit.After;
-import org.junit.Test;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-import org.junit.Before;
-import org.owasp.dependencycheck.data.update.cpe.CpePlus;
 import org.owasp.dependencycheck.dependency.VulnerableSoftwareBuilder;
 import us.springett.parsers.cpe.Cpe;
 import us.springett.parsers.cpe.CpeBuilder;
 import us.springett.parsers.cpe.values.LogicalValue;
 import us.springett.parsers.cpe.values.Part;
 
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 /**
  *
  * @author Jeremy Long
  */
-public class CveDBIT extends BaseDBTestCase {
+class CveDBIT extends BaseDBTestCase {
 
     private CveDB instance = null;
 
-    @Before
+    @BeforeEach
     @Override
     public void setUp() throws Exception {
         super.setUp();
@@ -55,7 +56,7 @@ public class CveDBIT extends BaseDBTestCase {
         instance.open();
     }
 
-    @After
+    @AfterEach
     @Override
     public void tearDown() throws Exception {
         instance.close();
@@ -67,7 +68,7 @@ public class CveDBIT extends BaseDBTestCase {
      * Test of getCPEs method, of class CveDB.
      */
     @Test
-    public void testGetCPEs() throws Exception {
+    void testGetCPEs() {
         String vendor = "apache";
         String product = "struts";
         Set<CpePlus> result = instance.getCPEs(vendor, product);
@@ -78,7 +79,7 @@ public class CveDBIT extends BaseDBTestCase {
      * Test of getVulnerability method, of class CveDB.
      */
     @Test
-    public void testgetVulnerability() throws Exception {
+    void testgetVulnerability() {
         Vulnerability result = instance.getVulnerability("CVE-2014-0094");
         assertTrue(result.getDescription().startsWith("The ParametersInterceptor in Apache Struts"));
     }
@@ -87,7 +88,7 @@ public class CveDBIT extends BaseDBTestCase {
      * Test of getVulnerabilities method, of class CveDB.
      */
     @Test
-    public void testGetVulnerabilities() throws Exception {
+    void testGetVulnerabilities() throws Exception {
 
         CpeBuilder builder = new CpeBuilder();
         Cpe cpe = builder.part(Part.APPLICATION).vendor("apache").product("struts").version("2.1.2").build();
@@ -107,7 +108,7 @@ public class CveDBIT extends BaseDBTestCase {
                 break;
             }
         }
-        assertTrue("Expected " + expected + ", but was not identified", found);
+        assertTrue(found, "Expected " + expected + ", but was not identified");
 
         found = false;
         expected = "CVE-2014-0096";
@@ -117,11 +118,11 @@ public class CveDBIT extends BaseDBTestCase {
                 break;
             }
         }
-        assertTrue("Expected " + expected + ", but was not identified", found);
+        assertTrue(found, "Expected " + expected + ", but was not identified");
 
         cpe = builder.part(Part.APPLICATION).vendor("jenkins").product("mailer").version("1.13").build();
         results = instance.getVulnerabilities(cpe);
-        assertTrue(results.size() >= 1);
+        assertFalse(results.isEmpty());
 
         found = false;
         expected = "CVE-2017-2651";
@@ -131,11 +132,11 @@ public class CveDBIT extends BaseDBTestCase {
                 break;
             }
         }
-        assertTrue("Expected " + expected + ", but was not identified", found);
+        assertTrue(found, "Expected " + expected + ", but was not identified");
 
         cpe = builder.part(Part.APPLICATION).vendor("fasterxml").product("jackson-databind").version("2.8.1").build();
         results = instance.getVulnerabilities(cpe);
-        assertTrue(results.size() >= 1);
+        assertFalse(results.isEmpty());
 
         found = false;
         expected = "CVE-2017-15095";
@@ -145,14 +146,14 @@ public class CveDBIT extends BaseDBTestCase {
                 break;
             }
         }
-        assertTrue("Expected " + expected + ", but was not identified", found);
+        assertTrue(found, "Expected " + expected + ", but was not identified");
     }
 
     /**
      * Test of getMatchingSoftware method, of class CveDB.
      */
     @Test
-    public void testGetMatchingSoftware() throws Exception {
+    void testGetMatchingSoftware() throws Exception {
 
         VulnerableSoftwareBuilder vsBuilder = new VulnerableSoftwareBuilder();
         Set<VulnerableSoftware> software = new HashSet<>();

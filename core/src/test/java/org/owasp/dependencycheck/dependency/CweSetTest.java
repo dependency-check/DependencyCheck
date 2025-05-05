@@ -17,24 +17,28 @@
  */
 package org.owasp.dependencycheck.dependency;
 
+import org.junit.jupiter.api.Test;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
-import org.junit.Test;
-import static org.junit.Assert.*;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  *
  * @author jeremy
  */
-public class CweSetTest {
+class CweSetTest {
 
     /**
      * Test of getEntries method, of class CweSet.
      */
     @Test
-    public void testGetEntries() {
+    void testGetEntries() {
         CweSet instance = new CweSet();
         Set<String> result = instance.getEntries();
         assertTrue(result.isEmpty());
@@ -44,7 +48,7 @@ public class CweSetTest {
      * Test of addCwe method, of class CweSet.
      */
     @Test
-    public void testAddCwe() {
+    void testAddCwe() {
         System.out.println("addCwe");
         String cwe = "CWE-89";
         CweSet instance = new CweSet();
@@ -56,7 +60,7 @@ public class CweSetTest {
      * Test of toString method, of class CweSet.
      */
     @Test
-    public void testToString() {
+    void testToString() {
         CweSet instance = new CweSet();
         instance.addCwe("CWE-79");
         String expResult = "CWE-79 Improper Neutralization of Input During Web Page Generation ('Cross-site Scripting')";
@@ -68,7 +72,7 @@ public class CweSetTest {
      * Test of stream method, of class CweSet.
      */
     @Test
-    public void testStream() {
+    void testStream() {
         CweSet instance = new CweSet();
         instance.addCwe("79");
         String expResult = "79";
@@ -80,7 +84,7 @@ public class CweSetTest {
      * Test of getFullCwes method, of class CweSet.
      */
     @Test
-    public void testGetFullCwes() {
+    void testGetFullCwes() {
         CweSet instance = new CweSet();
         instance.addCwe("CWE-89");
         instance.addCwe("CWE-79");
@@ -89,8 +93,8 @@ public class CweSetTest {
         expResult.put("CWE-89", "Improper Neutralization of Special Elements used in an SQL Command ('SQL Injection')");
         Map<String, String> result = instance.getFullCwes();
         for (Map.Entry<String,String> entry : expResult.entrySet()) {
-            assertTrue(result.get(entry.getKey()).equals(entry.getValue()));
+            assertEquals(result.get(entry.getKey()), entry.getValue());
         }
     }
-    
+
 }

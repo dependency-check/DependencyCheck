@@ -17,30 +17,31 @@
  */
 package org.owasp.dependencycheck.utils;
 
+import org.junit.jupiter.api.Test;
+
 import java.io.File;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-import org.junit.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  *
  * @author Jeremy Long
  */
-public class FileUtilsTest extends BaseTest {
+class FileUtilsTest extends BaseTest {
 
     /**
      * Test of getFileExtension method, of class FileUtils.
      */
     @Test
-    public void testGetFileExtension() {
+    void testGetFileExtension() {
         String[] fileName = {"something-0.9.5.jar", "lib2-1.1.js", "dir.tmp/noext"};
         String[] expResult = {"jar", "js", null};
 
         for (int i = 0; i < fileName.length; i++) {
             String result = FileUtils.getFileExtension(fileName[i]);
-            assertEquals("Failed extraction on \"" + fileName[i] + "\".", expResult[i], result);
+            assertEquals(expResult[i], result, "Failed extraction on \"" + fileName[i] + "\".");
         }
     }
 
@@ -48,31 +49,29 @@ public class FileUtilsTest extends BaseTest {
      * Test of delete method, of class FileUtils.
      */
     @Test
-    public void testDelete() throws Exception {
-
+    void testDelete() throws Exception {
         File file = File.createTempFile("tmp", "deleteme", getSettings().getTempDirectory());
-        if (!file.exists()) {
-            fail("Unable to create a temporary file.");
-        }
+
+        assertTrue(file.exists(), "Unable to create a temporary file.");
+
         boolean status = FileUtils.delete(file);
-        assertTrue("delete returned a failed status", status);
-        assertFalse("Temporary file exists after attempting deletion", file.exists());
+        assertTrue(status, "delete returned a failed status");
+        assertFalse(file.exists(), "Temporary file exists after attempting deletion");
     }
 
     /**
      * Test of delete method with a non-empty directory, of class FileUtils.
      */
     @Test
-    public void testDeleteWithSubDirectories() throws Exception {
-
+    void testDeleteWithSubDirectories() throws Exception {
         File dir = new File(getSettings().getTempDirectory(), "delete-me");
         dir.mkdirs();
         File file = File.createTempFile("tmp", "deleteme", dir);
-        assertTrue("Unable to create a temporary file " + file.getAbsolutePath(), file.exists());
+        assertTrue(file.exists(), "Unable to create a temporary file " + file.getAbsolutePath());
 
         // delete the file
         boolean status = FileUtils.delete(dir);
-        assertTrue("delete returned a failed status", status);
-        assertFalse("Temporary file exists after attempting deletion", file.exists());
+        assertTrue(status, "delete returned a failed status");
+        assertFalse(file.exists(), "Temporary file exists after attempting deletion");
     }
 }

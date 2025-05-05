@@ -17,8 +17,8 @@
  */
 package org.owasp.dependencycheck.data.artifactory;
 
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import org.owasp.dependencycheck.data.nexus.MavenArtifact;
 import org.owasp.dependencycheck.dependency.Dependency;
 import org.owasp.dependencycheck.utils.Settings;
@@ -27,15 +27,15 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
-@Ignore
-public class ArtifactorySearchIT {
+@Disabled
+class ArtifactorySearchIT {
 
 
     @Test
-    public void testWithRealInstanceUsingBearerToken() throws IOException {
+    void testWithRealInstanceUsingBearerToken() throws IOException {
         // Given
         Dependency dependency = new Dependency();
         dependency.setSha1sum("c5b4c491aecb72e7c32a78da0b5c6b9cda8dee0f");
@@ -63,7 +63,7 @@ public class ArtifactorySearchIT {
     }
 
     @Test
-    public void testWithRealInstanceAnonymous() throws IOException {
+    void testWithRealInstanceAnonymous() {
         // Given
         Dependency dependency = new Dependency();
         dependency.setSha1sum("c5b4c491aecb72e7c32a78da0b5c6b9cda8dee0f");
@@ -72,17 +72,14 @@ public class ArtifactorySearchIT {
         settings.setString(Settings.KEYS.ANALYZER_ARTIFACTORY_URL, "https://artifactory.techno.ingenico.com/artifactory");
         final ArtifactorySearch artifactorySearch = new ArtifactorySearch(settings);
         // When
-        try {
-            artifactorySearch.search(dependency);
-            fail("No Match found, should throw an exception!");
-        } catch (FileNotFoundException e) {
-            // Then
-            assertEquals("Artifact Dependency{ fileName='null', actualFilePath='null', filePath='null', packagePath='null'} not found in Artifactory", e.getMessage());
-        }
+        FileNotFoundException e = assertThrows(FileNotFoundException.class, () -> artifactorySearch.search(dependency),
+                "No Match found, should throw an exception!");
+        // Then
+        assertEquals("Artifact Dependency{ fileName='null', actualFilePath='null', filePath='null', packagePath='null'} not found in Artifactory", e.getMessage());
     }
 
     @Test
-    public void testWithRealInstanceWithUserToken() throws IOException {
+    void testWithRealInstanceWithUserToken() throws IOException {
         // Given
         Dependency dependency = new Dependency();
         dependency.setSha1sum("0695b63d702f505b9b916e02272e3b6381bade7f");

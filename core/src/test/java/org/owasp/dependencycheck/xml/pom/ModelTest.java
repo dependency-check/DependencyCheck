@@ -17,26 +17,27 @@
  */
 package org.owasp.dependencycheck.xml.pom;
 
+import org.junit.jupiter.api.Test;
+import org.owasp.dependencycheck.BaseTest;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
-import org.junit.Test;
-import static org.junit.Assert.*;
-import org.owasp.dependencycheck.BaseTest;
-import org.owasp.dependencycheck.utils.InterpolationUtil;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 /**
  *
  * @author jeremy long
  */
-public class ModelTest extends BaseTest {
+class ModelTest extends BaseTest {
 
     /**
      * Test of getName method, of class Model.
      */
     @Test
-    public void testGetName() {
+    void testGetName() {
         Model instance = new Model();
         instance.setName("");
         String expResult = "";
@@ -48,7 +49,7 @@ public class ModelTest extends BaseTest {
      * Test of setName method, of class Model.
      */
     @Test
-    public void testSetName() {
+    void testSetName() {
         String name = "name";
         Model instance = new Model();
         instance.setName(name);
@@ -59,7 +60,7 @@ public class ModelTest extends BaseTest {
      * Test of getOrganization method, of class Model.
      */
     @Test
-    public void testGetOrganization() {
+    void testGetOrganization() {
         Model instance = new Model();
         instance.setOrganization("");
         String expResult = "";
@@ -71,7 +72,7 @@ public class ModelTest extends BaseTest {
      * Test of setOrganization method, of class Model.
      */
     @Test
-    public void testSetOrganization() {
+    void testSetOrganization() {
         String organization = "apache";
         Model instance = new Model();
         instance.setOrganization(organization);
@@ -82,7 +83,7 @@ public class ModelTest extends BaseTest {
      * Test of getDescription method, of class Model.
      */
     @Test
-    public void testGetDescription() {
+    void testGetDescription() {
         Model instance = new Model();
         instance.setDescription("");
         String expResult = "";
@@ -94,7 +95,7 @@ public class ModelTest extends BaseTest {
      * Test of setDescription method, of class Model.
      */
     @Test
-    public void testSetDescription() {
+    void testSetDescription() {
         String description = "description";
         String expected = "description";
         Model instance = new Model();
@@ -106,7 +107,7 @@ public class ModelTest extends BaseTest {
      * Test of getGroupId method, of class Model.
      */
     @Test
-    public void testGetGroupId() {
+    void testGetGroupId() {
         Model instance = new Model();
         instance.setGroupId("");
         String expResult = "";
@@ -118,7 +119,7 @@ public class ModelTest extends BaseTest {
      * Test of setGroupId method, of class Model.
      */
     @Test
-    public void testSetGroupId() {
+    void testSetGroupId() {
         String groupId = "aaa";
         String expected = "aaa";
         Model instance = new Model();
@@ -130,7 +131,7 @@ public class ModelTest extends BaseTest {
      * Test of getArtifactId method, of class Model.
      */
     @Test
-    public void testGetArtifactId() {
+    void testGetArtifactId() {
         Model instance = new Model();
         instance.setArtifactId("");
         String expResult = "";
@@ -142,7 +143,7 @@ public class ModelTest extends BaseTest {
      * Test of setArtifactId method, of class Model.
      */
     @Test
-    public void testSetArtifactId() {
+    void testSetArtifactId() {
         String artifactId = "aaa";
         String expected = "aaa";
         Model instance = new Model();
@@ -154,7 +155,7 @@ public class ModelTest extends BaseTest {
      * Test of getVersion method, of class Model.
      */
     @Test
-    public void testGetVersion() {
+    void testGetVersion() {
         Model instance = new Model();
         instance.setVersion("");
         String expResult = "";
@@ -166,7 +167,7 @@ public class ModelTest extends BaseTest {
      * Test of setVersion method, of class Model.
      */
     @Test
-    public void testSetVersion() {
+    void testSetVersion() {
         String version = "";
         Model instance = new Model();
         instance.setVersion(version);
@@ -177,7 +178,7 @@ public class ModelTest extends BaseTest {
      * Test of getParentGroupId method, of class Model.
      */
     @Test
-    public void testGetParentGroupId() {
+    void testGetParentGroupId() {
         Model instance = new Model();
         instance.setParentGroupId("");
         String expResult = "";
@@ -189,7 +190,7 @@ public class ModelTest extends BaseTest {
      * Test of setParentGroupId method, of class Model.
      */
     @Test
-    public void testSetParentGroupId() {
+    void testSetParentGroupId() {
         String parentGroupId = "org.owasp";
         Model instance = new Model();
         instance.setParentGroupId(parentGroupId);
@@ -200,7 +201,7 @@ public class ModelTest extends BaseTest {
      * Test of getParentArtifactId method, of class Model.
      */
     @Test
-    public void testGetParentArtifactId() {
+    void testGetParentArtifactId() {
         Model instance = new Model();
         instance.setParentArtifactId("");
         String expResult = "";
@@ -212,7 +213,7 @@ public class ModelTest extends BaseTest {
      * Test of setParentArtifactId method, of class Model.
      */
     @Test
-    public void testSetParentArtifactId() {
+    void testSetParentArtifactId() {
         String parentArtifactId = "something";
         Model instance = new Model();
         instance.setParentArtifactId(parentArtifactId);
@@ -223,7 +224,7 @@ public class ModelTest extends BaseTest {
      * Test of getParentVersion method, of class Model.
      */
     @Test
-    public void testGetParentVersion() {
+    void testGetParentVersion() {
         Model instance = new Model();
         instance.setParentVersion("");
         String expResult = "";
@@ -235,7 +236,7 @@ public class ModelTest extends BaseTest {
      * Test of setParentVersion method, of class Model.
      */
     @Test
-    public void testSetParentVersion() {
+    void testSetParentVersion() {
         String parentVersion = "1.0";
         Model instance = new Model();
         instance.setParentVersion(parentVersion);
@@ -246,7 +247,7 @@ public class ModelTest extends BaseTest {
      * Test of getLicenses method, of class Model.
      */
     @Test
-    public void testGetLicenses() {
+    void testGetLicenses() {
         Model instance = new Model();
         instance.addLicense(new License("name", "url"));
         List<License> expResult = new ArrayList<>();
@@ -259,7 +260,7 @@ public class ModelTest extends BaseTest {
      * Test of addLicense method, of class Model.
      */
     @Test
-    public void testAddLicense() {
+    void testAddLicense() {
         License license = new License("name", "url");
         Model instance = new Model();
         instance.addLicense(license);
@@ -270,7 +271,7 @@ public class ModelTest extends BaseTest {
      * Test of processProperties method, of class Model.
      */
     @Test
-    public void testProcessProperties() {
+    void testProcessProperties() {
 
         String text = "This is a test of '${key}' '${nested}'";
         Model instance = new Model();

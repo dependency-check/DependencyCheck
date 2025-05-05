@@ -17,26 +17,29 @@
  */
 package org.owasp.dependencycheck.utils;
 
+import org.junit.jupiter.api.Test;
+import org.owasp.dependencycheck.BaseTest;
+
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import org.junit.Test;
-import org.owasp.dependencycheck.BaseTest;
+
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  *
  * @author Jeremy Long
  */
-public class DependencyVersionTest extends BaseTest {
+class DependencyVersionTest extends BaseTest {
 
     /**
      * Test of parseVersion method, of class DependencyVersion.
      */
     @Test
-    public void testParseVersion() {
+    void testParseVersion() {
         String version = "1.2r1";
         DependencyVersion instance = new DependencyVersion();
         instance.parseVersion(version);
@@ -70,14 +73,14 @@ public class DependencyVersionTest extends BaseTest {
      * Test of iterator method, of class DependencyVersion.
      */
     @Test
-    public void testIterator() {
+    void testIterator() {
         DependencyVersion instance = new DependencyVersion("1.2.3");
         Iterator<String> result = instance.iterator();
         assertTrue(result.hasNext());
         int count = 1;
         while (result.hasNext()) {
             String v = result.next();
-            assertTrue(String.valueOf(count++).equals(v));
+            assertEquals(String.valueOf(count++), v);
         }
     }
 
@@ -85,7 +88,7 @@ public class DependencyVersionTest extends BaseTest {
      * Test of toString method, of class DependencyVersion.
      */
     @Test
-    public void testToString() {
+    void testToString() {
         DependencyVersion instance = new DependencyVersion("1.2.3r1");
         String expResult = "1.2.3.r1";
         String result = instance.toString();
@@ -96,7 +99,7 @@ public class DependencyVersionTest extends BaseTest {
      * Test of equals method, of class DependencyVersion.
      */
     @Test
-    public void testEquals() {
+    void testEquals() {
         DependencyVersion obj = new DependencyVersion("1.2.3.r1");
         DependencyVersion instance = new DependencyVersion("1.2.3");
         boolean expResult = false;
@@ -106,26 +109,26 @@ public class DependencyVersionTest extends BaseTest {
         expResult = true;
         result = instance.equals(obj);
         assertEquals(expResult, result);
-        
+
         instance = new DependencyVersion("2.0.0");
         obj = new DependencyVersion("2");
         expResult = false;
         result = instance.equals(obj);
         assertEquals(expResult, result);
-        
+
         obj = new DependencyVersion("2.0");
         expResult = true;
         result = instance.equals(obj);
         assertEquals(expResult, result);
-        
-        
+
+
     }
 
     /**
      * Test of hashCode method, of class DependencyVersion.
      */
     @Test
-    public void testHashCode() {
+    void testHashCode() {
         DependencyVersion instance = new DependencyVersion("3.2.1");
         int expResult = 80756;
         int result = instance.hashCode();
@@ -136,26 +139,26 @@ public class DependencyVersionTest extends BaseTest {
      * Test of matchesAtLeastThreeLevels method, of class DependencyVersion.
      */
     @Test
-    public void testMatchesAtLeastThreeLevels() {
+    void testMatchesAtLeastThreeLevels() {
 
         DependencyVersion instance = new DependencyVersion("2.3.16.3");
         DependencyVersion version = new DependencyVersion("2.3.16.4");
         //true tests
-        assertEquals(true, instance.matchesAtLeastThreeLevels(version));
+        assertTrue(instance.matchesAtLeastThreeLevels(version));
         version = new DependencyVersion("2.3");
-        assertEquals(true, instance.matchesAtLeastThreeLevels(version));
+        assertTrue(instance.matchesAtLeastThreeLevels(version));
         //false tests
         version = new DependencyVersion("2.3.16.1");
-        assertEquals(false, instance.matchesAtLeastThreeLevels(version));
+        assertFalse(instance.matchesAtLeastThreeLevels(version));
         version = new DependencyVersion("2");
-        assertEquals(false, instance.matchesAtLeastThreeLevels(version));
+        assertFalse(instance.matchesAtLeastThreeLevels(version));
     }
 
     /**
      * Test of compareTo method, of class DependencyVersion.
      */
     @Test
-    public void testCompareTo() {
+    void testCompareTo() {
         DependencyVersion instance = new DependencyVersion("1.2.3");
         DependencyVersion version = new DependencyVersion("1.2.3");
         assertEquals(0, instance.compareTo(version));
@@ -202,7 +205,7 @@ public class DependencyVersionTest extends BaseTest {
      * Test of getVersionParts method, of class DependencyVersion.
      */
     @Test
-    public void testGetVersionParts() {
+    void testGetVersionParts() {
         DependencyVersion instance = new DependencyVersion();
         List<String> versionParts = Arrays.asList("1", "1", "1");
         instance.setVersionParts(versionParts);
@@ -215,7 +218,7 @@ public class DependencyVersionTest extends BaseTest {
      * Test of setVersionParts method, of class DependencyVersion.
      */
     @Test
-    public void testSetVersionParts() {
+    void testSetVersionParts() {
         List<String> versionParts = Arrays.asList("1", "1", "1");
         DependencyVersion instance = new DependencyVersion();
         instance.setVersionParts(versionParts);

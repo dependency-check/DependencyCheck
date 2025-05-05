@@ -17,25 +17,27 @@
  */
 package org.owasp.dependencycheck.xml.assembly;
 
+import org.junit.jupiter.api.Test;
+import org.owasp.dependencycheck.BaseTest;
+import org.owasp.dependencycheck.utils.XmlUtils;
+import org.xml.sax.InputSource;
+import org.xml.sax.XMLReader;
+
+import javax.xml.parsers.SAXParser;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.nio.charset.StandardCharsets;
-import javax.xml.parsers.SAXParser;
-import static org.junit.Assert.assertEquals;
-import org.junit.Test;
-import org.owasp.dependencycheck.BaseTest;
-import org.owasp.dependencycheck.utils.XmlUtils;
-import org.xml.sax.InputSource;
-import org.xml.sax.XMLReader;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  *
  * @author Jeremy Long
  */
-public class GrokHandlerTest extends BaseTest {
+class GrokHandlerTest extends BaseTest {
 
     /**
      * Test of getSuppressionRules method, of class SuppressionHandler.
@@ -43,7 +45,7 @@ public class GrokHandlerTest extends BaseTest {
      * @throws Exception thrown if there is an exception....
      */
     @Test
-    public void testHandler() throws Exception {
+    void testHandler() throws Exception {
         File file = BaseTest.getResourceAsFile(this, "assembly/sample-grok.xml");
         InputStream schemaStream = BaseTest.getResourceAsStream(this, "schema/grok-assembly.1.0.xsd");
 

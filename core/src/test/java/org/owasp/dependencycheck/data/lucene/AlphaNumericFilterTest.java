@@ -54,7 +54,7 @@ public class AlphaNumericFilterTest extends BaseTokenStreamTestCase {
 
     /**
      * Test of incrementToken method, of class AlphaNumericFilter.
-     * 
+     *
      * @throws Exception thrown if there is a problem
      */
     @Test

@@ -1,27 +1,26 @@
 package org.owasp.dependencycheck.analyzer;
 
-import org.junit.After;
-import org.junit.Assume;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.owasp.dependencycheck.BaseTest;
 import org.owasp.dependencycheck.Engine;
 import org.owasp.dependencycheck.analyzer.exception.AnalysisException;
 import org.owasp.dependencycheck.dependency.Dependency;
 import org.owasp.dependencycheck.dependency.EvidenceType;
 import org.owasp.dependencycheck.exception.InitializationException;
-import org.owasp.dependencycheck.utils.InvalidSettingException;
 import org.owasp.dependencycheck.utils.Settings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 /**
  *
  * @author anupamjuniwal
  */
-public class PipAnalyzerIT extends BaseTest {
+class PipAnalyzerIT extends BaseTest {
     private static final Logger LOGGER = LoggerFactory.getLogger(PipAnalyzerIT.class);
 
     /**
@@ -34,7 +33,7 @@ public class PipAnalyzerIT extends BaseTest {
      *
      * @throws Exception thrown if there is a problem
      */
-    @Before
+    @BeforeEach
     @Override
     public void setUp() throws Exception {
         super.setUp();
@@ -49,7 +48,7 @@ public class PipAnalyzerIT extends BaseTest {
      *
      * @throws Exception thrown if there is a problem
      */
-    @After
+    @AfterEach
     @Override
     public void tearDown() throws Exception {
         if (analyzer != null) {
@@ -66,13 +65,13 @@ public class PipAnalyzerIT extends BaseTest {
      * @throws AnalysisException thrown if there is a problem
      */
     @Test
-    public void testAnalyzePipAnalyzer() throws AnalysisException{
+    void testAnalyzePipAnalyzer() throws AnalysisException{
         try (Engine engine = new Engine(getSettings())) {
             analyzer.prepare(engine);
             final Dependency toScan = new Dependency(BaseTest.getResourceAsFile(this, "requirements.txt"));
             analyzer.analyze(toScan, engine);
             boolean found = false;
-            assertTrue("More then 1 dependency should be identified", 1 < engine.getDependencies().length);
+            assertTrue(1 < engine.getDependencies().length, "More then 1 dependency should be identified");
             for (Dependency result : engine.getDependencies()) {
                 if ("PyYAML".equals(result.getName())) {
                     found = true;
@@ -82,10 +81,10 @@ public class PipAnalyzerIT extends BaseTest {
                     assertTrue(result.isVirtual());
                 }
             }
-            assertTrue("Expeced to find PyYAML", found);
+            assertTrue(found, "Expeced to find PyYAML");
         } catch (InitializationException ex) {
             //yarn is not installed - skip the test case.
-            Assume.assumeNoException(ex);
+            assumeTrue(false, ex.toString());
         }
     }
 }

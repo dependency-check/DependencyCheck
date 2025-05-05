@@ -17,24 +17,27 @@
  */
 package org.owasp.dependencycheck.data.nvdcve;
 
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.owasp.dependencycheck.BaseDBTestCase;
+
 import java.util.Properties;
-import org.junit.After;
-import static org.junit.Assert.assertEquals;
-import org.junit.Test;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import org.junit.Before;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  *
  * @author Jeremy Long
  */
-public class DatabasePropertiesIT extends BaseDBTestCase {
+class DatabasePropertiesIT extends BaseDBTestCase {
 
     private CveDB cveDb = null;
 
-    @Before
+    @BeforeEach
     @Override
     public void setUp() throws Exception {
         super.setUp();
@@ -42,7 +45,7 @@ public class DatabasePropertiesIT extends BaseDBTestCase {
         cveDb.open();
     }
 
-    @After
+    @AfterEach
     @Override
     public void tearDown() throws Exception {
         cveDb.close();
@@ -53,7 +56,7 @@ public class DatabasePropertiesIT extends BaseDBTestCase {
      * Test of isEmpty method, of class DatabaseProperties.
      */
     @Test
-    public void testIsEmpty() throws Exception {
+    void testIsEmpty() {
         DatabaseProperties prop = cveDb.getDatabaseProperties();
         assertNotNull(prop);
         //no exception means the call worked... whether or not it is empty depends on if the db is new
@@ -64,7 +67,7 @@ public class DatabasePropertiesIT extends BaseDBTestCase {
      * Test of save method, of class DatabaseProperties.
      */
     @Test
-    public void testSave() throws Exception {
+    void testSave() {
         String key = "test";
         String value = "something";
         String expected = "something";
@@ -74,12 +77,12 @@ public class DatabasePropertiesIT extends BaseDBTestCase {
         String results = instance.getProperty(key);
         assertEquals(expected, results);
     }
-    
+
     /**
      * Test of getProperty method, of class DatabaseProperties.
      */
     @Test
-    public void testGetProperty_String_String() throws Exception {
+    void testGetProperty_String_String() {
         String key = "doesn't exist";
         String defaultValue = "default";
         DatabaseProperties instance = cveDb.getDatabaseProperties();
@@ -92,13 +95,13 @@ public class DatabasePropertiesIT extends BaseDBTestCase {
      * Test of getProperty method, of class DatabaseProperties.
      */
     @Test
-    public void testGetProperty_String() throws DatabaseException {
+    void testGetProperty_String() throws DatabaseException {
         String key = "version";
         DatabaseProperties instance = cveDb.getDatabaseProperties();
         String result = instance.getProperty(key);
-        
+
         int major = Integer.parseInt(result.substring(0, result.indexOf('.')));
-       
+
         assertTrue(major >= 5);
     }
 
@@ -106,10 +109,10 @@ public class DatabasePropertiesIT extends BaseDBTestCase {
      * Test of getProperties method, of class DatabaseProperties.
      */
     @Test
-    public void testGetProperties() throws DatabaseException {
+    void testGetProperties() throws DatabaseException {
         DatabaseProperties instance = cveDb.getDatabaseProperties();
         Properties result = instance.getProperties();
-        assertTrue(result.size() > 0);
+        assertFalse(result.isEmpty());
         cveDb.close();
     }
 }

@@ -17,9 +17,10 @@
  */
 package org.owasp.dependencycheck.analyzer;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.apache.commons.lang3.ArrayUtils;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.owasp.dependencycheck.BaseDBTestCase;
 import org.owasp.dependencycheck.BaseTest;
 import org.owasp.dependencycheck.Engine;
@@ -27,18 +28,17 @@ import org.owasp.dependencycheck.analyzer.exception.AnalysisException;
 import org.owasp.dependencycheck.dependency.Dependency;
 
 import java.io.File;
-import org.apache.commons.lang3.ArrayUtils;
 
-import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Unit tests for PipAnalyzerTest.
  */
-public class PipAnalyzerTest extends BaseDBTestCase {
+class PipAnalyzerTest extends BaseDBTestCase {
 
     /**
      * The analyzer to test.
@@ -50,7 +50,7 @@ public class PipAnalyzerTest extends BaseDBTestCase {
      *
      * @throws Exception thrown if there is a problem
      */
-    @Before
+    @BeforeEach
     @Override
     public void setUp() throws Exception {
         super.setUp();
@@ -65,7 +65,7 @@ public class PipAnalyzerTest extends BaseDBTestCase {
      *
      * @throws Exception thrown if there is a problem
      */
-    @After
+    @AfterEach
     @Override
     public void tearDown() throws Exception {
         analyzer.close();
@@ -76,7 +76,7 @@ public class PipAnalyzerTest extends BaseDBTestCase {
      * Test of getName method, of class PipAnalyzer.
      */
     @Test
-    public void testGetName() {
+    void testGetName() {
         assertEquals("pip Analyzer", analyzer.getName());
     }
 
@@ -84,7 +84,7 @@ public class PipAnalyzerTest extends BaseDBTestCase {
      * Test of supportsExtension method, of class PipAnalyzer.
      */
     @Test
-    public void testSupportsFiles() {
+    void testSupportsFiles() {
         assertTrue(analyzer.accept(new File("requirements.txt")));
         assertFalse(analyzer.accept(new File("requirements2.txt")));
         assertFalse(analyzer.accept(new File("requirements.py")));
@@ -97,7 +97,7 @@ public class PipAnalyzerTest extends BaseDBTestCase {
      * @throws AnalysisException is thrown when an exception occurs.
      */
     @Test
-    public void testAnalyzePackageJson() throws Exception {
+    void testAnalyzePackageJson() throws Exception {
         try (Engine engine = new Engine(getSettings())) {
             final Dependency result = new Dependency(BaseTest.getResourceAsFile(this, "requirements.txt"));
             engine.addDependency(result);
@@ -120,8 +120,8 @@ public class PipAnalyzerTest extends BaseDBTestCase {
                     assertEquals(PythonDistributionAnalyzer.DEPENDENCY_ECOSYSTEM, d.getEcosystem());
                 }
             }
-            assertTrue("Expected to find PyYAML", foundPyYAML);
-            assertTrue("Expected to find cryptography", foundCryptography);
+            assertTrue(foundPyYAML, "Expected to find PyYAML");
+            assertTrue(foundCryptography, "Expected to find cryptography");
         }
     }
 }

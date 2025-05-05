@@ -17,9 +17,6 @@
  */
 package org.owasp.dependencycheck.data.lucene;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.HashMap;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.miscellaneous.PerFieldAnalyzerWrapper;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
@@ -37,21 +34,24 @@ import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.TopScoreDocCollector;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.MMapDirectory;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.owasp.dependencycheck.BaseTest;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.HashMap;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 /**
  *
  * @author Jeremy Long
  */
-public class FieldAnalyzerTest extends BaseTest {
+class FieldAnalyzerTest extends BaseTest {
 
     @Test
-    public void testAnalyzers() throws Exception {
+    void testAnalyzers() throws Exception {
 
         Analyzer analyzer = new SearchFieldAnalyzer();
         File temp = getSettings().getTempDirectory();
@@ -92,7 +92,7 @@ public class FieldAnalyzerTest extends BaseTest {
         searcher.search(q, collector);
         ScoreDoc[] hits = collector.topDocs().scoreDocs;
 
-        assertEquals("Did not find 1 document?", 1, hits.length);
+        assertEquals(1, hits.length, "Did not find 1 document?");
         assertEquals("springframework", searcher.doc(hits[0].doc).get(field1));
         assertEquals("springsource", searcher.doc(hits[0].doc).get(field2));
 
@@ -100,7 +100,7 @@ public class FieldAnalyzerTest extends BaseTest {
 
         reset(searchAnalyzerProduct, searchAnalyzerVendor);
         Query q2 = parser.parse(querystr);
-        assertFalse("second parsing contains previousWord from the TokenPairConcatenatingFilter", q2.toString().contains("core"));
+        assertFalse(q2.toString().contains("core"), "second parsing contains previousWord from the TokenPairConcatenatingFilter");
 
         querystr = "product:(  x-stream^5 )  AND  vendor:(  thoughtworks.xstream )";
         reset(searchAnalyzerProduct, searchAnalyzerVendor);

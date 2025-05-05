@@ -18,20 +18,21 @@
 package org.owasp.dependencycheck.utils;
 
 import org.hamcrest.Matchers;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+
 import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
  *
  * @author Jeremy Long
  */
-public class SeverityUtilTest {
+class SeverityUtilTest {
 
     /**
      * Test of estimateCvssV2 method, of class SeverityUtil.
      */
     @Test
-    public void testEstimateCvssV2() {
+    void testEstimateCvssV2() {
         String severity = null;
         double expResult = 0.0;
         Double result = SeverityUtil.estimateCvssV2(severity);

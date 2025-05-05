@@ -17,6 +17,13 @@
  */
 package org.owasp.dependencycheck.xml.suppression;
 
+import org.junit.jupiter.api.Test;
+import org.owasp.dependencycheck.BaseTest;
+import org.owasp.dependencycheck.utils.XmlUtils;
+import org.xml.sax.InputSource;
+import org.xml.sax.XMLReader;
+
+import javax.xml.parsers.SAXParser;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
@@ -24,19 +31,14 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
-import javax.xml.parsers.SAXParser;
-import static org.junit.Assert.assertTrue;
-import org.junit.Test;
-import org.owasp.dependencycheck.BaseTest;
-import org.owasp.dependencycheck.utils.XmlUtils;
-import org.xml.sax.InputSource;
-import org.xml.sax.XMLReader;
+
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  *
  * @author Jeremy Long
  */
-public class SuppressionHandlerTest extends BaseTest {
+class SuppressionHandlerTest extends BaseTest {
 
     /**
      * Test of getSuppressionRules method, of class SuppressionHandler.
@@ -44,7 +46,7 @@ public class SuppressionHandlerTest extends BaseTest {
      * @throws Exception thrown if there is an exception....
      */
     @Test
-    public void testHandler() throws Exception {
+    void testHandler() throws Exception {
         File file = BaseTest.getResourceAsFile(this, "suppressions.xml");
         InputStream schemaStream = BaseTest.getResourceAsStream(this, "schema/suppression.xsd");
 

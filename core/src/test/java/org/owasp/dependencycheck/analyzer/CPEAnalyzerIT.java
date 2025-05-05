@@ -17,6 +17,18 @@
  */
 package org.owasp.dependencycheck.analyzer;
 
+import org.apache.commons.lang3.mutable.MutableInt;
+import org.junit.jupiter.api.Test;
+import org.owasp.dependencycheck.BaseDBTestCase;
+import org.owasp.dependencycheck.BaseTest;
+import org.owasp.dependencycheck.Engine;
+import org.owasp.dependencycheck.data.cpe.IndexEntry;
+import org.owasp.dependencycheck.data.nvd.ecosystem.Ecosystem;
+import org.owasp.dependencycheck.dependency.Confidence;
+import org.owasp.dependencycheck.dependency.Dependency;
+import org.owasp.dependencycheck.dependency.EvidenceType;
+import org.owasp.dependencycheck.dependency.naming.Identifier;
+
 import java.io.File;
 import java.util.Collections;
 import java.util.HashMap;
@@ -24,25 +36,17 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import org.apache.commons.lang3.mutable.MutableInt;
-import org.junit.Test;
-import org.owasp.dependencycheck.BaseTest;
-import org.owasp.dependencycheck.BaseDBTestCase;
-import org.owasp.dependencycheck.Engine;
-import org.owasp.dependencycheck.data.cpe.IndexEntry;
-import org.owasp.dependencycheck.dependency.Confidence;
-import org.owasp.dependencycheck.dependency.Dependency;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-import org.owasp.dependencycheck.data.nvd.ecosystem.Ecosystem;
-import org.owasp.dependencycheck.dependency.EvidenceType;
-import org.owasp.dependencycheck.dependency.naming.Identifier;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  *
  * @author Jeremy Long
  */
-public class CPEAnalyzerIT extends BaseDBTestCase {
+class CPEAnalyzerIT extends BaseDBTestCase {
 
     /**
      * Tests of buildSearch of class CPEAnalyzer.
@@ -50,9 +54,9 @@ public class CPEAnalyzerIT extends BaseDBTestCase {
      * @throws Exception is thrown when an IO Exception occurs.
      */
     @Test
-    public void testBuildSearch() throws Exception {
+    void testBuildSearch() throws Exception {
         Set<String> productWeightings = new HashSet<>();//Collections.singleton("struts2");
-        Set<String> vendorWeightings = new HashSet<>();//Collections.singleton("apache");        
+        Set<String> vendorWeightings = new HashSet<>();//Collections.singleton("apache");
         Map<String, MutableInt> vendor = new HashMap<>();
         Map<String, MutableInt> product = new HashMap<>();
         vendor.put("apache software foundation", new MutableInt(1));
@@ -62,14 +66,14 @@ public class CPEAnalyzerIT extends BaseDBTestCase {
         instance.initialize(getSettings());
         String queryText = instance.buildSearch(vendor, product, vendorWeightings, productWeightings);
         String expResult = "product:(struts 2 core) AND vendor:(apache software foundation)";
-        assertTrue(expResult.equals(queryText));
+        assertEquals(expResult, queryText);
 
         vendorWeightings.add("apache");
         productWeightings.add("struts2");
 
         queryText = instance.buildSearch(vendor, product, vendorWeightings, productWeightings);
         expResult = "product:(struts^2 2 core struts2^2) AND vendor:(apache^2 software foundation)";
-        assertTrue(expResult.equals(queryText));
+        assertEquals(expResult, queryText);
         instance.close();
     }
 
@@ -79,7 +83,7 @@ public class CPEAnalyzerIT extends BaseDBTestCase {
      * @throws Exception is thrown when an exception occurs
      */
     @Test
-    public void testDetermineCPE_full() throws Exception {
+    void testDetermineCPE_full() throws Exception {
         CPEAnalyzer cpeAnalyzer = new CPEAnalyzer();
         try (Engine e = new Engine(getSettings())) {
             //update needs to be performed so that xtream can be tested
@@ -130,7 +134,7 @@ public class CPEAnalyzerIT extends BaseDBTestCase {
      * @param cpeSuppression the CPE suppression analyzer
      * @throws Exception is thrown when an exception occurs
      */
-    public void callDetermineCPE_full(String depName, String expResult, CPEAnalyzer cpeAnalyzer, FileNameAnalyzer fnAnalyzer,
+    private void callDetermineCPE_full(String depName, String expResult, CPEAnalyzer cpeAnalyzer, FileNameAnalyzer fnAnalyzer,
             JarAnalyzer jarAnalyzer, HintAnalyzer hAnalyzer, FalsePositiveAnalyzer fp, CpeSuppressionAnalyzer cpeSuppression) throws Exception {
 
         //File file = new File(this.getClass().getClassLoader().getResource(depName).getPath());
@@ -153,9 +157,9 @@ public class CPEAnalyzerIT extends BaseDBTestCase {
                     break;
                 }
             }
-            assertTrue("Match not found: { dep:'" + dep.getFileName() + "', exp:'" + expResult + "' }", found);
+            assertTrue(found, "Match not found: { dep:'" + dep.getFileName() + "', exp:'" + expResult + "' }");
         } else {
-            dep.getVulnerableSoftwareIdentifiers().forEach((id) -> fail("Unexpected match found: { dep:'" + dep.getFileName() + "', found:'" + id + "' }"));
+            dep.getVulnerableSoftwareIdentifiers().forEach(id -> fail("Unexpected match found: { dep:'" + dep.getFileName() + "', found:'" + id + "' }"));
         }
     }
 
@@ -165,7 +169,7 @@ public class CPEAnalyzerIT extends BaseDBTestCase {
      * @throws Exception is thrown when an exception occurs
      */
     @Test
-    public void testDetermineCPE() throws Exception {
+    void testDetermineCPE() throws Exception {
         //File file = new File(this.getClass().getClassLoader().getResource("struts2-core-2.1.2.jar").getPath());
         File file = BaseTest.getResourceAsFile(this, "struts2-core-2.1.2.jar");
         //File file = new File(this.getClass().getClassLoader().getResource("axis2-adb-1.4.1.jar").getPath());
@@ -218,10 +222,10 @@ public class CPEAnalyzerIT extends BaseDBTestCase {
             instance.close();
 
             suppressionAnalyzer.analyze(commonValidator, engine);
-            commonValidator.getVulnerableSoftwareIdentifiers().forEach((i) -> fail("Apache Common Validator found an unexpected CPE identifier - " + i.getValue()));
+            commonValidator.getVulnerableSoftwareIdentifiers().forEach(i -> fail("Apache Common Validator found an unexpected CPE identifier - " + i.getValue()));
 
             String expResult = "cpe:2.3:a:apache:struts:2.1.2:*:*:*:*:*:*:*";
-            assertTrue("Incorrect match size - struts", struts.getVulnerableSoftwareIdentifiers().size() >= 1);
+            assertFalse(struts.getVulnerableSoftwareIdentifiers().isEmpty(), "Incorrect match size - struts");
             boolean found = false;
             for (Identifier i : struts.getVulnerableSoftwareIdentifiers()) {
                 if (expResult.equals(i.getValue())) {
@@ -229,8 +233,8 @@ public class CPEAnalyzerIT extends BaseDBTestCase {
                     break;
                 }
             }
-            assertTrue("Incorrect match - struts", found);
-            assertTrue("Incorrect match size - spring3 - " + spring3.getVulnerableSoftwareIdentifiers().size(), spring3.getVulnerableSoftwareIdentifiers().size() >= 1);
+            assertTrue(found, "Incorrect match - struts");
+            assertFalse(spring3.getVulnerableSoftwareIdentifiers().isEmpty(), "Incorrect match size - spring3 - " + spring3.getVulnerableSoftwareIdentifiers().size());
 
             jarAnalyzer.close();
             suppressionAnalyzer.close();
@@ -243,7 +247,7 @@ public class CPEAnalyzerIT extends BaseDBTestCase {
      * @throws Exception is thrown when an exception occurs
      */
     @Test
-    public void testDetermineIdentifiers() throws Exception {
+    void testDetermineIdentifiers() throws Exception {
 
         CPEAnalyzer instance = new CPEAnalyzer();
         try (Engine engine = new Engine(getSettings())) {
@@ -284,7 +288,7 @@ public class CPEAnalyzerIT extends BaseDBTestCase {
             System.out.println(id.getValue());
             return expectedCpe.equals(id.getValue());
         });
-        assertTrue(String.format("%s:%s:%s identifier not found", vendor, product, version), found);
+        assertTrue(found, String.format("%s:%s:%s identifier not found", vendor, product, version));
     }
 
     /**
@@ -293,7 +297,7 @@ public class CPEAnalyzerIT extends BaseDBTestCase {
      * @throws Exception is thrown when an exception occurs
      */
     @Test
-    public void testAnalyzeDependency() throws Exception {
+    void testAnalyzeDependency() throws Exception {
 
         CPEAnalyzer instance = new CPEAnalyzer();
         try (Engine engine = new Engine(getSettings())) {
@@ -344,7 +348,7 @@ public class CPEAnalyzerIT extends BaseDBTestCase {
             System.out.println(id.getValue());
             return expectedCpe.equals(id.getValue());
         });
-        assertTrue(String.format("%s:%s:%s identifier not found", vendor, product, version), found);
+        assertTrue(found, String.format("%s:%s:%s identifier not found", vendor, product, version));
     }
 
     /**
@@ -353,7 +357,7 @@ public class CPEAnalyzerIT extends BaseDBTestCase {
      * @throws Exception is thrown when an exception occurs
      */
     @Test
-    public void testSearchCPE() throws Exception {
+    void testSearchCPE() throws Exception {
         Map<String, MutableInt> vendor = new HashMap<>();
         Map<String, MutableInt> product = new HashMap<>();
         vendor.put("apache software foundation", new MutableInt(1));
@@ -379,7 +383,7 @@ public class CPEAnalyzerIT extends BaseDBTestCase {
                     break;
                 }
             }
-            assertTrue("apache:struts was not identified", found);
+            assertTrue(found, "apache:struts was not identified");
         }
         instance.close();
     }

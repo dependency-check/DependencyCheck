@@ -17,24 +17,27 @@
  */
 package org.owasp.dependencycheck.data.nexus;
 
-import java.io.FileNotFoundException;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import org.junit.Assume;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import org.owasp.dependencycheck.BaseTest;
 import org.owasp.dependencycheck.utils.Settings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class NexusV2SearchTest extends BaseTest {
+import java.io.FileNotFoundException;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
+
+class NexusV2SearchTest extends BaseTest {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(NexusV2SearchTest.class);
     private NexusV2Search searcher;
 
-    @Before
+    @BeforeEach
     @Override
     public void setUp() throws Exception {
         super.setUp();
@@ -45,40 +48,43 @@ public class NexusV2SearchTest extends BaseTest {
         String nexusUrl = sett.getString(Settings.KEYS.ANALYZER_NEXUS_URL);
         LOGGER.debug(nexusUrl);
         searcher = new NexusV2Search(sett, false);
-        Assume.assumeTrue(searcher.preflightRequest());
+        assumeTrue(searcher.preflightRequest());
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    @Ignore
-    public void testNullSha1() throws Exception {
-        searcher.searchSha1(null);
+    @Test
+    @Disabled
+    void testNullSha1() {
+        assertThrows(IllegalArgumentException.class, () ->
+            searcher.searchSha1(null));
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    @Ignore
-    public void testMalformedSha1() throws Exception {
-        searcher.searchSha1("invalid");
+    @Test
+    @Disabled
+    void testMalformedSha1() {
+        assertThrows(IllegalArgumentException.class, () ->
+            searcher.searchSha1("invalid"));
     }
 
     // This test does generate network traffic and communicates with a host
     // you may not be able to reach. Remove the @Ignore annotation if you want to
     // test it anyway
     @Test
-    @Ignore
-    public void testValidSha1() throws Exception {
+    @Disabled
+    void testValidSha1() throws Exception {
         MavenArtifact ma = searcher.searchSha1("9977a8d04e75609cf01badc4eb6a9c7198c4c5ea");
-        assertEquals("Incorrect group", "org.apache.maven.plugins", ma.getGroupId());
-        assertEquals("Incorrect artifact", "maven-compiler-plugin", ma.getArtifactId());
-        assertEquals("Incorrect version", "3.1", ma.getVersion());
-        assertNotNull("URL Should not be null", ma.getArtifactUrl());
+        assertEquals("org.apache.maven.plugins", ma.getGroupId(), "Incorrect group");
+        assertEquals("maven-compiler-plugin", ma.getArtifactId(), "Incorrect artifact");
+        assertEquals("3.1", ma.getVersion(), "Incorrect version");
+        assertNotNull(ma.getArtifactUrl(), "URL Should not be null");
     }
 
     // This test does generate network traffic and communicates with a host
     // you may not be able to reach. Remove the @Ignore annotation if you want to
     // test it anyway
-    @Test(expected = FileNotFoundException.class)
-    @Ignore
-    public void testMissingSha1() throws Exception {
-        searcher.searchSha1("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
+    @Test
+    @Disabled
+    void testMissingSha1() {
+        assertThrows(FileNotFoundException.class, () ->
+            searcher.searchSha1("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"));
     }
 }

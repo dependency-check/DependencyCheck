@@ -15,18 +15,19 @@
  */
 package org.owasp.dependencycheck.data.nvdcve;
 
+import org.junit.jupiter.api.Test;
+import org.owasp.dependencycheck.BaseDBTestCase;
+
 import java.sql.Connection;
 import java.sql.SQLException;
 
-import org.junit.Test;
-import static org.junit.Assert.*;
-import org.owasp.dependencycheck.BaseDBTestCase;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 /**
  *
  * @author jeremy long
  */
-public class DatabaseManagerTest extends BaseDBTestCase {
+class DatabaseManagerTest extends BaseDBTestCase {
 
     /**
      * Test of initialize method, of class DatabaseManager.
@@ -34,7 +35,7 @@ public class DatabaseManagerTest extends BaseDBTestCase {
      * @throws org.owasp.dependencycheck.data.nvdcve.DatabaseException
      */
     @Test
-    public void testInitialize() throws DatabaseException, SQLException {
+    void testInitialize() throws DatabaseException, SQLException {
         DatabaseManager factory = new DatabaseManager(getSettings());
         factory.open();
         try (Connection result = factory.getConnection()) {

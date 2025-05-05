@@ -17,30 +17,34 @@
  */
 package org.owasp.dependencycheck.analyzer;
 
+import org.apache.commons.lang3.mutable.MutableInt;
+import org.junit.jupiter.api.Test;
+import org.owasp.dependencycheck.dependency.Confidence;
+import org.owasp.dependencycheck.dependency.Evidence;
+import org.owasp.dependencycheck.utils.Settings;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import org.apache.commons.lang3.mutable.MutableInt;
-import org.junit.Test;
-import static org.junit.Assert.*;
-import org.owasp.dependencycheck.dependency.Confidence;
-import org.owasp.dependencycheck.dependency.Evidence;
-import org.owasp.dependencycheck.utils.Settings;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  *
  * @author jeremy long
  */
-public class CPEAnalyzerTest {
+class CPEAnalyzerTest {
 
     /**
      * Test of getName method, of class CPEAnalyzer.
      */
     @Test
-    public void testGetName() {
+    void testGetName() {
         CPEAnalyzer instance = new CPEAnalyzer();
         String expResult = "CPE Analyzer";
         String result = instance.getName();
@@ -51,7 +55,7 @@ public class CPEAnalyzerTest {
      * Test of getAnalysisPhase method, of class CPEAnalyzer.
      */
     @Test
-    public void testGetAnalysisPhase() {
+    void testGetAnalysisPhase() {
         CPEAnalyzer instance = new CPEAnalyzer();
         AnalysisPhase expResult = AnalysisPhase.IDENTIFIER_ANALYSIS;
         AnalysisPhase result = instance.getAnalysisPhase();
@@ -62,7 +66,7 @@ public class CPEAnalyzerTest {
      * Test of getAnalyzerEnabledSettingKey method, of class CPEAnalyzer.
      */
     @Test
-    public void testGetAnalyzerEnabledSettingKey() {
+    void testGetAnalyzerEnabledSettingKey() {
         CPEAnalyzer instance = new CPEAnalyzer();
         String expResult = Settings.KEYS.ANALYZER_CPE_ENABLED;
         String result = instance.getAnalyzerEnabledSettingKey();
@@ -73,7 +77,7 @@ public class CPEAnalyzerTest {
      * Test of collectTerms method, of class CPEAnalyzer.
      */
     @Test
-    public void testAddEvidenceWithoutDuplicateTerms() {
+    void testAddEvidenceWithoutDuplicateTerms() {
         Map<String, MutableInt> terms = new HashMap<>();
         List<Evidence> evidence = new ArrayList<>();
         evidence.add(new Evidence("test case", "value", "test", Confidence.HIGHEST));
@@ -191,7 +195,7 @@ public class CPEAnalyzerTest {
     }
 
     @Test
-    public void testCollectTerms() {
+    void testCollectTerms() {
         Map<String, MutableInt> terms = new HashMap<>();
         List<Evidence> evidence = new ArrayList<>();
         evidence.add(new Evidence("\\@", "\\*", "\\+", Confidence.HIGHEST));
@@ -204,7 +208,7 @@ public class CPEAnalyzerTest {
      * Test of buildSearch method, of class CPEAnalyzer.
      */
     @Test
-    public void testBuildSearch() {
+    void testBuildSearch() {
         Map<String, MutableInt> vendor = new HashMap<>();
         Map<String, MutableInt> product = new HashMap<>();
         vendor.put("apache software foundation", new MutableInt(1));
@@ -279,7 +283,7 @@ public class CPEAnalyzerTest {
     }
 
     @Test
-    public void testBuildSearchBlank() {
+    void testBuildSearchBlank() {
         Map<String, MutableInt> vendor = new HashMap<>();
         Map<String, MutableInt> product = new HashMap<>();
         vendor.put("   ", new MutableInt(1));

@@ -17,23 +17,25 @@
  */
 package org.owasp.dependencycheck.data.nvdcve;
 
+import org.junit.jupiter.api.Test;
+import org.owasp.dependencycheck.BaseTest;
+
 import java.io.File;
 import java.sql.Driver;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-
-import org.junit.Test;
-import org.owasp.dependencycheck.BaseTest;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  *
  * @author Jeremy Long
  */
-public class DriverLoaderTest extends BaseTest {
+class DriverLoaderTest extends BaseTest {
 
     /**
      * Test of load method, of class DriverLoader.
@@ -42,13 +44,11 @@ public class DriverLoaderTest extends BaseTest {
      * the driver
      */
     @Test
-    public void testLoad_String() throws SQLException {
+    void testLoad_String() throws SQLException {
         String className = "org.h2.Driver";
         Driver d = null;
         try {
-            d = DriverLoader.load(className);
-        } catch (DriverLoadException ex) {
-            fail(ex.getMessage());
+            d = assertDoesNotThrow(() ->  DriverLoader.load(className));
         } finally {
             if (d != null) {
                 DriverManager.deregisterDriver(d);
@@ -60,23 +60,24 @@ public class DriverLoaderTest extends BaseTest {
      * Test of load method, of class DriverLoader; expecting an exception due to
      * a bad driver class name.
      */
-    @Test(expected = DriverLoadException.class)
-    public void testLoad_String_ex() throws Exception {
+    @Test
+    void testLoad_String_ex() {
         final String className = "bad.Driver";
-        DriverLoader.load(className);
+        assertThrows(DriverLoadException.class, () ->
+            DriverLoader.load(className));
     }
 
     /**
      * Test of load method, of class DriverLoader.
      */
     @Test
-    public void testLoad_String_String() throws Exception {
+    void testLoad_String_String() throws Exception {
         String className = "com.mysql.jdbc.Driver";
         //we know this is in target/test-classes
         //File testClassPath = (new File(this.getClass().getClassLoader().getResource("org.mortbay.jetty.jar").getPath())).getParentFile();
         File testClassPath = BaseTest.getResourceAsFile(this, "org.mortbay.jetty.jar").getParentFile();
         File driver = new File(testClassPath, "../../src/test/resources/mysql-connector-java-5.1.27-bin.jar");
-        assertTrue("MySQL Driver JAR file not found in src/test/resources?", driver.isFile());
+        assertTrue(driver.isFile(), "MySQL Driver JAR file not found in src/test/resources?");
 
         Driver d = null;
         try {
@@ -94,7 +95,7 @@ public class DriverLoaderTest extends BaseTest {
      * Test of load method, of class DriverLoader.
      */
     @Test
-    public void testLoad_String_String_multiple_paths()  {
+    void testLoad_String_String_multiple_paths() {
         final String className = "com.mysql.jdbc.Driver";
         //we know this is in target/test-classes
         //final File testClassPath = (new File(this.getClass().getClassLoader().getResource("org.mortbay.jetty.jar").getPath())).getParentFile();
@@ -105,9 +106,7 @@ public class DriverLoaderTest extends BaseTest {
 
         Driver d = null;
         try {
-            d = DriverLoader.load(className, paths);
-        } catch (DriverLoadException ex) {
-            fail(ex.getMessage());
+            d = assertDoesNotThrow(() -> DriverLoader.load(className, paths));
         } finally {
             if (d != null) {
                 try {
@@ -122,28 +121,25 @@ public class DriverLoaderTest extends BaseTest {
     /**
      * Test of load method, of class DriverLoader with an incorrect class name.
      */
-    @Test(expected = DriverLoadException.class)
-    public void testLoad_String_String_badClassName() throws Exception {
+    @Test
+    void testLoad_String_String_badClassName() {
         String className = "com.mybad.jdbc.Driver";
-        //we know this is in target/test-classes
-        //File testClassPath = (new File(this.getClass().getClassLoader().getResource("org.mortbay.jetty.jar").getPath())).getParentFile();
         File testClassPath = BaseTest.getResourceAsFile(this, "org.mortbay.jetty.jar").getParentFile();
         File driver = new File(testClassPath, "../../src/test/resources/mysql-connector-java-5.1.27-bin.jar");
-        assertTrue("MySQL Driver JAR file not found in src/test/resources?", driver.isFile());
-
-        DriverLoader.load(className, driver.getAbsolutePath());
+        assertTrue(driver.isFile(), "MySQL Driver JAR file not found in src/test/resources?");
+        assertThrows(DriverLoadException.class, () ->
+            DriverLoader.load(className, driver.getAbsolutePath()));
     }
 
     /**
      * Test of load method, of class DriverLoader with an incorrect class path.
      */
-    @Test(expected = DriverLoadException.class)
-    public void testLoad_String_String_badPath() throws Exception {
+    @Test
+    void testLoad_String_String_badPath() {
         String className = "com.mysql.jdbc.Driver";
-        //we know this is in target/test-classes
-        //File testClassPath = (new File(this.getClass().getClassLoader().getResource("org.mortbay.jetty.jar").getPath())).getParentFile();
         File testClassPath = BaseTest.getResourceAsFile(this, "org.mortbay.jetty.jar").getParentFile();
         File driver = new File(testClassPath, "../../src/test/bad/mysql-connector-java-5.1.27-bin.jar");
-        DriverLoader.load(className, driver.getAbsolutePath());
+        assertThrows(DriverLoadException.class, () ->
+            DriverLoader.load(className, driver.getAbsolutePath()));
     }
 }

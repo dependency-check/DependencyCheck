@@ -17,15 +17,15 @@
  */
 package org.owasp.dependencycheck.analyzer;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.owasp.dependencycheck.BaseDBTestCase;
 import org.owasp.dependencycheck.utils.Settings;
 
 import java.util.List;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.owasp.dependencycheck.analyzer.AnalysisPhase.FINAL;
 import static org.owasp.dependencycheck.analyzer.AnalysisPhase.INITIAL;
 
@@ -33,13 +33,13 @@ import static org.owasp.dependencycheck.analyzer.AnalysisPhase.INITIAL;
  *
  * @author Jeremy Long
  */
-public class AnalyzerServiceTest extends BaseDBTestCase {
+class AnalyzerServiceTest extends BaseDBTestCase {
 
     /**
      * Test of getAnalyzers method, of class AnalyzerService.
      */
     @Test
-    public void testGetAnalyzers() {
+    void testGetAnalyzers() {
         AnalyzerService instance = new AnalyzerService(Thread.currentThread().getContextClassLoader(), getSettings());
         List<Analyzer> result = instance.getAnalyzers();
 
@@ -50,14 +50,14 @@ public class AnalyzerServiceTest extends BaseDBTestCase {
                 break;
             }
         }
-        assertTrue("JarAnalyzer loaded", found);
+        assertTrue(found, "JarAnalyzer loaded");
     }
 
     /**
      * Test of getAnalyzers method, of class AnalyzerService.
      */
     @Test
-    public void testGetAnalyzers_SpecificPhases() throws Exception {
+    void testGetAnalyzers_SpecificPhases() {
         AnalyzerService instance = new AnalyzerService(Thread.currentThread().getContextClassLoader(), getSettings());
         List<Analyzer> result = instance.getAnalyzers(INITIAL, FINAL);
 
@@ -72,7 +72,7 @@ public class AnalyzerServiceTest extends BaseDBTestCase {
      * Test of getAnalyzers method, of class AnalyzerService.
      */
     @Test
-    public void testGetExperimentalAnalyzers() {
+    void testGetExperimentalAnalyzers() {
         AnalyzerService instance = new AnalyzerService(Thread.currentThread().getContextClassLoader(), getSettings());
         List<Analyzer> result = instance.getAnalyzers();
         String experimental = "CMake Analyzer";
@@ -83,8 +83,8 @@ public class AnalyzerServiceTest extends BaseDBTestCase {
                 found = true;
             }
         }
-        assertFalse("Experimental analyzer loaded when set to false", found);
-        assertFalse("Retired analyzer loaded when set to false", retiredFound);
+        assertFalse(found, "Experimental analyzer loaded when set to false");
+        assertFalse(retiredFound, "Retired analyzer loaded when set to false");
 
         getSettings().setBoolean(Settings.KEYS.ANALYZER_EXPERIMENTAL_ENABLED, true);
         instance = new AnalyzerService(Thread.currentThread().getContextClassLoader(), getSettings());
@@ -96,8 +96,8 @@ public class AnalyzerServiceTest extends BaseDBTestCase {
                 found = true;
             }
         }
-        assertTrue("Experimental analyzer not loaded when set to true", found);
-        assertFalse("Retired analyzer loaded when set to false", retiredFound);
+        assertTrue(found, "Experimental analyzer not loaded when set to true");
+        assertFalse(retiredFound, "Retired analyzer loaded when set to false");
 
         getSettings().setBoolean(Settings.KEYS.ANALYZER_EXPERIMENTAL_ENABLED, false);
         getSettings().setBoolean(Settings.KEYS.ANALYZER_RETIRED_ENABLED, true);
@@ -109,6 +109,6 @@ public class AnalyzerServiceTest extends BaseDBTestCase {
                 found = true;
             }
         }
-        assertFalse("Experimental analyzer loaded when set to false", found);
+        assertFalse(found, "Experimental analyzer loaded when set to false");
     }
 }

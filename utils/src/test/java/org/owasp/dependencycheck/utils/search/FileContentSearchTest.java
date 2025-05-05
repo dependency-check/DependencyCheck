@@ -17,22 +17,24 @@
  */
 package org.owasp.dependencycheck.utils.search;
 
-import java.io.File;
-import org.junit.Test;
-import static org.junit.Assert.*;
+import org.junit.jupiter.api.Test;
 import org.owasp.dependencycheck.utils.BaseTest;
+
+import java.io.File;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  *
  * @author Jeremy Long
  */
-public class FileContentSearchTest extends BaseTest {
+class FileContentSearchTest extends BaseTest {
 
     /**
      * Test of contains method, of class FileContentSearch.
      */
     @Test
-    public void testContains_File_String() throws Exception {
+    void testContains_File_String() throws Exception {
         File file = BaseTest.getResourceAsFile(this, "SearchTest.txt");
         String pattern = "blue";
         boolean expResult = false;
@@ -44,7 +46,7 @@ public class FileContentSearchTest extends BaseTest {
         result = FileContentSearch.contains(file, pattern);
         assertEquals(expResult, result);
 
-        
+
         pattern = "(?i)test";
         expResult = true;
         result = FileContentSearch.contains(file, pattern);
@@ -55,14 +57,14 @@ public class FileContentSearchTest extends BaseTest {
      * Test of contains method, of class FileContentSearch.
      */
     @Test
-    public void testContains_File_List() throws Exception {
+    void testContains_File_List() throws Exception {
         File file = BaseTest.getResourceAsFile(this, "SearchTest.txt");
         String[] patterns = {"jeremy long", "blue"};
-        
+
         boolean expResult = false;
         boolean result = FileContentSearch.contains(file, patterns);
         assertEquals(expResult, result);
-        
+
         String[] patterns2 = {"jeremy long", "blue", "(?i)jeremy long"};
         expResult = true;
         result = FileContentSearch.contains(file, patterns2);

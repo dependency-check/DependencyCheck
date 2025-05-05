@@ -17,35 +17,35 @@
  */
 package org.owasp.dependencycheck.dependency;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.owasp.dependencycheck.BaseTest;
 import org.owasp.dependencycheck.data.nexus.MavenArtifact;
-
-import java.io.File;
-import java.util.HashSet;
-import java.util.Set;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
 import org.owasp.dependencycheck.dependency.naming.CpeIdentifier;
 import org.owasp.dependencycheck.dependency.naming.Identifier;
 import us.springett.parsers.cpe.Cpe;
 import us.springett.parsers.cpe.CpeBuilder;
 import us.springett.parsers.cpe.values.Part;
 
+import java.io.File;
+import java.util.HashSet;
+import java.util.Set;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 /**
  * @author Jeremy Long
  */
-public class DependencyTest extends BaseTest {
+class DependencyTest extends BaseTest {
 
     /**
      * Test of getFileName method, of class Dependency.
      */
     @Test
-    public void testGetFileName() {
+    void testGetFileName() {
         Dependency instance = new Dependency();
         String expResult = "filename";
         instance.setFileName(expResult);
@@ -57,7 +57,7 @@ public class DependencyTest extends BaseTest {
      * Test of setFileName method, of class Dependency.
      */
     @Test
-    public void testSetFileName() {
+    void testSetFileName() {
         String fileName = "file.tar";
         Dependency instance = new Dependency();
         instance.setFileName(fileName);
@@ -68,7 +68,7 @@ public class DependencyTest extends BaseTest {
      * Test of setActualFilePath method, of class Dependency.
      */
     @Test
-    public void testSetActualFilePath() {
+    void testSetActualFilePath() {
         String expectedPath = "file.tar";
         String actualPath = "file.tar";
         Dependency instance = new Dependency();
@@ -81,7 +81,7 @@ public class DependencyTest extends BaseTest {
      * Test of getActualFilePath method, of class Dependency.
      */
     @Test
-    public void testGetActualFilePath() {
+    void testGetActualFilePath() {
         Dependency instance = new Dependency();
         String expResult = "file.tar";
         instance.setSha1sum("non-null value");
@@ -94,7 +94,7 @@ public class DependencyTest extends BaseTest {
      * Test of setFilePath method, of class Dependency.
      */
     @Test
-    public void testSetFilePath() {
+    void testSetFilePath() {
         String filePath = "file.tar";
         Dependency instance = new Dependency();
         instance.setFilePath(filePath);
@@ -105,7 +105,7 @@ public class DependencyTest extends BaseTest {
      * Test of getFilePath method, of class Dependency.
      */
     @Test
-    public void testGetFilePath() {
+    void testGetFilePath() {
         Dependency instance = new Dependency();
         String expResult = "file.tar";
         instance.setFilePath(expResult);
@@ -117,7 +117,7 @@ public class DependencyTest extends BaseTest {
      * Test of getMd5sum method, of class Dependency.
      */
     @Test
-    public void testGetMd5sum() {
+    void testGetMd5sum() {
         //File file = new File(this.getClass().getClassLoader().getResource("struts2-core-2.1.2.jar").getPath());
         File file = BaseTest.getResourceAsFile(this, "struts2-core-2.1.2.jar");
 
@@ -133,7 +133,7 @@ public class DependencyTest extends BaseTest {
      * Test of setMd5sum method, of class Dependency.
      */
     @Test
-    public void testSetMd5sum() {
+    void testSetMd5sum() {
         String md5sum = "test";
         Dependency instance = new Dependency();
         instance.setMd5sum(md5sum);
@@ -144,7 +144,7 @@ public class DependencyTest extends BaseTest {
      * Test of getSha1sum method, of class Dependency.
      */
     @Test
-    public void testGetSha1sum() {
+    void testGetSha1sum() {
         //File file = new File(this.getClass().getClassLoader().getResource("struts2-core-2.1.2.jar").getPath());
         File file = BaseTest.getResourceAsFile(this, "struts2-core-2.1.2.jar");
         Dependency instance = new Dependency(file);
@@ -158,7 +158,7 @@ public class DependencyTest extends BaseTest {
      * Test of getSha256sum method, of class Dependency.
      */
     @Test
-    public void testGetSha256sum() {
+    void testGetSha256sum() {
         File file = BaseTest.getResourceAsFile(this, "struts2-core-2.1.2.jar");
         Dependency instance = new Dependency(file);
         String expResult = "5c1847a10800027254fcd0073385cceb46b1dacee061f3cd465e314bec592e81";
@@ -170,7 +170,7 @@ public class DependencyTest extends BaseTest {
      * Test of setSha1sum method, of class Dependency.
      */
     @Test
-    public void testSetSha1sum() {
+    void testSetSha1sum() {
         String sha1sum = "test";
         Dependency instance = new Dependency();
         instance.setSha1sum(sha1sum);
@@ -181,7 +181,7 @@ public class DependencyTest extends BaseTest {
      * Test of setSha256sum method, of class Dependency.
      */
     @Test
-    public void testSetSha256sum() {
+    void testSetSha256sum() {
         String sha256sum = "test";
         Dependency instance = new Dependency();
         instance.setSha256sum(sha256sum);
@@ -192,7 +192,7 @@ public class DependencyTest extends BaseTest {
      * Test of getSoftwareIdentifiers method, of class Dependency.
      */
     @Test
-    public void testGetSoftwareIdentifiers() {
+    void testGetSoftwareIdentifiers() {
         Dependency instance = new Dependency();
         Set<Identifier> result = instance.getSoftwareIdentifiers();
 
@@ -203,7 +203,7 @@ public class DependencyTest extends BaseTest {
      * Test of addSoftwareIdentifiers method, of class Dependency.
      */
     @Test
-    public void testAddSoftwareIdentifiers() {
+    void testAddSoftwareIdentifiers() {
         Set<Identifier> identifiers = new HashSet<>();
         Dependency instance = new Dependency();
         instance.addSoftwareIdentifiers(identifiers);
@@ -214,7 +214,7 @@ public class DependencyTest extends BaseTest {
      * Test of addVulnerableSoftwareIdentifier method, of class Dependency.
      */
     @Test
-    public void testAddVulnerableSoftwareIdentifier() throws Exception {
+    void testAddVulnerableSoftwareIdentifier() throws Exception {
         CpeBuilder builder = new CpeBuilder();
         Cpe cpe = builder.part(Part.APPLICATION).vendor("apache").product("struts").version("2.1.2").build();
         CpeIdentifier id = new CpeIdentifier(cpe, Confidence.HIGHEST);
@@ -225,14 +225,14 @@ public class DependencyTest extends BaseTest {
         Dependency instance = new Dependency();
         instance.addVulnerableSoftwareIdentifier(id);
         assertEquals(1, instance.getVulnerableSoftwareIdentifiers().size());
-        assertTrue("Identifier doesn't contain expected result.", instance.getVulnerableSoftwareIdentifiers().contains(expResult));
+        assertTrue(instance.getVulnerableSoftwareIdentifiers().contains(expResult), "Identifier doesn't contain expected result.");
     }
 
     /**
      * Test of getEvidence method, of class Dependency.
      */
     @Test
-    public void testGetEvidence() {
+    void testGetEvidence() {
         Dependency instance = new Dependency();
         Set<Evidence> result = instance.getEvidence(EvidenceType.VENDOR);
         assertNotNull(result);
@@ -246,7 +246,7 @@ public class DependencyTest extends BaseTest {
      * Test of addAsEvidence method, of class Dependency.
      */
     @Test
-    public void testAddAsEvidence() {
+    void testAddAsEvidence() {
         Dependency instance = new Dependency();
         MavenArtifact mavenArtifact = new MavenArtifact("group", "artifact", "version", "url");
         instance.addAsEvidence("pom", mavenArtifact, Confidence.HIGH);
@@ -259,12 +259,12 @@ public class DependencyTest extends BaseTest {
      * Test of addAsEvidence method, of class Dependency.
      */
     @Test
-    public void testAddAsEvidenceWithEmptyArtifact() {
+    void testAddAsEvidenceWithEmptyArtifact() {
         Dependency instance = new Dependency();
         MavenArtifact mavenArtifact = new MavenArtifact(null, null, null, null);
         instance.addAsEvidence("pom", mavenArtifact, Confidence.HIGH);
         assertFalse(instance.getEvidence(EvidenceType.VENDOR).stream().anyMatch(e -> e.getConfidence() == Confidence.HIGH));
-        assertTrue(instance.size() == 0);
+        assertEquals(0, instance.size());
         assertTrue(instance.getSoftwareIdentifiers().isEmpty());
     }
 
@@ -272,12 +272,12 @@ public class DependencyTest extends BaseTest {
      * Test of addAsEvidence method, of class Dependency.
      */
     @Test
-    public void testAddAsEvidenceWithExisting() {
+    void testAddAsEvidenceWithExisting() {
         Dependency instance = new Dependency();
         MavenArtifact mavenArtifact = new MavenArtifact("group", "artifact", "version", null);
         instance.addAsEvidence("pom", mavenArtifact, Confidence.HIGH);
         assertTrue(instance.getEvidence(EvidenceType.VENDOR).stream().anyMatch(e -> e.getConfidence() == Confidence.HIGH));
-        assertTrue(instance.size() == 4);
+        assertEquals(4, instance.size());
         assertFalse(instance.getSoftwareIdentifiers().isEmpty());
 
         instance.getSoftwareIdentifiers().forEach((i) -> assertNull(i.getUrl()));
@@ -285,7 +285,7 @@ public class DependencyTest extends BaseTest {
         mavenArtifact = new MavenArtifact("group", "artifact", "version", "url");
         instance.addAsEvidence("pom", mavenArtifact, Confidence.HIGH);
         assertTrue(instance.getEvidence(EvidenceType.VENDOR).stream().anyMatch(e -> e.getConfidence() == Confidence.HIGH));
-        assertTrue(instance.size() == 4);
+        assertEquals(4, instance.size());
         assertFalse(instance.getSoftwareIdentifiers().isEmpty());
 
         instance.getSoftwareIdentifiers().forEach((i) -> assertNotNull(i.getUrl()));

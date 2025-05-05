@@ -19,28 +19,30 @@ package org.owasp.dependencycheck.data.nvd.ecosystem;
 
 import io.github.jeremylong.openvulnerability.client.nvd.Config;
 import io.github.jeremylong.openvulnerability.client.nvd.CpeMatch;
-import java.util.ArrayList;
-import java.util.List;
-import org.junit.Test;
-import static org.junit.Assert.*;
-import org.owasp.dependencycheck.analyzer.JarAnalyzer;
-
-import io.github.jeremylong.openvulnerability.client.nvd.DefCveItem;
 import io.github.jeremylong.openvulnerability.client.nvd.CveItem;
+import io.github.jeremylong.openvulnerability.client.nvd.DefCveItem;
 import io.github.jeremylong.openvulnerability.client.nvd.LangString;
 import io.github.jeremylong.openvulnerability.client.nvd.Node;
+import org.junit.jupiter.api.Test;
+import org.owasp.dependencycheck.analyzer.JarAnalyzer;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 /**
  *
  * @author Jeremy Long
  */
-public class CveEcosystemMapperTest {
+class CveEcosystemMapperTest {
 
     /**
      * Test of getEcosystem method, of class CveEcosystemMapper.
      */
     @Test
-    public void testGetEcosystem() {
+    void testGetEcosystem() {
         CveEcosystemMapper mapper = new CveEcosystemMapper();
         String value = "There is a vulnerability in some.java file";
         assertEquals(JarAnalyzer.DEPENDENCY_ECOSYSTEM, mapper.getEcosystem(asCve(value)));

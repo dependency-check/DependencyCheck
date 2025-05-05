@@ -1,7 +1,7 @@
 package org.owasp.dependencycheck.analyzer;
 
-import org.junit.Assume;
-import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import org.owasp.dependencycheck.BaseTest;
 import org.owasp.dependencycheck.Engine;
 import org.owasp.dependencycheck.analyzer.exception.AnalysisException;
@@ -9,14 +9,14 @@ import org.owasp.dependencycheck.dependency.Dependency;
 import org.owasp.dependencycheck.dependency.EvidenceType;
 import org.owasp.dependencycheck.exception.InitializationException;
 
-import static org.junit.Assert.assertTrue;
-import org.junit.Ignore;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
-public class PnpmAuditAnalyzerIT extends BaseTest {
+class PnpmAuditAnalyzerIT extends BaseTest {
 
     @Test
-    @Ignore("unfortunately pnpm and brew are somewhat broken on my machine atm...")
-    public void testAnalyzePackagePnpm() throws AnalysisException {
+    @Disabled("unfortunately pnpm and brew are somewhat broken on my machine atm...")
+    void testAnalyzePackagePnpm() throws AnalysisException {
 
         try (Engine engine = new Engine(getSettings())) {
             PnpmAuditAnalyzer analyzer = new PnpmAuditAnalyzer();
@@ -27,7 +27,7 @@ public class PnpmAuditAnalyzerIT extends BaseTest {
             final Dependency toScan = new Dependency(BaseTest.getResourceAsFile(this, "pnpmaudit/pnpm-lock.yaml"));
             analyzer.analyze(toScan, engine);
             boolean found = false;
-            assertTrue("More than 1 dependency should be identified", 1 < engine.getDependencies().length);
+            assertTrue(1 < engine.getDependencies().length, "More than 1 dependency should be identified");
             for (Dependency result : engine.getDependencies()) {
                 if ("pnpm-lock.yaml?dns-sync".equals(result.getFileName())) {
                     found = true;
@@ -36,10 +36,10 @@ public class PnpmAuditAnalyzerIT extends BaseTest {
                     assertTrue(result.isVirtual());
                 }
             }
-            assertTrue("dns-sync was not found", found);
+            assertTrue(found, "dns-sync was not found");
         } catch (InitializationException ex) {
             //yarn is not installed - skip the test case.
-            Assume.assumeNoException(ex);
+            assumeTrue(false, ex.toString());
         }
     }
 }

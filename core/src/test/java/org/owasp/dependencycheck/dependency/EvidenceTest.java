@@ -17,25 +17,27 @@
  */
 package org.owasp.dependencycheck.dependency;
 
+import org.junit.jupiter.api.Test;
+import org.owasp.dependencycheck.BaseTest;
+
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
-import org.junit.Test;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import org.owasp.dependencycheck.BaseTest;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  *
  * @author Jeremy Long
  */
-public class EvidenceTest extends BaseTest {
+class EvidenceTest extends BaseTest {
 
     /**
      * Test of equals method, of class Evidence.
      */
     @Test
-    public void testEquals() {
+    void testEquals() {
         Evidence that0 = new Evidence("file", "name", "guice-3.0", Confidence.HIGHEST);
         Evidence that1 = new Evidence("jar", "package name", "dependency", Confidence.HIGHEST);
         Evidence that2 = new Evidence("jar", "package name", "google", Confidence.HIGHEST);
@@ -47,19 +49,19 @@ public class EvidenceTest extends BaseTest {
         Evidence that8 = new Evidence("Manifest", "Implementation-Title", "Spring Framework", Confidence.HIGH);
 
         Evidence instance = new Evidence("Manifest", "Implementation-Title", "Spring Framework", Confidence.HIGH);
-        assertFalse(instance.equals(that0));
-        assertFalse(instance.equals(that1));
-        assertFalse(instance.equals(that2));
-        assertFalse(instance.equals(that3));
-        assertFalse(instance.equals(that4));
-        assertFalse(instance.equals(that5));
-        assertFalse(instance.equals(that6));
-        assertFalse(instance.equals(that7));
-        assertTrue(instance.equals(that8));
+        assertNotEquals(instance, that0);
+        assertNotEquals(instance, that1);
+        assertNotEquals(instance, that2);
+        assertNotEquals(instance, that3);
+        assertNotEquals(instance, that4);
+        assertNotEquals(instance, that5);
+        assertNotEquals(instance, that6);
+        assertNotEquals(instance, that7);
+        assertEquals(instance, that8);
     }
 
     @Test
-    public void testHashcodeContract() throws Exception {
+    void testHashcodeContract() {
         final Evidence titleCase = new Evidence("Manifest", "Implementation-Title", "Spring Framework", Confidence.HIGH);
         final Evidence lowerCase = new Evidence("manifest", "implementation-title", "spring framework", Confidence.HIGH);
         assertThat(titleCase, is(equalTo(lowerCase)));
@@ -70,7 +72,7 @@ public class EvidenceTest extends BaseTest {
      * Test of compareTo method, of class Evidence.
      */
     @Test
-    public void testCompareTo() {
+    void testCompareTo() {
         Evidence that0 = new Evidence("file", "name", "guice-3.0", Confidence.HIGHEST);
         Evidence that1 = new Evidence("jar", "package name", "dependency", Confidence.HIGHEST);
         Evidence that2 = new Evidence("jar", "package name", "google", Confidence.HIGHEST);
@@ -110,7 +112,7 @@ public class EvidenceTest extends BaseTest {
         assertTrue(result > 0);
 
         result = instance.compareTo(that8);
-        assertTrue(result == 0);
+        assertEquals(0, result);
 
         result = instance.compareTo(that9);
         assertTrue(result < 0);

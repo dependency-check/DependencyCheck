@@ -17,28 +17,22 @@
  */
 package org.owasp.dependencycheck.data.update;
 
-import java.time.ZonedDateTime;
-import java.util.Map;
-import java.util.Properties;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import static org.junit.Assert.*;
-import org.owasp.dependencycheck.Engine;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 /**
  *
  * @author Jeremy Long
  */
-public class NvdApiDataSourceTest {
+class NvdApiDataSourceTest {
 
     /**
      * Test of extractUrlData method, of class NvdApiDataSource.
      */
     @Test
-    public void testExtractUrlData() {
+    void testExtractUrlData() {
         String nvdDataFeedUrl = "https://internal.server/nist/nvdcve-{0}.json.gz";
         NvdApiDataSource instance = new NvdApiDataSource();
         String expectedUrl = "https://internal.server/nist/";
@@ -51,7 +45,7 @@ public class NvdApiDataSourceTest {
 
         assertEquals(expectedUrl, result.getUrl());
         assertNull(result.getPattern());
-        
+
         nvdDataFeedUrl = "https://internal.server/nist";
         expectedUrl = "https://internal.server/nist/";
         result = instance.extractUrlData(nvdDataFeedUrl);

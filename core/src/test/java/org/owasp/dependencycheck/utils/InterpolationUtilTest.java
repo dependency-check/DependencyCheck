@@ -17,21 +17,23 @@
  */
 package org.owasp.dependencycheck.utils;
 
+import org.junit.jupiter.api.Test;
+
 import java.util.Properties;
-import org.junit.Test;
-import static org.junit.Assert.*;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  *
  * @author Jeremy Long
  */
-public class InterpolationUtilTest {
+class InterpolationUtilTest {
 
     /**
      * Test of interpolate method, of class InterpolationUtil.
      */
     @Test
-    public void testInterpolate() {
+    void testInterpolate() {
         Properties prop = new Properties();
         prop.setProperty("key", "value");
         prop.setProperty("nested", "nested ${key}");
@@ -42,7 +44,7 @@ public class InterpolationUtilTest {
     }
 
     @Test
-    public void testInterpolateNonexistentErased() {
+    void testInterpolateNonexistentErased() {
         Properties prop = new Properties();
         prop.setProperty("key", "value");
         String text = "This is a test of '${key}' and '${nothing}'";
@@ -52,7 +54,7 @@ public class InterpolationUtilTest {
     }
 
     @Test
-    public void testInterpolateMSBuild() {
+    void testInterpolateMSBuild() {
         Properties prop = new Properties();
         prop.setProperty("key", "value");
         prop.setProperty("nested", "nested $(key)");
@@ -63,7 +65,7 @@ public class InterpolationUtilTest {
     }
 
     @Test
-    public void testInterpolateNonexistentErasedMSBuild() {
+    void testInterpolateNonexistentErasedMSBuild() {
         Properties prop = new Properties();
         prop.setProperty("key", "value");
         String text = "This is a test of '$(key)' and '$(nothing)'";

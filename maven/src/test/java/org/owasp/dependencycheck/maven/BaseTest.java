@@ -17,11 +17,12 @@
  */
 package org.owasp.dependencycheck.maven;
 
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.owasp.dependencycheck.utils.Settings;
+
 import java.io.IOException;
 import java.io.InputStream;
-import org.junit.After;
-import org.junit.Before;
-import org.owasp.dependencycheck.utils.Settings;
 
 /**
  *
@@ -42,7 +43,7 @@ public abstract class BaseTest {
     /**
      * Initialize the {@link Settings}.
      */
-    @Before
+    @BeforeEach
     public void setUp() throws IOException {
         settings = new Settings();
         try (InputStream mojoProperties = BaseTest.class.getClassLoader().getResourceAsStream(BaseTest.PROPERTIES_FILE)) {
@@ -53,7 +54,7 @@ public abstract class BaseTest {
     /**
      * Clean the {@link Settings}.
      */
-    @After
+    @AfterEach
     public void tearDown() {
         settings.cleanup(true);
     }

@@ -17,89 +17,92 @@
  */
 package org.owasp.dependencycheck.xml.pom;
 
+import org.junit.jupiter.api.Test;
+import org.owasp.dependencycheck.BaseTest;
+
 import java.io.File;
 import java.io.InputStream;
-import org.junit.Test;
-import static org.junit.Assert.*;
-import org.owasp.dependencycheck.BaseTest;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
  *
  * @author jeremy long
  */
-public class PomParserTest {
+class PomParserTest {
 
     /**
      * Test of parse method, of class PomParser.
      */
     @Test
-    public void testParse_File() throws Exception {
+    void testParse_File() throws Exception {
         File file = BaseTest.getResourceAsFile(this, "pom/mailapi-1.4.3.pom");
         PomParser instance = new PomParser();
         String expVersion = "1.4.3";
         Model result = instance.parse(file);
-        assertEquals("Invalid version extracted", expVersion, result.getParentVersion());
+        assertEquals(expVersion, result.getParentVersion(), "Invalid version extracted");
     }
 
     /**
      * Test of parse method, of class PomParser.
      */
     @Test
-    public void testParse_InputStream() throws Exception {
+    void testParse_InputStream() throws Exception {
         InputStream inputStream = BaseTest.getResourceAsStream(this, "pom/plexus-utils-3.0.24.pom");
         PomParser instance = new PomParser();
         String expectedArtifactId = "plexus-utils";
         Model result = instance.parse(inputStream);
-        assertEquals("Invalid artifactId extracted", expectedArtifactId, result.getArtifactId());
+        assertEquals(expectedArtifactId, result.getArtifactId(), "Invalid artifactId extracted");
     }
 
     /**
      * Test of parse method, of class PomParser.
      */
     @Test
-    public void testParse_InputStreamWithDocType() throws Exception {
+    void testParse_InputStreamWithDocType() throws Exception {
         InputStream inputStream = BaseTest.getResourceAsStream(this, "pom/mailapi-1.4.3_doctype.pom");
         PomParser instance = new PomParser();
         String expVersion = "1.4.3";
         Model result = instance.parse(inputStream);
-        assertEquals("Invalid version extracted", expVersion, result.getParentVersion());
+        assertEquals(expVersion, result.getParentVersion(), "Invalid version extracted");
     }
 
     @Test
-    public void testParseWithoutDocTypeCleanup_InputStream() throws Exception {
+    void testParseWithoutDocTypeCleanup_InputStream() throws Exception {
         InputStream inputStream = BaseTest.getResourceAsStream(this, "pom/mailapi-1.4.3.pom");
         PomParser instance = new PomParser();
         String expVersion = "1.4.3";
         Model result = instance.parseWithoutDocTypeCleanup(inputStream);
-        assertEquals("Invalid version extracted", expVersion, result.getParentVersion());
+        assertEquals(expVersion, result.getParentVersion(), "Invalid version extracted");
     }
 
     @Test
-    public void testParseWithoutDocTypeCleanup() throws Exception {
+    void testParseWithoutDocTypeCleanup() throws Exception {
         File file = BaseTest.getResourceAsFile(this, "pom/mailapi-1.4.3.pom");
         PomParser instance = new PomParser();
         String expVersion = "1.4.3";
         Model result = instance.parseWithoutDocTypeCleanup(file);
-        assertEquals("Invalid version extracted", expVersion, result.getParentVersion());
+        assertEquals(expVersion, result.getParentVersion(), "Invalid version extracted");
     }
 
-    
-    @Test(expected = PomParseException.class)
-    public void testParseWithoutDocTypeCleanup_InputStreamWithDocType() throws Exception {
+
+    @Test
+    void testParseWithoutDocTypeCleanup_InputStreamWithDocType() {
         InputStream inputStream = BaseTest.getResourceAsStream(this, "pom/mailapi-1.4.3_doctype.pom");
         PomParser instance = new PomParser();
-        String expVersion = "1.4.3";
-        Model result = instance.parseWithoutDocTypeCleanup(inputStream);
-        assertEquals("Invalid version extracted", expVersion, result.getParentVersion());
+
+        assertThrows(PomParseException.class, () ->
+            instance.parseWithoutDocTypeCleanup(inputStream));
     }
 
-    @Test(expected = PomParseException.class)
-    public void testParseWithoutDocTypeCleanup_WithDocType() throws Exception {
+    @Test
+    void testParseWithoutDocTypeCleanup_WithDocType() {
         File file = BaseTest.getResourceAsFile(this, "pom/mailapi-1.4.3_doctype.pom");
         PomParser instance = new PomParser();
-        String expVersion = "1.4.3";
-        Model result = instance.parseWithoutDocTypeCleanup(file);
-        assertEquals("Invalid version extracted", expVersion, result.getParentVersion());
+
+        assertThrows(PomParseException.class, () ->
+            instance.parseWithoutDocTypeCleanup(file));
     }
 
 }

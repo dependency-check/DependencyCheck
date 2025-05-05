@@ -17,8 +17,17 @@
  */
 package org.owasp.dependencycheck;
 
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.owasp.dependencycheck.analyzer.Analyzer;
+import org.owasp.dependencycheck.data.nvdcve.DatabaseException;
+import org.owasp.dependencycheck.exception.ExceptionCollection;
+import org.owasp.dependencycheck.exception.ReportException;
+import org.owasp.dependencycheck.utils.Settings;
+
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -26,31 +35,20 @@ import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
-import org.owasp.dependencycheck.data.nvdcve.DatabaseException;
-import org.owasp.dependencycheck.exception.ExceptionCollection;
-import org.owasp.dependencycheck.exception.ReportException;
-import org.owasp.dependencycheck.utils.InvalidSettingException;
-import org.owasp.dependencycheck.utils.Settings;
-import org.owasp.dependencycheck.analyzer.Analyzer;
-
 /**
  *
  * @author Jeremy Long
  */
-@RunWith(MockitoJUnitRunner.class)
-public class EngineIT extends BaseDBTestCase {
+@ExtendWith(MockitoExtension.class)
+class EngineIT extends BaseDBTestCase {
 
     @Mock
     private Analyzer analyzer;
@@ -60,7 +58,7 @@ public class EngineIT extends BaseDBTestCase {
 
 
     @Test
-    public void exceptionDuringAnalysisTaskExecutionIsFatal() throws DatabaseException, ExceptionCollection {
+    void exceptionDuringAnalysisTaskExecutionIsFatal() throws DatabaseException {
          final ExecutorService executorService = Executors.newFixedThreadPool(3);
          try (Engine instance = spy(new Engine(new Settings()))) {
              final List<Throwable> exceptions = new ArrayList<>();
@@ -74,9 +72,9 @@ public class EngineIT extends BaseDBTestCase {
              when(instance.getExecutorService(analyzer)).thenReturn(executorService);
              doReturn(failingAnalysisTask).when(instance).getAnalysisTasks(analyzer, exceptions);
 
-             instance.executeAnalysisTasks(analyzer, exceptions);
-             fail("ExceptionCollection exception was expected");
-         } catch (ExceptionCollection expected) {
+             ExceptionCollection expected = assertThrows(ExceptionCollection.class,
+                     () -> instance.executeAnalysisTasks(analyzer, exceptions),
+                     "ExceptionCollection exception was expected");
              List<Throwable> collected = expected.getExceptions();
              assertEquals(1, collected.size());
              assertEquals(java.util.concurrent.ExecutionException.class, collected.get(0).getClass());
@@ -88,14 +86,12 @@ public class EngineIT extends BaseDBTestCase {
     /**
      * Test running the entire engine.
      *
-     * @throws java.io.IOException
-     * @throws org.owasp.dependencycheck.utils.InvalidSettingException
      * @throws org.owasp.dependencycheck.data.nvdcve.DatabaseException
      * @throws org.owasp.dependencycheck.exception.ReportException
      * @throws org.owasp.dependencycheck.exception.ExceptionCollection
      */
     @Test
-    public void testEngine() throws IOException, InvalidSettingException, DatabaseException, ReportException, ExceptionCollection {
+    void testEngine() throws DatabaseException, ReportException, ExceptionCollection {
         String testClasses = "target/test-classes";
         getSettings().setBoolean(Settings.KEYS.AUTO_UPDATE, false);
         getSettings().setBoolean(Settings.KEYS.ANALYZER_CENTRAL_ENABLED, false);

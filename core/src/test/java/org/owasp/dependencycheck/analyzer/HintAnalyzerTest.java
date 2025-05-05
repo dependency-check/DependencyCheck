@@ -15,33 +15,33 @@
  */
 package org.owasp.dependencycheck.analyzer;
 
-import java.io.File;
-import java.util.Set;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.owasp.dependencycheck.BaseDBTestCase;
 import org.owasp.dependencycheck.BaseTest;
 import org.owasp.dependencycheck.Engine;
-import org.owasp.dependencycheck.BaseDBTestCase;
 import org.owasp.dependencycheck.dependency.Confidence;
 import org.owasp.dependencycheck.dependency.Dependency;
 import org.owasp.dependencycheck.dependency.Evidence;
 import org.owasp.dependencycheck.dependency.EvidenceType;
 import org.owasp.dependencycheck.utils.Settings;
 
+import java.io.File;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 /**
  *
  * @author Jeremy Long
  */
-public class HintAnalyzerTest extends BaseDBTestCase {
+class HintAnalyzerTest extends BaseDBTestCase {
 
     /**
      * Test of getName method, of class HintAnalyzer.
      */
     @Test
-    public void testGetName() {
+    void testGetName() {
         HintAnalyzer instance = new HintAnalyzer();
         String expResult = "Hint Analyzer";
         String result = instance.getName();
@@ -52,7 +52,7 @@ public class HintAnalyzerTest extends BaseDBTestCase {
      * Test of getAnalysisPhase method, of class HintAnalyzer.
      */
     @Test
-    public void testGetAnalysisPhase() {
+    void testGetAnalysisPhase() {
         HintAnalyzer instance = new HintAnalyzer();
         AnalysisPhase expResult = AnalysisPhase.POST_INFORMATION_COLLECTION2;
         AnalysisPhase result = instance.getAnalysisPhase();
@@ -63,7 +63,7 @@ public class HintAnalyzerTest extends BaseDBTestCase {
      * Test of analyze method, of class HintAnalyzer.
      */
     @Test
-    public void testAnalyze() throws Exception {
+    void testAnalyze() throws Exception {
         //File guice = new File(this.getClass().getClassLoader().getResource("guice-3.0.jar").getPath());
         File guice = BaseTest.getResourceAsFile(this, "guice-3.0.jar");
         //Dependency guice = new EngineDependency(fileg);
@@ -110,7 +110,7 @@ public class HintAnalyzerTest extends BaseDBTestCase {
      * Test of analyze method, of class HintAnalyzer.
      */
     @Test
-    public void testAnalyze_1() throws Exception {
+    void testAnalyze_1() throws Exception {
         File path = BaseTest.getResourceAsFile(this, "hints_12.xml");
         getSettings().setString(Settings.KEYS.HINTS_FILE, path.getPath());
         HintAnalyzer instance = new HintAnalyzer();
@@ -125,13 +125,13 @@ public class HintAnalyzerTest extends BaseDBTestCase {
         d.addEvidence(EvidenceType.VENDOR, "hint analyzer", "other vendor name", "vendor", Confidence.HIGH);
         d.addEvidence(EvidenceType.PRODUCT, "hint analyzer", "other product name", "product", Confidence.HIGH);
 
-        assertEquals("vendor evidence mismatch", 2, d.getEvidence(EvidenceType.VENDOR).size());
-        assertEquals("product evidence mismatch", 2, d.getEvidence(EvidenceType.PRODUCT).size());
-        assertEquals("version evidence mismatch", 3, d.getEvidence(EvidenceType.VERSION).size());
+        assertEquals(2, d.getEvidence(EvidenceType.VENDOR).size(), "vendor evidence mismatch");
+        assertEquals(2, d.getEvidence(EvidenceType.PRODUCT).size(), "product evidence mismatch");
+        assertEquals(3, d.getEvidence(EvidenceType.VERSION).size(), "version evidence mismatch");
         instance.analyze(d, null);
-        assertEquals("vendor evidence mismatch", 1, d.getEvidence(EvidenceType.VENDOR).size());
-        assertEquals("product evidence mismatch", 1, d.getEvidence(EvidenceType.PRODUCT).size());
-        assertEquals("version evidence mismatch", 2, d.getEvidence(EvidenceType.VERSION).size());
+        assertEquals(1, d.getEvidence(EvidenceType.VENDOR).size(), "vendor evidence mismatch");
+        assertEquals(1, d.getEvidence(EvidenceType.PRODUCT).size(), "product evidence mismatch");
+        assertEquals(2, d.getEvidence(EvidenceType.VERSION).size(), "version evidence mismatch");
 
     }
 }

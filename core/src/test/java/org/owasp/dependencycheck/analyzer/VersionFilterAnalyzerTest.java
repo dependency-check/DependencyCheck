@@ -17,25 +17,27 @@
  */
 package org.owasp.dependencycheck.analyzer;
 
-import org.junit.Test;
-import static org.junit.Assert.*;
+import org.junit.jupiter.api.Test;
 import org.owasp.dependencycheck.BaseTest;
 import org.owasp.dependencycheck.dependency.Confidence;
 import org.owasp.dependencycheck.dependency.Dependency;
 import org.owasp.dependencycheck.dependency.EvidenceType;
 import org.owasp.dependencycheck.utils.Settings;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+
 /**
  *
  * @author Jeremy Long
  */
-public class VersionFilterAnalyzerTest extends BaseTest {
+class VersionFilterAnalyzerTest extends BaseTest {
 
     /**
      * Test of getName method, of class VersionFilterAnalyzer.
      */
     @Test
-    public void testGetName() {
+    void testGetName() {
         VersionFilterAnalyzer instance = new VersionFilterAnalyzer();
         String expResult = "Version Filter Analyzer";
         String result = instance.getName();
@@ -46,7 +48,7 @@ public class VersionFilterAnalyzerTest extends BaseTest {
      * Test of getAnalysisPhase method, of class VersionFilterAnalyzer.
      */
     @Test
-    public void testGetAnalysisPhase() {
+    void testGetAnalysisPhase() {
         VersionFilterAnalyzer instance = new VersionFilterAnalyzer();
         instance.initialize(getSettings());
         AnalysisPhase expResult = AnalysisPhase.POST_INFORMATION_COLLECTION3;
@@ -59,7 +61,7 @@ public class VersionFilterAnalyzerTest extends BaseTest {
      * VersionFilterAnalyzer.
      */
     @Test
-    public void testGetAnalyzerEnabledSettingKey() {
+    void testGetAnalyzerEnabledSettingKey() {
         VersionFilterAnalyzer instance = new VersionFilterAnalyzer();
         instance.initialize(getSettings());
         String expResult = Settings.KEYS.ANALYZER_VERSION_FILTER_ENABLED;
@@ -71,7 +73,7 @@ public class VersionFilterAnalyzerTest extends BaseTest {
      * Test of analyzeDependency method, of class VersionFilterAnalyzer.
      */
     @Test
-    public void testAnalyzeDependency() throws Exception {
+    void testAnalyzeDependency() throws Exception {
         Dependency dependency = new Dependency();
 
         dependency.addEvidence(EvidenceType.VERSION, "util", "version", "33.3", Confidence.HIGHEST);
@@ -112,7 +114,7 @@ public class VersionFilterAnalyzerTest extends BaseTest {
      * Test of analyzeDependency method, of class VersionFilterAnalyzer.
      */
     @Test
-    public void testAnalyzeDependencyFilePom() throws Exception {
+    void testAnalyzeDependencyFilePom() throws Exception {
         Dependency dependency = new Dependency();
 
         dependency.addEvidence(EvidenceType.VERSION, "util", "version", "33.3", Confidence.HIGHEST);
@@ -149,7 +151,7 @@ public class VersionFilterAnalyzerTest extends BaseTest {
      * Test of analyzeDependency method, of class VersionFilterAnalyzer.
      */
     @Test
-    public void testAnalyzeDependencyFileManifest() throws Exception {
+    void testAnalyzeDependencyFileManifest() throws Exception {
         Dependency dependency = new Dependency();
 
         dependency.addEvidence(EvidenceType.VERSION, "util", "version", "33.3", Confidence.HIGHEST);
@@ -176,7 +178,7 @@ public class VersionFilterAnalyzerTest extends BaseTest {
      * Test of analyzeDependency method, of class VersionFilterAnalyzer.
      */
     @Test
-    public void testAnalyzeDependencyPomManifest() throws Exception {
+    void testAnalyzeDependencyPomManifest() throws Exception {
         Dependency dependency = new Dependency();
 
         dependency.addEvidence(EvidenceType.VERSION, "util", "version", "33.3", Confidence.HIGHEST);

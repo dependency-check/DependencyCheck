@@ -17,19 +17,21 @@
  */
 package org.owasp.dependencycheck.xml.pom;
 
+import org.junit.jupiter.api.Test;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
-import org.junit.Test;
-import static org.junit.Assert.*;
+
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  *
  * @author Jeremy Long
  */
-public class PomProjectInputStreamTest {
+class PomProjectInputStreamTest {
 
     private final String POM = "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>\n"
             + "<!DOCTYPE xml [<!ENTITY quot \"&#34;\">\n"
@@ -62,7 +64,7 @@ public class PomProjectInputStreamTest {
             + "<blue></blue>";
 
     @Test
-    public void testFilter() throws IOException {
+    void testFilter() throws IOException {
         InputStream in = new ByteArrayInputStream(POM.getBytes(StandardCharsets.UTF_8));
         PomProjectInputStream instance = new PomProjectInputStream(in);
         byte[] expected = "<project></project>".getBytes(StandardCharsets.UTF_8);
@@ -85,7 +87,7 @@ public class PomProjectInputStreamTest {
      * Test of findSequence method, of class PomProjectInputStream.
      */
     @Test
-    public void testFindSequence() throws IOException {
+    void testFindSequence() {
 
         byte[] sequence = "project".getBytes(StandardCharsets.UTF_8);
         byte[] buffer = "my big project".getBytes(StandardCharsets.UTF_8);

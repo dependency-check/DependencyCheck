@@ -21,20 +21,22 @@ import io.github.jeremylong.openvulnerability.client.nvd.CvssV2;
 import io.github.jeremylong.openvulnerability.client.nvd.CvssV2Data;
 import io.github.jeremylong.openvulnerability.client.nvd.CvssV3;
 import io.github.jeremylong.openvulnerability.client.nvd.CvssV3Data;
-import org.junit.Test;
-import static org.junit.Assert.*;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 /**
  *
  * @author Jeremy Long
  */
-public class CvssUtilTest {
+class CvssUtilTest {
 
     /**
      * Test of vectorToCvssV2 method, of class CvssUtil.
      */
     @Test
-    public void testVectorToCvssV2() {
+    void testVectorToCvssV2() {
         String vectorString = "/AV:L/AC:L/Au:N/C:N/I:N/A:C";
         Double baseScore = 1.0;
         CvssV2 result = CvssUtil.vectorToCvssV2(vectorString, baseScore);
@@ -53,7 +55,7 @@ public class CvssUtilTest {
      * Test of cvssV2ScoreToSeverity method, of class CvssUtil.
      */
     @Test
-    public void testCvssV2ScoreToSeverity() {
+    void testCvssV2ScoreToSeverity() {
         Double score = -1.0;
         String expResult = "UNKNOWN";
         String result = CvssUtil.cvssV2ScoreToSeverity(score);
@@ -104,7 +106,7 @@ public class CvssUtilTest {
      * Test of cvssV3ScoreToSeverity method, of class CvssUtil.
      */
     @Test
-    public void testCvssV3ScoreToSeverity() {
+    void testCvssV3ScoreToSeverity() {
         Double score = 0.0;
         CvssV3Data.SeverityType expResult = CvssV3Data.SeverityType.NONE;
         CvssV3Data.SeverityType result = CvssUtil.cvssV3ScoreToSeverity(score);
@@ -163,7 +165,7 @@ public class CvssUtilTest {
      * Test of vectorToCvssV3 method, of class CvssUtil.
      */
     @Test
-    public void testVectorToCvssV3() {
+    void testVectorToCvssV3() {
         String vectorString = "CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:N/I:N/A:H";
         Double baseScore = 10.0;
         CvssV3 result = CvssUtil.vectorToCvssV3(vectorString, baseScore);

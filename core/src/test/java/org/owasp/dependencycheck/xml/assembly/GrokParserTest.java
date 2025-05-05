@@ -17,24 +17,25 @@
  */
 package org.owasp.dependencycheck.xml.assembly;
 
-import java.io.File;
-import org.junit.Assert;
-
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.owasp.dependencycheck.BaseTest;
+
+import java.io.File;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Test of the Grok Assembly parser.
  *
  * @author Jeremy Long
  */
-public class GrokParserTest extends BaseTest {
+class GrokParserTest extends BaseTest {
 
     @Test
-    public void testParseSuppressionRulesV1dot0() throws Exception {
+    void testParseSuppressionRulesV1dot0() throws Exception {
         File file = BaseTest.getResourceAsFile(this, "assembly/sample-grok-error.xml");
         GrokParser instance = new GrokParser();
         AssemblyData result = instance.parse(file);
-        Assert.assertEquals("Unable to process file", result.getError());
+        assertEquals("Unable to process file", result.getError());
     }
 }

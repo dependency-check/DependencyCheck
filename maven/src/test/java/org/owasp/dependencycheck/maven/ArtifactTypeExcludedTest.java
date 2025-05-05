@@ -17,20 +17,21 @@
  */
 package org.owasp.dependencycheck.maven;
 
-import org.junit.Test;
-import static org.junit.Assert.assertEquals;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  *
  * @author Jeremy Long
  */
-public class ArtifactTypeExcludedTest {
+class ArtifactTypeExcludedTest {
 
     /**
      * Test of passes method, of class ArtifactTypeExcluded.
      */
     @Test
-    public void testPasses() {
+    void testPasses() {
         String artifactType = null;
         ArtifactTypeExcluded instance = new ArtifactTypeExcluded(null);
         boolean expResult = false;

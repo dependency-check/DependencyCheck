@@ -17,22 +17,23 @@
  */
 package org.owasp.dependencycheck.analyzer;
 
-import org.junit.Test;
-import static org.junit.Assert.*;
+import org.junit.jupiter.api.Test;
 import org.owasp.dependencycheck.BaseDBTestCase;
 import org.owasp.dependencycheck.utils.Settings;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  *
  * @author jeremy long
  */
-public class NpmCPEAnalyzerTest extends BaseDBTestCase {
+class NpmCPEAnalyzerTest extends BaseDBTestCase {
 
     /**
      * Test of getName method, of class CPEAnalyzer.
      */
     @Test
-    public void testGetName() {
+    void testGetName() {
         NpmCPEAnalyzer instance = new NpmCPEAnalyzer();
         String expResult = "NPM CPE Analyzer";
         String result = instance.getName();
@@ -43,7 +44,7 @@ public class NpmCPEAnalyzerTest extends BaseDBTestCase {
      * Test of getAnalyzerEnabledSettingKey method, of class CPEAnalyzer.
      */
     @Test
-    public void testGetAnalyzerEnabledSettingKey() {
+    void testGetAnalyzerEnabledSettingKey() {
         NpmCPEAnalyzer instance = new NpmCPEAnalyzer();
         String expResult = Settings.KEYS.ANALYZER_NPM_CPE_ENABLED;
         String result = instance.getAnalyzerEnabledSettingKey();

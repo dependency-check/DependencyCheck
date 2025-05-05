@@ -17,49 +17,56 @@
  */
 package org.owasp.dependencycheck.utils;
 
-import java.io.File;
-import java.io.FilenameFilter;
 import org.apache.commons.io.filefilter.NameFileFilter;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.owasp.dependencycheck.BaseTest;
 import org.owasp.dependencycheck.Engine;
+
+import java.io.File;
+import java.io.FilenameFilter;
+
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
  *
  * @author Jeremy Long
  */
-public class ExtractionUtilTest extends BaseTest {
+class ExtractionUtilTest extends BaseTest {
 
     /**
      * Test of extractFiles method, of class ExtractionUtil.
      */
-    @Test(expected = org.owasp.dependencycheck.utils.ExtractionException.class)
-    public void testExtractFiles_File_File() throws Exception {
+    @Test
+    void testExtractFiles_File_File() throws Exception {
         File destination = getSettings().getTempDirectory();
         File archive = BaseTest.getResourceAsFile(this, "evil.zip");
-        ExtractionUtil.extractFiles(archive, destination);
+        assertThrows(org.owasp.dependencycheck.utils.ExtractionException.class, () ->
+            ExtractionUtil.extractFiles(archive, destination));
     }
 
     /**
      * Test of extractFiles method, of class ExtractionUtil.
      */
-    @Test(expected = org.owasp.dependencycheck.utils.ExtractionException.class)
-    public void testExtractFiles_3args() throws Exception {
+    @Test
+    void testExtractFiles_3args() throws Exception {
         File destination = getSettings().getTempDirectory();
         File archive = BaseTest.getResourceAsFile(this, "evil.zip");
         Engine engine = null;
-        ExtractionUtil.extractFiles(archive, destination, engine);
+        assertThrows(org.owasp.dependencycheck.utils.ExtractionException.class, () ->
+            ExtractionUtil.extractFiles(archive, destination, engine));
     }
 
     /**
      * Test of extractFilesUsingFilter method, of class ExtractionUtil.
      */
-    @Test(expected = org.owasp.dependencycheck.utils.ExtractionException.class)
-    public void testExtractFilesUsingFilter() throws Exception {
+    @Test
+    void testExtractFilesUsingFilter() throws Exception {
         File destination = getSettings().getTempDirectory();
         File archive = BaseTest.getResourceAsFile(this, "evil.zip");
-        ExtractionUtil.extractFiles(archive, destination);
+        assertThrows(org.owasp.dependencycheck.utils.ExtractionException.class, () ->
+            ExtractionUtil.extractFiles(archive, destination));
         FilenameFilter filter = new NameFileFilter("evil.txt");
-        ExtractionUtil.extractFilesUsingFilter(archive, destination, filter);
+        assertThrows(org.owasp.dependencycheck.utils.ExtractionException.class, () ->
+            ExtractionUtil.extractFilesUsingFilter(archive, destination, filter));
     }
 }

@@ -17,23 +17,23 @@
  */
 package org.owasp.dependencycheck.data.cwe;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.owasp.dependencycheck.BaseTest;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 /**
  *
  * @author Jeremy Long
  */
-public class CweDBTest extends BaseTest {
+class CweDBTest extends BaseTest {
 
     /**
      * Test of getName method, of class CweDB.
      */
     @Test
-    public void testGetName() {
+    void testGetName() {
         String cweId = "CWE-16";
         String expResult = "Configuration";
         String result = CweDB.getName(cweId);
@@ -48,7 +48,7 @@ public class CweDBTest extends BaseTest {
      * Test of getFullName method, of class CweDB.
      */
     @Test
-    public void testGetFullName() {
+    void testGetFullName() {
         String cweId = "CWE-16";
         String expResult = "CWE-16 Configuration";
         String result = CweDB.getFullName(cweId);

@@ -17,28 +17,30 @@
  */
 package org.owasp.dependencycheck.analyzer;
 
-import java.io.File;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.owasp.dependencycheck.BaseDBTestCase;
 import org.owasp.dependencycheck.BaseTest;
 import org.owasp.dependencycheck.Engine;
 import org.owasp.dependencycheck.dependency.Dependency;
 import org.owasp.dependencycheck.utils.Settings;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+
+import java.io.File;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Testing the CPE suppression analyzer.
  *
  * @author Jeremy Long
  */
-public class CpeSuppressionAnalyzerIT extends BaseDBTestCase {
+class CpeSuppressionAnalyzerIT extends BaseDBTestCase {
 
     /**
      * Test of getName method, of class CpeSuppressionAnalyzer.
      */
     @Test
-    public void testGetName() {
+    void testGetName() {
         CpeSuppressionAnalyzer instance = new CpeSuppressionAnalyzer();
         instance.initialize(getSettings());
         String expResult = "Cpe Suppression Analyzer";
@@ -50,7 +52,7 @@ public class CpeSuppressionAnalyzerIT extends BaseDBTestCase {
      * Test of getAnalysisPhase method, of class CpeSuppressionAnalyzer.
      */
     @Test
-    public void testGetAnalysisPhase() {
+    void testGetAnalysisPhase() {
         CpeSuppressionAnalyzer instance = new CpeSuppressionAnalyzer();
         instance.initialize(getSettings());
         AnalysisPhase expResult = AnalysisPhase.POST_IDENTIFIER_ANALYSIS;
@@ -62,7 +64,7 @@ public class CpeSuppressionAnalyzerIT extends BaseDBTestCase {
      * Test of analyze method, of class CpeSuppressionAnalyzer.
      */
     @Test
-    public void testAnalyze() throws Exception {
+    void testAnalyze() throws Exception {
 
         File file = BaseTest.getResourceAsFile(this, "commons-fileupload-1.2.1.jar");
         File suppression = BaseTest.getResourceAsFile(this, "commons-fileupload-1.2.1.suppression.xml");

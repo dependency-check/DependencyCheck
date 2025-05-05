@@ -17,20 +17,21 @@
  */
 package org.owasp.dependencycheck.analyzer;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.owasp.dependencycheck.BaseDBTestCase;
 import org.owasp.dependencycheck.BaseTest;
 import org.owasp.dependencycheck.Engine;
+import org.owasp.dependencycheck.data.update.RetireJSDataSource;
 import org.owasp.dependencycheck.dependency.Dependency;
 import org.owasp.dependencycheck.utils.Settings;
+
 import java.io.File;
 import java.util.List;
-import static org.junit.Assert.*;
-import org.owasp.dependencycheck.BaseDBTestCase;
-import org.owasp.dependencycheck.data.update.RetireJSDataSource;
 
-public class RetireJsAnalyzerFiltersTest extends BaseDBTestCase {
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+class RetireJsAnalyzerFiltersTest extends BaseDBTestCase {
 
     /**
      * Test of filters method.
@@ -38,7 +39,7 @@ public class RetireJsAnalyzerFiltersTest extends BaseDBTestCase {
      * @throws Exception is thrown when an exception occurs.
      */
     @Test
-    public void testFilters() throws Exception {
+    void testFilters() throws Exception {
 
         String[] filter = {"jQuery JavaScript Library"};
         getSettings().setArrayIfNotEmpty(Settings.KEYS.ANALYZER_RETIREJS_FILTERS, filter);
@@ -63,7 +64,7 @@ public class RetireJsAnalyzerFiltersTest extends BaseDBTestCase {
             //remove non-vulnerable
             file = BaseTest.getResourceAsFile(this, "javascript/custom.js");
             scanned = engine.scan(file);
-            assertTrue(scanned.size() == 1);
+            assertEquals(1, scanned.size());
             assertEquals(1, engine.getDependencies().length);
             analyzer.analyze(scanned.get(0), engine);
             assertEquals(0, engine.getDependencies().length);
@@ -71,7 +72,7 @@ public class RetireJsAnalyzerFiltersTest extends BaseDBTestCase {
             //kept because it is does not match the filter and is vulnerable
             file = BaseTest.getResourceAsFile(this, "javascript/ember.js");
             scanned = engine.scan(file);
-            assertTrue(scanned.size() == 1);
+            assertEquals(1, scanned.size());
             assertEquals(1, engine.getDependencies().length);
             analyzer.analyze(scanned.get(0), engine);
             assertEquals(1, engine.getDependencies().length);

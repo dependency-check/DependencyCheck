@@ -17,9 +17,8 @@
  */
 package org.owasp.dependencycheck.analyzer;
 
-import org.junit.Before;
-import org.junit.Test;
-
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.owasp.dependencycheck.BaseTest;
 import org.owasp.dependencycheck.Engine;
 import org.owasp.dependencycheck.dependency.Dependency;
@@ -28,18 +27,18 @@ import org.owasp.dependencycheck.utils.Settings;
 
 import java.io.File;
 
-import static junit.framework.TestCase.assertTrue;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * @author Arjen Korevaar
  */
-public class LibmanAnalyzerTest extends BaseTest {
+class LibmanAnalyzerTest extends BaseTest {
 
     private Engine engine;
     private LibmanAnalyzer analyzer;
 
-    @Before
+    @BeforeEach
     @Override
     public void setUp() throws Exception {
         super.setUp();
@@ -54,7 +53,7 @@ public class LibmanAnalyzerTest extends BaseTest {
     }
 
     @Test
-    public void testGetAnalyzerName() {
+    void testGetAnalyzerName() {
         String expected = "Libman Analyzer";
         String actual = analyzer.getName();
 
@@ -62,14 +61,14 @@ public class LibmanAnalyzerTest extends BaseTest {
     }
 
     @Test
-    public void testSupportedFileNames() {
+    void testSupportedFileNames() {
         boolean condition = analyzer.accept(new File("libman.json"));
 
         assertTrue(condition);
     }
 
     @Test
-    public void testGetAnalyzerEnabledSettingKey() {
+    void testGetAnalyzerEnabledSettingKey() {
         String expected = Settings.KEYS.ANALYZER_LIBMAN_ENABLED;
         String actual = analyzer.getAnalyzerEnabledSettingKey();
 
@@ -77,7 +76,7 @@ public class LibmanAnalyzerTest extends BaseTest {
     }
 
     @Test
-    public void testLibmanAnalysis() throws Exception {
+    void testLibmanAnalysis() throws Exception {
         try (Engine engine = new Engine(getSettings())) {
             File file = BaseTest.getResourceAsFile(this, "libman/libman.json");
             Dependency dependency = new Dependency(file);
@@ -118,7 +117,7 @@ public class LibmanAnalyzerTest extends BaseTest {
                 }
             }
 
-            assertEquals("4 dependencies should be found", 4, count);
+            assertEquals(4, count, "4 dependencies should be found");
         }
     }
 }

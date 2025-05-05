@@ -17,27 +17,27 @@
  */
 package org.owasp.dependencycheck.analyzer;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.owasp.dependencycheck.BaseTest;
 import org.owasp.dependencycheck.analyzer.exception.AnalysisException;
 import org.owasp.dependencycheck.dependency.Dependency;
+import org.owasp.dependencycheck.dependency.EvidenceType;
 
 import java.io.File;
 
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import org.owasp.dependencycheck.dependency.EvidenceType;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Unit tests for OpenSSLAnalyzerAnalyzer.
  *
  * @author Dale Visser
  */
-public class OpenSSLAnalyzerTest extends BaseTest {
+class OpenSSLAnalyzerTest extends BaseTest {
 
     /**
      * The package analyzer to test.
@@ -49,7 +49,7 @@ public class OpenSSLAnalyzerTest extends BaseTest {
      *
      * @throws Exception if there is a problem
      */
-    @Before
+    @BeforeEach
     @Override
     public void setUp() throws Exception {
         super.setUp();
@@ -64,7 +64,7 @@ public class OpenSSLAnalyzerTest extends BaseTest {
      *
      * @throws Exception if there is a problem
      */
-    @After
+    @AfterEach
     @Override
     public void tearDown() throws Exception {
         analyzer.close();
@@ -75,21 +75,21 @@ public class OpenSSLAnalyzerTest extends BaseTest {
      * Test of getName method, of class OpenSSLAnalyzer.
      */
     @Test
-    public void testGetName() {
-        assertEquals("Analyzer name wrong.", "OpenSSL Source Analyzer", analyzer.getName());
+    void testGetName() {
+        assertEquals("OpenSSL Source Analyzer", analyzer.getName(), "Analyzer name wrong.");
     }
 
     /**
      * Test of supportsExtension method, of class PythonPackageAnalyzer.
      */
     @Test
-    public void testAccept() {
-        assertTrue("Should support files named \"opensslv.h\".",
-                analyzer.accept(new File("opensslv.h")));
+    void testAccept() {
+        assertTrue(analyzer.accept(new File("opensslv.h")),
+                "Should support files named \"opensslv.h\".");
     }
 
     @Test
-    public void testVersionConstantExamples() {
+    void testVersionConstantExamples() {
         final long[] constants = {0x1000203fL, 0x00903000L, 0x00903001L, 0x00903002L, 0x0090300fL, 0x0090301fL, 0x0090400fL, 0x102031afL};
         final String[] versions = {"1.0.2c",
             "0.9.3-dev",
@@ -106,7 +106,7 @@ public class OpenSSLAnalyzerTest extends BaseTest {
     }
 
     @Test
-    public void testOpenSSLVersionHeaderFile() throws AnalysisException {
+    void testOpenSSLVersionHeaderFile() throws AnalysisException {
         final Dependency result = new Dependency(BaseTest.getResourceAsFile(
                 this,
                 "openssl/opensslv.h"));

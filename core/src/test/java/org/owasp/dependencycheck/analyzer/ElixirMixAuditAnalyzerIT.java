@@ -1,25 +1,32 @@
 package org.owasp.dependencycheck.analyzer;
 
-import org.junit.After;
-import org.junit.Assume;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.owasp.dependencycheck.BaseDBTestCase;
 import org.owasp.dependencycheck.BaseTest;
 import org.owasp.dependencycheck.Engine;
 import org.owasp.dependencycheck.analyzer.exception.AnalysisException;
 import org.owasp.dependencycheck.data.nvdcve.DatabaseException;
-import org.owasp.dependencycheck.dependency.*;
+import org.owasp.dependencycheck.dependency.Dependency;
+import org.owasp.dependencycheck.dependency.Evidence;
+import org.owasp.dependencycheck.dependency.EvidenceType;
+import org.owasp.dependencycheck.dependency.Vulnerability;
+import org.owasp.dependencycheck.dependency.VulnerableSoftware;
 import org.owasp.dependencycheck.exception.ExceptionCollection;
 import org.owasp.dependencycheck.exception.InitializationException;
 import org.owasp.dependencycheck.utils.Settings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
-public class ElixirMixAuditAnalyzerIT extends BaseDBTestCase {
+class ElixirMixAuditAnalyzerIT extends BaseDBTestCase {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ElixirMixAuditAnalyzerIT.class);
 
@@ -31,7 +38,7 @@ public class ElixirMixAuditAnalyzerIT extends BaseDBTestCase {
      *
      * @throws Exception thrown if there is a problem
      */
-    @Before
+    @BeforeEach
     @Override
     public void setUp() throws Exception {
         super.setUp();
@@ -48,7 +55,7 @@ public class ElixirMixAuditAnalyzerIT extends BaseDBTestCase {
      *
      * @throws Exception thrown if there is a problem
      */
-    @After
+    @AfterEach
     @Override
     public void tearDown() throws Exception {
         if (analyzer != null) {
@@ -62,10 +69,9 @@ public class ElixirMixAuditAnalyzerIT extends BaseDBTestCase {
     /**
      * Test Elixir MixAudit analysis.
      *
-     * @throws AnalysisException is thrown when an exception occurs.
      */
     @Test
-    public void testAnalysis() throws AnalysisException, DatabaseException {
+    void testAnalysis() throws DatabaseException {
         try (Engine engine = new Engine(getSettings())) {
             engine.openDatabase();
             analyzer.prepare(engine);
@@ -74,7 +80,7 @@ public class ElixirMixAuditAnalyzerIT extends BaseDBTestCase {
             analyzer.analyze(result, engine);
 
             final Dependency[] dependencies = engine.getDependencies();
-            assertEquals("should be one result exactly", 1, dependencies.length);
+            assertEquals(1, dependencies.length, "should be one result exactly");
 
             Dependency d = dependencies[0];
             assertTrue(d.isVirtual());
@@ -91,7 +97,7 @@ public class ElixirMixAuditAnalyzerIT extends BaseDBTestCase {
             assertEquals("1.3.4", versionEvidence.getValue());
 
             assertTrue(d.getFilePath().endsWith(resource));
-            assertTrue(d.getFileName().equals("mix.lock"));
+            assertEquals("mix.lock", d.getFileName());
 
             Vulnerability v = d.getVulnerabilities().iterator().next();
             assertEquals("2018-1000883", v.getName());
@@ -103,7 +109,7 @@ public class ElixirMixAuditAnalyzerIT extends BaseDBTestCase {
 
         } catch (InitializationException | DatabaseException | AnalysisException e) {
             LOGGER.warn("Exception setting up ElixirAuditAnalyzer. Make sure Elixir and the mix_audit escript is installed. You may also need to set property \"analyzer.mix.audit.path\".");
-            Assume.assumeNoException("Exception setting up ElixirMixAuditAnalyzer; mix_audit may not be installed, or property \"analyzer.mix.audit.path\" may not be set.", e);
+            assumeTrue(false, "Exception setting up ElixirMixAuditAnalyzer; mix_audit may not be installed, or property \"analyzer.mix.audit.path\" may not be set: " + e);
         }
     }
 
@@ -111,10 +117,9 @@ public class ElixirMixAuditAnalyzerIT extends BaseDBTestCase {
     /**
      * Test when mix_audit is not available on the system or wrongly configured.
      *
-     * @throws AnalysisException is thrown when an exception occurs.
      */
     @Test
-    public void testInvalidMixAuditExecutable() throws AnalysisException, DatabaseException {
+    void testInvalidMixAuditExecutable() throws DatabaseException {
 
         String path = BaseTest.getResourceAsFile(this, "elixir/invalid_executable").getAbsolutePath();
         getSettings().setString(Settings.KEYS.ANALYZER_MIX_AUDIT_PATH, path);
@@ -133,11 +138,10 @@ public class ElixirMixAuditAnalyzerIT extends BaseDBTestCase {
     /**
      * Test Mix dependencies and their paths.
      *
-     * @throws AnalysisException is thrown when an exception occurs.
      * @throws DatabaseException thrown when an exception occurs
      */
     @Test
-    public void testDependenciesPath() throws AnalysisException, DatabaseException {
+    void testDependenciesPath() throws DatabaseException {
         try (Engine engine = new Engine(getSettings())) {
             try {
                 engine.scan(BaseTest.getResourceAsFile(this, "elixir/mix.lock"));
@@ -146,12 +150,12 @@ public class ElixirMixAuditAnalyzerIT extends BaseDBTestCase {
                 LOGGER.error("NPE", ex);
                 fail(ex.getMessage());
             } catch (ExceptionCollection ex) {
-                Assume.assumeNoException("Exception setting up ElixirMixAuditAnalyzer; mix_audit may not be installed, or property \"analyzer.mix.audit.path\" may not be set.", ex);
+                assumeTrue(false, "Exception setting up ElixirMixAuditAnalyzer; mix_audit may not be installed, or property \"analyzer.mix.audit.path\" may not be set: "+ ex);
                 return;
             }
             Dependency[] dependencies = engine.getDependencies();
             LOGGER.info("{} dependencies found.", dependencies.length);
-            assertEquals("should find 0 (vulnerable) dependencies", 0, dependencies.length);
+            assertEquals(0, dependencies.length, "should find 0 (vulnerable) dependencies");
         }
     }
 }

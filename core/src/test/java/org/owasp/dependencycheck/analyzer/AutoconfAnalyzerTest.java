@@ -17,20 +17,20 @@
  */
 package org.owasp.dependencycheck.analyzer;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.owasp.dependencycheck.BaseTest;
 import org.owasp.dependencycheck.analyzer.exception.AnalysisException;
+import org.owasp.dependencycheck.dependency.Confidence;
 import org.owasp.dependencycheck.dependency.Dependency;
+import org.owasp.dependencycheck.dependency.Evidence;
+import org.owasp.dependencycheck.dependency.EvidenceType;
 
 import java.io.File;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import org.owasp.dependencycheck.dependency.Confidence;
-import org.owasp.dependencycheck.dependency.Evidence;
-import org.owasp.dependencycheck.dependency.EvidenceType;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Unit tests for AutoconfAnalyzer. The test resources under autoconf/ were
@@ -43,7 +43,7 @@ import org.owasp.dependencycheck.dependency.EvidenceType;
  * @see <a href="https://gnu.org/software/binutils/">GNU Binutils</a>
  * @see <a href="https://gnu.org/software/ghostscript/">GNU Ghostscript</a>
  */
-public class AutoconfAnalyzerTest extends BaseTest {
+class AutoconfAnalyzerTest extends BaseTest {
 
     /**
      * The analyzer to test.
@@ -55,7 +55,7 @@ public class AutoconfAnalyzerTest extends BaseTest {
      *
      * @throws Exception thrown if there is a problem
      */
-    @Before
+    @BeforeEach
     @Override
     public void setUp() throws Exception {
         super.setUp();
@@ -70,7 +70,7 @@ public class AutoconfAnalyzerTest extends BaseTest {
      *
      * @throws Exception thrown if there is a problem
      */
-    @After
+    @AfterEach
     @Override
     public void tearDown() throws Exception {
         analyzer.close();
@@ -84,7 +84,7 @@ public class AutoconfAnalyzerTest extends BaseTest {
      * @throws AnalysisException is thrown when an exception occurs.
      */
     @Test
-    public void testAnalyzeConfigureAC1() throws AnalysisException {
+    void testAnalyzeConfigureAC1() throws AnalysisException {
         final Dependency result = new Dependency(BaseTest.getResourceAsFile(
                 this, "autoconf/ghostscript/configure.ac"));
         analyzer.analyze(result, null);
@@ -100,7 +100,7 @@ public class AutoconfAnalyzerTest extends BaseTest {
      * @throws AnalysisException is thrown when an exception occurs.
      */
     @Test
-    public void testAnalyzeConfigureAC2() throws AnalysisException {
+    void testAnalyzeConfigureAC2() throws AnalysisException {
         final Dependency result = new Dependency(BaseTest.getResourceAsFile(
                 this, "autoconf/readable-code/configure.ac"));
         analyzer.analyze(result, null);
@@ -117,7 +117,7 @@ public class AutoconfAnalyzerTest extends BaseTest {
      * @throws AnalysisException is thrown when an exception occurs.
      */
     @Test
-    public void testAnalyzeConfigureScript() throws AnalysisException {
+    void testAnalyzeConfigureScript() throws AnalysisException {
         final Dependency result = new Dependency(BaseTest.getResourceAsFile(
                 this, "autoconf/binutils/configure"));
         analyzer.analyze(result, null);
@@ -133,7 +133,7 @@ public class AutoconfAnalyzerTest extends BaseTest {
      * @throws AnalysisException is thrown when an exception occurs.
      */
     @Test
-    public void testAnalyzeReadableConfigureScript() throws AnalysisException {
+    void testAnalyzeReadableConfigureScript() throws AnalysisException {
         final Dependency result = new Dependency(BaseTest.getResourceAsFile(
                 this, "autoconf/readable-code/configure"));
         analyzer.analyze(result, null);
@@ -148,21 +148,22 @@ public class AutoconfAnalyzerTest extends BaseTest {
      * Test of getName method, of {@link AutoconfAnalyzer}.
      */
     @Test
-    public void testGetName() {
-        assertEquals("Analyzer name wrong.", "Autoconf Analyzer",
-                analyzer.getName());
+    void testGetName() {
+        assertEquals("Autoconf Analyzer",
+                analyzer.getName(),
+                "Analyzer name wrong.");
     }
 
     /**
      * Test of {@link AutoconfAnalyzer#accept(File)}.
      */
     @Test
-    public void testSupportsFileExtension() {
-        assertTrue("Should support \"ac\" extension.",
-                analyzer.accept(new File("configure.ac")));
-        assertTrue("Should support \"in\" extension.",
-                analyzer.accept(new File("configure.in")));
-        assertTrue("Should support \"configure\" extension.",
-                analyzer.accept(new File("configure")));
+    void testSupportsFileExtension() {
+        assertTrue(analyzer.accept(new File("configure.ac")),
+                "Should support \"ac\" extension.");
+        assertTrue(analyzer.accept(new File("configure.in")),
+                "Should support \"in\" extension.");
+        assertTrue(analyzer.accept(new File("configure")),
+                "Should support \"configure\" extension.");
     }
 }

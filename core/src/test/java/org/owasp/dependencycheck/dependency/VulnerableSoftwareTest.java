@@ -17,20 +17,22 @@
  */
 package org.owasp.dependencycheck.dependency;
 
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertFalse;
-
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.owasp.dependencycheck.BaseTest;
 import us.springett.parsers.cpe.exceptions.CpeValidationException;
 import us.springett.parsers.cpe.values.LogicalValue;
 import us.springett.parsers.cpe.values.Part;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 /**
  *
  * @author Jeremy Long
  */
-public class VulnerableSoftwareTest extends BaseTest {
+class VulnerableSoftwareTest extends BaseTest {
 
     /**
      * Test of equals method, of class VulnerableSoftware.
@@ -38,19 +40,19 @@ public class VulnerableSoftwareTest extends BaseTest {
      * @throws CpeValidationException
      */
     @Test
-    public void testEquals() throws CpeValidationException {
+    void testEquals() throws CpeValidationException {
         VulnerableSoftwareBuilder builder = new VulnerableSoftwareBuilder();
         VulnerableSoftware obj = null;
         VulnerableSoftware instance = builder.part(Part.APPLICATION).vendor("mortbay").product("jetty").version("6.1").build();
-        assertFalse(instance.equals(obj));
+        assertNotEquals(obj, instance);
 
         obj = builder.part(Part.APPLICATION).vendor("mortbay").product("jetty").version("6.1.0").build();
         instance = builder.part(Part.APPLICATION).vendor("mortbay").product("jetty").version("6.1").build();
-        assertFalse(instance.equals(obj));
+        assertNotEquals(instance, obj);
 
         obj = builder.part(Part.APPLICATION).vendor("mortbay").product("jetty").version("6.1.0").build();
         instance = builder.part(Part.APPLICATION).vendor("mortbay").product("jetty").version("6.1.0").build();
-        assertTrue(instance.equals(obj));
+        assertEquals(instance, obj);
     }
 
     /**
@@ -59,7 +61,7 @@ public class VulnerableSoftwareTest extends BaseTest {
      * @throws CpeValidationException
      */
     @Test
-    public void testCompareTo() throws CpeValidationException {
+    void testCompareTo() throws CpeValidationException {
         VulnerableSoftwareBuilder builder = new VulnerableSoftwareBuilder();
         VulnerableSoftware obj = builder.part(Part.APPLICATION).vendor("mortbay").product("jetty").version("6.1.0").build();
         VulnerableSoftware instance = builder.part(Part.APPLICATION).vendor("mortbay").product("jetty").version("6.1").build();
@@ -73,7 +75,7 @@ public class VulnerableSoftwareTest extends BaseTest {
     }
 
     @Test
-    public void testCompareVersionRange() throws CpeValidationException {
+    void testCompareVersionRange() throws CpeValidationException {
         VulnerableSoftwareBuilder builder = new VulnerableSoftwareBuilder();
         VulnerableSoftware instance = builder.version("2.0.0").build();
         assertTrue(instance.compareVersionRange("2.0.0"));
@@ -103,7 +105,7 @@ public class VulnerableSoftwareTest extends BaseTest {
     }
 
     @Test
-    public void testcompareUpdateAttributes() throws CpeValidationException {
+    void testcompareUpdateAttributes() {
 
         assertTrue(VulnerableSoftware.compareUpdateAttributes("update1", "u1"));
         assertTrue(VulnerableSoftware.compareUpdateAttributes("u1", "update1"));

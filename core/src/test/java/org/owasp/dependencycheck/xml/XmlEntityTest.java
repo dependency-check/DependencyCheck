@@ -17,20 +17,21 @@
  */
 package org.owasp.dependencycheck.xml;
 
-import org.junit.Test;
-import static org.junit.Assert.*;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  *
  * @author Jeremy Long
  */
-public class XmlEntityTest {
+class XmlEntityTest {
 
     /**
      * Test of fromNamedReference method, of class XmlEntity.
      */
     @Test
-    public void testFromNamedReference() {
+    void testFromNamedReference() {
         CharSequence s = null;
         String expResult = null;
         String result = XmlEntity.fromNamedReference(s);

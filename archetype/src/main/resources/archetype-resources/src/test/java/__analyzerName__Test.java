@@ -13,43 +13,45 @@
  */
 package ${package};
 
-import java.io.File;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.AfterAll;
-import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.owasp.dependencycheck.Engine;
 import org.owasp.dependencycheck.analyzer.AnalysisPhase;
 import org.owasp.dependencycheck.dependency.Dependency;
 import org.owasp.dependencycheck.utils.Settings;
 
+import java.io.File;
+
+import static org.junit.jupiter.api.Assertions.*;
+
 /**
  * Test cases for ${analyzerName}
  */
-public class ${analyzerName}Test {
-    
+class ${analyzerName}Test {
+
     Settings settings = null;
-	
-    public ${analyzerName}Test() {
+
+    ${analyzerName}Test() {
     }
-    
+
     @BeforeAll
-    public static void setUpClass() {
+    static void setUpClass() {
     }
-    
+
     @AfterAll
-    public static void tearDownClass() {
+    static void tearDownClass() {
     }
-    
+
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         settings = new Settings();
     }
 
     @AfterEach
-    public void tearDown() {
+    void tearDown() {
         settings.cleanup();
     }
 
@@ -57,7 +59,7 @@ public class ${analyzerName}Test {
      * Test of accept method, of class ${analyzerName}.
      */
     @Test
-    public void testAccept() {
+    void testAccept() {
         File pathname = new File("test.file");
         ${analyzerName} instance = new ${analyzerName}();
         boolean expResult = true;
@@ -69,13 +71,13 @@ public class ${analyzerName}Test {
      * Test of analyze method, of class ${analyzerName}.
      */
     @Test
-    public void testAnalyze() throws Exception {
+    void testAnalyze() throws Exception {
         //The engine is generally null for most analyzer test cases but can be instantiated if needed.
         Engine engine = null;
         ${analyzerName} instance = new ${analyzerName}();
         instance.initialize(settings);
         instance.prepare(engine);
-		
+
         File file = new File(${analyzerName}.class.getClassLoader().getResource("test.file").toURI().getPath());
         Dependency dependency = new Dependency(file);
 
@@ -87,7 +89,7 @@ public class ${analyzerName}Test {
      * Test of getName method, of class ${analyzerName}.
      */
     @Test
-    public void testGetName() {
+    void testGetName() {
         ${analyzerName} instance = new ${analyzerName}();
         String expResult = "${analyzerName}";
         String result = instance.getName();
@@ -98,7 +100,7 @@ public class ${analyzerName}Test {
      * Test of getAnalysisPhase method, of class ${analyzerName}.
      */
     @Test
-    public void testGetAnalysisPhase() {
+    void testGetAnalysisPhase() {
         ${analyzerName} instance = new ${analyzerName}();
         AnalysisPhase expResult = AnalysisPhase.INFORMATION_COLLECTION;
         AnalysisPhase result = instance.getAnalysisPhase();
@@ -109,7 +111,7 @@ public class ${analyzerName}Test {
      * Test of initialize method, of class ${analyzerName}.
      */
     @Test
-    public void testInitialize() throws Exception {
+    void testInitialize() throws Exception {
         ${analyzerName} instance = new ${analyzerName}();
         instance.initialize(settings);
     }
@@ -118,7 +120,7 @@ public class ${analyzerName}Test {
      * Test of close method, of class ${analyzerName}.
      */
     @Test
-    public void testClose() throws Exception {
+    void testClose() throws Exception {
         ${analyzerName} instance = new ${analyzerName}();
         instance.close();
     }
@@ -127,7 +129,7 @@ public class ${analyzerName}Test {
      * Test of supportsParallelProcessing method, of class ${analyzerName}.
      */
     @Test
-    public void testSupportsParallelProcessing() {
+    void testSupportsParallelProcessing() {
         ${analyzerName} instance = new ${analyzerName}();
         boolean expResult = true;
         boolean result = instance.supportsParallelProcessing();
@@ -138,7 +140,7 @@ public class ${analyzerName}Test {
      * Test of isEnabled method, of class ${analyzerName}.
      */
     @Test
-    public void testIsEnabled() {
+    void testIsEnabled() {
         ${analyzerName} instance = new ${analyzerName}();
         boolean expResult = true;
         boolean result = instance.isEnabled();

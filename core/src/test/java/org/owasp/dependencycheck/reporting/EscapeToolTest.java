@@ -17,26 +17,28 @@
  */
 package org.owasp.dependencycheck.reporting;
 
-import java.util.HashSet;
-import java.util.Set;
-import org.junit.Test;
-import static org.junit.Assert.*;
-
+import org.junit.jupiter.api.Test;
 import org.owasp.dependencycheck.dependency.Confidence;
 import org.owasp.dependencycheck.dependency.naming.GenericIdentifier;
 import org.owasp.dependencycheck.dependency.naming.Identifier;
 
+import java.util.HashSet;
+import java.util.Set;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 /**
  *
-* @author Jeremy Long
+ * @author Jeremy Long
  */
-public class EscapeToolTest {
+class EscapeToolTest {
 
     /**
      * Test of url method, of class EscapeTool.
      */
     @Test
-    public void testUrl() {
+    void testUrl() {
         String text = null;
         EscapeTool instance = new EscapeTool();
         String expResult = null;
@@ -58,7 +60,7 @@ public class EscapeToolTest {
      * Test of html method, of class EscapeTool.
      */
     @Test
-    public void testHtml() {
+    void testHtml() {
         EscapeTool instance = new EscapeTool();
         String text = null;
         String expResult = null;
@@ -80,7 +82,7 @@ public class EscapeToolTest {
      * Test of xml method, of class EscapeTool.
      */
     @Test
-    public void testXml() {
+    void testXml() {
         EscapeTool instance = new EscapeTool();
         String text = null;
         String expResult = null;
@@ -102,7 +104,7 @@ public class EscapeToolTest {
      * Test of json method, of class EscapeTool.
      */
     @Test
-    public void testJson() {
+    void testJson() {
         String text = null;
         EscapeTool instance = new EscapeTool();
         String expResult = null;
@@ -124,7 +126,7 @@ public class EscapeToolTest {
      * Test of csv method, of class EscapeTool.
      */
     @Test
-    public void testCsv() {
+    void testCsv() {
         String text = null;
         EscapeTool instance = new EscapeTool();
         String expResult = "\"\"";
@@ -146,7 +148,7 @@ public class EscapeToolTest {
      * Test of csvIdentifiers method, of class EscapeTool.
      */
     @Test
-    public void testCsvIdentifiers() {
+    void testCsvIdentifiers() {
         EscapeTool instance = new EscapeTool();
         Set<Identifier> ids = null;
         String expResult = "\"\"";
@@ -177,7 +179,7 @@ public class EscapeToolTest {
      * Test of csvCpeConfidence method, of class EscapeTool.
      */
     @Test
-    public void testCsvCpeConfidence() {
+    void testCsvCpeConfidence() {
         EscapeTool instance = new EscapeTool();
         Set<Identifier> ids = null;
         String expResult = "\"\"";

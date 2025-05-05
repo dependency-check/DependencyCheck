@@ -17,6 +17,8 @@
  */
 package org.owasp.dependencycheck.utils;
 
+import org.junit.jupiter.api.Test;
+
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -24,21 +26,21 @@ import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.List;
-import static org.junit.Assert.fail;
-import org.junit.Test;
-import static org.junit.Assert.fail;
+
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  *
  * @author jeremy
  */
-public class ExpectedObjectInputStreamTest {
+class ExpectedObjectInputStreamTest {
 
     /**
      * Test of resolveClass method, of class ExpectedObjectInputStream.
      */
     @Test
-    public void testResolveClass() {
+    void testResolveClass() {
         List<SimplePojo> data = new ArrayList<>();
         data.add(new SimplePojo());
         try (ByteArrayOutputStream mem = new ByteArrayOutputStream();
@@ -57,11 +59,10 @@ public class ExpectedObjectInputStreamTest {
     /**
      * Test of resolveClass method, of class ExpectedObjectInputStream.
      */
-    @Test(expected = java.io.InvalidClassException.class)
-    public void testResolveClassException() throws Exception {
+    @Test
+    void testResolveClassException() throws Exception {
         List<SimplePojo> data = new ArrayList<>();
         data.add(new SimplePojo());
-
         ByteArrayOutputStream mem = new ByteArrayOutputStream();
         byte[] buf;
         try (ObjectOutputStream out = new ObjectOutputStream(new BufferedOutputStream(mem))) {
@@ -70,8 +71,7 @@ public class ExpectedObjectInputStreamTest {
             buf = mem.toByteArray();
         }
         ByteArrayInputStream in = new ByteArrayInputStream(buf);
-
         ExpectedObjectInputStream instance = new ExpectedObjectInputStream(in, "java.util.ArrayList", "org.owasp.dependencycheck.utils.SimplePojo");
-        instance.readObject();
+        assertThrows(java.io.InvalidClassException.class, instance::readObject);
     }
 }

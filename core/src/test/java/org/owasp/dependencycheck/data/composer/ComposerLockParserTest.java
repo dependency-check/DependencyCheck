@@ -17,24 +17,27 @@
  */
 package org.owasp.dependencycheck.data.composer;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.owasp.dependencycheck.BaseTest;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.nio.charset.Charset;
 
-import static org.junit.Assert.*;
-import org.owasp.dependencycheck.BaseTest;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Created by colezlaw on 9/5/15.
  */
-public class ComposerLockParserTest extends BaseTest  {
+class ComposerLockParserTest extends BaseTest {
 
     private InputStream inputStream;
 
-    @Before
+    @BeforeEach
     @Override
     public void setUp() throws Exception {
         super.setUp();
@@ -42,17 +45,17 @@ public class ComposerLockParserTest extends BaseTest  {
     }
 
     @Test
-    public void testValidComposerLock() {
+    void testValidComposerLock() {
         ComposerLockParser clp = new ComposerLockParser(inputStream, false);
         clp.process();
         assertEquals(30, clp.getDependencies().size());
         assertTrue(clp.getDependencies().contains(new ComposerDependency("symfony", "translation", "2.7.3")));
         assertTrue(clp.getDependencies().contains(new ComposerDependency("vlucas", "phpdotenv", "1.1.1")));
     }
-    
-    
+
+
     @Test
-    public void testComposerLockSkipDev() {
+    void testComposerLockSkipDev() {
         ComposerLockParser clp = new ComposerLockParser(inputStream, true);
         clp.process();
         assertEquals(29, clp.getDependencies().size());
@@ -61,24 +64,24 @@ public class ComposerLockParserTest extends BaseTest  {
         assertFalse(clp.getDependencies().contains(new ComposerDependency("vlucas", "phpdotenv", "1.1.1")));
     }
 
-    @Test(expected = ComposerException.class)
-    public void testNotJSON() throws Exception {
+    @Test
+    void testNotJSON() {
         String input = "NOT VALID JSON";
         ComposerLockParser clp = new ComposerLockParser(new ByteArrayInputStream(input.getBytes(Charset.defaultCharset())), false);
-        clp.process();
+        assertThrows(ComposerException.class, clp::process);
     }
 
-    @Test(expected = ComposerException.class)
-    public void testNotComposer() throws Exception {
+    @Test
+    void testNotComposer() {
         String input = "[\"ham\",\"eggs\"]";
         ComposerLockParser clp = new ComposerLockParser(new ByteArrayInputStream(input.getBytes(Charset.defaultCharset())), false);
-        clp.process();
+        assertThrows(ComposerException.class, clp::process);
     }
 
-    @Test(expected = ComposerException.class)
-    public void testNotPackagesArray() throws Exception {
+    @Test
+    void testNotPackagesArray() {
         String input = "{\"packages\":\"eleventy\"}";
         ComposerLockParser clp = new ComposerLockParser(new ByteArrayInputStream(input.getBytes(Charset.defaultCharset())), false);
-        clp.process();
+        assertThrows(ComposerException.class, clp::process);
     }
 }

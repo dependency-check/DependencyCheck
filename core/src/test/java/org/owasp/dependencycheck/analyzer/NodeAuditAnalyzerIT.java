@@ -1,23 +1,24 @@
 package org.owasp.dependencycheck.analyzer;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.owasp.dependencycheck.BaseTest;
+import org.owasp.dependencycheck.Engine;
 import org.owasp.dependencycheck.analyzer.exception.AnalysisException;
 import org.owasp.dependencycheck.dependency.Dependency;
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.*;
-import org.junit.Assume;
-import org.owasp.dependencycheck.Engine;
 import org.owasp.dependencycheck.dependency.EvidenceType;
 import org.owasp.dependencycheck.exception.InitializationException;
 import org.owasp.dependencycheck.utils.InvalidSettingException;
 import org.owasp.dependencycheck.utils.Settings;
 
-public class NodeAuditAnalyzerIT extends BaseTest {
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
+
+class NodeAuditAnalyzerIT extends BaseTest {
 
     @Test
-    public void testAnalyzePackage() throws AnalysisException, InitializationException, InvalidSettingException {
-        Assume.assumeThat(getSettings().getBoolean(Settings.KEYS.ANALYZER_NODE_AUDIT_ENABLED), is(true));
+    void testAnalyzePackage() throws AnalysisException, InitializationException, InvalidSettingException {
+        assumeTrue(getSettings().getBoolean(Settings.KEYS.ANALYZER_NODE_AUDIT_ENABLED));
         try (Engine engine = new Engine(getSettings())) {
             NodeAuditAnalyzer analyzer = new NodeAuditAnalyzer();
             analyzer.setFilesMatched(true);
@@ -26,7 +27,7 @@ public class NodeAuditAnalyzerIT extends BaseTest {
             final Dependency toScan = new Dependency(BaseTest.getResourceAsFile(this, "nodeaudit/package-lock.json"));
             analyzer.analyze(toScan, engine);
             boolean found = false;
-            assertTrue("More then 1 dependency should be identified", 1 < engine.getDependencies().length);
+            assertTrue(1 < engine.getDependencies().length, "More then 1 dependency should be identified");
             for (Dependency result : engine.getDependencies()) {
                 if ("package-lock.json?uglify-js".equals(result.getFileName())) {
                     found = true;
@@ -36,13 +37,13 @@ public class NodeAuditAnalyzerIT extends BaseTest {
                     assertTrue(result.isVirtual());
                 }
             }
-            assertTrue("Uglify was not found", found);
+            assertTrue(found, "Uglify was not found");
         }
     }
 
     @Test
-    public void testAnalyzeEmpty() throws AnalysisException, InitializationException, InvalidSettingException {
-        Assume.assumeThat(getSettings().getBoolean(Settings.KEYS.ANALYZER_NODE_AUDIT_ENABLED), is(true));
+    void testAnalyzeEmpty() throws AnalysisException, InitializationException, InvalidSettingException {
+        assumeTrue(getSettings().getBoolean(Settings.KEYS.ANALYZER_NODE_AUDIT_ENABLED));
         try (Engine engine = new Engine(getSettings())) {
             NodeAuditAnalyzer analyzer = new NodeAuditAnalyzer();
             analyzer.setFilesMatched(true);
@@ -58,8 +59,8 @@ public class NodeAuditAnalyzerIT extends BaseTest {
     }
 
     @Test
-    public void testAnalyzePackageJsonInNodeModulesDirectory() throws AnalysisException, InitializationException, InvalidSettingException {
-        Assume.assumeThat(getSettings().getBoolean(Settings.KEYS.ANALYZER_NODE_AUDIT_ENABLED), is(true));
+    void testAnalyzePackageJsonInNodeModulesDirectory() throws AnalysisException, InitializationException, InvalidSettingException {
+        assumeTrue(getSettings().getBoolean(Settings.KEYS.ANALYZER_NODE_AUDIT_ENABLED));
         try (Engine engine = new Engine(getSettings())) {
             NodeAuditAnalyzer analyzer = new NodeAuditAnalyzer();
             analyzer.setFilesMatched(true);
@@ -68,7 +69,7 @@ public class NodeAuditAnalyzerIT extends BaseTest {
             final Dependency toScan = new Dependency(BaseTest.getResourceAsFile(this, "nodejs/node_modules/dns-sync/package.json"));
             engine.addDependency(toScan);
             analyzer.analyze(toScan, engine);
-            assertEquals("No dependencies should exist", 0, engine.getDependencies().length);
+            assertEquals(0, engine.getDependencies().length, "No dependencies should exist");
         }
     }
 

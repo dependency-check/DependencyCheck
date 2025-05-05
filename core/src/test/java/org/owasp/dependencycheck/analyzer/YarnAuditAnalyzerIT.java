@@ -17,32 +17,32 @@
  */
 package org.owasp.dependencycheck.analyzer;
 
-import org.junit.Assume;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.owasp.dependencycheck.BaseTest;
 import org.owasp.dependencycheck.Engine;
 import org.owasp.dependencycheck.analyzer.exception.AnalysisException;
 import org.owasp.dependencycheck.dependency.Dependency;
 import org.owasp.dependencycheck.dependency.EvidenceType;
 import org.owasp.dependencycheck.exception.InitializationException;
-import org.owasp.dependencycheck.utils.InvalidSettingException;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
-public class YarnAuditAnalyzerIT extends BaseTest {
+class YarnAuditAnalyzerIT extends BaseTest {
 
     @Test
-    public void testAnalyzePackageYarnClassic() throws AnalysisException, InitializationException, InvalidSettingException {
+    void testAnalyzePackageYarnClassic() throws AnalysisException {
         testAnalyzePackageYarn("yarn/yarn-classic-audit/yarn.lock");
     }
 
     @Test
-    public void testAnalyzePackageYarnBerry() throws AnalysisException, InitializationException, InvalidSettingException {
+    void testAnalyzePackageYarnBerry() throws AnalysisException {
         testAnalyzePackageYarn("yarn/yarn-berry-audit/yarn.lock");
     }
 
     @Test
-    public void testAnalyzePackageYarnBerryNoVulnerability() throws AnalysisException, InitializationException, InvalidSettingException {
+    void testAnalyzePackageYarnBerryNoVulnerability() throws AnalysisException {
         //Assume.assumeThat(getSettings().getBoolean(Settings.KEYS.ANALYZER_YARN_AUDIT_ENABLED), is(true));
         try (Engine engine = new Engine(getSettings())) {
             var analyzer = new YarnAuditAnalyzer();
@@ -51,10 +51,10 @@ public class YarnAuditAnalyzerIT extends BaseTest {
             analyzer.prepare(engine);
             final Dependency toScan = new Dependency(BaseTest.getResourceAsFile(this, "yarn/yarn-berry-audit-no-vulnerability/yarn.lock"));
             analyzer.analyze(toScan, engine);
-            assertTrue("No dependency should be identified", engine.getDependencies().length == 0);
+            assertEquals(0, engine.getDependencies().length, "No dependency should be identified");
         } catch (InitializationException ex) {
             //yarn is not installed - skip the test case.
-            Assume.assumeNoException(ex);
+            assumeTrue(false, ex.toString());
         }
     }
 
@@ -68,20 +68,20 @@ public class YarnAuditAnalyzerIT extends BaseTest {
             final Dependency toScan = new Dependency(BaseTest.getResourceAsFile(this, yarnLockFile));
             analyzer.analyze(toScan, engine);
             boolean found = false;
-            assertTrue("More then 1 dependency should be identified", 1 < engine.getDependencies().length);
+            assertTrue(1 < engine.getDependencies().length, "More then 1 dependency should be identified");
             for (Dependency result : engine.getDependencies()) {
                 if ("yarn.lock?uglify-js".equals(result.getFileName())) {
                     found = true;
                     assertTrue(result.getEvidence(EvidenceType.VENDOR).toString().contains("uglify-js"));
                     assertTrue(result.getEvidence(EvidenceType.PRODUCT).toString().contains("uglify-js"));
-                    assertTrue("Unable to find version 2.4.24: " + result.getEvidence(EvidenceType.VERSION).toString(), result.getEvidence(EvidenceType.VERSION).toString().contains("2.4.24"));
+                    assertTrue(result.getEvidence(EvidenceType.VERSION).toString().contains("2.4.24"), "Unable to find version 2.4.24: " + result.getEvidence(EvidenceType.VERSION).toString());
                     assertTrue(result.isVirtual());
                 }
             }
-            assertTrue("Uglify was not found", found);
+            assertTrue(found, "Uglify was not found");
         } catch (InitializationException ex) {
             //yarn is not installed - skip the test case.
-            Assume.assumeNoException(ex);
+            assumeTrue(false, ex.toString());
         }
     }
 }

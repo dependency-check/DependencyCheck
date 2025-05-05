@@ -17,22 +17,26 @@
  */
 package org.owasp.dependencycheck.utils;
 
+import org.junit.jupiter.api.Test;
+
 import java.util.Arrays;
 import java.util.List;
-import org.junit.Test;
-import static org.junit.Assert.*;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  *
  * @author jeremy long
  */
-public class UrlStringUtilsTest {
+class UrlStringUtilsTest {
 
     /**
      * Test of containsUrl method, of class UrlStringUtils.
      */
     @Test
-    public void testContainsUrl() {
+    void testContainsUrl() {
         String text = "Test of https://github.com";
         assertTrue(UrlStringUtils.containsUrl(text));
         text = "Test of github.com";
@@ -43,7 +47,7 @@ public class UrlStringUtilsTest {
      * Test of isUrl method, of class UrlStringUtils.
      */
     @Test
-    public void testIsUrl() {
+    void testIsUrl() {
         String text = "https://github.com";
         assertTrue(UrlStringUtils.isUrl(text));
         text = "simple text";
@@ -54,17 +58,17 @@ public class UrlStringUtilsTest {
      * Test of extractImportantUrlData method, of class UrlStringUtils.
      */
     @Test
-    public void testExtractImportantUrlData() throws Exception {
+    void testExtractImportantUrlData() throws Exception {
         String text = "http://github.com/dependency-check/DependencyCheck/.gitignore";
         List<String> expResult = Arrays.asList("dependency-check", "DependencyCheck", "gitignore");
         List<String> result = UrlStringUtils.extractImportantUrlData(text);
         assertEquals(expResult, result);
-        
+
         text = "https://dependency-check.github.io/DependencyCheck/index.html";
         expResult = Arrays.asList("dependency-check", "DependencyCheck", "index");
         result = UrlStringUtils.extractImportantUrlData(text);
         assertEquals(expResult, result);
-        
+
         text = "http://example.com/dependency-check/DependencyCheck/something";
         expResult = Arrays.asList("example", "dependency-check", "DependencyCheck", "something");
         result = UrlStringUtils.extractImportantUrlData(text);

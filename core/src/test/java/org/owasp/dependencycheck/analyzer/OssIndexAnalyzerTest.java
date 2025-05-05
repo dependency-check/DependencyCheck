@@ -1,20 +1,6 @@
 package org.owasp.dependencycheck.analyzer;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-
-import java.net.SocketTimeoutException;
-
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.owasp.dependencycheck.BaseTest;
 import org.owasp.dependencycheck.Engine;
 import org.owasp.dependencycheck.analyzer.exception.AnalysisException;
@@ -23,16 +9,28 @@ import org.owasp.dependencycheck.dependency.Dependency;
 import org.owasp.dependencycheck.dependency.naming.Identifier;
 import org.owasp.dependencycheck.dependency.naming.PurlIdentifier;
 import org.owasp.dependencycheck.utils.Settings;
-
 import org.sonatype.goodies.packageurl.PackageUrl;
 import org.sonatype.ossindex.service.api.componentreport.ComponentReport;
 import org.sonatype.ossindex.service.client.OssindexClient;
 import org.sonatype.ossindex.service.client.transport.Transport;
 
-public class OssIndexAnalyzerTest extends BaseTest {
+import java.net.SocketTimeoutException;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+class OssIndexAnalyzerTest extends BaseTest {
 
     @Test
-    public void should_enrich_be_included_in_mutex_to_prevent_NPE()
+    void should_enrich_be_included_in_mutex_to_prevent_NPE()
             throws Exception {
 
         // Given
@@ -96,7 +94,7 @@ public class OssIndexAnalyzerTest extends BaseTest {
     }
 
     @Test
-    public void should_analyzeDependency_return_a_dedicated_error_message_when_403_response_from_sonatype() throws Exception {
+    void should_analyzeDependency_return_a_dedicated_error_message_when_403_response_from_sonatype() throws Exception {
         // Given
         OssIndexAnalyzer analyzer = new OssIndexAnalyzerThrowing403();
         analyzer.initialize(getSettings());
@@ -123,12 +121,12 @@ public class OssIndexAnalyzerTest extends BaseTest {
         analyzer.close();
     }
 
-    
+
     @Test
-    public void should_analyzeDependency_only_warn_when_transport_error_from_sonatype() throws Exception {
+    void should_analyzeDependency_only_warn_when_transport_error_from_sonatype() throws Exception {
         // Given
         OssIndexAnalyzer analyzer = new OssIndexAnalyzerThrowing502();
-        
+
         getSettings().setBoolean(Settings.KEYS.ANALYZER_OSSINDEX_WARN_ONLY_ON_REMOTE_ERRORS, true);
         analyzer.initialize(getSettings());
 
@@ -139,22 +137,20 @@ public class OssIndexAnalyzerTest extends BaseTest {
         dependency.addSoftwareIdentifier(identifier);
         Settings settings = getSettings();
         Engine engine = new Engine(settings);
-        engine.setDependencies(Collections.singletonList(dependency));
 
         // When
-        try {
-            analyzer.analyzeDependency(dependency, engine);
-        } catch (AnalysisException e) {
-            Assert.fail("Analysis exception thrown upon remote error although only a warning should have been logged");
+        try (engine) {
+            engine.setDependencies(Collections.singletonList(dependency));
+            assertDoesNotThrow(() -> analyzer.analyzeDependency(dependency, engine),
+                    "Analysis exception thrown upon remote error although only a warning should have been logged");
         } finally {
             analyzer.close();
-            engine.close();
         }
     }
 
 
     @Test
-    public void should_analyzeDependency_only_warn_when_socket_error_from_sonatype() throws Exception {
+    void should_analyzeDependency_only_warn_when_socket_error_from_sonatype() throws Exception {
         // Given
         OssIndexAnalyzer analyzer = new OssIndexAnalyzerThrowingSocketTimeout();
 
@@ -168,22 +164,20 @@ public class OssIndexAnalyzerTest extends BaseTest {
         dependency.addSoftwareIdentifier(identifier);
         Settings settings = getSettings();
         Engine engine = new Engine(settings);
-        engine.setDependencies(Collections.singletonList(dependency));
 
         // When
-        try {
-            analyzer.analyzeDependency(dependency, engine);
-        } catch (AnalysisException e) {
-            Assert.fail("Analysis exception thrown upon remote error although only a warning should have been logged");
+        try (engine) {
+            engine.setDependencies(Collections.singletonList(dependency));
+            assertDoesNotThrow(() -> analyzer.analyzeDependency(dependency, engine),
+                    "Analysis exception thrown upon remote error although only a warning should have been logged");
         } finally {
             analyzer.close();
-            engine.close();
         }
     }
 
 
     @Test
-    public void should_analyzeDependency_fail_when_socket_error_from_sonatype() throws Exception {
+    void should_analyzeDependency_fail_when_socket_error_from_sonatype() throws Exception {
         // Given
         OssIndexAnalyzer analyzer = new OssIndexAnalyzerThrowingSocketTimeout();
 
@@ -234,7 +228,7 @@ public class OssIndexAnalyzerTest extends BaseTest {
         }
 
         @Override
-        public void close() throws Exception {
+        public void close() {
 
         }
     }
@@ -259,7 +253,7 @@ public class OssIndexAnalyzerTest extends BaseTest {
         }
 
         @Override
-        public void close() throws Exception {
+        public void close() {
 
         }
     }
@@ -284,7 +278,7 @@ public class OssIndexAnalyzerTest extends BaseTest {
         }
 
         @Override
-        public void close() throws Exception {
+        public void close() {
 
         }
     }

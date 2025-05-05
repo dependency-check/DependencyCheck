@@ -17,16 +17,10 @@
  */
 package org.owasp.dependencycheck.analyzer;
 
-import java.io.File;
-import org.junit.After;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.owasp.dependencycheck.BaseTest;
-import org.owasp.dependencycheck.analyzer.exception.AnalysisException;
 import org.owasp.dependencycheck.analyzer.exception.UnexpectedAnalysisException;
 import org.owasp.dependencycheck.dependency.Confidence;
 import org.owasp.dependencycheck.dependency.Dependency;
@@ -35,13 +29,18 @@ import org.owasp.dependencycheck.dependency.EvidenceType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 /**
  * Tests for the PEAnalyzer.
  *
  * @author Jeremy Long
  *
  */
-public class PEAnalyzerTest extends BaseTest {
+class PEAnalyzerTest extends BaseTest {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PEAnalyzerTest.class);
 
@@ -54,7 +53,7 @@ public class PEAnalyzerTest extends BaseTest {
      *
      * @throws Exception if anything goes sideways
      */
-    @Before
+    @BeforeEach
     @Override
     public void setUp() throws Exception {
         super.setUp();
@@ -68,12 +67,12 @@ public class PEAnalyzerTest extends BaseTest {
      * Tests to make sure the name is correct.
      */
     @Test
-    public void testGetName() {
+    void testGetName() {
         assertEquals("PE Analyzer", analyzer.getName());
     }
 
     @Test
-    public void testAnalysis() throws Exception {
+    void testAnalysis() throws Exception {
         File f = BaseTest.getResourceAsFile(this, "log4net.dll");
 
         Dependency d = new Dependency(f);
@@ -85,7 +84,7 @@ public class PEAnalyzerTest extends BaseTest {
         assertEquals("log4net", d.getName());
     }
 
-    @After
+    @AfterEach
     @Override
     public void tearDown() throws Exception {
         try {

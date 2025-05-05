@@ -17,8 +17,8 @@
  */
 package org.owasp.dependencycheck.analyzer;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.owasp.dependencycheck.BaseTest;
 import org.owasp.dependencycheck.Engine;
 import org.owasp.dependencycheck.dependency.Dependency;
@@ -26,16 +26,16 @@ import org.owasp.dependencycheck.dependency.EvidenceType;
 
 import java.io.File;
 
-import static junit.framework.TestCase.assertTrue;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.owasp.dependencycheck.analyzer.NuspecAnalyzer.DEPENDENCY_ECOSYSTEM;
 
-public class NugetconfAnalyzerTest extends BaseTest {
+class NugetconfAnalyzerTest extends BaseTest {
 
     private NugetconfAnalyzer instance;
 
-    @Before
+    @BeforeEach
     @Override
     public void setUp() throws Exception {
         super.setUp();
@@ -46,18 +46,18 @@ public class NugetconfAnalyzerTest extends BaseTest {
     }
 
     @Test
-    public void testGetAnalyzerName() {
+    void testGetAnalyzerName() {
         assertEquals("Nugetconf Analyzer", instance.getName());
     }
 
     @Test
-    public void testSupportedFileNames() {
+    void testSupportedFileNames() {
         assertTrue(instance.accept(new File("packages.config")));
         assertFalse(instance.accept(new File("packages.json")));
     }
 
     @Test
-    public void testNugetconfAnalysis() throws Exception {
+    void testNugetconfAnalysis() throws Exception {
 
         try (Engine engine = new Engine(getSettings())) {
             File file = BaseTest.getResourceAsFile(this, "nugetconf/packages.config");
@@ -99,12 +99,12 @@ public class NugetconfAnalyzerTest extends BaseTest {
                         assertTrue(result.getEvidence(EvidenceType.PRODUCT).toString().contains("Newtonsoft.Json"));
                         assertTrue(result.getEvidence(EvidenceType.VERSION).toString().contains("10.0.3"));
                         break;
-                    
+
                     default :
                         break;
                     }
                 }
-            assertEquals("4 dependencies should be found", 4, foundCount);
+            assertEquals(4, foundCount, "4 dependencies should be found");
         }
     }
 }

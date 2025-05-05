@@ -17,27 +17,28 @@
  */
 package org.owasp.dependencycheck.analyzer;
 
-import java.io.File;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.owasp.dependencycheck.BaseTest;
 import org.owasp.dependencycheck.dependency.Dependency;
 import org.owasp.dependencycheck.dependency.EvidenceType;
-import org.owasp.dependencycheck.exception.InitializationException;
+
+import java.io.File;
+
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  *
  * @author Jeremy Long
  */
-public class FileNameAnalyzerTest extends BaseTest {
+class FileNameAnalyzerTest extends BaseTest {
 
     /**
      * Test of getName method, of class FileNameAnalyzer.
      */
     @Test
-    public void testGetName() {
+    void testGetName() {
         FileNameAnalyzer instance = new FileNameAnalyzer();
         String expResult = "File Name Analyzer";
         String result = instance.getName();
@@ -48,7 +49,7 @@ public class FileNameAnalyzerTest extends BaseTest {
      * Test of getAnalysisPhase method, of class FileNameAnalyzer.
      */
     @Test
-    public void testGetAnalysisPhase() {
+    void testGetAnalysisPhase() {
         FileNameAnalyzer instance = new FileNameAnalyzer();
         AnalysisPhase expResult = AnalysisPhase.INFORMATION_COLLECTION;
         AnalysisPhase result = instance.getAnalysisPhase();
@@ -59,7 +60,7 @@ public class FileNameAnalyzerTest extends BaseTest {
      * Test of analyze method, of class FileNameAnalyzer.
      */
     @Test
-    public void testAnalyze() throws Exception {
+    void testAnalyze() throws Exception {
         //File struts = new File(this.getClass().getClassLoader().getResource("struts2-core-2.1.2.jar").getPath());
         File struts = BaseTest.getResourceAsFile(this, "struts2-core-2.1.2.jar");
         Dependency resultStruts = new Dependency(struts);
@@ -79,14 +80,12 @@ public class FileNameAnalyzerTest extends BaseTest {
      * Test of prepare method, of class FileNameAnalyzer.
      */
     @Test
-    public void testInitialize() {
+    void testInitialize() {
         FileNameAnalyzer instance = new FileNameAnalyzer();
-        try {
+        assertDoesNotThrow(() -> {
             instance.initialize(getSettings());
             instance.prepare(null);
-        } catch (InitializationException ex) {
-            fail(ex.getMessage());
-        }
+        });
         assertTrue(instance.isEnabled());
     }
 
@@ -94,12 +93,8 @@ public class FileNameAnalyzerTest extends BaseTest {
      * Test of close method, of class FileNameAnalyzer.
      */
     @Test
-    public void testClose() {
+    void testClose() {
         FileNameAnalyzer instance = new FileNameAnalyzer();
-        try {
-            instance.close();
-        } catch (Exception ex) {
-            fail(ex.getMessage());
-        }
+        assertDoesNotThrow(instance::close);
     }
 }

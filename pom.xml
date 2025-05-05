@@ -117,14 +117,14 @@ Copyright (c) 2012 - Jeremy Long
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <github.global.server>github</github.global.server>
-        
+
         <apache.lucene.version>9.12.0</apache.lucene.version>
         <apache.ant.version>1.10.15</apache.ant.version>
-        
+
         <!-- upgrading slf4j and logback can cause issues ;) https://github.com/dependency-check/DependencyCheck/issues/4846 -->
         <slf4j.version>1.7.36</slf4j.version>
         <logback.version>1.2.13</logback.version>
-        
+
         <maven.api.version>3.6.3</maven.api.version>
         <reporting.checkstyle-plugin.version>3.6.0</reporting.checkstyle-plugin.version>
         <reporting.checkstyle.tool.version>9.3</reporting.checkstyle.tool.version>
@@ -147,17 +147,17 @@ Copyright (c) 2012 - Jeremy Long
         <commons-io.version>2.19.0</commons-io.version>
         <commons-lang3.version>3.17.0</commons-lang3.version>
         <commons-text.version>1.13.1</commons-text.version>
-        <httpcomponents.client.version>5.4.3</httpcomponents.client.version>
+        <httpcomponents.client.version>5.4.4</httpcomponents.client.version>
         <httpcomponents.core.version>5.3.4</httpcomponents.core.version>
         <!-- note that logging will be noisy and broken until we upgrade to 3.2
             See https://issues.apache.org/jira/browse/JCS-232 and
             https://github.com/apache/commons-jcs/pull/120 -->
         <commons-jcs-core.version>3.2.1</commons-jcs-core.version>
         <aho-corasick-double-array-trie.version>1.2.3</aho-corasick-double-array-trie.version>
-        <junit.version>4.13.2</junit.version>
+        <junit.version>5.12.2</junit.version>
         <hamcrest.version>3.0</hamcrest.version>
-        <mockito-core.version>5.12.0</mockito-core.version>
-        <jsoup.version>1.19.1</jsoup.version>
+        <mockito.version>5.17.0</mockito.version>
+        <jsoup.version>1.20.1</jsoup.version>
         <commons-compress.version>1.27.1</commons-compress.version>
         <org.apache.maven.shared.file-management.version>3.2.0</org.apache.maven.shared.file-management.version>
         <maven-plugin-testing-harness.version>3.3.0</maven-plugin-testing-harness.version>
@@ -169,10 +169,10 @@ Copyright (c) 2012 - Jeremy Long
         <maven-artifact-transfer.version>0.13.1</maven-artifact-transfer.version>
         <maven-common-artifact-filters.version>3.4.0</maven-common-artifact-filters.version>
         <groovy-all.version>2.4.21</groovy-all.version>
-        <gmavenplus-plugin.version>4.1.1</gmavenplus-plugin.version>
+        <gmavenplus-plugin.version>4.2.0</gmavenplus-plugin.version>
         <com.h3xstream.retirejs.core.version>3.0.4</com.h3xstream.retirejs.core.version>
-        <jackson.version>2.18.3</jackson.version>
-        <!--necassary for some IDEs to be able to execute test cases (Netbeans)-->
+        <jackson.version>2.19.0</jackson.version>
+        <!--necessary for some IDEs to be able to execute test cases (Netbeans)-->
         <surefireArgLine />
         <mock-server.version>5.15.0</mock-server.version>
     </properties>
@@ -415,7 +415,7 @@ Copyright (c) 2012 - Jeremy Long
                             </scripts>
                         </configuration>
                     </execution>
-                    
+
                     <execution>
                         <id>add-dynamic-properties-site</id>
                         <phase>pre-site</phase>
@@ -952,14 +952,20 @@ Copyright (c) 2012 - Jeremy Long
             </dependency>
             <dependency>
                 <groupId>org.mock-server</groupId>
-                <artifactId>mockserver-junit-rule</artifactId>
+                <artifactId>mockserver-junit-jupiter</artifactId>
                 <version>${mock-server.version}</version>
                 <scope>test</scope>
             </dependency>
             <dependency>
                 <groupId>org.mockito</groupId>
                 <artifactId>mockito-core</artifactId>
-                <version>${mockito-core.version}</version>
+                <version>${mockito.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.mockito</groupId>
+                <artifactId>mockito-junit-jupiter</artifactId>
+                <version>${mockito.version}</version>
                 <scope>test</scope>
             </dependency>
             <dependency>
@@ -1010,7 +1016,7 @@ Copyright (c) 2012 - Jeremy Long
             <dependency>
                 <groupId>org.semver4j</groupId>
                 <artifactId>semver4j</artifactId>
-                <version>5.6.0</version>
+                <version>5.7.0</version>
             </dependency>
             <dependency>
                 <groupId>org.jetbrains</groupId>
@@ -1079,16 +1085,21 @@ Copyright (c) 2012 - Jeremy Long
                 <version>${logback.version}</version>
             </dependency>
             <dependency>
-                <groupId>junit</groupId>
-                <artifactId>junit</artifactId>
+                <groupId>org.junit.jupiter</groupId>
+                <artifactId>junit-jupiter-api</artifactId>
                 <version>${junit.version}</version>
-                <exclusions>
-                    <exclusion>
-                        <!-- deprecated coordinates, replaced by org.hamcrest:hamcrest -->
-                        <groupId>org.hamcrest</groupId>
-                        <artifactId>hamcrest-core</artifactId>
-                    </exclusion>
-                </exclusions>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.junit.jupiter</groupId>
+                <artifactId>junit-jupiter-engine</artifactId>
+                <version>${junit.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.junit.jupiter</groupId>
+                <artifactId>junit-jupiter-params</artifactId>
+                <version>${junit.version}</version>
                 <scope>test</scope>
             </dependency>
             <dependency>
@@ -1210,7 +1221,7 @@ Copyright (c) 2012 - Jeremy Long
             <dependency>
                 <groupId>org.apache.commons</groupId>
                 <artifactId>commons-collections4</artifactId>
-                <version>4.4</version>
+                <version>4.5.0</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.velocity</groupId>
@@ -1322,8 +1333,18 @@ Copyright (c) 2012 - Jeremy Long
     <dependencies>
         <!-- region generic test dependencies -->
         <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-api</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-engine</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-params</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>

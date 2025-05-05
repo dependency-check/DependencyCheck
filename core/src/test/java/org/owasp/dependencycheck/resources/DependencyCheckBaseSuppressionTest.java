@@ -1,26 +1,26 @@
 package org.owasp.dependencycheck.resources;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-
-import javax.xml.XMLConstants;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
-public class DependencyCheckBaseSuppressionTest {
+import javax.xml.XMLConstants;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+class DependencyCheckBaseSuppressionTest {
 
     @Test
-    public void testAllSuppressionsHaveBaseAttribute() throws ParserConfigurationException, SAXException, IOException {
+    void testAllSuppressionsHaveBaseAttribute() throws ParserConfigurationException, SAXException, IOException {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
 
@@ -45,6 +45,6 @@ public class DependencyCheckBaseSuppressionTest {
             }
         }
 
-        Assert.assertEquals(0, numberOfSuppressTagsWithoutBaseTrueAttribute);
+        assertEquals(0, numberOfSuppressTagsWithoutBaseTrueAttribute);
     }
 }

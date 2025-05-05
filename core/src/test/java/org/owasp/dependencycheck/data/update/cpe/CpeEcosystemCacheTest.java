@@ -17,27 +17,28 @@
  */
 package org.owasp.dependencycheck.data.update.cpe;
 
+import org.junit.jupiter.api.Test;
+import org.owasp.dependencycheck.utils.Pair;
+
 import java.util.HashMap;
 import java.util.Map;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import static org.junit.Assert.*;
-import org.owasp.dependencycheck.utils.Pair;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  *
  * @author Jeremy Long
  */
-public class CpeEcosystemCacheTest {
+class CpeEcosystemCacheTest {
 
     /**
      * Test of getEcosystem method, of class CpeEcosystemCache.
      */
     @Test
-    public void testGetEcosystem() {
+    void testGetEcosystem() {
         Pair<String, String> key = new Pair<>("apache", "zookeeper");
         Map<Pair<String, String>, String> map = new HashMap<>();
         map.put(key, "java");
@@ -46,28 +47,28 @@ public class CpeEcosystemCacheTest {
         String expected = "java";
         String result = CpeEcosystemCache.getEcosystem("apache", "zookeeper", null);
         assertEquals(expected, result);
-        
+
         //changes to MULTIPLE = which is returned as null
         result = CpeEcosystemCache.getEcosystem("apache", "zookeeper", "c++");
         assertNull(result);
-        
+
         result = CpeEcosystemCache.getEcosystem("pivotal", "spring-framework", null);
         assertNull(result);
-        
+
         expected = "java";
         result = CpeEcosystemCache.getEcosystem("pivotal", "spring-framework", "java");
         assertEquals(expected, result);
-        
+
         expected = "java";
         result = CpeEcosystemCache.getEcosystem("pivotal", "spring-framework", "java");
         assertEquals(expected, result);
-        
+
         result = CpeEcosystemCache.getEcosystem("microsoft", "word", null );
         assertNull(result);
-        
+
         result = CpeEcosystemCache.getEcosystem("microsoft", "word", null );
         assertNull(result);
-        
+
         result = CpeEcosystemCache.getEcosystem("microsoft", "word", "" );
         assertNull(result);
     }
@@ -76,7 +77,7 @@ public class CpeEcosystemCacheTest {
      * Test of setCache method, of class CpeEcosystemCache.
      */
     @Test
-    public void testSetCache() {
+    void testSetCache() {
         Map<Pair<String, String>, String> map = new HashMap<>();
         CpeEcosystemCache.setCache(map);
         assertTrue(CpeEcosystemCache.isEmpty());
@@ -93,7 +94,7 @@ public class CpeEcosystemCacheTest {
      * Test of getChanged method, of class CpeEcosystemCache.
      */
     @Test
-    public void testGetChanged() {
+    void testGetChanged() {
         Pair<String, String> key = new Pair<>("apache", "zookeeper");
         Map<Pair<String, String>, String> map = new HashMap<>();
         map.put(key, "java");
@@ -120,7 +121,7 @@ public class CpeEcosystemCacheTest {
      * Test of isEmpty method, of class CpeEcosystemCache.
      */
     @Test
-    public void testIsEmpty() {
+    void testIsEmpty() {
         Map<Pair<String, String>, String> map = new HashMap<>();
         CpeEcosystemCache.setCache(map);
         boolean expResult = true;

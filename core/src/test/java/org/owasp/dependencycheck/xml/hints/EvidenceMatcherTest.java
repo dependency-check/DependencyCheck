@@ -17,18 +17,19 @@
  */
 package org.owasp.dependencycheck.xml.hints;
 
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertFalse;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.owasp.dependencycheck.dependency.Confidence;
 import org.owasp.dependencycheck.dependency.Evidence;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 /**
  * Unit tests for {@link EvidenceMatcher}.
- * 
+ *
  * @author Hans Aikema
  */
-public class EvidenceMatcherTest {
+class EvidenceMatcherTest {
 
     private static final Evidence EVIDENCE_HIGHEST = new Evidence("source", "name", "value", Confidence.HIGHEST);
     private static final Evidence EVIDENCE_HIGH = new Evidence("source", "name", "value", Confidence.HIGH);
@@ -44,76 +45,76 @@ public class EvidenceMatcherTest {
     private static final Evidence REGEX_EVIDENCE_LOW = new Evidence("source", "name", "val that should not match", Confidence.LOW);
 
     @Test
-    public void testExactMatching() throws Exception {
+    void testExactMatching() {
         final EvidenceMatcher exactMatcherHighest = new EvidenceMatcher("source", "name", "value", false, Confidence.HIGHEST);
-        assertTrue("exact matcher should match EVIDENCE_HIGHEST", exactMatcherHighest.matches(EVIDENCE_HIGHEST));
-        assertFalse("exact matcher should not match EVIDENCE_HIGH", exactMatcherHighest.matches(EVIDENCE_HIGH));
-        assertFalse("exact matcher should not match EVIDENCE_MEDIUM", exactMatcherHighest.matches(EVIDENCE_MEDIUM));
-        assertFalse("exact matcher should not match EVIDENCE_MEDIUM_SECOND_SOURCE", exactMatcherHighest.matches(EVIDENCE_MEDIUM_SECOND_SOURCE));
-        assertFalse("exact matcher should not match EVIDENCE_LOW", exactMatcherHighest.matches(EVIDENCE_LOW));
+        assertTrue(exactMatcherHighest.matches(EVIDENCE_HIGHEST), "exact matcher should match EVIDENCE_HIGHEST");
+        assertFalse(exactMatcherHighest.matches(EVIDENCE_HIGH), "exact matcher should not match EVIDENCE_HIGH");
+        assertFalse(exactMatcherHighest.matches(EVIDENCE_MEDIUM), "exact matcher should not match EVIDENCE_MEDIUM");
+        assertFalse(exactMatcherHighest.matches(EVIDENCE_MEDIUM_SECOND_SOURCE), "exact matcher should not match EVIDENCE_MEDIUM_SECOND_SOURCE");
+        assertFalse(exactMatcherHighest.matches(EVIDENCE_LOW), "exact matcher should not match EVIDENCE_LOW");
     }
 
     @Test
-    public void testWildcardConfidenceMatching() throws Exception {
+    void testWildcardConfidenceMatching() {
         final EvidenceMatcher wildcardCofidenceMatcher = new EvidenceMatcher("source", "name", "value", false, null);
-        assertTrue("wildcard confidence matcher should match EVIDENCE_HIGHEST", wildcardCofidenceMatcher.matches(EVIDENCE_HIGHEST));
-        assertTrue("wildcard confidence matcher should match EVIDENCE_HIGH", wildcardCofidenceMatcher.matches(EVIDENCE_HIGH));
-        assertTrue("wildcard confidence matcher should match EVIDENCE_MEDIUM", wildcardCofidenceMatcher.matches(EVIDENCE_MEDIUM));
-        assertFalse("wildcard confidence matcher should not match EVIDENCE_MEDIUM_SECOND_SOURCE", wildcardCofidenceMatcher.matches(EVIDENCE_MEDIUM_SECOND_SOURCE));
-        assertTrue("wildcard confidence matcher should match EVIDENCE_LOW", wildcardCofidenceMatcher.matches(EVIDENCE_LOW));
+        assertTrue(wildcardCofidenceMatcher.matches(EVIDENCE_HIGHEST), "wildcard confidence matcher should match EVIDENCE_HIGHEST");
+        assertTrue(wildcardCofidenceMatcher.matches(EVIDENCE_HIGH), "wildcard confidence matcher should match EVIDENCE_HIGH");
+        assertTrue(wildcardCofidenceMatcher.matches(EVIDENCE_MEDIUM), "wildcard confidence matcher should match EVIDENCE_MEDIUM");
+        assertFalse(wildcardCofidenceMatcher.matches(EVIDENCE_MEDIUM_SECOND_SOURCE), "wildcard confidence matcher should not match EVIDENCE_MEDIUM_SECOND_SOURCE");
+        assertTrue(wildcardCofidenceMatcher.matches(EVIDENCE_LOW), "wildcard confidence matcher should match EVIDENCE_LOW");
     }
 
     @Test
-    public void testWildcardSourceMatching() throws Exception {
+    void testWildcardSourceMatching() {
         final EvidenceMatcher wildcardSourceMatcher = new EvidenceMatcher(null, "name", "value", false, Confidence.MEDIUM);
-        assertFalse("wildcard source matcher should not match EVIDENCE_HIGHEST", wildcardSourceMatcher.matches(EVIDENCE_HIGHEST));
-        assertFalse("wildcard source matcher should not match EVIDENCE_HIGH", wildcardSourceMatcher.matches(EVIDENCE_HIGH));
-        assertTrue("wildcard source matcher should match EVIDENCE_MEDIUM", wildcardSourceMatcher.matches(EVIDENCE_MEDIUM));
-        assertTrue("wildcard source matcher should match EVIDENCE_MEDIUM_SECOND_SOURCE", wildcardSourceMatcher.matches(EVIDENCE_MEDIUM_SECOND_SOURCE));
-        assertFalse("wildcard source matcher should not match EVIDENCE_LOW", wildcardSourceMatcher.matches(EVIDENCE_LOW));
+        assertFalse(wildcardSourceMatcher.matches(EVIDENCE_HIGHEST), "wildcard source matcher should not match EVIDENCE_HIGHEST");
+        assertFalse(wildcardSourceMatcher.matches(EVIDENCE_HIGH), "wildcard source matcher should not match EVIDENCE_HIGH");
+        assertTrue(wildcardSourceMatcher.matches(EVIDENCE_MEDIUM), "wildcard source matcher should match EVIDENCE_MEDIUM");
+        assertTrue(wildcardSourceMatcher.matches(EVIDENCE_MEDIUM_SECOND_SOURCE), "wildcard source matcher should match EVIDENCE_MEDIUM_SECOND_SOURCE");
+        assertFalse(wildcardSourceMatcher.matches(EVIDENCE_LOW), "wildcard source matcher should not match EVIDENCE_LOW");
     }
 
     @Test
-    public void testRegExMatching() throws Exception {
+    void testRegExMatching() {
         final EvidenceMatcher regexMediumMatcher = new EvidenceMatcher("source 2", "name", ".*value.*", true, Confidence.MEDIUM);
-        assertFalse("regex medium matcher should not match REGEX_EVIDENCE_HIGHEST", regexMediumMatcher.matches(REGEX_EVIDENCE_HIGHEST));
-        assertFalse("regex medium matcher should not match REGEX_EVIDENCE_HIGH", regexMediumMatcher.matches(REGEX_EVIDENCE_HIGH));
-        assertFalse("regex medium matcher should not match REGEX_EVIDENCE_MEDIUM", regexMediumMatcher.matches(REGEX_EVIDENCE_MEDIUM));
-        assertTrue("regex medium matcher should match REGEX_EVIDENCE_MEDIUM_SECOND_SOURCE", regexMediumMatcher.matches(REGEX_EVIDENCE_MEDIUM_SECOND_SOURCE));
-        assertFalse("regex medium matcher should not match REGEX_EVIDENCE_MEDIUM_THIRD_SOURCE", regexMediumMatcher.matches(REGEX_EVIDENCE_MEDIUM_THIRD_SOURCE));
-        assertFalse("regex medium matcher should not match REGEX_EVIDENCE_LOW", regexMediumMatcher.matches(REGEX_EVIDENCE_LOW));
+        assertFalse(regexMediumMatcher.matches(REGEX_EVIDENCE_HIGHEST), "regex medium matcher should not match REGEX_EVIDENCE_HIGHEST");
+        assertFalse(regexMediumMatcher.matches(REGEX_EVIDENCE_HIGH), "regex medium matcher should not match REGEX_EVIDENCE_HIGH");
+        assertFalse(regexMediumMatcher.matches(REGEX_EVIDENCE_MEDIUM), "regex medium matcher should not match REGEX_EVIDENCE_MEDIUM");
+        assertTrue(regexMediumMatcher.matches(REGEX_EVIDENCE_MEDIUM_SECOND_SOURCE), "regex medium matcher should match REGEX_EVIDENCE_MEDIUM_SECOND_SOURCE");
+        assertFalse(regexMediumMatcher.matches(REGEX_EVIDENCE_MEDIUM_THIRD_SOURCE), "regex medium matcher should not match REGEX_EVIDENCE_MEDIUM_THIRD_SOURCE");
+        assertFalse(regexMediumMatcher.matches(REGEX_EVIDENCE_LOW), "regex medium matcher should not match REGEX_EVIDENCE_LOW");
     }
 
     @Test
-    public void testRegExWildcardSourceMatching() throws Exception {
+    void testRegExWildcardSourceMatching() {
         final EvidenceMatcher regexMediumWildcardSourceMatcher = new EvidenceMatcher(null, "name", "^.*v[al]{2,2}ue[a-z ]+$", true, Confidence.MEDIUM);
-        assertFalse("regex medium wildcard source matcher should not match REGEX_EVIDENCE_HIGHEST", regexMediumWildcardSourceMatcher.matches(REGEX_EVIDENCE_HIGHEST));
-        assertFalse("regex medium wildcard source matcher should not match REGEX_EVIDENCE_HIGH", regexMediumWildcardSourceMatcher.matches(REGEX_EVIDENCE_HIGH));
-        assertFalse("regex medium wildcard source matcher should not match REGEX_EVIDENCE_MEDIUM", regexMediumWildcardSourceMatcher.matches(REGEX_EVIDENCE_MEDIUM));
-        assertTrue("regex medium wildcard source matcher should match REGEX_EVIDENCE_MEDIUM_SECOND_SOURCE", regexMediumWildcardSourceMatcher.matches(REGEX_EVIDENCE_MEDIUM_SECOND_SOURCE));
-        assertTrue("regex medium wildcard source matcher should match REGEX_EVIDENCE_MEDIUM_THIRD_SOURCE", regexMediumWildcardSourceMatcher.matches(REGEX_EVIDENCE_MEDIUM_THIRD_SOURCE));
-        assertFalse("regex medium wildcard source matcher should not match REGEX_EVIDENCE_LOW", regexMediumWildcardSourceMatcher.matches(REGEX_EVIDENCE_LOW));
+        assertFalse(regexMediumWildcardSourceMatcher.matches(REGEX_EVIDENCE_HIGHEST), "regex medium wildcard source matcher should not match REGEX_EVIDENCE_HIGHEST");
+        assertFalse(regexMediumWildcardSourceMatcher.matches(REGEX_EVIDENCE_HIGH), "regex medium wildcard source matcher should not match REGEX_EVIDENCE_HIGH");
+        assertFalse(regexMediumWildcardSourceMatcher.matches(REGEX_EVIDENCE_MEDIUM), "regex medium wildcard source matcher should not match REGEX_EVIDENCE_MEDIUM");
+        assertTrue(regexMediumWildcardSourceMatcher.matches(REGEX_EVIDENCE_MEDIUM_SECOND_SOURCE), "regex medium wildcard source matcher should match REGEX_EVIDENCE_MEDIUM_SECOND_SOURCE");
+        assertTrue(regexMediumWildcardSourceMatcher.matches(REGEX_EVIDENCE_MEDIUM_THIRD_SOURCE), "regex medium wildcard source matcher should match REGEX_EVIDENCE_MEDIUM_THIRD_SOURCE");
+        assertFalse(regexMediumWildcardSourceMatcher.matches(REGEX_EVIDENCE_LOW), "regex medium wildcard source matcher should not match REGEX_EVIDENCE_LOW");
     }
 
     @Test
-    public void testRegExWildcardSourceWildcardConfidenceMatching() throws Exception {
+    void testRegExWildcardSourceWildcardConfidenceMatching() {
         final EvidenceMatcher regexMediumWildcardSourceMatcher = new EvidenceMatcher(null, "name", ".*value.*", true, null);
-        assertTrue("regex wildcard source wildcard confidence matcher should match REGEX_EVIDENCE_HIGHEST", regexMediumWildcardSourceMatcher.matches(REGEX_EVIDENCE_HIGHEST));
-        assertTrue("regex wildcard source wildcard confidence matcher should match REGEX_EVIDENCE_HIGH", regexMediumWildcardSourceMatcher.matches(REGEX_EVIDENCE_HIGH));
-        assertFalse("regex wildcard source wildcard confidence matcher should not match REGEX_EVIDENCE_MEDIUM", regexMediumWildcardSourceMatcher.matches(REGEX_EVIDENCE_MEDIUM));
-        assertTrue("regex wildcard source wildcard confidence matcher should match REGEX_EVIDENCE_MEDIUM_SECOND_SOURCE", regexMediumWildcardSourceMatcher.matches(REGEX_EVIDENCE_MEDIUM_SECOND_SOURCE));
-        assertTrue("regex wildcard source wildcard confidence matcher should match REGEX_EVIDENCE_MEDIUM_THIRD_SOURCE", regexMediumWildcardSourceMatcher.matches(REGEX_EVIDENCE_MEDIUM_THIRD_SOURCE));
-        assertFalse("regex wildcard source wildcard confidence matcher should match REGEX_EVIDENCE_LOW", regexMediumWildcardSourceMatcher.matches(REGEX_EVIDENCE_LOW));
+        assertTrue(regexMediumWildcardSourceMatcher.matches(REGEX_EVIDENCE_HIGHEST), "regex wildcard source wildcard confidence matcher should match REGEX_EVIDENCE_HIGHEST");
+        assertTrue(regexMediumWildcardSourceMatcher.matches(REGEX_EVIDENCE_HIGH), "regex wildcard source wildcard confidence matcher should match REGEX_EVIDENCE_HIGH");
+        assertFalse(regexMediumWildcardSourceMatcher.matches(REGEX_EVIDENCE_MEDIUM), "regex wildcard source wildcard confidence matcher should not match REGEX_EVIDENCE_MEDIUM");
+        assertTrue(regexMediumWildcardSourceMatcher.matches(REGEX_EVIDENCE_MEDIUM_SECOND_SOURCE), "regex wildcard source wildcard confidence matcher should match REGEX_EVIDENCE_MEDIUM_SECOND_SOURCE");
+        assertTrue(regexMediumWildcardSourceMatcher.matches(REGEX_EVIDENCE_MEDIUM_THIRD_SOURCE), "regex wildcard source wildcard confidence matcher should match REGEX_EVIDENCE_MEDIUM_THIRD_SOURCE");
+        assertFalse(regexMediumWildcardSourceMatcher.matches(REGEX_EVIDENCE_LOW), "regex wildcard source wildcard confidence matcher should match REGEX_EVIDENCE_LOW");
     }
 
     @Test
-    public void testRegExWildcardSourceWildcardConfidenceFourMatching() throws Exception {
+    void testRegExWildcardSourceWildcardConfidenceFourMatching() {
         final EvidenceMatcher regexMediumWildcardSourceMatcher = new EvidenceMatcher(null, "name", "^.*[Vv][al]{2,2}[a-z ]+$", true, null);
-        assertFalse("regex wildcard source wildcard confidence matcher should not match REGEX_EVIDENCE_HIGHEST", regexMediumWildcardSourceMatcher.matches(REGEX_EVIDENCE_HIGHEST));
-        assertFalse("regex wildcard source wildcard confidence matcher should not match REGEX_EVIDENCE_HIGH", regexMediumWildcardSourceMatcher.matches(REGEX_EVIDENCE_HIGH));
-        assertTrue("regex wildcard source wildcard confidence matcher should match REGEX_EVIDENCE_MEDIUM", regexMediumWildcardSourceMatcher.matches(REGEX_EVIDENCE_MEDIUM));
-        assertTrue("regex wildcard source wildcard confidence matcher should match REGEX_EVIDENCE_MEDIUM_SECOND_SOURCE", regexMediumWildcardSourceMatcher.matches(REGEX_EVIDENCE_MEDIUM_SECOND_SOURCE));
-        assertTrue("regex wildcard source wildcard confidence matcher should match REGEX_EVIDENCE_MEDIUM_THIRD_SOURCE", regexMediumWildcardSourceMatcher.matches(REGEX_EVIDENCE_MEDIUM_THIRD_SOURCE));
-        assertTrue("regex wildcard source wildcard confidence matcher should match REGEX_EVIDENCE_LOW", regexMediumWildcardSourceMatcher.matches(REGEX_EVIDENCE_LOW));
+        assertFalse(regexMediumWildcardSourceMatcher.matches(REGEX_EVIDENCE_HIGHEST), "regex wildcard source wildcard confidence matcher should not match REGEX_EVIDENCE_HIGHEST");
+        assertFalse(regexMediumWildcardSourceMatcher.matches(REGEX_EVIDENCE_HIGH), "regex wildcard source wildcard confidence matcher should not match REGEX_EVIDENCE_HIGH");
+        assertTrue(regexMediumWildcardSourceMatcher.matches(REGEX_EVIDENCE_MEDIUM), "regex wildcard source wildcard confidence matcher should match REGEX_EVIDENCE_MEDIUM");
+        assertTrue(regexMediumWildcardSourceMatcher.matches(REGEX_EVIDENCE_MEDIUM_SECOND_SOURCE), "regex wildcard source wildcard confidence matcher should match REGEX_EVIDENCE_MEDIUM_SECOND_SOURCE");
+        assertTrue(regexMediumWildcardSourceMatcher.matches(REGEX_EVIDENCE_MEDIUM_THIRD_SOURCE), "regex wildcard source wildcard confidence matcher should match REGEX_EVIDENCE_MEDIUM_THIRD_SOURCE");
+        assertTrue(regexMediumWildcardSourceMatcher.matches(REGEX_EVIDENCE_LOW), "regex wildcard source wildcard confidence matcher should match REGEX_EVIDENCE_LOW");
     }
 }

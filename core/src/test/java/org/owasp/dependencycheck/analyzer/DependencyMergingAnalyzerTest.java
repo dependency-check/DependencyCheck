@@ -17,11 +17,7 @@
  */
 package org.owasp.dependencycheck.analyzer;
 
-import java.io.File;
-import java.util.HashSet;
-import java.util.Set;
-import org.junit.Test;
-import static org.junit.Assert.*;
+import org.junit.jupiter.api.Test;
 import org.owasp.dependencycheck.BaseTest;
 import org.owasp.dependencycheck.Engine;
 import org.owasp.dependencycheck.data.nvd.ecosystem.Ecosystem;
@@ -30,17 +26,25 @@ import org.owasp.dependencycheck.dependency.Dependency;
 import org.owasp.dependencycheck.dependency.EvidenceType;
 import org.owasp.dependencycheck.utils.Settings;
 
+import java.io.File;
+import java.util.HashSet;
+import java.util.Set;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 /**
  *
  * @author Jeremy Long
  */
-public class DependencyMergingAnalyzerTest extends BaseTest {
+class DependencyMergingAnalyzerTest extends BaseTest {
 
     /**
      * Test of getName method, of class DependencyMergingAnalyzer.
      */
     @Test
-    public void testGetName() {
+    void testGetName() {
         DependencyMergingAnalyzer instance = new DependencyMergingAnalyzer();
         String expResult = "Dependency Merging Analyzer";
         String result = instance.getName();
@@ -51,7 +55,7 @@ public class DependencyMergingAnalyzerTest extends BaseTest {
      * Test of getAnalysisPhase method, of class DependencyMergingAnalyzer.
      */
     @Test
-    public void testGetAnalysisPhase() {
+    void testGetAnalysisPhase() {
         DependencyMergingAnalyzer instance = new DependencyMergingAnalyzer();
         AnalysisPhase expResult = AnalysisPhase.POST_INFORMATION_COLLECTION1;
         AnalysisPhase result = instance.getAnalysisPhase();
@@ -63,7 +67,7 @@ public class DependencyMergingAnalyzerTest extends BaseTest {
      * DependencyMergingAnalyzer.
      */
     @Test
-    public void testGetAnalyzerEnabledSettingKey() {
+    void testGetAnalyzerEnabledSettingKey() {
         DependencyMergingAnalyzer instance = new DependencyMergingAnalyzer();
         String expResult = Settings.KEYS.ANALYZER_DEPENDENCY_MERGING_ENABLED;
         String result = instance.getAnalyzerEnabledSettingKey();
@@ -74,7 +78,7 @@ public class DependencyMergingAnalyzerTest extends BaseTest {
      * Test of evaluateDependencies method, of class DependencyMergingAnalyzer.
      */
     @Test
-    public void testEvaluateDependencies() {
+    void testEvaluateDependencies() {
 //        Dependency dependency = null;
 //        Dependency nextDependency = null;
 //        Set<Dependency> dependenciesToRemove = null;
@@ -88,7 +92,7 @@ public class DependencyMergingAnalyzerTest extends BaseTest {
      * Test of mergeDependencies method, of class DependencyMergingAnalyzer.
      */
     @Test
-    public void testMergeDependencies() {
+    void testMergeDependencies() {
         Dependency dependency = new Dependency(true);
         dependency.setName("main");
         dependency.addEvidence(EvidenceType.VENDOR, "test", "vendor", "main", Confidence.HIGHEST);
@@ -114,7 +118,7 @@ public class DependencyMergingAnalyzerTest extends BaseTest {
      * Test of isSameRubyGem method, of class DependencyMergingAnalyzer.
      */
     @Test
-    public void testIsSameRubyGem() {
+    void testIsSameRubyGem() {
         Dependency dependency1 = new Dependency(new File("some.gemspec"), true);
         Dependency dependency2 = new Dependency(new File("another.gemspec"), true);
         dependency1.setPackagePath("path1");
@@ -135,7 +139,7 @@ public class DependencyMergingAnalyzerTest extends BaseTest {
      * DependencyMergingAnalyzer.
      */
     @Test
-    public void testGetMainGemspecDependency() {
+    void testGetMainGemspecDependency() {
         Dependency dependency1 = null;
         Dependency dependency2 = null;
         DependencyMergingAnalyzer instance = new DependencyMergingAnalyzer();
@@ -168,7 +172,7 @@ public class DependencyMergingAnalyzerTest extends BaseTest {
      * Test of isSameSwiftPackage method, of class DependencyMergingAnalyzer.
      */
     @Test
-    public void testIsSameSwiftPackage() {
+    void testIsSameSwiftPackage() {
         Dependency dependency1 = new Dependency(new File("Package.swift"), true);
         Dependency dependency2 = new Dependency(new File("Package.swift"), true);
         dependency1.setPackagePath("path1");
@@ -189,7 +193,7 @@ public class DependencyMergingAnalyzerTest extends BaseTest {
      * DependencyMergingAnalyzer.
      */
     @Test
-    public void testGetMainSwiftDependency() {
+    void testGetMainSwiftDependency() {
 
         Dependency dependency1 = null;
         Dependency dependency2 = null;
@@ -226,7 +230,7 @@ public class DependencyMergingAnalyzerTest extends BaseTest {
      * @throws Exception thrown if there is an analysis exception
      */
     @Test
-    public void testGetMainAndroidDependency() throws Exception {
+    void testGetMainAndroidDependency() throws Exception {
         ArchiveAnalyzer aa = null;
         try (Engine engine = new Engine(Engine.Mode.EVIDENCE_COLLECTION, getSettings())) {
             Dependency dependency1 = new Dependency(BaseTest.getResourceAsFile(this, "aar-1.0.0.aar"));
@@ -245,7 +249,7 @@ public class DependencyMergingAnalyzerTest extends BaseTest {
                     break;
                 }
             }
-            assertNotNull("classes.jar was not found", dependency2);
+            assertNotNull(dependency2, "classes.jar was not found");
             dependency2.setEcosystem(Ecosystem.JAVA);
             DependencyMergingAnalyzer instance = new DependencyMergingAnalyzer();
             Dependency expResult = dependency1;
@@ -263,7 +267,7 @@ public class DependencyMergingAnalyzerTest extends BaseTest {
      * DependencyMergingAnalyzer.
      */
     @Test
-    public void testGetMainDotnetDependency() {
+    void testGetMainDotnetDependency() {
         Dependency dependency1 = new Dependency(BaseTest.getResourceAsFile(this, "log4net.dll"));
         dependency1.setEcosystem(AssemblyAnalyzer.DEPENDENCY_ECOSYSTEM);
         dependency1.setName("log4net");

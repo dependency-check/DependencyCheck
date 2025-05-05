@@ -17,46 +17,43 @@
  */
 package org.owasp.dependencycheck.reporting;
 
+import org.junit.jupiter.api.Test;
+import org.owasp.dependencycheck.BaseDBTestCase;
+import org.owasp.dependencycheck.BaseTest;
+import org.owasp.dependencycheck.Engine;
+import org.owasp.dependencycheck.data.update.exception.UpdateException;
+import org.owasp.dependencycheck.dependency.Dependency;
+import org.owasp.dependencycheck.exception.ExceptionCollection;
+import org.owasp.dependencycheck.utils.DownloadFailedException;
+import org.owasp.dependencycheck.utils.Settings;
+
+import javax.xml.XMLConstants;
+import javax.xml.transform.stream.StreamSource;
+import javax.xml.validation.Schema;
+import javax.xml.validation.SchemaFactory;
+import javax.xml.validation.Validator;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
-import javax.xml.XMLConstants;
-import javax.xml.transform.stream.StreamSource;
-import javax.xml.validation.Schema;
-import javax.xml.validation.SchemaFactory;
-import javax.xml.validation.Validator;
-import org.junit.Assert;
 
-import org.junit.Test;
-import org.owasp.dependencycheck.BaseDBTestCase;
-import org.owasp.dependencycheck.BaseTest;
-import org.owasp.dependencycheck.Engine;
-import org.owasp.dependencycheck.data.nvdcve.DatabaseException;
-import org.owasp.dependencycheck.exception.ExceptionCollection;
-import org.owasp.dependencycheck.exception.ReportException;
-import org.owasp.dependencycheck.utils.InvalidSettingException;
-import org.owasp.dependencycheck.utils.Settings;
-import org.xml.sax.SAXException;
-import static org.junit.Assert.fail;
-import org.owasp.dependencycheck.data.update.exception.UpdateException;
-import org.owasp.dependencycheck.dependency.Dependency;
-import org.owasp.dependencycheck.utils.DownloadFailedException;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  *
  * @author Jeremy Long
  */
-public class ReportGeneratorIT extends BaseDBTestCase {
+class ReportGeneratorIT extends BaseDBTestCase {
 
     /**
      * Generates an XML report containing known vulnerabilities and realistic
      * data and validates the generated XML document against the XSD.
      */
     @Test
-    public void testGenerateReport() {
+    void testGenerateReport() {
         File writeTo = new File("target/test-reports/Report.xml");
         File writeJsonTo = new File("target/test-reports/Report.json");
         File writeHtmlTo = new File("target/test-reports/Report.html");
@@ -74,7 +71,7 @@ public class ReportGeneratorIT extends BaseDBTestCase {
         settings.setBoolean(Settings.KEYS.ANALYZER_CENTRAL_ENABLED, false);
         settings.setBoolean(Settings.KEYS.PRETTY_PRINT, true);
 
-        generateReport(settings, writeTo, writeJsonTo, writeHtmlTo, writeJunitTo, writeCsvTo, writeSarifTo, suppressionFile);        
+        generateReport(settings, writeTo, writeJsonTo, writeHtmlTo, writeJunitTo, writeCsvTo, writeSarifTo, suppressionFile);
     }
 
     /**
@@ -82,7 +79,7 @@ public class ReportGeneratorIT extends BaseDBTestCase {
      * data and validates the generated XML document against the XSD.
      */
     @Test
-    public void testGenerateNodeAuditReport() {
+    void testGenerateNodeAuditReport() {
         File writeTo = new File("target/test-reports/nodeAudit/Report.xml");
         File writeJsonTo = new File("target/test-reports/nodeAudit/Report.json");
         File writeHtmlTo = new File("target/test-reports/nodeAudit/Report.html");
@@ -108,7 +105,7 @@ public class ReportGeneratorIT extends BaseDBTestCase {
      * data and validates the generated XML document against the XSD.
      */
     @Test
-    public void testGenerateRetireJsReport() {
+    void testGenerateRetireJsReport() {
         File writeTo = new File("target/test-reports/retireJS/Report.xml");
         File writeJsonTo = new File("target/test-reports/retireJS/Report.json");
         File writeHtmlTo = new File("target/test-reports/retireJS/Report.html");
@@ -127,12 +124,13 @@ public class ReportGeneratorIT extends BaseDBTestCase {
 
         generateReport(settings, writeTo, writeJsonTo, writeHtmlTo, writeJunitTo, writeCsvTo, writeSarifTo, suppressionFile);
     }
+
     /**
      * Generates an XML report containing known vulnerabilities and realistic
      * data and validates the generated XML document against the XSD.
      */
     @Test
-    public void testGenerateNodePackageReport() {
+    void testGenerateNodePackageReport() {
         File writeTo = new File("target/test-reports/NodePackage/Report.xml");
         File writeJsonTo = new File("target/test-reports/NodePackage/Report.json");
         File writeHtmlTo = new File("target/test-reports/NodePackage/Report.html");
@@ -153,8 +151,8 @@ public class ReportGeneratorIT extends BaseDBTestCase {
     }
 
 
-    public void generateReport(Settings settings, File writeTo, File writeJsonTo, File writeHtmlTo, File writeJunitTo, File writeCsvTo, File writeSarifTo, File suppressionFile){
-        try {
+    private void generateReport(Settings settings, File writeTo, File writeJsonTo, File writeHtmlTo, File writeJunitTo, File writeCsvTo, File writeSarifTo, File suppressionFile){
+        assertDoesNotThrow(() -> {
             //first check parent folder
             createParentFolder(writeTo);
             createParentFolder(writeJsonTo);
@@ -166,7 +164,7 @@ public class ReportGeneratorIT extends BaseDBTestCase {
             File struts = new File(this.getClass().getClassLoader().getResource("struts2-core-2.1.2.jar").getPath());
             File war = BaseTest.getResourceAsFile(this, "war-4.0.war");
             File cfu = BaseTest.getResourceAsFile(this, "commons-fileupload-1.2.1.jar");
-            
+
             //File axis = new File(this.getClass().getClassLoader().getResource("axis2-adb-1.4.1.jar").getPath());
             File axis = BaseTest.getResourceAsFile(this, "axis2-adb-1.4.1.jar");
             //File jetty = new File(this.getClass().getClassLoader().getResource("org.mortbay.jetty.jar").getPath());
@@ -208,10 +206,8 @@ public class ReportGeneratorIT extends BaseDBTestCase {
 
             //Test CSV
             int linesWritten = countLines(writeCsvTo);
-            Assert.assertEquals(vulnCount + 1, linesWritten);
-        } catch (DatabaseException | ExceptionCollection | ReportException | SAXException | IOException ex) {
-            fail(ex.getMessage());
-        }
+            assertEquals(vulnCount + 1, linesWritten);
+        });
     }
 
     /**

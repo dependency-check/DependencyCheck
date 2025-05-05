@@ -17,37 +17,39 @@
  */
 package org.owasp.dependencycheck.utils;
 
+import org.junit.jupiter.api.Test;
+import org.owasp.dependencycheck.BaseTest;
+
 import java.util.ArrayList;
 import java.util.List;
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import org.junit.Test;
-import org.owasp.dependencycheck.BaseTest;
+
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  *
  * @author Jeremy Long
  */
-public class FilterTest extends BaseTest {
+class FilterTest extends BaseTest {
 
     /**
      * Test of passes method, of class Filter.
      */
     @Test
-    public void testPasses() {
+    void testPasses() {
         String keep = "keep";
         String fail = "fail";
 
-        assertTrue("String contained keep - but passes returned false.", TEST_FILTER.passes(keep));
-        assertFalse("String contained fail - but passes returned true.", TEST_FILTER.passes(fail));
+        assertTrue(TEST_FILTER.passes(keep), "String contained keep - but passes returned false.");
+        assertFalse(TEST_FILTER.passes(fail), "String contained fail - but passes returned true.");
     }
 
     /**
      * Test of filter method, of class Filter.
      */
     @Test
-    public void testFilter_Iterable() {
+    void testFilter_Iterable() {
         List<String> testData = new ArrayList<>();
         testData.add("keep");
         testData.add("remove");
@@ -64,10 +66,10 @@ public class FilterTest extends BaseTest {
         assertArrayEquals(expResults.toArray(), actResults.toArray());
     }
     private static final Filter<String> TEST_FILTER
-            = new Filter<String>() {
-                @Override
-                public boolean passes(String str) {
-                    return str.contains("keep");
-                }
-            };
+            = new Filter<>() {
+        @Override
+        public boolean passes(String str) {
+            return str.contains("keep");
+        }
+    };
 }

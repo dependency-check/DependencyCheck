@@ -15,32 +15,32 @@
  */
 package org.owasp.dependencycheck.data.update;
 
-import java.time.LocalDate;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
-import java.time.temporal.TemporalAccessor;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.doAnswer;
-
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.owasp.dependencycheck.BaseTest;
 import org.owasp.dependencycheck.data.nvdcve.CveDB;
 import org.owasp.dependencycheck.data.nvdcve.DatabaseProperties;
 import org.owasp.dependencycheck.utils.DependencyVersion;
 
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.TemporalAccessor;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doAnswer;
+
 /**
  * @author Jeremy Long
  */
-@RunWith(MockitoJUnitRunner.class)
-public class EngineVersionCheckTest extends BaseTest {
+@ExtendWith(MockitoExtension.class)
+class EngineVersionCheckTest extends BaseTest {
 
     @Mock
     private CveDB cveDb;
@@ -53,7 +53,7 @@ public class EngineVersionCheckTest extends BaseTest {
      * Test of shouldUpdate method, of class EngineVersionCheck.
      */
     @Test
-    public void testShouldUpdate() throws Exception {
+    void testShouldUpdate() throws Exception {
 
         doAnswer(invocation -> null).when(dbProperties).save(anyString(), anyString());
 
@@ -128,7 +128,7 @@ public class EngineVersionCheckTest extends BaseTest {
      * Test of getCurrentReleaseVersion method, of class EngineVersionCheck.
      */
     @Test
-    public void testGetCurrentReleaseVersion() {
+    void testGetCurrentReleaseVersion() {
         EngineVersionCheck instance = new EngineVersionCheck(getSettings());
         DependencyVersion minExpResult = new DependencyVersion("1.2.6");
         String release = instance.getCurrentReleaseVersion();

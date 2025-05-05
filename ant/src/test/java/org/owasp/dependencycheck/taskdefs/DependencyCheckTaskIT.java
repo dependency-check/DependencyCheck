@@ -17,29 +17,28 @@
  */
 package org.owasp.dependencycheck.taskdefs;
 
-import java.io.File;
-
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.BuildFileRule;
 import org.apache.tools.ant.types.LogLevel;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.owasp.dependencycheck.BaseDBTestCase;
 
-import static org.junit.Assert.assertTrue;
+import java.io.File;
+
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  *
  * @author Jeremy Long
  */
-public class DependencyCheckTaskIT extends BaseDBTestCase {
+class DependencyCheckTaskIT extends BaseDBTestCase {
 
-    @Rule
-    public final BuildFileRule buildFileRule = new BuildFileRule();
+    private final BuildFileRule buildFileRule = new BuildFileRule();
 
-    @Before
+    @BeforeEach
     @Override
     public void setUp() throws Exception {
         super.setUp();
@@ -47,17 +46,28 @@ public class DependencyCheckTaskIT extends BaseDBTestCase {
         buildFileRule.configureProject(buildFile, LogLevel.VERBOSE.getLevel());
     }
 
+    @AfterEach
+    @Override
+    public void tearDown() throws Exception {
+        if (buildFileRule.getProject() != null) {
+            if (this.buildFileRule.getProject().getTargets().containsKey("tearDown")) {
+                this.buildFileRule.getProject().executeTarget("tearDown");
+            }
+        }
+        super.tearDown();
+    }
+
     /**
      * Test of addFileSet method, of class DependencyCheckTask.
      */
     @Test
-    public void testAddFileSet() throws Exception {
+    void testAddFileSet() throws Exception {
         File report = new File("target/dependency-check-report.html");
         if (report.exists() && !report.delete()) {
             throw new Exception("Unable to delete 'target/dependency-check-report.html' prior to test.");
         }
         buildFileRule.executeTarget("test.fileset");
-        assertTrue("DependencyCheck report was not generated", report.exists());
+        assertTrue(report.exists(), "DependencyCheck report was not generated");
     }
 
     /**
@@ -66,7 +76,7 @@ public class DependencyCheckTaskIT extends BaseDBTestCase {
      * @throws Exception
      */
     @Test
-    public void testAddFileList() throws Exception {
+    void testAddFileList() throws Exception {
         File report = new File("target/dependency-check-report.xml");
         if (report.exists()) {
             if (!report.delete()) {
@@ -75,7 +85,7 @@ public class DependencyCheckTaskIT extends BaseDBTestCase {
         }
         buildFileRule.executeTarget("test.filelist");
 
-        assertTrue("DependencyCheck report was not generated", report.exists());
+        assertTrue(report.exists(), "DependencyCheck report was not generated");
     }
 
     /**
@@ -84,7 +94,7 @@ public class DependencyCheckTaskIT extends BaseDBTestCase {
      * @throws Exception
      */
     @Test
-    public void testAddDirSet() throws Exception {
+    void testAddDirSet() throws Exception {
         File report = new File("target/dependency-check-report.csv");
         if (report.exists()) {
             if (!report.delete()) {
@@ -92,11 +102,11 @@ public class DependencyCheckTaskIT extends BaseDBTestCase {
             }
         }
         buildFileRule.executeTarget("test.dirset");
-        assertTrue("DependencyCheck report was not generated", report.exists());
+        assertTrue(report.exists(), "DependencyCheck report was not generated");
     }
 
     @Test
-    public void testNestedReportFormat() throws Exception {
+    void testNestedReportFormat() throws Exception {
         File reportHTML = new File("target/dependency-check-report.html");
         File reportCSV = new File("target/dependency-check-report.csv");
         if (reportCSV.exists()) {
@@ -110,38 +120,37 @@ public class DependencyCheckTaskIT extends BaseDBTestCase {
             }
         }
         buildFileRule.executeTarget("test.formatNested");
-        assertTrue("DependencyCheck CSV report was not generated", reportCSV.exists());
-        assertTrue("DependencyCheck HTML report was not generated", reportHTML.exists());
+        assertTrue(reportCSV.exists(), "DependencyCheck CSV report was not generated");
+        assertTrue(reportHTML.exists(), "DependencyCheck HTML report was not generated");
     }
 
     @Test
-    public void testNestedBADReportFormat() throws Exception {
-        try {
-            buildFileRule.executeTarget("test.formatBADNested");
-            Assert.fail("Should have had a buildExceotion for a bad format attribute");
-        } catch (BuildException e) {
-            assertTrue("Message did not have BAD, unexpected exception: " + e.getMessage(), e.getMessage().contains("BAD is not a legal value for this attribute"));
-        }
+    void testNestedBADReportFormat() {
+        BuildException e = assertThrows(BuildException.class,
+                () -> buildFileRule.executeTarget("test.formatBADNested"),
+                "Should have had a buildException for a bad format attribute");
+        assertTrue(e.getMessage().contains("BAD is not a legal value for this attribute"),
+                "Message did not have BAD, unexpected exception: " + e.getMessage());
     }
 
     /**
      * Test of getFailBuildOnCVSS method, of class DependencyCheckTask.
      */
     @Test
-    public void testGetFailBuildOnCVSS() {
-        Exception exception = Assert.assertThrows(BuildException.class, () -> buildFileRule.executeTarget("failCVSS"));
+    void testGetFailBuildOnCVSS() {
+        Exception exception = assertThrows(BuildException.class, () -> buildFileRule.executeTarget("failCVSS"));
 
         String expectedMessage = String.format("One or more dependencies were identified with vulnerabilities that "
                 + "have a CVSS score greater than or equal to '%.1f':", 3.0f);
 
-        Assert.assertTrue(exception.getMessage().contains(expectedMessage));
+        assertTrue(exception.getMessage().contains(expectedMessage));
     }
 
     /**
      * Test the DependencyCheckTask where a CVE is suppressed.
      */
     @Test
-    public void testSuppressingCVE() {
+    void testSuppressingCVE() {
         // GIVEN an ant task with a vulnerability
         final String antTaskName = "suppression";
 
@@ -157,7 +166,7 @@ public class DependencyCheckTaskIT extends BaseDBTestCase {
 
         // THEN the ant task executed without error
         final File report = new File("target/suppression-report.html");
-        assertTrue("Expected the DependencyCheck report to be generated", report.exists());
+        assertTrue(report.exists(), "Expected the DependencyCheck report to be generated");
     }
 
     /**
@@ -165,7 +174,7 @@ public class DependencyCheckTaskIT extends BaseDBTestCase {
      * exception with a warning.
      */
     @Test
-    public void testSuppressingSingle() {
+    void testSuppressingSingle() {
         // GIVEN an ant task with a vulnerability using the legacy property
         final String antTaskName = "suppression-single";
         // WHEN executing the ant task
@@ -173,7 +182,7 @@ public class DependencyCheckTaskIT extends BaseDBTestCase {
 
         // THEN the ant task executed without error
         final File report = new File("target/suppression-single-report.html");
-        assertTrue("Expected the DependencyCheck report to be generated", report.exists());
+        assertTrue(report.exists(), "Expected the DependencyCheck report to be generated");
     }
 
     /**
@@ -181,7 +190,7 @@ public class DependencyCheckTaskIT extends BaseDBTestCase {
      * exception with a warning.
      */
     @Test
-    public void testSuppressingMultiple() {
+    void testSuppressingMultiple() {
         // GIVEN an ant task with a vulnerability using multiple was to configure the suppression file
         final String antTaskName = "suppression-multiple";
         // WHEN executing the ant task
@@ -189,14 +198,14 @@ public class DependencyCheckTaskIT extends BaseDBTestCase {
 
         // THEN the ant task executed without error
         final File report = new File("target/suppression-multiple-report.html");
-        assertTrue("Expected the DependencyCheck report to be generated", report.exists());
+        assertTrue(report.exists(), "Expected the DependencyCheck report to be generated");
     }
 
     /**
      * Test the DependencyCheckTask retireJS configuration.
      */
     @Test
-    public void testRetireJsConfiguration() {
+    void testRetireJsConfiguration() {
         // GIVEN an ant task with a vulnerability using multiple was to configure the suppression file
         final String antTaskName = "retireJS";
 
@@ -205,6 +214,6 @@ public class DependencyCheckTaskIT extends BaseDBTestCase {
 
         // THEN the ant task executed without error
         final File report = new File("target/retirejs-report.html");
-        assertTrue("Expected the DependencyCheck report to be generated", report.exists());
+        assertTrue(report.exists(), "Expected the DependencyCheck report to be generated");
     }
 }
