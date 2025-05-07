@@ -22,7 +22,7 @@ Copyright (c) 2012 Jeremy Long. All Rights Reserved.
 
 #[[
 <!DOCTYPE html>
-<html>
+<html lang="en">
     <head>
         <title>Dependency-Check Report</title>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
@@ -211,7 +211,14 @@ Copyright (c) 2012 Jeremy Long. All Rights Reserved.
             } else {
                 dependenciesHeader.text(dependenciesHeaderAllText);
             }
-            return toggleDisplay(event.target, '.notvulnerable', 'Showing Vulnerable Dependencies (click to show all)', 'Showing All Dependencies (click to show less)');
+            const plainCaptionPart = $('#tablecaption-plain');
+            const plainCaptionPartAllText = 'Summary of All Dependencies';
+            if (plainCaptionPart.text() == plainCaptionPartAllText) {
+                plainCaptionPart.text('Summary of Vulnerable Dependencies');
+            } else {
+                plainCaptionPart.text(plainCaptionPartAllText);
+            }
+            return toggleDisplay(event.target, '.notvulnerable', '(click to show all)', '(click to show less)');
           });
           $( ".versionToggle" ).bind( "click", function( event ) {
             var lnk = event.target;
@@ -230,7 +237,7 @@ Copyright (c) 2012 Jeremy Long. All Rights Reserved.
 
 
         </script>
-        <style type="text/css">
+        <style>
             #modal-background {
                 display: none;
                 position: fixed;
@@ -606,9 +613,6 @@ Copyright (c) 2012 Jeremy Long. All Rights Reserved.
             .notvulnerable {
                 display:none;
             }
-            .hidden {
-                display:none;
-            }
             .infolink {
                 text-decoration:none;
                 color: blue;
@@ -620,7 +624,7 @@ Copyright (c) 2012 Jeremy Long. All Rights Reserved.
                 float:right;
             }
             .disclaimer {
-                color: #888888;
+                color: #595959;
                 font: 9px "Droid Sans",Arial,"Helvetica Neue","Lucida Grande",sans-serif
             }
             .sortable {
@@ -756,9 +760,9 @@ Getting Help: <a href="https://github.com/dependency-check/DependencyCheck/issue
         <br/>
 #end
 <h2>Summary</h2>
-                Display:&nbsp;<a href="#" title="Click to toggle display" id="vulnerabilityDisplayToggle">Showing Vulnerable Dependencies (click to show all)</a><br/><br/>
+                <p><span id="tablecaption-plain">Summary of Vulnerable Dependencies </span><a href="#" title="Click to toggle display" id="vulnerabilityDisplayToggle">(click to show all)</a></p>
                 #set($lnkcnt=0)
-                <table id="summaryTable" class="lined">
+                <table id="summaryTable" class="lined" aria-labelledby="tablecaption-plain">
                     <thead><tr style="text-align:left">
                         <th class="sortable" data-sort="string" title="The name of the dependency">Dependency</th>
                         <th class="sortable" data-sort="string" title="The Common Platform Enumeration">Vulnerability&nbsp;IDs</th>
