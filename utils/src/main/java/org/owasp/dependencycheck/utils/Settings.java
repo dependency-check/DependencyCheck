@@ -174,6 +174,14 @@ public final class Settings {
          */
         public static final String NVD_API_DELAY = "nvd.api.delay";
         /**
+         * The number of requests made to the NVD API per 30 seconds when no API KEY is provided.
+         */
+        public static final String NVD_API_REQUESTS_PER_30_SECONDS_WITHOUT_API_KEY = "nvd.api.requestsperthirtysecondswithoutapikey";
+        /**
+         * The number of requests made to the NVD API per 30 seconds when an API KEY is provided.
+         */
+        public static final String NVD_API_REQUESTS_PER_30_SECONDS_WITH_API_KEY = "nvd.api.requestsperthirtysecondswithapikey";
+        /**
          * The maximum number of retry requests for a single call to the NVD
          * API.
          */
