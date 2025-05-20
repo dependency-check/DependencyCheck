@@ -387,7 +387,7 @@ public class NvdApiDataSource implements CachedWebDataSource {
                     final String msg;
                     if (key != null) {
                         msg = "Error updating the NVD Data; the NVD returned a 403 or 404 error\n\nPlease ensure your API Key is valid; "
-                                + "see https://github.com/jeremylong/Open-Vulnerability-Project/tree/main/vulnz#api-key-is-used-and-a-403-or-404-error-occurs\n\n"
+                                + "see https://github.com/jeremylong/open-vulnerability-cli/blob/main/README.md#api-key-is-used-and-a-403-or-404-error-occurs\n\n"
                                 + "If your NVD API Key is valid try increasing the NVD API Delay.\n\n"
                                 + "If this is occurring in a CI environment";
                     } else {
