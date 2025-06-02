@@ -7015,4 +7015,11 @@
         <packageUrl regex="true">^pkg:nuget/IronPython@.*$</packageUrl>
         <cpe>cpe:/a:python:python</cpe>
     </suppress>
+    <suppress base="true">
+        <notes><![CDATA[
+        FP per issue #7444
+        ]]></notes>
+        <packageUrl regex="true">^pkg:nuget/.+\.Redis\..*$</packageUrl>
+        <cpe>cpe:2.3:a:redis:redis</cpe>
+    </suppress>
 </suppressions>
