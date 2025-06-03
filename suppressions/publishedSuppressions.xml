@@ -2316,4 +2316,11 @@ only pkg:maven/org.clojure:clojure@.* is the CPE cpe:/a:clojure:clojure
    <packageUrl regex="true">^pkg:maven/edu\.washington\.cs\.knowitall/opennlp-chunk-models@.*$</packageUrl>
    <cpe>cpe:/a:apache:opennlp</cpe>
 </suppress>
+<suppress base="true">
+   <notes><![CDATA[
+   FP per issue #7700
+   ]]></notes>
+   <packageUrl regex="true">^pkg:maven/com\.microsoft\.azure/azure-eventhubs.*$</packageUrl>
+   <cpe>cpe:/a:microsoft:azure_cli</cpe>
+</suppress>
 </suppressions>
