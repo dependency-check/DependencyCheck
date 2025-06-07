@@ -8,15 +8,15 @@
 <div id="overview"><a href="../../../../../../testapidocs/org/owasp/dependencycheck/data/nexus/MavenArtifactTest.html">View Javadoc</a></div><pre>
 <a class="jxr_linenumber" name="L1" href="#L1">1</a>   <strong class="jxr_keyword">package</strong> org.owasp.dependencycheck.data.nexus;
 <a class="jxr_linenumber" name="L2" href="#L2">2</a>   
-<a class="jxr_linenumber" name="L3" href="#L3">3</a>   <strong class="jxr_keyword">import</strong> org.junit.Test;
-<a class="jxr_linenumber" name="L4" href="#L4">4</a>   
-<a class="jxr_linenumber" name="L5" href="#L5">5</a>   <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> org.junit.Assert.assertEquals;
-<a class="jxr_linenumber" name="L6" href="#L6">6</a>   <strong class="jxr_keyword">import</strong> org.owasp.dependencycheck.BaseTest;
+<a class="jxr_linenumber" name="L3" href="#L3">3</a>   <strong class="jxr_keyword">import</strong> org.junit.jupiter.api.Test;
+<a class="jxr_linenumber" name="L4" href="#L4">4</a>   <strong class="jxr_keyword">import</strong> org.owasp.dependencycheck.BaseTest;
+<a class="jxr_linenumber" name="L5" href="#L5">5</a>   
+<a class="jxr_linenumber" name="L6" href="#L6">6</a>   <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> org.junit.jupiter.api.Assertions.assertEquals;
 <a class="jxr_linenumber" name="L7" href="#L7">7</a>   
-<a class="jxr_linenumber" name="L8" href="#L8">8</a>   <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">class</strong> <a href="../../../../../org/owasp/dependencycheck/data/nexus/MavenArtifactTest.html">MavenArtifactTest</a> <strong class="jxr_keyword">extends</strong> <a href="../../../../../org/owasp/dependencycheck/BaseTest.html">BaseTest</a> {
+<a class="jxr_linenumber" name="L8" href="#L8">8</a>   <strong class="jxr_keyword">class</strong> <a href="../../../../../org/owasp/dependencycheck/data/nexus/MavenArtifactTest.html">MavenArtifactTest</a> <strong class="jxr_keyword">extends</strong> <a href="../../../../../org/owasp/dependencycheck/BaseTest.html">BaseTest</a> {
 <a class="jxr_linenumber" name="L9" href="#L9">9</a>   
 <a class="jxr_linenumber" name="L10" href="#L10">10</a>      @Test
-<a class="jxr_linenumber" name="L11" href="#L11">11</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> getPomUrl() {
+<a class="jxr_linenumber" name="L11" href="#L11">11</a>      <strong class="jxr_keyword">void</strong> getPomUrl() {
 <a class="jxr_linenumber" name="L12" href="#L12">12</a>          <em class="jxr_comment">// Given</em>
 <a class="jxr_linenumber" name="L13" href="#L13">13</a>          <strong class="jxr_keyword">final</strong> MavenArtifact mavenArtifact = <strong class="jxr_keyword">new</strong> MavenArtifact(<span class="jxr_string">"com.google.code.gson"</span>, <span class="jxr_string">"gson"</span>, <span class="jxr_string">"2.1"</span>,
 <a class="jxr_linenumber" name="L14" href="#L14">14</a>                  <span class="jxr_string">"https://artifactory.techno.ingenico.com/artifactory/jcenter-cache/com/google/code/gson/gson/2.1/gson-2.1.jar"</span>, MavenArtifact.derivePomUrl(<span class="jxr_string">"gson"</span>, <span class="jxr_string">"2.1"</span>,
@@ -29,7 +29,7 @@
 <a class="jxr_linenumber" name="L21" href="#L21">21</a>      }
 <a class="jxr_linenumber" name="L22" href="#L22">22</a>  
 <a class="jxr_linenumber" name="L23" href="#L23">23</a>      @Test
-<a class="jxr_linenumber" name="L24" href="#L24">24</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> getPomUrlWithQualifier() {
+<a class="jxr_linenumber" name="L24" href="#L24">24</a>      <strong class="jxr_keyword">void</strong> getPomUrlWithQualifier() {
 <a class="jxr_linenumber" name="L25" href="#L25">25</a>          <em class="jxr_comment">// Given</em>
 <a class="jxr_linenumber" name="L26" href="#L26">26</a>          <strong class="jxr_keyword">final</strong> MavenArtifact mavenArtifact = <strong class="jxr_keyword">new</strong> MavenArtifact(<span class="jxr_string">"com.google.code.gson"</span>, <span class="jxr_string">"gson"</span>, <span class="jxr_string">"2.8.5"</span>,
 <a class="jxr_linenumber" name="L27" href="#L27">27</a>                  <span class="jxr_string">"https://artifactory.techno.ingenico.com/artifactory/repo1-cache/com/google/code/gson/gson/2.8.5/gson-2.8.5-sources.jar"</span>, MavenArtifact.derivePomUrl(<span class="jxr_string">"gson"</span>, <span class="jxr_string">"2.8.5"</span>,

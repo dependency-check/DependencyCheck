@@ -23,26 +23,26 @@
 <a class="jxr_linenumber" name="L15" href="#L15">15</a>  <em class="jxr_comment"> */</em>
 <a class="jxr_linenumber" name="L16" href="#L16">16</a>  <strong class="jxr_keyword">package</strong> org.owasp.dependencycheck.utils;
 <a class="jxr_linenumber" name="L17" href="#L17">17</a>  
-<a class="jxr_linenumber" name="L18" href="#L18">18</a>  <strong class="jxr_keyword">import</strong> java.time.ZonedDateTime;
-<a class="jxr_linenumber" name="L19" href="#L19">19</a>  <strong class="jxr_keyword">import</strong> java.util.Calendar;
-<a class="jxr_linenumber" name="L20" href="#L20">20</a>  
-<a class="jxr_linenumber" name="L21" href="#L21">21</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> org.junit.Assert.assertEquals;
-<a class="jxr_linenumber" name="L22" href="#L22">22</a>  
-<a class="jxr_linenumber" name="L23" href="#L23">23</a>  <strong class="jxr_keyword">import</strong> org.junit.Test;
-<a class="jxr_linenumber" name="L24" href="#L24">24</a>  <strong class="jxr_keyword">import</strong> org.owasp.dependencycheck.BaseTest;
-<a class="jxr_linenumber" name="L25" href="#L25">25</a>  <strong class="jxr_keyword">import</strong> org.owasp.dependencycheck.exception.ParseException;
+<a class="jxr_linenumber" name="L18" href="#L18">18</a>  <strong class="jxr_keyword">import</strong> org.junit.jupiter.api.Test;
+<a class="jxr_linenumber" name="L19" href="#L19">19</a>  <strong class="jxr_keyword">import</strong> org.owasp.dependencycheck.BaseTest;
+<a class="jxr_linenumber" name="L20" href="#L20">20</a>  <strong class="jxr_keyword">import</strong> org.owasp.dependencycheck.exception.ParseException;
+<a class="jxr_linenumber" name="L21" href="#L21">21</a>  
+<a class="jxr_linenumber" name="L22" href="#L22">22</a>  <strong class="jxr_keyword">import</strong> java.time.ZonedDateTime;
+<a class="jxr_linenumber" name="L23" href="#L23">23</a>  <strong class="jxr_keyword">import</strong> java.util.Calendar;
+<a class="jxr_linenumber" name="L24" href="#L24">24</a>  
+<a class="jxr_linenumber" name="L25" href="#L25">25</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> org.junit.jupiter.api.Assertions.assertEquals;
 <a class="jxr_linenumber" name="L26" href="#L26">26</a>  
 <a class="jxr_linenumber" name="L27" href="#L27">27</a>  <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L28" href="#L28">28</a>  <em class="jxr_javadoccomment"> *</em>
 <a class="jxr_linenumber" name="L29" href="#L29">29</a>  <em class="jxr_javadoccomment"> * @author Jeremy Long</em>
 <a class="jxr_linenumber" name="L30" href="#L30">30</a>  <em class="jxr_javadoccomment"> */</em>
-<a class="jxr_linenumber" name="L31" href="#L31">31</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">class</strong> <a href="../../../../org/owasp/dependencycheck/utils/DateUtilTest.html">DateUtilTest</a> <strong class="jxr_keyword">extends</strong> <a href="../../../../org/owasp/dependencycheck/BaseTest.html">BaseTest</a> {
+<a class="jxr_linenumber" name="L31" href="#L31">31</a>  <strong class="jxr_keyword">class</strong> <a href="../../../../org/owasp/dependencycheck/utils/DateUtilTest.html">DateUtilTest</a> <strong class="jxr_keyword">extends</strong> <a href="../../../../org/owasp/dependencycheck/BaseTest.html">BaseTest</a> {
 <a class="jxr_linenumber" name="L32" href="#L32">32</a>  
 <a class="jxr_linenumber" name="L33" href="#L33">33</a>      <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L34" href="#L34">34</a>  <em class="jxr_javadoccomment">     * Test of withinDateRange method, of class DateUtil.</em>
 <a class="jxr_linenumber" name="L35" href="#L35">35</a>  <em class="jxr_javadoccomment">     */</em>
 <a class="jxr_linenumber" name="L36" href="#L36">36</a>      @Test
-<a class="jxr_linenumber" name="L37" href="#L37">37</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testWithinDateRange() {
+<a class="jxr_linenumber" name="L37" href="#L37">37</a>      <strong class="jxr_keyword">void</strong> testWithinDateRange() {
 <a class="jxr_linenumber" name="L38" href="#L38">38</a>          Calendar c = Calendar.getInstance();
 <a class="jxr_linenumber" name="L39" href="#L39">39</a>  
 <a class="jxr_linenumber" name="L40" href="#L40">40</a>          <strong class="jxr_keyword">long</strong> current = c.getTimeInMillis() / 1000;
@@ -57,12 +57,12 @@
 <a class="jxr_linenumber" name="L49" href="#L49">49</a>          result = DateUtil.withinDateRange(lastRun, current, range);
 <a class="jxr_linenumber" name="L50" href="#L50">50</a>          assertEquals(expResult, result);
 <a class="jxr_linenumber" name="L51" href="#L51">51</a>      }
-<a class="jxr_linenumber" name="L52" href="#L52">52</a>      
-<a class="jxr_linenumber" name="L53" href="#L53">53</a>         <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L52" href="#L52">52</a>  
+<a class="jxr_linenumber" name="L53" href="#L53">53</a>      <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L54" href="#L54">54</a>  <em class="jxr_javadoccomment">     * Test of withinDateRange method, of class DateUtil.</em>
 <a class="jxr_linenumber" name="L55" href="#L55">55</a>  <em class="jxr_javadoccomment">     */</em>
 <a class="jxr_linenumber" name="L56" href="#L56">56</a>      @Test
-<a class="jxr_linenumber" name="L57" href="#L57">57</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testWithinZonedDateRange() {
+<a class="jxr_linenumber" name="L57" href="#L57">57</a>      <strong class="jxr_keyword">void</strong> testWithinZonedDateRange() {
 <a class="jxr_linenumber" name="L58" href="#L58">58</a>          ZonedDateTime lastRun = ZonedDateTime.parse(<span class="jxr_string">"2023-11-15T11:15:03Z"</span>);
 <a class="jxr_linenumber" name="L59" href="#L59">59</a>          ZonedDateTime current = ZonedDateTime.parse(<span class="jxr_string">"2023-11-17T11:15:03Z"</span>);
 <a class="jxr_linenumber" name="L60" href="#L60">60</a>          <strong class="jxr_keyword">int</strong> range = 5;
@@ -82,7 +82,7 @@
 <a class="jxr_linenumber" name="L74" href="#L74">74</a>  <em class="jxr_javadoccomment">     * @throws ParseException thrown when there is a parse error</em>
 <a class="jxr_linenumber" name="L75" href="#L75">75</a>  <em class="jxr_javadoccomment">     */</em>
 <a class="jxr_linenumber" name="L76" href="#L76">76</a>      @Test
-<a class="jxr_linenumber" name="L77" href="#L77">77</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testParseXmlDate() <strong class="jxr_keyword">throws</strong> ParseException {
+<a class="jxr_linenumber" name="L77" href="#L77">77</a>      <strong class="jxr_keyword">void</strong> testParseXmlDate() <strong class="jxr_keyword">throws</strong> ParseException {
 <a class="jxr_linenumber" name="L78" href="#L78">78</a>          String xsDate = <span class="jxr_string">"2019-01-02Z"</span>;
 <a class="jxr_linenumber" name="L79" href="#L79">79</a>          Calendar result = DateUtil.parseXmlDate(xsDate);
 <a class="jxr_linenumber" name="L80" href="#L80">80</a>          assertEquals(2019, result.get(Calendar.YEAR));
@@ -92,7 +92,7 @@
 <a class="jxr_linenumber" name="L84" href="#L84">84</a>      }
 <a class="jxr_linenumber" name="L85" href="#L85">85</a>  
 <a class="jxr_linenumber" name="L86" href="#L86">86</a>      @Test
-<a class="jxr_linenumber" name="L87" href="#L87">87</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testGetEpochValueInSeconds() <strong class="jxr_keyword">throws</strong> ParseException {
+<a class="jxr_linenumber" name="L87" href="#L87">87</a>      <strong class="jxr_keyword">void</strong> testGetEpochValueInSeconds() {
 <a class="jxr_linenumber" name="L88" href="#L88">88</a>          String milliseconds = <span class="jxr_string">"1550538553466"</span>;
 <a class="jxr_linenumber" name="L89" href="#L89">89</a>          <strong class="jxr_keyword">long</strong> expected = 1550538553;
 <a class="jxr_linenumber" name="L90" href="#L90">90</a>          <strong class="jxr_keyword">long</strong> result = DateUtil.getEpochValueInSeconds(milliseconds);

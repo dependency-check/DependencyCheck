@@ -8,8 +8,8 @@
 <div id="overview"><a href="../../../../../testapidocs/org/owasp/dependencycheck/analyzer/PnpmAuditAnalyzerIT.html">View Javadoc</a></div><pre>
 <a class="jxr_linenumber" name="L1" href="#L1">1</a>   <strong class="jxr_keyword">package</strong> org.owasp.dependencycheck.analyzer;
 <a class="jxr_linenumber" name="L2" href="#L2">2</a>   
-<a class="jxr_linenumber" name="L3" href="#L3">3</a>   <strong class="jxr_keyword">import</strong> org.junit.Assume;
-<a class="jxr_linenumber" name="L4" href="#L4">4</a>   <strong class="jxr_keyword">import</strong> org.junit.Test;
+<a class="jxr_linenumber" name="L3" href="#L3">3</a>   <strong class="jxr_keyword">import</strong> org.junit.jupiter.api.Disabled;
+<a class="jxr_linenumber" name="L4" href="#L4">4</a>   <strong class="jxr_keyword">import</strong> org.junit.jupiter.api.Test;
 <a class="jxr_linenumber" name="L5" href="#L5">5</a>   <strong class="jxr_keyword">import</strong> org.owasp.dependencycheck.BaseTest;
 <a class="jxr_linenumber" name="L6" href="#L6">6</a>   <strong class="jxr_keyword">import</strong> org.owasp.dependencycheck.Engine;
 <a class="jxr_linenumber" name="L7" href="#L7">7</a>   <strong class="jxr_keyword">import</strong> org.owasp.dependencycheck.analyzer.exception.AnalysisException;
@@ -17,14 +17,14 @@
 <a class="jxr_linenumber" name="L9" href="#L9">9</a>   <strong class="jxr_keyword">import</strong> org.owasp.dependencycheck.dependency.EvidenceType;
 <a class="jxr_linenumber" name="L10" href="#L10">10</a>  <strong class="jxr_keyword">import</strong> org.owasp.dependencycheck.exception.InitializationException;
 <a class="jxr_linenumber" name="L11" href="#L11">11</a>  
-<a class="jxr_linenumber" name="L12" href="#L12">12</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> org.junit.Assert.assertTrue;
-<a class="jxr_linenumber" name="L13" href="#L13">13</a>  <strong class="jxr_keyword">import</strong> org.junit.Ignore;
+<a class="jxr_linenumber" name="L12" href="#L12">12</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> org.junit.jupiter.api.Assertions.assertTrue;
+<a class="jxr_linenumber" name="L13" href="#L13">13</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> org.junit.jupiter.api.Assumptions.assumeTrue;
 <a class="jxr_linenumber" name="L14" href="#L14">14</a>  
-<a class="jxr_linenumber" name="L15" href="#L15">15</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">class</strong> <a href="../../../../org/owasp/dependencycheck/analyzer/PnpmAuditAnalyzerIT.html">PnpmAuditAnalyzerIT</a> <strong class="jxr_keyword">extends</strong> <a href="../../../../org/owasp/dependencycheck/BaseTest.html">BaseTest</a> {
+<a class="jxr_linenumber" name="L15" href="#L15">15</a>  <strong class="jxr_keyword">class</strong> <a href="../../../../org/owasp/dependencycheck/analyzer/PnpmAuditAnalyzerIT.html">PnpmAuditAnalyzerIT</a> <strong class="jxr_keyword">extends</strong> <a href="../../../../org/owasp/dependencycheck/BaseTest.html">BaseTest</a> {
 <a class="jxr_linenumber" name="L16" href="#L16">16</a>  
 <a class="jxr_linenumber" name="L17" href="#L17">17</a>      @Test
-<a class="jxr_linenumber" name="L18" href="#L18">18</a>      @Ignore(<span class="jxr_string">"unfortunately pnpm and brew are somewhat broken on my machine atm..."</span>)
-<a class="jxr_linenumber" name="L19" href="#L19">19</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testAnalyzePackagePnpm() <strong class="jxr_keyword">throws</strong> AnalysisException {
+<a class="jxr_linenumber" name="L18" href="#L18">18</a>      @Disabled(<span class="jxr_string">"unfortunately pnpm and brew are somewhat broken on my machine atm..."</span>)
+<a class="jxr_linenumber" name="L19" href="#L19">19</a>      <strong class="jxr_keyword">void</strong> testAnalyzePackagePnpm() <strong class="jxr_keyword">throws</strong> AnalysisException {
 <a class="jxr_linenumber" name="L20" href="#L20">20</a>  
 <a class="jxr_linenumber" name="L21" href="#L21">21</a>          <strong class="jxr_keyword">try</strong> (Engine engine = <strong class="jxr_keyword">new</strong> Engine(getSettings())) {
 <a class="jxr_linenumber" name="L22" href="#L22">22</a>              PnpmAuditAnalyzer analyzer = <strong class="jxr_keyword">new</strong> PnpmAuditAnalyzer();
@@ -35,7 +35,7 @@
 <a class="jxr_linenumber" name="L27" href="#L27">27</a>              <strong class="jxr_keyword">final</strong> Dependency toScan = <strong class="jxr_keyword">new</strong> Dependency(BaseTest.getResourceAsFile(<strong class="jxr_keyword">this</strong>, <span class="jxr_string">"pnpmaudit/pnpm-lock.yaml"</span>));
 <a class="jxr_linenumber" name="L28" href="#L28">28</a>              analyzer.analyze(toScan, engine);
 <a class="jxr_linenumber" name="L29" href="#L29">29</a>              <strong class="jxr_keyword">boolean</strong> found = false;
-<a class="jxr_linenumber" name="L30" href="#L30">30</a>              assertTrue(<span class="jxr_string">"More than 1 dependency should be identified"</span>, 1 &lt; engine.getDependencies().length);
+<a class="jxr_linenumber" name="L30" href="#L30">30</a>              assertTrue(1 &lt; engine.getDependencies().length, <span class="jxr_string">"More than 1 dependency should be identified"</span>);
 <a class="jxr_linenumber" name="L31" href="#L31">31</a>              <strong class="jxr_keyword">for</strong> (Dependency result : engine.getDependencies()) {
 <a class="jxr_linenumber" name="L32" href="#L32">32</a>                  <strong class="jxr_keyword">if</strong> (<span class="jxr_string">"pnpm-lock.yaml?dns-sync"</span>.equals(result.getFileName())) {
 <a class="jxr_linenumber" name="L33" href="#L33">33</a>                      found = <strong class="jxr_keyword">true</strong>;
@@ -44,10 +44,10 @@
 <a class="jxr_linenumber" name="L36" href="#L36">36</a>                      assertTrue(result.isVirtual());
 <a class="jxr_linenumber" name="L37" href="#L37">37</a>                  }
 <a class="jxr_linenumber" name="L38" href="#L38">38</a>              }
-<a class="jxr_linenumber" name="L39" href="#L39">39</a>              assertTrue(<span class="jxr_string">"dns-sync was not found"</span>, found);
+<a class="jxr_linenumber" name="L39" href="#L39">39</a>              assertTrue(found, <span class="jxr_string">"dns-sync was not found"</span>);
 <a class="jxr_linenumber" name="L40" href="#L40">40</a>          } <strong class="jxr_keyword">catch</strong> (InitializationException ex) {
 <a class="jxr_linenumber" name="L41" href="#L41">41</a>              <em class="jxr_comment">//yarn is not installed - skip the test case.</em>
-<a class="jxr_linenumber" name="L42" href="#L42">42</a>              Assume.assumeNoException(ex);
+<a class="jxr_linenumber" name="L42" href="#L42">42</a>              assumeTrue(false, ex.toString());
 <a class="jxr_linenumber" name="L43" href="#L43">43</a>          }
 <a class="jxr_linenumber" name="L44" href="#L44">44</a>      }
 <a class="jxr_linenumber" name="L45" href="#L45">45</a>  }

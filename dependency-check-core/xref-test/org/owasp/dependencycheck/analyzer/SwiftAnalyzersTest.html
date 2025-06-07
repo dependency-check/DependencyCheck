@@ -8,22 +8,22 @@
 <div id="overview"><a href="../../../../../testapidocs/org/owasp/dependencycheck/analyzer/SwiftAnalyzersTest.html">View Javadoc</a></div><pre>
 <a class="jxr_linenumber" name="L1" href="#L1">1</a>   <strong class="jxr_keyword">package</strong> org.owasp.dependencycheck.analyzer;
 <a class="jxr_linenumber" name="L2" href="#L2">2</a>   
-<a class="jxr_linenumber" name="L3" href="#L3">3</a>   <strong class="jxr_keyword">import</strong> org.junit.After;
-<a class="jxr_linenumber" name="L4" href="#L4">4</a>   <strong class="jxr_keyword">import</strong> org.junit.Before;
-<a class="jxr_linenumber" name="L5" href="#L5">5</a>   <strong class="jxr_keyword">import</strong> org.junit.Test;
+<a class="jxr_linenumber" name="L3" href="#L3">3</a>   <strong class="jxr_keyword">import</strong> org.junit.jupiter.api.AfterEach;
+<a class="jxr_linenumber" name="L4" href="#L4">4</a>   <strong class="jxr_keyword">import</strong> org.junit.jupiter.api.BeforeEach;
+<a class="jxr_linenumber" name="L5" href="#L5">5</a>   <strong class="jxr_keyword">import</strong> org.junit.jupiter.api.Test;
 <a class="jxr_linenumber" name="L6" href="#L6">6</a>   <strong class="jxr_keyword">import</strong> org.owasp.dependencycheck.BaseTest;
 <a class="jxr_linenumber" name="L7" href="#L7">7</a>   <strong class="jxr_keyword">import</strong> org.owasp.dependencycheck.Engine;
 <a class="jxr_linenumber" name="L8" href="#L8">8</a>   <strong class="jxr_keyword">import</strong> org.owasp.dependencycheck.analyzer.exception.AnalysisException;
 <a class="jxr_linenumber" name="L9" href="#L9">9</a>   <strong class="jxr_keyword">import</strong> org.owasp.dependencycheck.dependency.Dependency;
-<a class="jxr_linenumber" name="L10" href="#L10">10</a>  
-<a class="jxr_linenumber" name="L11" href="#L11">11</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> org.hamcrest.CoreMatchers.containsString;
-<a class="jxr_linenumber" name="L12" href="#L12">12</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> org.hamcrest.CoreMatchers.is;
-<a class="jxr_linenumber" name="L13" href="#L13">13</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> org.hamcrest.MatcherAssert.assertThat;
-<a class="jxr_linenumber" name="L14" href="#L14">14</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> org.hamcrest.CoreMatchers.equalTo;
-<a class="jxr_linenumber" name="L15" href="#L15">15</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> org.junit.Assert.assertTrue;
-<a class="jxr_linenumber" name="L16" href="#L16">16</a>  
-<a class="jxr_linenumber" name="L17" href="#L17">17</a>  <strong class="jxr_keyword">import</strong> java.io.File;
-<a class="jxr_linenumber" name="L18" href="#L18">18</a>  <strong class="jxr_keyword">import</strong> org.owasp.dependencycheck.dependency.EvidenceType;
+<a class="jxr_linenumber" name="L10" href="#L10">10</a>  <strong class="jxr_keyword">import</strong> org.owasp.dependencycheck.dependency.EvidenceType;
+<a class="jxr_linenumber" name="L11" href="#L11">11</a>  
+<a class="jxr_linenumber" name="L12" href="#L12">12</a>  <strong class="jxr_keyword">import</strong> java.io.File;
+<a class="jxr_linenumber" name="L13" href="#L13">13</a>  
+<a class="jxr_linenumber" name="L14" href="#L14">14</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> org.hamcrest.CoreMatchers.containsString;
+<a class="jxr_linenumber" name="L15" href="#L15">15</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> org.hamcrest.CoreMatchers.equalTo;
+<a class="jxr_linenumber" name="L16" href="#L16">16</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> org.hamcrest.CoreMatchers.is;
+<a class="jxr_linenumber" name="L17" href="#L17">17</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> org.hamcrest.MatcherAssert.assertThat;
+<a class="jxr_linenumber" name="L18" href="#L18">18</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> org.junit.jupiter.api.Assertions.assertTrue;
 <a class="jxr_linenumber" name="L19" href="#L19">19</a>  
 <a class="jxr_linenumber" name="L20" href="#L20">20</a>  <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L21" href="#L21">21</a>  <em class="jxr_javadoccomment"> * Unit tests for CocoaPodsAnalyzer, CarthageAnalyzer and SwiftPackageManagerAnalyzer.</em>
@@ -32,7 +32,7 @@
 <a class="jxr_linenumber" name="L24" href="#L24">24</a>  <em class="jxr_javadoccomment"> * @author Jorge Mendes</em>
 <a class="jxr_linenumber" name="L25" href="#L25">25</a>  <em class="jxr_javadoccomment"> * @author Alin Radut</em>
 <a class="jxr_linenumber" name="L26" href="#L26">26</a>  <em class="jxr_javadoccomment"> */</em>
-<a class="jxr_linenumber" name="L27" href="#L27">27</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">class</strong> <a href="../../../../org/owasp/dependencycheck/analyzer/SwiftAnalyzersTest.html">SwiftAnalyzersTest</a> <strong class="jxr_keyword">extends</strong> <a href="../../../../org/owasp/dependencycheck/BaseTest.html">BaseTest</a> {
+<a class="jxr_linenumber" name="L27" href="#L27">27</a>  <strong class="jxr_keyword">class</strong> <a href="../../../../org/owasp/dependencycheck/analyzer/SwiftAnalyzersTest.html">SwiftAnalyzersTest</a> <strong class="jxr_keyword">extends</strong> <a href="../../../../org/owasp/dependencycheck/BaseTest.html">BaseTest</a> {
 <a class="jxr_linenumber" name="L28" href="#L28">28</a>  
 <a class="jxr_linenumber" name="L29" href="#L29">29</a>      <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L30" href="#L30">30</a>  <em class="jxr_javadoccomment">     * The analyzer to test.</em>
@@ -47,7 +47,7 @@
 <a class="jxr_linenumber" name="L39" href="#L39">39</a>  <em class="jxr_javadoccomment">     *</em>
 <a class="jxr_linenumber" name="L40" href="#L40">40</a>  <em class="jxr_javadoccomment">     * @throws Exception thrown if there is a problem</em>
 <a class="jxr_linenumber" name="L41" href="#L41">41</a>  <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L42" href="#L42">42</a>      @Before
+<a class="jxr_linenumber" name="L42" href="#L42">42</a>      @BeforeEach
 <a class="jxr_linenumber" name="L43" href="#L43">43</a>      @Override
 <a class="jxr_linenumber" name="L44" href="#L44">44</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> setUp() <strong class="jxr_keyword">throws</strong> Exception {
 <a class="jxr_linenumber" name="L45" href="#L45">45</a>          <strong class="jxr_keyword">super</strong>.setUp();
@@ -77,7 +77,7 @@
 <a class="jxr_linenumber" name="L69" href="#L69">69</a>  <em class="jxr_javadoccomment">     *</em>
 <a class="jxr_linenumber" name="L70" href="#L70">70</a>  <em class="jxr_javadoccomment">     * @throws Exception thrown if there is a problem</em>
 <a class="jxr_linenumber" name="L71" href="#L71">71</a>  <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L72" href="#L72">72</a>      @After
+<a class="jxr_linenumber" name="L72" href="#L72">72</a>      @AfterEach
 <a class="jxr_linenumber" name="L73" href="#L73">73</a>      @Override
 <a class="jxr_linenumber" name="L74" href="#L74">74</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> tearDown() <strong class="jxr_keyword">throws</strong> Exception {
 <a class="jxr_linenumber" name="L75" href="#L75">75</a>          podsAnalyzer.close();
@@ -93,7 +93,7 @@
 <a class="jxr_linenumber" name="L85" href="#L85">85</a>  <em class="jxr_javadoccomment">     * Test of getName method, of class CocoaPodsAnalyzer.</em>
 <a class="jxr_linenumber" name="L86" href="#L86">86</a>  <em class="jxr_javadoccomment">     */</em>
 <a class="jxr_linenumber" name="L87" href="#L87">87</a>      @Test
-<a class="jxr_linenumber" name="L88" href="#L88">88</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testPodsGetName() {
+<a class="jxr_linenumber" name="L88" href="#L88">88</a>      <strong class="jxr_keyword">void</strong> testPodsGetName() {
 <a class="jxr_linenumber" name="L89" href="#L89">89</a>          assertThat(podsAnalyzer.getName(), is(<span class="jxr_string">"CocoaPods Package Analyzer"</span>));
 <a class="jxr_linenumber" name="L90" href="#L90">90</a>      }
 <a class="jxr_linenumber" name="L91" href="#L91">91</a>  
@@ -101,7 +101,7 @@
 <a class="jxr_linenumber" name="L93" href="#L93">93</a>  <em class="jxr_javadoccomment">     * Test of getName method, of class CarthageAnalyzer.</em>
 <a class="jxr_linenumber" name="L94" href="#L94">94</a>  <em class="jxr_javadoccomment">     */</em>
 <a class="jxr_linenumber" name="L95" href="#L95">95</a>      @Test
-<a class="jxr_linenumber" name="L96" href="#L96">96</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testCarthageGetName() {
+<a class="jxr_linenumber" name="L96" href="#L96">96</a>      <strong class="jxr_keyword">void</strong> testCarthageGetName() {
 <a class="jxr_linenumber" name="L97" href="#L97">97</a>          assertThat(carthageAnalyzer.getName(), is(<span class="jxr_string">"Carthage Package Analyzer"</span>));
 <a class="jxr_linenumber" name="L98" href="#L98">98</a>      }
 <a class="jxr_linenumber" name="L99" href="#L99">99</a>  
@@ -109,7 +109,7 @@
 <a class="jxr_linenumber" name="L101" href="#L101">101</a> <em class="jxr_javadoccomment">     * Test of getName method, of class SwiftPackageManagerAnalyzer.</em>
 <a class="jxr_linenumber" name="L102" href="#L102">102</a> <em class="jxr_javadoccomment">     */</em>
 <a class="jxr_linenumber" name="L103" href="#L103">103</a>     @Test
-<a class="jxr_linenumber" name="L104" href="#L104">104</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testSPMGetName() {
+<a class="jxr_linenumber" name="L104" href="#L104">104</a>     <strong class="jxr_keyword">void</strong> testSPMGetName() {
 <a class="jxr_linenumber" name="L105" href="#L105">105</a>         assertThat(spmAnalyzer.getName(), is(<span class="jxr_string">"SWIFT Package Manager Analyzer"</span>));
 <a class="jxr_linenumber" name="L106" href="#L106">106</a>     }
 <a class="jxr_linenumber" name="L107" href="#L107">107</a> 
@@ -117,7 +117,7 @@
 <a class="jxr_linenumber" name="L109" href="#L109">109</a> <em class="jxr_javadoccomment">     * Test of supportsFiles method, of class CocoaPodsAnalyzer.</em>
 <a class="jxr_linenumber" name="L110" href="#L110">110</a> <em class="jxr_javadoccomment">     */</em>
 <a class="jxr_linenumber" name="L111" href="#L111">111</a>     @Test
-<a class="jxr_linenumber" name="L112" href="#L112">112</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testPodsSupportsFiles() {
+<a class="jxr_linenumber" name="L112" href="#L112">112</a>     <strong class="jxr_keyword">void</strong> testPodsSupportsFiles() {
 <a class="jxr_linenumber" name="L113" href="#L113">113</a>         assertThat(podsAnalyzer.accept(<strong class="jxr_keyword">new</strong> File(<span class="jxr_string">"test.podspec"</span>)), is(<strong class="jxr_keyword">true</strong>));
 <a class="jxr_linenumber" name="L114" href="#L114">114</a>         assertThat(podsAnalyzer.accept(<strong class="jxr_keyword">new</strong> File(<span class="jxr_string">"Podfile.lock"</span>)), is(<strong class="jxr_keyword">true</strong>));
 <a class="jxr_linenumber" name="L115" href="#L115">115</a>     }
@@ -126,7 +126,7 @@
 <a class="jxr_linenumber" name="L118" href="#L118">118</a> <em class="jxr_javadoccomment">     * Test of supportsFiles method, of class CocoaPodsAnalyzer.</em>
 <a class="jxr_linenumber" name="L119" href="#L119">119</a> <em class="jxr_javadoccomment">     */</em>
 <a class="jxr_linenumber" name="L120" href="#L120">120</a>     @Test
-<a class="jxr_linenumber" name="L121" href="#L121">121</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testCarthageSupportsFiles() {
+<a class="jxr_linenumber" name="L121" href="#L121">121</a>     <strong class="jxr_keyword">void</strong> testCarthageSupportsFiles() {
 <a class="jxr_linenumber" name="L122" href="#L122">122</a>         assertThat(carthageAnalyzer.accept(<strong class="jxr_keyword">new</strong> File(<span class="jxr_string">"Cartfile.resolved"</span>)), is(<strong class="jxr_keyword">true</strong>));
 <a class="jxr_linenumber" name="L123" href="#L123">123</a>     }
 <a class="jxr_linenumber" name="L124" href="#L124">124</a> 
@@ -134,7 +134,7 @@
 <a class="jxr_linenumber" name="L126" href="#L126">126</a> <em class="jxr_javadoccomment">     * Test of supportsFiles method, of class SwiftPackageManagerAnalyzer.</em>
 <a class="jxr_linenumber" name="L127" href="#L127">127</a> <em class="jxr_javadoccomment">     */</em>
 <a class="jxr_linenumber" name="L128" href="#L128">128</a>     @Test
-<a class="jxr_linenumber" name="L129" href="#L129">129</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testSPMSupportsFiles() {
+<a class="jxr_linenumber" name="L129" href="#L129">129</a>     <strong class="jxr_keyword">void</strong> testSPMSupportsFiles() {
 <a class="jxr_linenumber" name="L130" href="#L130">130</a>         assertThat(spmAnalyzer.accept(<strong class="jxr_keyword">new</strong> File(<span class="jxr_string">"Package.swift"</span>)), is(<strong class="jxr_keyword">true</strong>));
 <a class="jxr_linenumber" name="L131" href="#L131">131</a>         assertThat(sprAnalyzer.accept(<strong class="jxr_keyword">new</strong> File(<span class="jxr_string">"Package.resolved"</span>)), is(<strong class="jxr_keyword">true</strong>));
 <a class="jxr_linenumber" name="L132" href="#L132">132</a>     }
@@ -145,7 +145,7 @@
 <a class="jxr_linenumber" name="L137" href="#L137">137</a> <em class="jxr_javadoccomment">     * @throws AnalysisException is thrown when an exception occurs.</em>
 <a class="jxr_linenumber" name="L138" href="#L138">138</a> <em class="jxr_javadoccomment">     */</em>
 <a class="jxr_linenumber" name="L139" href="#L139">139</a>     @Test
-<a class="jxr_linenumber" name="L140" href="#L140">140</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testCocoaPodsPodfileAnalyzer() <strong class="jxr_keyword">throws</strong> AnalysisException {
+<a class="jxr_linenumber" name="L140" href="#L140">140</a>     <strong class="jxr_keyword">void</strong> testCocoaPodsPodfileAnalyzer() <strong class="jxr_keyword">throws</strong> AnalysisException {
 <a class="jxr_linenumber" name="L141" href="#L141">141</a>         <strong class="jxr_keyword">final</strong> Engine engine = <strong class="jxr_keyword">new</strong> Engine(getSettings());
 <a class="jxr_linenumber" name="L142" href="#L142">142</a>         <strong class="jxr_keyword">final</strong> Dependency result = <strong class="jxr_keyword">new</strong> Dependency(BaseTest.getResourceAsFile(<strong class="jxr_keyword">this</strong>,
 <a class="jxr_linenumber" name="L143" href="#L143">143</a>                 <span class="jxr_string">"swift/cocoapods/Podfile.lock"</span>));
@@ -173,7 +173,7 @@
 <a class="jxr_linenumber" name="L165" href="#L165">165</a>     }
 <a class="jxr_linenumber" name="L166" href="#L166">166</a> 
 <a class="jxr_linenumber" name="L167" href="#L167">167</a>     @Test
-<a class="jxr_linenumber" name="L168" href="#L168">168</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testCocoaPodsPodspecAnalyzer() <strong class="jxr_keyword">throws</strong> AnalysisException {
+<a class="jxr_linenumber" name="L168" href="#L168">168</a>     <strong class="jxr_keyword">void</strong> testCocoaPodsPodspecAnalyzer() <strong class="jxr_keyword">throws</strong> AnalysisException {
 <a class="jxr_linenumber" name="L169" href="#L169">169</a>         <strong class="jxr_keyword">final</strong> Dependency result = <strong class="jxr_keyword">new</strong> Dependency(BaseTest.getResourceAsFile(<strong class="jxr_keyword">this</strong>,
 <a class="jxr_linenumber" name="L170" href="#L170">170</a>                 <span class="jxr_string">"swift/cocoapods/EasyPeasy.podspec"</span>));
 <a class="jxr_linenumber" name="L171" href="#L171">171</a>         podsAnalyzer.analyze(result, <strong class="jxr_keyword">null</strong>);
@@ -196,7 +196,7 @@
 <a class="jxr_linenumber" name="L188" href="#L188">188</a> <em class="jxr_javadoccomment">     * @throws AnalysisException is thrown when an exception occurs.</em>
 <a class="jxr_linenumber" name="L189" href="#L189">189</a> <em class="jxr_javadoccomment">     */</em>
 <a class="jxr_linenumber" name="L190" href="#L190">190</a>     @Test
-<a class="jxr_linenumber" name="L191" href="#L191">191</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testCarthageCartfileResolvedAnalyzer() <strong class="jxr_keyword">throws</strong> AnalysisException {
+<a class="jxr_linenumber" name="L191" href="#L191">191</a>     <strong class="jxr_keyword">void</strong> testCarthageCartfileResolvedAnalyzer() <strong class="jxr_keyword">throws</strong> AnalysisException {
 <a class="jxr_linenumber" name="L192" href="#L192">192</a>         <strong class="jxr_keyword">final</strong> Engine engine = <strong class="jxr_keyword">new</strong> Engine(getSettings());
 <a class="jxr_linenumber" name="L193" href="#L193">193</a>         <strong class="jxr_keyword">final</strong> Dependency result = <strong class="jxr_keyword">new</strong> Dependency(BaseTest.getResourceAsFile(<strong class="jxr_keyword">this</strong>,
 <a class="jxr_linenumber" name="L194" href="#L194">194</a>                 <span class="jxr_string">"swift/carthage/Cartfile.resolved"</span>));
@@ -229,7 +229,7 @@
 <a class="jxr_linenumber" name="L221" href="#L221">221</a> <em class="jxr_javadoccomment">     * @throws AnalysisException is thrown when an exception occurs.</em>
 <a class="jxr_linenumber" name="L222" href="#L222">222</a> <em class="jxr_javadoccomment">     */</em>
 <a class="jxr_linenumber" name="L223" href="#L223">223</a>     @Test
-<a class="jxr_linenumber" name="L224" href="#L224">224</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testSPMAnalyzer() <strong class="jxr_keyword">throws</strong> AnalysisException {
+<a class="jxr_linenumber" name="L224" href="#L224">224</a>     <strong class="jxr_keyword">void</strong> testSPMAnalyzer() <strong class="jxr_keyword">throws</strong> AnalysisException {
 <a class="jxr_linenumber" name="L225" href="#L225">225</a>         <strong class="jxr_keyword">final</strong> Dependency result = <strong class="jxr_keyword">new</strong> Dependency(BaseTest.getResourceAsFile(<strong class="jxr_keyword">this</strong>,
 <a class="jxr_linenumber" name="L226" href="#L226">226</a>                 <span class="jxr_string">"swift/Gloss/Package.swift"</span>));
 <a class="jxr_linenumber" name="L227" href="#L227">227</a>         spmAnalyzer.analyze(result, <strong class="jxr_keyword">null</strong>);
@@ -242,7 +242,7 @@
 <a class="jxr_linenumber" name="L234" href="#L234">234</a>     }
 <a class="jxr_linenumber" name="L235" href="#L235">235</a> 
 <a class="jxr_linenumber" name="L236" href="#L236">236</a>     @Test
-<a class="jxr_linenumber" name="L237" href="#L237">237</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testSPMResolvedAnalyzerV1() <strong class="jxr_keyword">throws</strong> AnalysisException {
+<a class="jxr_linenumber" name="L237" href="#L237">237</a>     <strong class="jxr_keyword">void</strong> testSPMResolvedAnalyzerV1() <strong class="jxr_keyword">throws</strong> AnalysisException {
 <a class="jxr_linenumber" name="L238" href="#L238">238</a>         <strong class="jxr_keyword">final</strong> Engine engine = <strong class="jxr_keyword">new</strong> Engine(getSettings());
 <a class="jxr_linenumber" name="L239" href="#L239">239</a>         <strong class="jxr_keyword">final</strong> Dependency result = <strong class="jxr_keyword">new</strong> Dependency(BaseTest.getResourceAsFile(<strong class="jxr_keyword">this</strong>,
 <a class="jxr_linenumber" name="L240" href="#L240">240</a>                 <span class="jxr_string">"swift/spm/Package.resolved"</span>));
@@ -258,7 +258,7 @@
 <a class="jxr_linenumber" name="L250" href="#L250">250</a>     }
 <a class="jxr_linenumber" name="L251" href="#L251">251</a> 
 <a class="jxr_linenumber" name="L252" href="#L252">252</a>     @Test
-<a class="jxr_linenumber" name="L253" href="#L253">253</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testSPMResolvedAnalyzerV2() <strong class="jxr_keyword">throws</strong> AnalysisException {
+<a class="jxr_linenumber" name="L253" href="#L253">253</a>     <strong class="jxr_keyword">void</strong> testSPMResolvedAnalyzerV2() <strong class="jxr_keyword">throws</strong> AnalysisException {
 <a class="jxr_linenumber" name="L254" href="#L254">254</a>         <strong class="jxr_keyword">final</strong> Engine engine = <strong class="jxr_keyword">new</strong> Engine(getSettings());
 <a class="jxr_linenumber" name="L255" href="#L255">255</a>         <strong class="jxr_keyword">final</strong> Dependency result = <strong class="jxr_keyword">new</strong> Dependency(BaseTest.getResourceAsFile(<strong class="jxr_keyword">this</strong>,
 <a class="jxr_linenumber" name="L256" href="#L256">256</a>                 <span class="jxr_string">"swift/spmV2/Package.resolved"</span>));
@@ -274,7 +274,7 @@
 <a class="jxr_linenumber" name="L266" href="#L266">266</a>     }
 <a class="jxr_linenumber" name="L267" href="#L267">267</a> 
 <a class="jxr_linenumber" name="L268" href="#L268">268</a>     @Test
-<a class="jxr_linenumber" name="L269" href="#L269">269</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testSPMResolvedAnalyzerV3() <strong class="jxr_keyword">throws</strong> AnalysisException {
+<a class="jxr_linenumber" name="L269" href="#L269">269</a>     <strong class="jxr_keyword">void</strong> testSPMResolvedAnalyzerV3() <strong class="jxr_keyword">throws</strong> AnalysisException {
 <a class="jxr_linenumber" name="L270" href="#L270">270</a>         <strong class="jxr_keyword">final</strong> Engine engine = <strong class="jxr_keyword">new</strong> Engine(getSettings());
 <a class="jxr_linenumber" name="L271" href="#L271">271</a>         <strong class="jxr_keyword">final</strong> Dependency result = <strong class="jxr_keyword">new</strong> Dependency(BaseTest.getResourceAsFile(<strong class="jxr_keyword">this</strong>,
 <a class="jxr_linenumber" name="L272" href="#L272">272</a>                 <span class="jxr_string">"swift/spmV3/Package.resolved"</span>));
@@ -290,7 +290,7 @@
 <a class="jxr_linenumber" name="L282" href="#L282">282</a>     }
 <a class="jxr_linenumber" name="L283" href="#L283">283</a> 
 <a class="jxr_linenumber" name="L284" href="#L284">284</a>     @Test
-<a class="jxr_linenumber" name="L285" href="#L285">285</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testIsEnabledIsTrueByDefault() {
+<a class="jxr_linenumber" name="L285" href="#L285">285</a>     <strong class="jxr_keyword">void</strong> testIsEnabledIsTrueByDefault() {
 <a class="jxr_linenumber" name="L286" href="#L286">286</a>         assertTrue(spmAnalyzer.isEnabled());
 <a class="jxr_linenumber" name="L287" href="#L287">287</a>         assertTrue(sprAnalyzer.isEnabled());
 <a class="jxr_linenumber" name="L288" href="#L288">288</a>     }

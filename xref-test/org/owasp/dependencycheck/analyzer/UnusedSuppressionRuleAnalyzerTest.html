@@ -8,43 +8,43 @@
 <div id="overview"><a href="../../../../../testapidocs/org/owasp/dependencycheck/analyzer/UnusedSuppressionRuleAnalyzerTest.html">View Javadoc</a></div><pre>
 <a class="jxr_linenumber" name="L1" href="#L1">1</a>   <strong class="jxr_keyword">package</strong> org.owasp.dependencycheck.analyzer;
 <a class="jxr_linenumber" name="L2" href="#L2">2</a>   
-<a class="jxr_linenumber" name="L3" href="#L3">3</a>   <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> org.junit.Assert.assertNotNull;
-<a class="jxr_linenumber" name="L4" href="#L4">4</a>   <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> org.junit.Assert.assertEquals;
-<a class="jxr_linenumber" name="L5" href="#L5">5</a>   
-<a class="jxr_linenumber" name="L6" href="#L6">6</a>   <strong class="jxr_keyword">import</strong> java.util.ArrayList;
-<a class="jxr_linenumber" name="L7" href="#L7">7</a>   <strong class="jxr_keyword">import</strong> java.util.List;
-<a class="jxr_linenumber" name="L8" href="#L8">8</a>   
-<a class="jxr_linenumber" name="L9" href="#L9">9</a>   <strong class="jxr_keyword">import</strong> org.junit.Test;
-<a class="jxr_linenumber" name="L10" href="#L10">10</a>  <strong class="jxr_keyword">import</strong> org.owasp.dependencycheck.BaseTest;
-<a class="jxr_linenumber" name="L11" href="#L11">11</a>  <strong class="jxr_keyword">import</strong> org.owasp.dependencycheck.Engine;
-<a class="jxr_linenumber" name="L12" href="#L12">12</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> org.owasp.dependencycheck.analyzer.AbstractSuppressionAnalyzer.SUPPRESSION_OBJECT_KEY;
-<a class="jxr_linenumber" name="L13" href="#L13">13</a>  <strong class="jxr_keyword">import</strong> org.owasp.dependencycheck.analyzer.exception.AnalysisException;
-<a class="jxr_linenumber" name="L14" href="#L14">14</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> org.owasp.dependencycheck.analyzer.UnusedSuppressionRuleAnalyzer.EXCEPTION_MSG;
-<a class="jxr_linenumber" name="L15" href="#L15">15</a>  <strong class="jxr_keyword">import</strong> org.owasp.dependencycheck.dependency.Confidence;
-<a class="jxr_linenumber" name="L16" href="#L16">16</a>  <strong class="jxr_keyword">import</strong> org.owasp.dependencycheck.dependency.Dependency;
-<a class="jxr_linenumber" name="L17" href="#L17">17</a>  <strong class="jxr_keyword">import</strong> org.owasp.dependencycheck.dependency.naming.Identifier;
-<a class="jxr_linenumber" name="L18" href="#L18">18</a>  <strong class="jxr_keyword">import</strong> org.owasp.dependencycheck.dependency.naming.PurlIdentifier;
-<a class="jxr_linenumber" name="L19" href="#L19">19</a>  <strong class="jxr_keyword">import</strong> org.owasp.dependencycheck.utils.Settings;
-<a class="jxr_linenumber" name="L20" href="#L20">20</a>  <strong class="jxr_keyword">import</strong> org.owasp.dependencycheck.xml.suppression.SuppressionRule;
-<a class="jxr_linenumber" name="L21" href="#L21">21</a>  <strong class="jxr_keyword">import</strong> org.owasp.dependencycheck.xml.suppression.PropertyType;
+<a class="jxr_linenumber" name="L3" href="#L3">3</a>   <strong class="jxr_keyword">import</strong> org.junit.jupiter.api.Test;
+<a class="jxr_linenumber" name="L4" href="#L4">4</a>   <strong class="jxr_keyword">import</strong> org.owasp.dependencycheck.BaseTest;
+<a class="jxr_linenumber" name="L5" href="#L5">5</a>   <strong class="jxr_keyword">import</strong> org.owasp.dependencycheck.Engine;
+<a class="jxr_linenumber" name="L6" href="#L6">6</a>   <strong class="jxr_keyword">import</strong> org.owasp.dependencycheck.analyzer.exception.AnalysisException;
+<a class="jxr_linenumber" name="L7" href="#L7">7</a>   <strong class="jxr_keyword">import</strong> org.owasp.dependencycheck.dependency.Confidence;
+<a class="jxr_linenumber" name="L8" href="#L8">8</a>   <strong class="jxr_keyword">import</strong> org.owasp.dependencycheck.dependency.Dependency;
+<a class="jxr_linenumber" name="L9" href="#L9">9</a>   <strong class="jxr_keyword">import</strong> org.owasp.dependencycheck.dependency.naming.Identifier;
+<a class="jxr_linenumber" name="L10" href="#L10">10</a>  <strong class="jxr_keyword">import</strong> org.owasp.dependencycheck.dependency.naming.PurlIdentifier;
+<a class="jxr_linenumber" name="L11" href="#L11">11</a>  <strong class="jxr_keyword">import</strong> org.owasp.dependencycheck.utils.Settings;
+<a class="jxr_linenumber" name="L12" href="#L12">12</a>  <strong class="jxr_keyword">import</strong> org.owasp.dependencycheck.xml.suppression.PropertyType;
+<a class="jxr_linenumber" name="L13" href="#L13">13</a>  <strong class="jxr_keyword">import</strong> org.owasp.dependencycheck.xml.suppression.SuppressionRule;
+<a class="jxr_linenumber" name="L14" href="#L14">14</a>  
+<a class="jxr_linenumber" name="L15" href="#L15">15</a>  <strong class="jxr_keyword">import</strong> java.util.ArrayList;
+<a class="jxr_linenumber" name="L16" href="#L16">16</a>  <strong class="jxr_keyword">import</strong> java.util.List;
+<a class="jxr_linenumber" name="L17" href="#L17">17</a>  
+<a class="jxr_linenumber" name="L18" href="#L18">18</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> org.junit.jupiter.api.Assertions.assertEquals;
+<a class="jxr_linenumber" name="L19" href="#L19">19</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> org.junit.jupiter.api.Assertions.assertNotNull;
+<a class="jxr_linenumber" name="L20" href="#L20">20</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> org.owasp.dependencycheck.analyzer.AbstractSuppressionAnalyzer.SUPPRESSION_OBJECT_KEY;
+<a class="jxr_linenumber" name="L21" href="#L21">21</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> org.owasp.dependencycheck.analyzer.UnusedSuppressionRuleAnalyzer.EXCEPTION_MSG;
 <a class="jxr_linenumber" name="L22" href="#L22">22</a>  
-<a class="jxr_linenumber" name="L23" href="#L23">23</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">class</strong> <a href="../../../../org/owasp/dependencycheck/analyzer/UnusedSuppressionRuleAnalyzerTest.html">UnusedSuppressionRuleAnalyzerTest</a> <strong class="jxr_keyword">extends</strong> <a href="../../../../org/owasp/dependencycheck/BaseTest.html">BaseTest</a> {
+<a class="jxr_linenumber" name="L23" href="#L23">23</a>  <strong class="jxr_keyword">class</strong> <a href="../../../../org/owasp/dependencycheck/analyzer/UnusedSuppressionRuleAnalyzerTest.html">UnusedSuppressionRuleAnalyzerTest</a> <strong class="jxr_keyword">extends</strong> <a href="../../../../org/owasp/dependencycheck/BaseTest.html">BaseTest</a> {
 <a class="jxr_linenumber" name="L24" href="#L24">24</a>  	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> String NAME = <span class="jxr_string">"Unused Suppression Rule Analyzer"</span>;
 <a class="jxr_linenumber" name="L25" href="#L25">25</a>  	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> String PACKAGE_NAME = <span class="jxr_string">"CoolAsACucumber"</span>;
 <a class="jxr_linenumber" name="L26" href="#L26">26</a>  	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> String EXPECTED_EX = <span class="jxr_string">"should have thrown an AnalysisException"</span>;
 <a class="jxr_linenumber" name="L27" href="#L27">27</a>  
 <a class="jxr_linenumber" name="L28" href="#L28">28</a>      @Test
-<a class="jxr_linenumber" name="L29" href="#L29">29</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testGetName() {
+<a class="jxr_linenumber" name="L29" href="#L29">29</a>      <strong class="jxr_keyword">void</strong> testGetName() {
 <a class="jxr_linenumber" name="L30" href="#L30">30</a>          UnusedSuppressionRuleAnalyzer analyzer = <strong class="jxr_keyword">new</strong> UnusedSuppressionRuleAnalyzer();
 <a class="jxr_linenumber" name="L31" href="#L31">31</a>          assertEquals(NAME, analyzer.getName());
 <a class="jxr_linenumber" name="L32" href="#L32">32</a>      }
 <a class="jxr_linenumber" name="L33" href="#L33">33</a>  
 <a class="jxr_linenumber" name="L34" href="#L34">34</a>      @Test
-<a class="jxr_linenumber" name="L35" href="#L35">35</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testException() <strong class="jxr_keyword">throws</strong> Exception {
+<a class="jxr_linenumber" name="L35" href="#L35">35</a>      <strong class="jxr_keyword">void</strong> testException() <strong class="jxr_keyword">throws</strong> Exception {
 <a class="jxr_linenumber" name="L36" href="#L36">36</a>  		<strong class="jxr_keyword">boolean</strong> shouldFail = <strong class="jxr_keyword">true</strong>;
 <a class="jxr_linenumber" name="L37" href="#L37">37</a>  		Dependency dependency10 = getDependency(<span class="jxr_string">"1.0"</span>);
 <a class="jxr_linenumber" name="L38" href="#L38">38</a>  		Dependency dependency11 = getDependency(<span class="jxr_string">"1.1"</span>);
-<a class="jxr_linenumber" name="L39" href="#L39">39</a>  		
+<a class="jxr_linenumber" name="L39" href="#L39">39</a>  
 <a class="jxr_linenumber" name="L40" href="#L40">40</a>  		UnusedSuppressionRuleAnalyzer analyzer = getAnalyzer(shouldFail);
 <a class="jxr_linenumber" name="L41" href="#L41">41</a>  		Engine engine = getEngine(<strong class="jxr_keyword">true</strong>, false, dependency10, dependency11);
 <a class="jxr_linenumber" name="L42" href="#L42">42</a>  		<strong class="jxr_keyword">try</strong> {
@@ -53,7 +53,7 @@
 <a class="jxr_linenumber" name="L45" href="#L45">45</a>  		} <strong class="jxr_keyword">catch</strong>(AnalysisException ok){
 <a class="jxr_linenumber" name="L46" href="#L46">46</a>  			assertEquals(String.format(EXCEPTION_MSG, 1), ok.getMessage());
 <a class="jxr_linenumber" name="L47" href="#L47">47</a>  		}
-<a class="jxr_linenumber" name="L48" href="#L48">48</a>  		
+<a class="jxr_linenumber" name="L48" href="#L48">48</a>  
 <a class="jxr_linenumber" name="L49" href="#L49">49</a>  		<em class="jxr_comment">// no exception</em>
 <a class="jxr_linenumber" name="L50" href="#L50">50</a>  		shouldFail = false;
 <a class="jxr_linenumber" name="L51" href="#L51">51</a>  		analyzer = getAnalyzer(shouldFail);
@@ -61,14 +61,14 @@
 <a class="jxr_linenumber" name="L53" href="#L53">53</a>  		analyzer.analyzeDependency(dependency10, engine);
 <a class="jxr_linenumber" name="L54" href="#L54">54</a>      	assertEquals(1, analyzer.getUnusedSuppressionRuleCount());
 <a class="jxr_linenumber" name="L55" href="#L55">55</a>  	}
-<a class="jxr_linenumber" name="L56" href="#L56">56</a>  	
+<a class="jxr_linenumber" name="L56" href="#L56">56</a>  
 <a class="jxr_linenumber" name="L57" href="#L57">57</a>      @Test
-<a class="jxr_linenumber" name="L58" href="#L58">58</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testCheckUnusedRules() <strong class="jxr_keyword">throws</strong> Exception {
+<a class="jxr_linenumber" name="L58" href="#L58">58</a>      <strong class="jxr_keyword">void</strong> testCheckUnusedRules() <strong class="jxr_keyword">throws</strong> Exception {
 <a class="jxr_linenumber" name="L59" href="#L59">59</a>  		<em class="jxr_comment">// flag unset</em>
 <a class="jxr_linenumber" name="L60" href="#L60">60</a>  		<strong class="jxr_keyword">boolean</strong> shouldFail = false;
 <a class="jxr_linenumber" name="L61" href="#L61">61</a>  		Dependency dependency10 = getDependency(<span class="jxr_string">"1.0"</span>);
 <a class="jxr_linenumber" name="L62" href="#L62">62</a>  		Dependency dependency11 = getDependency(<span class="jxr_string">"1.1"</span>);
-<a class="jxr_linenumber" name="L63" href="#L63">63</a>  		
+<a class="jxr_linenumber" name="L63" href="#L63">63</a>  
 <a class="jxr_linenumber" name="L64" href="#L64">64</a>  		<em class="jxr_comment">// a run without any suppression rule ➫ no unused suppression</em>
 <a class="jxr_linenumber" name="L65" href="#L65">65</a>  		checkUnusedRules(shouldFail, 0, false, false, dependency10);
 <a class="jxr_linenumber" name="L66" href="#L66">66</a>  
@@ -78,7 +78,7 @@
 <a class="jxr_linenumber" name="L70" href="#L70">70</a>  		<em class="jxr_comment">// a run with the vulnerable package ➫ no unused suppression</em>
 <a class="jxr_linenumber" name="L71" href="#L71">71</a>  		checkUnusedRules(shouldFail, 0, <strong class="jxr_keyword">true</strong>, <strong class="jxr_keyword">true</strong>, dependency10, dependency11);
 <a class="jxr_linenumber" name="L72" href="#L72">72</a>  
-<a class="jxr_linenumber" name="L73" href="#L73">73</a>  			
+<a class="jxr_linenumber" name="L73" href="#L73">73</a>  
 <a class="jxr_linenumber" name="L74" href="#L74">74</a>  		<em class="jxr_comment">// set flag</em>
 <a class="jxr_linenumber" name="L75" href="#L75">75</a>  		shouldFail = <strong class="jxr_keyword">true</strong>;
 <a class="jxr_linenumber" name="L76" href="#L76">76</a>  
@@ -91,31 +91,31 @@
 <a class="jxr_linenumber" name="L83" href="#L83">83</a>  		<em class="jxr_comment">// a run with the vulnerable package ➫ no unused suppression</em>
 <a class="jxr_linenumber" name="L84" href="#L84">84</a>  		checkUnusedRules(shouldFail, 0, <strong class="jxr_keyword">true</strong>, <strong class="jxr_keyword">true</strong>, dependency10, dependency11);
 <a class="jxr_linenumber" name="L85" href="#L85">85</a>      }
-<a class="jxr_linenumber" name="L86" href="#L86">86</a>  	
-<a class="jxr_linenumber" name="L87" href="#L87">87</a>  	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> checkUnusedRules(<strong class="jxr_keyword">boolean</strong> shouldFail, <strong class="jxr_keyword">int</strong> expectedCount, 
+<a class="jxr_linenumber" name="L86" href="#L86">86</a>  
+<a class="jxr_linenumber" name="L87" href="#L87">87</a>  	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> checkUnusedRules(<strong class="jxr_keyword">boolean</strong> shouldFail, <strong class="jxr_keyword">int</strong> expectedCount,
 <a class="jxr_linenumber" name="L88" href="#L88">88</a>  		<strong class="jxr_keyword">boolean</strong> withSuppressionRules, <strong class="jxr_keyword">boolean</strong> matching,
-<a class="jxr_linenumber" name="L89" href="#L89">89</a>  		Dependency ... dependencies) <strong class="jxr_keyword">throws</strong> Exception {
+<a class="jxr_linenumber" name="L89" href="#L89">89</a>  		Dependency ... dependencies) {
 <a class="jxr_linenumber" name="L90" href="#L90">90</a>          UnusedSuppressionRuleAnalyzer analyzer = getAnalyzer(shouldFail);
 <a class="jxr_linenumber" name="L91" href="#L91">91</a>  		assertNotNull(analyzer);
 <a class="jxr_linenumber" name="L92" href="#L92">92</a>  		Engine engine = getEngine(withSuppressionRules, matching, dependencies);
 <a class="jxr_linenumber" name="L93" href="#L93">93</a>  		analyzer.checkUnusedRules(engine);
 <a class="jxr_linenumber" name="L94" href="#L94">94</a>  		assertEquals(expectedCount, analyzer.getUnusedSuppressionRuleCount());
 <a class="jxr_linenumber" name="L95" href="#L95">95</a>  	}
-<a class="jxr_linenumber" name="L96" href="#L96">96</a>  	
-<a class="jxr_linenumber" name="L97" href="#L97">97</a>  		
+<a class="jxr_linenumber" name="L96" href="#L96">96</a>  
+<a class="jxr_linenumber" name="L97" href="#L97">97</a>  
 <a class="jxr_linenumber" name="L98" href="#L98">98</a>  	<strong class="jxr_keyword">private</strong> Dependency getDependency(String type, String namespace, String name, String version) <strong class="jxr_keyword">throws</strong> Exception {
 <a class="jxr_linenumber" name="L99" href="#L99">99</a>          Dependency dependency = <strong class="jxr_keyword">new</strong> Dependency();
 <a class="jxr_linenumber" name="L100" href="#L100">100</a> 		Identifier id = <strong class="jxr_keyword">new</strong> PurlIdentifier(type,namespace,name,version,Confidence.HIGHEST);
 <a class="jxr_linenumber" name="L101" href="#L101">101</a>         dependency.addSoftwareIdentifier(id);
 <a class="jxr_linenumber" name="L102" href="#L102">102</a> 		<strong class="jxr_keyword">return</strong> dependency;
 <a class="jxr_linenumber" name="L103" href="#L103">103</a> 	}
-<a class="jxr_linenumber" name="L104" href="#L104">104</a> 	
+<a class="jxr_linenumber" name="L104" href="#L104">104</a> 
 <a class="jxr_linenumber" name="L105" href="#L105">105</a> 	<strong class="jxr_keyword">private</strong> Dependency getDependency(String version) <strong class="jxr_keyword">throws</strong> Exception {
 <a class="jxr_linenumber" name="L106" href="#L106">106</a> 		<strong class="jxr_keyword">return</strong> getDependency(<span class="jxr_string">"maven"</span>, <span class="jxr_string">"test"</span>, PACKAGE_NAME, version);
-<a class="jxr_linenumber" name="L107" href="#L107">107</a> 	}	
+<a class="jxr_linenumber" name="L107" href="#L107">107</a> 	}
 <a class="jxr_linenumber" name="L108" href="#L108">108</a> 
-<a class="jxr_linenumber" name="L109" href="#L109">109</a> 	
-<a class="jxr_linenumber" name="L110" href="#L110">110</a> 	<strong class="jxr_keyword">private</strong> Engine getEngine(<strong class="jxr_keyword">boolean</strong> hasSuppressionRules, <strong class="jxr_keyword">boolean</strong> matching, Dependency ... dependencies) <strong class="jxr_keyword">throws</strong> Exception {
+<a class="jxr_linenumber" name="L109" href="#L109">109</a> 
+<a class="jxr_linenumber" name="L110" href="#L110">110</a> 	<strong class="jxr_keyword">private</strong> Engine getEngine(<strong class="jxr_keyword">boolean</strong> hasSuppressionRules, <strong class="jxr_keyword">boolean</strong> matching, Dependency ... dependencies) {
 <a class="jxr_linenumber" name="L111" href="#L111">111</a>         Engine engine = <strong class="jxr_keyword">new</strong> Engine(getSettings());
 <a class="jxr_linenumber" name="L112" href="#L112">112</a> 		List&lt;Dependency&gt; dependencyList = <strong class="jxr_keyword">new</strong> ArrayList&lt;&gt;();
 <a class="jxr_linenumber" name="L113" href="#L113">113</a> 		<strong class="jxr_keyword">if</strong> (dependencies!=<strong class="jxr_keyword">null</strong>) {
@@ -129,20 +129,20 @@
 <a class="jxr_linenumber" name="L121" href="#L121">121</a> 		engine.putObject(SUPPRESSION_OBJECT_KEY,rules);
 <a class="jxr_linenumber" name="L122" href="#L122">122</a> 		<strong class="jxr_keyword">return</strong> engine;
 <a class="jxr_linenumber" name="L123" href="#L123">123</a> 	}
-<a class="jxr_linenumber" name="L124" href="#L124">124</a> 	
-<a class="jxr_linenumber" name="L125" href="#L125">125</a> 	<strong class="jxr_keyword">private</strong> UnusedSuppressionRuleAnalyzer getAnalyzer(<strong class="jxr_keyword">boolean</strong> flag) <strong class="jxr_keyword">throws</strong> AnalysisException {
+<a class="jxr_linenumber" name="L124" href="#L124">124</a> 
+<a class="jxr_linenumber" name="L125" href="#L125">125</a> 	<strong class="jxr_keyword">private</strong> UnusedSuppressionRuleAnalyzer getAnalyzer(<strong class="jxr_keyword">boolean</strong> flag) {
 <a class="jxr_linenumber" name="L126" href="#L126">126</a>         UnusedSuppressionRuleAnalyzer analyzer = <strong class="jxr_keyword">new</strong> UnusedSuppressionRuleAnalyzer();
 <a class="jxr_linenumber" name="L127" href="#L127">127</a> 		assertNotNull(analyzer);
-<a class="jxr_linenumber" name="L128" href="#L128">128</a> 		
+<a class="jxr_linenumber" name="L128" href="#L128">128</a> 
 <a class="jxr_linenumber" name="L129" href="#L129">129</a> 		Settings settings = getSettings();
 <a class="jxr_linenumber" name="L130" href="#L130">130</a>         settings.setBoolean(Settings.KEYS.FAIL_ON_UNUSED_SUPPRESSION_RULE, flag);
 <a class="jxr_linenumber" name="L131" href="#L131">131</a>         analyzer.initialize(settings);
 <a class="jxr_linenumber" name="L132" href="#L132">132</a>         assertEquals(flag, analyzer.failsForUnusedSuppressionRule());
 <a class="jxr_linenumber" name="L133" href="#L133">133</a>         assertEquals(0, analyzer.getUnusedSuppressionRuleCount());
-<a class="jxr_linenumber" name="L134" href="#L134">134</a> 		
-<a class="jxr_linenumber" name="L135" href="#L135">135</a> 		<strong class="jxr_keyword">return</strong> analyzer;		
+<a class="jxr_linenumber" name="L134" href="#L134">134</a> 
+<a class="jxr_linenumber" name="L135" href="#L135">135</a> 		<strong class="jxr_keyword">return</strong> analyzer;
 <a class="jxr_linenumber" name="L136" href="#L136">136</a> 	}
-<a class="jxr_linenumber" name="L137" href="#L137">137</a> 	
+<a class="jxr_linenumber" name="L137" href="#L137">137</a> 
 <a class="jxr_linenumber" name="L138" href="#L138">138</a> 	<strong class="jxr_keyword">private</strong> SuppressionRule getSuppressionRule(<strong class="jxr_keyword">boolean</strong> matching) {
 <a class="jxr_linenumber" name="L139" href="#L139">139</a>         SuppressionRule instance = <strong class="jxr_keyword">new</strong> SuppressionRule();
 <a class="jxr_linenumber" name="L140" href="#L140">140</a> 		instance.addVulnerabilityName(getPropertyType(<span class="jxr_string">"CVE-2023-5072"</span>, false, false));
@@ -152,7 +152,7 @@
 <a class="jxr_linenumber" name="L144" href="#L144">144</a> 		instance.setMatched(matching);
 <a class="jxr_linenumber" name="L145" href="#L145">145</a> 		<strong class="jxr_keyword">return</strong> instance;
 <a class="jxr_linenumber" name="L146" href="#L146">146</a>     }
-<a class="jxr_linenumber" name="L147" href="#L147">147</a> 	
+<a class="jxr_linenumber" name="L147" href="#L147">147</a> 
 <a class="jxr_linenumber" name="L148" href="#L148">148</a> 	<strong class="jxr_keyword">private</strong> PropertyType getPropertyType(String value, <strong class="jxr_keyword">boolean</strong> regex, <strong class="jxr_keyword">boolean</strong> caseSensitive) {
 <a class="jxr_linenumber" name="L149" href="#L149">149</a> 		PropertyType property = <strong class="jxr_keyword">new</strong> PropertyType();
 <a class="jxr_linenumber" name="L150" href="#L150">150</a> 		property.setValue(value);
@@ -160,7 +160,7 @@
 <a class="jxr_linenumber" name="L152" href="#L152">152</a> 		property.setCaseSensitive(caseSensitive);
 <a class="jxr_linenumber" name="L153" href="#L153">153</a> 		<strong class="jxr_keyword">return</strong> property;
 <a class="jxr_linenumber" name="L154" href="#L154">154</a> 	}
-<a class="jxr_linenumber" name="L155" href="#L155">155</a> 	
+<a class="jxr_linenumber" name="L155" href="#L155">155</a> 
 <a class="jxr_linenumber" name="L156" href="#L156">156</a> 
 <a class="jxr_linenumber" name="L157" href="#L157">157</a> }
 </pre>

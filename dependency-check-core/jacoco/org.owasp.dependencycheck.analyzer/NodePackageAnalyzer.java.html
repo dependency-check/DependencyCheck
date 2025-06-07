@@ -196,13 +196,14 @@ import java.util.Objects;
                     try {
 <span class="fc" id="L197">                        ((AbstractNpmAnalyzer) a).prepareFileTypeAnalyzer(engine);</span>
 <span class="nc" id="L198">                    } catch (InitializationException ex) {</span>
-<span class="nc" id="L199">                        LOGGER.debug(&quot;Error initializing the {}&quot;, a.getName());</span>
-<span class="fc" id="L200">                    }</span>
+<span class="nc" id="L199">                        String message = &quot;Error initializing the &quot; + a.getName();</span>
+<span class="nc" id="L200">                        LOGGER.debug(message, ex);</span>
+<span class="fc" id="L201">                    }</span>
                 }
-<span class="fc" id="L202">                return a.isEnabled();</span>
+<span class="fc" id="L203">                return a.isEnabled();</span>
             }
-<span class="fc" id="L204">        }</span>
-<span class="nc" id="L205">        return false;</span>
+<span class="fc" id="L205">        }</span>
+<span class="nc" id="L206">        return false;</span>
     }
 
     /**
@@ -213,67 +214,67 @@ import java.util.Objects;
      * &lt;code&gt;true&lt;/code&gt;
      */
     private boolean noLockFileExists(File dependencyFile) {
-<span class="fc" id="L216">        final File lock = new File(dependencyFile.getParentFile(), &quot;package-lock.json&quot;);</span>
-<span class="fc" id="L217">        final File shrinkwrap = new File(dependencyFile.getParentFile(), &quot;npm-shrinkwrap.json&quot;);</span>
-<span class="fc" id="L218">        final File yarnLock = new File(dependencyFile.getParentFile(), &quot;yarn.lock&quot;);</span>
-<span class="pc bpc" id="L219" title="2 of 6 branches missed.">        return !(lock.isFile() || shrinkwrap.isFile() || yarnLock.isFile());</span>
+<span class="fc" id="L217">        final File lock = new File(dependencyFile.getParentFile(), &quot;package-lock.json&quot;);</span>
+<span class="fc" id="L218">        final File shrinkwrap = new File(dependencyFile.getParentFile(), &quot;npm-shrinkwrap.json&quot;);</span>
+<span class="fc" id="L219">        final File yarnLock = new File(dependencyFile.getParentFile(), &quot;yarn.lock&quot;);</span>
+<span class="pc bpc" id="L220" title="2 of 6 branches missed.">        return !(lock.isFile() || shrinkwrap.isFile() || yarnLock.isFile());</span>
     }
 
     @Override
     protected void analyzeDependency(Dependency dependency, Engine engine) throws AnalysisException {
-<span class="fc" id="L224">        final File dependencyFile = dependency.getActualFile();</span>
-<span class="pc bpc" id="L225" title="2 of 6 branches missed.">        if (!dependencyFile.isFile() || dependencyFile.length() == 0 || !shouldProcess(dependencyFile)) {</span>
-<span class="fc" id="L226">            return;</span>
+<span class="fc" id="L225">        final File dependencyFile = dependency.getActualFile();</span>
+<span class="pc bpc" id="L226" title="2 of 6 branches missed.">        if (!dependencyFile.isFile() || dependencyFile.length() == 0 || !shouldProcess(dependencyFile)) {</span>
+<span class="fc" id="L227">            return;</span>
         }
-<span class="pc bpc" id="L228" title="1 of 2 branches missed.">        if (isNodeAuditEnabled(engine)</span>
-<span class="fc bfc" id="L229" title="All 4 branches covered.">                &amp;&amp; !(PACKAGE_LOCK_JSON.equals(dependency.getFileName()) || SHRINKWRAP_JSON.equals(dependency.getFileName()))) {</span>
-<span class="fc" id="L230">            engine.removeDependency(dependency);</span>
+<span class="pc bpc" id="L229" title="1 of 2 branches missed.">        if (isNodeAuditEnabled(engine)</span>
+<span class="fc bfc" id="L230" title="All 4 branches covered.">                &amp;&amp; !(PACKAGE_LOCK_JSON.equals(dependency.getFileName()) || SHRINKWRAP_JSON.equals(dependency.getFileName()))) {</span>
+<span class="fc" id="L231">            engine.removeDependency(dependency);</span>
         }
-<span class="fc bfc" id="L232" title="All 2 branches covered.">        if (noLockFileExists(dependency.getActualFile())) {</span>
-<span class="fc" id="L233">            LOGGER.warn(&quot;No lock file exists - this will result in false negatives; please run `npm install --package-lock`&quot;);</span>
+<span class="fc bfc" id="L233" title="All 2 branches covered.">        if (noLockFileExists(dependency.getActualFile())) {</span>
+<span class="fc" id="L234">            LOGGER.warn(&quot;No lock file exists - this will result in false negatives; please run `npm install --package-lock`&quot;);</span>
         }
-<span class="fc" id="L235">        final File baseDir = dependencyFile.getParentFile();</span>
-<span class="fc bfc" id="L236" title="All 2 branches covered.">        if (PACKAGE_JSON.equals(dependency.getFileName())) {</span>
-<span class="fc" id="L237">            final File lockfile = new File(baseDir, PACKAGE_LOCK_JSON);</span>
-<span class="fc" id="L238">            final File shrinkwrap = new File(baseDir, SHRINKWRAP_JSON);</span>
-<span class="fc bfc" id="L239" title="All 4 branches covered.">            if (shrinkwrap.exists() || lockfile.exists()) {</span>
-<span class="fc" id="L240">                return;</span>
+<span class="fc" id="L236">        final File baseDir = dependencyFile.getParentFile();</span>
+<span class="fc bfc" id="L237" title="All 2 branches covered.">        if (PACKAGE_JSON.equals(dependency.getFileName())) {</span>
+<span class="fc" id="L238">            final File lockfile = new File(baseDir, PACKAGE_LOCK_JSON);</span>
+<span class="fc" id="L239">            final File shrinkwrap = new File(baseDir, SHRINKWRAP_JSON);</span>
+<span class="fc bfc" id="L240" title="All 4 branches covered.">            if (shrinkwrap.exists() || lockfile.exists()) {</span>
+<span class="fc" id="L241">                return;</span>
             }
-<span class="fc bfc" id="L242" title="All 2 branches covered.">        } else if (PACKAGE_LOCK_JSON.equals(dependency.getFileName())) {</span>
-<span class="fc" id="L243">            final File shrinkwrap = new File(baseDir, SHRINKWRAP_JSON);</span>
-<span class="fc bfc" id="L244" title="All 2 branches covered.">            if (shrinkwrap.exists()) {</span>
-<span class="fc" id="L245">                return;</span>
+<span class="fc bfc" id="L243" title="All 2 branches covered.">        } else if (PACKAGE_LOCK_JSON.equals(dependency.getFileName())) {</span>
+<span class="fc" id="L244">            final File shrinkwrap = new File(baseDir, SHRINKWRAP_JSON);</span>
+<span class="fc bfc" id="L245" title="All 2 branches covered.">            if (shrinkwrap.exists()) {</span>
+<span class="fc" id="L246">                return;</span>
             }
         }
-<span class="fc" id="L248">        final File nodeModules = new File(baseDir, &quot;node_modules&quot;);</span>
-<span class="fc bfc" id="L249" title="All 2 branches covered.">        if (!nodeModules.isDirectory()) {</span>
-<span class="fc" id="L250">            LOGGER.warn(&quot;Analyzing `{}` - however, the node_modules directory does not exist. &quot;</span>
+<span class="fc" id="L249">        final File nodeModules = new File(baseDir, &quot;node_modules&quot;);</span>
+<span class="fc bfc" id="L250" title="All 2 branches covered.">        if (!nodeModules.isDirectory()) {</span>
+<span class="fc" id="L251">            LOGGER.warn(&quot;Analyzing `{}` - however, the node_modules directory does not exist. &quot;</span>
                     + &quot;Please run `npm install` prior to running dependency-check&quot;, dependencyFile);
-<span class="fc" id="L252">            return;</span>
+<span class="fc" id="L253">            return;</span>
         }
 
-<span class="fc" id="L255">        try (JsonReader jsonReader = Json.createReader(Files.newInputStream(dependencyFile.toPath()))) {</span>
-<span class="fc" id="L256">            final JsonObject json = jsonReader.readObject();</span>
-<span class="fc" id="L257">            final String parentName = json.getString(&quot;name&quot;, &quot;&quot;);</span>
-<span class="fc" id="L258">            final String parentVersion = json.getString(&quot;version&quot;, &quot;&quot;);</span>
-<span class="pc bpc" id="L259" title="1 of 2 branches missed.">            if (parentName.isEmpty()) {</span>
-<span class="nc" id="L260">                return;</span>
+<span class="fc" id="L256">        try (JsonReader jsonReader = Json.createReader(Files.newInputStream(dependencyFile.toPath()))) {</span>
+<span class="fc" id="L257">            final JsonObject json = jsonReader.readObject();</span>
+<span class="fc" id="L258">            final String parentName = json.getString(&quot;name&quot;, &quot;&quot;);</span>
+<span class="fc" id="L259">            final String parentVersion = json.getString(&quot;version&quot;, &quot;&quot;);</span>
+<span class="pc bpc" id="L260" title="1 of 2 branches missed.">            if (parentName.isEmpty()) {</span>
+<span class="nc" id="L261">                return;</span>
             }
-<span class="fc" id="L262">            dependency.setName(parentName);</span>
+<span class="fc" id="L263">            dependency.setName(parentName);</span>
             final String parentPackage;
-<span class="pc bpc" id="L264" title="1 of 2 branches missed.">            if (!parentVersion.isEmpty()) {</span>
-<span class="fc" id="L265">                dependency.setVersion(parentVersion);</span>
-<span class="fc" id="L266">                parentPackage = String.format(&quot;%s:%s&quot;, parentName, parentVersion);</span>
+<span class="pc bpc" id="L265" title="1 of 2 branches missed.">            if (!parentVersion.isEmpty()) {</span>
+<span class="fc" id="L266">                dependency.setVersion(parentVersion);</span>
+<span class="fc" id="L267">                parentPackage = String.format(&quot;%s:%s&quot;, parentName, parentVersion);</span>
             } else {
-<span class="nc" id="L268">                parentPackage = parentName;</span>
+<span class="nc" id="L269">                parentPackage = parentName;</span>
             }
-<span class="fc" id="L270">            processDependencies(json, baseDir, dependencyFile, parentPackage, engine);</span>
-<span class="nc bnc" id="L271" title="All 2 branches missed.">        } catch (JsonException e) {</span>
-<span class="nc" id="L272">            LOGGER.warn(&quot;Failed to parse package.json file.&quot;, e);</span>
-<span class="nc" id="L273">        } catch (IOException e) {</span>
-<span class="nc" id="L274">            throw new AnalysisException(&quot;Problem occurred while reading dependency file.&quot;, e);</span>
-<span class="pc" id="L275">        }</span>
-<span class="fc" id="L276">    }</span>
+<span class="fc" id="L271">            processDependencies(json, baseDir, dependencyFile, parentPackage, engine);</span>
+<span class="nc bnc" id="L272" title="All 2 branches missed.">        } catch (JsonException e) {</span>
+<span class="nc" id="L273">            LOGGER.warn(&quot;Failed to parse package.json file.&quot;, e);</span>
+<span class="nc" id="L274">        } catch (IOException e) {</span>
+<span class="nc" id="L275">            throw new AnalysisException(&quot;Problem occurred while reading dependency file.&quot;, e);</span>
+<span class="pc" id="L276">        }</span>
+<span class="fc" id="L277">    }</span>
 
     /**
      * should process the dependency ? Will return true if you need to skip it .
@@ -287,34 +288,34 @@ import java.util.Objects;
      */
     public static boolean shouldSkipDependency(String name, String version, boolean optional, boolean fileExist) {
         // some package manager can handle alias, yarn for example, but npm doesn't support it
-<span class="fc bfc" id="L290" title="All 4 branches covered.">        if (Objects.nonNull(version) &amp;&amp; version.startsWith(&quot;npm:&quot;)) {</span>
+<span class="fc bfc" id="L291" title="All 4 branches covered.">        if (Objects.nonNull(version) &amp;&amp; version.startsWith(&quot;npm:&quot;)) {</span>
             //TODO make this an error that gets logged
-<span class="fc" id="L292">            LOGGER.warn(&quot;dependency skipped: package.json contain an alias for {} =&gt; {} npm audit doesn't &quot;</span>
-<span class="fc" id="L293">                    + &quot;support aliases&quot;, name, version.replace(&quot;npm:&quot;, &quot;&quot;));</span>
-<span class="fc" id="L294">            return true;</span>
+<span class="fc" id="L293">            LOGGER.warn(&quot;dependency skipped: package.json contain an alias for {} =&gt; {} npm audit doesn't &quot;</span>
+<span class="fc" id="L294">                    + &quot;support aliases&quot;, name, version.replace(&quot;npm:&quot;, &quot;&quot;));</span>
+<span class="fc" id="L295">            return true;</span>
         }
 
-<span class="pc bpc" id="L297" title="1 of 4 branches missed.">        if (optional &amp;&amp; !fileExist) {</span>
-<span class="fc" id="L298">            LOGGER.warn(&quot;dependency skipped: node module {} seems optional and not installed&quot;, name);</span>
-<span class="fc" id="L299">            return true;</span>
+<span class="pc bpc" id="L298" title="1 of 4 branches missed.">        if (optional &amp;&amp; !fileExist) {</span>
+<span class="fc" id="L299">            LOGGER.warn(&quot;dependency skipped: node module {} seems optional and not installed&quot;, name);</span>
+<span class="fc" id="L300">            return true;</span>
         }
 
         // this seems to produce crash sometimes, I need to tests
         // using a local node_module is not supported by npm audit, it crash
-<span class="pc bpc" id="L304" title="1 of 6 branches missed.">        if (Objects.nonNull(version) &amp;&amp; (version.startsWith(&quot;file:&quot;) || version.matches(&quot;^[.~]{0,2}/.*&quot;))) {</span>
-<span class="fc" id="L305">            LOGGER.warn(&quot;dependency skipped: package.json contain an local node_module for {} seems to be &quot;</span>
+<span class="pc bpc" id="L305" title="1 of 6 branches missed.">        if (Objects.nonNull(version) &amp;&amp; (version.startsWith(&quot;file:&quot;) || version.matches(&quot;^[.~]{0,2}/.*&quot;))) {</span>
+<span class="fc" id="L306">            LOGGER.warn(&quot;dependency skipped: package.json contain an local node_module for {} seems to be &quot;</span>
                             + &quot;located {} npm audit doesn't support locally referenced modules&quot;,
                     name, version);
-<span class="fc" id="L308">            return true;</span>
+<span class="fc" id="L309">            return true;</span>
         }
 
         // Don't include package with empty name
-<span class="fc bfc" id="L312" title="All 2 branches covered.">        if (&quot;&quot;.equals(name)) {</span>
-<span class="fc" id="L313">            LOGGER.debug(&quot;Empty dependency of package-lock v2+ removed&quot;);</span>
-<span class="fc" id="L314">            return true;</span>
+<span class="fc bfc" id="L313" title="All 2 branches covered.">        if (&quot;&quot;.equals(name)) {</span>
+<span class="fc" id="L314">            LOGGER.debug(&quot;Empty dependency of package-lock v2+ removed&quot;);</span>
+<span class="fc" id="L315">            return true;</span>
         }
 
-<span class="fc" id="L317">        return false;</span>
+<span class="fc" id="L318">        return false;</span>
     }
 
     /**
@@ -328,7 +329,7 @@ import java.util.Objects;
      * java.lang.String, boolean, boolean)
      */
     public static boolean shouldSkipDependency(String name, String version) {
-<span class="fc" id="L331">        return shouldSkipDependency(name, version, false, true);</span>
+<span class="fc" id="L332">        return shouldSkipDependency(name, version, false, true);</span>
     }
 
     /**
@@ -345,135 +346,135 @@ import java.util.Objects;
      */
     private void processDependencies(JsonObject json, File baseDir, File rootFile,
                                      String parentPackage, Engine engine) throws AnalysisException {
-<span class="fc" id="L348">        final boolean skipDev = getSettings().getBoolean(Settings.KEYS.ANALYZER_NODE_PACKAGE_SKIPDEV, false);</span>
+<span class="fc" id="L349">        final boolean skipDev = getSettings().getBoolean(Settings.KEYS.ANALYZER_NODE_PACKAGE_SKIPDEV, false);</span>
         final JsonObject deps;
-<span class="fc" id="L350">        final File modulesRoot = new File(rootFile.getParentFile(), &quot;node_modules&quot;);</span>
-<span class="fc bfc" id="L351" title="All 2 branches covered.">        final int lockJsonVersion = json.containsKey(&quot;lockfileVersion&quot;) ? json.getInt(&quot;lockfileVersion&quot;) : 1;</span>
-<span class="fc bfc" id="L352" title="All 2 branches covered.">        if (lockJsonVersion &gt;= 2) {</span>
-<span class="fc" id="L353">            deps = json.getJsonObject(&quot;packages&quot;);</span>
-<span class="pc bpc" id="L354" title="1 of 2 branches missed.">        } else if (json.containsKey(&quot;dependencies&quot;)) {</span>
-<span class="fc" id="L355">            deps = json.getJsonObject(&quot;dependencies&quot;);</span>
+<span class="fc" id="L351">        final File modulesRoot = new File(rootFile.getParentFile(), &quot;node_modules&quot;);</span>
+<span class="fc bfc" id="L352" title="All 2 branches covered.">        final int lockJsonVersion = json.containsKey(&quot;lockfileVersion&quot;) ? json.getInt(&quot;lockfileVersion&quot;) : 1;</span>
+<span class="fc bfc" id="L353" title="All 2 branches covered.">        if (lockJsonVersion &gt;= 2) {</span>
+<span class="fc" id="L354">            deps = json.getJsonObject(&quot;packages&quot;);</span>
+<span class="pc bpc" id="L355" title="1 of 2 branches missed.">        } else if (json.containsKey(&quot;dependencies&quot;)) {</span>
+<span class="fc" id="L356">            deps = json.getJsonObject(&quot;dependencies&quot;);</span>
         } else {
-<span class="nc" id="L357">            deps = null;</span>
+<span class="nc" id="L358">            deps = null;</span>
         }
 
-<span class="pc bpc" id="L360" title="1 of 2 branches missed.">        if (deps != null) {</span>
-<span class="fc bfc" id="L361" title="All 2 branches covered.">            for (Map.Entry&lt;String, JsonValue&gt; entry : deps.entrySet()) {</span>
-<span class="fc" id="L362">                final String pathName = entry.getKey();</span>
-<span class="fc" id="L363">                String name = pathName;</span>
+<span class="pc bpc" id="L361" title="1 of 2 branches missed.">        if (deps != null) {</span>
+<span class="fc bfc" id="L362" title="All 2 branches covered.">            for (Map.Entry&lt;String, JsonValue&gt; entry : deps.entrySet()) {</span>
+<span class="fc" id="L363">                final String pathName = entry.getKey();</span>
+<span class="fc" id="L364">                String name = pathName;</span>
                 File base;
 
-<span class="fc" id="L366">                final int indexOfNodeModule = name.lastIndexOf(NODE_MODULES_DIRNAME + &quot;/&quot;);</span>
-<span class="fc bfc" id="L367" title="All 2 branches covered.">                if (indexOfNodeModule &gt;= 0) {</span>
-<span class="fc" id="L368">                    name = name.substring(indexOfNodeModule + NODE_MODULES_DIRNAME.length() + 1);</span>
-<span class="fc" id="L369">                    base = Paths.get(baseDir.getPath(), pathName).toFile();</span>
+<span class="fc" id="L367">                final int indexOfNodeModule = name.lastIndexOf(NODE_MODULES_DIRNAME + &quot;/&quot;);</span>
+<span class="fc bfc" id="L368" title="All 2 branches covered.">                if (indexOfNodeModule &gt;= 0) {</span>
+<span class="fc" id="L369">                    name = name.substring(indexOfNodeModule + NODE_MODULES_DIRNAME.length() + 1);</span>
+<span class="fc" id="L370">                    base = Paths.get(baseDir.getPath(), pathName).toFile();</span>
                 } else {
-<span class="fc" id="L371">                    base = Paths.get(baseDir.getPath(), &quot;node_modules&quot;, name).toFile();</span>
-<span class="fc bfc" id="L372" title="All 2 branches covered.">                    if (!base.isDirectory()) {</span>
-<span class="fc" id="L373">                        final File test = new File(modulesRoot, name);</span>
-<span class="fc bfc" id="L374" title="All 2 branches covered.">                        if (test.isDirectory()) {</span>
-<span class="fc" id="L375">                            base = test;</span>
+<span class="fc" id="L372">                    base = Paths.get(baseDir.getPath(), &quot;node_modules&quot;, name).toFile();</span>
+<span class="fc bfc" id="L373" title="All 2 branches covered.">                    if (!base.isDirectory()) {</span>
+<span class="fc" id="L374">                        final File test = new File(modulesRoot, name);</span>
+<span class="fc bfc" id="L375" title="All 2 branches covered.">                        if (test.isDirectory()) {</span>
+<span class="fc" id="L376">                            base = test;</span>
                         }
                     }
                 }
 
                 final String version;
-<span class="fc" id="L381">                boolean optional = false;</span>
-<span class="fc" id="L382">                boolean isDev = false;</span>
+<span class="fc" id="L382">                boolean optional = false;</span>
+<span class="fc" id="L383">                boolean isDev = false;</span>
 
-<span class="fc" id="L384">                final File f = new File(base, PACKAGE_JSON);</span>
-<span class="fc" id="L385">                JsonObject jo = null;</span>
+<span class="fc" id="L385">                final File f = new File(base, PACKAGE_JSON);</span>
+<span class="fc" id="L386">                JsonObject jo = null;</span>
 
-<span class="fc bfc" id="L387" title="All 2 branches covered.">                if (entry.getValue() instanceof JsonObject) {</span>
-<span class="fc" id="L388">                    jo = (JsonObject) entry.getValue();</span>
+<span class="fc bfc" id="L388" title="All 2 branches covered.">                if (entry.getValue() instanceof JsonObject) {</span>
+<span class="fc" id="L389">                    jo = (JsonObject) entry.getValue();</span>
 
                     // Ignore/skip linked entries (as they don't have &quot;version&quot; and
                     // later logic will crash)
-<span class="fc bfc" id="L392" title="All 2 branches covered.">                    if (jo.getBoolean(&quot;link&quot;, false)) {</span>
-<span class="fc" id="L393">                        LOGGER.warn(&quot;Skipping `&quot; + name + &quot;` because it is a link dependency&quot;);</span>
-<span class="fc" id="L394">                        continue;</span>
+<span class="fc bfc" id="L393" title="All 2 branches covered.">                    if (jo.getBoolean(&quot;link&quot;, false)) {</span>
+<span class="fc" id="L394">                        LOGGER.warn(&quot;Skipping `&quot; + name + &quot;` because it is a link dependency&quot;);</span>
+<span class="fc" id="L395">                        continue;</span>
                     }
 
-<span class="fc" id="L397">                    version = jo.getString(&quot;version&quot;, &quot;&quot;);</span>
-<span class="fc" id="L398">                    optional = jo.getBoolean(&quot;optional&quot;, false);</span>
-<span class="fc" id="L399">                    isDev = jo.getBoolean(&quot;dev&quot;, false);</span>
+<span class="fc" id="L398">                    version = jo.getString(&quot;version&quot;, &quot;&quot;);</span>
+<span class="fc" id="L399">                    optional = jo.getBoolean(&quot;optional&quot;, false);</span>
+<span class="fc" id="L400">                    isDev = jo.getBoolean(&quot;dev&quot;, false);</span>
                 } else {
-<span class="fc" id="L401">                    version = ((JsonString) entry.getValue()).getString();</span>
+<span class="fc" id="L402">                    version = ((JsonString) entry.getValue()).getString();</span>
                 }
 
-<span class="pc bpc" id="L404" title="3 of 6 branches missed.">                if ((isDev &amp;&amp; skipDev) || shouldSkipDependency(name, version, optional, f.exists())) {</span>
-<span class="fc" id="L405">                    continue;</span>
+<span class="pc bpc" id="L405" title="3 of 6 branches missed.">                if ((isDev &amp;&amp; skipDev) || shouldSkipDependency(name, version, optional, f.exists())) {</span>
+<span class="fc" id="L406">                    continue;</span>
                 }
 
-<span class="fc bfc" id="L408" title="All 4 branches covered.">                if (null != jo &amp;&amp; jo.containsKey(&quot;dependencies&quot;)) {</span>
-<span class="fc" id="L409">                    final String subPackageName = String.format(&quot;%s/%s:%s&quot;, parentPackage, name, version);</span>
-<span class="fc" id="L410">                    processDependencies(jo, base, rootFile, subPackageName, engine);</span>
+<span class="fc bfc" id="L409" title="All 4 branches covered.">                if (null != jo &amp;&amp; jo.containsKey(&quot;dependencies&quot;)) {</span>
+<span class="fc" id="L410">                    final String subPackageName = String.format(&quot;%s/%s:%s&quot;, parentPackage, name, version);</span>
+<span class="fc" id="L411">                    processDependencies(jo, base, rootFile, subPackageName, engine);</span>
                 }
 
-<span class="fc" id="L413">                String ref = &quot;&quot;;</span>
-<span class="fc" id="L414">                final int slash = parentPackage.indexOf(&quot;/&quot;);</span>
-<span class="fc bfc" id="L415" title="All 2 branches covered.">                if (slash &gt; 0) {</span>
-<span class="fc" id="L416">                    ref = parentPackage.substring(slash + 1);</span>
+<span class="fc" id="L414">                String ref = &quot;&quot;;</span>
+<span class="fc" id="L415">                final int slash = parentPackage.indexOf(&quot;/&quot;);</span>
+<span class="fc bfc" id="L416" title="All 2 branches covered.">                if (slash &gt; 0) {</span>
+<span class="fc" id="L417">                    ref = parentPackage.substring(slash + 1);</span>
                 }
-<span class="fc" id="L418">                final Dependency child = new Dependency(new File(rootFile + &quot;?&quot; + ref + &quot;/&quot; + name + &quot;:&quot; + version), true);</span>
-<span class="fc" id="L419">                child.addProjectReference(parentPackage);</span>
-<span class="fc" id="L420">                child.setEcosystem(DEPENDENCY_ECOSYSTEM);</span>
+<span class="fc" id="L419">                final Dependency child = new Dependency(new File(rootFile + &quot;?&quot; + ref + &quot;/&quot; + name + &quot;:&quot; + version), true);</span>
+<span class="fc" id="L420">                child.addProjectReference(parentPackage);</span>
+<span class="fc" id="L421">                child.setEcosystem(DEPENDENCY_ECOSYSTEM);</span>
 
-<span class="pc bpc" id="L422" title="1 of 2 branches missed.">                if (f.exists()) {</span>
+<span class="pc bpc" id="L423" title="1 of 2 branches missed.">                if (f.exists()) {</span>
                     try {
                         //TODO - we should use the integrity value instead of calculating the SHA1/MD5
-<span class="fc" id="L425">                        child.setMd5sum(Checksum.getMD5Checksum(f));</span>
-<span class="fc" id="L426">                        child.setSha1sum(Checksum.getSHA1Checksum(f));</span>
-<span class="fc" id="L427">                        child.setSha256sum(Checksum.getSHA256Checksum(f));</span>
-<span class="nc" id="L428">                    } catch (IOException | NoSuchAlgorithmException ex) {</span>
-<span class="nc" id="L429">                        LOGGER.debug(&quot;Error setting hashes:&quot; + ex.getMessage(), ex);</span>
-<span class="fc" id="L430">                    }</span>
-<span class="fc" id="L431">                    try (JsonReader jr = Json.createReader(Files.newInputStream(f.toPath()))) {</span>
-<span class="fc" id="L432">                        final JsonObject childJson = jr.readObject();</span>
-<span class="fc" id="L433">                        gatherEvidence(childJson, child);</span>
-<span class="nc" id="L434">                    } catch (JsonException e) {</span>
-<span class="nc" id="L435">                        LOGGER.warn(&quot;Failed to parse package.json file from dependency.&quot;, e);</span>
-<span class="nc" id="L436">                    } catch (IOException e) {</span>
-<span class="nc" id="L437">                        throw new AnalysisException(&quot;Problem occurred while reading dependency file.&quot;, e);</span>
-<span class="pc" id="L438">                    }</span>
+<span class="fc" id="L426">                        child.setMd5sum(Checksum.getMD5Checksum(f));</span>
+<span class="fc" id="L427">                        child.setSha1sum(Checksum.getSHA1Checksum(f));</span>
+<span class="fc" id="L428">                        child.setSha256sum(Checksum.getSHA256Checksum(f));</span>
+<span class="nc" id="L429">                    } catch (IOException | NoSuchAlgorithmException ex) {</span>
+<span class="nc" id="L430">                        LOGGER.debug(&quot;Error setting hashes:&quot; + ex.getMessage(), ex);</span>
+<span class="fc" id="L431">                    }</span>
+<span class="fc" id="L432">                    try (JsonReader jr = Json.createReader(Files.newInputStream(f.toPath()))) {</span>
+<span class="fc" id="L433">                        final JsonObject childJson = jr.readObject();</span>
+<span class="fc" id="L434">                        gatherEvidence(childJson, child);</span>
+<span class="nc" id="L435">                    } catch (JsonException e) {</span>
+<span class="nc" id="L436">                        LOGGER.warn(&quot;Failed to parse package.json file from dependency.&quot;, e);</span>
+<span class="nc" id="L437">                    } catch (IOException e) {</span>
+<span class="nc" id="L438">                        throw new AnalysisException(&quot;Problem occurred while reading dependency file.&quot;, e);</span>
+<span class="pc" id="L439">                    }</span>
                 } else {
-<span class="nc" id="L440">                    LOGGER.warn(&quot;Unable to find node module: {}&quot;, f);</span>
+<span class="nc" id="L441">                    LOGGER.warn(&quot;Unable to find node module: {}&quot;, f);</span>
                     //TODO - we should use the integrity value instead of calculating the SHA1/MD5
-<span class="nc" id="L442">                    child.setSha1sum(Checksum.getSHA1Checksum(String.format(&quot;%s:%s&quot;, name, version)));</span>
-<span class="nc" id="L443">                    child.setSha256sum(Checksum.getSHA256Checksum(String.format(&quot;%s:%s&quot;, name, version)));</span>
-<span class="nc" id="L444">                    child.setMd5sum(Checksum.getMD5Checksum(String.format(&quot;%s:%s&quot;, name, version)));</span>
-<span class="nc" id="L445">                    child.addEvidence(EvidenceType.VENDOR, rootFile.getName(), &quot;name&quot;, name, Confidence.HIGHEST);</span>
-<span class="nc" id="L446">                    child.addEvidence(EvidenceType.PRODUCT, rootFile.getName(), &quot;name&quot;, name, Confidence.HIGHEST);</span>
-<span class="nc" id="L447">                    child.addEvidence(EvidenceType.VERSION, rootFile.getName(), &quot;version&quot;, version, Confidence.HIGHEST);</span>
-<span class="nc" id="L448">                    child.setName(name);</span>
-<span class="nc" id="L449">                    child.setVersion(version);</span>
-<span class="nc" id="L450">                    final String packagePath = String.format(&quot;%s:%s&quot;, name, version);</span>
-<span class="nc" id="L451">                    child.setDisplayFileName(packagePath);</span>
-<span class="nc" id="L452">                    child.setPackagePath(packagePath);</span>
+<span class="nc" id="L443">                    child.setSha1sum(Checksum.getSHA1Checksum(String.format(&quot;%s:%s&quot;, name, version)));</span>
+<span class="nc" id="L444">                    child.setSha256sum(Checksum.getSHA256Checksum(String.format(&quot;%s:%s&quot;, name, version)));</span>
+<span class="nc" id="L445">                    child.setMd5sum(Checksum.getMD5Checksum(String.format(&quot;%s:%s&quot;, name, version)));</span>
+<span class="nc" id="L446">                    child.addEvidence(EvidenceType.VENDOR, rootFile.getName(), &quot;name&quot;, name, Confidence.HIGHEST);</span>
+<span class="nc" id="L447">                    child.addEvidence(EvidenceType.PRODUCT, rootFile.getName(), &quot;name&quot;, name, Confidence.HIGHEST);</span>
+<span class="nc" id="L448">                    child.addEvidence(EvidenceType.VERSION, rootFile.getName(), &quot;version&quot;, version, Confidence.HIGHEST);</span>
+<span class="nc" id="L449">                    child.setName(name);</span>
+<span class="nc" id="L450">                    child.setVersion(version);</span>
+<span class="nc" id="L451">                    final String packagePath = String.format(&quot;%s:%s&quot;, name, version);</span>
+<span class="nc" id="L452">                    child.setDisplayFileName(packagePath);</span>
+<span class="nc" id="L453">                    child.setPackagePath(packagePath);</span>
                     try {
-<span class="nc" id="L454">                        final PackageURL purl = PackageURLBuilder.aPackageURL().withType(&quot;npm&quot;).withName(name).withVersion(version).build();</span>
-<span class="nc" id="L455">                        final PurlIdentifier id = new PurlIdentifier(purl, Confidence.HIGHEST);</span>
-<span class="nc" id="L456">                        child.addSoftwareIdentifier(id);</span>
-<span class="nc" id="L457">                    } catch (MalformedPackageURLException ex) {</span>
-<span class="nc" id="L458">                        LOGGER.debug(&quot;Unable to build package url for `&quot; + packagePath + &quot;`&quot;, ex);</span>
-<span class="nc" id="L459">                    }</span>
+<span class="nc" id="L455">                        final PackageURL purl = PackageURLBuilder.aPackageURL().withType(&quot;npm&quot;).withName(name).withVersion(version).build();</span>
+<span class="nc" id="L456">                        final PurlIdentifier id = new PurlIdentifier(purl, Confidence.HIGHEST);</span>
+<span class="nc" id="L457">                        child.addSoftwareIdentifier(id);</span>
+<span class="nc" id="L458">                    } catch (MalformedPackageURLException ex) {</span>
+<span class="nc" id="L459">                        LOGGER.debug(&quot;Unable to build package url for `&quot; + packagePath + &quot;`&quot;, ex);</span>
+<span class="nc" id="L460">                    }</span>
                 }
-<span class="fc" id="L461">                synchronized (this) {</span>
-<span class="fc" id="L462">                    final Dependency existing = findDependency(engine, name, version);</span>
-<span class="fc bfc" id="L463" title="All 2 branches covered.">                    if (existing != null) {</span>
-<span class="pc bpc" id="L464" title="1 of 2 branches missed.">                        if (existing.isVirtual()) {</span>
-<span class="fc" id="L465">                            DependencyMergingAnalyzer.mergeDependencies(child, existing, null);</span>
-<span class="fc" id="L466">                            engine.removeDependency(existing);</span>
-<span class="fc" id="L467">                            engine.addDependency(child);</span>
+<span class="fc" id="L462">                synchronized (this) {</span>
+<span class="fc" id="L463">                    final Dependency existing = findDependency(engine, name, version);</span>
+<span class="fc bfc" id="L464" title="All 2 branches covered.">                    if (existing != null) {</span>
+<span class="pc bpc" id="L465" title="1 of 2 branches missed.">                        if (existing.isVirtual()) {</span>
+<span class="fc" id="L466">                            DependencyMergingAnalyzer.mergeDependencies(child, existing, null);</span>
+<span class="fc" id="L467">                            engine.removeDependency(existing);</span>
+<span class="fc" id="L468">                            engine.addDependency(child);</span>
                         } else {
-<span class="nc" id="L469">                            DependencyBundlingAnalyzer.mergeDependencies(existing, child, null);</span>
+<span class="nc" id="L470">                            DependencyBundlingAnalyzer.mergeDependencies(existing, child, null);</span>
                         }
                     } else {
-<span class="fc" id="L472">                        engine.addDependency(child);</span>
+<span class="fc" id="L473">                        engine.addDependency(child);</span>
                     }
-<span class="fc" id="L474">                }</span>
-<span class="fc" id="L475">            }</span>
+<span class="fc" id="L475">                }</span>
+<span class="fc" id="L476">            }</span>
         }
-<span class="fc" id="L477">    }</span>
+<span class="fc" id="L478">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

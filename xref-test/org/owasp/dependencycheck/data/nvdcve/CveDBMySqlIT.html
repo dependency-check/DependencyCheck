@@ -25,77 +25,76 @@
 <a class="jxr_linenumber" name="L17" href="#L17">17</a>  <em class="jxr_comment"> */</em>
 <a class="jxr_linenumber" name="L18" href="#L18">18</a>  <strong class="jxr_keyword">package</strong> org.owasp.dependencycheck.data.nvdcve;
 <a class="jxr_linenumber" name="L19" href="#L19">19</a>  
-<a class="jxr_linenumber" name="L20" href="#L20">20</a>  <strong class="jxr_keyword">import</strong> java.sql.SQLException;
-<a class="jxr_linenumber" name="L21" href="#L21">21</a>  <strong class="jxr_keyword">import</strong> java.util.List;
-<a class="jxr_linenumber" name="L22" href="#L22">22</a>  <strong class="jxr_keyword">import</strong> java.util.Set;
-<a class="jxr_linenumber" name="L23" href="#L23">23</a>  <strong class="jxr_keyword">import</strong> org.junit.After;
-<a class="jxr_linenumber" name="L24" href="#L24">24</a>  
-<a class="jxr_linenumber" name="L25" href="#L25">25</a>  <strong class="jxr_keyword">import</strong> org.junit.Test;
-<a class="jxr_linenumber" name="L26" href="#L26">26</a>  <strong class="jxr_keyword">import</strong> org.owasp.dependencycheck.BaseTest;
-<a class="jxr_linenumber" name="L27" href="#L27">27</a>  <strong class="jxr_keyword">import</strong> org.owasp.dependencycheck.dependency.Vulnerability;
-<a class="jxr_linenumber" name="L28" href="#L28">28</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> org.junit.Assert.assertTrue;
-<a class="jxr_linenumber" name="L29" href="#L29">29</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> org.junit.Assert.fail;
-<a class="jxr_linenumber" name="L30" href="#L30">30</a>  <strong class="jxr_keyword">import</strong> org.junit.Before;
-<a class="jxr_linenumber" name="L31" href="#L31">31</a>  <strong class="jxr_keyword">import</strong> org.owasp.dependencycheck.data.update.cpe.CpePlus;
-<a class="jxr_linenumber" name="L32" href="#L32">32</a>  <strong class="jxr_keyword">import</strong> us.springett.parsers.cpe.Cpe;
-<a class="jxr_linenumber" name="L33" href="#L33">33</a>  <strong class="jxr_keyword">import</strong> us.springett.parsers.cpe.CpeBuilder;
-<a class="jxr_linenumber" name="L34" href="#L34">34</a>  <strong class="jxr_keyword">import</strong> us.springett.parsers.cpe.values.Part;
-<a class="jxr_linenumber" name="L35" href="#L35">35</a>  
-<a class="jxr_linenumber" name="L36" href="#L36">36</a>  <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L37" href="#L37">37</a>  <em class="jxr_javadoccomment"> *</em>
-<a class="jxr_linenumber" name="L38" href="#L38">38</a>  <em class="jxr_javadoccomment"> * @author Jeremy Long</em>
-<a class="jxr_linenumber" name="L39" href="#L39">39</a>  <em class="jxr_javadoccomment"> */</em>
-<a class="jxr_linenumber" name="L40" href="#L40">40</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">class</strong> <a href="../../../../../org/owasp/dependencycheck/data/nvdcve/CveDBMySqlIT.html">CveDBMySqlIT</a> <strong class="jxr_keyword">extends</strong> <a href="../../../../../org/owasp/dependencycheck/BaseTest.html">BaseTest</a> {
-<a class="jxr_linenumber" name="L41" href="#L41">41</a>  
-<a class="jxr_linenumber" name="L42" href="#L42">42</a>      <strong class="jxr_keyword">private</strong> CveDB instance = <strong class="jxr_keyword">null</strong>;
-<a class="jxr_linenumber" name="L43" href="#L43">43</a>  
-<a class="jxr_linenumber" name="L44" href="#L44">44</a>      @Before
-<a class="jxr_linenumber" name="L45" href="#L45">45</a>      @Override
-<a class="jxr_linenumber" name="L46" href="#L46">46</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> setUp() <strong class="jxr_keyword">throws</strong> Exception {
-<a class="jxr_linenumber" name="L47" href="#L47">47</a>          <strong class="jxr_keyword">super</strong>.setUp();
-<a class="jxr_linenumber" name="L48" href="#L48">48</a>          instance = <strong class="jxr_keyword">new</strong> CveDB(getSettings());
-<a class="jxr_linenumber" name="L49" href="#L49">49</a>          instance.open();
-<a class="jxr_linenumber" name="L50" href="#L50">50</a>      }
-<a class="jxr_linenumber" name="L51" href="#L51">51</a>  
-<a class="jxr_linenumber" name="L52" href="#L52">52</a>      @After
-<a class="jxr_linenumber" name="L53" href="#L53">53</a>      @Override
-<a class="jxr_linenumber" name="L54" href="#L54">54</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> tearDown() <strong class="jxr_keyword">throws</strong> Exception {
-<a class="jxr_linenumber" name="L55" href="#L55">55</a>          instance.close();
-<a class="jxr_linenumber" name="L56" href="#L56">56</a>          <strong class="jxr_keyword">super</strong>.tearDown();
-<a class="jxr_linenumber" name="L57" href="#L57">57</a>      }   
-<a class="jxr_linenumber" name="L58" href="#L58">58</a>  
-<a class="jxr_linenumber" name="L59" href="#L59">59</a>      <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L60" href="#L60">60</a>  <em class="jxr_javadoccomment">     * Test of getCPEs method, of class CveDB.</em>
-<a class="jxr_linenumber" name="L61" href="#L61">61</a>  <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L62" href="#L62">62</a>      @Test
-<a class="jxr_linenumber" name="L63" href="#L63">63</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testGetCPEs() <strong class="jxr_keyword">throws</strong> Exception {
-<a class="jxr_linenumber" name="L64" href="#L64">64</a>          <strong class="jxr_keyword">try</strong> {
-<a class="jxr_linenumber" name="L65" href="#L65">65</a>              String vendor = <span class="jxr_string">"apache"</span>;
-<a class="jxr_linenumber" name="L66" href="#L66">66</a>              String product = <span class="jxr_string">"struts"</span>;
-<a class="jxr_linenumber" name="L67" href="#L67">67</a>              Set&lt;CpePlus&gt; result = instance.getCPEs(vendor, product);
-<a class="jxr_linenumber" name="L68" href="#L68">68</a>              assertTrue(<span class="jxr_string">"Has data been loaded into the MySQL DB? if not consider using the CLI to populate it"</span>, result.size() &gt; 5);
-<a class="jxr_linenumber" name="L69" href="#L69">69</a>          } <strong class="jxr_keyword">catch</strong> (Exception ex) {
-<a class="jxr_linenumber" name="L70" href="#L70">70</a>              System.out.println(<span class="jxr_string">"Unable to access the My SQL database; verify that the db server is running and that the schema has been generated"</span>);
-<a class="jxr_linenumber" name="L71" href="#L71">71</a>              <strong class="jxr_keyword">throw</strong> ex;
-<a class="jxr_linenumber" name="L72" href="#L72">72</a>          }
-<a class="jxr_linenumber" name="L73" href="#L73">73</a>      }
-<a class="jxr_linenumber" name="L74" href="#L74">74</a>  
-<a class="jxr_linenumber" name="L75" href="#L75">75</a>      <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L76" href="#L76">76</a>  <em class="jxr_javadoccomment">     * Test of getVulnerabilities method, of class CveDB.</em>
-<a class="jxr_linenumber" name="L77" href="#L77">77</a>  <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L78" href="#L78">78</a>      @Test
-<a class="jxr_linenumber" name="L79" href="#L79">79</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testGetVulnerabilities() <strong class="jxr_keyword">throws</strong> Exception {
-<a class="jxr_linenumber" name="L80" href="#L80">80</a>          CpeBuilder builder = <strong class="jxr_keyword">new</strong> CpeBuilder();
-<a class="jxr_linenumber" name="L81" href="#L81">81</a>          Cpe cpe = builder.part(Part.APPLICATION).vendor(<span class="jxr_string">"apache"</span>).product(<span class="jxr_string">"struts"</span>).version(<span class="jxr_string">"2.1.2"</span>).build();
-<a class="jxr_linenumber" name="L82" href="#L82">82</a>          <strong class="jxr_keyword">try</strong> {
-<a class="jxr_linenumber" name="L83" href="#L83">83</a>              List&lt;Vulnerability&gt; result = instance.getVulnerabilities(cpe);
-<a class="jxr_linenumber" name="L84" href="#L84">84</a>              assertTrue(result.size() &gt; 5);
-<a class="jxr_linenumber" name="L85" href="#L85">85</a>          } <strong class="jxr_keyword">catch</strong> (Exception ex) {
-<a class="jxr_linenumber" name="L86" href="#L86">86</a>              System.out.println(<span class="jxr_string">"Unable to access the My SQL database; verify that the db server is running and that the schema has been generated"</span>);
-<a class="jxr_linenumber" name="L87" href="#L87">87</a>              <strong class="jxr_keyword">throw</strong> ex;
-<a class="jxr_linenumber" name="L88" href="#L88">88</a>          }
-<a class="jxr_linenumber" name="L89" href="#L89">89</a>      }
-<a class="jxr_linenumber" name="L90" href="#L90">90</a>  }
+<a class="jxr_linenumber" name="L20" href="#L20">20</a>  <strong class="jxr_keyword">import</strong> org.junit.jupiter.api.AfterEach;
+<a class="jxr_linenumber" name="L21" href="#L21">21</a>  <strong class="jxr_keyword">import</strong> org.junit.jupiter.api.BeforeEach;
+<a class="jxr_linenumber" name="L22" href="#L22">22</a>  <strong class="jxr_keyword">import</strong> org.junit.jupiter.api.Test;
+<a class="jxr_linenumber" name="L23" href="#L23">23</a>  <strong class="jxr_keyword">import</strong> org.owasp.dependencycheck.BaseTest;
+<a class="jxr_linenumber" name="L24" href="#L24">24</a>  <strong class="jxr_keyword">import</strong> org.owasp.dependencycheck.data.update.cpe.CpePlus;
+<a class="jxr_linenumber" name="L25" href="#L25">25</a>  <strong class="jxr_keyword">import</strong> org.owasp.dependencycheck.dependency.Vulnerability;
+<a class="jxr_linenumber" name="L26" href="#L26">26</a>  <strong class="jxr_keyword">import</strong> us.springett.parsers.cpe.Cpe;
+<a class="jxr_linenumber" name="L27" href="#L27">27</a>  <strong class="jxr_keyword">import</strong> us.springett.parsers.cpe.CpeBuilder;
+<a class="jxr_linenumber" name="L28" href="#L28">28</a>  <strong class="jxr_keyword">import</strong> us.springett.parsers.cpe.values.Part;
+<a class="jxr_linenumber" name="L29" href="#L29">29</a>  
+<a class="jxr_linenumber" name="L30" href="#L30">30</a>  <strong class="jxr_keyword">import</strong> java.util.List;
+<a class="jxr_linenumber" name="L31" href="#L31">31</a>  <strong class="jxr_keyword">import</strong> java.util.Set;
+<a class="jxr_linenumber" name="L32" href="#L32">32</a>  
+<a class="jxr_linenumber" name="L33" href="#L33">33</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> org.junit.jupiter.api.Assertions.assertTrue;
+<a class="jxr_linenumber" name="L34" href="#L34">34</a>  
+<a class="jxr_linenumber" name="L35" href="#L35">35</a>  <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L36" href="#L36">36</a>  <em class="jxr_javadoccomment"> *</em>
+<a class="jxr_linenumber" name="L37" href="#L37">37</a>  <em class="jxr_javadoccomment"> * @author Jeremy Long</em>
+<a class="jxr_linenumber" name="L38" href="#L38">38</a>  <em class="jxr_javadoccomment"> */</em>
+<a class="jxr_linenumber" name="L39" href="#L39">39</a>  <strong class="jxr_keyword">class</strong> <a href="../../../../../org/owasp/dependencycheck/data/nvdcve/CveDBMySqlIT.html">CveDBMySqlIT</a> <strong class="jxr_keyword">extends</strong> <a href="../../../../../org/owasp/dependencycheck/BaseTest.html">BaseTest</a> {
+<a class="jxr_linenumber" name="L40" href="#L40">40</a>  
+<a class="jxr_linenumber" name="L41" href="#L41">41</a>      <strong class="jxr_keyword">private</strong> CveDB instance = <strong class="jxr_keyword">null</strong>;
+<a class="jxr_linenumber" name="L42" href="#L42">42</a>  
+<a class="jxr_linenumber" name="L43" href="#L43">43</a>      @BeforeEach
+<a class="jxr_linenumber" name="L44" href="#L44">44</a>      @Override
+<a class="jxr_linenumber" name="L45" href="#L45">45</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> setUp() <strong class="jxr_keyword">throws</strong> Exception {
+<a class="jxr_linenumber" name="L46" href="#L46">46</a>          <strong class="jxr_keyword">super</strong>.setUp();
+<a class="jxr_linenumber" name="L47" href="#L47">47</a>          instance = <strong class="jxr_keyword">new</strong> CveDB(getSettings());
+<a class="jxr_linenumber" name="L48" href="#L48">48</a>          instance.open();
+<a class="jxr_linenumber" name="L49" href="#L49">49</a>      }
+<a class="jxr_linenumber" name="L50" href="#L50">50</a>  
+<a class="jxr_linenumber" name="L51" href="#L51">51</a>      @AfterEach
+<a class="jxr_linenumber" name="L52" href="#L52">52</a>      @Override
+<a class="jxr_linenumber" name="L53" href="#L53">53</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> tearDown() <strong class="jxr_keyword">throws</strong> Exception {
+<a class="jxr_linenumber" name="L54" href="#L54">54</a>          instance.close();
+<a class="jxr_linenumber" name="L55" href="#L55">55</a>          <strong class="jxr_keyword">super</strong>.tearDown();
+<a class="jxr_linenumber" name="L56" href="#L56">56</a>      }
+<a class="jxr_linenumber" name="L57" href="#L57">57</a>  
+<a class="jxr_linenumber" name="L58" href="#L58">58</a>      <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L59" href="#L59">59</a>  <em class="jxr_javadoccomment">     * Test of getCPEs method, of class CveDB.</em>
+<a class="jxr_linenumber" name="L60" href="#L60">60</a>  <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L61" href="#L61">61</a>      @Test
+<a class="jxr_linenumber" name="L62" href="#L62">62</a>      <strong class="jxr_keyword">void</strong> testGetCPEs() {
+<a class="jxr_linenumber" name="L63" href="#L63">63</a>          <strong class="jxr_keyword">try</strong> {
+<a class="jxr_linenumber" name="L64" href="#L64">64</a>              String vendor = <span class="jxr_string">"apache"</span>;
+<a class="jxr_linenumber" name="L65" href="#L65">65</a>              String product = <span class="jxr_string">"struts"</span>;
+<a class="jxr_linenumber" name="L66" href="#L66">66</a>              Set&lt;CpePlus&gt; result = instance.getCPEs(vendor, product);
+<a class="jxr_linenumber" name="L67" href="#L67">67</a>              assertTrue(result.size() &gt; 5, <span class="jxr_string">"Has data been loaded into the MySQL DB? if not consider using the CLI to populate it"</span>);
+<a class="jxr_linenumber" name="L68" href="#L68">68</a>          } <strong class="jxr_keyword">catch</strong> (Exception ex) {
+<a class="jxr_linenumber" name="L69" href="#L69">69</a>              System.out.println(<span class="jxr_string">"Unable to access the My SQL database; verify that the db server is running and that the schema has been generated"</span>);
+<a class="jxr_linenumber" name="L70" href="#L70">70</a>              <strong class="jxr_keyword">throw</strong> ex;
+<a class="jxr_linenumber" name="L71" href="#L71">71</a>          }
+<a class="jxr_linenumber" name="L72" href="#L72">72</a>      }
+<a class="jxr_linenumber" name="L73" href="#L73">73</a>  
+<a class="jxr_linenumber" name="L74" href="#L74">74</a>      <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L75" href="#L75">75</a>  <em class="jxr_javadoccomment">     * Test of getVulnerabilities method, of class CveDB.</em>
+<a class="jxr_linenumber" name="L76" href="#L76">76</a>  <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L77" href="#L77">77</a>      @Test
+<a class="jxr_linenumber" name="L78" href="#L78">78</a>      <strong class="jxr_keyword">void</strong> testGetVulnerabilities() <strong class="jxr_keyword">throws</strong> Exception {
+<a class="jxr_linenumber" name="L79" href="#L79">79</a>          CpeBuilder builder = <strong class="jxr_keyword">new</strong> CpeBuilder();
+<a class="jxr_linenumber" name="L80" href="#L80">80</a>          Cpe cpe = builder.part(Part.APPLICATION).vendor(<span class="jxr_string">"apache"</span>).product(<span class="jxr_string">"struts"</span>).version(<span class="jxr_string">"2.1.2"</span>).build();
+<a class="jxr_linenumber" name="L81" href="#L81">81</a>          <strong class="jxr_keyword">try</strong> {
+<a class="jxr_linenumber" name="L82" href="#L82">82</a>              List&lt;Vulnerability&gt; result = instance.getVulnerabilities(cpe);
+<a class="jxr_linenumber" name="L83" href="#L83">83</a>              assertTrue(result.size() &gt; 5);
+<a class="jxr_linenumber" name="L84" href="#L84">84</a>          } <strong class="jxr_keyword">catch</strong> (Exception ex) {
+<a class="jxr_linenumber" name="L85" href="#L85">85</a>              System.out.println(<span class="jxr_string">"Unable to access the My SQL database; verify that the db server is running and that the schema has been generated"</span>);
+<a class="jxr_linenumber" name="L86" href="#L86">86</a>              <strong class="jxr_keyword">throw</strong> ex;
+<a class="jxr_linenumber" name="L87" href="#L87">87</a>          }
+<a class="jxr_linenumber" name="L88" href="#L88">88</a>      }
+<a class="jxr_linenumber" name="L89" href="#L89">89</a>  }
 </pre>
 <hr/>
 <div id="footer">Copyright &#169; 2012&#x2013;2025 <a href="https://www.owasp.org">OWASP</a>. All rights reserved.</div>

@@ -33,6 +33,7 @@ import org.owasp.dependencycheck.data.nexus.MavenArtifact;
 import org.owasp.dependencycheck.dependency.Dependency;
 import org.owasp.dependencycheck.utils.Checksum;
 import org.owasp.dependencycheck.utils.Downloader;
+import org.owasp.dependencycheck.utils.ForbiddenException;
 import org.owasp.dependencycheck.utils.ResourceNotFoundException;
 import org.owasp.dependencycheck.utils.Settings;
 import org.owasp.dependencycheck.utils.TooManyRequestsException;
@@ -44,7 +45,7 @@ import org.slf4j.LoggerFactory;
  * Class of methods to search Artifactory for hashes and determine Maven GAV
  * from there.
  *
- * Data classes copied from JFrog's artifactory-client-java project.
+ * &lt;p&gt;Data classes copied from JFrog's artifactory-client-java project.&lt;/p&gt;
  *
  * @author nhenneaux
  */
@@ -54,7 +55,7 @@ public class ArtifactorySearch {
     /**
      * Used for logging.
      */
-<span class="fc" id="L57">    private static final Logger LOGGER = LoggerFactory.getLogger(ArtifactorySearch.class);</span>
+<span class="fc" id="L58">    private static final Logger LOGGER = LoggerFactory.getLogger(ArtifactorySearch.class);</span>
 
     /**
      * The URL for the Central service.
@@ -72,22 +73,22 @@ public class ArtifactorySearch {
      *
      * @param settings the configured settings
      */
-<span class="fc" id="L75">    public ArtifactorySearch(Settings settings) {</span>
+<span class="fc" id="L76">    public ArtifactorySearch(Settings settings) {</span>
 
-<span class="fc" id="L77">        final String searchUrl = settings.getString(Settings.KEYS.ANALYZER_ARTIFACTORY_URL);</span>
+<span class="fc" id="L78">        final String searchUrl = settings.getString(Settings.KEYS.ANALYZER_ARTIFACTORY_URL);</span>
 
-<span class="fc" id="L79">        this.rootURL = searchUrl;</span>
-<span class="fc" id="L80">        LOGGER.debug(&quot;Artifactory Search URL {}&quot;, searchUrl);</span>
+<span class="fc" id="L80">        this.rootURL = searchUrl;</span>
+<span class="fc" id="L81">        LOGGER.debug(&quot;Artifactory Search URL {}&quot;, searchUrl);</span>
 
-<span class="pc bpc" id="L82" title="1 of 2 branches missed.">        if (null != settings.getString(Settings.KEYS.PROXY_SERVER)) {</span>
-<span class="nc" id="L83">            this.allowUsingProxy = settings.getBoolean(Settings.KEYS.ANALYZER_ARTIFACTORY_USES_PROXY, false);</span>
-<span class="nc" id="L84">            LOGGER.debug(&quot;Using proxy configuration? {}&quot;, allowUsingProxy);</span>
+<span class="pc bpc" id="L83" title="1 of 2 branches missed.">        if (null != settings.getString(Settings.KEYS.PROXY_SERVER)) {</span>
+<span class="nc" id="L84">            this.allowUsingProxy = settings.getBoolean(Settings.KEYS.ANALYZER_ARTIFACTORY_USES_PROXY, false);</span>
+<span class="nc" id="L85">            LOGGER.debug(&quot;Using proxy configuration? {}&quot;, allowUsingProxy);</span>
         } else {
-<span class="fc" id="L86">            this.allowUsingProxy = settings.getBoolean(Settings.KEYS.ANALYZER_ARTIFACTORY_USES_PROXY, true);</span>
-<span class="fc" id="L87">            LOGGER.debug(&quot;Using default non-legacy proxy configuration&quot;);</span>
+<span class="fc" id="L87">            this.allowUsingProxy = settings.getBoolean(Settings.KEYS.ANALYZER_ARTIFACTORY_USES_PROXY, true);</span>
+<span class="fc" id="L88">            LOGGER.debug(&quot;Using default non-legacy proxy configuration&quot;);</span>
         }
 
-<span class="fc" id="L90">    }</span>
+<span class="fc" id="L91">    }</span>
 
     /**
      * Searches the configured Central URL for the given hash (MD5, SHA1 and
@@ -102,20 +103,22 @@ public class ArtifactorySearch {
      */
     public List&lt;MavenArtifact&gt; search(Dependency dependency) throws IOException {
 
-<span class="fc" id="L105">        final String sha1sum = dependency.getSha1sum();</span>
-<span class="fc" id="L106">        final URL url = buildUrl(sha1sum);</span>
-<span class="fc" id="L107">        final StringBuilder msg = new StringBuilder(&quot;Could not connect to Artifactory at&quot;)</span>
-<span class="fc" id="L108">                .append(url);</span>
+<span class="fc" id="L106">        final String sha1sum = dependency.getSha1sum();</span>
+<span class="fc" id="L107">        final URL url = buildUrl(sha1sum);</span>
+<span class="fc" id="L108">        final StringBuilder msg = new StringBuilder(&quot;Could not connect to Artifactory at&quot;)</span>
+<span class="fc" id="L109">                .append(url);</span>
         try {
-<span class="fc" id="L110">            final BasicHeader artifactoryResultDetail = new BasicHeader(&quot;X-Result-Detail&quot;, &quot;info&quot;);</span>
-<span class="nc" id="L111">            return Downloader.getInstance().fetchAndHandle(url, new ArtifactorySearchResponseHandler(dependency), List.of(artifactoryResultDetail),</span>
+<span class="fc" id="L111">            final BasicHeader artifactoryResultDetail = new BasicHeader(&quot;X-Result-Detail&quot;, &quot;info&quot;);</span>
+<span class="nc" id="L112">            return Downloader.getInstance().fetchAndHandle(url, new ArtifactorySearchResponseHandler(dependency), List.of(artifactoryResultDetail),</span>
                     allowUsingProxy);
-<span class="nc" id="L113">        } catch (TooManyRequestsException e) {</span>
-<span class="nc" id="L114">            throw new IOException(msg.append(&quot; (429): Too manu requests&quot;).toString(), e);</span>
-<span class="nc" id="L115">        } catch (URISyntaxException e) {</span>
-<span class="nc" id="L116">            throw new IOException(msg.append(&quot; (400): Invalid URL&quot;).toString(), e);</span>
-<span class="nc" id="L117">        } catch (ResourceNotFoundException e) {</span>
-<span class="nc" id="L118">            throw new IOException(msg.append(&quot; (404): Not found&quot;).toString(), e);</span>
+<span class="nc" id="L114">        } catch (TooManyRequestsException e) {</span>
+<span class="nc" id="L115">            throw new IOException(msg.append(&quot; (429): Too manu requests&quot;).toString(), e);</span>
+<span class="nc" id="L116">        } catch (URISyntaxException e) {</span>
+<span class="nc" id="L117">            throw new IOException(msg.append(&quot; (400): Invalid URL&quot;).toString(), e);</span>
+<span class="nc" id="L118">        } catch (ResourceNotFoundException e) {</span>
+<span class="nc" id="L119">            throw new IOException(msg.append(&quot; (404): Not found&quot;).toString(), e);</span>
+<span class="nc" id="L120">        } catch (ForbiddenException e) {</span>
+<span class="nc" id="L121">            throw new IOException(msg.append(&quot; (403): Forbidden&quot;).toString(), e);</span>
         }
     }
 
@@ -129,7 +132,7 @@ public class ArtifactorySearch {
     private URL buildUrl(String sha1sum) throws MalformedURLException {
         // TODO Investigate why sha256 parameter is not working
         // API defined https://www.jfrog.com/confluence/display/RTF/Artifactory+REST+API#ArtifactoryRESTAPI-ChecksumSearch
-<span class="fc" id="L132">        return new URL(rootURL + &quot;/api/search/checksum?sha1=&quot; + sha1sum);</span>
+<span class="fc" id="L135">        return new URL(rootURL + &quot;/api/search/checksum?sha1=&quot; + sha1sum);</span>
     }
 
     /**
@@ -140,20 +143,20 @@ public class ArtifactorySearch {
      * &lt;code&gt;false&lt;/code&gt;.
      */
     public boolean preflightRequest() {
-<span class="nc" id="L143">        URL url = null;</span>
+<span class="nc" id="L146">        URL url = null;</span>
         try {
-<span class="nc" id="L145">            url = buildUrl(Checksum.getSHA1Checksum(UUID.randomUUID().toString()));</span>
-<span class="nc" id="L146">            Downloader.getInstance().fetchContent(url, StandardCharsets.UTF_8);</span>
-<span class="nc" id="L147">            return true;</span>
-<span class="nc" id="L148">        } catch (IOException e) {</span>
-<span class="nc" id="L149">            LOGGER.error(&quot;Cannot connect to Artifactory&quot;, e);</span>
-<span class="nc" id="L150">            return false;</span>
-<span class="nc" id="L151">        } catch (TooManyRequestsException e) {</span>
-<span class="nc" id="L152">            LOGGER.warn(&quot;Expected 200 result from Artifactory ({}), got 429&quot;, url);</span>
+<span class="nc" id="L148">            url = buildUrl(Checksum.getSHA1Checksum(UUID.randomUUID().toString()));</span>
+<span class="nc" id="L149">            Downloader.getInstance().fetchContent(url, StandardCharsets.UTF_8);</span>
+<span class="nc" id="L150">            return true;</span>
+<span class="nc" id="L151">        } catch (IOException e) {</span>
+<span class="nc" id="L152">            LOGGER.error(&quot;Cannot connect to Artifactory&quot;, e);</span>
 <span class="nc" id="L153">            return false;</span>
-<span class="nc" id="L154">        } catch (ResourceNotFoundException e) {</span>
-<span class="nc" id="L155">            LOGGER.warn(&quot;Expected 200 result from Artifactory ({}), got 404&quot;, url);</span>
+<span class="nc" id="L154">        } catch (TooManyRequestsException e) {</span>
+<span class="nc" id="L155">            LOGGER.warn(&quot;Expected 200 result from Artifactory ({}), got 429&quot;, url);</span>
 <span class="nc" id="L156">            return false;</span>
+<span class="nc" id="L157">        } catch (ResourceNotFoundException e) {</span>
+<span class="nc" id="L158">            LOGGER.warn(&quot;Expected 200 result from Artifactory ({}), got 404&quot;, url);</span>
+<span class="nc" id="L159">            return false;</span>
         }
 
     }

@@ -25,8 +25,8 @@
 <a class="jxr_linenumber" name="L17" href="#L17">17</a>  <em class="jxr_comment"> */</em>
 <a class="jxr_linenumber" name="L18" href="#L18">18</a>  <strong class="jxr_keyword">package</strong> org.owasp.dependencycheck.data.artifactory;
 <a class="jxr_linenumber" name="L19" href="#L19">19</a>  
-<a class="jxr_linenumber" name="L20" href="#L20">20</a>  <strong class="jxr_keyword">import</strong> org.junit.Ignore;
-<a class="jxr_linenumber" name="L21" href="#L21">21</a>  <strong class="jxr_keyword">import</strong> org.junit.Test;
+<a class="jxr_linenumber" name="L20" href="#L20">20</a>  <strong class="jxr_keyword">import</strong> org.junit.jupiter.api.Disabled;
+<a class="jxr_linenumber" name="L21" href="#L21">21</a>  <strong class="jxr_keyword">import</strong> org.junit.jupiter.api.Test;
 <a class="jxr_linenumber" name="L22" href="#L22">22</a>  <strong class="jxr_keyword">import</strong> org.owasp.dependencycheck.data.nexus.MavenArtifact;
 <a class="jxr_linenumber" name="L23" href="#L23">23</a>  <strong class="jxr_keyword">import</strong> org.owasp.dependencycheck.dependency.Dependency;
 <a class="jxr_linenumber" name="L24" href="#L24">24</a>  <strong class="jxr_keyword">import</strong> org.owasp.dependencycheck.utils.Settings;
@@ -35,15 +35,15 @@
 <a class="jxr_linenumber" name="L27" href="#L27">27</a>  <strong class="jxr_keyword">import</strong> java.io.IOException;
 <a class="jxr_linenumber" name="L28" href="#L28">28</a>  <strong class="jxr_keyword">import</strong> java.util.List;
 <a class="jxr_linenumber" name="L29" href="#L29">29</a>  
-<a class="jxr_linenumber" name="L30" href="#L30">30</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> org.junit.Assert.assertEquals;
-<a class="jxr_linenumber" name="L31" href="#L31">31</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> org.junit.Assert.fail;
+<a class="jxr_linenumber" name="L30" href="#L30">30</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> org.junit.jupiter.api.Assertions.assertEquals;
+<a class="jxr_linenumber" name="L31" href="#L31">31</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> org.junit.jupiter.api.Assertions.assertThrows;
 <a class="jxr_linenumber" name="L32" href="#L32">32</a>  
-<a class="jxr_linenumber" name="L33" href="#L33">33</a>  @Ignore
-<a class="jxr_linenumber" name="L34" href="#L34">34</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">class</strong> <a href="../../../../../org/owasp/dependencycheck/data/artifactory/ArtifactorySearchIT.html">ArtifactorySearchIT</a> {
+<a class="jxr_linenumber" name="L33" href="#L33">33</a>  @Disabled
+<a class="jxr_linenumber" name="L34" href="#L34">34</a>  <strong class="jxr_keyword">class</strong> <a href="../../../../../org/owasp/dependencycheck/data/artifactory/ArtifactorySearchIT.html">ArtifactorySearchIT</a> {
 <a class="jxr_linenumber" name="L35" href="#L35">35</a>  
 <a class="jxr_linenumber" name="L36" href="#L36">36</a>  
 <a class="jxr_linenumber" name="L37" href="#L37">37</a>      @Test
-<a class="jxr_linenumber" name="L38" href="#L38">38</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testWithRealInstanceUsingBearerToken() <strong class="jxr_keyword">throws</strong> IOException {
+<a class="jxr_linenumber" name="L38" href="#L38">38</a>      <strong class="jxr_keyword">void</strong> testWithRealInstanceUsingBearerToken() <strong class="jxr_keyword">throws</strong> IOException {
 <a class="jxr_linenumber" name="L39" href="#L39">39</a>          <em class="jxr_comment">// Given</em>
 <a class="jxr_linenumber" name="L40" href="#L40">40</a>          Dependency dependency = <strong class="jxr_keyword">new</strong> Dependency();
 <a class="jxr_linenumber" name="L41" href="#L41">41</a>          dependency.setSha1sum(<span class="jxr_string">"c5b4c491aecb72e7c32a78da0b5c6b9cda8dee0f"</span>);
@@ -71,7 +71,7 @@
 <a class="jxr_linenumber" name="L63" href="#L63">63</a>      }
 <a class="jxr_linenumber" name="L64" href="#L64">64</a>  
 <a class="jxr_linenumber" name="L65" href="#L65">65</a>      @Test
-<a class="jxr_linenumber" name="L66" href="#L66">66</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testWithRealInstanceAnonymous() <strong class="jxr_keyword">throws</strong> IOException {
+<a class="jxr_linenumber" name="L66" href="#L66">66</a>      <strong class="jxr_keyword">void</strong> testWithRealInstanceAnonymous() {
 <a class="jxr_linenumber" name="L67" href="#L67">67</a>          <em class="jxr_comment">// Given</em>
 <a class="jxr_linenumber" name="L68" href="#L68">68</a>          Dependency dependency = <strong class="jxr_keyword">new</strong> Dependency();
 <a class="jxr_linenumber" name="L69" href="#L69">69</a>          dependency.setSha1sum(<span class="jxr_string">"c5b4c491aecb72e7c32a78da0b5c6b9cda8dee0f"</span>);
@@ -80,42 +80,39 @@
 <a class="jxr_linenumber" name="L72" href="#L72">72</a>          settings.setString(Settings.KEYS.ANALYZER_ARTIFACTORY_URL, <span class="jxr_string">"https://artifactory.techno.ingenico.com/artifactory"</span>);
 <a class="jxr_linenumber" name="L73" href="#L73">73</a>          <strong class="jxr_keyword">final</strong> ArtifactorySearch artifactorySearch = <strong class="jxr_keyword">new</strong> ArtifactorySearch(settings);
 <a class="jxr_linenumber" name="L74" href="#L74">74</a>          <em class="jxr_comment">// When</em>
-<a class="jxr_linenumber" name="L75" href="#L75">75</a>          <strong class="jxr_keyword">try</strong> {
-<a class="jxr_linenumber" name="L76" href="#L76">76</a>              artifactorySearch.search(dependency);
-<a class="jxr_linenumber" name="L77" href="#L77">77</a>              fail(<span class="jxr_string">"No Match found, should throw an exception!"</span>);
-<a class="jxr_linenumber" name="L78" href="#L78">78</a>          } <strong class="jxr_keyword">catch</strong> (FileNotFoundException e) {
-<a class="jxr_linenumber" name="L79" href="#L79">79</a>              <em class="jxr_comment">// Then</em>
-<a class="jxr_linenumber" name="L80" href="#L80">80</a>              assertEquals(<span class="jxr_string">"Artifact Dependency{ fileName='null', actualFilePath='null', filePath='null', packagePath='null'} not found in Artifactory"</span>, e.getMessage());
-<a class="jxr_linenumber" name="L81" href="#L81">81</a>          }
-<a class="jxr_linenumber" name="L82" href="#L82">82</a>      }
-<a class="jxr_linenumber" name="L83" href="#L83">83</a>  
-<a class="jxr_linenumber" name="L84" href="#L84">84</a>      @Test
-<a class="jxr_linenumber" name="L85" href="#L85">85</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testWithRealInstanceWithUserToken() <strong class="jxr_keyword">throws</strong> IOException {
-<a class="jxr_linenumber" name="L86" href="#L86">86</a>          <em class="jxr_comment">// Given</em>
-<a class="jxr_linenumber" name="L87" href="#L87">87</a>          Dependency dependency = <strong class="jxr_keyword">new</strong> Dependency();
-<a class="jxr_linenumber" name="L88" href="#L88">88</a>          dependency.setSha1sum(<span class="jxr_string">"0695b63d702f505b9b916e02272e3b6381bade7f"</span>);
-<a class="jxr_linenumber" name="L89" href="#L89">89</a>          dependency.setMd5sum(<span class="jxr_string">"cde1963375c651f769d40c8023ab5876"</span>);
-<a class="jxr_linenumber" name="L90" href="#L90">90</a>  
-<a class="jxr_linenumber" name="L91" href="#L91">91</a>          <strong class="jxr_keyword">final</strong> Settings settings = <strong class="jxr_keyword">new</strong> Settings();
-<a class="jxr_linenumber" name="L92" href="#L92">92</a>          settings.setString(Settings.KEYS.ANALYZER_ARTIFACTORY_URL, <span class="jxr_string">"https://artifactory.techno.ingenico.com/artifactory"</span>);
-<a class="jxr_linenumber" name="L93" href="#L93">93</a>          settings.setString(Settings.KEYS.ANALYZER_ARTIFACTORY_API_USERNAME, <span class="jxr_string">"yourUserName"</span>);
-<a class="jxr_linenumber" name="L94" href="#L94">94</a>          settings.setString(Settings.KEYS.ANALYZER_ARTIFACTORY_API_TOKEN, <span class="jxr_string">"yourSecretApiToken"</span>);
-<a class="jxr_linenumber" name="L95" href="#L95">95</a>          <strong class="jxr_keyword">final</strong> ArtifactorySearch artifactorySearch = <strong class="jxr_keyword">new</strong> ArtifactorySearch(settings);
-<a class="jxr_linenumber" name="L96" href="#L96">96</a>          <em class="jxr_comment">// When</em>
-<a class="jxr_linenumber" name="L97" href="#L97">97</a>          <strong class="jxr_keyword">final</strong> List&lt;MavenArtifact&gt; mavenArtifacts = artifactorySearch.search(dependency);
-<a class="jxr_linenumber" name="L98" href="#L98">98</a>  
-<a class="jxr_linenumber" name="L99" href="#L99">99</a>          <em class="jxr_comment">// Then</em>
-<a class="jxr_linenumber" name="L100" href="#L100">100</a>         assertEquals(1, mavenArtifacts.size());
-<a class="jxr_linenumber" name="L101" href="#L101">101</a>         <strong class="jxr_keyword">final</strong> MavenArtifact artifact = mavenArtifacts.get(0);
-<a class="jxr_linenumber" name="L102" href="#L102">102</a>         assertEquals(<span class="jxr_string">"com.google.code.gson"</span>, artifact.getGroupId());
-<a class="jxr_linenumber" name="L103" href="#L103">103</a>         assertEquals(<span class="jxr_string">"gson"</span>, artifact.getArtifactId());
-<a class="jxr_linenumber" name="L104" href="#L104">104</a>         assertEquals(<span class="jxr_string">"2.4"</span>, artifact.getVersion());
-<a class="jxr_linenumber" name="L105" href="#L105">105</a>         assertEquals(<span class="jxr_string">"https://artifactory.techno.ingenico.com/artifactory/gradle-libs-cache/com/google/code/gson/gson/2.4/gson-2.4.jar"</span>, artifact.getArtifactUrl());
-<a class="jxr_linenumber" name="L106" href="#L106">106</a>         assertEquals(<span class="jxr_string">"https://artifactory.techno.ingenico.com/artifactory/gradle-libs-cache/com/google/code/gson/gson/2.4/gson-2.4.pom"</span>, artifact.getPomUrl());
-<a class="jxr_linenumber" name="L107" href="#L107">107</a>     }
-<a class="jxr_linenumber" name="L108" href="#L108">108</a> 
-<a class="jxr_linenumber" name="L109" href="#L109">109</a> 
-<a class="jxr_linenumber" name="L110" href="#L110">110</a> }
+<a class="jxr_linenumber" name="L75" href="#L75">75</a>          FileNotFoundException e = assertThrows(FileNotFoundException.<strong class="jxr_keyword">class</strong>, () -&gt; artifactorySearch.search(dependency),
+<a class="jxr_linenumber" name="L76" href="#L76">76</a>                  <span class="jxr_string">"No Match found, should throw an exception!"</span>);
+<a class="jxr_linenumber" name="L77" href="#L77">77</a>          <em class="jxr_comment">// Then</em>
+<a class="jxr_linenumber" name="L78" href="#L78">78</a>          assertEquals(<span class="jxr_string">"Artifact Dependency{ fileName='null', actualFilePath='null', filePath='null', packagePath='null'} not found in Artifactory"</span>, e.getMessage());
+<a class="jxr_linenumber" name="L79" href="#L79">79</a>      }
+<a class="jxr_linenumber" name="L80" href="#L80">80</a>  
+<a class="jxr_linenumber" name="L81" href="#L81">81</a>      @Test
+<a class="jxr_linenumber" name="L82" href="#L82">82</a>      <strong class="jxr_keyword">void</strong> testWithRealInstanceWithUserToken() <strong class="jxr_keyword">throws</strong> IOException {
+<a class="jxr_linenumber" name="L83" href="#L83">83</a>          <em class="jxr_comment">// Given</em>
+<a class="jxr_linenumber" name="L84" href="#L84">84</a>          Dependency dependency = <strong class="jxr_keyword">new</strong> Dependency();
+<a class="jxr_linenumber" name="L85" href="#L85">85</a>          dependency.setSha1sum(<span class="jxr_string">"0695b63d702f505b9b916e02272e3b6381bade7f"</span>);
+<a class="jxr_linenumber" name="L86" href="#L86">86</a>          dependency.setMd5sum(<span class="jxr_string">"cde1963375c651f769d40c8023ab5876"</span>);
+<a class="jxr_linenumber" name="L87" href="#L87">87</a>  
+<a class="jxr_linenumber" name="L88" href="#L88">88</a>          <strong class="jxr_keyword">final</strong> Settings settings = <strong class="jxr_keyword">new</strong> Settings();
+<a class="jxr_linenumber" name="L89" href="#L89">89</a>          settings.setString(Settings.KEYS.ANALYZER_ARTIFACTORY_URL, <span class="jxr_string">"https://artifactory.techno.ingenico.com/artifactory"</span>);
+<a class="jxr_linenumber" name="L90" href="#L90">90</a>          settings.setString(Settings.KEYS.ANALYZER_ARTIFACTORY_API_USERNAME, <span class="jxr_string">"yourUserName"</span>);
+<a class="jxr_linenumber" name="L91" href="#L91">91</a>          settings.setString(Settings.KEYS.ANALYZER_ARTIFACTORY_API_TOKEN, <span class="jxr_string">"yourSecretApiToken"</span>);
+<a class="jxr_linenumber" name="L92" href="#L92">92</a>          <strong class="jxr_keyword">final</strong> ArtifactorySearch artifactorySearch = <strong class="jxr_keyword">new</strong> ArtifactorySearch(settings);
+<a class="jxr_linenumber" name="L93" href="#L93">93</a>          <em class="jxr_comment">// When</em>
+<a class="jxr_linenumber" name="L94" href="#L94">94</a>          <strong class="jxr_keyword">final</strong> List&lt;MavenArtifact&gt; mavenArtifacts = artifactorySearch.search(dependency);
+<a class="jxr_linenumber" name="L95" href="#L95">95</a>  
+<a class="jxr_linenumber" name="L96" href="#L96">96</a>          <em class="jxr_comment">// Then</em>
+<a class="jxr_linenumber" name="L97" href="#L97">97</a>          assertEquals(1, mavenArtifacts.size());
+<a class="jxr_linenumber" name="L98" href="#L98">98</a>          <strong class="jxr_keyword">final</strong> MavenArtifact artifact = mavenArtifacts.get(0);
+<a class="jxr_linenumber" name="L99" href="#L99">99</a>          assertEquals(<span class="jxr_string">"com.google.code.gson"</span>, artifact.getGroupId());
+<a class="jxr_linenumber" name="L100" href="#L100">100</a>         assertEquals(<span class="jxr_string">"gson"</span>, artifact.getArtifactId());
+<a class="jxr_linenumber" name="L101" href="#L101">101</a>         assertEquals(<span class="jxr_string">"2.4"</span>, artifact.getVersion());
+<a class="jxr_linenumber" name="L102" href="#L102">102</a>         assertEquals(<span class="jxr_string">"https://artifactory.techno.ingenico.com/artifactory/gradle-libs-cache/com/google/code/gson/gson/2.4/gson-2.4.jar"</span>, artifact.getArtifactUrl());
+<a class="jxr_linenumber" name="L103" href="#L103">103</a>         assertEquals(<span class="jxr_string">"https://artifactory.techno.ingenico.com/artifactory/gradle-libs-cache/com/google/code/gson/gson/2.4/gson-2.4.pom"</span>, artifact.getPomUrl());
+<a class="jxr_linenumber" name="L104" href="#L104">104</a>     }
+<a class="jxr_linenumber" name="L105" href="#L105">105</a> 
+<a class="jxr_linenumber" name="L106" href="#L106">106</a> 
+<a class="jxr_linenumber" name="L107" href="#L107">107</a> }
 </pre>
 <hr/>
 <div id="footer">Copyright &#169; 2012&#x2013;2025 <a href="https://www.owasp.org">OWASP</a>. All rights reserved.</div>

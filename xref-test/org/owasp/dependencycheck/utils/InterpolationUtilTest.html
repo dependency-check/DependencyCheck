@@ -25,61 +25,63 @@
 <a class="jxr_linenumber" name="L17" href="#L17">17</a>  <em class="jxr_comment"> */</em>
 <a class="jxr_linenumber" name="L18" href="#L18">18</a>  <strong class="jxr_keyword">package</strong> org.owasp.dependencycheck.utils;
 <a class="jxr_linenumber" name="L19" href="#L19">19</a>  
-<a class="jxr_linenumber" name="L20" href="#L20">20</a>  <strong class="jxr_keyword">import</strong> java.util.Properties;
-<a class="jxr_linenumber" name="L21" href="#L21">21</a>  <strong class="jxr_keyword">import</strong> org.junit.Test;
-<a class="jxr_linenumber" name="L22" href="#L22">22</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> org.junit.Assert.*;
+<a class="jxr_linenumber" name="L20" href="#L20">20</a>  <strong class="jxr_keyword">import</strong> org.junit.jupiter.api.Test;
+<a class="jxr_linenumber" name="L21" href="#L21">21</a>  
+<a class="jxr_linenumber" name="L22" href="#L22">22</a>  <strong class="jxr_keyword">import</strong> java.util.Properties;
 <a class="jxr_linenumber" name="L23" href="#L23">23</a>  
-<a class="jxr_linenumber" name="L24" href="#L24">24</a>  <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L25" href="#L25">25</a>  <em class="jxr_javadoccomment"> *</em>
-<a class="jxr_linenumber" name="L26" href="#L26">26</a>  <em class="jxr_javadoccomment"> * @author Jeremy Long</em>
-<a class="jxr_linenumber" name="L27" href="#L27">27</a>  <em class="jxr_javadoccomment"> */</em>
-<a class="jxr_linenumber" name="L28" href="#L28">28</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">class</strong> <a href="../../../../org/owasp/dependencycheck/utils/InterpolationUtilTest.html">InterpolationUtilTest</a> {
-<a class="jxr_linenumber" name="L29" href="#L29">29</a>  
-<a class="jxr_linenumber" name="L30" href="#L30">30</a>      <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L31" href="#L31">31</a>  <em class="jxr_javadoccomment">     * Test of interpolate method, of class InterpolationUtil.</em>
-<a class="jxr_linenumber" name="L32" href="#L32">32</a>  <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L33" href="#L33">33</a>      @Test
-<a class="jxr_linenumber" name="L34" href="#L34">34</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testInterpolate() {
-<a class="jxr_linenumber" name="L35" href="#L35">35</a>          Properties prop = <strong class="jxr_keyword">new</strong> Properties();
-<a class="jxr_linenumber" name="L36" href="#L36">36</a>          prop.setProperty(<span class="jxr_string">"key"</span>, <span class="jxr_string">"value"</span>);
-<a class="jxr_linenumber" name="L37" href="#L37">37</a>          prop.setProperty(<span class="jxr_string">"nested"</span>, <span class="jxr_string">"nested ${key}"</span>);
-<a class="jxr_linenumber" name="L38" href="#L38">38</a>          String text = <span class="jxr_string">"This is a test of '${key}' '${nested}'"</span>;
-<a class="jxr_linenumber" name="L39" href="#L39">39</a>          String expResults = <span class="jxr_string">"This is a test of 'value' 'nested value'"</span>;
-<a class="jxr_linenumber" name="L40" href="#L40">40</a>          String results = InterpolationUtil.interpolate(text, prop);
-<a class="jxr_linenumber" name="L41" href="#L41">41</a>          assertEquals(expResults, results);
-<a class="jxr_linenumber" name="L42" href="#L42">42</a>      }
-<a class="jxr_linenumber" name="L43" href="#L43">43</a>  
-<a class="jxr_linenumber" name="L44" href="#L44">44</a>      @Test
-<a class="jxr_linenumber" name="L45" href="#L45">45</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testInterpolateNonexistentErased() {
-<a class="jxr_linenumber" name="L46" href="#L46">46</a>          Properties prop = <strong class="jxr_keyword">new</strong> Properties();
-<a class="jxr_linenumber" name="L47" href="#L47">47</a>          prop.setProperty(<span class="jxr_string">"key"</span>, <span class="jxr_string">"value"</span>);
-<a class="jxr_linenumber" name="L48" href="#L48">48</a>          String text = <span class="jxr_string">"This is a test of '${key}' and '${nothing}'"</span>;
-<a class="jxr_linenumber" name="L49" href="#L49">49</a>          String expResults = <span class="jxr_string">"This is a test of 'value' and ''"</span>;
-<a class="jxr_linenumber" name="L50" href="#L50">50</a>          String results = InterpolationUtil.interpolate(text, prop);
-<a class="jxr_linenumber" name="L51" href="#L51">51</a>          assertEquals(expResults, results);
-<a class="jxr_linenumber" name="L52" href="#L52">52</a>      }
-<a class="jxr_linenumber" name="L53" href="#L53">53</a>  
-<a class="jxr_linenumber" name="L54" href="#L54">54</a>      @Test
-<a class="jxr_linenumber" name="L55" href="#L55">55</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testInterpolateMSBuild() {
-<a class="jxr_linenumber" name="L56" href="#L56">56</a>          Properties prop = <strong class="jxr_keyword">new</strong> Properties();
-<a class="jxr_linenumber" name="L57" href="#L57">57</a>          prop.setProperty(<span class="jxr_string">"key"</span>, <span class="jxr_string">"value"</span>);
-<a class="jxr_linenumber" name="L58" href="#L58">58</a>          prop.setProperty(<span class="jxr_string">"nested"</span>, <span class="jxr_string">"nested $(key)"</span>);
-<a class="jxr_linenumber" name="L59" href="#L59">59</a>          String text = <span class="jxr_string">"This is a test of '$(key)' '$(nested)'"</span>;
-<a class="jxr_linenumber" name="L60" href="#L60">60</a>          String expResults = <span class="jxr_string">"This is a test of 'value' 'nested value'"</span>;
-<a class="jxr_linenumber" name="L61" href="#L61">61</a>          String results = InterpolationUtil.interpolate(text, prop, InterpolationUtil.SyntaxStyle.MSBUILD);
-<a class="jxr_linenumber" name="L62" href="#L62">62</a>          assertEquals(expResults, results);
-<a class="jxr_linenumber" name="L63" href="#L63">63</a>      }
-<a class="jxr_linenumber" name="L64" href="#L64">64</a>  
-<a class="jxr_linenumber" name="L65" href="#L65">65</a>      @Test
-<a class="jxr_linenumber" name="L66" href="#L66">66</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testInterpolateNonexistentErasedMSBuild() {
-<a class="jxr_linenumber" name="L67" href="#L67">67</a>          Properties prop = <strong class="jxr_keyword">new</strong> Properties();
-<a class="jxr_linenumber" name="L68" href="#L68">68</a>          prop.setProperty(<span class="jxr_string">"key"</span>, <span class="jxr_string">"value"</span>);
-<a class="jxr_linenumber" name="L69" href="#L69">69</a>          String text = <span class="jxr_string">"This is a test of '$(key)' and '$(nothing)'"</span>;
-<a class="jxr_linenumber" name="L70" href="#L70">70</a>          String expResults = <span class="jxr_string">"This is a test of 'value' and ''"</span>;
-<a class="jxr_linenumber" name="L71" href="#L71">71</a>          String results = InterpolationUtil.interpolate(text, prop, InterpolationUtil.SyntaxStyle.MSBUILD);
-<a class="jxr_linenumber" name="L72" href="#L72">72</a>          assertEquals(expResults, results);
-<a class="jxr_linenumber" name="L73" href="#L73">73</a>      }
-<a class="jxr_linenumber" name="L74" href="#L74">74</a>  }
+<a class="jxr_linenumber" name="L24" href="#L24">24</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> org.junit.jupiter.api.Assertions.assertEquals;
+<a class="jxr_linenumber" name="L25" href="#L25">25</a>  
+<a class="jxr_linenumber" name="L26" href="#L26">26</a>  <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L27" href="#L27">27</a>  <em class="jxr_javadoccomment"> *</em>
+<a class="jxr_linenumber" name="L28" href="#L28">28</a>  <em class="jxr_javadoccomment"> * @author Jeremy Long</em>
+<a class="jxr_linenumber" name="L29" href="#L29">29</a>  <em class="jxr_javadoccomment"> */</em>
+<a class="jxr_linenumber" name="L30" href="#L30">30</a>  <strong class="jxr_keyword">class</strong> <a href="../../../../org/owasp/dependencycheck/utils/InterpolationUtilTest.html">InterpolationUtilTest</a> {
+<a class="jxr_linenumber" name="L31" href="#L31">31</a>  
+<a class="jxr_linenumber" name="L32" href="#L32">32</a>      <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L33" href="#L33">33</a>  <em class="jxr_javadoccomment">     * Test of interpolate method, of class InterpolationUtil.</em>
+<a class="jxr_linenumber" name="L34" href="#L34">34</a>  <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L35" href="#L35">35</a>      @Test
+<a class="jxr_linenumber" name="L36" href="#L36">36</a>      <strong class="jxr_keyword">void</strong> testInterpolate() {
+<a class="jxr_linenumber" name="L37" href="#L37">37</a>          Properties prop = <strong class="jxr_keyword">new</strong> Properties();
+<a class="jxr_linenumber" name="L38" href="#L38">38</a>          prop.setProperty(<span class="jxr_string">"key"</span>, <span class="jxr_string">"value"</span>);
+<a class="jxr_linenumber" name="L39" href="#L39">39</a>          prop.setProperty(<span class="jxr_string">"nested"</span>, <span class="jxr_string">"nested ${key}"</span>);
+<a class="jxr_linenumber" name="L40" href="#L40">40</a>          String text = <span class="jxr_string">"This is a test of '${key}' '${nested}'"</span>;
+<a class="jxr_linenumber" name="L41" href="#L41">41</a>          String expResults = <span class="jxr_string">"This is a test of 'value' 'nested value'"</span>;
+<a class="jxr_linenumber" name="L42" href="#L42">42</a>          String results = InterpolationUtil.interpolate(text, prop);
+<a class="jxr_linenumber" name="L43" href="#L43">43</a>          assertEquals(expResults, results);
+<a class="jxr_linenumber" name="L44" href="#L44">44</a>      }
+<a class="jxr_linenumber" name="L45" href="#L45">45</a>  
+<a class="jxr_linenumber" name="L46" href="#L46">46</a>      @Test
+<a class="jxr_linenumber" name="L47" href="#L47">47</a>      <strong class="jxr_keyword">void</strong> testInterpolateNonexistentErased() {
+<a class="jxr_linenumber" name="L48" href="#L48">48</a>          Properties prop = <strong class="jxr_keyword">new</strong> Properties();
+<a class="jxr_linenumber" name="L49" href="#L49">49</a>          prop.setProperty(<span class="jxr_string">"key"</span>, <span class="jxr_string">"value"</span>);
+<a class="jxr_linenumber" name="L50" href="#L50">50</a>          String text = <span class="jxr_string">"This is a test of '${key}' and '${nothing}'"</span>;
+<a class="jxr_linenumber" name="L51" href="#L51">51</a>          String expResults = <span class="jxr_string">"This is a test of 'value' and ''"</span>;
+<a class="jxr_linenumber" name="L52" href="#L52">52</a>          String results = InterpolationUtil.interpolate(text, prop);
+<a class="jxr_linenumber" name="L53" href="#L53">53</a>          assertEquals(expResults, results);
+<a class="jxr_linenumber" name="L54" href="#L54">54</a>      }
+<a class="jxr_linenumber" name="L55" href="#L55">55</a>  
+<a class="jxr_linenumber" name="L56" href="#L56">56</a>      @Test
+<a class="jxr_linenumber" name="L57" href="#L57">57</a>      <strong class="jxr_keyword">void</strong> testInterpolateMSBuild() {
+<a class="jxr_linenumber" name="L58" href="#L58">58</a>          Properties prop = <strong class="jxr_keyword">new</strong> Properties();
+<a class="jxr_linenumber" name="L59" href="#L59">59</a>          prop.setProperty(<span class="jxr_string">"key"</span>, <span class="jxr_string">"value"</span>);
+<a class="jxr_linenumber" name="L60" href="#L60">60</a>          prop.setProperty(<span class="jxr_string">"nested"</span>, <span class="jxr_string">"nested $(key)"</span>);
+<a class="jxr_linenumber" name="L61" href="#L61">61</a>          String text = <span class="jxr_string">"This is a test of '$(key)' '$(nested)'"</span>;
+<a class="jxr_linenumber" name="L62" href="#L62">62</a>          String expResults = <span class="jxr_string">"This is a test of 'value' 'nested value'"</span>;
+<a class="jxr_linenumber" name="L63" href="#L63">63</a>          String results = InterpolationUtil.interpolate(text, prop, InterpolationUtil.SyntaxStyle.MSBUILD);
+<a class="jxr_linenumber" name="L64" href="#L64">64</a>          assertEquals(expResults, results);
+<a class="jxr_linenumber" name="L65" href="#L65">65</a>      }
+<a class="jxr_linenumber" name="L66" href="#L66">66</a>  
+<a class="jxr_linenumber" name="L67" href="#L67">67</a>      @Test
+<a class="jxr_linenumber" name="L68" href="#L68">68</a>      <strong class="jxr_keyword">void</strong> testInterpolateNonexistentErasedMSBuild() {
+<a class="jxr_linenumber" name="L69" href="#L69">69</a>          Properties prop = <strong class="jxr_keyword">new</strong> Properties();
+<a class="jxr_linenumber" name="L70" href="#L70">70</a>          prop.setProperty(<span class="jxr_string">"key"</span>, <span class="jxr_string">"value"</span>);
+<a class="jxr_linenumber" name="L71" href="#L71">71</a>          String text = <span class="jxr_string">"This is a test of '$(key)' and '$(nothing)'"</span>;
+<a class="jxr_linenumber" name="L72" href="#L72">72</a>          String expResults = <span class="jxr_string">"This is a test of 'value' and ''"</span>;
+<a class="jxr_linenumber" name="L73" href="#L73">73</a>          String results = InterpolationUtil.interpolate(text, prop, InterpolationUtil.SyntaxStyle.MSBUILD);
+<a class="jxr_linenumber" name="L74" href="#L74">74</a>          assertEquals(expResults, results);
+<a class="jxr_linenumber" name="L75" href="#L75">75</a>      }
+<a class="jxr_linenumber" name="L76" href="#L76">76</a>  }
 </pre>
 <hr/>
 <div id="footer">Copyright &#169; 2012&#x2013;2025 <a href="https://www.owasp.org">OWASP</a>. All rights reserved.</div>

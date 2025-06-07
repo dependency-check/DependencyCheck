@@ -217,10 +217,10 @@ public final class ExtractionUtil {
 <span class="nc" id="L217">            final String msg = String.format(&quot;Error extracting file `%s` with filter: %s&quot;, archive.getAbsolutePath(), ex.getMessage());</span>
 <span class="nc" id="L218">            LOGGER.debug(msg, ex);</span>
 <span class="nc" id="L219">            throw new ExtractionException(msg);</span>
-<span class="nc" id="L220">        } catch (IOException | ArchiveExtractionException ex) {</span>
-<span class="nc" id="L221">            LOGGER.warn(&quot;Exception extracting archive '{}'.&quot;, archive.getAbsolutePath());</span>
-<span class="nc" id="L222">            LOGGER.debug(&quot;&quot;, ex);</span>
-<span class="nc" id="L223">            throw new ExtractionException(&quot;Unable to extract from archive&quot;, ex);</span>
+<span class="fc" id="L220">        } catch (IOException | ArchiveExtractionException ex) {</span>
+<span class="fc" id="L221">            LOGGER.warn(&quot;Exception extracting archive '{}'.&quot;, archive.getAbsolutePath());</span>
+<span class="fc" id="L222">            LOGGER.debug(&quot;&quot;, ex);</span>
+<span class="fc" id="L223">            throw new ExtractionException(&quot;Unable to extract from archive&quot;, ex);</span>
 <span class="fc" id="L224">        }</span>
 <span class="fc" id="L225">    }</span>
 
@@ -259,8 +259,8 @@ public final class ExtractionUtil {
 <span class="fc" id="L259">                    extractFile(input, destination, filter, entry);</span>
                 }
             }
-<span class="nc" id="L262">        } catch (IOException | AnalysisException ex) {</span>
-<span class="nc" id="L263">            throw new ArchiveExtractionException(ex);</span>
+<span class="fc" id="L262">        } catch (IOException | AnalysisException ex) {</span>
+<span class="fc" id="L263">            throw new ArchiveExtractionException(ex);</span>
         } finally {
 <span class="fc" id="L265">            FileUtils.close(input);</span>
         }
@@ -283,12 +283,12 @@ public final class ExtractionUtil {
         try {
 <span class="fc bfc" id="L284" title="All 2 branches covered.">            if (filter.accept(file.getParentFile(), file.getName())) {</span>
 <span class="fc" id="L285">                final String destPath = destination.getCanonicalPath();</span>
-<span class="pc bpc" id="L286" title="1 of 2 branches missed.">                if (!file.getCanonicalPath().startsWith(destPath)) {</span>
-<span class="nc" id="L287">                    LOGGER.debug(&quot;ZipSlip detected\n-Destination: &quot; + destPath + &quot;\n-Path: &quot; + file);</span>
-<span class="nc" id="L288">                    final String msg = String.format(</span>
+<span class="fc bfc" id="L286" title="All 2 branches covered.">                if (!file.getCanonicalPath().startsWith(destPath)) {</span>
+<span class="fc" id="L287">                    LOGGER.debug(&quot;ZipSlip detected\n-Destination: &quot; + destPath + &quot;\n-Path: &quot; + file);</span>
+<span class="fc" id="L288">                    final String msg = String.format(</span>
                             &quot;Archive contains a file (%s) that would be extracted outside of the target directory.&quot;,
-<span class="nc" id="L290">                            file.getAbsolutePath());</span>
-<span class="nc" id="L291">                    throw new ExtractionException(msg);</span>
+<span class="fc" id="L290">                            file.getAbsolutePath());</span>
+<span class="fc" id="L291">                    throw new ExtractionException(msg);</span>
                 }
 <span class="fc" id="L293">                LOGGER.debug(&quot;Extracting '{}'&quot;, file.getPath());</span>
 <span class="fc" id="L294">                createParentFile(file);</span>
@@ -301,10 +301,10 @@ public final class ExtractionUtil {
 <span class="nc" id="L301">                    throw new ExtractionException(msg, ex);</span>
 <span class="fc" id="L302">                }</span>
             }
-<span class="nc" id="L304">        } catch (IOException ex) {</span>
-<span class="nc" id="L305">            LOGGER.debug(&quot;&quot;, ex);</span>
-<span class="nc" id="L306">            final String msg = String.format(&quot;IO Exception while parsing file '%s'.&quot;, file.getName());</span>
-<span class="nc" id="L307">            throw new ExtractionException(msg, ex);</span>
+<span class="fc" id="L304">        } catch (IOException ex) {</span>
+<span class="fc" id="L305">            LOGGER.debug(&quot;&quot;, ex);</span>
+<span class="fc" id="L306">            final String msg = String.format(&quot;IO Exception while parsing file '%s'.&quot;, file.getName());</span>
+<span class="fc" id="L307">            throw new ExtractionException(msg, ex);</span>
 <span class="fc" id="L308">        }</span>
 <span class="fc" id="L309">    }</span>
 

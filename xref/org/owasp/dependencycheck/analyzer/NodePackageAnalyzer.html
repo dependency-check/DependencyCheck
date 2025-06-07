@@ -204,286 +204,287 @@
 <a class="jxr_linenumber" name="L196" href="#L196">196</a>                     <strong class="jxr_keyword">try</strong> {
 <a class="jxr_linenumber" name="L197" href="#L197">197</a>                         ((<a href="../../../../org/owasp/dependencycheck/analyzer/AbstractNpmAnalyzer.html">AbstractNpmAnalyzer</a>) a).prepareFileTypeAnalyzer(engine);
 <a class="jxr_linenumber" name="L198" href="#L198">198</a>                     } <strong class="jxr_keyword">catch</strong> (InitializationException ex) {
-<a class="jxr_linenumber" name="L199" href="#L199">199</a>                         LOGGER.debug(<span class="jxr_string">"Error initializing the {}"</span>, a.getName());
-<a class="jxr_linenumber" name="L200" href="#L200">200</a>                     }
-<a class="jxr_linenumber" name="L201" href="#L201">201</a>                 }
-<a class="jxr_linenumber" name="L202" href="#L202">202</a>                 <strong class="jxr_keyword">return</strong> a.isEnabled();
-<a class="jxr_linenumber" name="L203" href="#L203">203</a>             }
-<a class="jxr_linenumber" name="L204" href="#L204">204</a>         }
-<a class="jxr_linenumber" name="L205" href="#L205">205</a>         <strong class="jxr_keyword">return</strong> false;
-<a class="jxr_linenumber" name="L206" href="#L206">206</a>     }
-<a class="jxr_linenumber" name="L207" href="#L207">207</a> 
-<a class="jxr_linenumber" name="L208" href="#L208">208</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L209" href="#L209">209</a> <em class="jxr_javadoccomment">     * Checks if a package lock file or equivalent exists for the NPM project.</em>
-<a class="jxr_linenumber" name="L210" href="#L210">210</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L211" href="#L211">211</a> <em class="jxr_javadoccomment">     * @param dependencyFile a reference to the `package.json` file</em>
-<a class="jxr_linenumber" name="L212" href="#L212">212</a> <em class="jxr_javadoccomment">     * @return &lt;code&gt;true&lt;/code&gt; if no lock file is found; otherwise</em>
-<a class="jxr_linenumber" name="L213" href="#L213">213</a> <em class="jxr_javadoccomment">     * &lt;code&gt;true&lt;/code&gt;</em>
-<a class="jxr_linenumber" name="L214" href="#L214">214</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L215" href="#L215">215</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">boolean</strong> noLockFileExists(File dependencyFile) {
-<a class="jxr_linenumber" name="L216" href="#L216">216</a>         <strong class="jxr_keyword">final</strong> File lock = <strong class="jxr_keyword">new</strong> File(dependencyFile.getParentFile(), <span class="jxr_string">"package-lock.json"</span>);
-<a class="jxr_linenumber" name="L217" href="#L217">217</a>         <strong class="jxr_keyword">final</strong> File shrinkwrap = <strong class="jxr_keyword">new</strong> File(dependencyFile.getParentFile(), <span class="jxr_string">"npm-shrinkwrap.json"</span>);
-<a class="jxr_linenumber" name="L218" href="#L218">218</a>         <strong class="jxr_keyword">final</strong> File yarnLock = <strong class="jxr_keyword">new</strong> File(dependencyFile.getParentFile(), <span class="jxr_string">"yarn.lock"</span>);
-<a class="jxr_linenumber" name="L219" href="#L219">219</a>         <strong class="jxr_keyword">return</strong> !(lock.isFile() || shrinkwrap.isFile() || yarnLock.isFile());
-<a class="jxr_linenumber" name="L220" href="#L220">220</a>     }
-<a class="jxr_linenumber" name="L221" href="#L221">221</a> 
-<a class="jxr_linenumber" name="L222" href="#L222">222</a>     @Override
-<a class="jxr_linenumber" name="L223" href="#L223">223</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">void</strong> analyzeDependency(<a href="../../../../org/owasp/dependencycheck/dependency/Dependency.html">Dependency</a> dependency, <a href="../../../../org/owasp/dependencycheck/Engine.html">Engine</a> engine) <strong class="jxr_keyword">throws</strong> AnalysisException {
-<a class="jxr_linenumber" name="L224" href="#L224">224</a>         <strong class="jxr_keyword">final</strong> File dependencyFile = dependency.getActualFile();
-<a class="jxr_linenumber" name="L225" href="#L225">225</a>         <strong class="jxr_keyword">if</strong> (!dependencyFile.isFile() || dependencyFile.length() == 0 || !shouldProcess(dependencyFile)) {
-<a class="jxr_linenumber" name="L226" href="#L226">226</a>             <strong class="jxr_keyword">return</strong>;
-<a class="jxr_linenumber" name="L227" href="#L227">227</a>         }
-<a class="jxr_linenumber" name="L228" href="#L228">228</a>         <strong class="jxr_keyword">if</strong> (isNodeAuditEnabled(engine)
-<a class="jxr_linenumber" name="L229" href="#L229">229</a>                 &amp;&amp; !(PACKAGE_LOCK_JSON.equals(dependency.getFileName()) || SHRINKWRAP_JSON.equals(dependency.getFileName()))) {
-<a class="jxr_linenumber" name="L230" href="#L230">230</a>             engine.removeDependency(dependency);
-<a class="jxr_linenumber" name="L231" href="#L231">231</a>         }
-<a class="jxr_linenumber" name="L232" href="#L232">232</a>         <strong class="jxr_keyword">if</strong> (noLockFileExists(dependency.getActualFile())) {
-<a class="jxr_linenumber" name="L233" href="#L233">233</a>             LOGGER.warn(<span class="jxr_string">"No lock file exists - this will result in false negatives; please run `npm install --package-lock`"</span>);
-<a class="jxr_linenumber" name="L234" href="#L234">234</a>         }
-<a class="jxr_linenumber" name="L235" href="#L235">235</a>         <strong class="jxr_keyword">final</strong> File baseDir = dependencyFile.getParentFile();
-<a class="jxr_linenumber" name="L236" href="#L236">236</a>         <strong class="jxr_keyword">if</strong> (PACKAGE_JSON.equals(dependency.getFileName())) {
-<a class="jxr_linenumber" name="L237" href="#L237">237</a>             <strong class="jxr_keyword">final</strong> File lockfile = <strong class="jxr_keyword">new</strong> File(baseDir, PACKAGE_LOCK_JSON);
-<a class="jxr_linenumber" name="L238" href="#L238">238</a>             <strong class="jxr_keyword">final</strong> File shrinkwrap = <strong class="jxr_keyword">new</strong> File(baseDir, SHRINKWRAP_JSON);
-<a class="jxr_linenumber" name="L239" href="#L239">239</a>             <strong class="jxr_keyword">if</strong> (shrinkwrap.exists() || lockfile.exists()) {
-<a class="jxr_linenumber" name="L240" href="#L240">240</a>                 <strong class="jxr_keyword">return</strong>;
-<a class="jxr_linenumber" name="L241" href="#L241">241</a>             }
-<a class="jxr_linenumber" name="L242" href="#L242">242</a>         } <strong class="jxr_keyword">else</strong> <strong class="jxr_keyword">if</strong> (PACKAGE_LOCK_JSON.equals(dependency.getFileName())) {
-<a class="jxr_linenumber" name="L243" href="#L243">243</a>             <strong class="jxr_keyword">final</strong> File shrinkwrap = <strong class="jxr_keyword">new</strong> File(baseDir, SHRINKWRAP_JSON);
-<a class="jxr_linenumber" name="L244" href="#L244">244</a>             <strong class="jxr_keyword">if</strong> (shrinkwrap.exists()) {
-<a class="jxr_linenumber" name="L245" href="#L245">245</a>                 <strong class="jxr_keyword">return</strong>;
-<a class="jxr_linenumber" name="L246" href="#L246">246</a>             }
-<a class="jxr_linenumber" name="L247" href="#L247">247</a>         }
-<a class="jxr_linenumber" name="L248" href="#L248">248</a>         <strong class="jxr_keyword">final</strong> File nodeModules = <strong class="jxr_keyword">new</strong> File(baseDir, <span class="jxr_string">"node_modules"</span>);
-<a class="jxr_linenumber" name="L249" href="#L249">249</a>         <strong class="jxr_keyword">if</strong> (!nodeModules.isDirectory()) {
-<a class="jxr_linenumber" name="L250" href="#L250">250</a>             LOGGER.warn(<span class="jxr_string">"Analyzing `{}` - however, the node_modules directory does not exist. "</span>
-<a class="jxr_linenumber" name="L251" href="#L251">251</a>                     + <span class="jxr_string">"Please run `npm install` prior to running dependency-check"</span>, dependencyFile);
-<a class="jxr_linenumber" name="L252" href="#L252">252</a>             <strong class="jxr_keyword">return</strong>;
-<a class="jxr_linenumber" name="L253" href="#L253">253</a>         }
-<a class="jxr_linenumber" name="L254" href="#L254">254</a> 
-<a class="jxr_linenumber" name="L255" href="#L255">255</a>         <strong class="jxr_keyword">try</strong> (JsonReader jsonReader = Json.createReader(Files.newInputStream(dependencyFile.toPath()))) {
-<a class="jxr_linenumber" name="L256" href="#L256">256</a>             <strong class="jxr_keyword">final</strong> JsonObject json = jsonReader.readObject();
-<a class="jxr_linenumber" name="L257" href="#L257">257</a>             <strong class="jxr_keyword">final</strong> String parentName = json.getString(<span class="jxr_string">"name"</span>, <span class="jxr_string">""</span>);
-<a class="jxr_linenumber" name="L258" href="#L258">258</a>             <strong class="jxr_keyword">final</strong> String parentVersion = json.getString(<span class="jxr_string">"version"</span>, <span class="jxr_string">""</span>);
-<a class="jxr_linenumber" name="L259" href="#L259">259</a>             <strong class="jxr_keyword">if</strong> (parentName.isEmpty()) {
-<a class="jxr_linenumber" name="L260" href="#L260">260</a>                 <strong class="jxr_keyword">return</strong>;
-<a class="jxr_linenumber" name="L261" href="#L261">261</a>             }
-<a class="jxr_linenumber" name="L262" href="#L262">262</a>             dependency.setName(parentName);
-<a class="jxr_linenumber" name="L263" href="#L263">263</a>             <strong class="jxr_keyword">final</strong> String parentPackage;
-<a class="jxr_linenumber" name="L264" href="#L264">264</a>             <strong class="jxr_keyword">if</strong> (!parentVersion.isEmpty()) {
-<a class="jxr_linenumber" name="L265" href="#L265">265</a>                 dependency.setVersion(parentVersion);
-<a class="jxr_linenumber" name="L266" href="#L266">266</a>                 parentPackage = String.format(<span class="jxr_string">"%s:%s"</span>, parentName, parentVersion);
-<a class="jxr_linenumber" name="L267" href="#L267">267</a>             } <strong class="jxr_keyword">else</strong> {
-<a class="jxr_linenumber" name="L268" href="#L268">268</a>                 parentPackage = parentName;
-<a class="jxr_linenumber" name="L269" href="#L269">269</a>             }
-<a class="jxr_linenumber" name="L270" href="#L270">270</a>             processDependencies(json, baseDir, dependencyFile, parentPackage, engine);
-<a class="jxr_linenumber" name="L271" href="#L271">271</a>         } <strong class="jxr_keyword">catch</strong> (JsonException e) {
-<a class="jxr_linenumber" name="L272" href="#L272">272</a>             LOGGER.warn(<span class="jxr_string">"Failed to parse package.json file."</span>, e);
-<a class="jxr_linenumber" name="L273" href="#L273">273</a>         } <strong class="jxr_keyword">catch</strong> (IOException e) {
-<a class="jxr_linenumber" name="L274" href="#L274">274</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a href="../../../../org/owasp/dependencycheck/analyzer/exception/AnalysisException.html">AnalysisException</a>(<span class="jxr_string">"Problem occurred while reading dependency file."</span>, e);
-<a class="jxr_linenumber" name="L275" href="#L275">275</a>         }
-<a class="jxr_linenumber" name="L276" href="#L276">276</a>     }
-<a class="jxr_linenumber" name="L277" href="#L277">277</a> 
-<a class="jxr_linenumber" name="L278" href="#L278">278</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L279" href="#L279">279</a> <em class="jxr_javadoccomment">     * should process the dependency ? Will return true if you need to skip it .</em>
-<a class="jxr_linenumber" name="L280" href="#L280">280</a> <em class="jxr_javadoccomment">     * (e.g. dependency can't be read, or if npm audit doesn't handle it)</em>
-<a class="jxr_linenumber" name="L281" href="#L281">281</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L282" href="#L282">282</a> <em class="jxr_javadoccomment">     * @param name the name of the dependency</em>
-<a class="jxr_linenumber" name="L283" href="#L283">283</a> <em class="jxr_javadoccomment">     * @param version the version of the dependency</em>
-<a class="jxr_linenumber" name="L284" href="#L284">284</a> <em class="jxr_javadoccomment">     * @param optional is the dependency optional ?</em>
-<a class="jxr_linenumber" name="L285" href="#L285">285</a> <em class="jxr_javadoccomment">     * @param fileExist is the package.json available for this file ?</em>
-<a class="jxr_linenumber" name="L286" href="#L286">286</a> <em class="jxr_javadoccomment">     * @return should you skip this dependency ?</em>
-<a class="jxr_linenumber" name="L287" href="#L287">287</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L288" href="#L288">288</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">boolean</strong> shouldSkipDependency(String name, String version, <strong class="jxr_keyword">boolean</strong> optional, <strong class="jxr_keyword">boolean</strong> fileExist) {
-<a class="jxr_linenumber" name="L289" href="#L289">289</a>         <em class="jxr_comment">// some package manager can handle alias, yarn for example, but npm doesn't support it</em>
-<a class="jxr_linenumber" name="L290" href="#L290">290</a>         <strong class="jxr_keyword">if</strong> (Objects.nonNull(version) &amp;&amp; version.startsWith(<span class="jxr_string">"npm:"</span>)) {
-<a class="jxr_linenumber" name="L291" href="#L291">291</a>             <em class="jxr_comment">//TODO make this an error that gets logged</em>
-<a class="jxr_linenumber" name="L292" href="#L292">292</a>             LOGGER.warn(<span class="jxr_string">"dependency skipped: package.json contain an alias for {} =&gt; {} npm audit doesn't "</span>
-<a class="jxr_linenumber" name="L293" href="#L293">293</a>                     + <span class="jxr_string">"support aliases"</span>, name, version.replace(<span class="jxr_string">"npm:"</span>, <span class="jxr_string">""</span>));
-<a class="jxr_linenumber" name="L294" href="#L294">294</a>             <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">true</strong>;
-<a class="jxr_linenumber" name="L295" href="#L295">295</a>         }
-<a class="jxr_linenumber" name="L296" href="#L296">296</a> 
-<a class="jxr_linenumber" name="L297" href="#L297">297</a>         <strong class="jxr_keyword">if</strong> (optional &amp;&amp; !fileExist) {
-<a class="jxr_linenumber" name="L298" href="#L298">298</a>             LOGGER.warn(<span class="jxr_string">"dependency skipped: node module {} seems optional and not installed"</span>, name);
-<a class="jxr_linenumber" name="L299" href="#L299">299</a>             <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">true</strong>;
-<a class="jxr_linenumber" name="L300" href="#L300">300</a>         }
-<a class="jxr_linenumber" name="L301" href="#L301">301</a> 
-<a class="jxr_linenumber" name="L302" href="#L302">302</a>         <em class="jxr_comment">// this seems to produce crash sometimes, I need to tests</em>
-<a class="jxr_linenumber" name="L303" href="#L303">303</a>         <em class="jxr_comment">// using a local node_module is not supported by npm audit, it crash</em>
-<a class="jxr_linenumber" name="L304" href="#L304">304</a>         <strong class="jxr_keyword">if</strong> (Objects.nonNull(version) &amp;&amp; (version.startsWith(<span class="jxr_string">"file:"</span>) || version.matches(<span class="jxr_string">"^[.~]{0,2}/.*"</span>))) {
-<a class="jxr_linenumber" name="L305" href="#L305">305</a>             LOGGER.warn(<span class="jxr_string">"dependency skipped: package.json contain an local node_module for {} seems to be "</span>
-<a class="jxr_linenumber" name="L306" href="#L306">306</a>                             + <span class="jxr_string">"located {} npm audit doesn't support locally referenced modules"</span>,
-<a class="jxr_linenumber" name="L307" href="#L307">307</a>                     name, version);
-<a class="jxr_linenumber" name="L308" href="#L308">308</a>             <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">true</strong>;
-<a class="jxr_linenumber" name="L309" href="#L309">309</a>         }
-<a class="jxr_linenumber" name="L310" href="#L310">310</a> 
-<a class="jxr_linenumber" name="L311" href="#L311">311</a>         <em class="jxr_comment">// Don't include package with empty name</em>
-<a class="jxr_linenumber" name="L312" href="#L312">312</a>         <strong class="jxr_keyword">if</strong> (<span class="jxr_string">""</span>.equals(name)) {
-<a class="jxr_linenumber" name="L313" href="#L313">313</a>             LOGGER.debug(<span class="jxr_string">"Empty dependency of package-lock v2+ removed"</span>);
-<a class="jxr_linenumber" name="L314" href="#L314">314</a>             <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">true</strong>;
-<a class="jxr_linenumber" name="L315" href="#L315">315</a>         }
-<a class="jxr_linenumber" name="L316" href="#L316">316</a> 
-<a class="jxr_linenumber" name="L317" href="#L317">317</a>         <strong class="jxr_keyword">return</strong> false;
-<a class="jxr_linenumber" name="L318" href="#L318">318</a>     }
-<a class="jxr_linenumber" name="L319" href="#L319">319</a> 
-<a class="jxr_linenumber" name="L320" href="#L320">320</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L321" href="#L321">321</a> <em class="jxr_javadoccomment">     * Checks if the given dependency should be skipped.</em>
-<a class="jxr_linenumber" name="L322" href="#L322">322</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L323" href="#L323">323</a> <em class="jxr_javadoccomment">     * @param name the name of the dependency to test</em>
-<a class="jxr_linenumber" name="L324" href="#L324">324</a> <em class="jxr_javadoccomment">     * @param version the version of the dependency to test</em>
-<a class="jxr_linenumber" name="L325" href="#L325">325</a> <em class="jxr_javadoccomment">     * @return &lt;code&gt;true&lt;/code&gt; if the dependency should be skipped; otherwise</em>
-<a class="jxr_linenumber" name="L326" href="#L326">326</a> <em class="jxr_javadoccomment">     * &lt;code&gt;false&lt;/code&gt;</em>
-<a class="jxr_linenumber" name="L327" href="#L327">327</a> <em class="jxr_javadoccomment">     * @see NodePackageAnalyzer#shouldSkipDependency(java.lang.String,</em>
-<a class="jxr_linenumber" name="L328" href="#L328">328</a> <em class="jxr_javadoccomment">     * java.lang.String, boolean, boolean)</em>
-<a class="jxr_linenumber" name="L329" href="#L329">329</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L330" href="#L330">330</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">boolean</strong> shouldSkipDependency(String name, String version) {
-<a class="jxr_linenumber" name="L331" href="#L331">331</a>         <strong class="jxr_keyword">return</strong> shouldSkipDependency(name, version, false, <strong class="jxr_keyword">true</strong>);
-<a class="jxr_linenumber" name="L332" href="#L332">332</a>     }
-<a class="jxr_linenumber" name="L333" href="#L333">333</a> 
-<a class="jxr_linenumber" name="L334" href="#L334">334</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L335" href="#L335">335</a> <em class="jxr_javadoccomment">     * Process the dependencies in the lock file by first parsing its</em>
-<a class="jxr_linenumber" name="L336" href="#L336">336</a> <em class="jxr_javadoccomment">     * dependencies and then finding the package.json for the module and adding</em>
-<a class="jxr_linenumber" name="L337" href="#L337">337</a> <em class="jxr_javadoccomment">     * it as a dependency.</em>
-<a class="jxr_linenumber" name="L338" href="#L338">338</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L339" href="#L339">339</a> <em class="jxr_javadoccomment">     * @param json the data to process</em>
-<a class="jxr_linenumber" name="L340" href="#L340">340</a> <em class="jxr_javadoccomment">     * @param baseDir the base directory being scanned</em>
-<a class="jxr_linenumber" name="L341" href="#L341">341</a> <em class="jxr_javadoccomment">     * @param rootFile the root package-lock/npm-shrinkwrap being analyzed</em>
-<a class="jxr_linenumber" name="L342" href="#L342">342</a> <em class="jxr_javadoccomment">     * @param parentPackage the parent package name of the current node</em>
-<a class="jxr_linenumber" name="L343" href="#L343">343</a> <em class="jxr_javadoccomment">     * @param engine a reference to the dependency-check engine</em>
-<a class="jxr_linenumber" name="L344" href="#L344">344</a> <em class="jxr_javadoccomment">     * @throws AnalysisException thrown if there is an exception</em>
-<a class="jxr_linenumber" name="L345" href="#L345">345</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L346" href="#L346">346</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> processDependencies(JsonObject json, File baseDir, File rootFile,
-<a class="jxr_linenumber" name="L347" href="#L347">347</a>                                      String parentPackage, <a href="../../../../org/owasp/dependencycheck/Engine.html">Engine</a> engine) <strong class="jxr_keyword">throws</strong> AnalysisException {
-<a class="jxr_linenumber" name="L348" href="#L348">348</a>         <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">boolean</strong> skipDev = getSettings().getBoolean(Settings.KEYS.ANALYZER_NODE_PACKAGE_SKIPDEV, false);
-<a class="jxr_linenumber" name="L349" href="#L349">349</a>         <strong class="jxr_keyword">final</strong> JsonObject deps;
-<a class="jxr_linenumber" name="L350" href="#L350">350</a>         <strong class="jxr_keyword">final</strong> File modulesRoot = <strong class="jxr_keyword">new</strong> File(rootFile.getParentFile(), <span class="jxr_string">"node_modules"</span>);
-<a class="jxr_linenumber" name="L351" href="#L351">351</a>         <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> lockJsonVersion = json.containsKey(<span class="jxr_string">"lockfileVersion"</span>) ? json.getInt(<span class="jxr_string">"lockfileVersion"</span>) : 1;
-<a class="jxr_linenumber" name="L352" href="#L352">352</a>         <strong class="jxr_keyword">if</strong> (lockJsonVersion &gt;= 2) {
-<a class="jxr_linenumber" name="L353" href="#L353">353</a>             deps = json.getJsonObject(<span class="jxr_string">"packages"</span>);
-<a class="jxr_linenumber" name="L354" href="#L354">354</a>         } <strong class="jxr_keyword">else</strong> <strong class="jxr_keyword">if</strong> (json.containsKey(<span class="jxr_string">"dependencies"</span>)) {
-<a class="jxr_linenumber" name="L355" href="#L355">355</a>             deps = json.getJsonObject(<span class="jxr_string">"dependencies"</span>);
-<a class="jxr_linenumber" name="L356" href="#L356">356</a>         } <strong class="jxr_keyword">else</strong> {
-<a class="jxr_linenumber" name="L357" href="#L357">357</a>             deps = <strong class="jxr_keyword">null</strong>;
-<a class="jxr_linenumber" name="L358" href="#L358">358</a>         }
-<a class="jxr_linenumber" name="L359" href="#L359">359</a> 
-<a class="jxr_linenumber" name="L360" href="#L360">360</a>         <strong class="jxr_keyword">if</strong> (deps != <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="L361" href="#L361">361</a>             <strong class="jxr_keyword">for</strong> (Map.Entry&lt;String, JsonValue&gt; entry : deps.entrySet()) {
-<a class="jxr_linenumber" name="L362" href="#L362">362</a>                 <strong class="jxr_keyword">final</strong> String pathName = entry.getKey();
-<a class="jxr_linenumber" name="L363" href="#L363">363</a>                 String name = pathName;
-<a class="jxr_linenumber" name="L364" href="#L364">364</a>                 File base;
-<a class="jxr_linenumber" name="L365" href="#L365">365</a> 
-<a class="jxr_linenumber" name="L366" href="#L366">366</a>                 <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> indexOfNodeModule = name.lastIndexOf(NODE_MODULES_DIRNAME + <span class="jxr_string">"/"</span>);
-<a class="jxr_linenumber" name="L367" href="#L367">367</a>                 <strong class="jxr_keyword">if</strong> (indexOfNodeModule &gt;= 0) {
-<a class="jxr_linenumber" name="L368" href="#L368">368</a>                     name = name.substring(indexOfNodeModule + NODE_MODULES_DIRNAME.length() + 1);
-<a class="jxr_linenumber" name="L369" href="#L369">369</a>                     base = Paths.get(baseDir.getPath(), pathName).toFile();
-<a class="jxr_linenumber" name="L370" href="#L370">370</a>                 } <strong class="jxr_keyword">else</strong> {
-<a class="jxr_linenumber" name="L371" href="#L371">371</a>                     base = Paths.get(baseDir.getPath(), <span class="jxr_string">"node_modules"</span>, name).toFile();
-<a class="jxr_linenumber" name="L372" href="#L372">372</a>                     <strong class="jxr_keyword">if</strong> (!base.isDirectory()) {
-<a class="jxr_linenumber" name="L373" href="#L373">373</a>                         <strong class="jxr_keyword">final</strong> File test = <strong class="jxr_keyword">new</strong> File(modulesRoot, name);
-<a class="jxr_linenumber" name="L374" href="#L374">374</a>                         <strong class="jxr_keyword">if</strong> (test.isDirectory()) {
-<a class="jxr_linenumber" name="L375" href="#L375">375</a>                             base = test;
-<a class="jxr_linenumber" name="L376" href="#L376">376</a>                         }
-<a class="jxr_linenumber" name="L377" href="#L377">377</a>                     }
-<a class="jxr_linenumber" name="L378" href="#L378">378</a>                 }
-<a class="jxr_linenumber" name="L379" href="#L379">379</a> 
-<a class="jxr_linenumber" name="L380" href="#L380">380</a>                 <strong class="jxr_keyword">final</strong> String version;
-<a class="jxr_linenumber" name="L381" href="#L381">381</a>                 <strong class="jxr_keyword">boolean</strong> optional = false;
-<a class="jxr_linenumber" name="L382" href="#L382">382</a>                 <strong class="jxr_keyword">boolean</strong> isDev = false;
-<a class="jxr_linenumber" name="L383" href="#L383">383</a> 
-<a class="jxr_linenumber" name="L384" href="#L384">384</a>                 <strong class="jxr_keyword">final</strong> File f = <strong class="jxr_keyword">new</strong> File(base, PACKAGE_JSON);
-<a class="jxr_linenumber" name="L385" href="#L385">385</a>                 JsonObject jo = <strong class="jxr_keyword">null</strong>;
-<a class="jxr_linenumber" name="L386" href="#L386">386</a> 
-<a class="jxr_linenumber" name="L387" href="#L387">387</a>                 <strong class="jxr_keyword">if</strong> (entry.getValue() instanceof JsonObject) {
-<a class="jxr_linenumber" name="L388" href="#L388">388</a>                     jo = (JsonObject) entry.getValue();
-<a class="jxr_linenumber" name="L389" href="#L389">389</a> 
-<a class="jxr_linenumber" name="L390" href="#L390">390</a>                     <em class="jxr_comment">// Ignore/skip linked entries (as they don't have "version" and</em>
-<a class="jxr_linenumber" name="L391" href="#L391">391</a>                     <em class="jxr_comment">// later logic will crash)</em>
-<a class="jxr_linenumber" name="L392" href="#L392">392</a>                     <strong class="jxr_keyword">if</strong> (jo.getBoolean(<span class="jxr_string">"link"</span>, false)) {
-<a class="jxr_linenumber" name="L393" href="#L393">393</a>                         LOGGER.warn(<span class="jxr_string">"Skipping `"</span> + name + <span class="jxr_string">"` because it is a link dependency"</span>);
-<a class="jxr_linenumber" name="L394" href="#L394">394</a>                         <strong class="jxr_keyword">continue</strong>;
-<a class="jxr_linenumber" name="L395" href="#L395">395</a>                     }
-<a class="jxr_linenumber" name="L396" href="#L396">396</a> 
-<a class="jxr_linenumber" name="L397" href="#L397">397</a>                     version = jo.getString(<span class="jxr_string">"version"</span>, <span class="jxr_string">""</span>);
-<a class="jxr_linenumber" name="L398" href="#L398">398</a>                     optional = jo.getBoolean(<span class="jxr_string">"optional"</span>, false);
-<a class="jxr_linenumber" name="L399" href="#L399">399</a>                     isDev = jo.getBoolean(<span class="jxr_string">"dev"</span>, false);
-<a class="jxr_linenumber" name="L400" href="#L400">400</a>                 } <strong class="jxr_keyword">else</strong> {
-<a class="jxr_linenumber" name="L401" href="#L401">401</a>                     version = ((JsonString) entry.getValue()).getString();
-<a class="jxr_linenumber" name="L402" href="#L402">402</a>                 }
-<a class="jxr_linenumber" name="L403" href="#L403">403</a> 
-<a class="jxr_linenumber" name="L404" href="#L404">404</a>                 <strong class="jxr_keyword">if</strong> ((isDev &amp;&amp; skipDev) || shouldSkipDependency(name, version, optional, f.exists())) {
-<a class="jxr_linenumber" name="L405" href="#L405">405</a>                     <strong class="jxr_keyword">continue</strong>;
-<a class="jxr_linenumber" name="L406" href="#L406">406</a>                 }
-<a class="jxr_linenumber" name="L407" href="#L407">407</a> 
-<a class="jxr_linenumber" name="L408" href="#L408">408</a>                 <strong class="jxr_keyword">if</strong> (<strong class="jxr_keyword">null</strong> != jo &amp;&amp; jo.containsKey(<span class="jxr_string">"dependencies"</span>)) {
-<a class="jxr_linenumber" name="L409" href="#L409">409</a>                     <strong class="jxr_keyword">final</strong> String subPackageName = String.format(<span class="jxr_string">"%s/%s:%s"</span>, parentPackage, name, version);
-<a class="jxr_linenumber" name="L410" href="#L410">410</a>                     processDependencies(jo, base, rootFile, subPackageName, engine);
-<a class="jxr_linenumber" name="L411" href="#L411">411</a>                 }
-<a class="jxr_linenumber" name="L412" href="#L412">412</a> 
-<a class="jxr_linenumber" name="L413" href="#L413">413</a>                 String ref = <span class="jxr_string">""</span>;
-<a class="jxr_linenumber" name="L414" href="#L414">414</a>                 <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> slash = parentPackage.indexOf(<span class="jxr_string">"/"</span>);
-<a class="jxr_linenumber" name="L415" href="#L415">415</a>                 <strong class="jxr_keyword">if</strong> (slash &gt; 0) {
-<a class="jxr_linenumber" name="L416" href="#L416">416</a>                     ref = parentPackage.substring(slash + 1);
-<a class="jxr_linenumber" name="L417" href="#L417">417</a>                 }
-<a class="jxr_linenumber" name="L418" href="#L418">418</a>                 <strong class="jxr_keyword">final</strong> <a href="../../../../org/owasp/dependencycheck/dependency/Dependency.html">Dependency</a> child = <strong class="jxr_keyword">new</strong> <a href="../../../../org/owasp/dependencycheck/dependency/Dependency.html">Dependency</a>(<strong class="jxr_keyword">new</strong> File(rootFile + <span class="jxr_string">"?"</span> + ref + <span class="jxr_string">"/"</span> + name + <span class="jxr_string">":"</span> + version), <strong class="jxr_keyword">true</strong>);
-<a class="jxr_linenumber" name="L419" href="#L419">419</a>                 child.addProjectReference(parentPackage);
-<a class="jxr_linenumber" name="L420" href="#L420">420</a>                 child.setEcosystem(DEPENDENCY_ECOSYSTEM);
-<a class="jxr_linenumber" name="L421" href="#L421">421</a> 
-<a class="jxr_linenumber" name="L422" href="#L422">422</a>                 <strong class="jxr_keyword">if</strong> (f.exists()) {
-<a class="jxr_linenumber" name="L423" href="#L423">423</a>                     <strong class="jxr_keyword">try</strong> {
-<a class="jxr_linenumber" name="L424" href="#L424">424</a>                         <em class="jxr_comment">//TODO - we should use the integrity value instead of calculating the SHA1/MD5</em>
-<a class="jxr_linenumber" name="L425" href="#L425">425</a>                         child.setMd5sum(Checksum.getMD5Checksum(f));
-<a class="jxr_linenumber" name="L426" href="#L426">426</a>                         child.setSha1sum(Checksum.getSHA1Checksum(f));
-<a class="jxr_linenumber" name="L427" href="#L427">427</a>                         child.setSha256sum(Checksum.getSHA256Checksum(f));
-<a class="jxr_linenumber" name="L428" href="#L428">428</a>                     } <strong class="jxr_keyword">catch</strong> (IOException | NoSuchAlgorithmException ex) {
-<a class="jxr_linenumber" name="L429" href="#L429">429</a>                         LOGGER.debug(<span class="jxr_string">"Error setting hashes:"</span> + ex.getMessage(), ex);
-<a class="jxr_linenumber" name="L430" href="#L430">430</a>                     }
-<a class="jxr_linenumber" name="L431" href="#L431">431</a>                     <strong class="jxr_keyword">try</strong> (JsonReader jr = Json.createReader(Files.newInputStream(f.toPath()))) {
-<a class="jxr_linenumber" name="L432" href="#L432">432</a>                         <strong class="jxr_keyword">final</strong> JsonObject childJson = jr.readObject();
-<a class="jxr_linenumber" name="L433" href="#L433">433</a>                         gatherEvidence(childJson, child);
-<a class="jxr_linenumber" name="L434" href="#L434">434</a>                     } <strong class="jxr_keyword">catch</strong> (JsonException e) {
-<a class="jxr_linenumber" name="L435" href="#L435">435</a>                         LOGGER.warn(<span class="jxr_string">"Failed to parse package.json file from dependency."</span>, e);
-<a class="jxr_linenumber" name="L436" href="#L436">436</a>                     } <strong class="jxr_keyword">catch</strong> (IOException e) {
-<a class="jxr_linenumber" name="L437" href="#L437">437</a>                         <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a href="../../../../org/owasp/dependencycheck/analyzer/exception/AnalysisException.html">AnalysisException</a>(<span class="jxr_string">"Problem occurred while reading dependency file."</span>, e);
-<a class="jxr_linenumber" name="L438" href="#L438">438</a>                     }
-<a class="jxr_linenumber" name="L439" href="#L439">439</a>                 } <strong class="jxr_keyword">else</strong> {
-<a class="jxr_linenumber" name="L440" href="#L440">440</a>                     LOGGER.warn(<span class="jxr_string">"Unable to find node module: {}"</span>, f);
-<a class="jxr_linenumber" name="L441" href="#L441">441</a>                     <em class="jxr_comment">//TODO - we should use the integrity value instead of calculating the SHA1/MD5</em>
-<a class="jxr_linenumber" name="L442" href="#L442">442</a>                     child.setSha1sum(Checksum.getSHA1Checksum(String.format(<span class="jxr_string">"%s:%s"</span>, name, version)));
-<a class="jxr_linenumber" name="L443" href="#L443">443</a>                     child.setSha256sum(Checksum.getSHA256Checksum(String.format(<span class="jxr_string">"%s:%s"</span>, name, version)));
-<a class="jxr_linenumber" name="L444" href="#L444">444</a>                     child.setMd5sum(Checksum.getMD5Checksum(String.format(<span class="jxr_string">"%s:%s"</span>, name, version)));
-<a class="jxr_linenumber" name="L445" href="#L445">445</a>                     child.addEvidence(EvidenceType.VENDOR, rootFile.getName(), <span class="jxr_string">"name"</span>, name, Confidence.HIGHEST);
-<a class="jxr_linenumber" name="L446" href="#L446">446</a>                     child.addEvidence(EvidenceType.PRODUCT, rootFile.getName(), <span class="jxr_string">"name"</span>, name, Confidence.HIGHEST);
-<a class="jxr_linenumber" name="L447" href="#L447">447</a>                     child.addEvidence(EvidenceType.VERSION, rootFile.getName(), <span class="jxr_string">"version"</span>, version, Confidence.HIGHEST);
-<a class="jxr_linenumber" name="L448" href="#L448">448</a>                     child.setName(name);
-<a class="jxr_linenumber" name="L449" href="#L449">449</a>                     child.setVersion(version);
-<a class="jxr_linenumber" name="L450" href="#L450">450</a>                     <strong class="jxr_keyword">final</strong> String packagePath = String.format(<span class="jxr_string">"%s:%s"</span>, name, version);
-<a class="jxr_linenumber" name="L451" href="#L451">451</a>                     child.setDisplayFileName(packagePath);
-<a class="jxr_linenumber" name="L452" href="#L452">452</a>                     child.setPackagePath(packagePath);
-<a class="jxr_linenumber" name="L453" href="#L453">453</a>                     <strong class="jxr_keyword">try</strong> {
-<a class="jxr_linenumber" name="L454" href="#L454">454</a>                         <strong class="jxr_keyword">final</strong> PackageURL purl = PackageURLBuilder.aPackageURL().withType(<span class="jxr_string">"npm"</span>).withName(name).withVersion(version).build();
-<a class="jxr_linenumber" name="L455" href="#L455">455</a>                         <strong class="jxr_keyword">final</strong> <a href="../../../../org/owasp/dependencycheck/dependency/naming/PurlIdentifier.html">PurlIdentifier</a> id = <strong class="jxr_keyword">new</strong> <a href="../../../../org/owasp/dependencycheck/dependency/naming/PurlIdentifier.html">PurlIdentifier</a>(purl, Confidence.HIGHEST);
-<a class="jxr_linenumber" name="L456" href="#L456">456</a>                         child.addSoftwareIdentifier(id);
-<a class="jxr_linenumber" name="L457" href="#L457">457</a>                     } <strong class="jxr_keyword">catch</strong> (MalformedPackageURLException ex) {
-<a class="jxr_linenumber" name="L458" href="#L458">458</a>                         LOGGER.debug(<span class="jxr_string">"Unable to build package url for `"</span> + packagePath + <span class="jxr_string">"`"</span>, ex);
-<a class="jxr_linenumber" name="L459" href="#L459">459</a>                     }
-<a class="jxr_linenumber" name="L460" href="#L460">460</a>                 }
-<a class="jxr_linenumber" name="L461" href="#L461">461</a>                 <strong class="jxr_keyword">synchronized</strong> (<strong class="jxr_keyword">this</strong>) {
-<a class="jxr_linenumber" name="L462" href="#L462">462</a>                     <strong class="jxr_keyword">final</strong> <a href="../../../../org/owasp/dependencycheck/dependency/Dependency.html">Dependency</a> existing = findDependency(engine, name, version);
-<a class="jxr_linenumber" name="L463" href="#L463">463</a>                     <strong class="jxr_keyword">if</strong> (existing != <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="L464" href="#L464">464</a>                         <strong class="jxr_keyword">if</strong> (existing.isVirtual()) {
-<a class="jxr_linenumber" name="L465" href="#L465">465</a>                             DependencyMergingAnalyzer.mergeDependencies(child, existing, <strong class="jxr_keyword">null</strong>);
-<a class="jxr_linenumber" name="L466" href="#L466">466</a>                             engine.removeDependency(existing);
-<a class="jxr_linenumber" name="L467" href="#L467">467</a>                             engine.addDependency(child);
-<a class="jxr_linenumber" name="L468" href="#L468">468</a>                         } <strong class="jxr_keyword">else</strong> {
-<a class="jxr_linenumber" name="L469" href="#L469">469</a>                             DependencyBundlingAnalyzer.mergeDependencies(existing, child, <strong class="jxr_keyword">null</strong>);
-<a class="jxr_linenumber" name="L470" href="#L470">470</a>                         }
-<a class="jxr_linenumber" name="L471" href="#L471">471</a>                     } <strong class="jxr_keyword">else</strong> {
-<a class="jxr_linenumber" name="L472" href="#L472">472</a>                         engine.addDependency(child);
-<a class="jxr_linenumber" name="L473" href="#L473">473</a>                     }
-<a class="jxr_linenumber" name="L474" href="#L474">474</a>                 }
-<a class="jxr_linenumber" name="L475" href="#L475">475</a>             }
-<a class="jxr_linenumber" name="L476" href="#L476">476</a>         }
-<a class="jxr_linenumber" name="L477" href="#L477">477</a>     }
-<a class="jxr_linenumber" name="L478" href="#L478">478</a> }
+<a class="jxr_linenumber" name="L199" href="#L199">199</a>                         String message = <span class="jxr_string">"Error initializing the "</span> + a.getName();
+<a class="jxr_linenumber" name="L200" href="#L200">200</a>                         LOGGER.debug(message, ex);
+<a class="jxr_linenumber" name="L201" href="#L201">201</a>                     }
+<a class="jxr_linenumber" name="L202" href="#L202">202</a>                 }
+<a class="jxr_linenumber" name="L203" href="#L203">203</a>                 <strong class="jxr_keyword">return</strong> a.isEnabled();
+<a class="jxr_linenumber" name="L204" href="#L204">204</a>             }
+<a class="jxr_linenumber" name="L205" href="#L205">205</a>         }
+<a class="jxr_linenumber" name="L206" href="#L206">206</a>         <strong class="jxr_keyword">return</strong> false;
+<a class="jxr_linenumber" name="L207" href="#L207">207</a>     }
+<a class="jxr_linenumber" name="L208" href="#L208">208</a> 
+<a class="jxr_linenumber" name="L209" href="#L209">209</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L210" href="#L210">210</a> <em class="jxr_javadoccomment">     * Checks if a package lock file or equivalent exists for the NPM project.</em>
+<a class="jxr_linenumber" name="L211" href="#L211">211</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L212" href="#L212">212</a> <em class="jxr_javadoccomment">     * @param dependencyFile a reference to the `package.json` file</em>
+<a class="jxr_linenumber" name="L213" href="#L213">213</a> <em class="jxr_javadoccomment">     * @return &lt;code&gt;true&lt;/code&gt; if no lock file is found; otherwise</em>
+<a class="jxr_linenumber" name="L214" href="#L214">214</a> <em class="jxr_javadoccomment">     * &lt;code&gt;true&lt;/code&gt;</em>
+<a class="jxr_linenumber" name="L215" href="#L215">215</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L216" href="#L216">216</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">boolean</strong> noLockFileExists(File dependencyFile) {
+<a class="jxr_linenumber" name="L217" href="#L217">217</a>         <strong class="jxr_keyword">final</strong> File lock = <strong class="jxr_keyword">new</strong> File(dependencyFile.getParentFile(), <span class="jxr_string">"package-lock.json"</span>);
+<a class="jxr_linenumber" name="L218" href="#L218">218</a>         <strong class="jxr_keyword">final</strong> File shrinkwrap = <strong class="jxr_keyword">new</strong> File(dependencyFile.getParentFile(), <span class="jxr_string">"npm-shrinkwrap.json"</span>);
+<a class="jxr_linenumber" name="L219" href="#L219">219</a>         <strong class="jxr_keyword">final</strong> File yarnLock = <strong class="jxr_keyword">new</strong> File(dependencyFile.getParentFile(), <span class="jxr_string">"yarn.lock"</span>);
+<a class="jxr_linenumber" name="L220" href="#L220">220</a>         <strong class="jxr_keyword">return</strong> !(lock.isFile() || shrinkwrap.isFile() || yarnLock.isFile());
+<a class="jxr_linenumber" name="L221" href="#L221">221</a>     }
+<a class="jxr_linenumber" name="L222" href="#L222">222</a> 
+<a class="jxr_linenumber" name="L223" href="#L223">223</a>     @Override
+<a class="jxr_linenumber" name="L224" href="#L224">224</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">void</strong> analyzeDependency(<a href="../../../../org/owasp/dependencycheck/dependency/Dependency.html">Dependency</a> dependency, <a href="../../../../org/owasp/dependencycheck/Engine.html">Engine</a> engine) <strong class="jxr_keyword">throws</strong> AnalysisException {
+<a class="jxr_linenumber" name="L225" href="#L225">225</a>         <strong class="jxr_keyword">final</strong> File dependencyFile = dependency.getActualFile();
+<a class="jxr_linenumber" name="L226" href="#L226">226</a>         <strong class="jxr_keyword">if</strong> (!dependencyFile.isFile() || dependencyFile.length() == 0 || !shouldProcess(dependencyFile)) {
+<a class="jxr_linenumber" name="L227" href="#L227">227</a>             <strong class="jxr_keyword">return</strong>;
+<a class="jxr_linenumber" name="L228" href="#L228">228</a>         }
+<a class="jxr_linenumber" name="L229" href="#L229">229</a>         <strong class="jxr_keyword">if</strong> (isNodeAuditEnabled(engine)
+<a class="jxr_linenumber" name="L230" href="#L230">230</a>                 &amp;&amp; !(PACKAGE_LOCK_JSON.equals(dependency.getFileName()) || SHRINKWRAP_JSON.equals(dependency.getFileName()))) {
+<a class="jxr_linenumber" name="L231" href="#L231">231</a>             engine.removeDependency(dependency);
+<a class="jxr_linenumber" name="L232" href="#L232">232</a>         }
+<a class="jxr_linenumber" name="L233" href="#L233">233</a>         <strong class="jxr_keyword">if</strong> (noLockFileExists(dependency.getActualFile())) {
+<a class="jxr_linenumber" name="L234" href="#L234">234</a>             LOGGER.warn(<span class="jxr_string">"No lock file exists - this will result in false negatives; please run `npm install --package-lock`"</span>);
+<a class="jxr_linenumber" name="L235" href="#L235">235</a>         }
+<a class="jxr_linenumber" name="L236" href="#L236">236</a>         <strong class="jxr_keyword">final</strong> File baseDir = dependencyFile.getParentFile();
+<a class="jxr_linenumber" name="L237" href="#L237">237</a>         <strong class="jxr_keyword">if</strong> (PACKAGE_JSON.equals(dependency.getFileName())) {
+<a class="jxr_linenumber" name="L238" href="#L238">238</a>             <strong class="jxr_keyword">final</strong> File lockfile = <strong class="jxr_keyword">new</strong> File(baseDir, PACKAGE_LOCK_JSON);
+<a class="jxr_linenumber" name="L239" href="#L239">239</a>             <strong class="jxr_keyword">final</strong> File shrinkwrap = <strong class="jxr_keyword">new</strong> File(baseDir, SHRINKWRAP_JSON);
+<a class="jxr_linenumber" name="L240" href="#L240">240</a>             <strong class="jxr_keyword">if</strong> (shrinkwrap.exists() || lockfile.exists()) {
+<a class="jxr_linenumber" name="L241" href="#L241">241</a>                 <strong class="jxr_keyword">return</strong>;
+<a class="jxr_linenumber" name="L242" href="#L242">242</a>             }
+<a class="jxr_linenumber" name="L243" href="#L243">243</a>         } <strong class="jxr_keyword">else</strong> <strong class="jxr_keyword">if</strong> (PACKAGE_LOCK_JSON.equals(dependency.getFileName())) {
+<a class="jxr_linenumber" name="L244" href="#L244">244</a>             <strong class="jxr_keyword">final</strong> File shrinkwrap = <strong class="jxr_keyword">new</strong> File(baseDir, SHRINKWRAP_JSON);
+<a class="jxr_linenumber" name="L245" href="#L245">245</a>             <strong class="jxr_keyword">if</strong> (shrinkwrap.exists()) {
+<a class="jxr_linenumber" name="L246" href="#L246">246</a>                 <strong class="jxr_keyword">return</strong>;
+<a class="jxr_linenumber" name="L247" href="#L247">247</a>             }
+<a class="jxr_linenumber" name="L248" href="#L248">248</a>         }
+<a class="jxr_linenumber" name="L249" href="#L249">249</a>         <strong class="jxr_keyword">final</strong> File nodeModules = <strong class="jxr_keyword">new</strong> File(baseDir, <span class="jxr_string">"node_modules"</span>);
+<a class="jxr_linenumber" name="L250" href="#L250">250</a>         <strong class="jxr_keyword">if</strong> (!nodeModules.isDirectory()) {
+<a class="jxr_linenumber" name="L251" href="#L251">251</a>             LOGGER.warn(<span class="jxr_string">"Analyzing `{}` - however, the node_modules directory does not exist. "</span>
+<a class="jxr_linenumber" name="L252" href="#L252">252</a>                     + <span class="jxr_string">"Please run `npm install` prior to running dependency-check"</span>, dependencyFile);
+<a class="jxr_linenumber" name="L253" href="#L253">253</a>             <strong class="jxr_keyword">return</strong>;
+<a class="jxr_linenumber" name="L254" href="#L254">254</a>         }
+<a class="jxr_linenumber" name="L255" href="#L255">255</a> 
+<a class="jxr_linenumber" name="L256" href="#L256">256</a>         <strong class="jxr_keyword">try</strong> (JsonReader jsonReader = Json.createReader(Files.newInputStream(dependencyFile.toPath()))) {
+<a class="jxr_linenumber" name="L257" href="#L257">257</a>             <strong class="jxr_keyword">final</strong> JsonObject json = jsonReader.readObject();
+<a class="jxr_linenumber" name="L258" href="#L258">258</a>             <strong class="jxr_keyword">final</strong> String parentName = json.getString(<span class="jxr_string">"name"</span>, <span class="jxr_string">""</span>);
+<a class="jxr_linenumber" name="L259" href="#L259">259</a>             <strong class="jxr_keyword">final</strong> String parentVersion = json.getString(<span class="jxr_string">"version"</span>, <span class="jxr_string">""</span>);
+<a class="jxr_linenumber" name="L260" href="#L260">260</a>             <strong class="jxr_keyword">if</strong> (parentName.isEmpty()) {
+<a class="jxr_linenumber" name="L261" href="#L261">261</a>                 <strong class="jxr_keyword">return</strong>;
+<a class="jxr_linenumber" name="L262" href="#L262">262</a>             }
+<a class="jxr_linenumber" name="L263" href="#L263">263</a>             dependency.setName(parentName);
+<a class="jxr_linenumber" name="L264" href="#L264">264</a>             <strong class="jxr_keyword">final</strong> String parentPackage;
+<a class="jxr_linenumber" name="L265" href="#L265">265</a>             <strong class="jxr_keyword">if</strong> (!parentVersion.isEmpty()) {
+<a class="jxr_linenumber" name="L266" href="#L266">266</a>                 dependency.setVersion(parentVersion);
+<a class="jxr_linenumber" name="L267" href="#L267">267</a>                 parentPackage = String.format(<span class="jxr_string">"%s:%s"</span>, parentName, parentVersion);
+<a class="jxr_linenumber" name="L268" href="#L268">268</a>             } <strong class="jxr_keyword">else</strong> {
+<a class="jxr_linenumber" name="L269" href="#L269">269</a>                 parentPackage = parentName;
+<a class="jxr_linenumber" name="L270" href="#L270">270</a>             }
+<a class="jxr_linenumber" name="L271" href="#L271">271</a>             processDependencies(json, baseDir, dependencyFile, parentPackage, engine);
+<a class="jxr_linenumber" name="L272" href="#L272">272</a>         } <strong class="jxr_keyword">catch</strong> (JsonException e) {
+<a class="jxr_linenumber" name="L273" href="#L273">273</a>             LOGGER.warn(<span class="jxr_string">"Failed to parse package.json file."</span>, e);
+<a class="jxr_linenumber" name="L274" href="#L274">274</a>         } <strong class="jxr_keyword">catch</strong> (IOException e) {
+<a class="jxr_linenumber" name="L275" href="#L275">275</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a href="../../../../org/owasp/dependencycheck/analyzer/exception/AnalysisException.html">AnalysisException</a>(<span class="jxr_string">"Problem occurred while reading dependency file."</span>, e);
+<a class="jxr_linenumber" name="L276" href="#L276">276</a>         }
+<a class="jxr_linenumber" name="L277" href="#L277">277</a>     }
+<a class="jxr_linenumber" name="L278" href="#L278">278</a> 
+<a class="jxr_linenumber" name="L279" href="#L279">279</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L280" href="#L280">280</a> <em class="jxr_javadoccomment">     * should process the dependency ? Will return true if you need to skip it .</em>
+<a class="jxr_linenumber" name="L281" href="#L281">281</a> <em class="jxr_javadoccomment">     * (e.g. dependency can't be read, or if npm audit doesn't handle it)</em>
+<a class="jxr_linenumber" name="L282" href="#L282">282</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L283" href="#L283">283</a> <em class="jxr_javadoccomment">     * @param name the name of the dependency</em>
+<a class="jxr_linenumber" name="L284" href="#L284">284</a> <em class="jxr_javadoccomment">     * @param version the version of the dependency</em>
+<a class="jxr_linenumber" name="L285" href="#L285">285</a> <em class="jxr_javadoccomment">     * @param optional is the dependency optional ?</em>
+<a class="jxr_linenumber" name="L286" href="#L286">286</a> <em class="jxr_javadoccomment">     * @param fileExist is the package.json available for this file ?</em>
+<a class="jxr_linenumber" name="L287" href="#L287">287</a> <em class="jxr_javadoccomment">     * @return should you skip this dependency ?</em>
+<a class="jxr_linenumber" name="L288" href="#L288">288</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L289" href="#L289">289</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">boolean</strong> shouldSkipDependency(String name, String version, <strong class="jxr_keyword">boolean</strong> optional, <strong class="jxr_keyword">boolean</strong> fileExist) {
+<a class="jxr_linenumber" name="L290" href="#L290">290</a>         <em class="jxr_comment">// some package manager can handle alias, yarn for example, but npm doesn't support it</em>
+<a class="jxr_linenumber" name="L291" href="#L291">291</a>         <strong class="jxr_keyword">if</strong> (Objects.nonNull(version) &amp;&amp; version.startsWith(<span class="jxr_string">"npm:"</span>)) {
+<a class="jxr_linenumber" name="L292" href="#L292">292</a>             <em class="jxr_comment">//TODO make this an error that gets logged</em>
+<a class="jxr_linenumber" name="L293" href="#L293">293</a>             LOGGER.warn(<span class="jxr_string">"dependency skipped: package.json contain an alias for {} =&gt; {} npm audit doesn't "</span>
+<a class="jxr_linenumber" name="L294" href="#L294">294</a>                     + <span class="jxr_string">"support aliases"</span>, name, version.replace(<span class="jxr_string">"npm:"</span>, <span class="jxr_string">""</span>));
+<a class="jxr_linenumber" name="L295" href="#L295">295</a>             <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">true</strong>;
+<a class="jxr_linenumber" name="L296" href="#L296">296</a>         }
+<a class="jxr_linenumber" name="L297" href="#L297">297</a> 
+<a class="jxr_linenumber" name="L298" href="#L298">298</a>         <strong class="jxr_keyword">if</strong> (optional &amp;&amp; !fileExist) {
+<a class="jxr_linenumber" name="L299" href="#L299">299</a>             LOGGER.warn(<span class="jxr_string">"dependency skipped: node module {} seems optional and not installed"</span>, name);
+<a class="jxr_linenumber" name="L300" href="#L300">300</a>             <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">true</strong>;
+<a class="jxr_linenumber" name="L301" href="#L301">301</a>         }
+<a class="jxr_linenumber" name="L302" href="#L302">302</a> 
+<a class="jxr_linenumber" name="L303" href="#L303">303</a>         <em class="jxr_comment">// this seems to produce crash sometimes, I need to tests</em>
+<a class="jxr_linenumber" name="L304" href="#L304">304</a>         <em class="jxr_comment">// using a local node_module is not supported by npm audit, it crash</em>
+<a class="jxr_linenumber" name="L305" href="#L305">305</a>         <strong class="jxr_keyword">if</strong> (Objects.nonNull(version) &amp;&amp; (version.startsWith(<span class="jxr_string">"file:"</span>) || version.matches(<span class="jxr_string">"^[.~]{0,2}/.*"</span>))) {
+<a class="jxr_linenumber" name="L306" href="#L306">306</a>             LOGGER.warn(<span class="jxr_string">"dependency skipped: package.json contain an local node_module for {} seems to be "</span>
+<a class="jxr_linenumber" name="L307" href="#L307">307</a>                             + <span class="jxr_string">"located {} npm audit doesn't support locally referenced modules"</span>,
+<a class="jxr_linenumber" name="L308" href="#L308">308</a>                     name, version);
+<a class="jxr_linenumber" name="L309" href="#L309">309</a>             <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">true</strong>;
+<a class="jxr_linenumber" name="L310" href="#L310">310</a>         }
+<a class="jxr_linenumber" name="L311" href="#L311">311</a> 
+<a class="jxr_linenumber" name="L312" href="#L312">312</a>         <em class="jxr_comment">// Don't include package with empty name</em>
+<a class="jxr_linenumber" name="L313" href="#L313">313</a>         <strong class="jxr_keyword">if</strong> (<span class="jxr_string">""</span>.equals(name)) {
+<a class="jxr_linenumber" name="L314" href="#L314">314</a>             LOGGER.debug(<span class="jxr_string">"Empty dependency of package-lock v2+ removed"</span>);
+<a class="jxr_linenumber" name="L315" href="#L315">315</a>             <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">true</strong>;
+<a class="jxr_linenumber" name="L316" href="#L316">316</a>         }
+<a class="jxr_linenumber" name="L317" href="#L317">317</a> 
+<a class="jxr_linenumber" name="L318" href="#L318">318</a>         <strong class="jxr_keyword">return</strong> false;
+<a class="jxr_linenumber" name="L319" href="#L319">319</a>     }
+<a class="jxr_linenumber" name="L320" href="#L320">320</a> 
+<a class="jxr_linenumber" name="L321" href="#L321">321</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L322" href="#L322">322</a> <em class="jxr_javadoccomment">     * Checks if the given dependency should be skipped.</em>
+<a class="jxr_linenumber" name="L323" href="#L323">323</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L324" href="#L324">324</a> <em class="jxr_javadoccomment">     * @param name the name of the dependency to test</em>
+<a class="jxr_linenumber" name="L325" href="#L325">325</a> <em class="jxr_javadoccomment">     * @param version the version of the dependency to test</em>
+<a class="jxr_linenumber" name="L326" href="#L326">326</a> <em class="jxr_javadoccomment">     * @return &lt;code&gt;true&lt;/code&gt; if the dependency should be skipped; otherwise</em>
+<a class="jxr_linenumber" name="L327" href="#L327">327</a> <em class="jxr_javadoccomment">     * &lt;code&gt;false&lt;/code&gt;</em>
+<a class="jxr_linenumber" name="L328" href="#L328">328</a> <em class="jxr_javadoccomment">     * @see NodePackageAnalyzer#shouldSkipDependency(java.lang.String,</em>
+<a class="jxr_linenumber" name="L329" href="#L329">329</a> <em class="jxr_javadoccomment">     * java.lang.String, boolean, boolean)</em>
+<a class="jxr_linenumber" name="L330" href="#L330">330</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L331" href="#L331">331</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">boolean</strong> shouldSkipDependency(String name, String version) {
+<a class="jxr_linenumber" name="L332" href="#L332">332</a>         <strong class="jxr_keyword">return</strong> shouldSkipDependency(name, version, false, <strong class="jxr_keyword">true</strong>);
+<a class="jxr_linenumber" name="L333" href="#L333">333</a>     }
+<a class="jxr_linenumber" name="L334" href="#L334">334</a> 
+<a class="jxr_linenumber" name="L335" href="#L335">335</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L336" href="#L336">336</a> <em class="jxr_javadoccomment">     * Process the dependencies in the lock file by first parsing its</em>
+<a class="jxr_linenumber" name="L337" href="#L337">337</a> <em class="jxr_javadoccomment">     * dependencies and then finding the package.json for the module and adding</em>
+<a class="jxr_linenumber" name="L338" href="#L338">338</a> <em class="jxr_javadoccomment">     * it as a dependency.</em>
+<a class="jxr_linenumber" name="L339" href="#L339">339</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L340" href="#L340">340</a> <em class="jxr_javadoccomment">     * @param json the data to process</em>
+<a class="jxr_linenumber" name="L341" href="#L341">341</a> <em class="jxr_javadoccomment">     * @param baseDir the base directory being scanned</em>
+<a class="jxr_linenumber" name="L342" href="#L342">342</a> <em class="jxr_javadoccomment">     * @param rootFile the root package-lock/npm-shrinkwrap being analyzed</em>
+<a class="jxr_linenumber" name="L343" href="#L343">343</a> <em class="jxr_javadoccomment">     * @param parentPackage the parent package name of the current node</em>
+<a class="jxr_linenumber" name="L344" href="#L344">344</a> <em class="jxr_javadoccomment">     * @param engine a reference to the dependency-check engine</em>
+<a class="jxr_linenumber" name="L345" href="#L345">345</a> <em class="jxr_javadoccomment">     * @throws AnalysisException thrown if there is an exception</em>
+<a class="jxr_linenumber" name="L346" href="#L346">346</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L347" href="#L347">347</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> processDependencies(JsonObject json, File baseDir, File rootFile,
+<a class="jxr_linenumber" name="L348" href="#L348">348</a>                                      String parentPackage, <a href="../../../../org/owasp/dependencycheck/Engine.html">Engine</a> engine) <strong class="jxr_keyword">throws</strong> AnalysisException {
+<a class="jxr_linenumber" name="L349" href="#L349">349</a>         <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">boolean</strong> skipDev = getSettings().getBoolean(Settings.KEYS.ANALYZER_NODE_PACKAGE_SKIPDEV, false);
+<a class="jxr_linenumber" name="L350" href="#L350">350</a>         <strong class="jxr_keyword">final</strong> JsonObject deps;
+<a class="jxr_linenumber" name="L351" href="#L351">351</a>         <strong class="jxr_keyword">final</strong> File modulesRoot = <strong class="jxr_keyword">new</strong> File(rootFile.getParentFile(), <span class="jxr_string">"node_modules"</span>);
+<a class="jxr_linenumber" name="L352" href="#L352">352</a>         <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> lockJsonVersion = json.containsKey(<span class="jxr_string">"lockfileVersion"</span>) ? json.getInt(<span class="jxr_string">"lockfileVersion"</span>) : 1;
+<a class="jxr_linenumber" name="L353" href="#L353">353</a>         <strong class="jxr_keyword">if</strong> (lockJsonVersion &gt;= 2) {
+<a class="jxr_linenumber" name="L354" href="#L354">354</a>             deps = json.getJsonObject(<span class="jxr_string">"packages"</span>);
+<a class="jxr_linenumber" name="L355" href="#L355">355</a>         } <strong class="jxr_keyword">else</strong> <strong class="jxr_keyword">if</strong> (json.containsKey(<span class="jxr_string">"dependencies"</span>)) {
+<a class="jxr_linenumber" name="L356" href="#L356">356</a>             deps = json.getJsonObject(<span class="jxr_string">"dependencies"</span>);
+<a class="jxr_linenumber" name="L357" href="#L357">357</a>         } <strong class="jxr_keyword">else</strong> {
+<a class="jxr_linenumber" name="L358" href="#L358">358</a>             deps = <strong class="jxr_keyword">null</strong>;
+<a class="jxr_linenumber" name="L359" href="#L359">359</a>         }
+<a class="jxr_linenumber" name="L360" href="#L360">360</a> 
+<a class="jxr_linenumber" name="L361" href="#L361">361</a>         <strong class="jxr_keyword">if</strong> (deps != <strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="L362" href="#L362">362</a>             <strong class="jxr_keyword">for</strong> (Map.Entry&lt;String, JsonValue&gt; entry : deps.entrySet()) {
+<a class="jxr_linenumber" name="L363" href="#L363">363</a>                 <strong class="jxr_keyword">final</strong> String pathName = entry.getKey();
+<a class="jxr_linenumber" name="L364" href="#L364">364</a>                 String name = pathName;
+<a class="jxr_linenumber" name="L365" href="#L365">365</a>                 File base;
+<a class="jxr_linenumber" name="L366" href="#L366">366</a> 
+<a class="jxr_linenumber" name="L367" href="#L367">367</a>                 <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> indexOfNodeModule = name.lastIndexOf(NODE_MODULES_DIRNAME + <span class="jxr_string">"/"</span>);
+<a class="jxr_linenumber" name="L368" href="#L368">368</a>                 <strong class="jxr_keyword">if</strong> (indexOfNodeModule &gt;= 0) {
+<a class="jxr_linenumber" name="L369" href="#L369">369</a>                     name = name.substring(indexOfNodeModule + NODE_MODULES_DIRNAME.length() + 1);
+<a class="jxr_linenumber" name="L370" href="#L370">370</a>                     base = Paths.get(baseDir.getPath(), pathName).toFile();
+<a class="jxr_linenumber" name="L371" href="#L371">371</a>                 } <strong class="jxr_keyword">else</strong> {
+<a class="jxr_linenumber" name="L372" href="#L372">372</a>                     base = Paths.get(baseDir.getPath(), <span class="jxr_string">"node_modules"</span>, name).toFile();
+<a class="jxr_linenumber" name="L373" href="#L373">373</a>                     <strong class="jxr_keyword">if</strong> (!base.isDirectory()) {
+<a class="jxr_linenumber" name="L374" href="#L374">374</a>                         <strong class="jxr_keyword">final</strong> File test = <strong class="jxr_keyword">new</strong> File(modulesRoot, name);
+<a class="jxr_linenumber" name="L375" href="#L375">375</a>                         <strong class="jxr_keyword">if</strong> (test.isDirectory()) {
+<a class="jxr_linenumber" name="L376" href="#L376">376</a>                             base = test;
+<a class="jxr_linenumber" name="L377" href="#L377">377</a>                         }
+<a class="jxr_linenumber" name="L378" href="#L378">378</a>                     }
+<a class="jxr_linenumber" name="L379" href="#L379">379</a>                 }
+<a class="jxr_linenumber" name="L380" href="#L380">380</a> 
+<a class="jxr_linenumber" name="L381" href="#L381">381</a>                 <strong class="jxr_keyword">final</strong> String version;
+<a class="jxr_linenumber" name="L382" href="#L382">382</a>                 <strong class="jxr_keyword">boolean</strong> optional = false;
+<a class="jxr_linenumber" name="L383" href="#L383">383</a>                 <strong class="jxr_keyword">boolean</strong> isDev = false;
+<a class="jxr_linenumber" name="L384" href="#L384">384</a> 
+<a class="jxr_linenumber" name="L385" href="#L385">385</a>                 <strong class="jxr_keyword">final</strong> File f = <strong class="jxr_keyword">new</strong> File(base, PACKAGE_JSON);
+<a class="jxr_linenumber" name="L386" href="#L386">386</a>                 JsonObject jo = <strong class="jxr_keyword">null</strong>;
+<a class="jxr_linenumber" name="L387" href="#L387">387</a> 
+<a class="jxr_linenumber" name="L388" href="#L388">388</a>                 <strong class="jxr_keyword">if</strong> (entry.getValue() instanceof JsonObject) {
+<a class="jxr_linenumber" name="L389" href="#L389">389</a>                     jo = (JsonObject) entry.getValue();
+<a class="jxr_linenumber" name="L390" href="#L390">390</a> 
+<a class="jxr_linenumber" name="L391" href="#L391">391</a>                     <em class="jxr_comment">// Ignore/skip linked entries (as they don't have "version" and</em>
+<a class="jxr_linenumber" name="L392" href="#L392">392</a>                     <em class="jxr_comment">// later logic will crash)</em>
+<a class="jxr_linenumber" name="L393" href="#L393">393</a>                     <strong class="jxr_keyword">if</strong> (jo.getBoolean(<span class="jxr_string">"link"</span>, false)) {
+<a class="jxr_linenumber" name="L394" href="#L394">394</a>                         LOGGER.warn(<span class="jxr_string">"Skipping `"</span> + name + <span class="jxr_string">"` because it is a link dependency"</span>);
+<a class="jxr_linenumber" name="L395" href="#L395">395</a>                         <strong class="jxr_keyword">continue</strong>;
+<a class="jxr_linenumber" name="L396" href="#L396">396</a>                     }
+<a class="jxr_linenumber" name="L397" href="#L397">397</a> 
+<a class="jxr_linenumber" name="L398" href="#L398">398</a>                     version = jo.getString(<span class="jxr_string">"version"</span>, <span class="jxr_string">""</span>);
+<a class="jxr_linenumber" name="L399" href="#L399">399</a>                     optional = jo.getBoolean(<span class="jxr_string">"optional"</span>, false);
+<a class="jxr_linenumber" name="L400" href="#L400">400</a>                     isDev = jo.getBoolean(<span class="jxr_string">"dev"</span>, false);
+<a class="jxr_linenumber" name="L401" href="#L401">401</a>                 } <strong class="jxr_keyword">else</strong> {
+<a class="jxr_linenumber" name="L402" href="#L402">402</a>                     version = ((JsonString) entry.getValue()).getString();
+<a class="jxr_linenumber" name="L403" href="#L403">403</a>                 }
+<a class="jxr_linenumber" name="L404" href="#L404">404</a> 
+<a class="jxr_linenumber" name="L405" href="#L405">405</a>                 <strong class="jxr_keyword">if</strong> ((isDev &amp;&amp; skipDev) || shouldSkipDependency(name, version, optional, f.exists())) {
+<a class="jxr_linenumber" name="L406" href="#L406">406</a>                     <strong class="jxr_keyword">continue</strong>;
+<a class="jxr_linenumber" name="L407" href="#L407">407</a>                 }
+<a class="jxr_linenumber" name="L408" href="#L408">408</a> 
+<a class="jxr_linenumber" name="L409" href="#L409">409</a>                 <strong class="jxr_keyword">if</strong> (<strong class="jxr_keyword">null</strong> != jo &amp;&amp; jo.containsKey(<span class="jxr_string">"dependencies"</span>)) {
+<a class="jxr_linenumber" name="L410" href="#L410">410</a>                     <strong class="jxr_keyword">final</strong> String subPackageName = String.format(<span class="jxr_string">"%s/%s:%s"</span>, parentPackage, name, version);
+<a class="jxr_linenumber" name="L411" href="#L411">411</a>                     processDependencies(jo, base, rootFile, subPackageName, engine);
+<a class="jxr_linenumber" name="L412" href="#L412">412</a>                 }
+<a class="jxr_linenumber" name="L413" href="#L413">413</a> 
+<a class="jxr_linenumber" name="L414" href="#L414">414</a>                 String ref = <span class="jxr_string">""</span>;
+<a class="jxr_linenumber" name="L415" href="#L415">415</a>                 <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> slash = parentPackage.indexOf(<span class="jxr_string">"/"</span>);
+<a class="jxr_linenumber" name="L416" href="#L416">416</a>                 <strong class="jxr_keyword">if</strong> (slash &gt; 0) {
+<a class="jxr_linenumber" name="L417" href="#L417">417</a>                     ref = parentPackage.substring(slash + 1);
+<a class="jxr_linenumber" name="L418" href="#L418">418</a>                 }
+<a class="jxr_linenumber" name="L419" href="#L419">419</a>                 <strong class="jxr_keyword">final</strong> <a href="../../../../org/owasp/dependencycheck/dependency/Dependency.html">Dependency</a> child = <strong class="jxr_keyword">new</strong> <a href="../../../../org/owasp/dependencycheck/dependency/Dependency.html">Dependency</a>(<strong class="jxr_keyword">new</strong> File(rootFile + <span class="jxr_string">"?"</span> + ref + <span class="jxr_string">"/"</span> + name + <span class="jxr_string">":"</span> + version), <strong class="jxr_keyword">true</strong>);
+<a class="jxr_linenumber" name="L420" href="#L420">420</a>                 child.addProjectReference(parentPackage);
+<a class="jxr_linenumber" name="L421" href="#L421">421</a>                 child.setEcosystem(DEPENDENCY_ECOSYSTEM);
+<a class="jxr_linenumber" name="L422" href="#L422">422</a> 
+<a class="jxr_linenumber" name="L423" href="#L423">423</a>                 <strong class="jxr_keyword">if</strong> (f.exists()) {
+<a class="jxr_linenumber" name="L424" href="#L424">424</a>                     <strong class="jxr_keyword">try</strong> {
+<a class="jxr_linenumber" name="L425" href="#L425">425</a>                         <em class="jxr_comment">//TODO - we should use the integrity value instead of calculating the SHA1/MD5</em>
+<a class="jxr_linenumber" name="L426" href="#L426">426</a>                         child.setMd5sum(Checksum.getMD5Checksum(f));
+<a class="jxr_linenumber" name="L427" href="#L427">427</a>                         child.setSha1sum(Checksum.getSHA1Checksum(f));
+<a class="jxr_linenumber" name="L428" href="#L428">428</a>                         child.setSha256sum(Checksum.getSHA256Checksum(f));
+<a class="jxr_linenumber" name="L429" href="#L429">429</a>                     } <strong class="jxr_keyword">catch</strong> (IOException | NoSuchAlgorithmException ex) {
+<a class="jxr_linenumber" name="L430" href="#L430">430</a>                         LOGGER.debug(<span class="jxr_string">"Error setting hashes:"</span> + ex.getMessage(), ex);
+<a class="jxr_linenumber" name="L431" href="#L431">431</a>                     }
+<a class="jxr_linenumber" name="L432" href="#L432">432</a>                     <strong class="jxr_keyword">try</strong> (JsonReader jr = Json.createReader(Files.newInputStream(f.toPath()))) {
+<a class="jxr_linenumber" name="L433" href="#L433">433</a>                         <strong class="jxr_keyword">final</strong> JsonObject childJson = jr.readObject();
+<a class="jxr_linenumber" name="L434" href="#L434">434</a>                         gatherEvidence(childJson, child);
+<a class="jxr_linenumber" name="L435" href="#L435">435</a>                     } <strong class="jxr_keyword">catch</strong> (JsonException e) {
+<a class="jxr_linenumber" name="L436" href="#L436">436</a>                         LOGGER.warn(<span class="jxr_string">"Failed to parse package.json file from dependency."</span>, e);
+<a class="jxr_linenumber" name="L437" href="#L437">437</a>                     } <strong class="jxr_keyword">catch</strong> (IOException e) {
+<a class="jxr_linenumber" name="L438" href="#L438">438</a>                         <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a href="../../../../org/owasp/dependencycheck/analyzer/exception/AnalysisException.html">AnalysisException</a>(<span class="jxr_string">"Problem occurred while reading dependency file."</span>, e);
+<a class="jxr_linenumber" name="L439" href="#L439">439</a>                     }
+<a class="jxr_linenumber" name="L440" href="#L440">440</a>                 } <strong class="jxr_keyword">else</strong> {
+<a class="jxr_linenumber" name="L441" href="#L441">441</a>                     LOGGER.warn(<span class="jxr_string">"Unable to find node module: {}"</span>, f);
+<a class="jxr_linenumber" name="L442" href="#L442">442</a>                     <em class="jxr_comment">//TODO - we should use the integrity value instead of calculating the SHA1/MD5</em>
+<a class="jxr_linenumber" name="L443" href="#L443">443</a>                     child.setSha1sum(Checksum.getSHA1Checksum(String.format(<span class="jxr_string">"%s:%s"</span>, name, version)));
+<a class="jxr_linenumber" name="L444" href="#L444">444</a>                     child.setSha256sum(Checksum.getSHA256Checksum(String.format(<span class="jxr_string">"%s:%s"</span>, name, version)));
+<a class="jxr_linenumber" name="L445" href="#L445">445</a>                     child.setMd5sum(Checksum.getMD5Checksum(String.format(<span class="jxr_string">"%s:%s"</span>, name, version)));
+<a class="jxr_linenumber" name="L446" href="#L446">446</a>                     child.addEvidence(EvidenceType.VENDOR, rootFile.getName(), <span class="jxr_string">"name"</span>, name, Confidence.HIGHEST);
+<a class="jxr_linenumber" name="L447" href="#L447">447</a>                     child.addEvidence(EvidenceType.PRODUCT, rootFile.getName(), <span class="jxr_string">"name"</span>, name, Confidence.HIGHEST);
+<a class="jxr_linenumber" name="L448" href="#L448">448</a>                     child.addEvidence(EvidenceType.VERSION, rootFile.getName(), <span class="jxr_string">"version"</span>, version, Confidence.HIGHEST);
+<a class="jxr_linenumber" name="L449" href="#L449">449</a>                     child.setName(name);
+<a class="jxr_linenumber" name="L450" href="#L450">450</a>                     child.setVersion(version);
+<a class="jxr_linenumber" name="L451" href="#L451">451</a>                     <strong class="jxr_keyword">final</strong> String packagePath = String.format(<span class="jxr_string">"%s:%s"</span>, name, version);
+<a class="jxr_linenumber" name="L452" href="#L452">452</a>                     child.setDisplayFileName(packagePath);
+<a class="jxr_linenumber" name="L453" href="#L453">453</a>                     child.setPackagePath(packagePath);
+<a class="jxr_linenumber" name="L454" href="#L454">454</a>                     <strong class="jxr_keyword">try</strong> {
+<a class="jxr_linenumber" name="L455" href="#L455">455</a>                         <strong class="jxr_keyword">final</strong> PackageURL purl = PackageURLBuilder.aPackageURL().withType(<span class="jxr_string">"npm"</span>).withName(name).withVersion(version).build();
+<a class="jxr_linenumber" name="L456" href="#L456">456</a>                         <strong class="jxr_keyword">final</strong> <a href="../../../../org/owasp/dependencycheck/dependency/naming/PurlIdentifier.html">PurlIdentifier</a> id = <strong class="jxr_keyword">new</strong> <a href="../../../../org/owasp/dependencycheck/dependency/naming/PurlIdentifier.html">PurlIdentifier</a>(purl, Confidence.HIGHEST);
+<a class="jxr_linenumber" name="L457" href="#L457">457</a>                         child.addSoftwareIdentifier(id);
+<a class="jxr_linenumber" name="L458" href="#L458">458</a>                     } <strong class="jxr_keyword">catch</strong> (MalformedPackageURLException ex) {
+<a class="jxr_linenumber" name="L459" href="#L459">459</a>                         LOGGER.debug(<span class="jxr_string">"Unable to build package url for `"</span> + packagePath + <span class="jxr_string">"`"</span>, ex);
+<a class="jxr_linenumber" name="L460" href="#L460">460</a>                     }
+<a class="jxr_linenumber" name="L461" href="#L461">461</a>                 }
+<a class="jxr_linenumber" name="L462" href="#L462">462</a>                 <strong class="jxr_keyword">synchronized</strong> (<strong class="jxr_keyword">this</strong>) {
+<a class="jxr_linenumber" name="L463" href="#L463">463</a>                     <strong class="jxr_keyword">final</strong> <a href="../../../../org/owasp/dependencycheck/dependency/Dependency.html">Dependency</a> existing = findDependency(engine, name, version);
+<a class="jxr_linenumber" name="L464" href="#L464">464</a>                     <strong class="jxr_keyword">if</strong> (existing != <strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="L465" href="#L465">465</a>                         <strong class="jxr_keyword">if</strong> (existing.isVirtual()) {
+<a class="jxr_linenumber" name="L466" href="#L466">466</a>                             DependencyMergingAnalyzer.mergeDependencies(child, existing, <strong class="jxr_keyword">null</strong>);
+<a class="jxr_linenumber" name="L467" href="#L467">467</a>                             engine.removeDependency(existing);
+<a class="jxr_linenumber" name="L468" href="#L468">468</a>                             engine.addDependency(child);
+<a class="jxr_linenumber" name="L469" href="#L469">469</a>                         } <strong class="jxr_keyword">else</strong> {
+<a class="jxr_linenumber" name="L470" href="#L470">470</a>                             DependencyBundlingAnalyzer.mergeDependencies(existing, child, <strong class="jxr_keyword">null</strong>);
+<a class="jxr_linenumber" name="L471" href="#L471">471</a>                         }
+<a class="jxr_linenumber" name="L472" href="#L472">472</a>                     } <strong class="jxr_keyword">else</strong> {
+<a class="jxr_linenumber" name="L473" href="#L473">473</a>                         engine.addDependency(child);
+<a class="jxr_linenumber" name="L474" href="#L474">474</a>                     }
+<a class="jxr_linenumber" name="L475" href="#L475">475</a>                 }
+<a class="jxr_linenumber" name="L476" href="#L476">476</a>             }
+<a class="jxr_linenumber" name="L477" href="#L477">477</a>         }
+<a class="jxr_linenumber" name="L478" href="#L478">478</a>     }
+<a class="jxr_linenumber" name="L479" href="#L479">479</a> }
 </pre>
 <hr/>
 <div id="footer">Copyright &#169; 2012&#x2013;2025 <a href="https://www.owasp.org">OWASP</a>. All rights reserved.</div>

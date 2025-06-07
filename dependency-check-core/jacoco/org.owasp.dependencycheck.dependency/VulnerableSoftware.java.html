@@ -156,8 +156,8 @@ public class VulnerableSoftware extends Cpe implements Serializable {
 
     @Override
     public boolean equals(Object obj) {
-<span class="pc bpc" id="L159" title="1 of 4 branches missed.">        if (obj == null || !(obj instanceof VulnerableSoftware)) {</span>
-<span class="fc" id="L160">            return false;</span>
+<span class="pc bpc" id="L159" title="2 of 4 branches missed.">        if (obj == null || !(obj instanceof VulnerableSoftware)) {</span>
+<span class="nc" id="L160">            return false;</span>
         }
 <span class="pc bpc" id="L162" title="1 of 2 branches missed.">        if (this == obj) {</span>
 <span class="nc" id="L163">            return true;</span>
@@ -509,11 +509,11 @@ public class VulnerableSoftware extends Cpe implements Serializable {
 <span class="fc" id="L509">                    .append(versionEndExcluding);</span>
 <span class="fc" id="L510">            textAdded = true;</span>
         }
-<span class="pc bpc" id="L512" title="1 of 2 branches missed.">        if (!vulnerable) {</span>
-<span class="nc bnc" id="L513" title="All 2 branches missed.">            if (textAdded) {</span>
+<span class="fc bfc" id="L512" title="All 2 branches covered.">        if (!vulnerable) {</span>
+<span class="pc bpc" id="L513" title="1 of 2 branches missed.">            if (textAdded) {</span>
 <span class="nc" id="L514">                sb.append(&quot;;&quot;);</span>
             }
-<span class="nc" id="L516">            sb.append(&quot; version is NOT VULNERABLE&quot;);</span>
+<span class="fc" id="L516">            sb.append(&quot; version is NOT VULNERABLE&quot;);</span>
         }
 <span class="fc" id="L518">        return sb.toString();</span>
     }

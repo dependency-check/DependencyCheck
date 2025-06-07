@@ -25,7 +25,7 @@
 <a class="jxr_linenumber" name="L17" href="#L17">17</a>  <em class="jxr_comment"> */</em>
 <a class="jxr_linenumber" name="L18" href="#L18">18</a>  <strong class="jxr_keyword">package</strong> org.owasp.dependencycheck.analyzer;
 <a class="jxr_linenumber" name="L19" href="#L19">19</a>  
-<a class="jxr_linenumber" name="L20" href="#L20">20</a>  <strong class="jxr_keyword">import</strong> org.junit.Test;
+<a class="jxr_linenumber" name="L20" href="#L20">20</a>  <strong class="jxr_keyword">import</strong> org.junit.jupiter.api.Test;
 <a class="jxr_linenumber" name="L21" href="#L21">21</a>  <strong class="jxr_keyword">import</strong> org.owasp.dependencycheck.BaseTest;
 <a class="jxr_linenumber" name="L22" href="#L22">22</a>  <strong class="jxr_keyword">import</strong> org.owasp.dependencycheck.Engine;
 <a class="jxr_linenumber" name="L23" href="#L23">23</a>  <strong class="jxr_keyword">import</strong> org.owasp.dependencycheck.dependency.Dependency;
@@ -40,14 +40,14 @@
 <a class="jxr_linenumber" name="L32" href="#L32">32</a>  <strong class="jxr_keyword">import</strong> java.util.Collections;
 <a class="jxr_linenumber" name="L33" href="#L33">33</a>  <strong class="jxr_keyword">import</strong> java.util.List;
 <a class="jxr_linenumber" name="L34" href="#L34">34</a>  
-<a class="jxr_linenumber" name="L35" href="#L35">35</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> org.junit.Assert.assertEquals;
-<a class="jxr_linenumber" name="L36" href="#L36">36</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> org.junit.Assert.assertFalse;
-<a class="jxr_linenumber" name="L37" href="#L37">37</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> org.junit.Assert.assertTrue;
+<a class="jxr_linenumber" name="L35" href="#L35">35</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> org.junit.jupiter.api.Assertions.assertEquals;
+<a class="jxr_linenumber" name="L36" href="#L36">36</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> org.junit.jupiter.api.Assertions.assertFalse;
+<a class="jxr_linenumber" name="L37" href="#L37">37</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> org.junit.jupiter.api.Assertions.assertTrue;
 <a class="jxr_linenumber" name="L38" href="#L38">38</a>  
 <a class="jxr_linenumber" name="L39" href="#L39">39</a>  <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L40" href="#L40">40</a>  <em class="jxr_javadoccomment"> * @author Jeremy Long</em>
 <a class="jxr_linenumber" name="L41" href="#L41">41</a>  <em class="jxr_javadoccomment"> */</em>
-<a class="jxr_linenumber" name="L42" href="#L42">42</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">class</strong> <a href="../../../../org/owasp/dependencycheck/analyzer/JarAnalyzerTest.html">JarAnalyzerTest</a> <strong class="jxr_keyword">extends</strong> <a href="../../../../org/owasp/dependencycheck/BaseTest.html">BaseTest</a> {
+<a class="jxr_linenumber" name="L42" href="#L42">42</a>  <strong class="jxr_keyword">class</strong> <a href="../../../../org/owasp/dependencycheck/analyzer/JarAnalyzerTest.html">JarAnalyzerTest</a> <strong class="jxr_keyword">extends</strong> <a href="../../../../org/owasp/dependencycheck/BaseTest.html">BaseTest</a> {
 <a class="jxr_linenumber" name="L43" href="#L43">43</a>  
 <a class="jxr_linenumber" name="L44" href="#L44">44</a>      <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L45" href="#L45">45</a>  <em class="jxr_javadoccomment">     * Test of inspect method, of class JarAnalyzer.</em>
@@ -55,7 +55,7 @@
 <a class="jxr_linenumber" name="L47" href="#L47">47</a>  <em class="jxr_javadoccomment">     * @throws Exception is thrown when an exception occurs.</em>
 <a class="jxr_linenumber" name="L48" href="#L48">48</a>  <em class="jxr_javadoccomment">     */</em>
 <a class="jxr_linenumber" name="L49" href="#L49">49</a>      @Test
-<a class="jxr_linenumber" name="L50" href="#L50">50</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testAnalyze() <strong class="jxr_keyword">throws</strong> Exception {
+<a class="jxr_linenumber" name="L50" href="#L50">50</a>      <strong class="jxr_keyword">void</strong> testAnalyze() <strong class="jxr_keyword">throws</strong> Exception {
 <a class="jxr_linenumber" name="L51" href="#L51">51</a>          <em class="jxr_comment">//File file = new File(this.getClass().getClassLoader().getResource("struts2-core-2.1.2.jar").getPath());</em>
 <a class="jxr_linenumber" name="L52" href="#L52">52</a>          File file = BaseTest.getResourceAsFile(<strong class="jxr_keyword">this</strong>, <span class="jxr_string">"struts2-core-2.1.2.jar"</span>);
 <a class="jxr_linenumber" name="L53" href="#L53">53</a>          Dependency result = <strong class="jxr_keyword">new</strong> Dependency(file);
@@ -73,12 +73,12 @@
 <a class="jxr_linenumber" name="L65" href="#L65">65</a>          <strong class="jxr_keyword">boolean</strong> found = false;
 <a class="jxr_linenumber" name="L66" href="#L66">66</a>          <strong class="jxr_keyword">for</strong> (Evidence e : result.getEvidence(EvidenceType.VENDOR)) {
 <a class="jxr_linenumber" name="L67" href="#L67">67</a>              <strong class="jxr_keyword">if</strong> (e.getName().equals(<span class="jxr_string">"url"</span>)) {
-<a class="jxr_linenumber" name="L68" href="#L68">68</a>                  assertEquals(<span class="jxr_string">"Project url was not as expected in dwr.jar"</span>, <span class="jxr_string">"http://getahead.ltd.uk/dwr"</span>, e.getValue());
+<a class="jxr_linenumber" name="L68" href="#L68">68</a>                  assertEquals(<span class="jxr_string">"http://getahead.ltd.uk/dwr"</span>, e.getValue(), <span class="jxr_string">"Project url was not as expected in dwr.jar"</span>);
 <a class="jxr_linenumber" name="L69" href="#L69">69</a>                  found = <strong class="jxr_keyword">true</strong>;
 <a class="jxr_linenumber" name="L70" href="#L70">70</a>                  <strong class="jxr_keyword">break</strong>;
 <a class="jxr_linenumber" name="L71" href="#L71">71</a>              }
 <a class="jxr_linenumber" name="L72" href="#L72">72</a>          }
-<a class="jxr_linenumber" name="L73" href="#L73">73</a>          assertTrue(<span class="jxr_string">"Project url was not found in dwr.jar"</span>, found);
+<a class="jxr_linenumber" name="L73" href="#L73">73</a>          assertTrue(found, <span class="jxr_string">"Project url was not found in dwr.jar"</span>);
 <a class="jxr_linenumber" name="L74" href="#L74">74</a>  
 <a class="jxr_linenumber" name="L75" href="#L75">75</a>          <em class="jxr_comment">//file = new File(this.getClass().getClassLoader().getResource("org.mortbay.jetty.jar").getPath());</em>
 <a class="jxr_linenumber" name="L76" href="#L76">76</a>          file = BaseTest.getResourceAsFile(<strong class="jxr_keyword">this</strong>, <span class="jxr_string">"org.mortbay.jetty.jar"</span>);
@@ -92,7 +92,7 @@
 <a class="jxr_linenumber" name="L84" href="#L84">84</a>                  <strong class="jxr_keyword">break</strong>;
 <a class="jxr_linenumber" name="L85" href="#L85">85</a>              }
 <a class="jxr_linenumber" name="L86" href="#L86">86</a>          }
-<a class="jxr_linenumber" name="L87" href="#L87">87</a>          assertTrue(<span class="jxr_string">"package-title of org.mortbay.http not found in org.mortbay.jetty.jar"</span>, found);
+<a class="jxr_linenumber" name="L87" href="#L87">87</a>          assertTrue(found, <span class="jxr_string">"package-title of org.mortbay.http not found in org.mortbay.jetty.jar"</span>);
 <a class="jxr_linenumber" name="L88" href="#L88">88</a>  
 <a class="jxr_linenumber" name="L89" href="#L89">89</a>          found = false;
 <a class="jxr_linenumber" name="L90" href="#L90">90</a>          <strong class="jxr_keyword">for</strong> (Evidence e : result.getEvidence(EvidenceType.VENDOR)) {
@@ -102,7 +102,7 @@
 <a class="jxr_linenumber" name="L94" href="#L94">94</a>                  <strong class="jxr_keyword">break</strong>;
 <a class="jxr_linenumber" name="L95" href="#L95">95</a>              }
 <a class="jxr_linenumber" name="L96" href="#L96">96</a>          }
-<a class="jxr_linenumber" name="L97" href="#L97">97</a>          assertTrue(<span class="jxr_string">"implementation-url of http://jetty.mortbay.org not found in org.mortbay.jetty.jar"</span>, found);
+<a class="jxr_linenumber" name="L97" href="#L97">97</a>          assertTrue(found, <span class="jxr_string">"implementation-url of http://jetty.mortbay.org not found in org.mortbay.jetty.jar"</span>);
 <a class="jxr_linenumber" name="L98" href="#L98">98</a>  
 <a class="jxr_linenumber" name="L99" href="#L99">99</a>          found = false;
 <a class="jxr_linenumber" name="L100" href="#L100">100</a>         <strong class="jxr_keyword">for</strong> (Evidence e : result.getEvidence(EvidenceType.VERSION)) {
@@ -112,17 +112,17 @@
 <a class="jxr_linenumber" name="L104" href="#L104">104</a>                 <strong class="jxr_keyword">break</strong>;
 <a class="jxr_linenumber" name="L105" href="#L105">105</a>             }
 <a class="jxr_linenumber" name="L106" href="#L106">106</a>         }
-<a class="jxr_linenumber" name="L107" href="#L107">107</a>         assertTrue(<span class="jxr_string">"implementation-version of 4.2.27 not found in org.mortbay.jetty.jar"</span>, found);
+<a class="jxr_linenumber" name="L107" href="#L107">107</a>         assertTrue(found, <span class="jxr_string">"implementation-version of 4.2.27 not found in org.mortbay.jetty.jar"</span>);
 <a class="jxr_linenumber" name="L108" href="#L108">108</a> 
 <a class="jxr_linenumber" name="L109" href="#L109">109</a>         <em class="jxr_comment">//file = new File(this.getClass().getClassLoader().getResource("org.mortbay.jmx.jar").getPath());</em>
 <a class="jxr_linenumber" name="L110" href="#L110">110</a>         file = BaseTest.getResourceAsFile(<strong class="jxr_keyword">this</strong>, <span class="jxr_string">"org.mortbay.jmx.jar"</span>);
 <a class="jxr_linenumber" name="L111" href="#L111">111</a>         result = <strong class="jxr_keyword">new</strong> Dependency(file);
 <a class="jxr_linenumber" name="L112" href="#L112">112</a>         instance.analyze(result, <strong class="jxr_keyword">null</strong>);
-<a class="jxr_linenumber" name="L113" href="#L113">113</a>         assertEquals(<span class="jxr_string">"org.mortbar.jmx.jar has version evidence?"</span>, 0, result.getEvidence(EvidenceType.VERSION).size());
+<a class="jxr_linenumber" name="L113" href="#L113">113</a>         assertEquals(0, result.getEvidence(EvidenceType.VERSION).size(), <span class="jxr_string">"org.mortbar.jmx.jar has version evidence?"</span>);
 <a class="jxr_linenumber" name="L114" href="#L114">114</a>     }
 <a class="jxr_linenumber" name="L115" href="#L115">115</a> 
 <a class="jxr_linenumber" name="L116" href="#L116">116</a>     @Test
-<a class="jxr_linenumber" name="L117" href="#L117">117</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testAddMatchingValues() <strong class="jxr_keyword">throws</strong> Exception {
+<a class="jxr_linenumber" name="L117" href="#L117">117</a>     <strong class="jxr_keyword">void</strong> testAddMatchingValues() <strong class="jxr_keyword">throws</strong> Exception {
 <a class="jxr_linenumber" name="L118" href="#L118">118</a>         File file = BaseTest.getResourceAsFile(<strong class="jxr_keyword">this</strong>, <span class="jxr_string">"struts2-core-2.1.2.jar"</span>);
 <a class="jxr_linenumber" name="L119" href="#L119">119</a>         Dependency dependency = <strong class="jxr_keyword">new</strong> Dependency(file);
 <a class="jxr_linenumber" name="L120" href="#L120">120</a>         JarAnalyzer instance = <strong class="jxr_keyword">new</strong> JarAnalyzer();
@@ -156,14 +156,14 @@
 <a class="jxr_linenumber" name="L148" href="#L148">148</a> <em class="jxr_javadoccomment">     * Test of getSupportedExtensions method, of class JarAnalyzer.</em>
 <a class="jxr_linenumber" name="L149" href="#L149">149</a> <em class="jxr_javadoccomment">     */</em>
 <a class="jxr_linenumber" name="L150" href="#L150">150</a>     @Test
-<a class="jxr_linenumber" name="L151" href="#L151">151</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testAcceptSupportedExtensions() <strong class="jxr_keyword">throws</strong> Exception {
+<a class="jxr_linenumber" name="L151" href="#L151">151</a>     <strong class="jxr_keyword">void</strong> testAcceptSupportedExtensions() <strong class="jxr_keyword">throws</strong> Exception {
 <a class="jxr_linenumber" name="L152" href="#L152">152</a>         JarAnalyzer instance = <strong class="jxr_keyword">new</strong> JarAnalyzer();
 <a class="jxr_linenumber" name="L153" href="#L153">153</a>         instance.initialize(getSettings());
 <a class="jxr_linenumber" name="L154" href="#L154">154</a>         instance.prepare(<strong class="jxr_keyword">null</strong>);
 <a class="jxr_linenumber" name="L155" href="#L155">155</a>         instance.setEnabled(<strong class="jxr_keyword">true</strong>);
 <a class="jxr_linenumber" name="L156" href="#L156">156</a>         String[] files = {<span class="jxr_string">"test.jar"</span>, <span class="jxr_string">"test.war"</span>};
 <a class="jxr_linenumber" name="L157" href="#L157">157</a>         <strong class="jxr_keyword">for</strong> (String name : files) {
-<a class="jxr_linenumber" name="L158" href="#L158">158</a>             assertTrue(name, instance.accept(<strong class="jxr_keyword">new</strong> File(name)));
+<a class="jxr_linenumber" name="L158" href="#L158">158</a>             assertTrue(instance.accept(<strong class="jxr_keyword">new</strong> File(name)), name);
 <a class="jxr_linenumber" name="L159" href="#L159">159</a>         }
 <a class="jxr_linenumber" name="L160" href="#L160">160</a>     }
 <a class="jxr_linenumber" name="L161" href="#L161">161</a> 
@@ -171,7 +171,7 @@
 <a class="jxr_linenumber" name="L163" href="#L163">163</a> <em class="jxr_javadoccomment">     * Test of getName method, of class JarAnalyzer.</em>
 <a class="jxr_linenumber" name="L164" href="#L164">164</a> <em class="jxr_javadoccomment">     */</em>
 <a class="jxr_linenumber" name="L165" href="#L165">165</a>     @Test
-<a class="jxr_linenumber" name="L166" href="#L166">166</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testGetName() {
+<a class="jxr_linenumber" name="L166" href="#L166">166</a>     <strong class="jxr_keyword">void</strong> testGetName() {
 <a class="jxr_linenumber" name="L167" href="#L167">167</a>         JarAnalyzer instance = <strong class="jxr_keyword">new</strong> JarAnalyzer();
 <a class="jxr_linenumber" name="L168" href="#L168">168</a>         String expResult = <span class="jxr_string">"Jar Analyzer"</span>;
 <a class="jxr_linenumber" name="L169" href="#L169">169</a>         String result = instance.getName();
@@ -179,7 +179,7 @@
 <a class="jxr_linenumber" name="L171" href="#L171">171</a>     }
 <a class="jxr_linenumber" name="L172" href="#L172">172</a> 
 <a class="jxr_linenumber" name="L173" href="#L173">173</a>     @Test
-<a class="jxr_linenumber" name="L174" href="#L174">174</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testParseManifest() <strong class="jxr_keyword">throws</strong> Exception {
+<a class="jxr_linenumber" name="L174" href="#L174">174</a>     <strong class="jxr_keyword">void</strong> testParseManifest() <strong class="jxr_keyword">throws</strong> Exception {
 <a class="jxr_linenumber" name="L175" href="#L175">175</a>         File file = BaseTest.getResourceAsFile(<strong class="jxr_keyword">this</strong>, <span class="jxr_string">"xalan-2.7.0.jar"</span>);
 <a class="jxr_linenumber" name="L176" href="#L176">176</a>         Dependency result = <strong class="jxr_keyword">new</strong> Dependency(file);
 <a class="jxr_linenumber" name="L177" href="#L177">177</a>         JarAnalyzer instance = <strong class="jxr_keyword">new</strong> JarAnalyzer();
@@ -193,7 +193,7 @@
 <a class="jxr_linenumber" name="L185" href="#L185">185</a> <em class="jxr_javadoccomment">     * Test of getAnalysisPhase method, of class JarAnalyzer.</em>
 <a class="jxr_linenumber" name="L186" href="#L186">186</a> <em class="jxr_javadoccomment">     */</em>
 <a class="jxr_linenumber" name="L187" href="#L187">187</a>     @Test
-<a class="jxr_linenumber" name="L188" href="#L188">188</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testGetAnalysisPhase() {
+<a class="jxr_linenumber" name="L188" href="#L188">188</a>     <strong class="jxr_keyword">void</strong> testGetAnalysisPhase() {
 <a class="jxr_linenumber" name="L189" href="#L189">189</a>         JarAnalyzer instance = <strong class="jxr_keyword">new</strong> JarAnalyzer();
 <a class="jxr_linenumber" name="L190" href="#L190">190</a>         AnalysisPhase expResult = AnalysisPhase.INFORMATION_COLLECTION;
 <a class="jxr_linenumber" name="L191" href="#L191">191</a>         AnalysisPhase result = instance.getAnalysisPhase();
@@ -204,7 +204,7 @@
 <a class="jxr_linenumber" name="L196" href="#L196">196</a> <em class="jxr_javadoccomment">     * Test of getAnalyzerEnabledSettingKey method, of class JarAnalyzer.</em>
 <a class="jxr_linenumber" name="L197" href="#L197">197</a> <em class="jxr_javadoccomment">     */</em>
 <a class="jxr_linenumber" name="L198" href="#L198">198</a>     @Test
-<a class="jxr_linenumber" name="L199" href="#L199">199</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testGetAnalyzerEnabledSettingKey() {
+<a class="jxr_linenumber" name="L199" href="#L199">199</a>     <strong class="jxr_keyword">void</strong> testGetAnalyzerEnabledSettingKey() {
 <a class="jxr_linenumber" name="L200" href="#L200">200</a>         JarAnalyzer instance = <strong class="jxr_keyword">new</strong> JarAnalyzer();
 <a class="jxr_linenumber" name="L201" href="#L201">201</a>         String expResult = Settings.KEYS.ANALYZER_JAR_ENABLED;
 <a class="jxr_linenumber" name="L202" href="#L202">202</a>         String result = instance.getAnalyzerEnabledSettingKey();
@@ -212,7 +212,7 @@
 <a class="jxr_linenumber" name="L204" href="#L204">204</a>     }
 <a class="jxr_linenumber" name="L205" href="#L205">205</a> 
 <a class="jxr_linenumber" name="L206" href="#L206">206</a>     @Test
-<a class="jxr_linenumber" name="L207" href="#L207">207</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testClassInformation() {
+<a class="jxr_linenumber" name="L207" href="#L207">207</a>     <strong class="jxr_keyword">void</strong> testClassInformation() {
 <a class="jxr_linenumber" name="L208" href="#L208">208</a>         JarAnalyzer.ClassNameInformation instance = <strong class="jxr_keyword">new</strong> JarAnalyzer.ClassNameInformation(<span class="jxr_string">"org/owasp/dependencycheck/analyzer/JarAnalyzer"</span>);
 <a class="jxr_linenumber" name="L209" href="#L209">209</a>         assertEquals(<span class="jxr_string">"org/owasp/dependencycheck/analyzer/JarAnalyzer"</span>, instance.getName());
 <a class="jxr_linenumber" name="L210" href="#L210">210</a>         List&lt;String&gt; expected = Arrays.asList(<span class="jxr_string">"owasp"</span>, <span class="jxr_string">"dependencycheck"</span>, <span class="jxr_string">"analyzer"</span>, <span class="jxr_string">"jaranalyzer"</span>);
@@ -221,7 +221,7 @@
 <a class="jxr_linenumber" name="L213" href="#L213">213</a>     }
 <a class="jxr_linenumber" name="L214" href="#L214">214</a> 
 <a class="jxr_linenumber" name="L215" href="#L215">215</a>     @Test
-<a class="jxr_linenumber" name="L216" href="#L216">216</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testAnalyzeDependency_SkipsMacOSMetaDataFile() <strong class="jxr_keyword">throws</strong> Exception {
+<a class="jxr_linenumber" name="L216" href="#L216">216</a>     <strong class="jxr_keyword">void</strong> testAnalyzeDependency_SkipsMacOSMetaDataFile() <strong class="jxr_keyword">throws</strong> Exception {
 <a class="jxr_linenumber" name="L217" href="#L217">217</a>         JarAnalyzer instance = <strong class="jxr_keyword">new</strong> JarAnalyzer();
 <a class="jxr_linenumber" name="L218" href="#L218">218</a>         Dependency macOSMetaDataFile = <strong class="jxr_keyword">new</strong> Dependency();
 <a class="jxr_linenumber" name="L219" href="#L219">219</a> 
@@ -240,7 +240,7 @@
 <a class="jxr_linenumber" name="L232" href="#L232">232</a>     }
 <a class="jxr_linenumber" name="L233" href="#L233">233</a> 
 <a class="jxr_linenumber" name="L234" href="#L234">234</a>     @Test
-<a class="jxr_linenumber" name="L235" href="#L235">235</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testAnalyseDependency_SkipsNonZipFile() <strong class="jxr_keyword">throws</strong> Exception {
+<a class="jxr_linenumber" name="L235" href="#L235">235</a>     <strong class="jxr_keyword">void</strong> testAnalyseDependency_SkipsNonZipFile() <strong class="jxr_keyword">throws</strong> Exception {
 <a class="jxr_linenumber" name="L236" href="#L236">236</a>         JarAnalyzer instance = <strong class="jxr_keyword">new</strong> JarAnalyzer();
 <a class="jxr_linenumber" name="L237" href="#L237">237</a>         Dependency textFileWithJarExtension = <strong class="jxr_keyword">new</strong> Dependency();
 <a class="jxr_linenumber" name="L238" href="#L238">238</a>         textFileWithJarExtension

@@ -36,96 +36,97 @@
 <a class="jxr_linenumber" name="L28" href="#L28">28</a>  <strong class="jxr_keyword">import</strong> io.github.jeremylong.openvulnerability.client.nvd.Reference;
 <a class="jxr_linenumber" name="L29" href="#L29">29</a>  <strong class="jxr_keyword">import</strong> io.github.jeremylong.openvulnerability.client.nvd.VendorComment;
 <a class="jxr_linenumber" name="L30" href="#L30">30</a>  <strong class="jxr_keyword">import</strong> io.github.jeremylong.openvulnerability.client.nvd.Weakness;
-<a class="jxr_linenumber" name="L31" href="#L31">31</a>  <strong class="jxr_keyword">import</strong> java.time.LocalDate;
-<a class="jxr_linenumber" name="L32" href="#L32">32</a>  <strong class="jxr_keyword">import</strong> java.time.ZonedDateTime;
-<a class="jxr_linenumber" name="L33" href="#L33">33</a>  <strong class="jxr_keyword">import</strong> java.util.ArrayList;
-<a class="jxr_linenumber" name="L34" href="#L34">34</a>  <strong class="jxr_keyword">import</strong> java.util.List;
-<a class="jxr_linenumber" name="L35" href="#L35">35</a>  <strong class="jxr_keyword">import</strong> org.junit.Test;
-<a class="jxr_linenumber" name="L36" href="#L36">36</a>  
-<a class="jxr_linenumber" name="L37" href="#L37">37</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> org.junit.Assert.*;
-<a class="jxr_linenumber" name="L38" href="#L38">38</a>  
-<a class="jxr_linenumber" name="L39" href="#L39">39</a>  <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L40" href="#L40">40</a>  <em class="jxr_javadoccomment"> *</em>
-<a class="jxr_linenumber" name="L41" href="#L41">41</a>  <em class="jxr_javadoccomment"> * @author jeremy</em>
-<a class="jxr_linenumber" name="L42" href="#L42">42</a>  <em class="jxr_javadoccomment"> */</em>
-<a class="jxr_linenumber" name="L43" href="#L43">43</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">class</strong> <a href="../../../../../org/owasp/dependencycheck/data/nvdcve/CveItemOperatorTest.html">CveItemOperatorTest</a> {
-<a class="jxr_linenumber" name="L44" href="#L44">44</a>  
-<a class="jxr_linenumber" name="L45" href="#L45">45</a>      <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L46" href="#L46">46</a>  <em class="jxr_javadoccomment">     * Test of testCveCpeStartWithFilter method, of class CveItemOperator.</em>
-<a class="jxr_linenumber" name="L47" href="#L47">47</a>  <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L48" href="#L48">48</a>      @Test
-<a class="jxr_linenumber" name="L49" href="#L49">49</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testTestCveCpeStartWithFilter() {
-<a class="jxr_linenumber" name="L50" href="#L50">50</a>  
-<a class="jxr_linenumber" name="L51" href="#L51">51</a>          ZonedDateTime published = ZonedDateTime.now();
-<a class="jxr_linenumber" name="L52" href="#L52">52</a>          ZonedDateTime lastModified = ZonedDateTime.now();
-<a class="jxr_linenumber" name="L53" href="#L53">53</a>          LocalDate cisaExploitAdd = <strong class="jxr_keyword">null</strong>;
-<a class="jxr_linenumber" name="L54" href="#L54">54</a>          LocalDate cisaActionDue = <strong class="jxr_keyword">null</strong>;
-<a class="jxr_linenumber" name="L55" href="#L55">55</a>          List&lt;CveTag&gt; cveTags = <strong class="jxr_keyword">null</strong>;
-<a class="jxr_linenumber" name="L56" href="#L56">56</a>          List&lt;LangString&gt; descriptions = <strong class="jxr_keyword">null</strong>;
-<a class="jxr_linenumber" name="L57" href="#L57">57</a>          List&lt;Reference&gt; references = <strong class="jxr_keyword">null</strong>;
-<a class="jxr_linenumber" name="L58" href="#L58">58</a>          Metrics metrics = <strong class="jxr_keyword">null</strong>;
-<a class="jxr_linenumber" name="L59" href="#L59">59</a>          List&lt;Weakness&gt; weaknesses = <strong class="jxr_keyword">null</strong>;
-<a class="jxr_linenumber" name="L60" href="#L60">60</a>          List&lt;Config&gt; configurations = <strong class="jxr_keyword">new</strong> ArrayList&lt;&gt;();
-<a class="jxr_linenumber" name="L61" href="#L61">61</a>          List&lt;CpeMatch&gt; matches = <strong class="jxr_keyword">new</strong> ArrayList&lt;&gt;();
-<a class="jxr_linenumber" name="L62" href="#L62">62</a>          matches.add(<strong class="jxr_keyword">null</strong>);
-<a class="jxr_linenumber" name="L63" href="#L63">63</a>          Node first = <strong class="jxr_keyword">new</strong> Node(Node.Operator.OR, <strong class="jxr_keyword">null</strong>, matches);
-<a class="jxr_linenumber" name="L64" href="#L64">64</a>          List&lt;CpeMatch&gt; cpeMatch = <strong class="jxr_keyword">new</strong> ArrayList&lt;&gt;();
-<a class="jxr_linenumber" name="L65" href="#L65">65</a>          <em class="jxr_comment">//cpe:2.3:o:microsoft:windows:-:*:*:*:*:*:*:*</em>
-<a class="jxr_linenumber" name="L66" href="#L66">66</a>          CpeMatch match = <strong class="jxr_keyword">new</strong> CpeMatch(<strong class="jxr_keyword">true</strong>, <span class="jxr_string">"cpe:2.3:o:microsoft:windows:-:*:*:*:*:*:*:*"</span>, <span class="jxr_string">"matchCriteriaId"</span>, <span class="jxr_string">"versionStartExcluding"</span>,
-<a class="jxr_linenumber" name="L67" href="#L67">67</a>              <span class="jxr_string">"versionStartIncluding"</span>, <span class="jxr_string">"versionEndExcluding"</span>, <span class="jxr_string">"versionEndIncluding"</span>);
-<a class="jxr_linenumber" name="L68" href="#L68">68</a>          cpeMatch.add(match);
-<a class="jxr_linenumber" name="L69" href="#L69">69</a>          Node second = <strong class="jxr_keyword">new</strong> Node(Node.Operator.OR, Boolean.FALSE, cpeMatch);
-<a class="jxr_linenumber" name="L70" href="#L70">70</a>          Node third = <strong class="jxr_keyword">new</strong> Node(Node.Operator.OR, <strong class="jxr_keyword">null</strong>, <strong class="jxr_keyword">null</strong>);
-<a class="jxr_linenumber" name="L71" href="#L71">71</a>          List&lt;Node&gt; nodes = <strong class="jxr_keyword">new</strong> ArrayList&lt;&gt;();
-<a class="jxr_linenumber" name="L72" href="#L72">72</a>          nodes.add(<strong class="jxr_keyword">null</strong>);
-<a class="jxr_linenumber" name="L73" href="#L73">73</a>          nodes.add(first);
-<a class="jxr_linenumber" name="L74" href="#L74">74</a>          nodes.add(second);
-<a class="jxr_linenumber" name="L75" href="#L75">75</a>          nodes.add(third);
-<a class="jxr_linenumber" name="L76" href="#L76">76</a>          
-<a class="jxr_linenumber" name="L77" href="#L77">77</a>          Config c = <strong class="jxr_keyword">new</strong> Config(Config.Operator.AND, <strong class="jxr_keyword">null</strong>, nodes);
-<a class="jxr_linenumber" name="L78" href="#L78">78</a>          configurations.add(c);
-<a class="jxr_linenumber" name="L79" href="#L79">79</a>          List&lt;VendorComment&gt; vendorComments = <strong class="jxr_keyword">null</strong>;
-<a class="jxr_linenumber" name="L80" href="#L80">80</a>          CveItem cveItem = <strong class="jxr_keyword">new</strong> CveItem(<span class="jxr_string">"id"</span>, <span class="jxr_string">"sourceIdentifier"</span>, <span class="jxr_string">"vulnStatus"</span>, published, lastModified,
-<a class="jxr_linenumber" name="L81" href="#L81">81</a>                  <span class="jxr_string">"evaluatorComment"</span>, <span class="jxr_string">"evaluatorSolution"</span>, <span class="jxr_string">"evaluatorImpact"</span>, cisaExploitAdd, cisaActionDue,
-<a class="jxr_linenumber" name="L82" href="#L82">82</a>                  <span class="jxr_string">"cisaRequiredAction"</span>, <span class="jxr_string">"cisaVulnerabilityName"</span>, cveTags, descriptions, references, metrics,
-<a class="jxr_linenumber" name="L83" href="#L83">83</a>                  weaknesses, configurations, vendorComments);
-<a class="jxr_linenumber" name="L84" href="#L84">84</a>  
-<a class="jxr_linenumber" name="L85" href="#L85">85</a>          DefCveItem cve = <strong class="jxr_keyword">new</strong> DefCveItem(cveItem);
-<a class="jxr_linenumber" name="L86" href="#L86">86</a>          CveItemOperator instance = <strong class="jxr_keyword">new</strong> CveItemOperator(<span class="jxr_string">"cpe:2.3:o:"</span>);
-<a class="jxr_linenumber" name="L87" href="#L87">87</a>          <strong class="jxr_keyword">boolean</strong> expResult = <strong class="jxr_keyword">true</strong>;
-<a class="jxr_linenumber" name="L88" href="#L88">88</a>          <strong class="jxr_keyword">boolean</strong> result = instance.testCveCpeStartWithFilter(cve);
-<a class="jxr_linenumber" name="L89" href="#L89">89</a>          assertEquals(expResult, result);
-<a class="jxr_linenumber" name="L90" href="#L90">90</a>  
-<a class="jxr_linenumber" name="L91" href="#L91">91</a>      }
-<a class="jxr_linenumber" name="L92" href="#L92">92</a>  
-<a class="jxr_linenumber" name="L93" href="#L93">93</a>      @Test
-<a class="jxr_linenumber" name="L94" href="#L94">94</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testTestCveCpeStartWithFilterForConfigurationWithoutCpeMatches() {
-<a class="jxr_linenumber" name="L95" href="#L95">95</a>          ZonedDateTime published = ZonedDateTime.now();
-<a class="jxr_linenumber" name="L96" href="#L96">96</a>          ZonedDateTime lastModified = ZonedDateTime.now();
-<a class="jxr_linenumber" name="L97" href="#L97">97</a>          LocalDate cisaExploitAdd = <strong class="jxr_keyword">null</strong>;
-<a class="jxr_linenumber" name="L98" href="#L98">98</a>          LocalDate cisaActionDue = <strong class="jxr_keyword">null</strong>;
-<a class="jxr_linenumber" name="L99" href="#L99">99</a>          List&lt;CveTag&gt; cveTags = <strong class="jxr_keyword">null</strong>;
-<a class="jxr_linenumber" name="L100" href="#L100">100</a>         List&lt;LangString&gt; descriptions = <strong class="jxr_keyword">null</strong>;
-<a class="jxr_linenumber" name="L101" href="#L101">101</a>         List&lt;Reference&gt; references = <strong class="jxr_keyword">null</strong>;
-<a class="jxr_linenumber" name="L102" href="#L102">102</a>         Metrics metrics = <strong class="jxr_keyword">null</strong>;
-<a class="jxr_linenumber" name="L103" href="#L103">103</a>         List&lt;Weakness&gt; weaknesses = <strong class="jxr_keyword">null</strong>;
-<a class="jxr_linenumber" name="L104" href="#L104">104</a> 
-<a class="jxr_linenumber" name="L105" href="#L105">105</a>         Node noCpeMatches = <strong class="jxr_keyword">new</strong> Node(Node.Operator.OR, <strong class="jxr_keyword">null</strong>, <strong class="jxr_keyword">null</strong>);
-<a class="jxr_linenumber" name="L106" href="#L106">106</a>         Config c = <strong class="jxr_keyword">new</strong> Config(Config.Operator.AND, <strong class="jxr_keyword">null</strong>, List.of(noCpeMatches));
-<a class="jxr_linenumber" name="L107" href="#L107">107</a>         List&lt;VendorComment&gt; vendorComments = <strong class="jxr_keyword">null</strong>;
-<a class="jxr_linenumber" name="L108" href="#L108">108</a>         CveItem cveItem = <strong class="jxr_keyword">new</strong> CveItem(<span class="jxr_string">"id"</span>, <span class="jxr_string">"sourceIdentifier"</span>, <span class="jxr_string">"vulnStatus"</span>, published, lastModified,
-<a class="jxr_linenumber" name="L109" href="#L109">109</a>                 <span class="jxr_string">"evaluatorComment"</span>, <span class="jxr_string">"evaluatorSolution"</span>, <span class="jxr_string">"evaluatorImpact"</span>, cisaExploitAdd, cisaActionDue,
-<a class="jxr_linenumber" name="L110" href="#L110">110</a>                 <span class="jxr_string">"cisaRequiredAction"</span>, <span class="jxr_string">"cisaVulnerabilityName"</span>, cveTags, descriptions, references, metrics,
-<a class="jxr_linenumber" name="L111" href="#L111">111</a>                 weaknesses, List.of(c), vendorComments);
-<a class="jxr_linenumber" name="L112" href="#L112">112</a> 
-<a class="jxr_linenumber" name="L113" href="#L113">113</a>         DefCveItem cve = <strong class="jxr_keyword">new</strong> DefCveItem(cveItem);
-<a class="jxr_linenumber" name="L114" href="#L114">114</a>         CveItemOperator instance = <strong class="jxr_keyword">new</strong> CveItemOperator(<span class="jxr_string">"cpe:2.3:o:"</span>);
-<a class="jxr_linenumber" name="L115" href="#L115">115</a>         <strong class="jxr_keyword">boolean</strong> expResult = false;
-<a class="jxr_linenumber" name="L116" href="#L116">116</a>         <strong class="jxr_keyword">boolean</strong> result = instance.testCveCpeStartWithFilter(cve);
-<a class="jxr_linenumber" name="L117" href="#L117">117</a>         assertEquals(expResult, result);
-<a class="jxr_linenumber" name="L118" href="#L118">118</a>     }
-<a class="jxr_linenumber" name="L119" href="#L119">119</a> 
-<a class="jxr_linenumber" name="L120" href="#L120">120</a> }
+<a class="jxr_linenumber" name="L31" href="#L31">31</a>  <strong class="jxr_keyword">import</strong> org.junit.jupiter.api.Test;
+<a class="jxr_linenumber" name="L32" href="#L32">32</a>  
+<a class="jxr_linenumber" name="L33" href="#L33">33</a>  <strong class="jxr_keyword">import</strong> java.time.LocalDate;
+<a class="jxr_linenumber" name="L34" href="#L34">34</a>  <strong class="jxr_keyword">import</strong> java.time.ZonedDateTime;
+<a class="jxr_linenumber" name="L35" href="#L35">35</a>  <strong class="jxr_keyword">import</strong> java.util.ArrayList;
+<a class="jxr_linenumber" name="L36" href="#L36">36</a>  <strong class="jxr_keyword">import</strong> java.util.List;
+<a class="jxr_linenumber" name="L37" href="#L37">37</a>  
+<a class="jxr_linenumber" name="L38" href="#L38">38</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> org.junit.jupiter.api.Assertions.assertEquals;
+<a class="jxr_linenumber" name="L39" href="#L39">39</a>  
+<a class="jxr_linenumber" name="L40" href="#L40">40</a>  <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L41" href="#L41">41</a>  <em class="jxr_javadoccomment"> *</em>
+<a class="jxr_linenumber" name="L42" href="#L42">42</a>  <em class="jxr_javadoccomment"> * @author jeremy</em>
+<a class="jxr_linenumber" name="L43" href="#L43">43</a>  <em class="jxr_javadoccomment"> */</em>
+<a class="jxr_linenumber" name="L44" href="#L44">44</a>  <strong class="jxr_keyword">class</strong> <a href="../../../../../org/owasp/dependencycheck/data/nvdcve/CveItemOperatorTest.html">CveItemOperatorTest</a> {
+<a class="jxr_linenumber" name="L45" href="#L45">45</a>  
+<a class="jxr_linenumber" name="L46" href="#L46">46</a>      <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L47" href="#L47">47</a>  <em class="jxr_javadoccomment">     * Test of testCveCpeStartWithFilter method, of class CveItemOperator.</em>
+<a class="jxr_linenumber" name="L48" href="#L48">48</a>  <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L49" href="#L49">49</a>      @Test
+<a class="jxr_linenumber" name="L50" href="#L50">50</a>      <strong class="jxr_keyword">void</strong> testTestCveCpeStartWithFilter() {
+<a class="jxr_linenumber" name="L51" href="#L51">51</a>  
+<a class="jxr_linenumber" name="L52" href="#L52">52</a>          ZonedDateTime published = ZonedDateTime.now();
+<a class="jxr_linenumber" name="L53" href="#L53">53</a>          ZonedDateTime lastModified = ZonedDateTime.now();
+<a class="jxr_linenumber" name="L54" href="#L54">54</a>          LocalDate cisaExploitAdd = <strong class="jxr_keyword">null</strong>;
+<a class="jxr_linenumber" name="L55" href="#L55">55</a>          LocalDate cisaActionDue = <strong class="jxr_keyword">null</strong>;
+<a class="jxr_linenumber" name="L56" href="#L56">56</a>          List&lt;CveTag&gt; cveTags = <strong class="jxr_keyword">null</strong>;
+<a class="jxr_linenumber" name="L57" href="#L57">57</a>          List&lt;LangString&gt; descriptions = <strong class="jxr_keyword">null</strong>;
+<a class="jxr_linenumber" name="L58" href="#L58">58</a>          List&lt;Reference&gt; references = <strong class="jxr_keyword">null</strong>;
+<a class="jxr_linenumber" name="L59" href="#L59">59</a>          Metrics metrics = <strong class="jxr_keyword">null</strong>;
+<a class="jxr_linenumber" name="L60" href="#L60">60</a>          List&lt;Weakness&gt; weaknesses = <strong class="jxr_keyword">null</strong>;
+<a class="jxr_linenumber" name="L61" href="#L61">61</a>          List&lt;Config&gt; configurations = <strong class="jxr_keyword">new</strong> ArrayList&lt;&gt;();
+<a class="jxr_linenumber" name="L62" href="#L62">62</a>          List&lt;CpeMatch&gt; matches = <strong class="jxr_keyword">new</strong> ArrayList&lt;&gt;();
+<a class="jxr_linenumber" name="L63" href="#L63">63</a>          matches.add(<strong class="jxr_keyword">null</strong>);
+<a class="jxr_linenumber" name="L64" href="#L64">64</a>          Node first = <strong class="jxr_keyword">new</strong> Node(Node.Operator.OR, <strong class="jxr_keyword">null</strong>, matches);
+<a class="jxr_linenumber" name="L65" href="#L65">65</a>          List&lt;CpeMatch&gt; cpeMatch = <strong class="jxr_keyword">new</strong> ArrayList&lt;&gt;();
+<a class="jxr_linenumber" name="L66" href="#L66">66</a>          <em class="jxr_comment">//cpe:2.3:o:microsoft:windows:-:*:*:*:*:*:*:*</em>
+<a class="jxr_linenumber" name="L67" href="#L67">67</a>          CpeMatch match = <strong class="jxr_keyword">new</strong> CpeMatch(<strong class="jxr_keyword">true</strong>, <span class="jxr_string">"cpe:2.3:o:microsoft:windows:-:*:*:*:*:*:*:*"</span>, <span class="jxr_string">"matchCriteriaId"</span>, <span class="jxr_string">"versionStartExcluding"</span>,
+<a class="jxr_linenumber" name="L68" href="#L68">68</a>              <span class="jxr_string">"versionStartIncluding"</span>, <span class="jxr_string">"versionEndExcluding"</span>, <span class="jxr_string">"versionEndIncluding"</span>);
+<a class="jxr_linenumber" name="L69" href="#L69">69</a>          cpeMatch.add(match);
+<a class="jxr_linenumber" name="L70" href="#L70">70</a>          Node second = <strong class="jxr_keyword">new</strong> Node(Node.Operator.OR, Boolean.FALSE, cpeMatch);
+<a class="jxr_linenumber" name="L71" href="#L71">71</a>          Node third = <strong class="jxr_keyword">new</strong> Node(Node.Operator.OR, <strong class="jxr_keyword">null</strong>, <strong class="jxr_keyword">null</strong>);
+<a class="jxr_linenumber" name="L72" href="#L72">72</a>          List&lt;Node&gt; nodes = <strong class="jxr_keyword">new</strong> ArrayList&lt;&gt;();
+<a class="jxr_linenumber" name="L73" href="#L73">73</a>          nodes.add(<strong class="jxr_keyword">null</strong>);
+<a class="jxr_linenumber" name="L74" href="#L74">74</a>          nodes.add(first);
+<a class="jxr_linenumber" name="L75" href="#L75">75</a>          nodes.add(second);
+<a class="jxr_linenumber" name="L76" href="#L76">76</a>          nodes.add(third);
+<a class="jxr_linenumber" name="L77" href="#L77">77</a>  
+<a class="jxr_linenumber" name="L78" href="#L78">78</a>          Config c = <strong class="jxr_keyword">new</strong> Config(Config.Operator.AND, <strong class="jxr_keyword">null</strong>, nodes);
+<a class="jxr_linenumber" name="L79" href="#L79">79</a>          configurations.add(c);
+<a class="jxr_linenumber" name="L80" href="#L80">80</a>          List&lt;VendorComment&gt; vendorComments = <strong class="jxr_keyword">null</strong>;
+<a class="jxr_linenumber" name="L81" href="#L81">81</a>          CveItem cveItem = <strong class="jxr_keyword">new</strong> CveItem(<span class="jxr_string">"id"</span>, <span class="jxr_string">"sourceIdentifier"</span>, <span class="jxr_string">"vulnStatus"</span>, published, lastModified,
+<a class="jxr_linenumber" name="L82" href="#L82">82</a>                  <span class="jxr_string">"evaluatorComment"</span>, <span class="jxr_string">"evaluatorSolution"</span>, <span class="jxr_string">"evaluatorImpact"</span>, cisaExploitAdd, cisaActionDue,
+<a class="jxr_linenumber" name="L83" href="#L83">83</a>                  <span class="jxr_string">"cisaRequiredAction"</span>, <span class="jxr_string">"cisaVulnerabilityName"</span>, cveTags, descriptions, references, metrics,
+<a class="jxr_linenumber" name="L84" href="#L84">84</a>                  weaknesses, configurations, vendorComments);
+<a class="jxr_linenumber" name="L85" href="#L85">85</a>  
+<a class="jxr_linenumber" name="L86" href="#L86">86</a>          DefCveItem cve = <strong class="jxr_keyword">new</strong> DefCveItem(cveItem);
+<a class="jxr_linenumber" name="L87" href="#L87">87</a>          CveItemOperator instance = <strong class="jxr_keyword">new</strong> CveItemOperator(<span class="jxr_string">"cpe:2.3:o:"</span>);
+<a class="jxr_linenumber" name="L88" href="#L88">88</a>          <strong class="jxr_keyword">boolean</strong> expResult = <strong class="jxr_keyword">true</strong>;
+<a class="jxr_linenumber" name="L89" href="#L89">89</a>          <strong class="jxr_keyword">boolean</strong> result = instance.testCveCpeStartWithFilter(cve);
+<a class="jxr_linenumber" name="L90" href="#L90">90</a>          assertEquals(expResult, result);
+<a class="jxr_linenumber" name="L91" href="#L91">91</a>  
+<a class="jxr_linenumber" name="L92" href="#L92">92</a>      }
+<a class="jxr_linenumber" name="L93" href="#L93">93</a>  
+<a class="jxr_linenumber" name="L94" href="#L94">94</a>      @Test
+<a class="jxr_linenumber" name="L95" href="#L95">95</a>      <strong class="jxr_keyword">void</strong> testTestCveCpeStartWithFilterForConfigurationWithoutCpeMatches() {
+<a class="jxr_linenumber" name="L96" href="#L96">96</a>          ZonedDateTime published = ZonedDateTime.now();
+<a class="jxr_linenumber" name="L97" href="#L97">97</a>          ZonedDateTime lastModified = ZonedDateTime.now();
+<a class="jxr_linenumber" name="L98" href="#L98">98</a>          LocalDate cisaExploitAdd = <strong class="jxr_keyword">null</strong>;
+<a class="jxr_linenumber" name="L99" href="#L99">99</a>          LocalDate cisaActionDue = <strong class="jxr_keyword">null</strong>;
+<a class="jxr_linenumber" name="L100" href="#L100">100</a>         List&lt;CveTag&gt; cveTags = <strong class="jxr_keyword">null</strong>;
+<a class="jxr_linenumber" name="L101" href="#L101">101</a>         List&lt;LangString&gt; descriptions = <strong class="jxr_keyword">null</strong>;
+<a class="jxr_linenumber" name="L102" href="#L102">102</a>         List&lt;Reference&gt; references = <strong class="jxr_keyword">null</strong>;
+<a class="jxr_linenumber" name="L103" href="#L103">103</a>         Metrics metrics = <strong class="jxr_keyword">null</strong>;
+<a class="jxr_linenumber" name="L104" href="#L104">104</a>         List&lt;Weakness&gt; weaknesses = <strong class="jxr_keyword">null</strong>;
+<a class="jxr_linenumber" name="L105" href="#L105">105</a> 
+<a class="jxr_linenumber" name="L106" href="#L106">106</a>         Node noCpeMatches = <strong class="jxr_keyword">new</strong> Node(Node.Operator.OR, <strong class="jxr_keyword">null</strong>, <strong class="jxr_keyword">null</strong>);
+<a class="jxr_linenumber" name="L107" href="#L107">107</a>         Config c = <strong class="jxr_keyword">new</strong> Config(Config.Operator.AND, <strong class="jxr_keyword">null</strong>, List.of(noCpeMatches));
+<a class="jxr_linenumber" name="L108" href="#L108">108</a>         List&lt;VendorComment&gt; vendorComments = <strong class="jxr_keyword">null</strong>;
+<a class="jxr_linenumber" name="L109" href="#L109">109</a>         CveItem cveItem = <strong class="jxr_keyword">new</strong> CveItem(<span class="jxr_string">"id"</span>, <span class="jxr_string">"sourceIdentifier"</span>, <span class="jxr_string">"vulnStatus"</span>, published, lastModified,
+<a class="jxr_linenumber" name="L110" href="#L110">110</a>                 <span class="jxr_string">"evaluatorComment"</span>, <span class="jxr_string">"evaluatorSolution"</span>, <span class="jxr_string">"evaluatorImpact"</span>, cisaExploitAdd, cisaActionDue,
+<a class="jxr_linenumber" name="L111" href="#L111">111</a>                 <span class="jxr_string">"cisaRequiredAction"</span>, <span class="jxr_string">"cisaVulnerabilityName"</span>, cveTags, descriptions, references, metrics,
+<a class="jxr_linenumber" name="L112" href="#L112">112</a>                 weaknesses, List.of(c), vendorComments);
+<a class="jxr_linenumber" name="L113" href="#L113">113</a> 
+<a class="jxr_linenumber" name="L114" href="#L114">114</a>         DefCveItem cve = <strong class="jxr_keyword">new</strong> DefCveItem(cveItem);
+<a class="jxr_linenumber" name="L115" href="#L115">115</a>         CveItemOperator instance = <strong class="jxr_keyword">new</strong> CveItemOperator(<span class="jxr_string">"cpe:2.3:o:"</span>);
+<a class="jxr_linenumber" name="L116" href="#L116">116</a>         <strong class="jxr_keyword">boolean</strong> expResult = false;
+<a class="jxr_linenumber" name="L117" href="#L117">117</a>         <strong class="jxr_keyword">boolean</strong> result = instance.testCveCpeStartWithFilter(cve);
+<a class="jxr_linenumber" name="L118" href="#L118">118</a>         assertEquals(expResult, result);
+<a class="jxr_linenumber" name="L119" href="#L119">119</a>     }
+<a class="jxr_linenumber" name="L120" href="#L120">120</a> 
+<a class="jxr_linenumber" name="L121" href="#L121">121</a> }
 </pre>
 <hr/>
 <div id="footer">Copyright &#169; 2012&#x2013;2025 <a href="https://www.owasp.org">OWASP</a>. All rights reserved.</div>

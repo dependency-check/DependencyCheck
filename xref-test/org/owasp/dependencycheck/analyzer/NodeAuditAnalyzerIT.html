@@ -8,79 +8,80 @@
 <div id="overview"><a href="../../../../../testapidocs/org/owasp/dependencycheck/analyzer/NodeAuditAnalyzerIT.html">View Javadoc</a></div><pre>
 <a class="jxr_linenumber" name="L1" href="#L1">1</a>   <strong class="jxr_keyword">package</strong> org.owasp.dependencycheck.analyzer;
 <a class="jxr_linenumber" name="L2" href="#L2">2</a>   
-<a class="jxr_linenumber" name="L3" href="#L3">3</a>   <strong class="jxr_keyword">import</strong> org.junit.Test;
+<a class="jxr_linenumber" name="L3" href="#L3">3</a>   <strong class="jxr_keyword">import</strong> org.junit.jupiter.api.Test;
 <a class="jxr_linenumber" name="L4" href="#L4">4</a>   <strong class="jxr_keyword">import</strong> org.owasp.dependencycheck.BaseTest;
-<a class="jxr_linenumber" name="L5" href="#L5">5</a>   <strong class="jxr_keyword">import</strong> org.owasp.dependencycheck.analyzer.exception.AnalysisException;
-<a class="jxr_linenumber" name="L6" href="#L6">6</a>   <strong class="jxr_keyword">import</strong> org.owasp.dependencycheck.dependency.Dependency;
-<a class="jxr_linenumber" name="L7" href="#L7">7</a>   <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> org.hamcrest.CoreMatchers.is;
-<a class="jxr_linenumber" name="L8" href="#L8">8</a>   <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> org.junit.Assert.*;
-<a class="jxr_linenumber" name="L9" href="#L9">9</a>   <strong class="jxr_keyword">import</strong> org.junit.Assume;
-<a class="jxr_linenumber" name="L10" href="#L10">10</a>  <strong class="jxr_keyword">import</strong> org.owasp.dependencycheck.Engine;
-<a class="jxr_linenumber" name="L11" href="#L11">11</a>  <strong class="jxr_keyword">import</strong> org.owasp.dependencycheck.dependency.EvidenceType;
-<a class="jxr_linenumber" name="L12" href="#L12">12</a>  <strong class="jxr_keyword">import</strong> org.owasp.dependencycheck.exception.InitializationException;
-<a class="jxr_linenumber" name="L13" href="#L13">13</a>  <strong class="jxr_keyword">import</strong> org.owasp.dependencycheck.utils.InvalidSettingException;
-<a class="jxr_linenumber" name="L14" href="#L14">14</a>  <strong class="jxr_keyword">import</strong> org.owasp.dependencycheck.utils.Settings;
-<a class="jxr_linenumber" name="L15" href="#L15">15</a>  
-<a class="jxr_linenumber" name="L16" href="#L16">16</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">class</strong> <a href="../../../../org/owasp/dependencycheck/analyzer/NodeAuditAnalyzerIT.html">NodeAuditAnalyzerIT</a> <strong class="jxr_keyword">extends</strong> <a href="../../../../org/owasp/dependencycheck/BaseTest.html">BaseTest</a> {
-<a class="jxr_linenumber" name="L17" href="#L17">17</a>  
-<a class="jxr_linenumber" name="L18" href="#L18">18</a>      @Test
-<a class="jxr_linenumber" name="L19" href="#L19">19</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testAnalyzePackage() <strong class="jxr_keyword">throws</strong> AnalysisException, InitializationException, InvalidSettingException {
-<a class="jxr_linenumber" name="L20" href="#L20">20</a>          Assume.assumeThat(getSettings().getBoolean(Settings.KEYS.ANALYZER_NODE_AUDIT_ENABLED), is(<strong class="jxr_keyword">true</strong>));
-<a class="jxr_linenumber" name="L21" href="#L21">21</a>          <strong class="jxr_keyword">try</strong> (Engine engine = <strong class="jxr_keyword">new</strong> Engine(getSettings())) {
-<a class="jxr_linenumber" name="L22" href="#L22">22</a>              NodeAuditAnalyzer analyzer = <strong class="jxr_keyword">new</strong> NodeAuditAnalyzer();
-<a class="jxr_linenumber" name="L23" href="#L23">23</a>              analyzer.setFilesMatched(<strong class="jxr_keyword">true</strong>);
-<a class="jxr_linenumber" name="L24" href="#L24">24</a>              analyzer.initialize(getSettings());
-<a class="jxr_linenumber" name="L25" href="#L25">25</a>              analyzer.prepare(engine);
-<a class="jxr_linenumber" name="L26" href="#L26">26</a>              <strong class="jxr_keyword">final</strong> Dependency toScan = <strong class="jxr_keyword">new</strong> Dependency(BaseTest.getResourceAsFile(<strong class="jxr_keyword">this</strong>, <span class="jxr_string">"nodeaudit/package-lock.json"</span>));
-<a class="jxr_linenumber" name="L27" href="#L27">27</a>              analyzer.analyze(toScan, engine);
-<a class="jxr_linenumber" name="L28" href="#L28">28</a>              <strong class="jxr_keyword">boolean</strong> found = false;
-<a class="jxr_linenumber" name="L29" href="#L29">29</a>              assertTrue(<span class="jxr_string">"More then 1 dependency should be identified"</span>, 1 &lt; engine.getDependencies().length);
-<a class="jxr_linenumber" name="L30" href="#L30">30</a>              <strong class="jxr_keyword">for</strong> (Dependency result : engine.getDependencies()) {
-<a class="jxr_linenumber" name="L31" href="#L31">31</a>                  <strong class="jxr_keyword">if</strong> (<span class="jxr_string">"package-lock.json?uglify-js"</span>.equals(result.getFileName())) {
-<a class="jxr_linenumber" name="L32" href="#L32">32</a>                      found = <strong class="jxr_keyword">true</strong>;
-<a class="jxr_linenumber" name="L33" href="#L33">33</a>                      assertTrue(result.getEvidence(EvidenceType.VENDOR).toString().contains(<span class="jxr_string">"uglify-js"</span>));
-<a class="jxr_linenumber" name="L34" href="#L34">34</a>                      assertTrue(result.getEvidence(EvidenceType.PRODUCT).toString().contains(<span class="jxr_string">"uglify-js"</span>));
-<a class="jxr_linenumber" name="L35" href="#L35">35</a>                      assertTrue(result.getEvidence(EvidenceType.VERSION).toString().contains(<span class="jxr_string">"2.4.24"</span>));
-<a class="jxr_linenumber" name="L36" href="#L36">36</a>                      assertTrue(result.isVirtual());
-<a class="jxr_linenumber" name="L37" href="#L37">37</a>                  }
-<a class="jxr_linenumber" name="L38" href="#L38">38</a>              }
-<a class="jxr_linenumber" name="L39" href="#L39">39</a>              assertTrue(<span class="jxr_string">"Uglify was not found"</span>, found);
-<a class="jxr_linenumber" name="L40" href="#L40">40</a>          }
-<a class="jxr_linenumber" name="L41" href="#L41">41</a>      }
-<a class="jxr_linenumber" name="L42" href="#L42">42</a>  
-<a class="jxr_linenumber" name="L43" href="#L43">43</a>      @Test
-<a class="jxr_linenumber" name="L44" href="#L44">44</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testAnalyzeEmpty() <strong class="jxr_keyword">throws</strong> AnalysisException, InitializationException, InvalidSettingException {
-<a class="jxr_linenumber" name="L45" href="#L45">45</a>          Assume.assumeThat(getSettings().getBoolean(Settings.KEYS.ANALYZER_NODE_AUDIT_ENABLED), is(<strong class="jxr_keyword">true</strong>));
-<a class="jxr_linenumber" name="L46" href="#L46">46</a>          <strong class="jxr_keyword">try</strong> (Engine engine = <strong class="jxr_keyword">new</strong> Engine(getSettings())) {
-<a class="jxr_linenumber" name="L47" href="#L47">47</a>              NodeAuditAnalyzer analyzer = <strong class="jxr_keyword">new</strong> NodeAuditAnalyzer();
-<a class="jxr_linenumber" name="L48" href="#L48">48</a>              analyzer.setFilesMatched(<strong class="jxr_keyword">true</strong>);
-<a class="jxr_linenumber" name="L49" href="#L49">49</a>              analyzer.initialize(getSettings());
-<a class="jxr_linenumber" name="L50" href="#L50">50</a>              analyzer.prepare(engine);
-<a class="jxr_linenumber" name="L51" href="#L51">51</a>              <strong class="jxr_keyword">final</strong> Dependency result = <strong class="jxr_keyword">new</strong> Dependency(BaseTest.getResourceAsFile(<strong class="jxr_keyword">this</strong>, <span class="jxr_string">"nodeaudit/empty.json"</span>));
-<a class="jxr_linenumber" name="L52" href="#L52">52</a>              analyzer.analyze(result, engine);
-<a class="jxr_linenumber" name="L53" href="#L53">53</a>  
-<a class="jxr_linenumber" name="L54" href="#L54">54</a>              assertEquals(0, result.getEvidence(EvidenceType.VENDOR).size());
-<a class="jxr_linenumber" name="L55" href="#L55">55</a>              assertEquals(0, result.getEvidence(EvidenceType.PRODUCT).size());
-<a class="jxr_linenumber" name="L56" href="#L56">56</a>              assertEquals(0, result.getEvidence(EvidenceType.VERSION).size());
-<a class="jxr_linenumber" name="L57" href="#L57">57</a>          }
-<a class="jxr_linenumber" name="L58" href="#L58">58</a>      }
-<a class="jxr_linenumber" name="L59" href="#L59">59</a>  
-<a class="jxr_linenumber" name="L60" href="#L60">60</a>      @Test
-<a class="jxr_linenumber" name="L61" href="#L61">61</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testAnalyzePackageJsonInNodeModulesDirectory() <strong class="jxr_keyword">throws</strong> AnalysisException, InitializationException, InvalidSettingException {
-<a class="jxr_linenumber" name="L62" href="#L62">62</a>          Assume.assumeThat(getSettings().getBoolean(Settings.KEYS.ANALYZER_NODE_AUDIT_ENABLED), is(<strong class="jxr_keyword">true</strong>));
-<a class="jxr_linenumber" name="L63" href="#L63">63</a>          <strong class="jxr_keyword">try</strong> (Engine engine = <strong class="jxr_keyword">new</strong> Engine(getSettings())) {
-<a class="jxr_linenumber" name="L64" href="#L64">64</a>              NodeAuditAnalyzer analyzer = <strong class="jxr_keyword">new</strong> NodeAuditAnalyzer();
-<a class="jxr_linenumber" name="L65" href="#L65">65</a>              analyzer.setFilesMatched(<strong class="jxr_keyword">true</strong>);
-<a class="jxr_linenumber" name="L66" href="#L66">66</a>              analyzer.initialize(getSettings());
-<a class="jxr_linenumber" name="L67" href="#L67">67</a>              analyzer.prepare(engine);
-<a class="jxr_linenumber" name="L68" href="#L68">68</a>              <strong class="jxr_keyword">final</strong> Dependency toScan = <strong class="jxr_keyword">new</strong> Dependency(BaseTest.getResourceAsFile(<strong class="jxr_keyword">this</strong>, <span class="jxr_string">"nodejs/node_modules/dns-sync/package.json"</span>));
-<a class="jxr_linenumber" name="L69" href="#L69">69</a>              engine.addDependency(toScan);
-<a class="jxr_linenumber" name="L70" href="#L70">70</a>              analyzer.analyze(toScan, engine);
-<a class="jxr_linenumber" name="L71" href="#L71">71</a>              assertEquals(<span class="jxr_string">"No dependencies should exist"</span>, 0, engine.getDependencies().length);
-<a class="jxr_linenumber" name="L72" href="#L72">72</a>          }
-<a class="jxr_linenumber" name="L73" href="#L73">73</a>      }
-<a class="jxr_linenumber" name="L74" href="#L74">74</a>  
-<a class="jxr_linenumber" name="L75" href="#L75">75</a>  }
+<a class="jxr_linenumber" name="L5" href="#L5">5</a>   <strong class="jxr_keyword">import</strong> org.owasp.dependencycheck.Engine;
+<a class="jxr_linenumber" name="L6" href="#L6">6</a>   <strong class="jxr_keyword">import</strong> org.owasp.dependencycheck.analyzer.exception.AnalysisException;
+<a class="jxr_linenumber" name="L7" href="#L7">7</a>   <strong class="jxr_keyword">import</strong> org.owasp.dependencycheck.dependency.Dependency;
+<a class="jxr_linenumber" name="L8" href="#L8">8</a>   <strong class="jxr_keyword">import</strong> org.owasp.dependencycheck.dependency.EvidenceType;
+<a class="jxr_linenumber" name="L9" href="#L9">9</a>   <strong class="jxr_keyword">import</strong> org.owasp.dependencycheck.exception.InitializationException;
+<a class="jxr_linenumber" name="L10" href="#L10">10</a>  <strong class="jxr_keyword">import</strong> org.owasp.dependencycheck.utils.InvalidSettingException;
+<a class="jxr_linenumber" name="L11" href="#L11">11</a>  <strong class="jxr_keyword">import</strong> org.owasp.dependencycheck.utils.Settings;
+<a class="jxr_linenumber" name="L12" href="#L12">12</a>  
+<a class="jxr_linenumber" name="L13" href="#L13">13</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> org.junit.jupiter.api.Assertions.assertEquals;
+<a class="jxr_linenumber" name="L14" href="#L14">14</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> org.junit.jupiter.api.Assertions.assertTrue;
+<a class="jxr_linenumber" name="L15" href="#L15">15</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> org.junit.jupiter.api.Assumptions.assumeTrue;
+<a class="jxr_linenumber" name="L16" href="#L16">16</a>  
+<a class="jxr_linenumber" name="L17" href="#L17">17</a>  <strong class="jxr_keyword">class</strong> <a href="../../../../org/owasp/dependencycheck/analyzer/NodeAuditAnalyzerIT.html">NodeAuditAnalyzerIT</a> <strong class="jxr_keyword">extends</strong> <a href="../../../../org/owasp/dependencycheck/BaseTest.html">BaseTest</a> {
+<a class="jxr_linenumber" name="L18" href="#L18">18</a>  
+<a class="jxr_linenumber" name="L19" href="#L19">19</a>      @Test
+<a class="jxr_linenumber" name="L20" href="#L20">20</a>      <strong class="jxr_keyword">void</strong> testAnalyzePackage() <strong class="jxr_keyword">throws</strong> AnalysisException, InitializationException, InvalidSettingException {
+<a class="jxr_linenumber" name="L21" href="#L21">21</a>          assumeTrue(getSettings().getBoolean(Settings.KEYS.ANALYZER_NODE_AUDIT_ENABLED));
+<a class="jxr_linenumber" name="L22" href="#L22">22</a>          <strong class="jxr_keyword">try</strong> (Engine engine = <strong class="jxr_keyword">new</strong> Engine(getSettings())) {
+<a class="jxr_linenumber" name="L23" href="#L23">23</a>              NodeAuditAnalyzer analyzer = <strong class="jxr_keyword">new</strong> NodeAuditAnalyzer();
+<a class="jxr_linenumber" name="L24" href="#L24">24</a>              analyzer.setFilesMatched(<strong class="jxr_keyword">true</strong>);
+<a class="jxr_linenumber" name="L25" href="#L25">25</a>              analyzer.initialize(getSettings());
+<a class="jxr_linenumber" name="L26" href="#L26">26</a>              analyzer.prepare(engine);
+<a class="jxr_linenumber" name="L27" href="#L27">27</a>              <strong class="jxr_keyword">final</strong> Dependency toScan = <strong class="jxr_keyword">new</strong> Dependency(BaseTest.getResourceAsFile(<strong class="jxr_keyword">this</strong>, <span class="jxr_string">"nodeaudit/package-lock.json"</span>));
+<a class="jxr_linenumber" name="L28" href="#L28">28</a>              analyzer.analyze(toScan, engine);
+<a class="jxr_linenumber" name="L29" href="#L29">29</a>              <strong class="jxr_keyword">boolean</strong> found = false;
+<a class="jxr_linenumber" name="L30" href="#L30">30</a>              assertTrue(1 &lt; engine.getDependencies().length, <span class="jxr_string">"More then 1 dependency should be identified"</span>);
+<a class="jxr_linenumber" name="L31" href="#L31">31</a>              <strong class="jxr_keyword">for</strong> (Dependency result : engine.getDependencies()) {
+<a class="jxr_linenumber" name="L32" href="#L32">32</a>                  <strong class="jxr_keyword">if</strong> (<span class="jxr_string">"package-lock.json?uglify-js"</span>.equals(result.getFileName())) {
+<a class="jxr_linenumber" name="L33" href="#L33">33</a>                      found = <strong class="jxr_keyword">true</strong>;
+<a class="jxr_linenumber" name="L34" href="#L34">34</a>                      assertTrue(result.getEvidence(EvidenceType.VENDOR).toString().contains(<span class="jxr_string">"uglify-js"</span>));
+<a class="jxr_linenumber" name="L35" href="#L35">35</a>                      assertTrue(result.getEvidence(EvidenceType.PRODUCT).toString().contains(<span class="jxr_string">"uglify-js"</span>));
+<a class="jxr_linenumber" name="L36" href="#L36">36</a>                      assertTrue(result.getEvidence(EvidenceType.VERSION).toString().contains(<span class="jxr_string">"2.4.24"</span>));
+<a class="jxr_linenumber" name="L37" href="#L37">37</a>                      assertTrue(result.isVirtual());
+<a class="jxr_linenumber" name="L38" href="#L38">38</a>                  }
+<a class="jxr_linenumber" name="L39" href="#L39">39</a>              }
+<a class="jxr_linenumber" name="L40" href="#L40">40</a>              assertTrue(found, <span class="jxr_string">"Uglify was not found"</span>);
+<a class="jxr_linenumber" name="L41" href="#L41">41</a>          }
+<a class="jxr_linenumber" name="L42" href="#L42">42</a>      }
+<a class="jxr_linenumber" name="L43" href="#L43">43</a>  
+<a class="jxr_linenumber" name="L44" href="#L44">44</a>      @Test
+<a class="jxr_linenumber" name="L45" href="#L45">45</a>      <strong class="jxr_keyword">void</strong> testAnalyzeEmpty() <strong class="jxr_keyword">throws</strong> AnalysisException, InitializationException, InvalidSettingException {
+<a class="jxr_linenumber" name="L46" href="#L46">46</a>          assumeTrue(getSettings().getBoolean(Settings.KEYS.ANALYZER_NODE_AUDIT_ENABLED));
+<a class="jxr_linenumber" name="L47" href="#L47">47</a>          <strong class="jxr_keyword">try</strong> (Engine engine = <strong class="jxr_keyword">new</strong> Engine(getSettings())) {
+<a class="jxr_linenumber" name="L48" href="#L48">48</a>              NodeAuditAnalyzer analyzer = <strong class="jxr_keyword">new</strong> NodeAuditAnalyzer();
+<a class="jxr_linenumber" name="L49" href="#L49">49</a>              analyzer.setFilesMatched(<strong class="jxr_keyword">true</strong>);
+<a class="jxr_linenumber" name="L50" href="#L50">50</a>              analyzer.initialize(getSettings());
+<a class="jxr_linenumber" name="L51" href="#L51">51</a>              analyzer.prepare(engine);
+<a class="jxr_linenumber" name="L52" href="#L52">52</a>              <strong class="jxr_keyword">final</strong> Dependency result = <strong class="jxr_keyword">new</strong> Dependency(BaseTest.getResourceAsFile(<strong class="jxr_keyword">this</strong>, <span class="jxr_string">"nodeaudit/empty.json"</span>));
+<a class="jxr_linenumber" name="L53" href="#L53">53</a>              analyzer.analyze(result, engine);
+<a class="jxr_linenumber" name="L54" href="#L54">54</a>  
+<a class="jxr_linenumber" name="L55" href="#L55">55</a>              assertEquals(0, result.getEvidence(EvidenceType.VENDOR).size());
+<a class="jxr_linenumber" name="L56" href="#L56">56</a>              assertEquals(0, result.getEvidence(EvidenceType.PRODUCT).size());
+<a class="jxr_linenumber" name="L57" href="#L57">57</a>              assertEquals(0, result.getEvidence(EvidenceType.VERSION).size());
+<a class="jxr_linenumber" name="L58" href="#L58">58</a>          }
+<a class="jxr_linenumber" name="L59" href="#L59">59</a>      }
+<a class="jxr_linenumber" name="L60" href="#L60">60</a>  
+<a class="jxr_linenumber" name="L61" href="#L61">61</a>      @Test
+<a class="jxr_linenumber" name="L62" href="#L62">62</a>      <strong class="jxr_keyword">void</strong> testAnalyzePackageJsonInNodeModulesDirectory() <strong class="jxr_keyword">throws</strong> AnalysisException, InitializationException, InvalidSettingException {
+<a class="jxr_linenumber" name="L63" href="#L63">63</a>          assumeTrue(getSettings().getBoolean(Settings.KEYS.ANALYZER_NODE_AUDIT_ENABLED));
+<a class="jxr_linenumber" name="L64" href="#L64">64</a>          <strong class="jxr_keyword">try</strong> (Engine engine = <strong class="jxr_keyword">new</strong> Engine(getSettings())) {
+<a class="jxr_linenumber" name="L65" href="#L65">65</a>              NodeAuditAnalyzer analyzer = <strong class="jxr_keyword">new</strong> NodeAuditAnalyzer();
+<a class="jxr_linenumber" name="L66" href="#L66">66</a>              analyzer.setFilesMatched(<strong class="jxr_keyword">true</strong>);
+<a class="jxr_linenumber" name="L67" href="#L67">67</a>              analyzer.initialize(getSettings());
+<a class="jxr_linenumber" name="L68" href="#L68">68</a>              analyzer.prepare(engine);
+<a class="jxr_linenumber" name="L69" href="#L69">69</a>              <strong class="jxr_keyword">final</strong> Dependency toScan = <strong class="jxr_keyword">new</strong> Dependency(BaseTest.getResourceAsFile(<strong class="jxr_keyword">this</strong>, <span class="jxr_string">"nodejs/node_modules/dns-sync/package.json"</span>));
+<a class="jxr_linenumber" name="L70" href="#L70">70</a>              engine.addDependency(toScan);
+<a class="jxr_linenumber" name="L71" href="#L71">71</a>              analyzer.analyze(toScan, engine);
+<a class="jxr_linenumber" name="L72" href="#L72">72</a>              assertEquals(0, engine.getDependencies().length, <span class="jxr_string">"No dependencies should exist"</span>);
+<a class="jxr_linenumber" name="L73" href="#L73">73</a>          }
+<a class="jxr_linenumber" name="L74" href="#L74">74</a>      }
+<a class="jxr_linenumber" name="L75" href="#L75">75</a>  
+<a class="jxr_linenumber" name="L76" href="#L76">76</a>  }
 </pre>
 <hr/>
 <div id="footer">Copyright &#169; 2012&#x2013;2025 <a href="https://www.owasp.org">OWASP</a>. All rights reserved.</div>

@@ -25,23 +25,23 @@
 <a class="jxr_linenumber" name="L17" href="#L17">17</a>  <em class="jxr_comment"> */</em>
 <a class="jxr_linenumber" name="L18" href="#L18">18</a>  <strong class="jxr_keyword">package</strong> org.owasp.dependencycheck.utils;
 <a class="jxr_linenumber" name="L19" href="#L19">19</a>  
-<a class="jxr_linenumber" name="L20" href="#L20">20</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> org.junit.Assert.assertEquals;
-<a class="jxr_linenumber" name="L21" href="#L21">21</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> org.junit.Assert.assertNull;
+<a class="jxr_linenumber" name="L20" href="#L20">20</a>  <strong class="jxr_keyword">import</strong> org.junit.jupiter.api.Test;
+<a class="jxr_linenumber" name="L21" href="#L21">21</a>  <strong class="jxr_keyword">import</strong> org.owasp.dependencycheck.BaseTest;
 <a class="jxr_linenumber" name="L22" href="#L22">22</a>  
-<a class="jxr_linenumber" name="L23" href="#L23">23</a>  <strong class="jxr_keyword">import</strong> org.junit.Test;
-<a class="jxr_linenumber" name="L24" href="#L24">24</a>  <strong class="jxr_keyword">import</strong> org.owasp.dependencycheck.BaseTest;
+<a class="jxr_linenumber" name="L23" href="#L23">23</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> org.junit.jupiter.api.Assertions.assertEquals;
+<a class="jxr_linenumber" name="L24" href="#L24">24</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> org.junit.jupiter.api.Assertions.assertNull;
 <a class="jxr_linenumber" name="L25" href="#L25">25</a>  
 <a class="jxr_linenumber" name="L26" href="#L26">26</a>  <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L27" href="#L27">27</a>  <em class="jxr_javadoccomment"> *</em>
 <a class="jxr_linenumber" name="L28" href="#L28">28</a>  <em class="jxr_javadoccomment"> * @author Jeremy Long</em>
 <a class="jxr_linenumber" name="L29" href="#L29">29</a>  <em class="jxr_javadoccomment"> */</em>
-<a class="jxr_linenumber" name="L30" href="#L30">30</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">class</strong> <a href="../../../../org/owasp/dependencycheck/utils/DependencyVersionUtilTest.html">DependencyVersionUtilTest</a> <strong class="jxr_keyword">extends</strong> <a href="../../../../org/owasp/dependencycheck/BaseTest.html">BaseTest</a> {
+<a class="jxr_linenumber" name="L30" href="#L30">30</a>  <strong class="jxr_keyword">class</strong> <a href="../../../../org/owasp/dependencycheck/utils/DependencyVersionUtilTest.html">DependencyVersionUtilTest</a> <strong class="jxr_keyword">extends</strong> <a href="../../../../org/owasp/dependencycheck/BaseTest.html">BaseTest</a> {
 <a class="jxr_linenumber" name="L31" href="#L31">31</a>  
 <a class="jxr_linenumber" name="L32" href="#L32">32</a>      <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L33" href="#L33">33</a>  <em class="jxr_javadoccomment">     * Test of parseVersion method, of class DependencyVersionUtil.</em>
 <a class="jxr_linenumber" name="L34" href="#L34">34</a>  <em class="jxr_javadoccomment">     */</em>
 <a class="jxr_linenumber" name="L35" href="#L35">35</a>      @Test
-<a class="jxr_linenumber" name="L36" href="#L36">36</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testParseVersion_String() {
+<a class="jxr_linenumber" name="L36" href="#L36">36</a>      <strong class="jxr_keyword">void</strong> testParseVersion_String() {
 <a class="jxr_linenumber" name="L37" href="#L37">37</a>          <strong class="jxr_keyword">final</strong> String[] fileName = {<span class="jxr_string">"openssl1.0.1c"</span>, <span class="jxr_string">"something-0.9.5.jar"</span>, <span class="jxr_string">"lib2-1.1.jar"</span>, <span class="jxr_string">"lib1.5r4-someflag-R26.jar"</span>,
 <a class="jxr_linenumber" name="L38" href="#L38">38</a>              <span class="jxr_string">"lib-1.2.5-dev-20050313.jar"</span>, <span class="jxr_string">"testlib_V4.4.0.jar"</span>, <span class="jxr_string">"lib-core-2.0.0-RC1-SNAPSHOT.jar"</span>,
 <a class="jxr_linenumber" name="L39" href="#L39">39</a>              <span class="jxr_string">"lib-jsp-2.0.1_R114940.jar"</span>, <span class="jxr_string">"dev-api-2.3.11_R121413.jar"</span>, <span class="jxr_string">"lib-api-3.7-SNAPSHOT.jar"</span>,
@@ -57,14 +57,14 @@
 <a class="jxr_linenumber" name="L49" href="#L49">49</a>              <strong class="jxr_keyword">if</strong> (version != <strong class="jxr_keyword">null</strong>) {
 <a class="jxr_linenumber" name="L50" href="#L50">50</a>                  result = version.toString();
 <a class="jxr_linenumber" name="L51" href="#L51">51</a>              }
-<a class="jxr_linenumber" name="L52" href="#L52">52</a>              assertEquals(<span class="jxr_string">"Failed extraction on \&quot;"</span> + fileName[i] + <span class="jxr_string">"\&quot;."</span>, expResult[i], result);
+<a class="jxr_linenumber" name="L52" href="#L52">52</a>              assertEquals(expResult[i], result, <span class="jxr_string">"Failed extraction on \&quot;"</span> + fileName[i] + <span class="jxr_string">"\&quot;."</span>);
 <a class="jxr_linenumber" name="L53" href="#L53">53</a>          }
 <a class="jxr_linenumber" name="L54" href="#L54">54</a>  
 <a class="jxr_linenumber" name="L55" href="#L55">55</a>          String[] failingNames = {<span class="jxr_string">"no-version-identified.jar"</span>, <span class="jxr_string">"somelib-04aug2000r7-dev.jar"</span>, <em class="jxr_comment">/*"no.version15.jar",*/</em>
 <a class="jxr_linenumber" name="L56" href="#L56">56</a>              <span class="jxr_string">"lib_1.0_spec-1.1.jar"</span>, <span class="jxr_string">"lib-api_1.0_spec-1.0.1.jar"</span>};
 <a class="jxr_linenumber" name="L57" href="#L57">57</a>          <strong class="jxr_keyword">for</strong> (String failingName : failingNames) {
 <a class="jxr_linenumber" name="L58" href="#L58">58</a>              <strong class="jxr_keyword">final</strong> DependencyVersion version = DependencyVersionUtil.parseVersion(failingName);
-<a class="jxr_linenumber" name="L59" href="#L59">59</a>              assertNull(<span class="jxr_string">"Found version in name that should have failed \&quot;"</span> + failingName + <span class="jxr_string">"\&quot;."</span>, version);
+<a class="jxr_linenumber" name="L59" href="#L59">59</a>              assertNull(version, <span class="jxr_string">"Found version in name that should have failed \&quot;"</span> + failingName + <span class="jxr_string">"\&quot;."</span>);
 <a class="jxr_linenumber" name="L60" href="#L60">60</a>          }
 <a class="jxr_linenumber" name="L61" href="#L61">61</a>      }
 <a class="jxr_linenumber" name="L62" href="#L62">62</a>  
@@ -72,7 +72,7 @@
 <a class="jxr_linenumber" name="L64" href="#L64">64</a>  <em class="jxr_javadoccomment">     * Test of parseVersion method, of class DependencyVersionUtil.</em>
 <a class="jxr_linenumber" name="L65" href="#L65">65</a>  <em class="jxr_javadoccomment">     */</em>
 <a class="jxr_linenumber" name="L66" href="#L66">66</a>      @Test
-<a class="jxr_linenumber" name="L67" href="#L67">67</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testParseVersion_String_<strong class="jxr_keyword">boolean</strong>() {
+<a class="jxr_linenumber" name="L67" href="#L67">67</a>      <strong class="jxr_keyword">void</strong> testParseVersion_String_<strong class="jxr_keyword">boolean</strong>() {
 <a class="jxr_linenumber" name="L68" href="#L68">68</a>          <em class="jxr_comment">//cpe:/a:playframework:play_framework:2.1.1:rc1-2.9.x-backport</em>
 <a class="jxr_linenumber" name="L69" href="#L69">69</a>          String text = <span class="jxr_string">"2.1.1.rc1.2.9.x-backport"</span>;
 <a class="jxr_linenumber" name="L70" href="#L70">70</a>          <strong class="jxr_keyword">boolean</strong> firstMatchOnly = false;
@@ -97,7 +97,7 @@
 <a class="jxr_linenumber" name="L89" href="#L89">89</a>  <em class="jxr_javadoccomment">     * Test of parsePreVersion method, of class DependencyVersionUtil.</em>
 <a class="jxr_linenumber" name="L90" href="#L90">90</a>  <em class="jxr_javadoccomment">     */</em>
 <a class="jxr_linenumber" name="L91" href="#L91">91</a>      @Test
-<a class="jxr_linenumber" name="L92" href="#L92">92</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testParsePreVersion() {
+<a class="jxr_linenumber" name="L92" href="#L92">92</a>      <strong class="jxr_keyword">void</strong> testParsePreVersion() {
 <a class="jxr_linenumber" name="L93" href="#L93">93</a>          String text = <span class="jxr_string">"library-name-1.4.1r2-release.jar"</span>;
 <a class="jxr_linenumber" name="L94" href="#L94">94</a>          String expResult = <span class="jxr_string">"library-name"</span>;
 <a class="jxr_linenumber" name="L95" href="#L95">95</a>          String result = DependencyVersionUtil.parsePreVersion(text);

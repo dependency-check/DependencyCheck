@@ -21,38 +21,39 @@
 <a class="jxr_linenumber" name="L13" href="#L13">13</a>  <em class="jxr_comment"> */</em>
 <a class="jxr_linenumber" name="L14" href="#L14">14</a>  <strong class="jxr_keyword">package</strong> org.owasp.dependencycheck.utils;
 <a class="jxr_linenumber" name="L15" href="#L15">15</a>  
-<a class="jxr_linenumber" name="L16" href="#L16">16</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> org.junit.Assert.assertFalse;
-<a class="jxr_linenumber" name="L17" href="#L17">17</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> org.junit.Assert.assertTrue;
+<a class="jxr_linenumber" name="L16" href="#L16">16</a>  <strong class="jxr_keyword">import</strong> org.junit.jupiter.api.Test;
+<a class="jxr_linenumber" name="L17" href="#L17">17</a>  <strong class="jxr_keyword">import</strong> org.semver4j.Semver;
 <a class="jxr_linenumber" name="L18" href="#L18">18</a>  
-<a class="jxr_linenumber" name="L19" href="#L19">19</a>  <strong class="jxr_keyword">import</strong> org.junit.Test;
-<a class="jxr_linenumber" name="L20" href="#L20">20</a>  <strong class="jxr_keyword">import</strong> org.semver4j.Semver;
+<a class="jxr_linenumber" name="L19" href="#L19">19</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> org.junit.jupiter.api.Assertions.assertFalse;
+<a class="jxr_linenumber" name="L20" href="#L20">20</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> org.junit.jupiter.api.Assertions.assertTrue;
 <a class="jxr_linenumber" name="L21" href="#L21">21</a>  
 <a class="jxr_linenumber" name="L22" href="#L22">22</a>  <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L23" href="#L23">23</a>  <em class="jxr_javadoccomment"> *</em>
 <a class="jxr_linenumber" name="L24" href="#L24">24</a>  <em class="jxr_javadoccomment"> * @author Jeremy Long</em>
 <a class="jxr_linenumber" name="L25" href="#L25">25</a>  <em class="jxr_javadoccomment"> */</em>
-<a class="jxr_linenumber" name="L26" href="#L26">26</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">class</strong> <a href="../../../../org/owasp/dependencycheck/utils/SemverTest.html">SemverTest</a> {
+<a class="jxr_linenumber" name="L26" href="#L26">26</a>  <strong class="jxr_keyword">class</strong> <a href="../../../../org/owasp/dependencycheck/utils/SemverTest.html">SemverTest</a> {
 <a class="jxr_linenumber" name="L27" href="#L27">27</a>  
 <a class="jxr_linenumber" name="L28" href="#L28">28</a>      <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L29" href="#L29">29</a>  <em class="jxr_javadoccomment">     * Test of semver4j. See https://github.com/dependency-check/DependencyCheck/issues/5128#issuecomment-1343080426</em>
 <a class="jxr_linenumber" name="L30" href="#L30">30</a>  <em class="jxr_javadoccomment">     */</em>
 <a class="jxr_linenumber" name="L31" href="#L31">31</a>      @Test
-<a class="jxr_linenumber" name="L32" href="#L32">32</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testSemver() {
+<a class="jxr_linenumber" name="L32" href="#L32">32</a>      <strong class="jxr_keyword">void</strong> testSemver() {
 <a class="jxr_linenumber" name="L33" href="#L33">33</a>          Semver semver = <strong class="jxr_keyword">new</strong> Semver(<span class="jxr_string">"3.1.4"</span>);
 <a class="jxr_linenumber" name="L34" href="#L34">34</a>          assertTrue(semver.satisfies(<span class="jxr_string">"^3.0.0-0"</span>));
 <a class="jxr_linenumber" name="L35" href="#L35">35</a>      }
-<a class="jxr_linenumber" name="L36" href="#L36">36</a>      <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L37" href="#L37">37</a>  <em class="jxr_javadoccomment">     * Test of semver4j. See https://github.com/dependency-check/DependencyCheck/issues/5158</em>
-<a class="jxr_linenumber" name="L38" href="#L38">38</a>  <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L39" href="#L39">39</a>      @Test
-<a class="jxr_linenumber" name="L40" href="#L40">40</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testSemverComplex() {
-<a class="jxr_linenumber" name="L41" href="#L41">41</a>          Semver semver = <strong class="jxr_keyword">new</strong> Semver(<span class="jxr_string">"18.11.5"</span>);
-<a class="jxr_linenumber" name="L42" href="#L42">42</a>          assertFalse(semver.satisfies(<span class="jxr_string">"^14.14.20 || ^16.0.0"</span>));
-<a class="jxr_linenumber" name="L43" href="#L43">43</a>          
-<a class="jxr_linenumber" name="L44" href="#L44">44</a>          semver = <strong class="jxr_keyword">new</strong> Semver(<span class="jxr_string">"14.15.0"</span>);
-<a class="jxr_linenumber" name="L45" href="#L45">45</a>          assertTrue(semver.satisfies(<span class="jxr_string">"^14.14.20 || ^16.0.0"</span>));
-<a class="jxr_linenumber" name="L46" href="#L46">46</a>      }
-<a class="jxr_linenumber" name="L47" href="#L47">47</a>  }
+<a class="jxr_linenumber" name="L36" href="#L36">36</a>  
+<a class="jxr_linenumber" name="L37" href="#L37">37</a>      <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L38" href="#L38">38</a>  <em class="jxr_javadoccomment">     * Test of semver4j. See https://github.com/dependency-check/DependencyCheck/issues/5158</em>
+<a class="jxr_linenumber" name="L39" href="#L39">39</a>  <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L40" href="#L40">40</a>      @Test
+<a class="jxr_linenumber" name="L41" href="#L41">41</a>      <strong class="jxr_keyword">void</strong> testSemverComplex() {
+<a class="jxr_linenumber" name="L42" href="#L42">42</a>          Semver semver = <strong class="jxr_keyword">new</strong> Semver(<span class="jxr_string">"18.11.5"</span>);
+<a class="jxr_linenumber" name="L43" href="#L43">43</a>          assertFalse(semver.satisfies(<span class="jxr_string">"^14.14.20 || ^16.0.0"</span>));
+<a class="jxr_linenumber" name="L44" href="#L44">44</a>  
+<a class="jxr_linenumber" name="L45" href="#L45">45</a>          semver = <strong class="jxr_keyword">new</strong> Semver(<span class="jxr_string">"14.15.0"</span>);
+<a class="jxr_linenumber" name="L46" href="#L46">46</a>          assertTrue(semver.satisfies(<span class="jxr_string">"^14.14.20 || ^16.0.0"</span>));
+<a class="jxr_linenumber" name="L47" href="#L47">47</a>      }
+<a class="jxr_linenumber" name="L48" href="#L48">48</a>  }
 </pre>
 <hr/>
 <div id="footer">Copyright &#169; 2012&#x2013;2025 <a href="https://www.owasp.org">OWASP</a>. All rights reserved.</div>

@@ -8,24 +8,24 @@
 <div id="overview"><a href="../../../../testapidocs/org/owasp/dependencycheck/AnalysisTaskTest.html">View Javadoc</a></div><pre>
 <a class="jxr_linenumber" name="L1" href="#L1">1</a>   <strong class="jxr_keyword">package</strong> org.owasp.dependencycheck;
 <a class="jxr_linenumber" name="L2" href="#L2">2</a>   
-<a class="jxr_linenumber" name="L3" href="#L3">3</a>   <strong class="jxr_keyword">import</strong> org.junit.Test;
-<a class="jxr_linenumber" name="L4" href="#L4">4</a>   <strong class="jxr_keyword">import</strong> org.junit.runner.RunWith;
+<a class="jxr_linenumber" name="L3" href="#L3">3</a>   <strong class="jxr_keyword">import</strong> org.junit.jupiter.api.Test;
+<a class="jxr_linenumber" name="L4" href="#L4">4</a>   <strong class="jxr_keyword">import</strong> org.junit.jupiter.api.extension.ExtendWith;
 <a class="jxr_linenumber" name="L5" href="#L5">5</a>   <strong class="jxr_keyword">import</strong> org.mockito.Mock;
-<a class="jxr_linenumber" name="L6" href="#L6">6</a>   <strong class="jxr_keyword">import</strong> org.mockito.junit.MockitoJUnitRunner;
+<a class="jxr_linenumber" name="L6" href="#L6">6</a>   <strong class="jxr_keyword">import</strong> org.mockito.junit.jupiter.MockitoExtension;
 <a class="jxr_linenumber" name="L7" href="#L7">7</a>   <strong class="jxr_keyword">import</strong> org.owasp.dependencycheck.analyzer.FileTypeAnalyzer;
 <a class="jxr_linenumber" name="L8" href="#L8">8</a>   <strong class="jxr_keyword">import</strong> org.owasp.dependencycheck.analyzer.HintAnalyzer;
 <a class="jxr_linenumber" name="L9" href="#L9">9</a>   <strong class="jxr_keyword">import</strong> org.owasp.dependencycheck.dependency.Dependency;
 <a class="jxr_linenumber" name="L10" href="#L10">10</a>  
 <a class="jxr_linenumber" name="L11" href="#L11">11</a>  <strong class="jxr_keyword">import</strong> java.io.File;
 <a class="jxr_linenumber" name="L12" href="#L12">12</a>  
-<a class="jxr_linenumber" name="L13" href="#L13">13</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> org.junit.Assert.assertFalse;
-<a class="jxr_linenumber" name="L14" href="#L14">14</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> org.junit.Assert.assertTrue;
-<a class="jxr_linenumber" name="L15" href="#L15">15</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> org.mockito.Mockito.when;
+<a class="jxr_linenumber" name="L13" href="#L13">13</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> org.junit.jupiter.api.Assertions.assertFalse;
+<a class="jxr_linenumber" name="L14" href="#L14">14</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> org.junit.jupiter.api.Assertions.assertTrue;
+<a class="jxr_linenumber" name="L15" href="#L15">15</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> org.mockito.Mockito.times;
 <a class="jxr_linenumber" name="L16" href="#L16">16</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> org.mockito.Mockito.verify;
-<a class="jxr_linenumber" name="L17" href="#L17">17</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> org.mockito.Mockito.times;
+<a class="jxr_linenumber" name="L17" href="#L17">17</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> org.mockito.Mockito.when;
 <a class="jxr_linenumber" name="L18" href="#L18">18</a>  
-<a class="jxr_linenumber" name="L19" href="#L19">19</a>  @RunWith(MockitoJUnitRunner.<strong class="jxr_keyword">class</strong>)
-<a class="jxr_linenumber" name="L20" href="#L20">20</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">class</strong> <a href="../../../org/owasp/dependencycheck/AnalysisTaskTest.html">AnalysisTaskTest</a> <strong class="jxr_keyword">extends</strong> <a href="../../../org/owasp/dependencycheck/BaseTest.html">BaseTest</a> {
+<a class="jxr_linenumber" name="L19" href="#L19">19</a>  @ExtendWith(MockitoExtension.<strong class="jxr_keyword">class</strong>)
+<a class="jxr_linenumber" name="L20" href="#L20">20</a>  <strong class="jxr_keyword">class</strong> <a href="../../../org/owasp/dependencycheck/AnalysisTaskTest.html">AnalysisTaskTest</a> <strong class="jxr_keyword">extends</strong> <a href="../../../org/owasp/dependencycheck/BaseTest.html">BaseTest</a> {
 <a class="jxr_linenumber" name="L21" href="#L21">21</a>  
 <a class="jxr_linenumber" name="L22" href="#L22">22</a>      @Mock
 <a class="jxr_linenumber" name="L23" href="#L23">23</a>      <strong class="jxr_keyword">private</strong> FileTypeAnalyzer fileTypeAnalyzer;
@@ -38,14 +38,14 @@
 <a class="jxr_linenumber" name="L30" href="#L30">30</a>  
 <a class="jxr_linenumber" name="L31" href="#L31">31</a>  
 <a class="jxr_linenumber" name="L32" href="#L32">32</a>      @Test
-<a class="jxr_linenumber" name="L33" href="#L33">33</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> shouldAnalyzeReturnsTrueForNonFileTypeAnalyzers() {
+<a class="jxr_linenumber" name="L33" href="#L33">33</a>      <strong class="jxr_keyword">void</strong> shouldAnalyzeReturnsTrueForNonFileTypeAnalyzers() {
 <a class="jxr_linenumber" name="L34" href="#L34">34</a>          AnalysisTask instance = <strong class="jxr_keyword">new</strong> AnalysisTask(<strong class="jxr_keyword">new</strong> HintAnalyzer(), <strong class="jxr_keyword">null</strong>, <strong class="jxr_keyword">null</strong>, <strong class="jxr_keyword">null</strong>);
 <a class="jxr_linenumber" name="L35" href="#L35">35</a>          <strong class="jxr_keyword">boolean</strong> shouldAnalyze = instance.shouldAnalyze();
 <a class="jxr_linenumber" name="L36" href="#L36">36</a>          assertTrue(shouldAnalyze);
 <a class="jxr_linenumber" name="L37" href="#L37">37</a>      }
 <a class="jxr_linenumber" name="L38" href="#L38">38</a>  
 <a class="jxr_linenumber" name="L39" href="#L39">39</a>      @Test
-<a class="jxr_linenumber" name="L40" href="#L40">40</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> shouldAnalyzeReturnsTrueIfTheFileTypeAnalyzersAcceptsTheDependency() {
+<a class="jxr_linenumber" name="L40" href="#L40">40</a>      <strong class="jxr_keyword">void</strong> shouldAnalyzeReturnsTrueIfTheFileTypeAnalyzersAcceptsTheDependency() {
 <a class="jxr_linenumber" name="L41" href="#L41">41</a>          <strong class="jxr_keyword">final</strong> File dependencyFile = <strong class="jxr_keyword">new</strong> File(<span class="jxr_string">""</span>);
 <a class="jxr_linenumber" name="L42" href="#L42">42</a>          when(dependency.getActualFile()).thenReturn(dependencyFile);
 <a class="jxr_linenumber" name="L43" href="#L43">43</a>          when(fileTypeAnalyzer.accept(dependencyFile)).thenReturn(<strong class="jxr_keyword">true</strong>);
@@ -57,7 +57,7 @@
 <a class="jxr_linenumber" name="L49" href="#L49">49</a>      }
 <a class="jxr_linenumber" name="L50" href="#L50">50</a>  
 <a class="jxr_linenumber" name="L51" href="#L51">51</a>      @Test
-<a class="jxr_linenumber" name="L52" href="#L52">52</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> shouldAnalyzeReturnsFalseIfTheFileTypeAnalyzerDoesNotAcceptTheDependency() {
+<a class="jxr_linenumber" name="L52" href="#L52">52</a>      <strong class="jxr_keyword">void</strong> shouldAnalyzeReturnsFalseIfTheFileTypeAnalyzerDoesNotAcceptTheDependency() {
 <a class="jxr_linenumber" name="L53" href="#L53">53</a>          <strong class="jxr_keyword">final</strong> File dependencyFile = <strong class="jxr_keyword">new</strong> File(<span class="jxr_string">""</span>);
 <a class="jxr_linenumber" name="L54" href="#L54">54</a>          when(dependency.getActualFile()).thenReturn(dependencyFile);
 <a class="jxr_linenumber" name="L55" href="#L55">55</a>          when(fileTypeAnalyzer.accept(dependencyFile)).thenReturn(false);
@@ -69,7 +69,7 @@
 <a class="jxr_linenumber" name="L61" href="#L61">61</a>      }
 <a class="jxr_linenumber" name="L62" href="#L62">62</a>  
 <a class="jxr_linenumber" name="L63" href="#L63">63</a>      @Test
-<a class="jxr_linenumber" name="L64" href="#L64">64</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> taskAnalyzes() <strong class="jxr_keyword">throws</strong> Exception {
+<a class="jxr_linenumber" name="L64" href="#L64">64</a>      <strong class="jxr_keyword">void</strong> taskAnalyzes() <strong class="jxr_keyword">throws</strong> Exception {
 <a class="jxr_linenumber" name="L65" href="#L65">65</a>          <strong class="jxr_keyword">final</strong> AnalysisTask analysisTask = <strong class="jxr_keyword">new</strong> AnalysisTask(fileTypeAnalyzer, dependency, engine, <strong class="jxr_keyword">null</strong>);
 <a class="jxr_linenumber" name="L66" href="#L66">66</a>          when(fileTypeAnalyzer.accept(dependency.getActualFile())).thenReturn(<strong class="jxr_keyword">true</strong>);
 <a class="jxr_linenumber" name="L67" href="#L67">67</a>  
@@ -79,7 +79,7 @@
 <a class="jxr_linenumber" name="L71" href="#L71">71</a>      }
 <a class="jxr_linenumber" name="L72" href="#L72">72</a>  
 <a class="jxr_linenumber" name="L73" href="#L73">73</a>      @Test
-<a class="jxr_linenumber" name="L74" href="#L74">74</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> taskDoesNothingIfItShouldNotAnalyze() <strong class="jxr_keyword">throws</strong> Exception {
+<a class="jxr_linenumber" name="L74" href="#L74">74</a>      <strong class="jxr_keyword">void</strong> taskDoesNothingIfItShouldNotAnalyze() <strong class="jxr_keyword">throws</strong> Exception {
 <a class="jxr_linenumber" name="L75" href="#L75">75</a>          <strong class="jxr_keyword">final</strong> AnalysisTask analysisTask = <strong class="jxr_keyword">new</strong> AnalysisTask(fileTypeAnalyzer, dependency, engine, <strong class="jxr_keyword">null</strong>);
 <a class="jxr_linenumber" name="L76" href="#L76">76</a>          when(fileTypeAnalyzer.accept(dependency.getActualFile())).thenReturn(false);
 <a class="jxr_linenumber" name="L77" href="#L77">77</a>  

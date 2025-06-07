@@ -25,29 +25,29 @@
 <a class="jxr_linenumber" name="L17" href="#L17">17</a>  <em class="jxr_comment"> */</em>
 <a class="jxr_linenumber" name="L18" href="#L18">18</a>  <strong class="jxr_keyword">package</strong> org.owasp.dependencycheck.utils;
 <a class="jxr_linenumber" name="L19" href="#L19">19</a>  
-<a class="jxr_linenumber" name="L20" href="#L20">20</a>  <strong class="jxr_keyword">import</strong> java.io.File;
-<a class="jxr_linenumber" name="L21" href="#L21">21</a>  <strong class="jxr_keyword">import</strong> java.io.IOException;
-<a class="jxr_linenumber" name="L22" href="#L22">22</a>  <strong class="jxr_keyword">import</strong> java.io.InputStream;
-<a class="jxr_linenumber" name="L23" href="#L23">23</a>  <strong class="jxr_keyword">import</strong> java.net.URL;
+<a class="jxr_linenumber" name="L20" href="#L20">20</a>  <strong class="jxr_keyword">import</strong> org.apache.hc.client5.http.impl.classic.AbstractHttpClientResponseHandler;
+<a class="jxr_linenumber" name="L21" href="#L21">21</a>  <strong class="jxr_keyword">import</strong> org.apache.hc.core5.http.HttpEntity;
+<a class="jxr_linenumber" name="L22" href="#L22">22</a>  <strong class="jxr_keyword">import</strong> org.junit.jupiter.api.BeforeEach;
+<a class="jxr_linenumber" name="L23" href="#L23">23</a>  <strong class="jxr_keyword">import</strong> org.junit.jupiter.api.Test;
 <a class="jxr_linenumber" name="L24" href="#L24">24</a>  
-<a class="jxr_linenumber" name="L25" href="#L25">25</a>  <strong class="jxr_keyword">import</strong> org.apache.hc.client5.http.impl.classic.AbstractHttpClientResponseHandler;
-<a class="jxr_linenumber" name="L26" href="#L26">26</a>  <strong class="jxr_keyword">import</strong> org.apache.hc.core5.http.HttpEntity;
-<a class="jxr_linenumber" name="L27" href="#L27">27</a>  <strong class="jxr_keyword">import</strong> org.junit.Test;
-<a class="jxr_linenumber" name="L28" href="#L28">28</a>  
-<a class="jxr_linenumber" name="L29" href="#L29">29</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> java.nio.charset.StandardCharsets.UTF_8;
-<a class="jxr_linenumber" name="L30" href="#L30">30</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> org.junit.Assert.assertTrue;
-<a class="jxr_linenumber" name="L31" href="#L31">31</a>  <strong class="jxr_keyword">import</strong> org.junit.Before;
+<a class="jxr_linenumber" name="L25" href="#L25">25</a>  <strong class="jxr_keyword">import</strong> java.io.File;
+<a class="jxr_linenumber" name="L26" href="#L26">26</a>  <strong class="jxr_keyword">import</strong> java.io.IOException;
+<a class="jxr_linenumber" name="L27" href="#L27">27</a>  <strong class="jxr_keyword">import</strong> java.io.InputStream;
+<a class="jxr_linenumber" name="L28" href="#L28">28</a>  <strong class="jxr_keyword">import</strong> java.net.URL;
+<a class="jxr_linenumber" name="L29" href="#L29">29</a>  
+<a class="jxr_linenumber" name="L30" href="#L30">30</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> java.nio.charset.StandardCharsets.UTF_8;
+<a class="jxr_linenumber" name="L31" href="#L31">31</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> org.junit.jupiter.api.Assertions.assertTrue;
 <a class="jxr_linenumber" name="L32" href="#L32">32</a>  
 <a class="jxr_linenumber" name="L33" href="#L33">33</a>  <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L34" href="#L34">34</a>  <em class="jxr_javadoccomment"> *</em>
 <a class="jxr_linenumber" name="L35" href="#L35">35</a>  <em class="jxr_javadoccomment"> * @author Jeremy Long</em>
 <a class="jxr_linenumber" name="L36" href="#L36">36</a>  <em class="jxr_javadoccomment"> */</em>
-<a class="jxr_linenumber" name="L37" href="#L37">37</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">class</strong> <a href="../../../../org/owasp/dependencycheck/utils/DownloaderIT.html">DownloaderIT</a> <strong class="jxr_keyword">extends</strong> <a href="../../../../org/owasp/dependencycheck/utils/BaseTest.html">BaseTest</a> {
+<a class="jxr_linenumber" name="L37" href="#L37">37</a>  <strong class="jxr_keyword">class</strong> <a href="../../../../org/owasp/dependencycheck/utils/DownloaderIT.html">DownloaderIT</a> <strong class="jxr_keyword">extends</strong> <a href="../../../../org/owasp/dependencycheck/utils/BaseTest.html">BaseTest</a> {
 <a class="jxr_linenumber" name="L38" href="#L38">38</a>  
 <a class="jxr_linenumber" name="L39" href="#L39">39</a>      <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L40" href="#L40">40</a>  <em class="jxr_javadoccomment">     * Initialize the {@link Settings}.</em>
 <a class="jxr_linenumber" name="L41" href="#L41">41</a>  <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L42" href="#L42">42</a>      @Before
+<a class="jxr_linenumber" name="L42" href="#L42">42</a>      @BeforeEach
 <a class="jxr_linenumber" name="L43" href="#L43">43</a>      @Override
 <a class="jxr_linenumber" name="L44" href="#L44">44</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> setUp() {
 <a class="jxr_linenumber" name="L45" href="#L45">45</a>          <strong class="jxr_keyword">super</strong>.setUp();
@@ -59,7 +59,7 @@
 <a class="jxr_linenumber" name="L51" href="#L51">51</a>  <em class="jxr_javadoccomment">     * @throws Exception thrown when an exception occurs.</em>
 <a class="jxr_linenumber" name="L52" href="#L52">52</a>  <em class="jxr_javadoccomment">     */</em>
 <a class="jxr_linenumber" name="L53" href="#L53">53</a>      @Test
-<a class="jxr_linenumber" name="L54" href="#L54">54</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testFetchFile() <strong class="jxr_keyword">throws</strong> Exception {
+<a class="jxr_linenumber" name="L54" href="#L54">54</a>      <strong class="jxr_keyword">void</strong> testFetchFile() <strong class="jxr_keyword">throws</strong> Exception {
 <a class="jxr_linenumber" name="L55" href="#L55">55</a>          <strong class="jxr_keyword">final</strong> String str = getSettings().getString(Settings.KEYS.ENGINE_VERSION_CHECK_URL, <span class="jxr_string">"https://dependency-check.github.io/DependencyCheck/current.txt"</span>);
 <a class="jxr_linenumber" name="L56" href="#L56">56</a>          URL url = <strong class="jxr_keyword">new</strong> URL(str);
 <a class="jxr_linenumber" name="L57" href="#L57">57</a>          File outputPath = <strong class="jxr_keyword">new</strong> File(<span class="jxr_string">"target/current.txt"</span>);
@@ -74,9 +74,9 @@
 <a class="jxr_linenumber" name="L66" href="#L66">66</a>  <em class="jxr_javadoccomment">     * @throws Exception thrown when an exception occurs.</em>
 <a class="jxr_linenumber" name="L67" href="#L67">67</a>  <em class="jxr_javadoccomment">     */</em>
 <a class="jxr_linenumber" name="L68" href="#L68">68</a>      @Test
-<a class="jxr_linenumber" name="L69" href="#L69">69</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testfetchAndHandleContent() <strong class="jxr_keyword">throws</strong> Exception {
+<a class="jxr_linenumber" name="L69" href="#L69">69</a>      <strong class="jxr_keyword">void</strong> testfetchAndHandleContent() <strong class="jxr_keyword">throws</strong> Exception {
 <a class="jxr_linenumber" name="L70" href="#L70">70</a>          URL url = <strong class="jxr_keyword">new</strong> URL(getSettings().getString(Settings.KEYS.ENGINE_VERSION_CHECK_URL));
-<a class="jxr_linenumber" name="L71" href="#L71">71</a>          AbstractHttpClientResponseHandler&lt;String&gt; versionHandler = <strong class="jxr_keyword">new</strong> AbstractHttpClientResponseHandler&lt;String&gt;() {
+<a class="jxr_linenumber" name="L71" href="#L71">71</a>          AbstractHttpClientResponseHandler&lt;String&gt; versionHandler = <strong class="jxr_keyword">new</strong> AbstractHttpClientResponseHandler&lt;&gt;() {
 <a class="jxr_linenumber" name="L72" href="#L72">72</a>              @Override
 <a class="jxr_linenumber" name="L73" href="#L73">73</a>              <strong class="jxr_keyword">public</strong> String handleEntity(HttpEntity entity) <strong class="jxr_keyword">throws</strong> IOException {
 <a class="jxr_linenumber" name="L74" href="#L74">74</a>                  <strong class="jxr_keyword">try</strong> (InputStream in = entity.getContent()) {

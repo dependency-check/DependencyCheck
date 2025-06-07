@@ -25,32 +25,32 @@
 <a class="jxr_linenumber" name="L17" href="#L17">17</a>  <em class="jxr_comment"> */</em>
 <a class="jxr_linenumber" name="L18" href="#L18">18</a>  <strong class="jxr_keyword">package</strong> org.owasp.dependencycheck.analyzer;
 <a class="jxr_linenumber" name="L19" href="#L19">19</a>  
-<a class="jxr_linenumber" name="L20" href="#L20">20</a>  <strong class="jxr_keyword">import</strong> org.junit.Assume;
-<a class="jxr_linenumber" name="L21" href="#L21">21</a>  <strong class="jxr_keyword">import</strong> org.junit.Test;
-<a class="jxr_linenumber" name="L22" href="#L22">22</a>  <strong class="jxr_keyword">import</strong> org.owasp.dependencycheck.BaseTest;
-<a class="jxr_linenumber" name="L23" href="#L23">23</a>  <strong class="jxr_keyword">import</strong> org.owasp.dependencycheck.Engine;
-<a class="jxr_linenumber" name="L24" href="#L24">24</a>  <strong class="jxr_keyword">import</strong> org.owasp.dependencycheck.analyzer.exception.AnalysisException;
-<a class="jxr_linenumber" name="L25" href="#L25">25</a>  <strong class="jxr_keyword">import</strong> org.owasp.dependencycheck.dependency.Dependency;
-<a class="jxr_linenumber" name="L26" href="#L26">26</a>  <strong class="jxr_keyword">import</strong> org.owasp.dependencycheck.dependency.EvidenceType;
-<a class="jxr_linenumber" name="L27" href="#L27">27</a>  <strong class="jxr_keyword">import</strong> org.owasp.dependencycheck.exception.InitializationException;
-<a class="jxr_linenumber" name="L28" href="#L28">28</a>  <strong class="jxr_keyword">import</strong> org.owasp.dependencycheck.utils.InvalidSettingException;
-<a class="jxr_linenumber" name="L29" href="#L29">29</a>  
-<a class="jxr_linenumber" name="L30" href="#L30">30</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> org.junit.Assert.assertTrue;
+<a class="jxr_linenumber" name="L20" href="#L20">20</a>  <strong class="jxr_keyword">import</strong> org.junit.jupiter.api.Test;
+<a class="jxr_linenumber" name="L21" href="#L21">21</a>  <strong class="jxr_keyword">import</strong> org.owasp.dependencycheck.BaseTest;
+<a class="jxr_linenumber" name="L22" href="#L22">22</a>  <strong class="jxr_keyword">import</strong> org.owasp.dependencycheck.Engine;
+<a class="jxr_linenumber" name="L23" href="#L23">23</a>  <strong class="jxr_keyword">import</strong> org.owasp.dependencycheck.analyzer.exception.AnalysisException;
+<a class="jxr_linenumber" name="L24" href="#L24">24</a>  <strong class="jxr_keyword">import</strong> org.owasp.dependencycheck.dependency.Dependency;
+<a class="jxr_linenumber" name="L25" href="#L25">25</a>  <strong class="jxr_keyword">import</strong> org.owasp.dependencycheck.dependency.EvidenceType;
+<a class="jxr_linenumber" name="L26" href="#L26">26</a>  <strong class="jxr_keyword">import</strong> org.owasp.dependencycheck.exception.InitializationException;
+<a class="jxr_linenumber" name="L27" href="#L27">27</a>  
+<a class="jxr_linenumber" name="L28" href="#L28">28</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> org.junit.jupiter.api.Assertions.assertEquals;
+<a class="jxr_linenumber" name="L29" href="#L29">29</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> org.junit.jupiter.api.Assertions.assertTrue;
+<a class="jxr_linenumber" name="L30" href="#L30">30</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> org.junit.jupiter.api.Assumptions.assumeTrue;
 <a class="jxr_linenumber" name="L31" href="#L31">31</a>  
-<a class="jxr_linenumber" name="L32" href="#L32">32</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">class</strong> <a href="../../../../org/owasp/dependencycheck/analyzer/YarnAuditAnalyzerIT.html">YarnAuditAnalyzerIT</a> <strong class="jxr_keyword">extends</strong> <a href="../../../../org/owasp/dependencycheck/BaseTest.html">BaseTest</a> {
+<a class="jxr_linenumber" name="L32" href="#L32">32</a>  <strong class="jxr_keyword">class</strong> <a href="../../../../org/owasp/dependencycheck/analyzer/YarnAuditAnalyzerIT.html">YarnAuditAnalyzerIT</a> <strong class="jxr_keyword">extends</strong> <a href="../../../../org/owasp/dependencycheck/BaseTest.html">BaseTest</a> {
 <a class="jxr_linenumber" name="L33" href="#L33">33</a>  
 <a class="jxr_linenumber" name="L34" href="#L34">34</a>      @Test
-<a class="jxr_linenumber" name="L35" href="#L35">35</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testAnalyzePackageYarnClassic() <strong class="jxr_keyword">throws</strong> AnalysisException, InitializationException, InvalidSettingException {
+<a class="jxr_linenumber" name="L35" href="#L35">35</a>      <strong class="jxr_keyword">void</strong> testAnalyzePackageYarnClassic() <strong class="jxr_keyword">throws</strong> AnalysisException {
 <a class="jxr_linenumber" name="L36" href="#L36">36</a>          testAnalyzePackageYarn(<span class="jxr_string">"yarn/yarn-classic-audit/yarn.lock"</span>);
 <a class="jxr_linenumber" name="L37" href="#L37">37</a>      }
 <a class="jxr_linenumber" name="L38" href="#L38">38</a>  
 <a class="jxr_linenumber" name="L39" href="#L39">39</a>      @Test
-<a class="jxr_linenumber" name="L40" href="#L40">40</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testAnalyzePackageYarnBerry() <strong class="jxr_keyword">throws</strong> AnalysisException, InitializationException, InvalidSettingException {
+<a class="jxr_linenumber" name="L40" href="#L40">40</a>      <strong class="jxr_keyword">void</strong> testAnalyzePackageYarnBerry() <strong class="jxr_keyword">throws</strong> AnalysisException {
 <a class="jxr_linenumber" name="L41" href="#L41">41</a>          testAnalyzePackageYarn(<span class="jxr_string">"yarn/yarn-berry-audit/yarn.lock"</span>);
 <a class="jxr_linenumber" name="L42" href="#L42">42</a>      }
 <a class="jxr_linenumber" name="L43" href="#L43">43</a>  
 <a class="jxr_linenumber" name="L44" href="#L44">44</a>      @Test
-<a class="jxr_linenumber" name="L45" href="#L45">45</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testAnalyzePackageYarnBerryNoVulnerability() <strong class="jxr_keyword">throws</strong> AnalysisException, InitializationException, InvalidSettingException {
+<a class="jxr_linenumber" name="L45" href="#L45">45</a>      <strong class="jxr_keyword">void</strong> testAnalyzePackageYarnBerryNoVulnerability() <strong class="jxr_keyword">throws</strong> AnalysisException {
 <a class="jxr_linenumber" name="L46" href="#L46">46</a>          <em class="jxr_comment">//Assume.assumeThat(getSettings().getBoolean(Settings.KEYS.ANALYZER_YARN_AUDIT_ENABLED), is(true));</em>
 <a class="jxr_linenumber" name="L47" href="#L47">47</a>          <strong class="jxr_keyword">try</strong> (Engine engine = <strong class="jxr_keyword">new</strong> Engine(getSettings())) {
 <a class="jxr_linenumber" name="L48" href="#L48">48</a>              <strong class="jxr_keyword">var</strong> analyzer = <strong class="jxr_keyword">new</strong> YarnAuditAnalyzer();
@@ -59,10 +59,10 @@
 <a class="jxr_linenumber" name="L51" href="#L51">51</a>              analyzer.prepare(engine);
 <a class="jxr_linenumber" name="L52" href="#L52">52</a>              <strong class="jxr_keyword">final</strong> Dependency toScan = <strong class="jxr_keyword">new</strong> Dependency(BaseTest.getResourceAsFile(<strong class="jxr_keyword">this</strong>, <span class="jxr_string">"yarn/yarn-berry-audit-no-vulnerability/yarn.lock"</span>));
 <a class="jxr_linenumber" name="L53" href="#L53">53</a>              analyzer.analyze(toScan, engine);
-<a class="jxr_linenumber" name="L54" href="#L54">54</a>              assertTrue(<span class="jxr_string">"No dependency should be identified"</span>, engine.getDependencies().length == 0);
+<a class="jxr_linenumber" name="L54" href="#L54">54</a>              assertEquals(0, engine.getDependencies().length, <span class="jxr_string">"No dependency should be identified"</span>);
 <a class="jxr_linenumber" name="L55" href="#L55">55</a>          } <strong class="jxr_keyword">catch</strong> (InitializationException ex) {
 <a class="jxr_linenumber" name="L56" href="#L56">56</a>              <em class="jxr_comment">//yarn is not installed - skip the test case.</em>
-<a class="jxr_linenumber" name="L57" href="#L57">57</a>              Assume.assumeNoException(ex);
+<a class="jxr_linenumber" name="L57" href="#L57">57</a>              assumeTrue(false, ex.toString());
 <a class="jxr_linenumber" name="L58" href="#L58">58</a>          }
 <a class="jxr_linenumber" name="L59" href="#L59">59</a>      }
 <a class="jxr_linenumber" name="L60" href="#L60">60</a>  
@@ -76,20 +76,20 @@
 <a class="jxr_linenumber" name="L68" href="#L68">68</a>              <strong class="jxr_keyword">final</strong> Dependency toScan = <strong class="jxr_keyword">new</strong> Dependency(BaseTest.getResourceAsFile(<strong class="jxr_keyword">this</strong>, yarnLockFile));
 <a class="jxr_linenumber" name="L69" href="#L69">69</a>              analyzer.analyze(toScan, engine);
 <a class="jxr_linenumber" name="L70" href="#L70">70</a>              <strong class="jxr_keyword">boolean</strong> found = false;
-<a class="jxr_linenumber" name="L71" href="#L71">71</a>              assertTrue(<span class="jxr_string">"More then 1 dependency should be identified"</span>, 1 &lt; engine.getDependencies().length);
+<a class="jxr_linenumber" name="L71" href="#L71">71</a>              assertTrue(1 &lt; engine.getDependencies().length, <span class="jxr_string">"More then 1 dependency should be identified"</span>);
 <a class="jxr_linenumber" name="L72" href="#L72">72</a>              <strong class="jxr_keyword">for</strong> (Dependency result : engine.getDependencies()) {
 <a class="jxr_linenumber" name="L73" href="#L73">73</a>                  <strong class="jxr_keyword">if</strong> (<span class="jxr_string">"yarn.lock?uglify-js"</span>.equals(result.getFileName())) {
 <a class="jxr_linenumber" name="L74" href="#L74">74</a>                      found = <strong class="jxr_keyword">true</strong>;
 <a class="jxr_linenumber" name="L75" href="#L75">75</a>                      assertTrue(result.getEvidence(EvidenceType.VENDOR).toString().contains(<span class="jxr_string">"uglify-js"</span>));
 <a class="jxr_linenumber" name="L76" href="#L76">76</a>                      assertTrue(result.getEvidence(EvidenceType.PRODUCT).toString().contains(<span class="jxr_string">"uglify-js"</span>));
-<a class="jxr_linenumber" name="L77" href="#L77">77</a>                      assertTrue(<span class="jxr_string">"Unable to find version 2.4.24: "</span> + result.getEvidence(EvidenceType.VERSION).toString(), result.getEvidence(EvidenceType.VERSION).toString().contains(<span class="jxr_string">"2.4.24"</span>));
+<a class="jxr_linenumber" name="L77" href="#L77">77</a>                      assertTrue(result.getEvidence(EvidenceType.VERSION).toString().contains(<span class="jxr_string">"2.4.24"</span>), <span class="jxr_string">"Unable to find version 2.4.24: "</span> + result.getEvidence(EvidenceType.VERSION).toString());
 <a class="jxr_linenumber" name="L78" href="#L78">78</a>                      assertTrue(result.isVirtual());
 <a class="jxr_linenumber" name="L79" href="#L79">79</a>                  }
 <a class="jxr_linenumber" name="L80" href="#L80">80</a>              }
-<a class="jxr_linenumber" name="L81" href="#L81">81</a>              assertTrue(<span class="jxr_string">"Uglify was not found"</span>, found);
+<a class="jxr_linenumber" name="L81" href="#L81">81</a>              assertTrue(found, <span class="jxr_string">"Uglify was not found"</span>);
 <a class="jxr_linenumber" name="L82" href="#L82">82</a>          } <strong class="jxr_keyword">catch</strong> (InitializationException ex) {
 <a class="jxr_linenumber" name="L83" href="#L83">83</a>              <em class="jxr_comment">//yarn is not installed - skip the test case.</em>
-<a class="jxr_linenumber" name="L84" href="#L84">84</a>              Assume.assumeNoException(ex);
+<a class="jxr_linenumber" name="L84" href="#L84">84</a>              assumeTrue(false, ex.toString());
 <a class="jxr_linenumber" name="L85" href="#L85">85</a>          }
 <a class="jxr_linenumber" name="L86" href="#L86">86</a>      }
 <a class="jxr_linenumber" name="L87" href="#L87">87</a>  }

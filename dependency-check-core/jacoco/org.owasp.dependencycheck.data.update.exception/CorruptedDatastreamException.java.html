@@ -27,11 +27,13 @@ import javax.annotation.concurrent.ThreadSafe;
 @ThreadSafe
 public class CorruptedDatastreamException extends Exception {
 
+    private static final long serialVersionUID = 1L;
+
     /**
      * Create a new CorruptedDatastreamException.
      */
-<span class="nc" id="L33">    public CorruptedDatastreamException() {</span>
-<span class="nc" id="L34">    }</span>
+<span class="nc" id="L35">    public CorruptedDatastreamException() {</span>
+<span class="nc" id="L36">    }</span>
 
     /**
      * Create a new CorruptedDatastreamException with the specified detail message.
@@ -40,8 +42,8 @@ public class CorruptedDatastreamException extends Exception {
      *         a message for the exception.
      */
     public CorruptedDatastreamException(final String message) {
-<span class="nc" id="L43">        super(message);</span>
-<span class="nc" id="L44">    }</span>
+<span class="nc" id="L45">        super(message);</span>
+<span class="nc" id="L46">    }</span>
 
     /**
      * Create a new CorruptedDatastreamException with the specified cause.
@@ -50,8 +52,8 @@ public class CorruptedDatastreamException extends Exception {
      *         the cause for the exception.
      */
     public CorruptedDatastreamException(final Throwable cause) {
-<span class="nc" id="L53">        super(cause);</span>
-<span class="nc" id="L54">    }</span>
+<span class="nc" id="L55">        super(cause);</span>
+<span class="nc" id="L56">    }</span>
 
     /**
      * Create a new CorruptedDatastreamException with the specified detail message and cause.
@@ -62,8 +64,8 @@ public class CorruptedDatastreamException extends Exception {
      *         the cause for the exception.
      */
     public CorruptedDatastreamException(final String message, final Throwable cause) {
-<span class="nc" id="L65">        super(message, cause);</span>
-<span class="nc" id="L66">    }</span>
+<span class="nc" id="L67">        super(message, cause);</span>
+<span class="nc" id="L68">    }</span>
 
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>
