@@ -2337,4 +2337,11 @@ only pkg:maven/org.clojure:clojure@.* is the CPE cpe:/a:clojure:clojure
    <packageUrl regex="true">^pkg:maven/io\.micrometer/micrometer-registry-prometheus-simpleclient@.*$</packageUrl>
    <cpe>cpe:/a:prometheus:prometheus</cpe>
 </suppress>
+<suppress base="true">
+   <notes><![CDATA[
+   FP per issue #7715
+   ]]></notes>
+   <packageUrl regex="true">^pkg:maven/opensymphony/oscache@.*$</packageUrl>
+   <cpe>cpe:/a:tag_project:tag</cpe>
+</suppress>
 </suppressions>
