@@ -2358,4 +2358,11 @@ only pkg:maven/org.clojure:clojure@.* is the CPE cpe:/a:clojure:clojure
    <packageUrl regex="true">^pkg:maven/io\.github\.x-stream/mxparser@.*$</packageUrl>
    <cpe>cpe:/a:x-stream:xstream</cpe>
 </suppress>
+<suppress base="true">
+   <notes><![CDATA[
+   FP per issue #7724
+   ]]></notes>
+   <packageUrl regex="true">^pkg:maven/org\.apache\.xmlgraphics/batik-i18n@.*$</packageUrl>
+   <cpe>cpe:/a:apache:xml_graphics_batik</cpe>
+</suppress>
 </suppressions>
