@@ -7056,4 +7056,11 @@
         <packageUrl regex="true">^pkg:nuget/.+\.Redis\..*$</packageUrl>
         <cpe>cpe:2.3:a:redis:redis</cpe>
     </suppress>
+    <suppress base="true">
+        <notes><![CDATA[
+        FP per issue #7664
+        ]]></notes>
+        <packageUrl regex="true">^pkg:maven/(?!.*org\.eclipse\.equinox\.p2).*$</packageUrl>
+        <cve>CVE-2021-41033</cve>
+    </suppress>
 </suppressions>
