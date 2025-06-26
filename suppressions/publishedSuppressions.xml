@@ -2393,4 +2393,11 @@ only pkg:maven/org.clojure:clojure@.* is the CPE cpe:/a:clojure:clojure
    <packageUrl regex="true">^pkg:maven/io\.projectreactor\.netty/reactor-netty-http@.*$</packageUrl>
    <cpe>cpe:/a:netty:netty</cpe>
 </suppress>
+<suppress base="true">
+   <notes><![CDATA[
+   FP per issue #7756
+   ]]></notes>
+   <packageUrl regex="true">^pkg:maven/org\.ccil\.cowan\.tagsoup/tagsoup@.*$</packageUrl>
+   <cpe>cpe:/a:tag_project:tag</cpe>
+</suppress>
 </suppressions>
