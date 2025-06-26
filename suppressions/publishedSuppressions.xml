@@ -2400,4 +2400,11 @@ only pkg:maven/org.clojure:clojure@.* is the CPE cpe:/a:clojure:clojure
    <packageUrl regex="true">^pkg:maven/org\.ccil\.cowan\.tagsoup/tagsoup@.*$</packageUrl>
    <cpe>cpe:/a:tag_project:tag</cpe>
 </suppress>
+<suppress base="true">
+   <notes><![CDATA[
+   FP per issue #7752
+   ]]></notes>
+   <packageUrl regex="true">^pkg:maven/org\.apache\.groovy/groovy-json@.*$</packageUrl>
+   <cpe>cpe:/a:apache:groovy</cpe>
+</suppress>
 </suppressions>
