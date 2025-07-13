@@ -61,10 +61,11 @@ jobs:
       - name: Build Snapshot with Maven
         id: build-snapshot
         env:
-          CENTRAL_USERNAME: ${{ secrets.CENTRAL_USER }}
-          CENTRAL_PASSWORD: ${{ secrets.CENTRAL_PASSWORD }}
+          MAVEN_USERNAME: ${{ secrets.CENTRAL_USER }}
+          MAVEN_PASSWORD: ${{ secrets.CENTRAL_PASSWORD }}
+          MAVEN_GPG_PASSPHRASE: ${{ secrets.GPG_PRIVATE_KEY_PASSWORD }}
           NVD_API_KEY: ${{ secrets.NVD_API_KEY }}
-        run: mvn -V -s settings.xml -Prelease clean package verify source:jar javadoc:jar gpg:sign deploy -DreleaseTesting --no-transfer-progress --batch-mode -Dgpg.passphrase=${{ secrets.GPG_PRIVATE_KEY_PASSWORD }}
+        run: mvn -V -s settings.xml -Prelease clean package verify source:jar javadoc:jar gpg:sign deploy -DreleaseTesting --no-transfer-progress --batch-mode
       - name: SARIF Multitool
         uses: microsoft/sarif-actions@v0.1
         with:

@@ -72,11 +72,12 @@ jobs:
         id: build-release
         timeout-minutes: 120
         env:
-          CENTRAL_USERNAME: ${{ secrets.CENTRAL_USER }}
-          CENTRAL_PASSWORD: ${{ secrets.CENTRAL_PASSWORD }}
+          MAVEN_USERNAME: ${{ secrets.CENTRAL_USER }}
+          MAVEN_PASSWORD: ${{ secrets.CENTRAL_PASSWORD }}
+          MAVEN_GPG_PASSPHRASE: ${{ secrets.GPG_PRIVATE_KEY_PASSWORD }}
           NVD_API_KEY: ${{ secrets.NVD_API_KEY }}
         run: |
-          mvn -V -s settings.xml -Prelease clean package source:jar javadoc:jar gpg:sign deploy site site:stage -DreleaseTesting --no-transfer-progress --batch-mode -Dgpg.passphrase=${{ secrets.GPG_PRIVATE_KEY_PASSWORD }}
+          mvn -V -s settings.xml -Prelease clean package source:jar javadoc:jar gpg:sign deploy site site:stage -DreleaseTesting --no-transfer-progress --batch-mode
       - name: Archive code coverage results
         id: archive-coverage
         uses: actions/upload-artifact@v4
