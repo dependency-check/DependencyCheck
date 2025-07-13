@@ -108,20 +108,20 @@ jobs:
           retention-days: 7
           path: target/staging/
 
-  publish_coverage:
-    name: publish code coverage reports  
-    runs-on: ubuntu-latest 
-    needs: build
-    steps:
-      - name: Download coverage reports
-        uses: actions/download-artifact@v4
-        with:
-          name: code-coverage-report
-      - name: Run codacy-coverage-reporter
-        uses: codacy/codacy-coverage-reporter-action@master
-        with:
-          project-token: ${{ secrets.CODACY_PROJECT_TOKEN }}
-          coverage-reports: utils/target/jacoco-results/jacoco.xml,core/target/jacoco-results/jacoco.xml,maven/target/jacoco-results/jacoco.xml,ant/target/jacoco-results/jacoco.xml,cli/target/jacoco-results/jacoco.xml
+#  publish_coverage:
+#    name: publish code coverage reports
+#    runs-on: ubuntu-latest
+#    needs: build
+#    steps:
+#      - name: Download coverage reports
+#        uses: actions/download-artifact@v4
+#        with:
+#          name: code-coverage-report
+#      - name: Run codacy-coverage-reporter
+#        uses: codacy/codacy-coverage-reporter-action@master
+#        with:
+#          project-token: ${{ secrets.CODACY_PROJECT_TOKEN }}
+#          coverage-reports: utils/target/jacoco-results/jacoco.xml,core/target/jacoco-results/jacoco.xml,maven/target/jacoco-results/jacoco.xml,ant/target/jacoco-results/jacoco.xml,cli/target/jacoco-results/jacoco.xml
 
   docker:
     name: Publish Docker
