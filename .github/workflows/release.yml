@@ -24,7 +24,7 @@ jobs:
       - name: Install gpg secret key
         id: install-gpg-key
         run: |
-          cat <(echo -e "${{ secrets.OSSRH_GPG_SECRET_KEY }}") | gpg --batch --import
+          cat <(echo -e "${{ secrets.GPG_PRIVATE_KEY }}") | gpg --batch --import
           gpg --list-secret-keys --keyid-format LONG
       - uses: actions/checkout@v4
       - name: Check Maven Cache
@@ -54,9 +54,9 @@ jobs:
         with:
           java-version: 11
           distribution: 'zulu'
-          server-id: ossrh
-          server-username: ${{ secrets.OSSRH_USERNAME }}
-          server-password: ${{ secrets.OSSRH_TOKEN }}
+          server-id: central
+          server-username: ${{ secrets.CENTRAL_USER }}
+          server-password: ${{ secrets.CENTRAL_PASSWORD }}
       - uses: pnpm/action-setup@a7487c7e89a18df4991f7f222e4898a00d66ddda # v4.1.0
         with:
           version: 6.0.2
@@ -72,11 +72,11 @@ jobs:
         id: build-release
         timeout-minutes: 120
         env:
-          MAVEN_USERNAME: ${{ secrets.OSSRH_USERNAME }}
-          MAVEN_PASSWORD: ${{ secrets.OSSRH_TOKEN }}
+          CENTRAL_USERNAME: ${{ secrets.CENTRAL_USER }}
+          CENTRAL_PASSWORD: ${{ secrets.CENTRAL_PASSWORD }}
           NVD_API_KEY: ${{ secrets.NVD_API_KEY }}
         run: |
-          mvn -V -s settings.xml -Prelease "-DnexusUrl=https://oss.sonatype.org/" clean package source:jar javadoc:jar gpg:sign deploy site site:stage -DreleaseTesting --no-transfer-progress --batch-mode -Dgpg.passphrase=${{ secrets.OSSRH_GPG_SECRET_KEY_PASSWORD }}
+          mvn -V -s settings.xml -Prelease clean package source:jar javadoc:jar gpg:sign deploy site site:stage -DreleaseTesting --no-transfer-progress --batch-mode -Dgpg.passphrase=${{ secrets.GPG_PRIVATE_KEY_PASSWORD }}
       - name: Archive code coverage results
         id: archive-coverage
         uses: actions/upload-artifact@v4
