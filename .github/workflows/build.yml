@@ -22,7 +22,7 @@ jobs:
         run: |
           cat <(echo -e "${{ secrets.GPG_PRIVATE_KEY }}") | gpg --batch --import
           gpg --list-secret-keys --keyid-format LONG
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Check Maven Cache
         id: maven-cache
         uses: actions/cache@v4
@@ -128,7 +128,7 @@ jobs:
       DOCKER_TOKEN: ${{ secrets.DOCKER_TOKEN }}
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
       - name: Check Maven Cache
         id: maven-cache
         uses: actions/cache@v4

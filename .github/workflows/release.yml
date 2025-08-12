@@ -26,7 +26,7 @@ jobs:
         run: |
           cat <(echo -e "${{ secrets.GPG_PRIVATE_KEY }}") | gpg --batch --import
           gpg --list-secret-keys --keyid-format LONG
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Check Maven Cache
         id: maven-cache
         uses: actions/cache@v4
@@ -144,7 +144,7 @@ jobs:
           path: ~/OWASP-Dependency-Check
           key: docker-repo
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
       - name: Download release build
         uses: actions/download-artifact@v5
         with:
@@ -166,7 +166,7 @@ jobs:
     needs: build
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
       - name: Get version
         id: get-version
         run: |
@@ -246,7 +246,7 @@ jobs:
     needs: build
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
       - name: Download Site
         uses: actions/download-artifact@v5
         with:
