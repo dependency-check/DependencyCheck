@@ -1169,8 +1169,9 @@ public abstract class BaseDependencyCheckMojo extends AbstractMojo implements Ma
     private Retirejs retirejs;
 
     /**
-     * The list of artifacts (and their transitive dependencies) to exclude from
-     * the check.
+     * The list of patterns to exclude from the check. This is matched against the project dependencies (and will implicitly also remove transitive dependencies from matching dependencies). 
+     * Each pattern has the format {@code [groupId]:[artifactId]:[type]:[version]}. You can leave out unspecified parts (which is equal to using {@code *}).
+     * Examples: {@code org.apache.*} would match all artifacts whose group id starts with {@code org.apache.}, and {@code :::*-SNAPSHOT} would match all snapshot artifacts.
      */
     @Parameter(property = "odc.excludes")
     private List<String> excludes;
