@@ -1611,6 +1611,7 @@ public final class CveDB implements AutoCloseable {
         final List<VulnerableSoftware> software = new ArrayList<>();
 
         final List<CpeMatch> cpeEntries = cve.getCve().getConfigurations().stream()
+                .filter(config -> config.getNodes() != null)
                 .map(Config::getNodes)
                 .flatMap(List::stream)
                 .map(Node::getCpeMatch)
