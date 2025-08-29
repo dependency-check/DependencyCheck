@@ -19,6 +19,7 @@ package org.owasp.dependencycheck.analyzer;
 
 import io.github.jeremylong.openvulnerability.client.nvd.CvssV2;
 import io.github.jeremylong.openvulnerability.client.nvd.CvssV2Data;
+import io.github.jeremylong.openvulnerability.client.nvd.CvssV4;
 import org.sonatype.ossindex.service.api.componentreport.ComponentReport;
 import org.sonatype.ossindex.service.api.componentreport.ComponentReportVulnerability;
 import org.sonatype.ossindex.service.api.cvss.Cvss2Severity;
@@ -321,7 +322,9 @@ public class OssIndexAnalyzer extends AbstractAnalyzer {
         final double cvssScore = source.getCvssScore() != null ? source.getCvssScore().doubleValue() : -1;
 
         if (source.getCvssVector() != null) {
-            if (source.getCvssVector().startsWith("CVSS:3")) {
+            if (source.getCvssVector().startsWith("CVSS:4")) {
+                result.setCvssV4(CvssUtil.vectorToCvssV4("ossindex", CvssV4.Type.PRIMARY, cvssScore, source.getCvssVector()));
+            } else if (source.getCvssVector().startsWith("CVSS:3")) {
                 result.setCvssV3(CvssUtil.vectorToCvssV3(source.getCvssVector(), cvssScore));
             } else {
                 // convert cvss details

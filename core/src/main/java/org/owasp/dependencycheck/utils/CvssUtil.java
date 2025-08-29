@@ -21,9 +21,14 @@ import io.github.jeremylong.openvulnerability.client.nvd.CvssV2;
 import io.github.jeremylong.openvulnerability.client.nvd.CvssV2Data;
 import io.github.jeremylong.openvulnerability.client.nvd.CvssV3;
 import io.github.jeremylong.openvulnerability.client.nvd.CvssV3Data;
+
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import io.github.jeremylong.openvulnerability.client.nvd.CvssV4;
+import io.github.jeremylong.openvulnerability.client.nvd.CvssV4Data;
 import org.sonatype.ossindex.service.api.cvss.Cvss3Severity;
 
 /**
@@ -36,6 +41,7 @@ public final class CvssUtil {
     private CvssUtil() {
         //empty constructor for utility class.
     }
+
     /**
      * The CVSS v3 Base Metrics (that are required by the spec for any CVSS v3
      * Vector String)
@@ -221,6 +227,129 @@ public final class CvssUtil {
                 baseSeverity, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
         final CvssV3 cvss = new CvssV3(null, null, data, null, null);
         return cvss;
+    }
 
+    private static CvssV4Data.SeverityType toSeverityType(double baseScore) {
+        if (baseScore == 0.0) {
+            return CvssV4Data.SeverityType.NONE;
+        } else if (baseScore >= 0.1 && baseScore <= 3.9) {
+            return CvssV4Data.SeverityType.LOW;
+        } else if (baseScore >= 4.0 && baseScore <= 6.9) {
+            return CvssV4Data.SeverityType.MEDIUM;
+        } else if (baseScore >= 7.0 && baseScore <= 8.9) {
+            return CvssV4Data.SeverityType.HIGH;
+        } else if (baseScore >= 9.0 && baseScore <= 10.0) {
+            return CvssV4Data.SeverityType.CRITICAL;
+        } else {
+            throw new IllegalArgumentException("Invalid CVSS base score: " + baseScore);
+        }
+    }
+
+    /**
+     * Convert a CVSSv4 vector String into a CvssV4 Object.
+     *
+     * @param source the source of the CVSS data
+     * @param type the type of CVSS data (primary or secondary)
+     * @param baseScore the base score
+     * @param vectorString the vector string
+     * @return the CVSSv4 object
+     */
+    public static CvssV4 vectorToCvssV4(String source, CvssV4.Type type, Double baseScore, String vectorString) {
+        // Remove "CVSS:" prefix and split by "/"
+        String[] parts = vectorString.replaceFirst("^CVSS:", "").split("/");
+        Map<String, String> values = new HashMap<>();
+        for (String part : parts) {
+            String[] kv = part.split(":");
+            if (kv.length == 2) {
+                values.put(kv[0], kv[1]);
+            }
+        }
+
+        CvssV4Data.Version version = CvssV4Data.Version.fromValue(values.getOrDefault("4.0", "4.0"));
+
+        CvssV4Data.AttackVectorType attackVector = values.containsKey("AV") ? CvssV4Data.AttackVectorType.fromValue(values.get("AV")) : null;
+        CvssV4Data.AttackComplexityType attackComplexity = values.containsKey("AC") ? CvssV4Data.AttackComplexityType.fromValue(values.get("AC")) : null;
+        CvssV4Data.AttackRequirementsType attackRequirements = values.containsKey("AT") ? CvssV4Data.AttackRequirementsType.fromValue(values.get("AT")) : null;
+        CvssV4Data.PrivilegesRequiredType privilegesRequired = values.containsKey("PR") ? CvssV4Data.PrivilegesRequiredType.fromValue(values.get("PR")) : null;
+        CvssV4Data.UserInteractionType userInteraction = values.containsKey("UI") ? CvssV4Data.UserInteractionType.fromValue(values.get("UI")) : null;
+        CvssV4Data.CiaType vulnConfidentialityImpact = values.containsKey("VC") ? CvssV4Data.CiaType.fromValue(values.get("VC")) : null;
+        CvssV4Data.CiaType vulnIntegrityImpact = values.containsKey("VI") ? CvssV4Data.CiaType.fromValue(values.get("VI")) : null;
+        CvssV4Data.CiaType vulnAvailabilityImpact = values.containsKey("VA") ? CvssV4Data.CiaType.fromValue(values.get("VA")) : null;
+        CvssV4Data.CiaType subConfidentialityImpact = values.containsKey("SC") ? CvssV4Data.CiaType.fromValue(values.get("SC")) : null;
+        CvssV4Data.CiaType subIntegrityImpact = values.containsKey("SI") ? CvssV4Data.CiaType.fromValue(values.get("SI")) : null;
+        CvssV4Data.CiaType subAvailabilityImpact = values.containsKey("SA") ? CvssV4Data.CiaType.fromValue(values.get("SA")) : null;
+        CvssV4Data.ExploitMaturityType exploitMaturity = values.containsKey("E") ? CvssV4Data.ExploitMaturityType.fromValue(values.get("E")) : CvssV4Data.ExploitMaturityType.NOT_DEFINED;
+        CvssV4Data.CiaRequirementType confidentialityRequirement = values.containsKey("CR") ? CvssV4Data.CiaRequirementType.fromValue(values.get("CR")) : CvssV4Data.CiaRequirementType.NOT_DEFINED;
+        CvssV4Data.CiaRequirementType integrityRequirement = values.containsKey("IR") ? CvssV4Data.CiaRequirementType.fromValue(values.get("IR")) : CvssV4Data.CiaRequirementType.NOT_DEFINED;
+        CvssV4Data.CiaRequirementType availabilityRequirement = values.containsKey("AR") ? CvssV4Data.CiaRequirementType.fromValue(values.get("AR")) : CvssV4Data.CiaRequirementType.NOT_DEFINED;
+        CvssV4Data.ModifiedAttackVectorType modifiedAttackVector = values.containsKey("MAV") ? CvssV4Data.ModifiedAttackVectorType.fromValue(values.get("MAV")) : CvssV4Data.ModifiedAttackVectorType.NOT_DEFINED;
+        CvssV4Data.ModifiedAttackComplexityType modifiedAttackComplexity = values.containsKey("MAC") ? CvssV4Data.ModifiedAttackComplexityType.fromValue(values.get("MAC")) : CvssV4Data.ModifiedAttackComplexityType.NOT_DEFINED;
+        CvssV4Data.ModifiedAttackRequirementsType modifiedAttackRequirements = values.containsKey("MAT") ? CvssV4Data.ModifiedAttackRequirementsType.fromValue(values.get("MAT")) : CvssV4Data.ModifiedAttackRequirementsType.NOT_DEFINED;
+        CvssV4Data.ModifiedPrivilegesRequiredType modifiedPrivilegesRequired = values.containsKey("MPR") ? CvssV4Data.ModifiedPrivilegesRequiredType.fromValue(values.get("MPR")) : CvssV4Data.ModifiedPrivilegesRequiredType.NOT_DEFINED;
+        CvssV4Data.ModifiedUserInteractionType modifiedUserInteraction = values.containsKey("MUI") ? CvssV4Data.ModifiedUserInteractionType.fromValue(values.get("MUI")) : CvssV4Data.ModifiedUserInteractionType.NOT_DEFINED;
+        CvssV4Data.ModifiedCiaType modifiedVulnConfidentialityImpact = values.containsKey("MVC") ? CvssV4Data.ModifiedCiaType.fromValue(values.get("MVC")) : CvssV4Data.ModifiedCiaType.NOT_DEFINED;
+        CvssV4Data.ModifiedCiaType modifiedVulnIntegrityImpact = values.containsKey("MVI") ? CvssV4Data.ModifiedCiaType.fromValue(values.get("MVI")) : CvssV4Data.ModifiedCiaType.NOT_DEFINED;
+        CvssV4Data.ModifiedCiaType modifiedVulnAvailabilityImpact = values.containsKey("MVA") ? CvssV4Data.ModifiedCiaType.fromValue(values.get("MVA")) : CvssV4Data.ModifiedCiaType.NOT_DEFINED;
+        CvssV4Data.ModifiedSubCType modifiedSubConfidentialityImpact = values.containsKey("MSC") ? CvssV4Data.ModifiedSubCType.fromValue(values.get("MSC")) : CvssV4Data.ModifiedSubCType.NOT_DEFINED;
+        CvssV4Data.ModifiedSubIaType modifiedSubIntegrityImpact = values.containsKey("MSI") ? CvssV4Data.ModifiedSubIaType.fromValue(values.get("MSI")) : CvssV4Data.ModifiedSubIaType.NOT_DEFINED;
+        CvssV4Data.ModifiedSubIaType modifiedSubAvailabilityImpact = values.containsKey("MSA") ? CvssV4Data.ModifiedSubIaType.fromValue(values.get("MSA")) : CvssV4Data.ModifiedSubIaType.NOT_DEFINED;
+        CvssV4Data.SafetyType safety = values.containsKey("S") ? CvssV4Data.SafetyType.fromValue(values.get("S")) : CvssV4Data.SafetyType.NOT_DEFINED;
+        CvssV4Data.AutomatableType automatable = values.containsKey("AU") ? CvssV4Data.AutomatableType.fromValue(values.get("AU")) : CvssV4Data.AutomatableType.NOT_DEFINED;
+        CvssV4Data.RecoveryType recovery = values.containsKey("R") ? CvssV4Data.RecoveryType.fromValue(values.get("R")) : CvssV4Data.RecoveryType.NOT_DEFINED;
+        CvssV4Data.ValueDensityType valueDensity = values.containsKey("V") ? CvssV4Data.ValueDensityType.fromValue(values.get("V")) : CvssV4Data.ValueDensityType.NOT_DEFINED;
+        CvssV4Data.VulnerabilityResponseEffortType vulnerabilityResponseEffort = values.containsKey("RE") ? CvssV4Data.VulnerabilityResponseEffortType.fromValue(values.get("RE")) : CvssV4Data.VulnerabilityResponseEffortType.NOT_DEFINED;
+        CvssV4Data.ProviderUrgencyType providerUrgency = values.containsKey("U") ? CvssV4Data.ProviderUrgencyType.fromValue(values.get("U")) : CvssV4Data.ProviderUrgencyType.NOT_DEFINED;
+
+        CvssV4Data.SeverityType baseSeverity = toSeverityType(baseScore);
+        // Scores and severities are not present in the vector string, set to null/defaults
+        Double threatScore = null;
+        CvssV4Data.SeverityType threatSeverity = null;
+        Double environmentalScore = null;
+        CvssV4Data.SeverityType environmentalSeverity = null;
+
+        CvssV4Data cvssData = new CvssV4Data(
+                version,
+                vectorString,
+                attackVector,
+                attackComplexity,
+                attackRequirements,
+                privilegesRequired,
+                userInteraction,
+                vulnConfidentialityImpact,
+                vulnIntegrityImpact,
+                vulnAvailabilityImpact,
+                subConfidentialityImpact,
+                subIntegrityImpact,
+                subAvailabilityImpact,
+                exploitMaturity,
+                confidentialityRequirement,
+                integrityRequirement,
+                availabilityRequirement,
+                modifiedAttackVector,
+                modifiedAttackComplexity,
+                modifiedAttackRequirements,
+                modifiedPrivilegesRequired,
+                modifiedUserInteraction,
+                modifiedVulnConfidentialityImpact,
+                modifiedVulnIntegrityImpact,
+                modifiedVulnAvailabilityImpact,
+                modifiedSubConfidentialityImpact,
+                modifiedSubIntegrityImpact,
+                modifiedSubAvailabilityImpact,
+                safety,
+                automatable,
+                recovery,
+                valueDensity,
+                vulnerabilityResponseEffort,
+                providerUrgency,
+                baseScore,
+                baseSeverity,
+                threatScore,
+                threatSeverity,
+                environmentalScore,
+                environmentalSeverity
+        );
+
+        return new CvssV4(source, type, cvssData);
     }
 }
