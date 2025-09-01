@@ -159,7 +159,7 @@ public class SuppressionHandler extends DefaultHandler {
      * present and can be parsed.
      *
      * @return empty if attribute {@code until} is not present.
-     * @throws SAXException if attribute {@code until} is present but value can not be parsed to  {@link Calendar}.
+     * @throws SAXException if attribute {@code until} is present but value can not be parsed as {@link Calendar}.
      */
     private static Optional<Calendar> parseUntilAttribute(Attributes attributes) throws SAXException {
         String untilStr = attributes.getValue("until");
@@ -167,7 +167,7 @@ public class SuppressionHandler extends DefaultHandler {
             try {
                 return Optional.of(DateUtil.parseXmlDate(untilStr));
             } catch (ParseException ex) {
-                throw new SAXException("Unable to parse group 'until' date: " + untilStr, ex);
+                throw new SAXException("Unable to parse attribute 'until': " + untilStr, ex);
             }
         } else {
             return Optional.empty();

@@ -115,8 +115,8 @@ class SuppressionParserTest extends BaseTest {
     }
 
     /**
-     * If a suppression is present in a group and does not have attributes set, then it the ones from the group are used
-     * as default values.
+     * If a suppression is present in a group and does not have attributes set, then the ones from the group are used
+     * as defaults.
      */
     @Test
     void testParseSuppressionV1dot4Inherits() throws SuppressionParseException {
@@ -139,7 +139,7 @@ class SuppressionParserTest extends BaseTest {
     }
 
     /**
-     * If a suppression has attributes set, then it should override those of the suppressionGroup it is present in.
+     * If a suppression in a suppression group has attributes set, then those override those of the suppressionGroup.
      */
     @Test
     void testParseSuppressionV1dot4AttributeOverrides() throws SuppressionParseException {

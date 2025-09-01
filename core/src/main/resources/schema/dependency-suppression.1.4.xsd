@@ -51,8 +51,7 @@
                 <xs:element name="cvssBelow" type="dc:cvssScoreType"/>
             </xs:choice>
         </xs:sequence>
-
-        <xs:attributeGroup ref="dc:suppressAttrs"/>
+        <xs:attribute name="until" type="xs:date"/>
     </xs:complexType>
 
     <xs:complexType name="suppressionGroupType">
@@ -60,33 +59,35 @@
             <xs:sequence minOccurs="0" maxOccurs="1">
                 <xs:element name="notes" type="xs:string"/>
             </xs:sequence>
-            <xs:element name="suppress" type="dc:suppressType" minOccurs="1" maxOccurs="unbounded"/>
+            <xs:element name="suppress" minOccurs="1" maxOccurs="unbounded">
+                <xs:complexType>
+                    <xs:complexContent>
+                        <xs:extension base="dc:suppressType">
+                            <!-- Suppression has no default value for "base" when part of a group. Group value is used as default. -->
+                            <xs:attribute name="base" type="xs:boolean"/>
+                        </xs:extension>
+                    </xs:complexContent>
+                </xs:complexType>
+            </xs:element>
         </xs:sequence>
-        <xs:attribute name="name" type="xs:string" use="optional"/>
-        <xs:attributeGroup ref="dc:suppressAttrs">
-            <xs:annotation>
-                <xs:documentation>
-                    Attributes on a group element act as defaults for all child suppression elements.
-                </xs:documentation>
-            </xs:annotation>
-        </xs:attributeGroup>
+        <xs:attribute name="name" type="xs:string"/>
+        <xs:attribute name="until" type="xs:date"/>
+        <xs:attribute name="base" type="xs:boolean" default="false"/>
     </xs:complexType>
-
-    <xs:attributeGroup name="suppressAttrs">
-        <xs:attribute name="base"  type="xs:boolean" default="false"/>
-        <xs:attribute name="until" type="xs:date">
-            <xs:annotation>
-                <xs:documentation>
-                    When specified the suppression will only be active when the specified date is still in the future. On and after the 'until' date the suppression will no longer be active.
-                </xs:documentation>
-            </xs:annotation>
-        </xs:attribute>
-    </xs:attributeGroup>
 
     <xs:element name="suppressions">
         <xs:complexType>
             <xs:choice minOccurs="0" maxOccurs="unbounded">
-                <xs:element name="suppress" type="dc:suppressType"/>
+                <xs:element name="suppress" >
+                    <xs:complexType>
+                        <xs:complexContent>
+                            <xs:extension base="dc:suppressType">
+                                <!-- Default values present in standalone suppression -->
+                                <xs:attribute use="optional" name="base" default="false"/>
+                            </xs:extension>
+                        </xs:complexContent>
+                    </xs:complexType>
+                </xs:element>
                 <xs:element name="suppressionGroup" type="dc:suppressionGroupType"/>
             </xs:choice>
         </xs:complexType>

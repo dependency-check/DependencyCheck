@@ -3,7 +3,7 @@
               xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
               xsi:schemaLocation="https://dependency-check.github.io/DependencyCheck/dependency-suppression.1.4.xsd">
 
-    <!-- Suppressions can be provided individually as in earlier schemas -->
+    <!-- Suppressions can be provided individually. -->
     <suppress base="true">
         <notes><![CDATA[
         This suppresses any jboss:jboss cpe for any test.jar in any directory.
@@ -28,7 +28,7 @@
         <cvssBelow>7</cvssBelow>
     </suppress>
 
-    <!-- suppression in the past won't be parsed -->
+    <!-- suppression in the past is not parsed -->
     <suppress until="2014-01-01Z">
         <notes><![CDATA[
         This suppresses a specific cve for any dependency in any directory that has the specified sha1 checksum. If current date is not yet on or beyond 1 Jan 2014
