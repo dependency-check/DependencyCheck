@@ -15,7 +15,7 @@ jobs:
     steps:
       - name: Remove Labels
         if: contains(github.event.issue.labels.*.name, 'pending more information')
-        uses: actions/github-script@v7.0.1
+        uses: actions/github-script@v8.0.0
         with:
           script: |
               github.rest.issues.removeLabel({
@@ -50,7 +50,7 @@ jobs:
           npm install packageurl-js
       - name: Parse Package URL
         id: purl-parser
-        uses: actions/github-script@v7.0.1
+        uses: actions/github-script@v8.0.0
         env:
           PURL: ${{ fromJSON(steps.issue-parser.outputs.jsonString).purl }}
         with:
@@ -148,7 +148,7 @@ jobs:
            path: ${{github.workspace}}/reports
       - name: Comment on maven issue
         if: ${{ fromJSON(steps.purl-parser.outputs.result).type == 'maven' }}
-        uses: actions/github-script@v7.0.1
+        uses: actions/github-script@v8.0.0
         env:
           GROUPID: ${{ fromJSON(steps.purl-parser.outputs.result).namespace }}
           ARTIFACTID: ${{ fromJSON(steps.purl-parser.outputs.result).name }}
@@ -199,7 +199,7 @@ jobs:
             })
       - name: Comment on npm issue
         if: ${{ fromJSON(steps.purl-parser.outputs.result).type == 'npm' }}
-        uses: actions/github-script@v7.0.1
+        uses: actions/github-script@v8.0.0
         env:
           NAME: ${{ fromJSON(steps.purl-parser.outputs.result).name }}
           VERSION: ${{ fromJSON(steps.purl-parser.outputs.result).version }}
@@ -246,7 +246,7 @@ jobs:
             })
       - name: Comment on dotnet issue
         if: ${{ fromJSON(steps.purl-parser.outputs.result).type == 'nuget' }}
-        uses: actions/github-script@v7.0.1
+        uses: actions/github-script@v8.0.0
         env:
           NAME: ${{ fromJSON(steps.purl-parser.outputs.result).name }}
           VERSION: ${{ fromJSON(steps.purl-parser.outputs.result).version }}
@@ -293,7 +293,7 @@ jobs:
             
       - name: Message failure
         if: ${{ failure() }}
-        uses: actions/github-script@v7.0.1
+        uses: actions/github-script@v8.0.0
         with:
           script: |
             github.rest.issues.createComment({
