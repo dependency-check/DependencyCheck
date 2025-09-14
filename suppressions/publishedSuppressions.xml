@@ -2465,4 +2465,11 @@ only pkg:maven/org.clojure:clojure@.* is the CPE cpe:/a:clojure:clojure
    <packageUrl regex="true">^pkg:maven/org\.xmlunit/xmlunit-core@.*$</packageUrl>
    <cpe>cpe:/a:ada:ada</cpe>
 </suppress>
+<suppress base="true">
+   <notes><![CDATA[
+   FP per issue #7916
+   ]]></notes>
+   <packageUrl regex="true">^pkg:maven/io\.debezium/mysql-binlog-connector-java@.*$</packageUrl>
+   <cpe>cpe:/a:mysql:mysql</cpe>
+</suppress>
 </suppressions>
