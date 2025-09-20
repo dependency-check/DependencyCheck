@@ -633,7 +633,7 @@
 <a class="jxr_linenumber" name="L625" href="#L625">625</a>         <strong class="jxr_keyword">if</strong> (sorted) {
 <a class="jxr_linenumber" name="L626" href="#L626">626</a>             vulnerabilitySet = <strong class="jxr_keyword">new</strong> TreeSet&lt;&gt;(vulnerabilities);
 <a class="jxr_linenumber" name="L627" href="#L627">627</a>         } <strong class="jxr_keyword">else</strong> {
-<a class="jxr_linenumber" name="L628" href="#L628">628</a>             vulnerabilitySet = vulnerabilities;
+<a class="jxr_linenumber" name="L628" href="#L628">628</a>             vulnerabilitySet = <strong class="jxr_keyword">new</strong> HashSet&lt;&gt;(vulnerabilities);
 <a class="jxr_linenumber" name="L629" href="#L629">629</a>         }
 <a class="jxr_linenumber" name="L630" href="#L630">630</a>         <strong class="jxr_keyword">return</strong> Collections.unmodifiableSet(vulnerabilitySet);
 <a class="jxr_linenumber" name="L631" href="#L631">631</a>     }

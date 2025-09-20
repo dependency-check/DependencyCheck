@@ -61,114 +61,125 @@
 <a class="jxr_linenumber" name="L53" href="#L53">53</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">class</strong> <a href="../../../../../org/owasp/dependencycheck/data/artifactory/ArtifactorySearch.html">ArtifactorySearch</a> {
 <a class="jxr_linenumber" name="L54" href="#L54">54</a>  
 <a class="jxr_linenumber" name="L55" href="#L55">55</a>      <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L56" href="#L56">56</a>  <em class="jxr_javadoccomment">     * Used for logging.</em>
-<a class="jxr_linenumber" name="L57" href="#L57">57</a>  <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L58" href="#L58">58</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> Logger LOGGER = LoggerFactory.getLogger(ArtifactorySearch.<strong class="jxr_keyword">class</strong>);
-<a class="jxr_linenumber" name="L59" href="#L59">59</a>  
-<a class="jxr_linenumber" name="L60" href="#L60">60</a>      <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L61" href="#L61">61</a>  <em class="jxr_javadoccomment">     * The URL for the Central service.</em>
-<a class="jxr_linenumber" name="L62" href="#L62">62</a>  <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L63" href="#L63">63</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> String rootURL;
-<a class="jxr_linenumber" name="L64" href="#L64">64</a>  
-<a class="jxr_linenumber" name="L65" href="#L65">65</a>      <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L66" href="#L66">66</a>  <em class="jxr_javadoccomment">     * Whether to use the Proxy when making requests.</em>
-<a class="jxr_linenumber" name="L67" href="#L67">67</a>  <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L68" href="#L68">68</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">boolean</strong> allowUsingProxy;
-<a class="jxr_linenumber" name="L69" href="#L69">69</a>  
-<a class="jxr_linenumber" name="L70" href="#L70">70</a>  
-<a class="jxr_linenumber" name="L71" href="#L71">71</a>      <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L72" href="#L72">72</a>  <em class="jxr_javadoccomment">     * Creates a ArtifactorySearch for the given repository URL.</em>
-<a class="jxr_linenumber" name="L73" href="#L73">73</a>  <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L74" href="#L74">74</a>  <em class="jxr_javadoccomment">     * @param settings the configured settings</em>
-<a class="jxr_linenumber" name="L75" href="#L75">75</a>  <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L76" href="#L76">76</a>      <strong class="jxr_keyword">public</strong> <a href="../../../../../org/owasp/dependencycheck/data/artifactory/ArtifactorySearch.html">ArtifactorySearch</a>(Settings settings) {
+<a class="jxr_linenumber" name="L56" href="#L56">56</a>  <em class="jxr_javadoccomment">     * Required to add all extra information of the found artifact.</em>
+<a class="jxr_linenumber" name="L57" href="#L57">57</a>  <em class="jxr_javadoccomment">     * Source: https://jfrog.com/help/r/jfrog-rest-apis/property-search</em>
+<a class="jxr_linenumber" name="L58" href="#L58">58</a>  <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L59" href="#L59">59</a>      @SuppressWarnings(<span class="jxr_string">"JavadocLinkAsPlainText"</span>)
+<a class="jxr_linenumber" name="L60" href="#L60">60</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> String X_RESULT_DETAIL_HEADER = <span class="jxr_string">"X-Result-Detail"</span>;
+<a class="jxr_linenumber" name="L61" href="#L61">61</a>  
+<a class="jxr_linenumber" name="L62" href="#L62">62</a>      <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L63" href="#L63">63</a>  <em class="jxr_javadoccomment">     * Used for logging.</em>
+<a class="jxr_linenumber" name="L64" href="#L64">64</a>  <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L65" href="#L65">65</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> Logger LOGGER = LoggerFactory.getLogger(ArtifactorySearch.<strong class="jxr_keyword">class</strong>);
+<a class="jxr_linenumber" name="L66" href="#L66">66</a>  
+<a class="jxr_linenumber" name="L67" href="#L67">67</a>      <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L68" href="#L68">68</a>  <em class="jxr_javadoccomment">     * The URL for the Central service.</em>
+<a class="jxr_linenumber" name="L69" href="#L69">69</a>  <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L70" href="#L70">70</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> String rootURL;
+<a class="jxr_linenumber" name="L71" href="#L71">71</a>  
+<a class="jxr_linenumber" name="L72" href="#L72">72</a>      <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L73" href="#L73">73</a>  <em class="jxr_javadoccomment">     * Whether to use the Proxy when making requests.</em>
+<a class="jxr_linenumber" name="L74" href="#L74">74</a>  <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L75" href="#L75">75</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">boolean</strong> allowUsingProxy;
+<a class="jxr_linenumber" name="L76" href="#L76">76</a>  
 <a class="jxr_linenumber" name="L77" href="#L77">77</a>  
-<a class="jxr_linenumber" name="L78" href="#L78">78</a>          <strong class="jxr_keyword">final</strong> String searchUrl = settings.getString(Settings.KEYS.ANALYZER_ARTIFACTORY_URL);
-<a class="jxr_linenumber" name="L79" href="#L79">79</a>  
-<a class="jxr_linenumber" name="L80" href="#L80">80</a>          <strong class="jxr_keyword">this</strong>.rootURL = searchUrl;
-<a class="jxr_linenumber" name="L81" href="#L81">81</a>          LOGGER.debug(<span class="jxr_string">"Artifactory Search URL {}"</span>, searchUrl);
-<a class="jxr_linenumber" name="L82" href="#L82">82</a>  
-<a class="jxr_linenumber" name="L83" href="#L83">83</a>          <strong class="jxr_keyword">if</strong> (<strong class="jxr_keyword">null</strong> != settings.getString(Settings.KEYS.PROXY_SERVER)) {
-<a class="jxr_linenumber" name="L84" href="#L84">84</a>              <strong class="jxr_keyword">this</strong>.allowUsingProxy = settings.getBoolean(Settings.KEYS.ANALYZER_ARTIFACTORY_USES_PROXY, false);
-<a class="jxr_linenumber" name="L85" href="#L85">85</a>              LOGGER.debug(<span class="jxr_string">"Using proxy configuration? {}"</span>, allowUsingProxy);
-<a class="jxr_linenumber" name="L86" href="#L86">86</a>          } <strong class="jxr_keyword">else</strong> {
-<a class="jxr_linenumber" name="L87" href="#L87">87</a>              <strong class="jxr_keyword">this</strong>.allowUsingProxy = settings.getBoolean(Settings.KEYS.ANALYZER_ARTIFACTORY_USES_PROXY, <strong class="jxr_keyword">true</strong>);
-<a class="jxr_linenumber" name="L88" href="#L88">88</a>              LOGGER.debug(<span class="jxr_string">"Using default non-legacy proxy configuration"</span>);
-<a class="jxr_linenumber" name="L89" href="#L89">89</a>          }
-<a class="jxr_linenumber" name="L90" href="#L90">90</a>  
-<a class="jxr_linenumber" name="L91" href="#L91">91</a>      }
-<a class="jxr_linenumber" name="L92" href="#L92">92</a>  
-<a class="jxr_linenumber" name="L93" href="#L93">93</a>      <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L94" href="#L94">94</a>  <em class="jxr_javadoccomment">     * Searches the configured Central URL for the given hash (MD5, SHA1 and</em>
-<a class="jxr_linenumber" name="L95" href="#L95">95</a>  <em class="jxr_javadoccomment">     * SHA256). If the artifact is found, a &lt;code&gt;MavenArtifact&lt;/code&gt; is</em>
-<a class="jxr_linenumber" name="L96" href="#L96">96</a>  <em class="jxr_javadoccomment">     * populated with the GAV.</em>
-<a class="jxr_linenumber" name="L97" href="#L97">97</a>  <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L98" href="#L98">98</a>  <em class="jxr_javadoccomment">     * @param dependency the dependency for which to search (search is based on</em>
-<a class="jxr_linenumber" name="L99" href="#L99">99</a>  <em class="jxr_javadoccomment">     * hashes)</em>
-<a class="jxr_linenumber" name="L100" href="#L100">100</a> <em class="jxr_javadoccomment">     * @return the populated Maven GAV.</em>
-<a class="jxr_linenumber" name="L101" href="#L101">101</a> <em class="jxr_javadoccomment">     * @throws FileNotFoundException if the specified artifact is not found</em>
-<a class="jxr_linenumber" name="L102" href="#L102">102</a> <em class="jxr_javadoccomment">     * @throws IOException if it's unable to connect to the specified repository</em>
-<a class="jxr_linenumber" name="L103" href="#L103">103</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L104" href="#L104">104</a>     <strong class="jxr_keyword">public</strong> List&lt;MavenArtifact&gt; search(<a href="../../../../../org/owasp/dependencycheck/dependency/Dependency.html">Dependency</a> dependency) <strong class="jxr_keyword">throws</strong> IOException {
-<a class="jxr_linenumber" name="L105" href="#L105">105</a> 
-<a class="jxr_linenumber" name="L106" href="#L106">106</a>         <strong class="jxr_keyword">final</strong> String sha1sum = dependency.getSha1sum();
-<a class="jxr_linenumber" name="L107" href="#L107">107</a>         <strong class="jxr_keyword">final</strong> URL url = buildUrl(sha1sum);
-<a class="jxr_linenumber" name="L108" href="#L108">108</a>         <strong class="jxr_keyword">final</strong> StringBuilder msg = <strong class="jxr_keyword">new</strong> StringBuilder(<span class="jxr_string">"Could not connect to Artifactory at"</span>)
-<a class="jxr_linenumber" name="L109" href="#L109">109</a>                 .append(url);
-<a class="jxr_linenumber" name="L110" href="#L110">110</a>         <strong class="jxr_keyword">try</strong> {
-<a class="jxr_linenumber" name="L111" href="#L111">111</a>             <strong class="jxr_keyword">final</strong> BasicHeader artifactoryResultDetail = <strong class="jxr_keyword">new</strong> BasicHeader(<span class="jxr_string">"X-Result-Detail"</span>, <span class="jxr_string">"info"</span>);
-<a class="jxr_linenumber" name="L112" href="#L112">112</a>             <strong class="jxr_keyword">return</strong> Downloader.getInstance().fetchAndHandle(url, <strong class="jxr_keyword">new</strong> ArtifactorySearchResponseHandler(dependency), List.of(artifactoryResultDetail),
-<a class="jxr_linenumber" name="L113" href="#L113">113</a>                     allowUsingProxy);
-<a class="jxr_linenumber" name="L114" href="#L114">114</a>         } <strong class="jxr_keyword">catch</strong> (TooManyRequestsException e) {
-<a class="jxr_linenumber" name="L115" href="#L115">115</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> IOException(msg.append(<span class="jxr_string">" (429): Too manu requests"</span>).toString(), e);
-<a class="jxr_linenumber" name="L116" href="#L116">116</a>         } <strong class="jxr_keyword">catch</strong> (URISyntaxException e) {
-<a class="jxr_linenumber" name="L117" href="#L117">117</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> IOException(msg.append(<span class="jxr_string">" (400): Invalid URL"</span>).toString(), e);
-<a class="jxr_linenumber" name="L118" href="#L118">118</a>         } <strong class="jxr_keyword">catch</strong> (ResourceNotFoundException e) {
-<a class="jxr_linenumber" name="L119" href="#L119">119</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> IOException(msg.append(<span class="jxr_string">" (404): Not found"</span>).toString(), e);
-<a class="jxr_linenumber" name="L120" href="#L120">120</a>         } <strong class="jxr_keyword">catch</strong> (ForbiddenException e) {
-<a class="jxr_linenumber" name="L121" href="#L121">121</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> IOException(msg.append(<span class="jxr_string">" (403): Forbidden"</span>).toString(), e);
-<a class="jxr_linenumber" name="L122" href="#L122">122</a>         }
-<a class="jxr_linenumber" name="L123" href="#L123">123</a>     }
-<a class="jxr_linenumber" name="L124" href="#L124">124</a> 
-<a class="jxr_linenumber" name="L125" href="#L125">125</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L126" href="#L126">126</a> <em class="jxr_javadoccomment">     * Constructs the URL using the SHA1 checksum.</em>
-<a class="jxr_linenumber" name="L127" href="#L127">127</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L128" href="#L128">128</a> <em class="jxr_javadoccomment">     * @param sha1sum the SHA1 checksum</em>
-<a class="jxr_linenumber" name="L129" href="#L129">129</a> <em class="jxr_javadoccomment">     * @return the API URL to search for the given checksum</em>
-<a class="jxr_linenumber" name="L130" href="#L130">130</a> <em class="jxr_javadoccomment">     * @throws MalformedURLException thrown if the URL is malformed</em>
-<a class="jxr_linenumber" name="L131" href="#L131">131</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L132" href="#L132">132</a>     <strong class="jxr_keyword">private</strong> URL buildUrl(String sha1sum) <strong class="jxr_keyword">throws</strong> MalformedURLException {
-<a class="jxr_linenumber" name="L133" href="#L133">133</a>         <em class="jxr_comment">// TODO Investigate why sha256 parameter is not working</em>
-<a class="jxr_linenumber" name="L134" href="#L134">134</a>         <em class="jxr_comment">// API defined https://www.jfrog.com/confluence/display/RTF/Artifactory+REST+API#ArtifactoryRESTAPI-ChecksumSearch</em>
-<a class="jxr_linenumber" name="L135" href="#L135">135</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> URL(rootURL + <span class="jxr_string">"/api/search/checksum?sha1="</span> + sha1sum);
-<a class="jxr_linenumber" name="L136" href="#L136">136</a>     }
-<a class="jxr_linenumber" name="L137" href="#L137">137</a> 
-<a class="jxr_linenumber" name="L138" href="#L138">138</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L139" href="#L139">139</a> <em class="jxr_javadoccomment">     * Performs a pre-flight request to ensure the Artifactory service is</em>
-<a class="jxr_linenumber" name="L140" href="#L140">140</a> <em class="jxr_javadoccomment">     * reachable.</em>
-<a class="jxr_linenumber" name="L141" href="#L141">141</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L142" href="#L142">142</a> <em class="jxr_javadoccomment">     * @return &lt;code&gt;true&lt;/code&gt; if Artifactory could be reached; otherwise</em>
-<a class="jxr_linenumber" name="L143" href="#L143">143</a> <em class="jxr_javadoccomment">     * &lt;code&gt;false&lt;/code&gt;.</em>
-<a class="jxr_linenumber" name="L144" href="#L144">144</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L145" href="#L145">145</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">boolean</strong> preflightRequest() {
-<a class="jxr_linenumber" name="L146" href="#L146">146</a>         URL url = <strong class="jxr_keyword">null</strong>;
-<a class="jxr_linenumber" name="L147" href="#L147">147</a>         <strong class="jxr_keyword">try</strong> {
-<a class="jxr_linenumber" name="L148" href="#L148">148</a>             url = buildUrl(Checksum.getSHA1Checksum(UUID.randomUUID().toString()));
-<a class="jxr_linenumber" name="L149" href="#L149">149</a>             Downloader.getInstance().fetchContent(url, StandardCharsets.UTF_8);
-<a class="jxr_linenumber" name="L150" href="#L150">150</a>             <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">true</strong>;
-<a class="jxr_linenumber" name="L151" href="#L151">151</a>         } <strong class="jxr_keyword">catch</strong> (IOException e) {
-<a class="jxr_linenumber" name="L152" href="#L152">152</a>             LOGGER.error(<span class="jxr_string">"Cannot connect to Artifactory"</span>, e);
-<a class="jxr_linenumber" name="L153" href="#L153">153</a>             <strong class="jxr_keyword">return</strong> false;
-<a class="jxr_linenumber" name="L154" href="#L154">154</a>         } <strong class="jxr_keyword">catch</strong> (TooManyRequestsException e) {
-<a class="jxr_linenumber" name="L155" href="#L155">155</a>             LOGGER.warn(<span class="jxr_string">"Expected 200 result from Artifactory ({}), got 429"</span>, url);
-<a class="jxr_linenumber" name="L156" href="#L156">156</a>             <strong class="jxr_keyword">return</strong> false;
-<a class="jxr_linenumber" name="L157" href="#L157">157</a>         } <strong class="jxr_keyword">catch</strong> (ResourceNotFoundException e) {
-<a class="jxr_linenumber" name="L158" href="#L158">158</a>             LOGGER.warn(<span class="jxr_string">"Expected 200 result from Artifactory ({}), got 404"</span>, url);
-<a class="jxr_linenumber" name="L159" href="#L159">159</a>             <strong class="jxr_keyword">return</strong> false;
-<a class="jxr_linenumber" name="L160" href="#L160">160</a>         }
-<a class="jxr_linenumber" name="L161" href="#L161">161</a> 
-<a class="jxr_linenumber" name="L162" href="#L162">162</a>     }
-<a class="jxr_linenumber" name="L163" href="#L163">163</a> }
+<a class="jxr_linenumber" name="L78" href="#L78">78</a>      <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L79" href="#L79">79</a>  <em class="jxr_javadoccomment">     * Creates a ArtifactorySearch for the given repository URL.</em>
+<a class="jxr_linenumber" name="L80" href="#L80">80</a>  <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L81" href="#L81">81</a>  <em class="jxr_javadoccomment">     * @param settings the configured settings</em>
+<a class="jxr_linenumber" name="L82" href="#L82">82</a>  <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L83" href="#L83">83</a>      <strong class="jxr_keyword">public</strong> <a href="../../../../../org/owasp/dependencycheck/data/artifactory/ArtifactorySearch.html">ArtifactorySearch</a>(Settings settings) {
+<a class="jxr_linenumber" name="L84" href="#L84">84</a>  
+<a class="jxr_linenumber" name="L85" href="#L85">85</a>          <strong class="jxr_keyword">final</strong> String searchUrl = settings.getString(Settings.KEYS.ANALYZER_ARTIFACTORY_URL);
+<a class="jxr_linenumber" name="L86" href="#L86">86</a>  
+<a class="jxr_linenumber" name="L87" href="#L87">87</a>          <strong class="jxr_keyword">this</strong>.rootURL = searchUrl;
+<a class="jxr_linenumber" name="L88" href="#L88">88</a>          LOGGER.debug(<span class="jxr_string">"Artifactory Search URL {}"</span>, searchUrl);
+<a class="jxr_linenumber" name="L89" href="#L89">89</a>  
+<a class="jxr_linenumber" name="L90" href="#L90">90</a>          <strong class="jxr_keyword">if</strong> (<strong class="jxr_keyword">null</strong> != settings.getString(Settings.KEYS.PROXY_SERVER)) {
+<a class="jxr_linenumber" name="L91" href="#L91">91</a>              <strong class="jxr_keyword">this</strong>.allowUsingProxy = settings.getBoolean(Settings.KEYS.ANALYZER_ARTIFACTORY_USES_PROXY, false);
+<a class="jxr_linenumber" name="L92" href="#L92">92</a>              LOGGER.debug(<span class="jxr_string">"Using proxy configuration? {}"</span>, allowUsingProxy);
+<a class="jxr_linenumber" name="L93" href="#L93">93</a>          } <strong class="jxr_keyword">else</strong> {
+<a class="jxr_linenumber" name="L94" href="#L94">94</a>              <strong class="jxr_keyword">this</strong>.allowUsingProxy = settings.getBoolean(Settings.KEYS.ANALYZER_ARTIFACTORY_USES_PROXY, <strong class="jxr_keyword">true</strong>);
+<a class="jxr_linenumber" name="L95" href="#L95">95</a>              LOGGER.debug(<span class="jxr_string">"Using default non-legacy proxy configuration"</span>);
+<a class="jxr_linenumber" name="L96" href="#L96">96</a>          }
+<a class="jxr_linenumber" name="L97" href="#L97">97</a>  
+<a class="jxr_linenumber" name="L98" href="#L98">98</a>      }
+<a class="jxr_linenumber" name="L99" href="#L99">99</a>  
+<a class="jxr_linenumber" name="L100" href="#L100">100</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L101" href="#L101">101</a> <em class="jxr_javadoccomment">     * Searches the configured Central URL for the given hash (MD5, SHA1 and</em>
+<a class="jxr_linenumber" name="L102" href="#L102">102</a> <em class="jxr_javadoccomment">     * SHA256). If the artifact is found, a &lt;code&gt;MavenArtifact&lt;/code&gt; is</em>
+<a class="jxr_linenumber" name="L103" href="#L103">103</a> <em class="jxr_javadoccomment">     * populated with the GAV.</em>
+<a class="jxr_linenumber" name="L104" href="#L104">104</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L105" href="#L105">105</a> <em class="jxr_javadoccomment">     * @param dependency the dependency for which to search (search is based on</em>
+<a class="jxr_linenumber" name="L106" href="#L106">106</a> <em class="jxr_javadoccomment">     * hashes)</em>
+<a class="jxr_linenumber" name="L107" href="#L107">107</a> <em class="jxr_javadoccomment">     * @return the populated Maven GAV.</em>
+<a class="jxr_linenumber" name="L108" href="#L108">108</a> <em class="jxr_javadoccomment">     * @throws FileNotFoundException if the specified artifact is not found</em>
+<a class="jxr_linenumber" name="L109" href="#L109">109</a> <em class="jxr_javadoccomment">     * @throws IOException if it's unable to connect to the specified repository</em>
+<a class="jxr_linenumber" name="L110" href="#L110">110</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L111" href="#L111">111</a>     <strong class="jxr_keyword">public</strong> List&lt;MavenArtifact&gt; search(<a href="../../../../../org/owasp/dependencycheck/dependency/Dependency.html">Dependency</a> dependency) <strong class="jxr_keyword">throws</strong> IOException {
+<a class="jxr_linenumber" name="L112" href="#L112">112</a> 
+<a class="jxr_linenumber" name="L113" href="#L113">113</a>         <strong class="jxr_keyword">final</strong> String sha1sum = dependency.getSha1sum();
+<a class="jxr_linenumber" name="L114" href="#L114">114</a>         <strong class="jxr_keyword">final</strong> URL url = buildUrl(sha1sum);
+<a class="jxr_linenumber" name="L115" href="#L115">115</a>         <strong class="jxr_keyword">final</strong> StringBuilder msg = <strong class="jxr_keyword">new</strong> StringBuilder(<span class="jxr_string">"Could not connect to Artifactory at"</span>)
+<a class="jxr_linenumber" name="L116" href="#L116">116</a>                 .append(url);
+<a class="jxr_linenumber" name="L117" href="#L117">117</a>         <strong class="jxr_keyword">try</strong> {
+<a class="jxr_linenumber" name="L118" href="#L118">118</a>             <strong class="jxr_keyword">final</strong> BasicHeader artifactoryResultDetail = <strong class="jxr_keyword">new</strong> BasicHeader(X_RESULT_DETAIL_HEADER, <span class="jxr_string">"info"</span>);
+<a class="jxr_linenumber" name="L119" href="#L119">119</a>             <strong class="jxr_keyword">return</strong> Downloader.getInstance().fetchAndHandle(
+<a class="jxr_linenumber" name="L120" href="#L120">120</a>                     url,
+<a class="jxr_linenumber" name="L121" href="#L121">121</a>                     <strong class="jxr_keyword">new</strong> <a href="../../../../../org/owasp/dependencycheck/data/artifactory/ArtifactorySearchResponseHandler.html">ArtifactorySearchResponseHandler</a>(url, dependency),
+<a class="jxr_linenumber" name="L122" href="#L122">122</a>                     List.of(artifactoryResultDetail),
+<a class="jxr_linenumber" name="L123" href="#L123">123</a>                     allowUsingProxy
+<a class="jxr_linenumber" name="L124" href="#L124">124</a>             );
+<a class="jxr_linenumber" name="L125" href="#L125">125</a>         } <strong class="jxr_keyword">catch</strong> (TooManyRequestsException e) {
+<a class="jxr_linenumber" name="L126" href="#L126">126</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> IOException(msg.append(<span class="jxr_string">" (429): Too manu requests"</span>).toString(), e);
+<a class="jxr_linenumber" name="L127" href="#L127">127</a>         } <strong class="jxr_keyword">catch</strong> (URISyntaxException e) {
+<a class="jxr_linenumber" name="L128" href="#L128">128</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> IOException(msg.append(<span class="jxr_string">" (400): Invalid URL"</span>).toString(), e);
+<a class="jxr_linenumber" name="L129" href="#L129">129</a>         } <strong class="jxr_keyword">catch</strong> (ResourceNotFoundException e) {
+<a class="jxr_linenumber" name="L130" href="#L130">130</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> IOException(msg.append(<span class="jxr_string">" (404): Not found"</span>).toString(), e);
+<a class="jxr_linenumber" name="L131" href="#L131">131</a>         } <strong class="jxr_keyword">catch</strong> (ForbiddenException e) {
+<a class="jxr_linenumber" name="L132" href="#L132">132</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> IOException(msg.append(<span class="jxr_string">" (403): Forbidden"</span>).toString(), e);
+<a class="jxr_linenumber" name="L133" href="#L133">133</a>         }
+<a class="jxr_linenumber" name="L134" href="#L134">134</a>     }
+<a class="jxr_linenumber" name="L135" href="#L135">135</a> 
+<a class="jxr_linenumber" name="L136" href="#L136">136</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L137" href="#L137">137</a> <em class="jxr_javadoccomment">     * Constructs the URL using the SHA1 checksum.</em>
+<a class="jxr_linenumber" name="L138" href="#L138">138</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L139" href="#L139">139</a> <em class="jxr_javadoccomment">     * @param sha1sum the SHA1 checksum</em>
+<a class="jxr_linenumber" name="L140" href="#L140">140</a> <em class="jxr_javadoccomment">     * @return the API URL to search for the given checksum</em>
+<a class="jxr_linenumber" name="L141" href="#L141">141</a> <em class="jxr_javadoccomment">     * @throws MalformedURLException thrown if the URL is malformed</em>
+<a class="jxr_linenumber" name="L142" href="#L142">142</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L143" href="#L143">143</a>     <strong class="jxr_keyword">private</strong> URL buildUrl(String sha1sum) <strong class="jxr_keyword">throws</strong> MalformedURLException {
+<a class="jxr_linenumber" name="L144" href="#L144">144</a>         <em class="jxr_comment">// TODO Investigate why sha256 parameter is not working</em>
+<a class="jxr_linenumber" name="L145" href="#L145">145</a>         <em class="jxr_comment">// API defined https://www.jfrog.com/confluence/display/RTF/Artifactory+REST+API#ArtifactoryRESTAPI-ChecksumSearch</em>
+<a class="jxr_linenumber" name="L146" href="#L146">146</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> URL(rootURL + <span class="jxr_string">"/api/search/checksum?sha1="</span> + sha1sum);
+<a class="jxr_linenumber" name="L147" href="#L147">147</a>     }
+<a class="jxr_linenumber" name="L148" href="#L148">148</a> 
+<a class="jxr_linenumber" name="L149" href="#L149">149</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L150" href="#L150">150</a> <em class="jxr_javadoccomment">     * Performs a pre-flight request to ensure the Artifactory service is</em>
+<a class="jxr_linenumber" name="L151" href="#L151">151</a> <em class="jxr_javadoccomment">     * reachable.</em>
+<a class="jxr_linenumber" name="L152" href="#L152">152</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L153" href="#L153">153</a> <em class="jxr_javadoccomment">     * @return &lt;code&gt;true&lt;/code&gt; if Artifactory could be reached; otherwise</em>
+<a class="jxr_linenumber" name="L154" href="#L154">154</a> <em class="jxr_javadoccomment">     * &lt;code&gt;false&lt;/code&gt;.</em>
+<a class="jxr_linenumber" name="L155" href="#L155">155</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L156" href="#L156">156</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">boolean</strong> preflightRequest() {
+<a class="jxr_linenumber" name="L157" href="#L157">157</a>         URL url = <strong class="jxr_keyword">null</strong>;
+<a class="jxr_linenumber" name="L158" href="#L158">158</a>         <strong class="jxr_keyword">try</strong> {
+<a class="jxr_linenumber" name="L159" href="#L159">159</a>             url = buildUrl(Checksum.getSHA1Checksum(UUID.randomUUID().toString()));
+<a class="jxr_linenumber" name="L160" href="#L160">160</a>             Downloader.getInstance().fetchContent(url, StandardCharsets.UTF_8);
+<a class="jxr_linenumber" name="L161" href="#L161">161</a>             <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">true</strong>;
+<a class="jxr_linenumber" name="L162" href="#L162">162</a>         } <strong class="jxr_keyword">catch</strong> (IOException e) {
+<a class="jxr_linenumber" name="L163" href="#L163">163</a>             LOGGER.error(<span class="jxr_string">"Cannot connect to Artifactory"</span>, e);
+<a class="jxr_linenumber" name="L164" href="#L164">164</a>             <strong class="jxr_keyword">return</strong> false;
+<a class="jxr_linenumber" name="L165" href="#L165">165</a>         } <strong class="jxr_keyword">catch</strong> (TooManyRequestsException e) {
+<a class="jxr_linenumber" name="L166" href="#L166">166</a>             LOGGER.warn(<span class="jxr_string">"Expected 200 result from Artifactory ({}), got 429"</span>, url);
+<a class="jxr_linenumber" name="L167" href="#L167">167</a>             <strong class="jxr_keyword">return</strong> false;
+<a class="jxr_linenumber" name="L168" href="#L168">168</a>         } <strong class="jxr_keyword">catch</strong> (ResourceNotFoundException e) {
+<a class="jxr_linenumber" name="L169" href="#L169">169</a>             LOGGER.warn(<span class="jxr_string">"Expected 200 result from Artifactory ({}), got 404"</span>, url);
+<a class="jxr_linenumber" name="L170" href="#L170">170</a>             <strong class="jxr_keyword">return</strong> false;
+<a class="jxr_linenumber" name="L171" href="#L171">171</a>         }
+<a class="jxr_linenumber" name="L172" href="#L172">172</a> 
+<a class="jxr_linenumber" name="L173" href="#L173">173</a>     }
+<a class="jxr_linenumber" name="L174" href="#L174">174</a> }
 </pre>
 <hr/>
 <div id="footer">Copyright &#169; 2012&#x2013;2025 <a href="https://www.owasp.org">OWASP</a>. All rights reserved.</div>

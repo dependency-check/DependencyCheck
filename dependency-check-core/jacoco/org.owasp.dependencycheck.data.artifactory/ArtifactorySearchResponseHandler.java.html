@@ -32,6 +32,7 @@ import org.slf4j.LoggerFactory;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
@@ -39,16 +40,18 @@ import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static org.owasp.dependencycheck.data.artifactory.ArtifactorySearch.X_RESULT_DETAIL_HEADER;
+
 class ArtifactorySearchResponseHandler implements HttpClientResponseHandler&lt;List&lt;MavenArtifact&gt;&gt; {
     /**
      * Pattern to match the path returned by the Artifactory AQL API.
      */
-<span class="fc" id="L46">    private static final Pattern PATH_PATTERN = Pattern.compile(&quot;^/(?&lt;groupId&gt;.+)/(?&lt;artifactId&gt;[^/]+)/(?&lt;version&gt;[^/]+)/[^/]+$&quot;);</span>
+<span class="fc" id="L49">    private static final Pattern PATH_PATTERN = Pattern.compile(&quot;^/(?&lt;groupId&gt;.+)/(?&lt;artifactId&gt;[^/]+)/(?&lt;version&gt;[^/]+)/[^/]+$&quot;);</span>
 
     /**
      * Used for logging.
      */
-<span class="fc" id="L51">    private static final Logger LOGGER = LoggerFactory.getLogger(ArtifactorySearchResponseHandler.class);</span>
+<span class="fc" id="L54">    private static final Logger LOGGER = LoggerFactory.getLogger(ArtifactorySearchResponseHandler.class);</span>
 
     /**
      * Search result reader
@@ -61,37 +64,44 @@ class ArtifactorySearchResponseHandler implements HttpClientResponseHandler&lt;L
     private final Dependency expectedDependency;
 
     /**
-     * Creates a responsehandler for the response on a single dependency-search attempt.
+     * The search request URL i.e., the location at which to search artifacts with checksum information
+     */
+    private final URL sourceUrl;
+
+    /**
+     * Creates a response handler for the response on a single dependency-search attempt.
      *
+     * @param sourceUrl The search request URL
      * @param dependency The dependency that is expected to be in the response when found (for validating the FileItem(s) in the response)
      */
-<span class="fc" id="L68">    ArtifactorySearchResponseHandler(Dependency dependency) {</span>
-<span class="fc" id="L69">        this.fileImplReader = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false).readerFor(FileImpl.class);</span>
-<span class="fc" id="L70">        this.expectedDependency = dependency;</span>
-<span class="fc" id="L71">    }</span>
+<span class="fc" id="L77">    ArtifactorySearchResponseHandler(URL sourceUrl, Dependency dependency) {</span>
+<span class="fc" id="L78">        this.fileImplReader = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false).readerFor(FileImpl.class);</span>
+<span class="fc" id="L79">        this.expectedDependency = dependency;</span>
+<span class="fc" id="L80">        this.sourceUrl = sourceUrl;</span>
+<span class="fc" id="L81">    }</span>
 
     protected boolean init(JsonParser parser) throws IOException {
-<span class="fc" id="L74">        com.fasterxml.jackson.core.JsonToken nextToken = parser.nextToken();</span>
-<span class="pc bpc" id="L75" title="1 of 2 branches missed.">        if (nextToken != com.fasterxml.jackson.core.JsonToken.START_OBJECT) {</span>
-<span class="nc" id="L76">            throw new IOException(&quot;Expected &quot; + com.fasterxml.jackson.core.JsonToken.START_OBJECT + &quot;, got &quot; + nextToken);</span>
+<span class="fc" id="L84">        com.fasterxml.jackson.core.JsonToken nextToken = parser.nextToken();</span>
+<span class="pc bpc" id="L85" title="1 of 2 branches missed.">        if (nextToken != com.fasterxml.jackson.core.JsonToken.START_OBJECT) {</span>
+<span class="nc" id="L86">            throw new IOException(&quot;Expected &quot; + com.fasterxml.jackson.core.JsonToken.START_OBJECT + &quot;, got &quot; + nextToken);</span>
         }
 
         do {
-<span class="fc" id="L80">            nextToken = parser.nextToken();</span>
-<span class="pc bpc" id="L81" title="1 of 2 branches missed.">            if (nextToken == null) {</span>
-<span class="nc" id="L82">                break;</span>
+<span class="fc" id="L90">            nextToken = parser.nextToken();</span>
+<span class="pc bpc" id="L91" title="1 of 2 branches missed.">            if (nextToken == null) {</span>
+<span class="nc" id="L92">                break;</span>
             }
 
-<span class="fc bfc" id="L85" title="All 2 branches covered.">            if (nextToken.isStructStart()) {</span>
-<span class="pc bpc" id="L86" title="2 of 4 branches missed.">                if (nextToken == com.fasterxml.jackson.core.JsonToken.START_ARRAY &amp;&amp; &quot;results&quot;.equals(parser.currentName())) {</span>
-<span class="fc" id="L87">                    return true;</span>
+<span class="fc bfc" id="L95" title="All 2 branches covered.">            if (nextToken.isStructStart()) {</span>
+<span class="pc bpc" id="L96" title="2 of 4 branches missed.">                if (nextToken == com.fasterxml.jackson.core.JsonToken.START_ARRAY &amp;&amp; &quot;results&quot;.equals(parser.currentName())) {</span>
+<span class="fc" id="L97">                    return true;</span>
                 } else {
-<span class="nc" id="L89">                    parser.skipChildren();</span>
+<span class="nc" id="L99">                    parser.skipChildren();</span>
                 }
             }
         } while (true);
 
-<span class="nc" id="L94">        return false;</span>
+<span class="nc" id="L104">        return false;</span>
     }
 
     /**
@@ -101,107 +111,110 @@ class ArtifactorySearchResponseHandler implements HttpClientResponseHandler&lt;L
      * @return Whether all available hashes match
      */
     private boolean checkHashes(ChecksumsImpl checksums) {
-<span class="fc" id="L104">        final String md5sum = expectedDependency.getMd5sum();</span>
-<span class="fc" id="L105">        final String hashMismatchFormat = &quot;Artifact found by API is not matching the {} of the artifact (repository hash is {} while actual is {}) !&quot;;</span>
-<span class="fc" id="L106">        boolean match = true;</span>
-<span class="fc bfc" id="L107" title="All 2 branches covered.">        if (!checksums.getMd5().equals(md5sum)) {</span>
-<span class="fc" id="L108">            LOGGER.warn(hashMismatchFormat, &quot;md5&quot;, md5sum, checksums.getMd5());</span>
-<span class="fc" id="L109">            match = false;</span>
+<span class="fc" id="L114">        final String md5sum = expectedDependency.getMd5sum();</span>
+<span class="fc" id="L115">        final String hashMismatchFormat = &quot;Artifact found by API is not matching the {} of the artifact (repository hash is {} while actual is {}) !&quot;;</span>
+<span class="fc" id="L116">        boolean match = true;</span>
+<span class="fc bfc" id="L117" title="All 2 branches covered.">        if (!checksums.getMd5().equals(md5sum)) {</span>
+<span class="fc" id="L118">            LOGGER.warn(hashMismatchFormat, &quot;md5&quot;, md5sum, checksums.getMd5());</span>
+<span class="fc" id="L119">            match = false;</span>
         }
-<span class="fc" id="L111">        final String sha1sum = expectedDependency.getSha1sum();</span>
-<span class="fc bfc" id="L112" title="All 2 branches covered.">        if (!checksums.getSha1().equals(sha1sum)) {</span>
-<span class="fc" id="L113">            LOGGER.warn(hashMismatchFormat, &quot;sha1&quot;, sha1sum, checksums.getSha1());</span>
-<span class="fc" id="L114">            match = false;</span>
+<span class="fc" id="L121">        final String sha1sum = expectedDependency.getSha1sum();</span>
+<span class="fc bfc" id="L122" title="All 2 branches covered.">        if (!checksums.getSha1().equals(sha1sum)) {</span>
+<span class="fc" id="L123">            LOGGER.warn(hashMismatchFormat, &quot;sha1&quot;, sha1sum, checksums.getSha1());</span>
+<span class="fc" id="L124">            match = false;</span>
         }
-<span class="fc" id="L116">        final String sha256sum = expectedDependency.getSha256sum();</span>
-        /* For sha256 we need to validate that the checksum is non-null in the artifactory response.
+<span class="fc" id="L126">        final String sha256sum = expectedDependency.getSha256sum();</span>
+        /* For SHA-256, we need to validate that the checksum is non-null in the artifactory response.
          * Extract from Artifactory documentation:
          * New artifacts that are uploaded to Artifactory 5.5 and later will automatically have their SHA-256 checksum calculated.
          * However, artifacts that were already hosted in Artifactory before the upgrade will not have their SHA-256 checksum in the database yet.
          * To make full use of Artifactory's SHA-256 capabilities, you need to Migrate the Database to Include SHA-256 making sure that the record
          * for each artifact includes its SHA-256 checksum.
          */
-<span class="fc bfc" id="L124" title="All 4 branches covered.">        if (checksums.getSha256() != null &amp;&amp; !checksums.getSha256().equals(sha256sum)) {</span>
-<span class="fc" id="L125">            LOGGER.warn(hashMismatchFormat, &quot;sha256&quot;, sha256sum, checksums.getSha256());</span>
-<span class="fc" id="L126">            match = false;</span>
+<span class="fc bfc" id="L134" title="All 4 branches covered.">        if (checksums.getSha256() != null &amp;&amp; !checksums.getSha256().equals(sha256sum)) {</span>
+<span class="fc" id="L135">            LOGGER.warn(hashMismatchFormat, &quot;sha256&quot;, sha256sum, checksums.getSha256());</span>
+<span class="fc" id="L136">            match = false;</span>
         }
-<span class="fc" id="L128">        return match;</span>
+<span class="fc" id="L138">        return match;</span>
     }
 
     /**
      * Process the Artifactory response.
      *
      * @param response the HTTP response
-     * @return a list of the Maven Artifact informations that match the searched dependency hash
+     * @return a list of the Maven Artifact information that matches the searched dependency hash
      * @throws FileNotFoundException When a matching artifact is not found
      * @throws IOException           thrown if there is an I/O error
      */
     @Override
     public List&lt;MavenArtifact&gt; handleResponse(ClassicHttpResponse response) throws IOException {
-<span class="fc" id="L141">        final List&lt;MavenArtifact&gt; result = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L151">        final List&lt;MavenArtifact&gt; result = new ArrayList&lt;&gt;();</span>
 
-<span class="fc" id="L143">        try (InputStreamReader streamReader = new InputStreamReader(response.getEntity().getContent(), StandardCharsets.UTF_8);</span>
-<span class="fc" id="L144">             JsonParser parser = fileImplReader.getFactory().createParser(streamReader)) {</span>
+<span class="fc" id="L153">        try (InputStreamReader streamReader = new InputStreamReader(response.getEntity().getContent(), StandardCharsets.UTF_8);</span>
+<span class="fc" id="L154">             JsonParser parser = fileImplReader.getFactory().createParser(streamReader)) {</span>
 
-<span class="pc bpc" id="L146" title="1 of 4 branches missed.">            if (init(parser) &amp;&amp; parser.nextToken() == JsonToken.START_OBJECT) {</span>
+<span class="pc bpc" id="L156" title="1 of 4 branches missed.">            if (init(parser) &amp;&amp; parser.nextToken() == JsonToken.START_OBJECT) {</span>
                 // at least one result
                 do {
-<span class="fc" id="L149">                    final FileImpl file = fileImplReader.readValue(parser);</span>
+<span class="fc" id="L159">                    final FileImpl file = fileImplReader.readValue(parser);</span>
 
-<span class="fc bfc" id="L151" title="All 2 branches covered.">                    if (file.getChecksums() == null) {</span>
-<span class="fc" id="L152">                        LOGGER.warn(&quot;No checksums found in artifactory search result of uri {}. Please make sure that header X-Result-Detail is retained on any (reverse)-proxy, loadbalancer or WebApplicationFirewall in the network path to your Artifactory Server&quot;,</span>
-<span class="fc" id="L153">                                file.getUri());</span>
-<span class="fc" id="L154">                        continue;</span>
+<span class="fc bfc" id="L161" title="All 2 branches covered.">                    if (file.getChecksums() == null) {</span>
+<span class="fc" id="L162">                        LOGGER.warn(</span>
+                                &quot;No checksums found in Artifactory search result for '{}'. &quot; +
+                                &quot;Specifically, the result set contains URI '{}' but it is missing the 'checksums' property. &quot; +
+                                &quot;Please make sure that the '{}' header is retained on any (reverse-)proxy, load-balancer or Web Application Firewall in the network path to your Artifactory server.&quot;,
+<span class="fc" id="L166">                                sourceUrl, file.getUri(), X_RESULT_DETAIL_HEADER);</span>
+<span class="fc" id="L167">                        continue;</span>
                     }
 
-<span class="fc" id="L157">                    final Optional&lt;Matcher&gt; validationResult = validateUsability(file);</span>
-<span class="fc bfc" id="L158" title="All 2 branches covered.">                    if (validationResult.isEmpty()) {</span>
-<span class="fc" id="L159">                        continue;</span>
+<span class="fc" id="L170">                    final Optional&lt;Matcher&gt; validationResult = validateUsability(file);</span>
+<span class="fc bfc" id="L171" title="All 2 branches covered.">                    if (validationResult.isEmpty()) {</span>
+<span class="fc" id="L172">                        continue;</span>
                     }
-<span class="fc" id="L161">                    final Matcher pathMatcher = validationResult.get();</span>
+<span class="fc" id="L174">                    final Matcher pathMatcher = validationResult.get();</span>
 
-<span class="fc" id="L163">                    final String groupId = pathMatcher.group(&quot;groupId&quot;).replace('/', '.');</span>
-<span class="fc" id="L164">                    final String artifactId = pathMatcher.group(&quot;artifactId&quot;);</span>
-<span class="fc" id="L165">                    final String version = pathMatcher.group(&quot;version&quot;);</span>
+<span class="fc" id="L176">                    final String groupId = pathMatcher.group(&quot;groupId&quot;).replace('/', '.');</span>
+<span class="fc" id="L177">                    final String artifactId = pathMatcher.group(&quot;artifactId&quot;);</span>
+<span class="fc" id="L178">                    final String version = pathMatcher.group(&quot;version&quot;);</span>
 
-<span class="fc" id="L167">                    result.add(new MavenArtifact(groupId, artifactId, version, file.getDownloadUri(),</span>
-<span class="fc" id="L168">                            MavenArtifact.derivePomUrl(artifactId, version, file.getDownloadUri())));</span>
+<span class="fc" id="L180">                    result.add(new MavenArtifact(groupId, artifactId, version, file.getDownloadUri(),</span>
+<span class="fc" id="L181">                            MavenArtifact.derivePomUrl(artifactId, version, file.getDownloadUri())));</span>
 
-<span class="fc bfc" id="L170" title="All 2 branches covered.">                } while (parser.nextToken() == JsonToken.START_OBJECT);</span>
+<span class="fc bfc" id="L183" title="All 2 branches covered.">                } while (parser.nextToken() == JsonToken.START_OBJECT);</span>
             } else {
-<span class="fc" id="L172">                throw new FileNotFoundException(&quot;Artifact &quot; + expectedDependency + &quot; not found in Artifactory&quot;);</span>
+<span class="fc" id="L185">                throw new FileNotFoundException(&quot;Artifact &quot; + expectedDependency + &quot; not found in Artifactory&quot;);</span>
             }
         }
-<span class="fc bfc" id="L175" title="All 2 branches covered.">        if (result.isEmpty()) {</span>
-<span class="fc" id="L176">            throw new FileNotFoundException(&quot;Artifact &quot; + expectedDependency</span>
-                    + &quot; not found in Artifactory; discovered sha1 hits not recognized as matching maven artifacts&quot;);
+<span class="fc bfc" id="L188" title="All 2 branches covered.">        if (result.isEmpty()) {</span>
+<span class="fc" id="L189">            throw new FileNotFoundException(&quot;Artifact &quot; + expectedDependency</span>
+                    + &quot; not found in Artifactory; discovered SHA1 hits not recognized as matching Maven artifacts&quot;);
         }
-<span class="fc" id="L179">        return result;</span>
+<span class="fc" id="L192">        return result;</span>
     }
 
     /**
      * Validate the FileImpl result for usability as a dependency.
      * &lt;br/&gt;
-     * Checks that the actually matches all known hashes and the path appears to match a maven repository G/A/V pattern.
+     * Checks that the file actually matches all known hashes and the path appears to match a maven repository G/A/V pattern.
      *
      * @param file The FileImpl from an Artifactory search response
-     * @return An Optional with the Matcher for the file path to retrieve the Maven G/A/V coordinates in case result is usable for further
+     * @return An Optional with the Matcher for the file path to retrieve the Maven G/A/V coordinates in case the result is usable for further
      * processing, otherwise an empty Optional.
      */
     private Optional&lt;Matcher&gt; validateUsability(FileImpl file) {
         final Optional&lt;Matcher&gt; result;
-<span class="fc bfc" id="L193" title="All 2 branches covered.">        if (!checkHashes(file.getChecksums())) {</span>
-<span class="fc" id="L194">            result = Optional.empty();</span>
+<span class="fc bfc" id="L206" title="All 2 branches covered.">        if (!checkHashes(file.getChecksums())) {</span>
+<span class="fc" id="L207">            result = Optional.empty();</span>
         } else {
-<span class="fc" id="L196">            final Matcher pathMatcher = PATH_PATTERN.matcher(file.getPath());</span>
-<span class="fc bfc" id="L197" title="All 2 branches covered.">            if (!pathMatcher.matches()) {</span>
-<span class="fc" id="L198">                LOGGER.debug(&quot;Cannot extract the Maven information from the path retrieved in Artifactory {}&quot;, file.getPath());</span>
-<span class="fc" id="L199">                result = Optional.empty();</span>
+<span class="fc" id="L209">            final Matcher pathMatcher = PATH_PATTERN.matcher(file.getPath());</span>
+<span class="fc bfc" id="L210" title="All 2 branches covered.">            if (!pathMatcher.matches()) {</span>
+<span class="fc" id="L211">                LOGGER.debug(&quot;Cannot extract the Maven information from the path retrieved in Artifactory {}&quot;, file.getPath());</span>
+<span class="fc" id="L212">                result = Optional.empty();</span>
             } else {
-<span class="fc" id="L201">                result = Optional.of(pathMatcher);</span>
+<span class="fc" id="L214">                result = Optional.of(pathMatcher);</span>
             }
         }
-<span class="fc" id="L204">        return result;</span>
+<span class="fc" id="L217">        return result;</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

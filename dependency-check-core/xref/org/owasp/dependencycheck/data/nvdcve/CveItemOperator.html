@@ -230,18 +230,19 @@
 <a class="jxr_linenumber" name="L222" href="#L222">222</a>         <strong class="jxr_keyword">if</strong> (cve.getCve().getConfigurations() != <strong class="jxr_keyword">null</strong>) {
 <a class="jxr_linenumber" name="L223" href="#L223">223</a>             <em class="jxr_comment">//cycle through to see if this is a CPE we care about (use the CPE filters</em>
 <a class="jxr_linenumber" name="L224" href="#L224">224</a>             <strong class="jxr_keyword">return</strong> cve.getCve().getConfigurations().stream()
-<a class="jxr_linenumber" name="L225" href="#L225">225</a>                     .map(Config::getNodes)
-<a class="jxr_linenumber" name="L226" href="#L226">226</a>                     .flatMap(List::stream)
-<a class="jxr_linenumber" name="L227" href="#L227">227</a>                     .filter(Objects::nonNull)
-<a class="jxr_linenumber" name="L228" href="#L228">228</a>                     .map(Node::getCpeMatch)
-<a class="jxr_linenumber" name="L229" href="#L229">229</a>                     .filter(Objects::nonNull)
-<a class="jxr_linenumber" name="L230" href="#L230">230</a>                     .flatMap(List::stream)
-<a class="jxr_linenumber" name="L231" href="#L231">231</a>                     .filter(cpe -&gt; cpe != <strong class="jxr_keyword">null</strong> &amp;&amp; cpe.getCriteria() != <strong class="jxr_keyword">null</strong>)
-<a class="jxr_linenumber" name="L232" href="#L232">232</a>                     .anyMatch(cpe -&gt; cpe.getCriteria().startsWith(cpeStartsWithFilter));
-<a class="jxr_linenumber" name="L233" href="#L233">233</a>         }
-<a class="jxr_linenumber" name="L234" href="#L234">234</a>         <strong class="jxr_keyword">return</strong> false;
-<a class="jxr_linenumber" name="L235" href="#L235">235</a>     }
-<a class="jxr_linenumber" name="L236" href="#L236">236</a> }
+<a class="jxr_linenumber" name="L225" href="#L225">225</a>                     .filter(config -&gt; config.getNodes() != <strong class="jxr_keyword">null</strong>)
+<a class="jxr_linenumber" name="L226" href="#L226">226</a>                     .map(Config::getNodes)
+<a class="jxr_linenumber" name="L227" href="#L227">227</a>                     .flatMap(List::stream)
+<a class="jxr_linenumber" name="L228" href="#L228">228</a>                     .filter(Objects::nonNull)
+<a class="jxr_linenumber" name="L229" href="#L229">229</a>                     .map(Node::getCpeMatch)
+<a class="jxr_linenumber" name="L230" href="#L230">230</a>                     .filter(Objects::nonNull)
+<a class="jxr_linenumber" name="L231" href="#L231">231</a>                     .flatMap(List::stream)
+<a class="jxr_linenumber" name="L232" href="#L232">232</a>                     .filter(cpe -&gt; cpe != <strong class="jxr_keyword">null</strong> &amp;&amp; cpe.getCriteria() != <strong class="jxr_keyword">null</strong>)
+<a class="jxr_linenumber" name="L233" href="#L233">233</a>                     .anyMatch(cpe -&gt; cpe.getCriteria().startsWith(cpeStartsWithFilter));
+<a class="jxr_linenumber" name="L234" href="#L234">234</a>         }
+<a class="jxr_linenumber" name="L235" href="#L235">235</a>         <strong class="jxr_keyword">return</strong> false;
+<a class="jxr_linenumber" name="L236" href="#L236">236</a>     }
+<a class="jxr_linenumber" name="L237" href="#L237">237</a> }
 </pre>
 <hr/>
 <div id="footer">Copyright &#169; 2012&#x2013;2025 <a href="https://www.owasp.org">OWASP</a>. All rights reserved.</div>

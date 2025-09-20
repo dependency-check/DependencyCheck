@@ -393,11 +393,14 @@ import us.springett.parsers.cpe.values.Part;
                     }
                 }
 <span class="fc" id="L395">                dependency.setLicense(sb.toString());</span>
-<span class="fc" id="L396">            } else {</span>
-<span class="fc" id="L397">                dependency.setLicense(json.getJsonObject(&quot;license&quot;).getString(&quot;type&quot;));</span>
+<span class="pc bpc" id="L396" title="1 of 2 branches missed.">            } else if (value instanceof JsonObject) {</span>
+<span class="fc" id="L397">                final JsonObject object = (JsonObject) value;</span>
+<span class="pc bpc" id="L398" title="2 of 4 branches missed.">                if (object.containsKey(&quot;type&quot;) &amp;&amp; !object.isNull(&quot;type&quot;)) {</span>
+<span class="fc" id="L399">                    dependency.setLicense(object.getString(&quot;type&quot;));</span>
+                }
             }
         }
-<span class="fc" id="L400">    }</span>
+<span class="fc" id="L403">    }</span>
 
     /**
      * Initializes the analyzer once before any analysis is performed.
@@ -407,30 +410,30 @@ import us.springett.parsers.cpe.values.Part;
      */
     @Override
     protected void prepareFileTypeAnalyzer(Engine engine) throws InitializationException {
-<span class="pc bpc" id="L410" title="2 of 4 branches missed.">        if (!isEnabled() || !getFilesMatched()) {</span>
-<span class="nc" id="L411">            this.setEnabled(false);</span>
-<span class="nc" id="L412">            return;</span>
+<span class="pc bpc" id="L413" title="2 of 4 branches missed.">        if (!isEnabled() || !getFilesMatched()) {</span>
+<span class="nc" id="L414">            this.setEnabled(false);</span>
+<span class="nc" id="L415">            return;</span>
         }
-<span class="fc bfc" id="L414" title="All 2 branches covered.">        if (searcher == null) {</span>
-<span class="fc" id="L415">            LOGGER.debug(&quot;Initializing {}&quot;, getName());</span>
+<span class="fc bfc" id="L417" title="All 2 branches covered.">        if (searcher == null) {</span>
+<span class="fc" id="L418">            LOGGER.debug(&quot;Initializing {}&quot;, getName());</span>
             try {
-<span class="fc" id="L417">                searcher = new NodeAuditSearch(getSettings());</span>
-<span class="nc" id="L418">            } catch (MalformedURLException ex) {</span>
-<span class="nc" id="L419">                setEnabled(false);</span>
-<span class="nc" id="L420">                throw new InitializationException(&quot;The configured URL to NPM Audit API is malformed&quot;, ex);</span>
-<span class="fc" id="L421">            }</span>
+<span class="fc" id="L420">                searcher = new NodeAuditSearch(getSettings());</span>
+<span class="nc" id="L421">            } catch (MalformedURLException ex) {</span>
+<span class="nc" id="L422">                setEnabled(false);</span>
+<span class="nc" id="L423">                throw new InitializationException(&quot;The configured URL to NPM Audit API is malformed&quot;, ex);</span>
+<span class="fc" id="L424">            }</span>
             try {
-<span class="fc" id="L423">                final Settings settings = engine.getSettings();</span>
-<span class="fc" id="L424">                final boolean nodeEnabled = settings.getBoolean(Settings.KEYS.ANALYZER_NODE_PACKAGE_ENABLED);</span>
-<span class="fc bfc" id="L425" title="All 2 branches covered.">                if (!nodeEnabled) {</span>
-<span class="fc" id="L426">                    LOGGER.warn(&quot;The Node Package Analyzer has been disabled; the resulting report will only &quot;</span>
+<span class="fc" id="L426">                final Settings settings = engine.getSettings();</span>
+<span class="fc" id="L427">                final boolean nodeEnabled = settings.getBoolean(Settings.KEYS.ANALYZER_NODE_PACKAGE_ENABLED);</span>
+<span class="fc bfc" id="L428" title="All 2 branches covered.">                if (!nodeEnabled) {</span>
+<span class="fc" id="L429">                    LOGGER.warn(&quot;The Node Package Analyzer has been disabled; the resulting report will only &quot;</span>
                             + &quot;contain the known vulnerable dependency - not a bill of materials for the node project.&quot;);
                 }
-<span class="nc" id="L429">            } catch (InvalidSettingException ex) {</span>
-<span class="nc" id="L430">                throw new InitializationException(&quot;Unable to read configuration settings&quot;, ex);</span>
-<span class="fc" id="L431">            }</span>
+<span class="nc" id="L432">            } catch (InvalidSettingException ex) {</span>
+<span class="nc" id="L433">                throw new InitializationException(&quot;Unable to read configuration settings&quot;, ex);</span>
+<span class="fc" id="L434">            }</span>
         }
-<span class="fc" id="L433">    }</span>
+<span class="fc" id="L436">    }</span>
 
     /**
      * Processes the advisories creating the appropriate dependency objects and
@@ -447,54 +450,54 @@ import us.springett.parsers.cpe.values.Part;
     protected void processResults(final List&lt;Advisory&gt; advisories, Engine engine,
             Dependency dependency, MultiValuedMap&lt;String, String&gt; dependencyMap)
             throws CpeValidationException {
-<span class="fc bfc" id="L450" title="All 2 branches covered.">        for (Advisory advisory : advisories) {</span>
+<span class="fc bfc" id="L453" title="All 2 branches covered.">        for (Advisory advisory : advisories) {</span>
             //Create a new vulnerability out of the advisory returned by nsp.
-<span class="fc" id="L452">            final Vulnerability vuln = new Vulnerability();</span>
-<span class="fc" id="L453">            vuln.setDescription(advisory.getOverview());</span>
-<span class="fc" id="L454">            vuln.setName(String.valueOf(advisory.getGhsaId()));</span>
-<span class="fc" id="L455">            vuln.setUnscoredSeverity(advisory.getSeverity());</span>
-<span class="fc" id="L456">            vuln.setCvssV3(advisory.getCvssV3());</span>
-<span class="fc" id="L457">            vuln.setSource(Vulnerability.Source.NPM);</span>
-<span class="fc bfc" id="L458" title="All 2 branches covered.">            for (String cwe : advisory.getCwes()) {</span>
-<span class="fc" id="L459">                vuln.addCwe(cwe);</span>
-<span class="fc" id="L460">            }</span>
-<span class="fc bfc" id="L461" title="All 2 branches covered.">            if (advisory.getReferences() != null) {</span>
-<span class="fc" id="L462">                final String[] references = advisory.getReferences().split(&quot;\\n&quot;);</span>
-<span class="fc bfc" id="L463" title="All 2 branches covered.">                for (String reference : references) {</span>
-<span class="pc bpc" id="L464" title="1 of 2 branches missed.">                    if (reference.length() &gt; 3) {</span>
-<span class="fc" id="L465">                        String url = reference.substring(2);</span>
+<span class="fc" id="L455">            final Vulnerability vuln = new Vulnerability();</span>
+<span class="fc" id="L456">            vuln.setDescription(advisory.getOverview());</span>
+<span class="fc" id="L457">            vuln.setName(String.valueOf(advisory.getGhsaId()));</span>
+<span class="fc" id="L458">            vuln.setUnscoredSeverity(advisory.getSeverity());</span>
+<span class="fc" id="L459">            vuln.setCvssV3(advisory.getCvssV3());</span>
+<span class="fc" id="L460">            vuln.setSource(Vulnerability.Source.NPM);</span>
+<span class="fc bfc" id="L461" title="All 2 branches covered.">            for (String cwe : advisory.getCwes()) {</span>
+<span class="fc" id="L462">                vuln.addCwe(cwe);</span>
+<span class="fc" id="L463">            }</span>
+<span class="fc bfc" id="L464" title="All 2 branches covered.">            if (advisory.getReferences() != null) {</span>
+<span class="fc" id="L465">                final String[] references = advisory.getReferences().split(&quot;\\n&quot;);</span>
+<span class="fc bfc" id="L466" title="All 2 branches covered.">                for (String reference : references) {</span>
+<span class="pc bpc" id="L467" title="1 of 2 branches missed.">                    if (reference.length() &gt; 3) {</span>
+<span class="fc" id="L468">                        String url = reference.substring(2);</span>
                         try {
-<span class="fc" id="L467">                            new URL(url);</span>
-<span class="nc" id="L468">                        } catch (MalformedURLException ignored) {</span>
+<span class="fc" id="L470">                            new URL(url);</span>
+<span class="nc" id="L471">                        } catch (MalformedURLException ignored) {</span>
                             // reference is not a format-valid URL, so null it to make the reference be used as plaintext
-<span class="nc" id="L470">                            url = null;</span>
-<span class="fc" id="L471">                        }</span>
-<span class="pc bpc" id="L472" title="1 of 2 branches missed.">                        vuln.addReference(&quot;NPM Advisory reference: &quot;, url == null ? reference : url, url);</span>
+<span class="nc" id="L473">                            url = null;</span>
+<span class="fc" id="L474">                        }</span>
+<span class="pc bpc" id="L475" title="1 of 2 branches missed.">                        vuln.addReference(&quot;NPM Advisory reference: &quot;, url == null ? reference : url, url);</span>
                     }
                 }
             }
 
             //Create a single vulnerable software object - these do not use CPEs unlike the NVD.
-<span class="fc" id="L478">            final VulnerableSoftwareBuilder builder = new VulnerableSoftwareBuilder();</span>
-<span class="fc" id="L479">            builder.part(Part.APPLICATION).product(advisory.getModuleName().replace(&quot; &quot;, &quot;_&quot;))</span>
-<span class="fc" id="L480">                    .version(advisory.getVulnerableVersions().replace(&quot; &quot;, &quot;&quot;));</span>
-<span class="fc" id="L481">            final VulnerableSoftware vs = builder.build();</span>
-<span class="fc" id="L482">            vuln.addVulnerableSoftware(vs);</span>
+<span class="fc" id="L481">            final VulnerableSoftwareBuilder builder = new VulnerableSoftwareBuilder();</span>
+<span class="fc" id="L482">            builder.part(Part.APPLICATION).product(advisory.getModuleName().replace(&quot; &quot;, &quot;_&quot;))</span>
+<span class="fc" id="L483">                    .version(advisory.getVulnerableVersions().replace(&quot; &quot;, &quot;&quot;));</span>
+<span class="fc" id="L484">            final VulnerableSoftware vs = builder.build();</span>
+<span class="fc" id="L485">            vuln.addVulnerableSoftware(vs);</span>
 
-<span class="fc" id="L484">            String version = advisory.getVersion();</span>
-<span class="fc bfc" id="L485" title="All 4 branches covered.">            if (version == null &amp;&amp; dependencyMap.containsKey(advisory.getModuleName())) {</span>
-<span class="fc" id="L486">                version = determineVersionFromMap(advisory.getVulnerableVersions(), dependencyMap.get(advisory.getModuleName()));</span>
+<span class="fc" id="L487">            String version = advisory.getVersion();</span>
+<span class="fc bfc" id="L488" title="All 4 branches covered.">            if (version == null &amp;&amp; dependencyMap.containsKey(advisory.getModuleName())) {</span>
+<span class="fc" id="L489">                version = determineVersionFromMap(advisory.getVulnerableVersions(), dependencyMap.get(advisory.getModuleName()));</span>
             }
-<span class="fc" id="L488">            final Dependency existing = findDependency(engine, advisory.getModuleName(), version);</span>
-<span class="fc bfc" id="L489" title="All 2 branches covered.">            if (existing == null) {</span>
-<span class="fc" id="L490">                final Dependency nodeModule = createDependency(dependency, advisory.getModuleName(), version, &quot;transitive&quot;);</span>
-<span class="fc" id="L491">                nodeModule.addVulnerability(vuln);</span>
-<span class="fc" id="L492">                engine.addDependency(nodeModule);</span>
-<span class="fc" id="L493">            } else {</span>
-<span class="fc" id="L494">                replaceOrAddVulnerability(existing, vuln);</span>
+<span class="fc" id="L491">            final Dependency existing = findDependency(engine, advisory.getModuleName(), version);</span>
+<span class="fc bfc" id="L492" title="All 2 branches covered.">            if (existing == null) {</span>
+<span class="fc" id="L493">                final Dependency nodeModule = createDependency(dependency, advisory.getModuleName(), version, &quot;transitive&quot;);</span>
+<span class="fc" id="L494">                nodeModule.addVulnerability(vuln);</span>
+<span class="fc" id="L495">                engine.addDependency(nodeModule);</span>
+<span class="fc" id="L496">            } else {</span>
+<span class="fc" id="L497">                replaceOrAddVulnerability(existing, vuln);</span>
             }
-<span class="fc" id="L496">        }</span>
-<span class="fc" id="L497">    }</span>
+<span class="fc" id="L499">        }</span>
+<span class="fc" id="L500">    }</span>
 
     /**
      * Evaluates if the vulnerability is already present; if it is the
@@ -504,17 +507,17 @@ import us.springett.parsers.cpe.values.Part;
      * @param vuln the vulnerability to add
      */
     protected void replaceOrAddVulnerability(Dependency dependency, Vulnerability vuln) {
-<span class="pc bpc" id="L507" title="1 of 2 branches missed.">        final boolean found = vuln.getSource() == Vulnerability.Source.NPM</span>
-<span class="pc bpc" id="L508" title="1 of 2 branches missed.">                &amp;&amp; dependency.getVulnerabilities().stream().anyMatch(existing -&gt; {</span>
-<span class="fc" id="L509">                    return existing.getReferences().stream().anyMatch(ref -&gt; {</span>
-<span class="pc bpc" id="L510" title="1 of 2 branches missed.">                        return ref.getName() != null</span>
-<span class="pc bpc" id="L511" title="1 of 2 branches missed.">                                &amp;&amp; ref.getName().equals(&quot;https://nodesecurity.io/advisories/&quot; + vuln.getName());</span>
+<span class="pc bpc" id="L510" title="1 of 2 branches missed.">        final boolean found = vuln.getSource() == Vulnerability.Source.NPM</span>
+<span class="pc bpc" id="L511" title="1 of 2 branches missed.">                &amp;&amp; dependency.getVulnerabilities().stream().anyMatch(existing -&gt; {</span>
+<span class="fc" id="L512">                    return existing.getReferences().stream().anyMatch(ref -&gt; {</span>
+<span class="pc bpc" id="L513" title="1 of 2 branches missed.">                        return ref.getName() != null</span>
+<span class="pc bpc" id="L514" title="1 of 2 branches missed.">                                &amp;&amp; ref.getName().equals(&quot;https://nodesecurity.io/advisories/&quot; + vuln.getName());</span>
                     });
                 });
-<span class="pc bpc" id="L514" title="1 of 2 branches missed.">        if (!found) {</span>
-<span class="fc" id="L515">            dependency.addVulnerability(vuln);</span>
+<span class="pc bpc" id="L517" title="1 of 2 branches missed.">        if (!found) {</span>
+<span class="fc" id="L518">            dependency.addVulnerability(vuln);</span>
         }
-<span class="fc" id="L517">    }</span>
+<span class="fc" id="L520">    }</span>
 
     /**
      * Returns the node audit search utility.
@@ -522,7 +525,7 @@ import us.springett.parsers.cpe.values.Part;
      * @return the node audit search utility
      */
     protected NodeAuditSearch getSearcher() {
-<span class="fc" id="L525">        return searcher;</span>
+<span class="fc" id="L528">        return searcher;</span>
     }
 
     /**
@@ -535,20 +538,20 @@ import us.springett.parsers.cpe.values.Part;
      * @return the selected range from the versionRange
      */
     public static String determineVersionFromMap(String versionRange, Collection&lt;String&gt; availableVersions) {
-<span class="fc bfc" id="L538" title="All 2 branches covered.">        if (availableVersions.size() == 1) {</span>
-<span class="fc" id="L539">            return availableVersions.iterator().next();</span>
+<span class="fc bfc" id="L541" title="All 2 branches covered.">        if (availableVersions.size() == 1) {</span>
+<span class="fc" id="L542">            return availableVersions.iterator().next();</span>
         }
-<span class="fc bfc" id="L541" title="All 2 branches covered.">        for (String v : availableVersions) {</span>
+<span class="fc bfc" id="L544" title="All 2 branches covered.">        for (String v : availableVersions) {</span>
             try {
-<span class="fc" id="L543">                final Semver version = new Semver(v);</span>
-<span class="fc bfc" id="L544" title="All 2 branches covered.">                if (version.satisfies(versionRange)) {</span>
-<span class="fc" id="L545">                    return v;</span>
+<span class="fc" id="L546">                final Semver version = new Semver(v);</span>
+<span class="fc bfc" id="L547" title="All 2 branches covered.">                if (version.satisfies(versionRange)) {</span>
+<span class="fc" id="L548">                    return v;</span>
                 }
-<span class="nc" id="L547">            } catch (SemverException ex) {</span>
-<span class="nc" id="L548">                LOGGER.debug(&quot;invalid semver: &quot; + v);</span>
-<span class="fc" id="L549">            }</span>
-<span class="fc" id="L550">        }</span>
-<span class="fc" id="L551">        return availableVersions.iterator().next();</span>
+<span class="nc" id="L550">            } catch (SemverException ex) {</span>
+<span class="nc" id="L551">                LOGGER.debug(&quot;invalid semver: &quot; + v);</span>
+<span class="fc" id="L552">            }</span>
+<span class="fc" id="L553">        }</span>
+<span class="fc" id="L554">        return availableVersions.iterator().next();</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

@@ -222,16 +222,17 @@ public class CveItemOperator {
 <span class="pc bpc" id="L222" title="1 of 2 branches missed.">        if (cve.getCve().getConfigurations() != null) {</span>
             //cycle through to see if this is a CPE we care about (use the CPE filters
 <span class="fc" id="L224">            return cve.getCve().getConfigurations().stream()</span>
-<span class="fc" id="L225">                    .map(Config::getNodes)</span>
-<span class="fc" id="L226">                    .flatMap(List::stream)</span>
-<span class="fc" id="L227">                    .filter(Objects::nonNull)</span>
-<span class="fc" id="L228">                    .map(Node::getCpeMatch)</span>
-<span class="fc" id="L229">                    .filter(Objects::nonNull)</span>
-<span class="fc" id="L230">                    .flatMap(List::stream)</span>
-<span class="pc bpc" id="L231" title="1 of 4 branches missed.">                    .filter(cpe -&gt; cpe != null &amp;&amp; cpe.getCriteria() != null)</span>
-<span class="fc" id="L232">                    .anyMatch(cpe -&gt; cpe.getCriteria().startsWith(cpeStartsWithFilter));</span>
+<span class="pc bpc" id="L225" title="1 of 2 branches missed.">                    .filter(config -&gt; config.getNodes() != null)</span>
+<span class="fc" id="L226">                    .map(Config::getNodes)</span>
+<span class="fc" id="L227">                    .flatMap(List::stream)</span>
+<span class="fc" id="L228">                    .filter(Objects::nonNull)</span>
+<span class="fc" id="L229">                    .map(Node::getCpeMatch)</span>
+<span class="fc" id="L230">                    .filter(Objects::nonNull)</span>
+<span class="fc" id="L231">                    .flatMap(List::stream)</span>
+<span class="pc bpc" id="L232" title="1 of 4 branches missed.">                    .filter(cpe -&gt; cpe != null &amp;&amp; cpe.getCriteria() != null)</span>
+<span class="fc" id="L233">                    .anyMatch(cpe -&gt; cpe.getCriteria().startsWith(cpeStartsWithFilter));</span>
         }
-<span class="nc" id="L234">        return false;</span>
+<span class="nc" id="L235">        return false;</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

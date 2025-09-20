@@ -625,7 +625,7 @@ public class Dependency extends EvidenceCollection implements Serializable {
 <span class="fc bfc" id="L625" title="All 2 branches covered.">        if (sorted) {</span>
 <span class="fc" id="L626">            vulnerabilitySet = new TreeSet&lt;&gt;(vulnerabilities);</span>
         } else {
-<span class="fc" id="L628">            vulnerabilitySet = vulnerabilities;</span>
+<span class="fc" id="L628">            vulnerabilitySet = new HashSet&lt;&gt;(vulnerabilities);</span>
         }
 <span class="fc" id="L630">        return Collections.unmodifiableSet(vulnerabilitySet);</span>
     }

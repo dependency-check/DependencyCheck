@@ -21,9 +21,14 @@ import io.github.jeremylong.openvulnerability.client.nvd.CvssV2;
 import io.github.jeremylong.openvulnerability.client.nvd.CvssV2Data;
 import io.github.jeremylong.openvulnerability.client.nvd.CvssV3;
 import io.github.jeremylong.openvulnerability.client.nvd.CvssV3Data;
+
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import io.github.jeremylong.openvulnerability.client.nvd.CvssV4;
+import io.github.jeremylong.openvulnerability.client.nvd.CvssV4Data;
 import org.sonatype.ossindex.service.api.cvss.Cvss3Severity;
 
 /**
@@ -36,40 +41,41 @@ public final class CvssUtil {
     private CvssUtil() {
         //empty constructor for utility class.
     }
+
     /**
      * The CVSS v3 Base Metrics (that are required by the spec for any CVSS v3
      * Vector String)
      */
-<span class="fc" id="L43">    private static final List&lt;String&gt; BASE_METRICS_V3 = Arrays.asList(&quot;AV&quot;, &quot;AC&quot;, &quot;PR&quot;, &quot;UI&quot;, &quot;S&quot;, &quot;C&quot;, &quot;I&quot;, &quot;A&quot;);</span>
+<span class="fc" id="L49">    private static final List&lt;String&gt; BASE_METRICS_V3 = Arrays.asList(&quot;AV&quot;, &quot;AC&quot;, &quot;PR&quot;, &quot;UI&quot;, &quot;S&quot;, &quot;C&quot;, &quot;I&quot;, &quot;A&quot;);</span>
 
     /**
      * The CVSS V2 Metrics required for the vector string to be complete.
      */
-<span class="fc" id="L48">    private static final List&lt;String&gt; BASE_METRICS_V2 = Arrays.asList(&quot;AV&quot;, &quot;AC&quot;, &quot;Au&quot;, &quot;C&quot;, &quot;I&quot;, &quot;A&quot;);</span>
+<span class="fc" id="L54">    private static final List&lt;String&gt; BASE_METRICS_V2 = Arrays.asList(&quot;AV&quot;, &quot;AC&quot;, &quot;Au&quot;, &quot;C&quot;, &quot;I&quot;, &quot;A&quot;);</span>
     /**
      * ZERO.
      */
-<span class="fc" id="L52">    private static final Double ZERO = 0.0;</span>
+<span class="fc" id="L58">    private static final Double ZERO = 0.0;</span>
     /**
      * ONE.
      */
-<span class="fc" id="L56">    private static final Double ONE = 1.0;</span>
+<span class="fc" id="L62">    private static final Double ONE = 1.0;</span>
     /**
      * FOUR.
      */
-<span class="fc" id="L60">    private static final Double FOUR = 4.0;</span>
+<span class="fc" id="L66">    private static final Double FOUR = 4.0;</span>
     /**
      * SEVEN.
      */
-<span class="fc" id="L64">    private static final Double SEVEN = 7.0;</span>
+<span class="fc" id="L70">    private static final Double SEVEN = 7.0;</span>
     /**
      * NINE.
      */
-<span class="fc" id="L68">    private static final Double NINE = 9.0;</span>
+<span class="fc" id="L74">    private static final Double NINE = 9.0;</span>
     /**
      * TEN.
      */
-<span class="fc" id="L72">    private static final Double TEN = 10.0;</span>
+<span class="fc" id="L78">    private static final Double TEN = 10.0;</span>
     /**
      * UNKNOWN.
      */
@@ -95,40 +101,40 @@ public final class CvssUtil {
      * @return the CVSSv2 object
      */
     public static CvssV2 vectorToCvssV2(String vectorString, Double baseScore) {
-<span class="pc bpc" id="L98" title="1 of 2 branches missed.">        if (vectorString.startsWith(&quot;CVSS:&quot;)) {</span>
-<span class="nc" id="L99">            throw new IllegalArgumentException(&quot;Not a valid CVSSv2 vector string: &quot; + vectorString);</span>
+<span class="pc bpc" id="L104" title="1 of 2 branches missed.">        if (vectorString.startsWith(&quot;CVSS:&quot;)) {</span>
+<span class="nc" id="L105">            throw new IllegalArgumentException(&quot;Not a valid CVSSv2 vector string: &quot; + vectorString);</span>
         }
-<span class="fc" id="L101">        final String[] metricStrings = vectorString.substring(vectorString.indexOf('/') + 1).split(&quot;/&quot;);</span>
-<span class="fc" id="L102">        final HashMap&lt;String, String&gt; metrics = new HashMap&lt;&gt;();</span>
-<span class="fc bfc" id="L103" title="All 2 branches covered.">        for (int i = 0; i &lt; metricStrings.length; i++) {</span>
-<span class="fc" id="L104">            final String[] metricKeyVal = metricStrings[i].split(&quot;:&quot;);</span>
-<span class="pc bpc" id="L105" title="1 of 2 branches missed.">            if (metricKeyVal.length != 2) {</span>
-<span class="nc" id="L106">                throw new IllegalArgumentException(</span>
-<span class="nc" id="L107">                        String.format(&quot;Not a valid CVSSv2 vector string '%s', invalid metric component '%s'&quot;,</span>
+<span class="fc" id="L107">        final String[] metricStrings = vectorString.substring(vectorString.indexOf('/') + 1).split(&quot;/&quot;);</span>
+<span class="fc" id="L108">        final HashMap&lt;String, String&gt; metrics = new HashMap&lt;&gt;();</span>
+<span class="fc bfc" id="L109" title="All 2 branches covered.">        for (int i = 0; i &lt; metricStrings.length; i++) {</span>
+<span class="fc" id="L110">            final String[] metricKeyVal = metricStrings[i].split(&quot;:&quot;);</span>
+<span class="pc bpc" id="L111" title="1 of 2 branches missed.">            if (metricKeyVal.length != 2) {</span>
+<span class="nc" id="L112">                throw new IllegalArgumentException(</span>
+<span class="nc" id="L113">                        String.format(&quot;Not a valid CVSSv2 vector string '%s', invalid metric component '%s'&quot;,</span>
                                 vectorString, metricStrings[i]));
             }
-<span class="fc" id="L110">            metrics.put(metricKeyVal[0], metricKeyVal[1]);</span>
+<span class="fc" id="L116">            metrics.put(metricKeyVal[0], metricKeyVal[1]);</span>
         }
-<span class="pc bpc" id="L112" title="1 of 2 branches missed.">        if (!metrics.keySet().containsAll(BASE_METRICS_V2)) {</span>
-<span class="nc" id="L113">            throw new IllegalArgumentException(</span>
-<span class="nc" id="L114">                    String.format(&quot;Not a valid CVSSv2 vector string '%s'; missing one or more required Metrics;&quot;,</span>
+<span class="pc bpc" id="L118" title="1 of 2 branches missed.">        if (!metrics.keySet().containsAll(BASE_METRICS_V2)) {</span>
+<span class="nc" id="L119">            throw new IllegalArgumentException(</span>
+<span class="nc" id="L120">                    String.format(&quot;Not a valid CVSSv2 vector string '%s'; missing one or more required Metrics;&quot;,</span>
                             vectorString));
         }
 
         //&quot;AV:L/AC:L/Au:N/C:N/I:N/A:C&quot;
-<span class="fc" id="L119">        final CvssV2Data.AccessVectorType accessVector = CvssV2Data.AccessVectorType.fromValue(metrics.get(&quot;AV&quot;));</span>
-<span class="fc" id="L120">        final CvssV2Data.AccessComplexityType attackComplexity = CvssV2Data.AccessComplexityType.fromValue(metrics.get(&quot;AC&quot;));</span>
-<span class="fc" id="L121">        final CvssV2Data.AuthenticationType authentication = CvssV2Data.AuthenticationType.fromValue(metrics.get(&quot;Au&quot;));</span>
-<span class="fc" id="L122">        final CvssV2Data.CiaType confidentialityImpact = CvssV2Data.CiaType.fromValue(metrics.get(&quot;C&quot;));</span>
-<span class="fc" id="L123">        final CvssV2Data.CiaType integrityImpact = CvssV2Data.CiaType.fromValue(metrics.get(&quot;I&quot;));</span>
-<span class="fc" id="L124">        final CvssV2Data.CiaType availabilityImpact = CvssV2Data.CiaType.fromValue(metrics.get(&quot;A&quot;));</span>
+<span class="fc" id="L125">        final CvssV2Data.AccessVectorType accessVector = CvssV2Data.AccessVectorType.fromValue(metrics.get(&quot;AV&quot;));</span>
+<span class="fc" id="L126">        final CvssV2Data.AccessComplexityType attackComplexity = CvssV2Data.AccessComplexityType.fromValue(metrics.get(&quot;AC&quot;));</span>
+<span class="fc" id="L127">        final CvssV2Data.AuthenticationType authentication = CvssV2Data.AuthenticationType.fromValue(metrics.get(&quot;Au&quot;));</span>
+<span class="fc" id="L128">        final CvssV2Data.CiaType confidentialityImpact = CvssV2Data.CiaType.fromValue(metrics.get(&quot;C&quot;));</span>
+<span class="fc" id="L129">        final CvssV2Data.CiaType integrityImpact = CvssV2Data.CiaType.fromValue(metrics.get(&quot;I&quot;));</span>
+<span class="fc" id="L130">        final CvssV2Data.CiaType availabilityImpact = CvssV2Data.CiaType.fromValue(metrics.get(&quot;A&quot;));</span>
 
-<span class="fc" id="L126">        final String baseSeverity = cvssV2ScoreToSeverity(baseScore);</span>
-<span class="fc" id="L127">        final CvssV2Data data = new CvssV2Data(CvssV2Data.Version._2_0, vectorString, accessVector, attackComplexity,</span>
+<span class="fc" id="L132">        final String baseSeverity = cvssV2ScoreToSeverity(baseScore);</span>
+<span class="fc" id="L133">        final CvssV2Data data = new CvssV2Data(CvssV2Data.Version._2_0, vectorString, accessVector, attackComplexity,</span>
                 authentication, confidentialityImpact, integrityImpact, availabilityImpact, baseScore, baseSeverity,
                 null, null, null, null, null, null, null, null, null, null);
-<span class="fc" id="L130">        final CvssV2 cvss = new CvssV2(null, null, data, baseSeverity, null, null, null, null, null, null, null);</span>
-<span class="fc" id="L131">        return cvss;</span>
+<span class="fc" id="L136">        final CvssV2 cvss = new CvssV2(null, null, data, baseSeverity, null, null, null, null, null, null, null);</span>
+<span class="fc" id="L137">        return cvss;</span>
 
     }
 
@@ -139,16 +145,16 @@ public final class CvssUtil {
      * @return the severity
      */
     public static String cvssV2ScoreToSeverity(Double score) {
-<span class="pc bpc" id="L142" title="1 of 2 branches missed.">        if (score != null) {</span>
-<span class="fc bfc" id="L143" title="All 4 branches covered.">            if (ZERO.compareTo(score) &lt;= 0 &amp;&amp; FOUR.compareTo(score) &gt; 0) {</span>
-<span class="fc" id="L144">                return LOW;</span>
-<span class="fc bfc" id="L145" title="All 4 branches covered.">            } else if (FOUR.compareTo(score) &lt;= 0 &amp;&amp; SEVEN.compareTo(score) &gt; 0) {</span>
-<span class="fc" id="L146">                return MEDIUM;</span>
-<span class="fc bfc" id="L147" title="All 4 branches covered.">            } else if (SEVEN.compareTo(score) &lt;= 0 &amp;&amp; TEN.compareTo(score) &gt;= 0) {</span>
-<span class="fc" id="L148">                return HIGH;</span>
+<span class="pc bpc" id="L148" title="1 of 2 branches missed.">        if (score != null) {</span>
+<span class="fc bfc" id="L149" title="All 4 branches covered.">            if (ZERO.compareTo(score) &lt;= 0 &amp;&amp; FOUR.compareTo(score) &gt; 0) {</span>
+<span class="fc" id="L150">                return LOW;</span>
+<span class="fc bfc" id="L151" title="All 4 branches covered.">            } else if (FOUR.compareTo(score) &lt;= 0 &amp;&amp; SEVEN.compareTo(score) &gt; 0) {</span>
+<span class="fc" id="L152">                return MEDIUM;</span>
+<span class="fc bfc" id="L153" title="All 4 branches covered.">            } else if (SEVEN.compareTo(score) &lt;= 0 &amp;&amp; TEN.compareTo(score) &gt;= 0) {</span>
+<span class="fc" id="L154">                return HIGH;</span>
             }
         }
-<span class="fc" id="L151">        return UNKNOWN;</span>
+<span class="fc" id="L157">        return UNKNOWN;</span>
     }
 
     /**
@@ -158,20 +164,20 @@ public final class CvssUtil {
      * @return the severity
      */
     public static CvssV3Data.SeverityType cvssV3ScoreToSeverity(Double score) {
-<span class="pc bpc" id="L161" title="1 of 2 branches missed.">        if (score != null) {</span>
-<span class="fc bfc" id="L162" title="All 2 branches covered.">            if (ZERO.compareTo(score) == 0) {</span>
-<span class="fc" id="L163">                return CvssV3Data.SeverityType.NONE;</span>
-<span class="fc bfc" id="L164" title="All 4 branches covered.">            } else if (ZERO.compareTo(score) &lt;= 0 &amp;&amp; FOUR.compareTo(score) &gt; 0) {</span>
-<span class="fc" id="L165">                return CvssV3Data.SeverityType.LOW;</span>
-<span class="fc bfc" id="L166" title="All 4 branches covered.">            } else if (FOUR.compareTo(score) &lt;= 0 &amp;&amp; SEVEN.compareTo(score) &gt; 0) {</span>
-<span class="fc" id="L167">                return CvssV3Data.SeverityType.MEDIUM;</span>
-<span class="fc bfc" id="L168" title="All 4 branches covered.">            } else if (SEVEN.compareTo(score) &lt;= 0 &amp;&amp; NINE.compareTo(score) &gt; 0) {</span>
-<span class="fc" id="L169">                return CvssV3Data.SeverityType.HIGH;</span>
-<span class="fc bfc" id="L170" title="All 4 branches covered.">            } else if (NINE.compareTo(score) &lt;= 0 &amp;&amp; TEN.compareTo(score) &gt;= 0) {</span>
-<span class="fc" id="L171">                return CvssV3Data.SeverityType.CRITICAL;</span>
+<span class="pc bpc" id="L167" title="1 of 2 branches missed.">        if (score != null) {</span>
+<span class="fc bfc" id="L168" title="All 2 branches covered.">            if (ZERO.compareTo(score) == 0) {</span>
+<span class="fc" id="L169">                return CvssV3Data.SeverityType.NONE;</span>
+<span class="fc bfc" id="L170" title="All 4 branches covered.">            } else if (ZERO.compareTo(score) &lt;= 0 &amp;&amp; FOUR.compareTo(score) &gt; 0) {</span>
+<span class="fc" id="L171">                return CvssV3Data.SeverityType.LOW;</span>
+<span class="fc bfc" id="L172" title="All 4 branches covered.">            } else if (FOUR.compareTo(score) &lt;= 0 &amp;&amp; SEVEN.compareTo(score) &gt; 0) {</span>
+<span class="fc" id="L173">                return CvssV3Data.SeverityType.MEDIUM;</span>
+<span class="fc bfc" id="L174" title="All 4 branches covered.">            } else if (SEVEN.compareTo(score) &lt;= 0 &amp;&amp; NINE.compareTo(score) &gt; 0) {</span>
+<span class="fc" id="L175">                return CvssV3Data.SeverityType.HIGH;</span>
+<span class="fc bfc" id="L176" title="All 4 branches covered.">            } else if (NINE.compareTo(score) &lt;= 0 &amp;&amp; TEN.compareTo(score) &gt;= 0) {</span>
+<span class="fc" id="L177">                return CvssV3Data.SeverityType.CRITICAL;</span>
             }
         }
-<span class="fc" id="L174">        return null;</span>
+<span class="fc" id="L180">        return null;</span>
     }
 
     /**
@@ -182,46 +188,169 @@ public final class CvssUtil {
      * @return the CVSSv3 object
      */
     public static CvssV3 vectorToCvssV3(String vectorString, Double baseScore) {
-<span class="pc bpc" id="L185" title="1 of 2 branches missed.">        if (!vectorString.startsWith(&quot;CVSS:3&quot;)) {</span>
-<span class="nc" id="L186">            throw new IllegalArgumentException(&quot;Not a valid CVSSv3 vector string: &quot; + vectorString);</span>
+<span class="pc bpc" id="L191" title="1 of 2 branches missed.">        if (!vectorString.startsWith(&quot;CVSS:3&quot;)) {</span>
+<span class="nc" id="L192">            throw new IllegalArgumentException(&quot;Not a valid CVSSv3 vector string: &quot; + vectorString);</span>
         }
-<span class="fc" id="L188">        final String versionString = vectorString.substring(5, vectorString.indexOf('/'));</span>
-<span class="fc" id="L189">        final String[] metricStrings = vectorString.substring(vectorString.indexOf('/') + 1).split(&quot;/&quot;);</span>
-<span class="fc" id="L190">        final HashMap&lt;String, String&gt; metrics = new HashMap&lt;&gt;();</span>
-<span class="fc bfc" id="L191" title="All 2 branches covered.">        for (int i = 0; i &lt; metricStrings.length; i++) {</span>
-<span class="fc" id="L192">            final String[] metricKeyVal = metricStrings[i].split(&quot;:&quot;);</span>
-<span class="pc bpc" id="L193" title="1 of 2 branches missed.">            if (metricKeyVal.length != 2) {</span>
-<span class="nc" id="L194">                throw new IllegalArgumentException(</span>
-<span class="nc" id="L195">                        String.format(&quot;Not a valid CVSSv3 vector string '%s', invalid metric component '%s'&quot;,</span>
+<span class="fc" id="L194">        final String versionString = vectorString.substring(5, vectorString.indexOf('/'));</span>
+<span class="fc" id="L195">        final String[] metricStrings = vectorString.substring(vectorString.indexOf('/') + 1).split(&quot;/&quot;);</span>
+<span class="fc" id="L196">        final HashMap&lt;String, String&gt; metrics = new HashMap&lt;&gt;();</span>
+<span class="fc bfc" id="L197" title="All 2 branches covered.">        for (int i = 0; i &lt; metricStrings.length; i++) {</span>
+<span class="fc" id="L198">            final String[] metricKeyVal = metricStrings[i].split(&quot;:&quot;);</span>
+<span class="pc bpc" id="L199" title="1 of 2 branches missed.">            if (metricKeyVal.length != 2) {</span>
+<span class="nc" id="L200">                throw new IllegalArgumentException(</span>
+<span class="nc" id="L201">                        String.format(&quot;Not a valid CVSSv3 vector string '%s', invalid metric component '%s'&quot;,</span>
                                 vectorString, metricStrings[i]));
             }
-<span class="fc" id="L198">            metrics.put(metricKeyVal[0], metricKeyVal[1]);</span>
+<span class="fc" id="L204">            metrics.put(metricKeyVal[0], metricKeyVal[1]);</span>
         }
-<span class="pc bpc" id="L200" title="1 of 2 branches missed.">        if (!metrics.keySet().containsAll(BASE_METRICS_V3)) {</span>
-<span class="nc" id="L201">            throw new IllegalArgumentException(</span>
-<span class="nc" id="L202">                    String.format(&quot;Not a valid CVSSv3 vector string '%s'; missing one or more required Base Metrics;&quot;,</span>
+<span class="pc bpc" id="L206" title="1 of 2 branches missed.">        if (!metrics.keySet().containsAll(BASE_METRICS_V3)) {</span>
+<span class="nc" id="L207">            throw new IllegalArgumentException(</span>
+<span class="nc" id="L208">                    String.format(&quot;Not a valid CVSSv3 vector string '%s'; missing one or more required Base Metrics;&quot;,</span>
                             vectorString));
         }
 
-<span class="fc" id="L206">        final CvssV3Data.Version version = CvssV3Data.Version.fromValue(versionString);</span>
+<span class="fc" id="L212">        final CvssV3Data.Version version = CvssV3Data.Version.fromValue(versionString);</span>
         //&quot;CVSS:3.1\/AV:L\/AC:L\/PR:L\/UI:N\/S:U\/C:N\/I:N\/A:H&quot;
-<span class="fc" id="L208">        final CvssV3Data.AttackVectorType attackVector = CvssV3Data.AttackVectorType.fromValue(metrics.get(&quot;AV&quot;));</span>
-<span class="fc" id="L209">        final CvssV3Data.AttackComplexityType attackComplexity = CvssV3Data.AttackComplexityType.fromValue(metrics.get(&quot;AC&quot;));</span>
-<span class="fc" id="L210">        final CvssV3Data.PrivilegesRequiredType privilegesRequired = CvssV3Data.PrivilegesRequiredType.fromValue(metrics.get(&quot;PR&quot;));</span>
-<span class="fc" id="L211">        final CvssV3Data.UserInteractionType userInteraction = CvssV3Data.UserInteractionType.fromValue(metrics.get(&quot;UI&quot;));</span>
-<span class="fc" id="L212">        final CvssV3Data.ScopeType scope = CvssV3Data.ScopeType.fromValue(metrics.get(&quot;S&quot;));</span>
-<span class="fc" id="L213">        final CvssV3Data.CiaType confidentialityImpact = CvssV3Data.CiaType.fromValue(metrics.get(&quot;C&quot;));</span>
-<span class="fc" id="L214">        final CvssV3Data.CiaType integrityImpact = CvssV3Data.CiaType.fromValue(metrics.get(&quot;I&quot;));</span>
-<span class="fc" id="L215">        final CvssV3Data.CiaType availabilityImpact = CvssV3Data.CiaType.fromValue(metrics.get(&quot;A&quot;));</span>
+<span class="fc" id="L214">        final CvssV3Data.AttackVectorType attackVector = CvssV3Data.AttackVectorType.fromValue(metrics.get(&quot;AV&quot;));</span>
+<span class="fc" id="L215">        final CvssV3Data.AttackComplexityType attackComplexity = CvssV3Data.AttackComplexityType.fromValue(metrics.get(&quot;AC&quot;));</span>
+<span class="fc" id="L216">        final CvssV3Data.PrivilegesRequiredType privilegesRequired = CvssV3Data.PrivilegesRequiredType.fromValue(metrics.get(&quot;PR&quot;));</span>
+<span class="fc" id="L217">        final CvssV3Data.UserInteractionType userInteraction = CvssV3Data.UserInteractionType.fromValue(metrics.get(&quot;UI&quot;));</span>
+<span class="fc" id="L218">        final CvssV3Data.ScopeType scope = CvssV3Data.ScopeType.fromValue(metrics.get(&quot;S&quot;));</span>
+<span class="fc" id="L219">        final CvssV3Data.CiaType confidentialityImpact = CvssV3Data.CiaType.fromValue(metrics.get(&quot;C&quot;));</span>
+<span class="fc" id="L220">        final CvssV3Data.CiaType integrityImpact = CvssV3Data.CiaType.fromValue(metrics.get(&quot;I&quot;));</span>
+<span class="fc" id="L221">        final CvssV3Data.CiaType availabilityImpact = CvssV3Data.CiaType.fromValue(metrics.get(&quot;A&quot;));</span>
 
-<span class="fc" id="L217">        final String baseSeverityString = Cvss3Severity.of(baseScore.floatValue()).name();</span>
-<span class="fc" id="L218">        final CvssV3Data.SeverityType baseSeverity = CvssV3Data.SeverityType.fromValue(baseSeverityString);</span>
-<span class="fc" id="L219">        final CvssV3Data data = new CvssV3Data(version, vectorString, attackVector, attackComplexity,</span>
+<span class="fc" id="L223">        final String baseSeverityString = Cvss3Severity.of(baseScore.floatValue()).name();</span>
+<span class="fc" id="L224">        final CvssV3Data.SeverityType baseSeverity = CvssV3Data.SeverityType.fromValue(baseSeverityString);</span>
+<span class="fc" id="L225">        final CvssV3Data data = new CvssV3Data(version, vectorString, attackVector, attackComplexity,</span>
                 privilegesRequired, userInteraction, scope, confidentialityImpact, integrityImpact, availabilityImpact, baseScore,
                 baseSeverity, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
-<span class="fc" id="L222">        final CvssV3 cvss = new CvssV3(null, null, data, null, null);</span>
-<span class="fc" id="L223">        return cvss;</span>
+<span class="fc" id="L228">        final CvssV3 cvss = new CvssV3(null, null, data, null, null);</span>
+<span class="fc" id="L229">        return cvss;</span>
+    }
 
+    private static CvssV4Data.SeverityType toSeverityType(double baseScore) {
+<span class="nc bnc" id="L233" title="All 2 branches missed.">        if (baseScore == 0.0) {</span>
+<span class="nc" id="L234">            return CvssV4Data.SeverityType.NONE;</span>
+<span class="nc bnc" id="L235" title="All 4 branches missed.">        } else if (baseScore &gt;= 0.1 &amp;&amp; baseScore &lt;= 3.9) {</span>
+<span class="nc" id="L236">            return CvssV4Data.SeverityType.LOW;</span>
+<span class="nc bnc" id="L237" title="All 4 branches missed.">        } else if (baseScore &gt;= 4.0 &amp;&amp; baseScore &lt;= 6.9) {</span>
+<span class="nc" id="L238">            return CvssV4Data.SeverityType.MEDIUM;</span>
+<span class="nc bnc" id="L239" title="All 4 branches missed.">        } else if (baseScore &gt;= 7.0 &amp;&amp; baseScore &lt;= 8.9) {</span>
+<span class="nc" id="L240">            return CvssV4Data.SeverityType.HIGH;</span>
+<span class="nc bnc" id="L241" title="All 4 branches missed.">        } else if (baseScore &gt;= 9.0 &amp;&amp; baseScore &lt;= 10.0) {</span>
+<span class="nc" id="L242">            return CvssV4Data.SeverityType.CRITICAL;</span>
+        } else {
+<span class="nc" id="L244">            throw new IllegalArgumentException(&quot;Invalid CVSS base score: &quot; + baseScore);</span>
+        }
+    }
+
+    /**
+     * Convert a CVSSv4 vector String into a CvssV4 Object.
+     *
+     * @param source the source of the CVSS data
+     * @param type the type of CVSS data (primary or secondary)
+     * @param baseScore the base score
+     * @param vectorString the vector string
+     * @return the CVSSv4 object
+     */
+    public static CvssV4 vectorToCvssV4(String source, CvssV4.Type type, Double baseScore, String vectorString) {
+        // Remove &quot;CVSS:&quot; prefix and split by &quot;/&quot;
+<span class="nc" id="L259">        String[] parts = vectorString.replaceFirst(&quot;^CVSS:&quot;, &quot;&quot;).split(&quot;/&quot;);</span>
+<span class="nc" id="L260">        Map&lt;String, String&gt; values = new HashMap&lt;&gt;();</span>
+<span class="nc bnc" id="L261" title="All 2 branches missed.">        for (String part : parts) {</span>
+<span class="nc" id="L262">            String[] kv = part.split(&quot;:&quot;);</span>
+<span class="nc bnc" id="L263" title="All 2 branches missed.">            if (kv.length == 2) {</span>
+<span class="nc" id="L264">                values.put(kv[0], kv[1]);</span>
+            }
+        }
+
+<span class="nc" id="L268">        CvssV4Data.Version version = CvssV4Data.Version.fromValue(values.getOrDefault(&quot;4.0&quot;, &quot;4.0&quot;));</span>
+
+<span class="nc bnc" id="L270" title="All 2 branches missed.">        CvssV4Data.AttackVectorType attackVector = values.containsKey(&quot;AV&quot;) ? CvssV4Data.AttackVectorType.fromValue(values.get(&quot;AV&quot;)) : null;</span>
+<span class="nc bnc" id="L271" title="All 2 branches missed.">        CvssV4Data.AttackComplexityType attackComplexity = values.containsKey(&quot;AC&quot;) ? CvssV4Data.AttackComplexityType.fromValue(values.get(&quot;AC&quot;)) : null;</span>
+<span class="nc bnc" id="L272" title="All 2 branches missed.">        CvssV4Data.AttackRequirementsType attackRequirements = values.containsKey(&quot;AT&quot;) ? CvssV4Data.AttackRequirementsType.fromValue(values.get(&quot;AT&quot;)) : null;</span>
+<span class="nc bnc" id="L273" title="All 2 branches missed.">        CvssV4Data.PrivilegesRequiredType privilegesRequired = values.containsKey(&quot;PR&quot;) ? CvssV4Data.PrivilegesRequiredType.fromValue(values.get(&quot;PR&quot;)) : null;</span>
+<span class="nc bnc" id="L274" title="All 2 branches missed.">        CvssV4Data.UserInteractionType userInteraction = values.containsKey(&quot;UI&quot;) ? CvssV4Data.UserInteractionType.fromValue(values.get(&quot;UI&quot;)) : null;</span>
+<span class="nc bnc" id="L275" title="All 2 branches missed.">        CvssV4Data.CiaType vulnConfidentialityImpact = values.containsKey(&quot;VC&quot;) ? CvssV4Data.CiaType.fromValue(values.get(&quot;VC&quot;)) : null;</span>
+<span class="nc bnc" id="L276" title="All 2 branches missed.">        CvssV4Data.CiaType vulnIntegrityImpact = values.containsKey(&quot;VI&quot;) ? CvssV4Data.CiaType.fromValue(values.get(&quot;VI&quot;)) : null;</span>
+<span class="nc bnc" id="L277" title="All 2 branches missed.">        CvssV4Data.CiaType vulnAvailabilityImpact = values.containsKey(&quot;VA&quot;) ? CvssV4Data.CiaType.fromValue(values.get(&quot;VA&quot;)) : null;</span>
+<span class="nc bnc" id="L278" title="All 2 branches missed.">        CvssV4Data.CiaType subConfidentialityImpact = values.containsKey(&quot;SC&quot;) ? CvssV4Data.CiaType.fromValue(values.get(&quot;SC&quot;)) : null;</span>
+<span class="nc bnc" id="L279" title="All 2 branches missed.">        CvssV4Data.CiaType subIntegrityImpact = values.containsKey(&quot;SI&quot;) ? CvssV4Data.CiaType.fromValue(values.get(&quot;SI&quot;)) : null;</span>
+<span class="nc bnc" id="L280" title="All 2 branches missed.">        CvssV4Data.CiaType subAvailabilityImpact = values.containsKey(&quot;SA&quot;) ? CvssV4Data.CiaType.fromValue(values.get(&quot;SA&quot;)) : null;</span>
+<span class="nc bnc" id="L281" title="All 2 branches missed.">        CvssV4Data.ExploitMaturityType exploitMaturity = values.containsKey(&quot;E&quot;) ? CvssV4Data.ExploitMaturityType.fromValue(values.get(&quot;E&quot;)) : CvssV4Data.ExploitMaturityType.NOT_DEFINED;</span>
+<span class="nc bnc" id="L282" title="All 2 branches missed.">        CvssV4Data.CiaRequirementType confidentialityRequirement = values.containsKey(&quot;CR&quot;) ? CvssV4Data.CiaRequirementType.fromValue(values.get(&quot;CR&quot;)) : CvssV4Data.CiaRequirementType.NOT_DEFINED;</span>
+<span class="nc bnc" id="L283" title="All 2 branches missed.">        CvssV4Data.CiaRequirementType integrityRequirement = values.containsKey(&quot;IR&quot;) ? CvssV4Data.CiaRequirementType.fromValue(values.get(&quot;IR&quot;)) : CvssV4Data.CiaRequirementType.NOT_DEFINED;</span>
+<span class="nc bnc" id="L284" title="All 2 branches missed.">        CvssV4Data.CiaRequirementType availabilityRequirement = values.containsKey(&quot;AR&quot;) ? CvssV4Data.CiaRequirementType.fromValue(values.get(&quot;AR&quot;)) : CvssV4Data.CiaRequirementType.NOT_DEFINED;</span>
+<span class="nc bnc" id="L285" title="All 2 branches missed.">        CvssV4Data.ModifiedAttackVectorType modifiedAttackVector = values.containsKey(&quot;MAV&quot;) ? CvssV4Data.ModifiedAttackVectorType.fromValue(values.get(&quot;MAV&quot;)) : CvssV4Data.ModifiedAttackVectorType.NOT_DEFINED;</span>
+<span class="nc bnc" id="L286" title="All 2 branches missed.">        CvssV4Data.ModifiedAttackComplexityType modifiedAttackComplexity = values.containsKey(&quot;MAC&quot;) ? CvssV4Data.ModifiedAttackComplexityType.fromValue(values.get(&quot;MAC&quot;)) : CvssV4Data.ModifiedAttackComplexityType.NOT_DEFINED;</span>
+<span class="nc bnc" id="L287" title="All 2 branches missed.">        CvssV4Data.ModifiedAttackRequirementsType modifiedAttackRequirements = values.containsKey(&quot;MAT&quot;) ? CvssV4Data.ModifiedAttackRequirementsType.fromValue(values.get(&quot;MAT&quot;)) : CvssV4Data.ModifiedAttackRequirementsType.NOT_DEFINED;</span>
+<span class="nc bnc" id="L288" title="All 2 branches missed.">        CvssV4Data.ModifiedPrivilegesRequiredType modifiedPrivilegesRequired = values.containsKey(&quot;MPR&quot;) ? CvssV4Data.ModifiedPrivilegesRequiredType.fromValue(values.get(&quot;MPR&quot;)) : CvssV4Data.ModifiedPrivilegesRequiredType.NOT_DEFINED;</span>
+<span class="nc bnc" id="L289" title="All 2 branches missed.">        CvssV4Data.ModifiedUserInteractionType modifiedUserInteraction = values.containsKey(&quot;MUI&quot;) ? CvssV4Data.ModifiedUserInteractionType.fromValue(values.get(&quot;MUI&quot;)) : CvssV4Data.ModifiedUserInteractionType.NOT_DEFINED;</span>
+<span class="nc bnc" id="L290" title="All 2 branches missed.">        CvssV4Data.ModifiedCiaType modifiedVulnConfidentialityImpact = values.containsKey(&quot;MVC&quot;) ? CvssV4Data.ModifiedCiaType.fromValue(values.get(&quot;MVC&quot;)) : CvssV4Data.ModifiedCiaType.NOT_DEFINED;</span>
+<span class="nc bnc" id="L291" title="All 2 branches missed.">        CvssV4Data.ModifiedCiaType modifiedVulnIntegrityImpact = values.containsKey(&quot;MVI&quot;) ? CvssV4Data.ModifiedCiaType.fromValue(values.get(&quot;MVI&quot;)) : CvssV4Data.ModifiedCiaType.NOT_DEFINED;</span>
+<span class="nc bnc" id="L292" title="All 2 branches missed.">        CvssV4Data.ModifiedCiaType modifiedVulnAvailabilityImpact = values.containsKey(&quot;MVA&quot;) ? CvssV4Data.ModifiedCiaType.fromValue(values.get(&quot;MVA&quot;)) : CvssV4Data.ModifiedCiaType.NOT_DEFINED;</span>
+<span class="nc bnc" id="L293" title="All 2 branches missed.">        CvssV4Data.ModifiedSubCType modifiedSubConfidentialityImpact = values.containsKey(&quot;MSC&quot;) ? CvssV4Data.ModifiedSubCType.fromValue(values.get(&quot;MSC&quot;)) : CvssV4Data.ModifiedSubCType.NOT_DEFINED;</span>
+<span class="nc bnc" id="L294" title="All 2 branches missed.">        CvssV4Data.ModifiedSubIaType modifiedSubIntegrityImpact = values.containsKey(&quot;MSI&quot;) ? CvssV4Data.ModifiedSubIaType.fromValue(values.get(&quot;MSI&quot;)) : CvssV4Data.ModifiedSubIaType.NOT_DEFINED;</span>
+<span class="nc bnc" id="L295" title="All 2 branches missed.">        CvssV4Data.ModifiedSubIaType modifiedSubAvailabilityImpact = values.containsKey(&quot;MSA&quot;) ? CvssV4Data.ModifiedSubIaType.fromValue(values.get(&quot;MSA&quot;)) : CvssV4Data.ModifiedSubIaType.NOT_DEFINED;</span>
+<span class="nc bnc" id="L296" title="All 2 branches missed.">        CvssV4Data.SafetyType safety = values.containsKey(&quot;S&quot;) ? CvssV4Data.SafetyType.fromValue(values.get(&quot;S&quot;)) : CvssV4Data.SafetyType.NOT_DEFINED;</span>
+<span class="nc bnc" id="L297" title="All 2 branches missed.">        CvssV4Data.AutomatableType automatable = values.containsKey(&quot;AU&quot;) ? CvssV4Data.AutomatableType.fromValue(values.get(&quot;AU&quot;)) : CvssV4Data.AutomatableType.NOT_DEFINED;</span>
+<span class="nc bnc" id="L298" title="All 2 branches missed.">        CvssV4Data.RecoveryType recovery = values.containsKey(&quot;R&quot;) ? CvssV4Data.RecoveryType.fromValue(values.get(&quot;R&quot;)) : CvssV4Data.RecoveryType.NOT_DEFINED;</span>
+<span class="nc bnc" id="L299" title="All 2 branches missed.">        CvssV4Data.ValueDensityType valueDensity = values.containsKey(&quot;V&quot;) ? CvssV4Data.ValueDensityType.fromValue(values.get(&quot;V&quot;)) : CvssV4Data.ValueDensityType.NOT_DEFINED;</span>
+<span class="nc bnc" id="L300" title="All 2 branches missed.">        CvssV4Data.VulnerabilityResponseEffortType vulnerabilityResponseEffort = values.containsKey(&quot;RE&quot;) ? CvssV4Data.VulnerabilityResponseEffortType.fromValue(values.get(&quot;RE&quot;)) : CvssV4Data.VulnerabilityResponseEffortType.NOT_DEFINED;</span>
+<span class="nc bnc" id="L301" title="All 2 branches missed.">        CvssV4Data.ProviderUrgencyType providerUrgency = values.containsKey(&quot;U&quot;) ? CvssV4Data.ProviderUrgencyType.fromValue(values.get(&quot;U&quot;)) : CvssV4Data.ProviderUrgencyType.NOT_DEFINED;</span>
+
+<span class="nc" id="L303">        CvssV4Data.SeverityType baseSeverity = toSeverityType(baseScore);</span>
+        // Scores and severities are not present in the vector string, set to null/defaults
+<span class="nc" id="L305">        Double threatScore = null;</span>
+<span class="nc" id="L306">        CvssV4Data.SeverityType threatSeverity = null;</span>
+<span class="nc" id="L307">        Double environmentalScore = null;</span>
+<span class="nc" id="L308">        CvssV4Data.SeverityType environmentalSeverity = null;</span>
+
+<span class="nc" id="L310">        CvssV4Data cvssData = new CvssV4Data(</span>
+                version,
+                vectorString,
+                attackVector,
+                attackComplexity,
+                attackRequirements,
+                privilegesRequired,
+                userInteraction,
+                vulnConfidentialityImpact,
+                vulnIntegrityImpact,
+                vulnAvailabilityImpact,
+                subConfidentialityImpact,
+                subIntegrityImpact,
+                subAvailabilityImpact,
+                exploitMaturity,
+                confidentialityRequirement,
+                integrityRequirement,
+                availabilityRequirement,
+                modifiedAttackVector,
+                modifiedAttackComplexity,
+                modifiedAttackRequirements,
+                modifiedPrivilegesRequired,
+                modifiedUserInteraction,
+                modifiedVulnConfidentialityImpact,
+                modifiedVulnIntegrityImpact,
+                modifiedVulnAvailabilityImpact,
+                modifiedSubConfidentialityImpact,
+                modifiedSubIntegrityImpact,
+                modifiedSubAvailabilityImpact,
+                safety,
+                automatable,
+                recovery,
+                valueDensity,
+                vulnerabilityResponseEffort,
+                providerUrgency,
+                baseScore,
+                baseSeverity,
+                threatScore,
+                threatSeverity,
+                environmentalScore,
+                environmentalSeverity
+        );
+
+<span class="nc" id="L353">        return new CvssV4(source, type, cvssData);</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

@@ -401,164 +401,167 @@
 <a class="jxr_linenumber" name="L393" href="#L393">393</a>                     }
 <a class="jxr_linenumber" name="L394" href="#L394">394</a>                 }
 <a class="jxr_linenumber" name="L395" href="#L395">395</a>                 dependency.setLicense(sb.toString());
-<a class="jxr_linenumber" name="L396" href="#L396">396</a>             } <strong class="jxr_keyword">else</strong> {
-<a class="jxr_linenumber" name="L397" href="#L397">397</a>                 dependency.setLicense(json.getJsonObject(<span class="jxr_string">"license"</span>).getString(<span class="jxr_string">"type"</span>));
-<a class="jxr_linenumber" name="L398" href="#L398">398</a>             }
-<a class="jxr_linenumber" name="L399" href="#L399">399</a>         }
-<a class="jxr_linenumber" name="L400" href="#L400">400</a>     }
-<a class="jxr_linenumber" name="L401" href="#L401">401</a> 
-<a class="jxr_linenumber" name="L402" href="#L402">402</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L403" href="#L403">403</a> <em class="jxr_javadoccomment">     * Initializes the analyzer once before any analysis is performed.</em>
-<a class="jxr_linenumber" name="L404" href="#L404">404</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L405" href="#L405">405</a> <em class="jxr_javadoccomment">     * @param engine a reference to the dependency-check engine</em>
-<a class="jxr_linenumber" name="L406" href="#L406">406</a> <em class="jxr_javadoccomment">     * @throws InitializationException if there's an error during initialization</em>
-<a class="jxr_linenumber" name="L407" href="#L407">407</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L408" href="#L408">408</a>     @Override
-<a class="jxr_linenumber" name="L409" href="#L409">409</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">void</strong> prepareFileTypeAnalyzer(<a href="../../../../org/owasp/dependencycheck/Engine.html">Engine</a> engine) <strong class="jxr_keyword">throws</strong> InitializationException {
-<a class="jxr_linenumber" name="L410" href="#L410">410</a>         <strong class="jxr_keyword">if</strong> (!isEnabled() || !getFilesMatched()) {
-<a class="jxr_linenumber" name="L411" href="#L411">411</a>             <strong class="jxr_keyword">this</strong>.setEnabled(false);
-<a class="jxr_linenumber" name="L412" href="#L412">412</a>             <strong class="jxr_keyword">return</strong>;
-<a class="jxr_linenumber" name="L413" href="#L413">413</a>         }
-<a class="jxr_linenumber" name="L414" href="#L414">414</a>         <strong class="jxr_keyword">if</strong> (searcher == <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="L415" href="#L415">415</a>             LOGGER.debug(<span class="jxr_string">"Initializing {}"</span>, getName());
-<a class="jxr_linenumber" name="L416" href="#L416">416</a>             <strong class="jxr_keyword">try</strong> {
-<a class="jxr_linenumber" name="L417" href="#L417">417</a>                 searcher = <strong class="jxr_keyword">new</strong> <a href="../../../../org/owasp/dependencycheck/data/nodeaudit/NodeAuditSearch.html">NodeAuditSearch</a>(getSettings());
-<a class="jxr_linenumber" name="L418" href="#L418">418</a>             } <strong class="jxr_keyword">catch</strong> (MalformedURLException ex) {
-<a class="jxr_linenumber" name="L419" href="#L419">419</a>                 setEnabled(false);
-<a class="jxr_linenumber" name="L420" href="#L420">420</a>                 <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a href="../../../../org/owasp/dependencycheck/exception/InitializationException.html">InitializationException</a>(<span class="jxr_string">"The configured URL to NPM Audit API is malformed"</span>, ex);
-<a class="jxr_linenumber" name="L421" href="#L421">421</a>             }
-<a class="jxr_linenumber" name="L422" href="#L422">422</a>             <strong class="jxr_keyword">try</strong> {
-<a class="jxr_linenumber" name="L423" href="#L423">423</a>                 <strong class="jxr_keyword">final</strong> <a href="../../../../org/owasp/dependencycheck/utils/Settings.html">Settings</a> settings = engine.getSettings();
-<a class="jxr_linenumber" name="L424" href="#L424">424</a>                 <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">boolean</strong> nodeEnabled = settings.getBoolean(Settings.KEYS.ANALYZER_NODE_PACKAGE_ENABLED);
-<a class="jxr_linenumber" name="L425" href="#L425">425</a>                 <strong class="jxr_keyword">if</strong> (!nodeEnabled) {
-<a class="jxr_linenumber" name="L426" href="#L426">426</a>                     LOGGER.warn(<span class="jxr_string">"The Node Package Analyzer has been disabled; the resulting report will only "</span>
-<a class="jxr_linenumber" name="L427" href="#L427">427</a>                             + <span class="jxr_string">"contain the known vulnerable dependency - not a bill of materials for the node project."</span>);
-<a class="jxr_linenumber" name="L428" href="#L428">428</a>                 }
-<a class="jxr_linenumber" name="L429" href="#L429">429</a>             } <strong class="jxr_keyword">catch</strong> (InvalidSettingException ex) {
-<a class="jxr_linenumber" name="L430" href="#L430">430</a>                 <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a href="../../../../org/owasp/dependencycheck/exception/InitializationException.html">InitializationException</a>(<span class="jxr_string">"Unable to read configuration settings"</span>, ex);
-<a class="jxr_linenumber" name="L431" href="#L431">431</a>             }
-<a class="jxr_linenumber" name="L432" href="#L432">432</a>         }
-<a class="jxr_linenumber" name="L433" href="#L433">433</a>     }
-<a class="jxr_linenumber" name="L434" href="#L434">434</a> 
-<a class="jxr_linenumber" name="L435" href="#L435">435</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L436" href="#L436">436</a> <em class="jxr_javadoccomment">     * Processes the advisories creating the appropriate dependency objects and</em>
-<a class="jxr_linenumber" name="L437" href="#L437">437</a> <em class="jxr_javadoccomment">     * adding the resulting vulnerabilities.</em>
-<a class="jxr_linenumber" name="L438" href="#L438">438</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L439" href="#L439">439</a> <em class="jxr_javadoccomment">     * @param advisories a collection of advisories from npm</em>
-<a class="jxr_linenumber" name="L440" href="#L440">440</a> <em class="jxr_javadoccomment">     * @param engine a reference to the analysis engine</em>
-<a class="jxr_linenumber" name="L441" href="#L441">441</a> <em class="jxr_javadoccomment">     * @param dependency a reference to the package-lock.json dependency</em>
-<a class="jxr_linenumber" name="L442" href="#L442">442</a> <em class="jxr_javadoccomment">     * @param dependencyMap a collection of module/version pairs obtained from</em>
-<a class="jxr_linenumber" name="L443" href="#L443">443</a> <em class="jxr_javadoccomment">     * the package-lock file - used in case the advisories do not include a</em>
-<a class="jxr_linenumber" name="L444" href="#L444">444</a> <em class="jxr_javadoccomment">     * version number</em>
-<a class="jxr_linenumber" name="L445" href="#L445">445</a> <em class="jxr_javadoccomment">     * @throws CpeValidationException thrown when a CPE cannot be created</em>
-<a class="jxr_linenumber" name="L446" href="#L446">446</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L447" href="#L447">447</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">void</strong> processResults(<strong class="jxr_keyword">final</strong> List&lt;Advisory&gt; advisories, <a href="../../../../org/owasp/dependencycheck/Engine.html">Engine</a> engine,
-<a class="jxr_linenumber" name="L448" href="#L448">448</a>             <a href="../../../../org/owasp/dependencycheck/dependency/Dependency.html">Dependency</a> dependency, MultiValuedMap&lt;String, String&gt; dependencyMap)
-<a class="jxr_linenumber" name="L449" href="#L449">449</a>             <strong class="jxr_keyword">throws</strong> CpeValidationException {
-<a class="jxr_linenumber" name="L450" href="#L450">450</a>         <strong class="jxr_keyword">for</strong> (Advisory advisory : advisories) {
-<a class="jxr_linenumber" name="L451" href="#L451">451</a>             <em class="jxr_comment">//Create a new vulnerability out of the advisory returned by nsp.</em>
-<a class="jxr_linenumber" name="L452" href="#L452">452</a>             <strong class="jxr_keyword">final</strong> <a href="../../../../org/owasp/dependencycheck/dependency/Vulnerability.html">Vulnerability</a> vuln = <strong class="jxr_keyword">new</strong> <a href="../../../../org/owasp/dependencycheck/dependency/Vulnerability.html">Vulnerability</a>();
-<a class="jxr_linenumber" name="L453" href="#L453">453</a>             vuln.setDescription(advisory.getOverview());
-<a class="jxr_linenumber" name="L454" href="#L454">454</a>             vuln.setName(String.valueOf(advisory.getGhsaId()));
-<a class="jxr_linenumber" name="L455" href="#L455">455</a>             vuln.setUnscoredSeverity(advisory.getSeverity());
-<a class="jxr_linenumber" name="L456" href="#L456">456</a>             vuln.setCvssV3(advisory.getCvssV3());
-<a class="jxr_linenumber" name="L457" href="#L457">457</a>             vuln.setSource(Vulnerability.Source.NPM);
-<a class="jxr_linenumber" name="L458" href="#L458">458</a>             <strong class="jxr_keyword">for</strong> (String cwe : advisory.getCwes()) {
-<a class="jxr_linenumber" name="L459" href="#L459">459</a>                 vuln.addCwe(cwe);
-<a class="jxr_linenumber" name="L460" href="#L460">460</a>             }
-<a class="jxr_linenumber" name="L461" href="#L461">461</a>             <strong class="jxr_keyword">if</strong> (advisory.getReferences() != <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="L462" href="#L462">462</a>                 <strong class="jxr_keyword">final</strong> String[] references = advisory.getReferences().split(<span class="jxr_string">"&#92;&#92;n"</span>);
-<a class="jxr_linenumber" name="L463" href="#L463">463</a>                 <strong class="jxr_keyword">for</strong> (String reference : references) {
-<a class="jxr_linenumber" name="L464" href="#L464">464</a>                     <strong class="jxr_keyword">if</strong> (reference.length() &gt; 3) {
-<a class="jxr_linenumber" name="L465" href="#L465">465</a>                         String url = reference.substring(2);
-<a class="jxr_linenumber" name="L466" href="#L466">466</a>                         <strong class="jxr_keyword">try</strong> {
-<a class="jxr_linenumber" name="L467" href="#L467">467</a>                             <strong class="jxr_keyword">new</strong> URL(url);
-<a class="jxr_linenumber" name="L468" href="#L468">468</a>                         } <strong class="jxr_keyword">catch</strong> (MalformedURLException ignored) {
-<a class="jxr_linenumber" name="L469" href="#L469">469</a>                             <em class="jxr_comment">// reference is not a format-valid URL, so null it to make the reference be used as plaintext</em>
-<a class="jxr_linenumber" name="L470" href="#L470">470</a>                             url = <strong class="jxr_keyword">null</strong>;
-<a class="jxr_linenumber" name="L471" href="#L471">471</a>                         }
-<a class="jxr_linenumber" name="L472" href="#L472">472</a>                         vuln.addReference(<span class="jxr_string">"NPM Advisory reference: "</span>, url == <strong class="jxr_keyword">null</strong> ? reference : url, url);
-<a class="jxr_linenumber" name="L473" href="#L473">473</a>                     }
-<a class="jxr_linenumber" name="L474" href="#L474">474</a>                 }
-<a class="jxr_linenumber" name="L475" href="#L475">475</a>             }
-<a class="jxr_linenumber" name="L476" href="#L476">476</a> 
-<a class="jxr_linenumber" name="L477" href="#L477">477</a>             <em class="jxr_comment">//Create a single vulnerable software object - these do not use CPEs unlike the NVD.</em>
-<a class="jxr_linenumber" name="L478" href="#L478">478</a>             <strong class="jxr_keyword">final</strong> <a href="../../../../org/owasp/dependencycheck/dependency/VulnerableSoftwareBuilder.html">VulnerableSoftwareBuilder</a> builder = <strong class="jxr_keyword">new</strong> <a href="../../../../org/owasp/dependencycheck/dependency/VulnerableSoftwareBuilder.html">VulnerableSoftwareBuilder</a>();
-<a class="jxr_linenumber" name="L479" href="#L479">479</a>             builder.part(Part.APPLICATION).product(advisory.getModuleName().replace(<span class="jxr_string">" "</span>, <span class="jxr_string">"_"</span>))
-<a class="jxr_linenumber" name="L480" href="#L480">480</a>                     .version(advisory.getVulnerableVersions().replace(<span class="jxr_string">" "</span>, <span class="jxr_string">""</span>));
-<a class="jxr_linenumber" name="L481" href="#L481">481</a>             <strong class="jxr_keyword">final</strong> <a href="../../../../org/owasp/dependencycheck/dependency/VulnerableSoftware.html">VulnerableSoftware</a> vs = builder.build();
-<a class="jxr_linenumber" name="L482" href="#L482">482</a>             vuln.addVulnerableSoftware(vs);
-<a class="jxr_linenumber" name="L483" href="#L483">483</a> 
-<a class="jxr_linenumber" name="L484" href="#L484">484</a>             String version = advisory.getVersion();
-<a class="jxr_linenumber" name="L485" href="#L485">485</a>             <strong class="jxr_keyword">if</strong> (version == <strong class="jxr_keyword">null</strong> &amp;&amp; dependencyMap.containsKey(advisory.getModuleName())) {
-<a class="jxr_linenumber" name="L486" href="#L486">486</a>                 version = determineVersionFromMap(advisory.getVulnerableVersions(), dependencyMap.get(advisory.getModuleName()));
-<a class="jxr_linenumber" name="L487" href="#L487">487</a>             }
-<a class="jxr_linenumber" name="L488" href="#L488">488</a>             <strong class="jxr_keyword">final</strong> <a href="../../../../org/owasp/dependencycheck/dependency/Dependency.html">Dependency</a> existing = findDependency(engine, advisory.getModuleName(), version);
-<a class="jxr_linenumber" name="L489" href="#L489">489</a>             <strong class="jxr_keyword">if</strong> (existing == <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="L490" href="#L490">490</a>                 <strong class="jxr_keyword">final</strong> <a href="../../../../org/owasp/dependencycheck/dependency/Dependency.html">Dependency</a> nodeModule = createDependency(dependency, advisory.getModuleName(), version, <span class="jxr_string">"transitive"</span>);
-<a class="jxr_linenumber" name="L491" href="#L491">491</a>                 nodeModule.addVulnerability(vuln);
-<a class="jxr_linenumber" name="L492" href="#L492">492</a>                 engine.addDependency(nodeModule);
-<a class="jxr_linenumber" name="L493" href="#L493">493</a>             } <strong class="jxr_keyword">else</strong> {
-<a class="jxr_linenumber" name="L494" href="#L494">494</a>                 replaceOrAddVulnerability(existing, vuln);
-<a class="jxr_linenumber" name="L495" href="#L495">495</a>             }
-<a class="jxr_linenumber" name="L496" href="#L496">496</a>         }
-<a class="jxr_linenumber" name="L497" href="#L497">497</a>     }
-<a class="jxr_linenumber" name="L498" href="#L498">498</a> 
-<a class="jxr_linenumber" name="L499" href="#L499">499</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L500" href="#L500">500</a> <em class="jxr_javadoccomment">     * Evaluates if the vulnerability is already present; if it is the</em>
-<a class="jxr_linenumber" name="L501" href="#L501">501</a> <em class="jxr_javadoccomment">     * vulnerability is not added.</em>
-<a class="jxr_linenumber" name="L502" href="#L502">502</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L503" href="#L503">503</a> <em class="jxr_javadoccomment">     * @param dependency a reference to the dependency being analyzed</em>
-<a class="jxr_linenumber" name="L504" href="#L504">504</a> <em class="jxr_javadoccomment">     * @param vuln the vulnerability to add</em>
-<a class="jxr_linenumber" name="L505" href="#L505">505</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L506" href="#L506">506</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">void</strong> replaceOrAddVulnerability(<a href="../../../../org/owasp/dependencycheck/dependency/Dependency.html">Dependency</a> dependency, <a href="../../../../org/owasp/dependencycheck/dependency/Vulnerability.html">Vulnerability</a> vuln) {
-<a class="jxr_linenumber" name="L507" href="#L507">507</a>         <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">boolean</strong> found = vuln.getSource() == Vulnerability.Source.NPM
-<a class="jxr_linenumber" name="L508" href="#L508">508</a>                 &amp;&amp; dependency.getVulnerabilities().stream().anyMatch(existing -&gt; {
-<a class="jxr_linenumber" name="L509" href="#L509">509</a>                     <strong class="jxr_keyword">return</strong> existing.getReferences().stream().anyMatch(ref -&gt; {
-<a class="jxr_linenumber" name="L510" href="#L510">510</a>                         <strong class="jxr_keyword">return</strong> ref.getName() != <strong class="jxr_keyword">null</strong>
-<a class="jxr_linenumber" name="L511" href="#L511">511</a>                                 &amp;&amp; ref.getName().equals(<span class="jxr_string">"https://nodesecurity.io/advisories/"</span> + vuln.getName());
-<a class="jxr_linenumber" name="L512" href="#L512">512</a>                     });
-<a class="jxr_linenumber" name="L513" href="#L513">513</a>                 });
-<a class="jxr_linenumber" name="L514" href="#L514">514</a>         <strong class="jxr_keyword">if</strong> (!found) {
-<a class="jxr_linenumber" name="L515" href="#L515">515</a>             dependency.addVulnerability(vuln);
-<a class="jxr_linenumber" name="L516" href="#L516">516</a>         }
-<a class="jxr_linenumber" name="L517" href="#L517">517</a>     }
-<a class="jxr_linenumber" name="L518" href="#L518">518</a> 
-<a class="jxr_linenumber" name="L519" href="#L519">519</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L520" href="#L520">520</a> <em class="jxr_javadoccomment">     * Returns the node audit search utility.</em>
-<a class="jxr_linenumber" name="L521" href="#L521">521</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L522" href="#L522">522</a> <em class="jxr_javadoccomment">     * @return the node audit search utility</em>
-<a class="jxr_linenumber" name="L523" href="#L523">523</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L524" href="#L524">524</a>     <strong class="jxr_keyword">protected</strong> <a href="../../../../org/owasp/dependencycheck/data/nodeaudit/NodeAuditSearch.html">NodeAuditSearch</a> getSearcher() {
-<a class="jxr_linenumber" name="L525" href="#L525">525</a>         <strong class="jxr_keyword">return</strong> searcher;
-<a class="jxr_linenumber" name="L526" href="#L526">526</a>     }
-<a class="jxr_linenumber" name="L527" href="#L527">527</a> 
-<a class="jxr_linenumber" name="L528" href="#L528">528</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L529" href="#L529">529</a> <em class="jxr_javadoccomment">     * Give an NPM version range and a collection of versions, this method</em>
-<a class="jxr_linenumber" name="L530" href="#L530">530</a> <em class="jxr_javadoccomment">     * attempts to select a specific version from the collection that is in the</em>
-<a class="jxr_linenumber" name="L531" href="#L531">531</a> <em class="jxr_javadoccomment">     * range.</em>
-<a class="jxr_linenumber" name="L532" href="#L532">532</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L533" href="#L533">533</a> <em class="jxr_javadoccomment">     * @param versionRange the version range to evaluate</em>
-<a class="jxr_linenumber" name="L534" href="#L534">534</a> <em class="jxr_javadoccomment">     * @param availableVersions the collection of possible versions to select</em>
-<a class="jxr_linenumber" name="L535" href="#L535">535</a> <em class="jxr_javadoccomment">     * @return the selected range from the versionRange</em>
-<a class="jxr_linenumber" name="L536" href="#L536">536</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L537" href="#L537">537</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> String determineVersionFromMap(String versionRange, Collection&lt;String&gt; availableVersions) {
-<a class="jxr_linenumber" name="L538" href="#L538">538</a>         <strong class="jxr_keyword">if</strong> (availableVersions.size() == 1) {
-<a class="jxr_linenumber" name="L539" href="#L539">539</a>             <strong class="jxr_keyword">return</strong> availableVersions.iterator().next();
-<a class="jxr_linenumber" name="L540" href="#L540">540</a>         }
-<a class="jxr_linenumber" name="L541" href="#L541">541</a>         <strong class="jxr_keyword">for</strong> (String v : availableVersions) {
-<a class="jxr_linenumber" name="L542" href="#L542">542</a>             <strong class="jxr_keyword">try</strong> {
-<a class="jxr_linenumber" name="L543" href="#L543">543</a>                 <strong class="jxr_keyword">final</strong> Semver version = <strong class="jxr_keyword">new</strong> Semver(v);
-<a class="jxr_linenumber" name="L544" href="#L544">544</a>                 <strong class="jxr_keyword">if</strong> (version.satisfies(versionRange)) {
-<a class="jxr_linenumber" name="L545" href="#L545">545</a>                     <strong class="jxr_keyword">return</strong> v;
-<a class="jxr_linenumber" name="L546" href="#L546">546</a>                 }
-<a class="jxr_linenumber" name="L547" href="#L547">547</a>             } <strong class="jxr_keyword">catch</strong> (SemverException ex) {
-<a class="jxr_linenumber" name="L548" href="#L548">548</a>                 LOGGER.debug(<span class="jxr_string">"invalid semver: "</span> + v);
-<a class="jxr_linenumber" name="L549" href="#L549">549</a>             }
-<a class="jxr_linenumber" name="L550" href="#L550">550</a>         }
-<a class="jxr_linenumber" name="L551" href="#L551">551</a>         <strong class="jxr_keyword">return</strong> availableVersions.iterator().next();
-<a class="jxr_linenumber" name="L552" href="#L552">552</a>     }
-<a class="jxr_linenumber" name="L553" href="#L553">553</a> }
+<a class="jxr_linenumber" name="L396" href="#L396">396</a>             } <strong class="jxr_keyword">else</strong> <strong class="jxr_keyword">if</strong> (value instanceof JsonObject) {
+<a class="jxr_linenumber" name="L397" href="#L397">397</a>                 <strong class="jxr_keyword">final</strong> JsonObject object = (JsonObject) value;
+<a class="jxr_linenumber" name="L398" href="#L398">398</a>                 <strong class="jxr_keyword">if</strong> (object.containsKey(<span class="jxr_string">"type"</span>) &amp;&amp; !object.isNull(<span class="jxr_string">"type"</span>)) {
+<a class="jxr_linenumber" name="L399" href="#L399">399</a>                     dependency.setLicense(object.getString(<span class="jxr_string">"type"</span>));
+<a class="jxr_linenumber" name="L400" href="#L400">400</a>                 }
+<a class="jxr_linenumber" name="L401" href="#L401">401</a>             }
+<a class="jxr_linenumber" name="L402" href="#L402">402</a>         }
+<a class="jxr_linenumber" name="L403" href="#L403">403</a>     }
+<a class="jxr_linenumber" name="L404" href="#L404">404</a> 
+<a class="jxr_linenumber" name="L405" href="#L405">405</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L406" href="#L406">406</a> <em class="jxr_javadoccomment">     * Initializes the analyzer once before any analysis is performed.</em>
+<a class="jxr_linenumber" name="L407" href="#L407">407</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L408" href="#L408">408</a> <em class="jxr_javadoccomment">     * @param engine a reference to the dependency-check engine</em>
+<a class="jxr_linenumber" name="L409" href="#L409">409</a> <em class="jxr_javadoccomment">     * @throws InitializationException if there's an error during initialization</em>
+<a class="jxr_linenumber" name="L410" href="#L410">410</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L411" href="#L411">411</a>     @Override
+<a class="jxr_linenumber" name="L412" href="#L412">412</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">void</strong> prepareFileTypeAnalyzer(<a href="../../../../org/owasp/dependencycheck/Engine.html">Engine</a> engine) <strong class="jxr_keyword">throws</strong> InitializationException {
+<a class="jxr_linenumber" name="L413" href="#L413">413</a>         <strong class="jxr_keyword">if</strong> (!isEnabled() || !getFilesMatched()) {
+<a class="jxr_linenumber" name="L414" href="#L414">414</a>             <strong class="jxr_keyword">this</strong>.setEnabled(false);
+<a class="jxr_linenumber" name="L415" href="#L415">415</a>             <strong class="jxr_keyword">return</strong>;
+<a class="jxr_linenumber" name="L416" href="#L416">416</a>         }
+<a class="jxr_linenumber" name="L417" href="#L417">417</a>         <strong class="jxr_keyword">if</strong> (searcher == <strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="L418" href="#L418">418</a>             LOGGER.debug(<span class="jxr_string">"Initializing {}"</span>, getName());
+<a class="jxr_linenumber" name="L419" href="#L419">419</a>             <strong class="jxr_keyword">try</strong> {
+<a class="jxr_linenumber" name="L420" href="#L420">420</a>                 searcher = <strong class="jxr_keyword">new</strong> <a href="../../../../org/owasp/dependencycheck/data/nodeaudit/NodeAuditSearch.html">NodeAuditSearch</a>(getSettings());
+<a class="jxr_linenumber" name="L421" href="#L421">421</a>             } <strong class="jxr_keyword">catch</strong> (MalformedURLException ex) {
+<a class="jxr_linenumber" name="L422" href="#L422">422</a>                 setEnabled(false);
+<a class="jxr_linenumber" name="L423" href="#L423">423</a>                 <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a href="../../../../org/owasp/dependencycheck/exception/InitializationException.html">InitializationException</a>(<span class="jxr_string">"The configured URL to NPM Audit API is malformed"</span>, ex);
+<a class="jxr_linenumber" name="L424" href="#L424">424</a>             }
+<a class="jxr_linenumber" name="L425" href="#L425">425</a>             <strong class="jxr_keyword">try</strong> {
+<a class="jxr_linenumber" name="L426" href="#L426">426</a>                 <strong class="jxr_keyword">final</strong> <a href="../../../../org/owasp/dependencycheck/utils/Settings.html">Settings</a> settings = engine.getSettings();
+<a class="jxr_linenumber" name="L427" href="#L427">427</a>                 <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">boolean</strong> nodeEnabled = settings.getBoolean(Settings.KEYS.ANALYZER_NODE_PACKAGE_ENABLED);
+<a class="jxr_linenumber" name="L428" href="#L428">428</a>                 <strong class="jxr_keyword">if</strong> (!nodeEnabled) {
+<a class="jxr_linenumber" name="L429" href="#L429">429</a>                     LOGGER.warn(<span class="jxr_string">"The Node Package Analyzer has been disabled; the resulting report will only "</span>
+<a class="jxr_linenumber" name="L430" href="#L430">430</a>                             + <span class="jxr_string">"contain the known vulnerable dependency - not a bill of materials for the node project."</span>);
+<a class="jxr_linenumber" name="L431" href="#L431">431</a>                 }
+<a class="jxr_linenumber" name="L432" href="#L432">432</a>             } <strong class="jxr_keyword">catch</strong> (InvalidSettingException ex) {
+<a class="jxr_linenumber" name="L433" href="#L433">433</a>                 <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a href="../../../../org/owasp/dependencycheck/exception/InitializationException.html">InitializationException</a>(<span class="jxr_string">"Unable to read configuration settings"</span>, ex);
+<a class="jxr_linenumber" name="L434" href="#L434">434</a>             }
+<a class="jxr_linenumber" name="L435" href="#L435">435</a>         }
+<a class="jxr_linenumber" name="L436" href="#L436">436</a>     }
+<a class="jxr_linenumber" name="L437" href="#L437">437</a> 
+<a class="jxr_linenumber" name="L438" href="#L438">438</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L439" href="#L439">439</a> <em class="jxr_javadoccomment">     * Processes the advisories creating the appropriate dependency objects and</em>
+<a class="jxr_linenumber" name="L440" href="#L440">440</a> <em class="jxr_javadoccomment">     * adding the resulting vulnerabilities.</em>
+<a class="jxr_linenumber" name="L441" href="#L441">441</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L442" href="#L442">442</a> <em class="jxr_javadoccomment">     * @param advisories a collection of advisories from npm</em>
+<a class="jxr_linenumber" name="L443" href="#L443">443</a> <em class="jxr_javadoccomment">     * @param engine a reference to the analysis engine</em>
+<a class="jxr_linenumber" name="L444" href="#L444">444</a> <em class="jxr_javadoccomment">     * @param dependency a reference to the package-lock.json dependency</em>
+<a class="jxr_linenumber" name="L445" href="#L445">445</a> <em class="jxr_javadoccomment">     * @param dependencyMap a collection of module/version pairs obtained from</em>
+<a class="jxr_linenumber" name="L446" href="#L446">446</a> <em class="jxr_javadoccomment">     * the package-lock file - used in case the advisories do not include a</em>
+<a class="jxr_linenumber" name="L447" href="#L447">447</a> <em class="jxr_javadoccomment">     * version number</em>
+<a class="jxr_linenumber" name="L448" href="#L448">448</a> <em class="jxr_javadoccomment">     * @throws CpeValidationException thrown when a CPE cannot be created</em>
+<a class="jxr_linenumber" name="L449" href="#L449">449</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L450" href="#L450">450</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">void</strong> processResults(<strong class="jxr_keyword">final</strong> List&lt;Advisory&gt; advisories, <a href="../../../../org/owasp/dependencycheck/Engine.html">Engine</a> engine,
+<a class="jxr_linenumber" name="L451" href="#L451">451</a>             <a href="../../../../org/owasp/dependencycheck/dependency/Dependency.html">Dependency</a> dependency, MultiValuedMap&lt;String, String&gt; dependencyMap)
+<a class="jxr_linenumber" name="L452" href="#L452">452</a>             <strong class="jxr_keyword">throws</strong> CpeValidationException {
+<a class="jxr_linenumber" name="L453" href="#L453">453</a>         <strong class="jxr_keyword">for</strong> (Advisory advisory : advisories) {
+<a class="jxr_linenumber" name="L454" href="#L454">454</a>             <em class="jxr_comment">//Create a new vulnerability out of the advisory returned by nsp.</em>
+<a class="jxr_linenumber" name="L455" href="#L455">455</a>             <strong class="jxr_keyword">final</strong> <a href="../../../../org/owasp/dependencycheck/dependency/Vulnerability.html">Vulnerability</a> vuln = <strong class="jxr_keyword">new</strong> <a href="../../../../org/owasp/dependencycheck/dependency/Vulnerability.html">Vulnerability</a>();
+<a class="jxr_linenumber" name="L456" href="#L456">456</a>             vuln.setDescription(advisory.getOverview());
+<a class="jxr_linenumber" name="L457" href="#L457">457</a>             vuln.setName(String.valueOf(advisory.getGhsaId()));
+<a class="jxr_linenumber" name="L458" href="#L458">458</a>             vuln.setUnscoredSeverity(advisory.getSeverity());
+<a class="jxr_linenumber" name="L459" href="#L459">459</a>             vuln.setCvssV3(advisory.getCvssV3());
+<a class="jxr_linenumber" name="L460" href="#L460">460</a>             vuln.setSource(Vulnerability.Source.NPM);
+<a class="jxr_linenumber" name="L461" href="#L461">461</a>             <strong class="jxr_keyword">for</strong> (String cwe : advisory.getCwes()) {
+<a class="jxr_linenumber" name="L462" href="#L462">462</a>                 vuln.addCwe(cwe);
+<a class="jxr_linenumber" name="L463" href="#L463">463</a>             }
+<a class="jxr_linenumber" name="L464" href="#L464">464</a>             <strong class="jxr_keyword">if</strong> (advisory.getReferences() != <strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="L465" href="#L465">465</a>                 <strong class="jxr_keyword">final</strong> String[] references = advisory.getReferences().split(<span class="jxr_string">"&#92;&#92;n"</span>);
+<a class="jxr_linenumber" name="L466" href="#L466">466</a>                 <strong class="jxr_keyword">for</strong> (String reference : references) {
+<a class="jxr_linenumber" name="L467" href="#L467">467</a>                     <strong class="jxr_keyword">if</strong> (reference.length() &gt; 3) {
+<a class="jxr_linenumber" name="L468" href="#L468">468</a>                         String url = reference.substring(2);
+<a class="jxr_linenumber" name="L469" href="#L469">469</a>                         <strong class="jxr_keyword">try</strong> {
+<a class="jxr_linenumber" name="L470" href="#L470">470</a>                             <strong class="jxr_keyword">new</strong> URL(url);
+<a class="jxr_linenumber" name="L471" href="#L471">471</a>                         } <strong class="jxr_keyword">catch</strong> (MalformedURLException ignored) {
+<a class="jxr_linenumber" name="L472" href="#L472">472</a>                             <em class="jxr_comment">// reference is not a format-valid URL, so null it to make the reference be used as plaintext</em>
+<a class="jxr_linenumber" name="L473" href="#L473">473</a>                             url = <strong class="jxr_keyword">null</strong>;
+<a class="jxr_linenumber" name="L474" href="#L474">474</a>                         }
+<a class="jxr_linenumber" name="L475" href="#L475">475</a>                         vuln.addReference(<span class="jxr_string">"NPM Advisory reference: "</span>, url == <strong class="jxr_keyword">null</strong> ? reference : url, url);
+<a class="jxr_linenumber" name="L476" href="#L476">476</a>                     }
+<a class="jxr_linenumber" name="L477" href="#L477">477</a>                 }
+<a class="jxr_linenumber" name="L478" href="#L478">478</a>             }
+<a class="jxr_linenumber" name="L479" href="#L479">479</a> 
+<a class="jxr_linenumber" name="L480" href="#L480">480</a>             <em class="jxr_comment">//Create a single vulnerable software object - these do not use CPEs unlike the NVD.</em>
+<a class="jxr_linenumber" name="L481" href="#L481">481</a>             <strong class="jxr_keyword">final</strong> <a href="../../../../org/owasp/dependencycheck/dependency/VulnerableSoftwareBuilder.html">VulnerableSoftwareBuilder</a> builder = <strong class="jxr_keyword">new</strong> <a href="../../../../org/owasp/dependencycheck/dependency/VulnerableSoftwareBuilder.html">VulnerableSoftwareBuilder</a>();
+<a class="jxr_linenumber" name="L482" href="#L482">482</a>             builder.part(Part.APPLICATION).product(advisory.getModuleName().replace(<span class="jxr_string">" "</span>, <span class="jxr_string">"_"</span>))
+<a class="jxr_linenumber" name="L483" href="#L483">483</a>                     .version(advisory.getVulnerableVersions().replace(<span class="jxr_string">" "</span>, <span class="jxr_string">""</span>));
+<a class="jxr_linenumber" name="L484" href="#L484">484</a>             <strong class="jxr_keyword">final</strong> <a href="../../../../org/owasp/dependencycheck/dependency/VulnerableSoftware.html">VulnerableSoftware</a> vs = builder.build();
+<a class="jxr_linenumber" name="L485" href="#L485">485</a>             vuln.addVulnerableSoftware(vs);
+<a class="jxr_linenumber" name="L486" href="#L486">486</a> 
+<a class="jxr_linenumber" name="L487" href="#L487">487</a>             String version = advisory.getVersion();
+<a class="jxr_linenumber" name="L488" href="#L488">488</a>             <strong class="jxr_keyword">if</strong> (version == <strong class="jxr_keyword">null</strong> &amp;&amp; dependencyMap.containsKey(advisory.getModuleName())) {
+<a class="jxr_linenumber" name="L489" href="#L489">489</a>                 version = determineVersionFromMap(advisory.getVulnerableVersions(), dependencyMap.get(advisory.getModuleName()));
+<a class="jxr_linenumber" name="L490" href="#L490">490</a>             }
+<a class="jxr_linenumber" name="L491" href="#L491">491</a>             <strong class="jxr_keyword">final</strong> <a href="../../../../org/owasp/dependencycheck/dependency/Dependency.html">Dependency</a> existing = findDependency(engine, advisory.getModuleName(), version);
+<a class="jxr_linenumber" name="L492" href="#L492">492</a>             <strong class="jxr_keyword">if</strong> (existing == <strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="L493" href="#L493">493</a>                 <strong class="jxr_keyword">final</strong> <a href="../../../../org/owasp/dependencycheck/dependency/Dependency.html">Dependency</a> nodeModule = createDependency(dependency, advisory.getModuleName(), version, <span class="jxr_string">"transitive"</span>);
+<a class="jxr_linenumber" name="L494" href="#L494">494</a>                 nodeModule.addVulnerability(vuln);
+<a class="jxr_linenumber" name="L495" href="#L495">495</a>                 engine.addDependency(nodeModule);
+<a class="jxr_linenumber" name="L496" href="#L496">496</a>             } <strong class="jxr_keyword">else</strong> {
+<a class="jxr_linenumber" name="L497" href="#L497">497</a>                 replaceOrAddVulnerability(existing, vuln);
+<a class="jxr_linenumber" name="L498" href="#L498">498</a>             }
+<a class="jxr_linenumber" name="L499" href="#L499">499</a>         }
+<a class="jxr_linenumber" name="L500" href="#L500">500</a>     }
+<a class="jxr_linenumber" name="L501" href="#L501">501</a> 
+<a class="jxr_linenumber" name="L502" href="#L502">502</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L503" href="#L503">503</a> <em class="jxr_javadoccomment">     * Evaluates if the vulnerability is already present; if it is the</em>
+<a class="jxr_linenumber" name="L504" href="#L504">504</a> <em class="jxr_javadoccomment">     * vulnerability is not added.</em>
+<a class="jxr_linenumber" name="L505" href="#L505">505</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L506" href="#L506">506</a> <em class="jxr_javadoccomment">     * @param dependency a reference to the dependency being analyzed</em>
+<a class="jxr_linenumber" name="L507" href="#L507">507</a> <em class="jxr_javadoccomment">     * @param vuln the vulnerability to add</em>
+<a class="jxr_linenumber" name="L508" href="#L508">508</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L509" href="#L509">509</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">void</strong> replaceOrAddVulnerability(<a href="../../../../org/owasp/dependencycheck/dependency/Dependency.html">Dependency</a> dependency, <a href="../../../../org/owasp/dependencycheck/dependency/Vulnerability.html">Vulnerability</a> vuln) {
+<a class="jxr_linenumber" name="L510" href="#L510">510</a>         <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">boolean</strong> found = vuln.getSource() == Vulnerability.Source.NPM
+<a class="jxr_linenumber" name="L511" href="#L511">511</a>                 &amp;&amp; dependency.getVulnerabilities().stream().anyMatch(existing -&gt; {
+<a class="jxr_linenumber" name="L512" href="#L512">512</a>                     <strong class="jxr_keyword">return</strong> existing.getReferences().stream().anyMatch(ref -&gt; {
+<a class="jxr_linenumber" name="L513" href="#L513">513</a>                         <strong class="jxr_keyword">return</strong> ref.getName() != <strong class="jxr_keyword">null</strong>
+<a class="jxr_linenumber" name="L514" href="#L514">514</a>                                 &amp;&amp; ref.getName().equals(<span class="jxr_string">"https://nodesecurity.io/advisories/"</span> + vuln.getName());
+<a class="jxr_linenumber" name="L515" href="#L515">515</a>                     });
+<a class="jxr_linenumber" name="L516" href="#L516">516</a>                 });
+<a class="jxr_linenumber" name="L517" href="#L517">517</a>         <strong class="jxr_keyword">if</strong> (!found) {
+<a class="jxr_linenumber" name="L518" href="#L518">518</a>             dependency.addVulnerability(vuln);
+<a class="jxr_linenumber" name="L519" href="#L519">519</a>         }
+<a class="jxr_linenumber" name="L520" href="#L520">520</a>     }
+<a class="jxr_linenumber" name="L521" href="#L521">521</a> 
+<a class="jxr_linenumber" name="L522" href="#L522">522</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L523" href="#L523">523</a> <em class="jxr_javadoccomment">     * Returns the node audit search utility.</em>
+<a class="jxr_linenumber" name="L524" href="#L524">524</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L525" href="#L525">525</a> <em class="jxr_javadoccomment">     * @return the node audit search utility</em>
+<a class="jxr_linenumber" name="L526" href="#L526">526</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L527" href="#L527">527</a>     <strong class="jxr_keyword">protected</strong> <a href="../../../../org/owasp/dependencycheck/data/nodeaudit/NodeAuditSearch.html">NodeAuditSearch</a> getSearcher() {
+<a class="jxr_linenumber" name="L528" href="#L528">528</a>         <strong class="jxr_keyword">return</strong> searcher;
+<a class="jxr_linenumber" name="L529" href="#L529">529</a>     }
+<a class="jxr_linenumber" name="L530" href="#L530">530</a> 
+<a class="jxr_linenumber" name="L531" href="#L531">531</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L532" href="#L532">532</a> <em class="jxr_javadoccomment">     * Give an NPM version range and a collection of versions, this method</em>
+<a class="jxr_linenumber" name="L533" href="#L533">533</a> <em class="jxr_javadoccomment">     * attempts to select a specific version from the collection that is in the</em>
+<a class="jxr_linenumber" name="L534" href="#L534">534</a> <em class="jxr_javadoccomment">     * range.</em>
+<a class="jxr_linenumber" name="L535" href="#L535">535</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L536" href="#L536">536</a> <em class="jxr_javadoccomment">     * @param versionRange the version range to evaluate</em>
+<a class="jxr_linenumber" name="L537" href="#L537">537</a> <em class="jxr_javadoccomment">     * @param availableVersions the collection of possible versions to select</em>
+<a class="jxr_linenumber" name="L538" href="#L538">538</a> <em class="jxr_javadoccomment">     * @return the selected range from the versionRange</em>
+<a class="jxr_linenumber" name="L539" href="#L539">539</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L540" href="#L540">540</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> String determineVersionFromMap(String versionRange, Collection&lt;String&gt; availableVersions) {
+<a class="jxr_linenumber" name="L541" href="#L541">541</a>         <strong class="jxr_keyword">if</strong> (availableVersions.size() == 1) {
+<a class="jxr_linenumber" name="L542" href="#L542">542</a>             <strong class="jxr_keyword">return</strong> availableVersions.iterator().next();
+<a class="jxr_linenumber" name="L543" href="#L543">543</a>         }
+<a class="jxr_linenumber" name="L544" href="#L544">544</a>         <strong class="jxr_keyword">for</strong> (String v : availableVersions) {
+<a class="jxr_linenumber" name="L545" href="#L545">545</a>             <strong class="jxr_keyword">try</strong> {
+<a class="jxr_linenumber" name="L546" href="#L546">546</a>                 <strong class="jxr_keyword">final</strong> Semver version = <strong class="jxr_keyword">new</strong> Semver(v);
+<a class="jxr_linenumber" name="L547" href="#L547">547</a>                 <strong class="jxr_keyword">if</strong> (version.satisfies(versionRange)) {
+<a class="jxr_linenumber" name="L548" href="#L548">548</a>                     <strong class="jxr_keyword">return</strong> v;
+<a class="jxr_linenumber" name="L549" href="#L549">549</a>                 }
+<a class="jxr_linenumber" name="L550" href="#L550">550</a>             } <strong class="jxr_keyword">catch</strong> (SemverException ex) {
+<a class="jxr_linenumber" name="L551" href="#L551">551</a>                 LOGGER.debug(<span class="jxr_string">"invalid semver: "</span> + v);
+<a class="jxr_linenumber" name="L552" href="#L552">552</a>             }
+<a class="jxr_linenumber" name="L553" href="#L553">553</a>         }
+<a class="jxr_linenumber" name="L554" href="#L554">554</a>         <strong class="jxr_keyword">return</strong> availableVersions.iterator().next();
+<a class="jxr_linenumber" name="L555" href="#L555">555</a>     }
+<a class="jxr_linenumber" name="L556" href="#L556">556</a> }
 </pre>
 <hr/>
 <div id="footer">Copyright &#169; 2012&#x2013;2025 <a href="https://www.owasp.org">OWASP</a>. All rights reserved.</div>

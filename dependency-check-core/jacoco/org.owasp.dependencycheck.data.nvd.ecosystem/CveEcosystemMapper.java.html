@@ -84,22 +84,23 @@ import javax.annotation.concurrent.NotThreadSafe;
     private boolean hasMultipleVendorProductConfigurations(DefCveItem cve) {
 <span class="pc bpc" id="L85" title="2 of 4 branches missed.">        if (cve.getCve().getConfigurations() != null &amp;&amp; !cve.getCve().getConfigurations().isEmpty()) {</span>
 <span class="nc" id="L86">            final List&lt;CpeMatch&gt; cpeEntries = cve.getCve().getConfigurations().stream()</span>
-<span class="nc" id="L87">                    .map(Config::getNodes)</span>
-<span class="nc" id="L88">                    .flatMap(List::stream)</span>
-<span class="nc bnc" id="L89" title="All 2 branches missed.">                    .filter(cpe -&gt; cpe.getCpeMatch() != null)</span>
-<span class="nc" id="L90">                    .map(Node::getCpeMatch)</span>
-<span class="nc" id="L91">                    .flatMap(List::stream)</span>
-<span class="nc bnc" id="L92" title="All 2 branches missed.">                    .filter(match -&gt; match.getCriteria() != null)</span>
-<span class="nc" id="L93">                    .collect(Collectors.toList());</span>
-<span class="nc bnc" id="L94" title="All 4 branches missed.">            if (!cpeEntries.isEmpty() &amp;&amp; cpeEntries.size() &gt; 1) {</span>
-<span class="nc" id="L95">                final CpeMatch firstMatch = cpeEntries.get(0);</span>
-<span class="nc" id="L96">                final String uri = firstMatch.getCriteria();</span>
-<span class="nc" id="L97">                final int pos = uri.indexOf(&quot;:&quot;, uri.indexOf(&quot;:&quot;, 10) + 1);</span>
-<span class="nc" id="L98">                final String match = uri.substring(0, pos + 1);</span>
-<span class="nc bnc" id="L99" title="All 2 branches missed.">                return !cpeEntries.stream().allMatch(e -&gt; e.getCriteria().startsWith(match));</span>
+<span class="nc bnc" id="L87" title="All 2 branches missed.">                    .filter(config -&gt; config.getNodes() != null)</span>
+<span class="nc" id="L88">                    .map(Config::getNodes)</span>
+<span class="nc" id="L89">                    .flatMap(List::stream)</span>
+<span class="nc bnc" id="L90" title="All 2 branches missed.">                    .filter(cpe -&gt; cpe.getCpeMatch() != null)</span>
+<span class="nc" id="L91">                    .map(Node::getCpeMatch)</span>
+<span class="nc" id="L92">                    .flatMap(List::stream)</span>
+<span class="nc bnc" id="L93" title="All 2 branches missed.">                    .filter(match -&gt; match.getCriteria() != null)</span>
+<span class="nc" id="L94">                    .collect(Collectors.toList());</span>
+<span class="nc bnc" id="L95" title="All 4 branches missed.">            if (!cpeEntries.isEmpty() &amp;&amp; cpeEntries.size() &gt; 1) {</span>
+<span class="nc" id="L96">                final CpeMatch firstMatch = cpeEntries.get(0);</span>
+<span class="nc" id="L97">                final String uri = firstMatch.getCriteria();</span>
+<span class="nc" id="L98">                final int pos = uri.indexOf(&quot;:&quot;, uri.indexOf(&quot;:&quot;, 10) + 1);</span>
+<span class="nc" id="L99">                final String match = uri.substring(0, pos + 1);</span>
+<span class="nc bnc" id="L100" title="All 2 branches missed.">                return !cpeEntries.stream().allMatch(e -&gt; e.getCriteria().startsWith(match));</span>
             }
         }
-<span class="fc" id="L102">        return false;</span>
+<span class="fc" id="L103">        return false;</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

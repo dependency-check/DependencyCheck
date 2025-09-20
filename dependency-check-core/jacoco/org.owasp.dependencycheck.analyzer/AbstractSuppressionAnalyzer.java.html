@@ -200,30 +200,34 @@ import org.xml.sax.SAXException;
 <span class="fc" id="L200">        String suppressionFileLocation = jarLocation.getFile();</span>
 <span class="fc bfc" id="L201" title="All 2 branches covered.">        if (suppressionFileLocation.endsWith(&quot;.jar&quot;)) {</span>
 <span class="fc" id="L202">            suppressionFileLocation = &quot;jar:file:&quot; + suppressionFileLocation + &quot;!/&quot; + BASE_SUPPRESSION_FILE;</span>
+<span class="pc bpc" id="L203" title="3 of 4 branches missed.">        } else if (suppressionFileLocation.startsWith(&quot;nested:&quot;) &amp;&amp; suppressionFileLocation.endsWith(&quot;.jar!/&quot;)) {</span>
+            // suppressionFileLocation -&gt; nested:/app/app.jar/!BOOT-INF/lib/dependency-check-core-&lt;version&gt;.jar!/
+            // goal-&gt;                 jar:nested:/app/app.jar/!BOOT-INF/lib/dependency-check-core-&lt;version&gt;.jar!/dependencycheck-base-suppression.xml
+<span class="nc" id="L206">            suppressionFileLocation = &quot;jar:&quot; + suppressionFileLocation + BASE_SUPPRESSION_FILE;</span>
         } else {
-<span class="fc" id="L204">            suppressionFileLocation = &quot;file:&quot; + suppressionFileLocation + BASE_SUPPRESSION_FILE;</span>
+<span class="fc" id="L208">            suppressionFileLocation = &quot;file:&quot; + suppressionFileLocation + BASE_SUPPRESSION_FILE;</span>
         }
-<span class="fc" id="L206">        URL baseSuppresssionURL = null;</span>
+<span class="fc" id="L210">        URL baseSuppresssionURL = null;</span>
         try {
-<span class="fc" id="L208">            baseSuppresssionURL = new URL(suppressionFileLocation);</span>
-<span class="nc" id="L209">        } catch (MalformedURLException e) {</span>
-<span class="nc" id="L210">            throw new SuppressionParseException(&quot;Unable to load the base suppression data file&quot;, e);</span>
-<span class="fc" id="L211">        }</span>
-<span class="fc" id="L212">        try (InputStream in = baseSuppresssionURL.openStream()) {</span>
-<span class="fc" id="L213">            ruleList = parser.parseSuppressionRules(in);</span>
-<span class="nc" id="L214">        } catch (SAXException | IOException ex) {</span>
-<span class="nc" id="L215">            throw new SuppressionParseException(&quot;Unable to parse the base suppression data file&quot;, ex);</span>
-<span class="fc" id="L216">        }</span>
-<span class="pc bpc" id="L217" title="2 of 4 branches missed.">        if (ruleList != null &amp;&amp; !ruleList.isEmpty()) {</span>
-<span class="pc bpc" id="L218" title="1 of 2 branches missed.">            if (engine.hasObject(SUPPRESSION_OBJECT_KEY)) {</span>
+<span class="fc" id="L212">            baseSuppresssionURL = new URL(suppressionFileLocation);</span>
+<span class="nc" id="L213">        } catch (MalformedURLException e) {</span>
+<span class="nc" id="L214">            throw new SuppressionParseException(&quot;Unable to load the base suppression data file&quot;, e);</span>
+<span class="fc" id="L215">        }</span>
+<span class="fc" id="L216">        try (InputStream in = baseSuppresssionURL.openStream()) {</span>
+<span class="fc" id="L217">            ruleList = parser.parseSuppressionRules(in);</span>
+<span class="nc" id="L218">        } catch (SAXException | IOException ex) {</span>
+<span class="nc" id="L219">            throw new SuppressionParseException(&quot;Unable to parse the base suppression data file&quot;, ex);</span>
+<span class="fc" id="L220">        }</span>
+<span class="pc bpc" id="L221" title="2 of 4 branches missed.">        if (ruleList != null &amp;&amp; !ruleList.isEmpty()) {</span>
+<span class="pc bpc" id="L222" title="1 of 2 branches missed.">            if (engine.hasObject(SUPPRESSION_OBJECT_KEY)) {</span>
                 @SuppressWarnings(&quot;unchecked&quot;)
-<span class="nc" id="L220">                final List&lt;SuppressionRule&gt; rules = (List&lt;SuppressionRule&gt;) engine.getObject(SUPPRESSION_OBJECT_KEY);</span>
-<span class="nc" id="L221">                rules.addAll(ruleList);</span>
-<span class="nc" id="L222">            } else {</span>
-<span class="fc" id="L223">                engine.putObject(SUPPRESSION_OBJECT_KEY, ruleList);</span>
+<span class="nc" id="L224">                final List&lt;SuppressionRule&gt; rules = (List&lt;SuppressionRule&gt;) engine.getObject(SUPPRESSION_OBJECT_KEY);</span>
+<span class="nc" id="L225">                rules.addAll(ruleList);</span>
+<span class="nc" id="L226">            } else {</span>
+<span class="fc" id="L227">                engine.putObject(SUPPRESSION_OBJECT_KEY, ruleList);</span>
             }
         }
-<span class="fc" id="L226">    }</span>
+<span class="fc" id="L230">    }</span>
 
     /**
      * Loads all the base suppression rules from the hosted suppression file
@@ -239,42 +243,42 @@ import org.xml.sax.SAXException;
      */
     private void loadHostedSuppressionBaseData(final SuppressionParser parser, final Engine engine) {
         final File repoFile;
-<span class="fc" id="L242">        boolean repoEmpty = false;</span>
-<span class="fc" id="L243">        final boolean enabled = getSettings().getBoolean(Settings.KEYS.HOSTED_SUPPRESSIONS_ENABLED, true);</span>
-<span class="pc bpc" id="L244" title="1 of 2 branches missed.">        if (!enabled) {</span>
-<span class="nc" id="L245">            return;</span>
+<span class="fc" id="L246">        boolean repoEmpty = false;</span>
+<span class="fc" id="L247">        final boolean enabled = getSettings().getBoolean(Settings.KEYS.HOSTED_SUPPRESSIONS_ENABLED, true);</span>
+<span class="pc bpc" id="L248" title="1 of 2 branches missed.">        if (!enabled) {</span>
+<span class="nc" id="L249">            return;</span>
         }
-<span class="fc" id="L247">        final boolean autoupdate = getSettings().getBoolean(Settings.KEYS.AUTO_UPDATE, true);</span>
-<span class="fc" id="L248">        final boolean forceupdate = getSettings().getBoolean(Settings.KEYS.HOSTED_SUPPRESSIONS_FORCEUPDATE, false);</span>
+<span class="fc" id="L251">        final boolean autoupdate = getSettings().getBoolean(Settings.KEYS.AUTO_UPDATE, true);</span>
+<span class="fc" id="L252">        final boolean forceupdate = getSettings().getBoolean(Settings.KEYS.HOSTED_SUPPRESSIONS_FORCEUPDATE, false);</span>
 
         try {
-<span class="fc" id="L251">            final String configuredUrl = getSettings().getString(Settings.KEYS.HOSTED_SUPPRESSIONS_URL,</span>
+<span class="fc" id="L255">            final String configuredUrl = getSettings().getString(Settings.KEYS.HOSTED_SUPPRESSIONS_URL,</span>
                     HostedSuppressionsDataSource.DEFAULT_SUPPRESSIONS_URL);
-<span class="fc" id="L253">            final URL url = new URL(configuredUrl);</span>
-<span class="fc" id="L254">            final String fileName = new File(url.getPath()).getName();</span>
-<span class="fc" id="L255">            repoFile = new File(getSettings().getDataDirectory(), fileName);</span>
-<span class="pc bpc" id="L256" title="1 of 4 branches missed.">            if (!repoFile.isFile() || repoFile.length() &lt;= 1L) {</span>
-<span class="fc" id="L257">                repoEmpty = true;</span>
-<span class="fc" id="L258">                LOGGER.warn(&quot;Hosted Suppressions file is empty or missing - attempting to force the update&quot;);</span>
-<span class="fc" id="L259">                getSettings().setBoolean(Settings.KEYS.HOSTED_SUPPRESSIONS_FORCEUPDATE, true);</span>
+<span class="fc" id="L257">            final URL url = new URL(configuredUrl);</span>
+<span class="fc" id="L258">            final String fileName = new File(url.getPath()).getName();</span>
+<span class="fc" id="L259">            repoFile = new File(getSettings().getDataDirectory(), fileName);</span>
+<span class="pc bpc" id="L260" title="1 of 4 branches missed.">            if (!repoFile.isFile() || repoFile.length() &lt;= 1L) {</span>
+<span class="fc" id="L261">                repoEmpty = true;</span>
+<span class="fc" id="L262">                LOGGER.warn(&quot;Hosted Suppressions file is empty or missing - attempting to force the update&quot;);</span>
+<span class="fc" id="L263">                getSettings().setBoolean(Settings.KEYS.HOSTED_SUPPRESSIONS_FORCEUPDATE, true);</span>
             }
-<span class="pc bpc" id="L261" title="1 of 8 branches missed.">            if ((!autoupdate &amp;&amp; forceupdate) || (autoupdate &amp;&amp; repoEmpty)) {</span>
-<span class="pc bpc" id="L262" title="1 of 2 branches missed.">                if (engine == null) {</span>
-<span class="nc" id="L263">                    LOGGER.warn(&quot;Engine was null, this should only happen in tests - skipping forced update&quot;);</span>
+<span class="pc bpc" id="L265" title="1 of 8 branches missed.">            if ((!autoupdate &amp;&amp; forceupdate) || (autoupdate &amp;&amp; repoEmpty)) {</span>
+<span class="pc bpc" id="L266" title="1 of 2 branches missed.">                if (engine == null) {</span>
+<span class="nc" id="L267">                    LOGGER.warn(&quot;Engine was null, this should only happen in tests - skipping forced update&quot;);</span>
                 } else {
-<span class="fc" id="L265">                    repoEmpty = forceUpdateHostedSuppressions(engine, repoFile);</span>
+<span class="fc" id="L269">                    repoEmpty = forceUpdateHostedSuppressions(engine, repoFile);</span>
                 }
             }
-<span class="fc bfc" id="L268" title="All 2 branches covered.">            if (!repoEmpty) {</span>
-<span class="fc" id="L269">                loadCachedHostedSuppressionsRules(parser, repoFile, engine);</span>
+<span class="fc bfc" id="L272" title="All 2 branches covered.">            if (!repoEmpty) {</span>
+<span class="fc" id="L273">                loadCachedHostedSuppressionsRules(parser, repoFile, engine);</span>
             } else {
-<span class="fc" id="L271">                LOGGER.warn(&quot;Empty Hosted Suppression file after update, results may contain false positives &quot;</span>
+<span class="fc" id="L275">                LOGGER.warn(&quot;Empty Hosted Suppression file after update, results may contain false positives &quot;</span>
                         + &quot;already resolved by the DependencyCheck project due to failed download of the hosted suppression file&quot;);
             }
-<span class="nc" id="L274">        } catch (IOException | InitializationException ex) {</span>
-<span class="nc" id="L275">            LOGGER.warn(&quot;Unable to load hosted suppressions&quot;, ex);</span>
-<span class="fc" id="L276">        }</span>
-<span class="fc" id="L277">    }</span>
+<span class="nc" id="L278">        } catch (IOException | InitializationException ex) {</span>
+<span class="nc" id="L279">            LOGGER.warn(&quot;Unable to load hosted suppressions&quot;, ex);</span>
+<span class="fc" id="L280">        }</span>
+<span class="fc" id="L281">    }</span>
 
     /**
      * Load the hosted suppression file from the web resource
@@ -290,47 +294,47 @@ import org.xml.sax.SAXException;
             throws InitializationException {
         // take a defensive copy to avoid a risk of corrupted file by a competing parallel new download.
         final Path defensiveCopy;
-<span class="fc" id="L293">        try (WriteLock lock = new WriteLock(getSettings(), true, repoFile.getName() + &quot;.lock&quot;)) {</span>
-<span class="fc" id="L294">            defensiveCopy = Files.createTempFile(&quot;dc-basesuppressions&quot;, &quot;.xml&quot;);</span>
-<span class="fc" id="L295">            LOGGER.debug(&quot;copying hosted suppressions file {} to {}&quot;, repoFile.toPath(), defensiveCopy);</span>
-<span class="fc" id="L296">            Files.copy(repoFile.toPath(), defensiveCopy, StandardCopyOption.REPLACE_EXISTING);</span>
-<span class="nc" id="L297">        } catch (WriteLockException | IOException ex) {</span>
-<span class="nc" id="L298">            throw new InitializationException(&quot;Failed to copy the hosted suppressions file&quot;, ex);</span>
-<span class="fc" id="L299">        }</span>
+<span class="fc" id="L297">        try (WriteLock lock = new WriteLock(getSettings(), true, repoFile.getName() + &quot;.lock&quot;)) {</span>
+<span class="fc" id="L298">            defensiveCopy = Files.createTempFile(&quot;dc-basesuppressions&quot;, &quot;.xml&quot;);</span>
+<span class="fc" id="L299">            LOGGER.debug(&quot;copying hosted suppressions file {} to {}&quot;, repoFile.toPath(), defensiveCopy);</span>
+<span class="fc" id="L300">            Files.copy(repoFile.toPath(), defensiveCopy, StandardCopyOption.REPLACE_EXISTING);</span>
+<span class="nc" id="L301">        } catch (WriteLockException | IOException ex) {</span>
+<span class="nc" id="L302">            throw new InitializationException(&quot;Failed to copy the hosted suppressions file&quot;, ex);</span>
+<span class="fc" id="L303">        }</span>
 
-<span class="fc" id="L301">        try (InputStream in = Files.newInputStream(defensiveCopy)) {</span>
+<span class="fc" id="L305">        try (InputStream in = Files.newInputStream(defensiveCopy)) {</span>
             final List&lt;SuppressionRule&gt; ruleList;
-<span class="fc" id="L303">            ruleList = parser.parseSuppressionRules(in);</span>
-<span class="pc bpc" id="L304" title="1 of 2 branches missed.">            if (!ruleList.isEmpty()) {</span>
-<span class="pc bpc" id="L305" title="1 of 2 branches missed.">                if (engine.hasObject(SUPPRESSION_OBJECT_KEY)) {</span>
+<span class="fc" id="L307">            ruleList = parser.parseSuppressionRules(in);</span>
+<span class="pc bpc" id="L308" title="1 of 2 branches missed.">            if (!ruleList.isEmpty()) {</span>
+<span class="pc bpc" id="L309" title="1 of 2 branches missed.">                if (engine.hasObject(SUPPRESSION_OBJECT_KEY)) {</span>
                     @SuppressWarnings(&quot;unchecked&quot;)
-<span class="fc" id="L307">                    final List&lt;SuppressionRule&gt; rules = (List&lt;SuppressionRule&gt;) engine.getObject(SUPPRESSION_OBJECT_KEY);</span>
-<span class="fc" id="L308">                    rules.addAll(ruleList);</span>
-<span class="fc" id="L309">                } else {</span>
-<span class="nc" id="L310">                    engine.putObject(SUPPRESSION_OBJECT_KEY, ruleList);</span>
+<span class="fc" id="L311">                    final List&lt;SuppressionRule&gt; rules = (List&lt;SuppressionRule&gt;) engine.getObject(SUPPRESSION_OBJECT_KEY);</span>
+<span class="fc" id="L312">                    rules.addAll(ruleList);</span>
+<span class="fc" id="L313">                } else {</span>
+<span class="nc" id="L314">                    engine.putObject(SUPPRESSION_OBJECT_KEY, ruleList);</span>
                 }
             }
-<span class="nc" id="L313">        } catch (SAXException | IOException ex) {</span>
-<span class="nc" id="L314">            LOGGER.warn(&quot;Unable to parse the hosted suppressions data file, results may contain false positives already resolved &quot;</span>
+<span class="nc" id="L317">        } catch (SAXException | IOException ex) {</span>
+<span class="nc" id="L318">            LOGGER.warn(&quot;Unable to parse the hosted suppressions data file, results may contain false positives already resolved &quot;</span>
                     + &quot;by the DependencyCheck project&quot;, ex);
-<span class="fc" id="L316">        }</span>
+<span class="fc" id="L320">        }</span>
         try {
-<span class="fc" id="L318">            Files.delete(defensiveCopy);</span>
-<span class="nc" id="L319">        } catch (IOException ex) {</span>
-<span class="nc" id="L320">            LOGGER.warn(&quot;Could not delete defensive copy of hosted suppressions file {}&quot;, defensiveCopy, ex);</span>
-<span class="fc" id="L321">        }</span>
-<span class="fc" id="L322">    }</span>
+<span class="fc" id="L322">            Files.delete(defensiveCopy);</span>
+<span class="nc" id="L323">        } catch (IOException ex) {</span>
+<span class="nc" id="L324">            LOGGER.warn(&quot;Could not delete defensive copy of hosted suppressions file {}&quot;, defensiveCopy, ex);</span>
+<span class="fc" id="L325">        }</span>
+<span class="fc" id="L326">    }</span>
 
     private static boolean forceUpdateHostedSuppressions(final Engine engine, final File repoFile) {
-<span class="fc" id="L325">        final HostedSuppressionsDataSource ds = new HostedSuppressionsDataSource();</span>
-<span class="fc" id="L326">        boolean repoEmpty = true;</span>
+<span class="fc" id="L329">        final HostedSuppressionsDataSource ds = new HostedSuppressionsDataSource();</span>
+<span class="fc" id="L330">        boolean repoEmpty = true;</span>
         try {
-<span class="fc" id="L328">            ds.update(engine);</span>
-<span class="pc bpc" id="L329" title="2 of 4 branches missed.">            repoEmpty = !repoFile.isFile() || repoFile.length() &lt;= 1L;</span>
-<span class="nc" id="L330">        } catch (UpdateException ex) {</span>
-<span class="nc" id="L331">            LOGGER.warn(&quot;Failed to update the Hosted Suppression file&quot;, ex);</span>
-<span class="fc" id="L332">        }</span>
-<span class="fc" id="L333">        return repoEmpty;</span>
+<span class="fc" id="L332">            ds.update(engine);</span>
+<span class="pc bpc" id="L333" title="2 of 4 branches missed.">            repoEmpty = !repoFile.isFile() || repoFile.length() &lt;= 1L;</span>
+<span class="nc" id="L334">        } catch (UpdateException ex) {</span>
+<span class="nc" id="L335">            LOGGER.warn(&quot;Failed to update the Hosted Suppression file&quot;, ex);</span>
+<span class="fc" id="L336">        }</span>
+<span class="fc" id="L337">        return repoEmpty;</span>
     }
 
     /**
@@ -345,84 +349,84 @@ import org.xml.sax.SAXException;
      */
     private List&lt;SuppressionRule&gt; loadSuppressionFile(final SuppressionParser parser,
             final String suppressionFilePath) throws SuppressionParseException {
-<span class="fc" id="L348">        LOGGER.debug(&quot;Loading suppression rules from '{}'&quot;, suppressionFilePath);</span>
-<span class="fc" id="L349">        final List&lt;SuppressionRule&gt; list = new ArrayList&lt;&gt;();</span>
-<span class="fc" id="L350">        File file = null;</span>
-<span class="fc" id="L351">        boolean deleteTempFile = false;</span>
+<span class="fc" id="L352">        LOGGER.debug(&quot;Loading suppression rules from '{}'&quot;, suppressionFilePath);</span>
+<span class="fc" id="L353">        final List&lt;SuppressionRule&gt; list = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L354">        File file = null;</span>
+<span class="fc" id="L355">        boolean deleteTempFile = false;</span>
         try {
-<span class="fc" id="L353">            final Pattern uriRx = Pattern.compile(&quot;^(https?|file):.*&quot;, Pattern.CASE_INSENSITIVE);</span>
-<span class="fc bfc" id="L354" title="All 2 branches covered.">            if (uriRx.matcher(suppressionFilePath).matches()) {</span>
-<span class="fc" id="L355">                deleteTempFile = true;</span>
-<span class="fc" id="L356">                file = getSettings().getTempFile(&quot;suppression&quot;, &quot;xml&quot;);</span>
-<span class="fc" id="L357">                final URL url = new URL(suppressionFilePath);</span>
+<span class="fc" id="L357">            final Pattern uriRx = Pattern.compile(&quot;^(https?|file):.*&quot;, Pattern.CASE_INSENSITIVE);</span>
+<span class="fc bfc" id="L358" title="All 2 branches covered.">            if (uriRx.matcher(suppressionFilePath).matches()) {</span>
+<span class="fc" id="L359">                deleteTempFile = true;</span>
+<span class="fc" id="L360">                file = getSettings().getTempFile(&quot;suppression&quot;, &quot;xml&quot;);</span>
+<span class="fc" id="L361">                final URL url = new URL(suppressionFilePath);</span>
                 try {
-<span class="fc" id="L359">                    Downloader.getInstance().fetchFile(url, file, false, Settings.KEYS.SUPPRESSION_FILE_USER,</span>
+<span class="fc" id="L363">                    Downloader.getInstance().fetchFile(url, file, false, Settings.KEYS.SUPPRESSION_FILE_USER,</span>
                             Settings.KEYS.SUPPRESSION_FILE_PASSWORD, Settings.KEYS.SUPPRESSION_FILE_BEARER_TOKEN);
-<span class="nc" id="L361">                } catch (DownloadFailedException ex) {</span>
-<span class="nc" id="L362">                    LOGGER.trace(&quot;Failed download suppression file - first attempt&quot;, ex);</span>
+<span class="nc" id="L365">                } catch (DownloadFailedException ex) {</span>
+<span class="nc" id="L366">                    LOGGER.trace(&quot;Failed download suppression file - first attempt&quot;, ex);</span>
                     try {
-<span class="nc" id="L364">                        Thread.sleep(500);</span>
-<span class="nc" id="L365">                        Downloader.getInstance().fetchFile(url, file, true, Settings.KEYS.SUPPRESSION_FILE_USER,</span>
+<span class="nc" id="L368">                        Thread.sleep(500);</span>
+<span class="nc" id="L369">                        Downloader.getInstance().fetchFile(url, file, true, Settings.KEYS.SUPPRESSION_FILE_USER,</span>
                                 Settings.KEYS.SUPPRESSION_FILE_PASSWORD, Settings.KEYS.SUPPRESSION_FILE_BEARER_TOKEN);
-<span class="nc" id="L367">                    } catch (TooManyRequestsException ex1) {</span>
-<span class="nc" id="L368">                        throw new SuppressionParseException(&quot;Unable to download supression file `&quot; + file</span>
+<span class="nc" id="L371">                    } catch (TooManyRequestsException ex1) {</span>
+<span class="nc" id="L372">                        throw new SuppressionParseException(&quot;Unable to download supression file `&quot; + file</span>
                                 + &quot;`; received 429 - too many requests&quot;, ex1);
-<span class="nc" id="L370">                    } catch (ResourceNotFoundException ex1) {</span>
-<span class="nc" id="L371">                        throw new SuppressionParseException(&quot;Unable to download supression file `&quot; + file</span>
+<span class="nc" id="L374">                    } catch (ResourceNotFoundException ex1) {</span>
+<span class="nc" id="L375">                        throw new SuppressionParseException(&quot;Unable to download supression file `&quot; + file</span>
                                 + &quot;`; received 404 - resource not found&quot;, ex1);
-<span class="nc" id="L373">                    } catch (InterruptedException ex1) {</span>
-<span class="nc" id="L374">                        Thread.currentThread().interrupt();</span>
-<span class="nc" id="L375">                        throw new SuppressionParseException(&quot;Unable to download supression file `&quot; + file + &quot;`&quot;, ex1);</span>
-<span class="nc" id="L376">                    }</span>
-<span class="nc" id="L377">                } catch (TooManyRequestsException ex) {</span>
-<span class="nc" id="L378">                    throw new SuppressionParseException(&quot;Unable to download supression file `&quot; + file</span>
+<span class="nc" id="L377">                    } catch (InterruptedException ex1) {</span>
+<span class="nc" id="L378">                        Thread.currentThread().interrupt();</span>
+<span class="nc" id="L379">                        throw new SuppressionParseException(&quot;Unable to download supression file `&quot; + file + &quot;`&quot;, ex1);</span>
+<span class="nc" id="L380">                    }</span>
+<span class="nc" id="L381">                } catch (TooManyRequestsException ex) {</span>
+<span class="nc" id="L382">                    throw new SuppressionParseException(&quot;Unable to download supression file `&quot; + file</span>
                             + &quot;`; received 429 - too many requests&quot;, ex);
-<span class="nc" id="L380">                } catch (ResourceNotFoundException ex) {</span>
-<span class="nc" id="L381">                    throw new SuppressionParseException(&quot;Unable to download supression file `&quot; + file + &quot;`; received 404 - resource not found&quot;, ex);</span>
-<span class="pc" id="L382">                }</span>
-<span class="fc" id="L383">            } else {</span>
-<span class="fc" id="L384">                file = new File(suppressionFilePath);</span>
+<span class="nc" id="L384">                } catch (ResourceNotFoundException ex) {</span>
+<span class="nc" id="L385">                    throw new SuppressionParseException(&quot;Unable to download supression file `&quot; + file + &quot;`; received 404 - resource not found&quot;, ex);</span>
+<span class="pc" id="L386">                }</span>
+<span class="fc" id="L387">            } else {</span>
+<span class="fc" id="L388">                file = new File(suppressionFilePath);</span>
 
-<span class="fc bfc" id="L386" title="All 2 branches covered.">                if (!file.exists()) {</span>
-<span class="fc" id="L387">                    try (InputStream suppressionFromClasspath = FileUtils.getResourceAsStream(suppressionFilePath)) {</span>
-<span class="fc" id="L388">                        deleteTempFile = true;</span>
-<span class="fc" id="L389">                        file = getSettings().getTempFile(&quot;suppression&quot;, &quot;xml&quot;);</span>
+<span class="fc bfc" id="L390" title="All 2 branches covered.">                if (!file.exists()) {</span>
+<span class="fc" id="L391">                    try (InputStream suppressionFromClasspath = FileUtils.getResourceAsStream(suppressionFilePath)) {</span>
+<span class="fc" id="L392">                        deleteTempFile = true;</span>
+<span class="fc" id="L393">                        file = getSettings().getTempFile(&quot;suppression&quot;, &quot;xml&quot;);</span>
                         try {
-<span class="fc" id="L391">                            Files.copy(suppressionFromClasspath, file.toPath());</span>
-<span class="nc" id="L392">                        } catch (IOException ex) {</span>
-<span class="nc" id="L393">                            throwSuppressionParseException(&quot;Unable to locate suppression file in classpath&quot;, ex, suppressionFilePath);</span>
-<span class="fc" id="L394">                        }</span>
+<span class="fc" id="L395">                            Files.copy(suppressionFromClasspath, file.toPath());</span>
+<span class="nc" id="L396">                        } catch (IOException ex) {</span>
+<span class="nc" id="L397">                            throwSuppressionParseException(&quot;Unable to locate suppression file in classpath&quot;, ex, suppressionFilePath);</span>
+<span class="fc" id="L398">                        }</span>
                     }
                 }
             }
-<span class="pc bpc" id="L398" title="1 of 2 branches missed.">            if (file != null) {</span>
-<span class="pc bpc" id="L399" title="1 of 2 branches missed.">                if (!file.exists()) {</span>
-<span class="nc" id="L400">                    final String msg = String.format(&quot;Suppression file '%s' does not exist&quot;, file.getPath());</span>
-<span class="nc" id="L401">                    LOGGER.warn(msg);</span>
-<span class="nc" id="L402">                    throw new SuppressionParseException(msg);</span>
+<span class="pc bpc" id="L402" title="1 of 2 branches missed.">            if (file != null) {</span>
+<span class="pc bpc" id="L403" title="1 of 2 branches missed.">                if (!file.exists()) {</span>
+<span class="nc" id="L404">                    final String msg = String.format(&quot;Suppression file '%s' does not exist&quot;, file.getPath());</span>
+<span class="nc" id="L405">                    LOGGER.warn(msg);</span>
+<span class="nc" id="L406">                    throw new SuppressionParseException(msg);</span>
                 }
                 try {
-<span class="fc" id="L405">                    list.addAll(parser.parseSuppressionRules(file));</span>
-<span class="nc" id="L406">                } catch (SuppressionParseException ex) {</span>
-<span class="nc" id="L407">                    LOGGER.warn(&quot;Unable to parse suppression xml file '{}'&quot;, file.getPath());</span>
-<span class="nc" id="L408">                    LOGGER.warn(ex.getMessage());</span>
-<span class="nc" id="L409">                    throw ex;</span>
-<span class="fc" id="L410">                }</span>
+<span class="fc" id="L409">                    list.addAll(parser.parseSuppressionRules(file));</span>
+<span class="nc" id="L410">                } catch (SuppressionParseException ex) {</span>
+<span class="nc" id="L411">                    LOGGER.warn(&quot;Unable to parse suppression xml file '{}'&quot;, file.getPath());</span>
+<span class="nc" id="L412">                    LOGGER.warn(ex.getMessage());</span>
+<span class="nc" id="L413">                    throw ex;</span>
+<span class="fc" id="L414">                }</span>
             }
-<span class="nc" id="L412">        } catch (DownloadFailedException ex) {</span>
-<span class="nc" id="L413">            throwSuppressionParseException(&quot;Unable to fetch the configured suppression file&quot;, ex, suppressionFilePath);</span>
-<span class="nc" id="L414">        } catch (MalformedURLException ex) {</span>
-<span class="nc" id="L415">            throwSuppressionParseException(&quot;Configured suppression file has an invalid URL&quot;, ex, suppressionFilePath);</span>
-<span class="nc" id="L416">        } catch (SuppressionParseException ex) {</span>
-<span class="nc" id="L417">            throw ex;</span>
-<span class="fc" id="L418">        } catch (IOException ex) {</span>
-<span class="nc" id="L419">            throwSuppressionParseException(&quot;Unable to read suppression file&quot;, ex, suppressionFilePath);</span>
+<span class="nc" id="L416">        } catch (DownloadFailedException ex) {</span>
+<span class="nc" id="L417">            throwSuppressionParseException(&quot;Unable to fetch the configured suppression file&quot;, ex, suppressionFilePath);</span>
+<span class="nc" id="L418">        } catch (MalformedURLException ex) {</span>
+<span class="nc" id="L419">            throwSuppressionParseException(&quot;Configured suppression file has an invalid URL&quot;, ex, suppressionFilePath);</span>
+<span class="nc" id="L420">        } catch (SuppressionParseException ex) {</span>
+<span class="nc" id="L421">            throw ex;</span>
+<span class="fc" id="L422">        } catch (IOException ex) {</span>
+<span class="nc" id="L423">            throwSuppressionParseException(&quot;Unable to read suppression file&quot;, ex, suppressionFilePath);</span>
         } finally {
-<span class="pc bpc" id="L421" title="1 of 4 branches missed.">            if (deleteTempFile &amp;&amp; file != null) {</span>
-<span class="fc" id="L422">                FileUtils.delete(file);</span>
+<span class="pc bpc" id="L425" title="1 of 4 branches missed.">            if (deleteTempFile &amp;&amp; file != null) {</span>
+<span class="fc" id="L426">                FileUtils.delete(file);</span>
             }
         }
-<span class="fc" id="L425">        return list;</span>
+<span class="fc" id="L429">        return list;</span>
     }
 
     /**
@@ -435,9 +439,9 @@ import org.xml.sax.SAXException;
      * SuppressionParseException
      */
     private void throwSuppressionParseException(String message, Exception exception, String suppressionFilePath) throws SuppressionParseException {
-<span class="fc" id="L438">        LOGGER.warn(String.format(message + &quot; '%s'&quot;, suppressionFilePath));</span>
-<span class="fc" id="L439">        LOGGER.debug(&quot;&quot;, exception);</span>
-<span class="fc" id="L440">        throw new SuppressionParseException(message, exception);</span>
+<span class="fc" id="L442">        LOGGER.warn(String.format(message + &quot; '%s'&quot;, suppressionFilePath));</span>
+<span class="fc" id="L443">        LOGGER.debug(&quot;&quot;, exception);</span>
+<span class="fc" id="L444">        throw new SuppressionParseException(message, exception);</span>
     }
 
     /**
@@ -447,12 +451,12 @@ import org.xml.sax.SAXException;
      * @return the count of rules loaded
      */
     public static int getRuleCount(Engine engine) {
-<span class="pc bpc" id="L450" title="1 of 2 branches missed.">        if (engine.hasObject(SUPPRESSION_OBJECT_KEY)) {</span>
+<span class="pc bpc" id="L454" title="1 of 2 branches missed.">        if (engine.hasObject(SUPPRESSION_OBJECT_KEY)) {</span>
             @SuppressWarnings(&quot;unchecked&quot;)
-<span class="fc" id="L452">            final List&lt;SuppressionRule&gt; rules = (List&lt;SuppressionRule&gt;) engine.getObject(SUPPRESSION_OBJECT_KEY);</span>
-<span class="fc" id="L453">            return rules.size();</span>
+<span class="fc" id="L456">            final List&lt;SuppressionRule&gt; rules = (List&lt;SuppressionRule&gt;) engine.getObject(SUPPRESSION_OBJECT_KEY);</span>
+<span class="fc" id="L457">            return rules.size();</span>
         }
-<span class="nc" id="L455">        return 0;</span>
+<span class="nc" id="L459">        return 0;</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

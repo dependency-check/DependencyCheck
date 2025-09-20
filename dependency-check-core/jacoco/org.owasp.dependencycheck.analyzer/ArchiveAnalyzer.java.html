@@ -345,43 +345,43 @@ public class ArchiveAnalyzer extends AbstractFileTypeAnalyzer {
      * @throws AnalysisException thrown if there is an issue
      */
     private void addDisguisedJarsToDependencies(Dependency dependency, Engine engine) throws AnalysisException {
-<span class="pc bpc" id="L348" title="1 of 4 branches missed.">        if (ZIP_FILTER.accept(dependency.getActualFile()) &amp;&amp; isZipFileActuallyJarFile(dependency)) {</span>
-<span class="nc" id="L349">            final File tempDir = getNextTempDirectory();</span>
-<span class="nc" id="L350">            final String fileName = dependency.getFileName();</span>
+<span class="fc bfc" id="L348" title="All 4 branches covered.">        if (ZIP_FILTER.accept(dependency.getActualFile()) &amp;&amp; isZipFileActuallyJarFile(dependency)) {</span>
+<span class="fc" id="L349">            final File tempDir = getNextTempDirectory();</span>
+<span class="fc" id="L350">            final String fileName = dependency.getFileName();</span>
 
-<span class="nc" id="L352">            LOGGER.info(&quot;The zip file '{}' appears to be a JAR file, making a copy and analyzing it as a JAR.&quot;, fileName);</span>
-<span class="nc" id="L353">            final File tmpLoc = new File(tempDir, fileName.substring(0, fileName.length() - 3) + &quot;jar&quot;);</span>
+<span class="fc" id="L352">            LOGGER.info(&quot;The zip file '{}' appears to be a JAR file, making a copy and analyzing it as a JAR.&quot;, fileName);</span>
+<span class="fc" id="L353">            final File tmpLoc = new File(tempDir, fileName.substring(0, fileName.length() - 3) + &quot;jar&quot;);</span>
             //store the archives sha1 and change it so that the engine doesn't think the zip and jar file are the same
             // and add it is a related dependency.
-<span class="nc" id="L356">            final String archiveMd5 = dependency.getMd5sum();</span>
-<span class="nc" id="L357">            final String archiveSha1 = dependency.getSha1sum();</span>
-<span class="nc" id="L358">            final String archiveSha256 = dependency.getSha256sum();</span>
+<span class="fc" id="L356">            final String archiveMd5 = dependency.getMd5sum();</span>
+<span class="fc" id="L357">            final String archiveSha1 = dependency.getSha1sum();</span>
+<span class="fc" id="L358">            final String archiveSha256 = dependency.getSha256sum();</span>
             try {
-<span class="nc" id="L360">                dependency.setMd5sum(&quot;&quot;);</span>
-<span class="nc" id="L361">                dependency.setSha1sum(&quot;&quot;);</span>
-<span class="nc" id="L362">                dependency.setSha256sum(&quot;&quot;);</span>
-<span class="nc" id="L363">                Files.copy(dependency.getActualFile().toPath(), tmpLoc.toPath());</span>
-<span class="nc" id="L364">                final List&lt;Dependency&gt; dependencySet = findMoreDependencies(engine, tmpLoc);</span>
-<span class="nc bnc" id="L365" title="All 4 branches missed.">                if (dependencySet != null &amp;&amp; !dependencySet.isEmpty()) {</span>
-<span class="nc" id="L366">                    dependencySet.forEach((d) -&gt; {</span>
+<span class="fc" id="L360">                dependency.setMd5sum(&quot;&quot;);</span>
+<span class="fc" id="L361">                dependency.setSha1sum(&quot;&quot;);</span>
+<span class="fc" id="L362">                dependency.setSha256sum(&quot;&quot;);</span>
+<span class="fc" id="L363">                Files.copy(dependency.getActualFile().toPath(), tmpLoc.toPath());</span>
+<span class="fc" id="L364">                final List&lt;Dependency&gt; dependencySet = findMoreDependencies(engine, tmpLoc);</span>
+<span class="pc bpc" id="L365" title="2 of 4 branches missed.">                if (dependencySet != null &amp;&amp; !dependencySet.isEmpty()) {</span>
+<span class="fc" id="L366">                    dependencySet.forEach((d) -&gt; {</span>
                         //fix the dependency's display name and path
-<span class="nc bnc" id="L368" title="All 2 branches missed.">                        if (d.getActualFile().equals(tmpLoc)) {</span>
-<span class="nc" id="L369">                            d.setFilePath(dependency.getFilePath());</span>
-<span class="nc" id="L370">                            d.setDisplayFileName(dependency.getFileName());</span>
+<span class="pc bpc" id="L368" title="1 of 2 branches missed.">                        if (d.getActualFile().equals(tmpLoc)) {</span>
+<span class="fc" id="L369">                            d.setFilePath(dependency.getFilePath());</span>
+<span class="fc" id="L370">                            d.setDisplayFileName(dependency.getFileName());</span>
                         } else {
 <span class="nc" id="L372">                            d.getRelatedDependencies().stream().filter((rel) -&gt; rel.getActualFile().equals(tmpLoc)).forEach((rel) -&gt; {</span>
 <span class="nc" id="L373">                                rel.setFilePath(dependency.getFilePath());</span>
 <span class="nc" id="L374">                                rel.setDisplayFileName(dependency.getFileName());</span>
 <span class="nc" id="L375">                            });</span>
                         }
-<span class="nc" id="L377">                    });</span>
+<span class="fc" id="L377">                    });</span>
                 }
 <span class="nc" id="L379">            } catch (IOException ex) {</span>
 <span class="nc" id="L380">                LOGGER.debug(&quot;Unable to perform deep copy on '{}'&quot;, dependency.getActualFile().getPath(), ex);</span>
             } finally {
-<span class="nc" id="L382">                dependency.setMd5sum(archiveMd5);</span>
-<span class="nc" id="L383">                dependency.setSha1sum(archiveSha1);</span>
-<span class="nc" id="L384">                dependency.setSha256sum(archiveSha256);</span>
+<span class="fc" id="L382">                dependency.setMd5sum(archiveMd5);</span>
+<span class="fc" id="L383">                dependency.setSha1sum(archiveSha1);</span>
+<span class="fc" id="L384">                dependency.setSha256sum(archiveSha256);</span>
             }
         }
 <span class="fc" id="L387">    }</span>
@@ -729,19 +729,19 @@ public class ArchiveAnalyzer extends AbstractFileTypeAnalyzer {
 <span class="fc" id="L729">        ZipFile zip = null;</span>
         try {
 <span class="fc" id="L731">            zip = ZipFile.builder().setFile(dependency.getActualFilePath()).get();</span>
-<span class="pc bpc" id="L732" title="1 of 2 branches missed.">            if (zip.getEntry(&quot;META-INF/MANIFEST.MF&quot;) != null</span>
+<span class="fc bfc" id="L732" title="All 2 branches covered.">            if (zip.getEntry(&quot;META-INF/MANIFEST.MF&quot;) != null</span>
 <span class="pc bpc" id="L733" title="1 of 2 branches missed.">                    || zip.getEntry(&quot;META-INF/maven&quot;) != null) {</span>
-<span class="nc" id="L734">                final Enumeration&lt;ZipArchiveEntry&gt; entries = zip.getEntries();</span>
-<span class="nc bnc" id="L735" title="All 2 branches missed.">                while (entries.hasMoreElements()) {</span>
-<span class="nc" id="L736">                    final ZipArchiveEntry entry = entries.nextElement();</span>
-<span class="nc bnc" id="L737" title="All 2 branches missed.">                    if (!entry.isDirectory()) {</span>
-<span class="nc" id="L738">                        final String name = entry.getName().toLowerCase();</span>
-<span class="nc bnc" id="L739" title="All 2 branches missed.">                        if (name.endsWith(&quot;.class&quot;)) {</span>
-<span class="nc" id="L740">                            isJar = true;</span>
-<span class="nc" id="L741">                            break;</span>
+<span class="fc" id="L734">                final Enumeration&lt;ZipArchiveEntry&gt; entries = zip.getEntries();</span>
+<span class="pc bpc" id="L735" title="1 of 2 branches missed.">                while (entries.hasMoreElements()) {</span>
+<span class="fc" id="L736">                    final ZipArchiveEntry entry = entries.nextElement();</span>
+<span class="fc bfc" id="L737" title="All 2 branches covered.">                    if (!entry.isDirectory()) {</span>
+<span class="fc" id="L738">                        final String name = entry.getName().toLowerCase();</span>
+<span class="fc bfc" id="L739" title="All 2 branches covered.">                        if (name.endsWith(&quot;.class&quot;)) {</span>
+<span class="fc" id="L740">                            isJar = true;</span>
+<span class="fc" id="L741">                            break;</span>
                         }
                     }
-<span class="nc" id="L744">                }</span>
+<span class="fc" id="L744">                }</span>
             }
 <span class="nc" id="L746">        } catch (IOException ex) {</span>
 <span class="nc" id="L747">            LOGGER.debug(&quot;Unable to unzip zip file '{}'&quot;, dependency.getFilePath(), ex);</span>

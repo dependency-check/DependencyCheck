@@ -58,28 +58,28 @@ public class ODCConnectionTransport implements Transport {
      * @param config the OSS client configuration
      * @param userAgent the user agent to send to OSS Index
      */
-<span class="fc" id="L61">    public ODCConnectionTransport(OssindexClientConfiguration config, UserAgentSupplier userAgent) {</span>
-<span class="fc" id="L62">        this.userAgent = userAgent;</span>
-<span class="fc" id="L63">        this.configuration = config;</span>
-<span class="fc" id="L64">    }</span>
+<span class="nc" id="L61">    public ODCConnectionTransport(OssindexClientConfiguration config, UserAgentSupplier userAgent) {</span>
+<span class="nc" id="L62">        this.userAgent = userAgent;</span>
+<span class="nc" id="L63">        this.configuration = config;</span>
+<span class="nc" id="L64">    }</span>
 
     @Override
     public void init(OssindexClientConfiguration configuration) {
         // no initialisation needed
-<span class="fc" id="L69">    }</span>
+<span class="nc" id="L69">    }</span>
 
     @Override
     public String post(URI url, String payloadType, String payload, String acceptType) throws TransportException, IOException {
         try {
-<span class="fc" id="L74">            final List&lt;Header&gt; headers = new ArrayList&lt;&gt;(3);</span>
-<span class="fc" id="L75">            headers.add(new BasicHeader(HttpHeaders.ACCEPT, acceptType));</span>
-<span class="fc" id="L76">            headers.add(new BasicHeader(HttpHeaders.USER_AGENT, userAgent.get()));</span>
+<span class="nc" id="L74">            final List&lt;Header&gt; headers = new ArrayList&lt;&gt;(3);</span>
+<span class="nc" id="L75">            headers.add(new BasicHeader(HttpHeaders.ACCEPT, acceptType));</span>
+<span class="nc" id="L76">            headers.add(new BasicHeader(HttpHeaders.USER_AGENT, userAgent.get()));</span>
             // TODO consider to promote pre-emptive authentication by default to the Downloader and also load the OSSIndex credentials there.
-<span class="fc" id="L78">            final String authorization = BasicAuthHelper.authorizationHeader(configuration.getAuthConfiguration());</span>
-<span class="pc bpc" id="L79" title="1 of 2 branches missed.">            if (authorization != null) {</span>
+<span class="nc" id="L78">            final String authorization = BasicAuthHelper.authorizationHeader(configuration.getAuthConfiguration());</span>
+<span class="nc bnc" id="L79" title="All 2 branches missed.">            if (authorization != null) {</span>
 <span class="nc" id="L80">                headers.add(new BasicHeader(HttpHeaders.AUTHORIZATION, authorization));</span>
             }
-<span class="fc" id="L82">            return Downloader.getInstance().postBasedFetchContent(url, payload, ContentType.create(payloadType, StandardCharsets.UTF_8), headers);</span>
+<span class="nc" id="L82">            return Downloader.getInstance().postBasedFetchContent(url, payload, ContentType.create(payloadType, StandardCharsets.UTF_8), headers);</span>
 <span class="nc" id="L83">        } catch (TooManyRequestsException e) {</span>
 <span class="nc" id="L84">            throw new TransportException(&quot;Too many requests for &quot; + url.toString() + &quot; HTTP status 429&quot;, e);</span>
 <span class="nc" id="L85">        } catch (ResourceNotFoundException e) {</span>
@@ -90,6 +90,6 @@ public class ODCConnectionTransport implements Transport {
     @Override
     public void close() throws Exception {
         // no resource closure needed; fully delegated to HTTPClient
-<span class="fc" id="L93">    }</span>
+<span class="nc" id="L93">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>
