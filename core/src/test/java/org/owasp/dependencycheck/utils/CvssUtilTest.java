@@ -56,50 +56,15 @@ class CvssUtilTest {
      */
     @Test
     void testCvssV2ScoreToSeverity() {
-        Double score = -1.0;
-        String expResult = "UNKNOWN";
-        String result = CvssUtil.cvssV2ScoreToSeverity(score);
-        assertEquals(expResult, result);
-
-        score = 0.0;
-        expResult = "LOW";
-        result = CvssUtil.cvssV2ScoreToSeverity(score);
-        assertEquals(expResult, result);
-
-        score = 1.0;
-        expResult = "LOW";
-        result = CvssUtil.cvssV2ScoreToSeverity(score);
-        assertEquals(expResult, result);
-
-        score = 3.9;
-        expResult = "LOW";
-        result = CvssUtil.cvssV2ScoreToSeverity(score);
-        assertEquals(expResult, result);
-
-        score = 4.0;
-        expResult = "MEDIUM";
-        result = CvssUtil.cvssV2ScoreToSeverity(score);
-        assertEquals(expResult, result);
-
-        score = 6.9;
-        expResult = "MEDIUM";
-        result = CvssUtil.cvssV2ScoreToSeverity(score);
-        assertEquals(expResult, result);
-
-        score = 7.0;
-        expResult = "HIGH";
-        result = CvssUtil.cvssV2ScoreToSeverity(score);
-        assertEquals(expResult, result);
-
-        score = 10.0;
-        expResult = "HIGH";
-        result = CvssUtil.cvssV2ScoreToSeverity(score);
-        assertEquals(expResult, result);
-
-        score = 11.0;
-        expResult = "UNKNOWN";
-        result = CvssUtil.cvssV2ScoreToSeverity(score);
-        assertEquals(expResult, result);
+        assertEquals("UNKNOWN", CvssUtil.cvssV2ScoreToSeverity(-1.0));
+        assertEquals("LOW", CvssUtil.cvssV2ScoreToSeverity(0.0));
+        assertEquals("LOW", CvssUtil.cvssV2ScoreToSeverity(1.0));
+        assertEquals("LOW", CvssUtil.cvssV2ScoreToSeverity(3.9));
+        assertEquals("MEDIUM", CvssUtil.cvssV2ScoreToSeverity(4.0));
+        assertEquals("MEDIUM", CvssUtil.cvssV2ScoreToSeverity(6.9));
+        assertEquals("HIGH", CvssUtil.cvssV2ScoreToSeverity(7.0));
+        assertEquals("HIGH", CvssUtil.cvssV2ScoreToSeverity(10.0));
+        assertEquals("UNKNOWN", CvssUtil.cvssV2ScoreToSeverity(11.0));
     }
 
     /**
@@ -107,58 +72,17 @@ class CvssUtilTest {
      */
     @Test
     void testCvssV3ScoreToSeverity() {
-        Double score = 0.0;
-        CvssV3Data.SeverityType expResult = CvssV3Data.SeverityType.NONE;
-        CvssV3Data.SeverityType result = CvssUtil.cvssV3ScoreToSeverity(score);
-        assertEquals(expResult, result);
-
-        score = 1.0;
-        expResult = CvssV3Data.SeverityType.LOW;
-        result = CvssUtil.cvssV3ScoreToSeverity(score);
-        assertEquals(expResult, result);
-
-        score = 3.9;
-        expResult = CvssV3Data.SeverityType.LOW;
-        result = CvssUtil.cvssV3ScoreToSeverity(score);
-        assertEquals(expResult, result);
-
-        score = 4.0;
-        expResult = CvssV3Data.SeverityType.MEDIUM;
-        result = CvssUtil.cvssV3ScoreToSeverity(score);
-        assertEquals(expResult, result);
-
-        score = 6.9;
-        expResult = CvssV3Data.SeverityType.MEDIUM;
-        result = CvssUtil.cvssV3ScoreToSeverity(score);
-        assertEquals(expResult, result);
-
-        score = 7.0;
-        expResult = CvssV3Data.SeverityType.HIGH;
-        result = CvssUtil.cvssV3ScoreToSeverity(score);
-        assertEquals(expResult, result);
-
-        score = 8.9;
-        expResult = CvssV3Data.SeverityType.HIGH;
-        result = CvssUtil.cvssV3ScoreToSeverity(score);
-        assertEquals(expResult, result);
-
-        score = 9.0;
-        expResult = CvssV3Data.SeverityType.CRITICAL;
-        result = CvssUtil.cvssV3ScoreToSeverity(score);
-        assertEquals(expResult, result);
-
-        score = 10.0;
-        expResult = CvssV3Data.SeverityType.CRITICAL;
-        result = CvssUtil.cvssV3ScoreToSeverity(score);
-        assertEquals(expResult, result);
-
-        score = 11.0;
-        result = CvssUtil.cvssV3ScoreToSeverity(score);
-        assertNull(result);
-
-        score = -1.0;
-        result = CvssUtil.cvssV3ScoreToSeverity(score);
-        assertNull(result);
+        assertEquals(CvssV3Data.SeverityType.NONE, CvssUtil.cvssV3ScoreToSeverity(0.0));
+        assertEquals(CvssV3Data.SeverityType.LOW, CvssUtil.cvssV3ScoreToSeverity(1.0));
+        assertEquals(CvssV3Data.SeverityType.LOW, CvssUtil.cvssV3ScoreToSeverity(3.9));
+        assertEquals(CvssV3Data.SeverityType.MEDIUM, CvssUtil.cvssV3ScoreToSeverity(4.0));
+        assertEquals(CvssV3Data.SeverityType.MEDIUM, CvssUtil.cvssV3ScoreToSeverity(6.9));
+        assertEquals(CvssV3Data.SeverityType.HIGH, CvssUtil.cvssV3ScoreToSeverity(7.0));
+        assertEquals(CvssV3Data.SeverityType.HIGH, CvssUtil.cvssV3ScoreToSeverity(8.9));
+        assertEquals(CvssV3Data.SeverityType.CRITICAL, CvssUtil.cvssV3ScoreToSeverity(9.0));
+        assertEquals(CvssV3Data.SeverityType.CRITICAL, CvssUtil.cvssV3ScoreToSeverity(10.0));
+        assertNull(CvssUtil.cvssV3ScoreToSeverity(11.0));
+        assertNull(CvssUtil.cvssV3ScoreToSeverity(-1.0));
     }
 
     /**
