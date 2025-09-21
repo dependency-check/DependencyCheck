@@ -229,14 +229,14 @@ public final class CvssUtil {
         return cvss;
     }
 
-    private static CvssV4Data.SeverityType toSeverityType(double baseScore) {
+    public static CvssV4Data.SeverityType cvssV4ScoreToSeverity(double baseScore) {
         if (baseScore == 0.0) {
             return CvssV4Data.SeverityType.NONE;
-        } else if (baseScore >= 0.1 && baseScore <= 3.9) {
+        } else if (baseScore > 0.0 && baseScore < 4.0) {
             return CvssV4Data.SeverityType.LOW;
-        } else if (baseScore >= 4.0 && baseScore <= 6.9) {
+        } else if (baseScore >= 4.0 && baseScore < 7.0) {
             return CvssV4Data.SeverityType.MEDIUM;
-        } else if (baseScore >= 7.0 && baseScore <= 8.9) {
+        } else if (baseScore >= 7.0 && baseScore < 9.0) {
             return CvssV4Data.SeverityType.HIGH;
         } else if (baseScore >= 9.0 && baseScore <= 10.0) {
             return CvssV4Data.SeverityType.CRITICAL;
@@ -300,7 +300,7 @@ public final class CvssUtil {
         CvssV4Data.VulnerabilityResponseEffortType vulnerabilityResponseEffort = values.containsKey("RE") ? CvssV4Data.VulnerabilityResponseEffortType.fromValue(values.get("RE")) : CvssV4Data.VulnerabilityResponseEffortType.NOT_DEFINED;
         CvssV4Data.ProviderUrgencyType providerUrgency = values.containsKey("U") ? CvssV4Data.ProviderUrgencyType.fromValue(values.get("U")) : CvssV4Data.ProviderUrgencyType.NOT_DEFINED;
 
-        CvssV4Data.SeverityType baseSeverity = toSeverityType(baseScore);
+        CvssV4Data.SeverityType baseSeverity = cvssV4ScoreToSeverity(baseScore);
         // Scores and severities are not present in the vector string, set to null/defaults
         Double threatScore = null;
         CvssV4Data.SeverityType threatSeverity = null;
