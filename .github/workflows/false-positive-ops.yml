@@ -140,6 +140,8 @@ jobs:
           args: >
             --failOnCVSS 11
             --enableExperimental
+            --ossIndexUsername ${{ secrets.OSS_INDEX_USERNAME }}
+            --ossIndexPassword ${{ secrets.OSS_INDEX_API_TOKEN }}
       - name: Upload FP Report
         if: steps.check_files.outputs.files_exists == 'true'
         uses: actions/upload-artifact@v4
