@@ -64,7 +64,19 @@ jobs:
         with:
           sarif_file: core/target/spotbugsSarif.json
           category: spotbugs-core
-          
+      - name: Archive Snapshot
+        id: archive-snapshot
+        uses: actions/upload-artifact@v4
+        with:
+          name: archive-snapshot
+          retention-days: 1
+          path: |
+            **/target/*.asc
+            **/target/*.jar
+            **/target/*.pom
+            ant/target/*.zip
+            cli/target/*.zip
+
   maven:
     name: Regression Test Maven Plugin
     permissions: 
@@ -144,3 +156,44 @@ jobs:
         with:
           sarif_file: target/checkstyle-result.sarif
           category: checkstyle
+
+  docker:
+    permissions:
+      contents: read # to fetch code (actions/checkout)
+
+    name: Build and Test Docker
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+      - name: Check Maven Cache
+        id: maven-cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
+      - name: Download release build
+        uses: actions/download-artifact@v5
+        with:
+          name: archive-snapshot
+      - name: Set up Docker
+        uses: docker/setup-docker-action@v4
+        with:
+          daemon-config: |
+            {
+              "debug": true,
+              "features": {
+                "containerd-snapshotter": true
+              }
+            }
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      - name: Build Docker Image
+        run: ./build-docker.sh
+      - name: build scan target
+        run: mvn -V -s settings.xml package -DskipTests=true --no-transfer-progress --batch-mode
+      - name: Test Docker Image
+        run: ./test-docker.sh

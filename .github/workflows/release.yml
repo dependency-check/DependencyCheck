@@ -149,6 +149,18 @@ jobs:
         uses: actions/download-artifact@v5
         with:
           name: archive-release
+      - name: Set up Docker
+        uses: docker/setup-docker-action@v4
+        with:
+          daemon-config: |
+            {
+              "debug": true,
+              "features": {
+                "containerd-snapshotter": true
+              }
+            }
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
       - name: Build Docker Image
         run: ./build-docker.sh
       - name: build scan target

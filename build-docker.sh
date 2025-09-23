@@ -8,10 +8,11 @@ VERSION=$(mvn -q \
 
 FILE=./cli/target/dependency-check-$VERSION-release.zip
 if [ -f "$FILE" ]; then
-    docker build . --build-arg VERSION=$VERSION -t owasp/dependency-check:$VERSION
-    if [[ ! $VERSION = *"SNAPSHOT"* ]]; then
-        docker tag owasp/dependency-check:$VERSION owasp/dependency-check:latest
-    fi
+    extra_tag_args="$([[ ! $VERSION = *"SNAPSHOT"* ]] && echo "--tag owasp/dependency-check:latest" || echo "")"
+
+    docker buildx build --pull --load --platform linux/amd64,linux/arm64 . \
+      --build-arg VERSION=$VERSION \
+      --tag owasp/dependency-check:$VERSION ${extra_tag_args}
 else 
     echo "$FILE does not exist - run 'mvn package' first"
     exit 1

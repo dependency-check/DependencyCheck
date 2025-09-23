@@ -47,7 +47,7 @@ RUN apk update                                                                  
     apk del .build-deps
 
 ### remove any suid sgid - we don't need them
-RUN find / -perm +6000 -type f -exec chmod a-s {} \;
+RUN find / -path /proc -prune -perm +6000 -type f -exec chmod a-s {} \;
 USER ${UID}
 
 VOLUME ["/src", "/report"]
