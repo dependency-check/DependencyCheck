@@ -8,7 +8,6 @@ import org.owasp.dependencycheck.dependency.Confidence;
 import org.owasp.dependencycheck.dependency.Dependency;
 import org.owasp.dependencycheck.dependency.naming.Identifier;
 import org.owasp.dependencycheck.dependency.naming.PurlIdentifier;
-import org.owasp.dependencycheck.exception.InitializationException;
 import org.owasp.dependencycheck.utils.Settings;
 import org.owasp.dependencycheck.utils.Settings.KEYS;
 
@@ -30,7 +29,7 @@ import java.util.concurrent.Future;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class OssIndexAnalyzerTest extends BaseTest {
@@ -252,18 +251,20 @@ class OssIndexAnalyzerTest extends BaseTest {
     }
 
     @Test
-    void should_prepareAnalyzer_fail_when_credentials_not_set() throws Exception {
+    void should_prepareAnalyzer_disable_when_credentials_not_set() throws Exception {
+        // Given
         OssIndexAnalyzer analyzer = new OssIndexAnalyzer();
         Settings settings = getSettings();
         Engine engine = new Engine(settings);
         analyzer.initialize(settings);
-        try {
-            analyzer.prepareAnalyzer(engine);
-            assertThrows(InitializationException.class, () -> analyzer.prepareAnalyzer(engine));
-        } catch (InitializationException e) {
-          analyzer.close();
-          engine.close();
-        }
+
+        // When
+        analyzer.prepareAnalyzer(engine);
+
+        // Then
+        assertFalse(analyzer.isEnabled());
+        analyzer.close();
+        engine.close();
     }
 
     private static void setCredentials(final Settings settings) {
