@@ -20,12 +20,15 @@ package org.owasp.dependencycheck.dependency.naming;
 import org.apache.commons.lang3.builder.CompareToBuilder;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.hc.core5.net.PercentCodec;
 import org.jetbrains.annotations.NotNull;
 import org.owasp.dependencycheck.dependency.Confidence;
 import us.springett.parsers.cpe.Cpe;
 import us.springett.parsers.cpe.CpeBuilder;
 import us.springett.parsers.cpe.exceptions.CpeValidationException;
 import us.springett.parsers.cpe.values.Part;
+
+import static java.nio.charset.StandardCharsets.UTF_8;
 
 /**
  * A CPE Identifier for a dependency object.
@@ -202,5 +205,42 @@ public class CpeIdentifier implements Identifier {
                 .append(this.url, o.getUrl())
                 .append(this.confidence, o.getConfidence())
                 .toComparison();
+    }
+
+    /**
+     * Produces an NVD search URL for a given CPE to find all applicable vulnerabilities, including all populated parts
+     * of the given CPE.
+     * <p/>
+     * The opened link should be sorted in descending order (sortDirection=2) by publish date (sortOrder=3).
+     */
+    public static String nvdSearchUrlFor(Cpe cpe) {
+        // Use PercentCodec to force `*` to be encoded for CPE strings inside the URL. Technically '*' is not a reserved
+        // character in the fragment of URLs, but not all browsers handle this consistently, so better to encode aggressively.
+        // URlEncoder does not distinguish between parts of URLs appropriately, as well as not forcing encoding of these.
+        return String.format("https://nvd.nist.gov/vuln/search#/nvd/home?sortOrder=3&sortDirection=2&cpeFilterMode=applicability&resultType=records&cpeName=%s",
+                PercentCodec.encode(cpe.toCpe23FS(), UTF_8));
+    }
+
+    /**
+     * Produces an NVD search URL for a given application vendor/product/version combination to find all applicable vulnerabilities.
+     * <p/>
+     * The opened link should be sorted in descending order (sortDirection=2) by publish date (sortOrder=3).
+     */
+    public static String nvdSearchUrlFor(String vendor, String product, String version) throws CpeValidationException {
+        return nvdSearchUrlFor(new CpeBuilder().part(Part.APPLICATION).vendor(vendor).product(product).version(version).build());
+    }
+
+    /**
+     * Produces an NVD search URL for a given CPE to find all applicable vulnerabilities, including only the part, vendor,
+     * and product of the given CPE (if populated). Discards all other parts/discriminators of the CPE in the generated search.
+     * <p/>
+     * The opened link should be sorted in descending order (sortDirection=2) by publish date (sortOrder=3).
+     */
+    public static String nvdProductSearchUrlFor(Cpe cpe) {
+        try {
+            return nvdSearchUrlFor(new CpeBuilder().part(cpe.getPart()).vendor(cpe.getVendor()).product(cpe.getProduct()).build());
+        } catch (CpeValidationException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
