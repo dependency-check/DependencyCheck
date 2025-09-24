@@ -262,9 +262,10 @@ class OssIndexAnalyzerTest extends BaseTest {
         analyzer.prepareAnalyzer(engine);
 
         // Then
-        assertFalse(analyzer.isEnabled());
+        boolean enabled = analyzer.isEnabled();
         analyzer.close();
         engine.close();
+        assertFalse(enabled);
     }
 
     private static void setCredentials(final Settings settings) {
