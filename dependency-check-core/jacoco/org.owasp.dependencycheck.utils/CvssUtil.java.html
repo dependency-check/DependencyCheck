@@ -229,19 +229,19 @@ public final class CvssUtil {
 <span class="fc" id="L229">        return cvss;</span>
     }
 
-    private static CvssV4Data.SeverityType toSeverityType(double baseScore) {
-<span class="nc bnc" id="L233" title="All 2 branches missed.">        if (baseScore == 0.0) {</span>
-<span class="nc" id="L234">            return CvssV4Data.SeverityType.NONE;</span>
-<span class="nc bnc" id="L235" title="All 4 branches missed.">        } else if (baseScore &gt;= 0.1 &amp;&amp; baseScore &lt;= 3.9) {</span>
-<span class="nc" id="L236">            return CvssV4Data.SeverityType.LOW;</span>
-<span class="nc bnc" id="L237" title="All 4 branches missed.">        } else if (baseScore &gt;= 4.0 &amp;&amp; baseScore &lt;= 6.9) {</span>
-<span class="nc" id="L238">            return CvssV4Data.SeverityType.MEDIUM;</span>
-<span class="nc bnc" id="L239" title="All 4 branches missed.">        } else if (baseScore &gt;= 7.0 &amp;&amp; baseScore &lt;= 8.9) {</span>
-<span class="nc" id="L240">            return CvssV4Data.SeverityType.HIGH;</span>
-<span class="nc bnc" id="L241" title="All 4 branches missed.">        } else if (baseScore &gt;= 9.0 &amp;&amp; baseScore &lt;= 10.0) {</span>
-<span class="nc" id="L242">            return CvssV4Data.SeverityType.CRITICAL;</span>
+    public static CvssV4Data.SeverityType cvssV4ScoreToSeverity(double baseScore) {
+<span class="fc bfc" id="L233" title="All 2 branches covered.">        if (baseScore == 0.0) {</span>
+<span class="fc" id="L234">            return CvssV4Data.SeverityType.NONE;</span>
+<span class="fc bfc" id="L235" title="All 4 branches covered.">        } else if (baseScore &gt; 0.0 &amp;&amp; baseScore &lt; 4.0) {</span>
+<span class="fc" id="L236">            return CvssV4Data.SeverityType.LOW;</span>
+<span class="fc bfc" id="L237" title="All 4 branches covered.">        } else if (baseScore &gt;= 4.0 &amp;&amp; baseScore &lt; 7.0) {</span>
+<span class="fc" id="L238">            return CvssV4Data.SeverityType.MEDIUM;</span>
+<span class="fc bfc" id="L239" title="All 4 branches covered.">        } else if (baseScore &gt;= 7.0 &amp;&amp; baseScore &lt; 9.0) {</span>
+<span class="fc" id="L240">            return CvssV4Data.SeverityType.HIGH;</span>
+<span class="fc bfc" id="L241" title="All 4 branches covered.">        } else if (baseScore &gt;= 9.0 &amp;&amp; baseScore &lt;= 10.0) {</span>
+<span class="fc" id="L242">            return CvssV4Data.SeverityType.CRITICAL;</span>
         } else {
-<span class="nc" id="L244">            throw new IllegalArgumentException(&quot;Invalid CVSS base score: &quot; + baseScore);</span>
+<span class="fc" id="L244">            throw new IllegalArgumentException(&quot;Invalid CVSS base score: &quot; + baseScore);</span>
         }
     }
 
@@ -256,58 +256,58 @@ public final class CvssUtil {
      */
     public static CvssV4 vectorToCvssV4(String source, CvssV4.Type type, Double baseScore, String vectorString) {
         // Remove &quot;CVSS:&quot; prefix and split by &quot;/&quot;
-<span class="nc" id="L259">        String[] parts = vectorString.replaceFirst(&quot;^CVSS:&quot;, &quot;&quot;).split(&quot;/&quot;);</span>
-<span class="nc" id="L260">        Map&lt;String, String&gt; values = new HashMap&lt;&gt;();</span>
-<span class="nc bnc" id="L261" title="All 2 branches missed.">        for (String part : parts) {</span>
-<span class="nc" id="L262">            String[] kv = part.split(&quot;:&quot;);</span>
-<span class="nc bnc" id="L263" title="All 2 branches missed.">            if (kv.length == 2) {</span>
-<span class="nc" id="L264">                values.put(kv[0], kv[1]);</span>
+<span class="fc" id="L259">        String[] parts = vectorString.replaceFirst(&quot;^CVSS:&quot;, &quot;&quot;).split(&quot;/&quot;);</span>
+<span class="fc" id="L260">        Map&lt;String, String&gt; values = new HashMap&lt;&gt;();</span>
+<span class="fc bfc" id="L261" title="All 2 branches covered.">        for (String part : parts) {</span>
+<span class="fc" id="L262">            String[] kv = part.split(&quot;:&quot;);</span>
+<span class="fc bfc" id="L263" title="All 2 branches covered.">            if (kv.length == 2) {</span>
+<span class="fc" id="L264">                values.put(kv[0], kv[1]);</span>
             }
         }
 
-<span class="nc" id="L268">        CvssV4Data.Version version = CvssV4Data.Version.fromValue(values.getOrDefault(&quot;4.0&quot;, &quot;4.0&quot;));</span>
+<span class="fc" id="L268">        CvssV4Data.Version version = CvssV4Data.Version.fromValue(values.getOrDefault(&quot;4.0&quot;, &quot;4.0&quot;));</span>
 
-<span class="nc bnc" id="L270" title="All 2 branches missed.">        CvssV4Data.AttackVectorType attackVector = values.containsKey(&quot;AV&quot;) ? CvssV4Data.AttackVectorType.fromValue(values.get(&quot;AV&quot;)) : null;</span>
-<span class="nc bnc" id="L271" title="All 2 branches missed.">        CvssV4Data.AttackComplexityType attackComplexity = values.containsKey(&quot;AC&quot;) ? CvssV4Data.AttackComplexityType.fromValue(values.get(&quot;AC&quot;)) : null;</span>
-<span class="nc bnc" id="L272" title="All 2 branches missed.">        CvssV4Data.AttackRequirementsType attackRequirements = values.containsKey(&quot;AT&quot;) ? CvssV4Data.AttackRequirementsType.fromValue(values.get(&quot;AT&quot;)) : null;</span>
-<span class="nc bnc" id="L273" title="All 2 branches missed.">        CvssV4Data.PrivilegesRequiredType privilegesRequired = values.containsKey(&quot;PR&quot;) ? CvssV4Data.PrivilegesRequiredType.fromValue(values.get(&quot;PR&quot;)) : null;</span>
-<span class="nc bnc" id="L274" title="All 2 branches missed.">        CvssV4Data.UserInteractionType userInteraction = values.containsKey(&quot;UI&quot;) ? CvssV4Data.UserInteractionType.fromValue(values.get(&quot;UI&quot;)) : null;</span>
-<span class="nc bnc" id="L275" title="All 2 branches missed.">        CvssV4Data.CiaType vulnConfidentialityImpact = values.containsKey(&quot;VC&quot;) ? CvssV4Data.CiaType.fromValue(values.get(&quot;VC&quot;)) : null;</span>
-<span class="nc bnc" id="L276" title="All 2 branches missed.">        CvssV4Data.CiaType vulnIntegrityImpact = values.containsKey(&quot;VI&quot;) ? CvssV4Data.CiaType.fromValue(values.get(&quot;VI&quot;)) : null;</span>
-<span class="nc bnc" id="L277" title="All 2 branches missed.">        CvssV4Data.CiaType vulnAvailabilityImpact = values.containsKey(&quot;VA&quot;) ? CvssV4Data.CiaType.fromValue(values.get(&quot;VA&quot;)) : null;</span>
-<span class="nc bnc" id="L278" title="All 2 branches missed.">        CvssV4Data.CiaType subConfidentialityImpact = values.containsKey(&quot;SC&quot;) ? CvssV4Data.CiaType.fromValue(values.get(&quot;SC&quot;)) : null;</span>
-<span class="nc bnc" id="L279" title="All 2 branches missed.">        CvssV4Data.CiaType subIntegrityImpact = values.containsKey(&quot;SI&quot;) ? CvssV4Data.CiaType.fromValue(values.get(&quot;SI&quot;)) : null;</span>
-<span class="nc bnc" id="L280" title="All 2 branches missed.">        CvssV4Data.CiaType subAvailabilityImpact = values.containsKey(&quot;SA&quot;) ? CvssV4Data.CiaType.fromValue(values.get(&quot;SA&quot;)) : null;</span>
-<span class="nc bnc" id="L281" title="All 2 branches missed.">        CvssV4Data.ExploitMaturityType exploitMaturity = values.containsKey(&quot;E&quot;) ? CvssV4Data.ExploitMaturityType.fromValue(values.get(&quot;E&quot;)) : CvssV4Data.ExploitMaturityType.NOT_DEFINED;</span>
-<span class="nc bnc" id="L282" title="All 2 branches missed.">        CvssV4Data.CiaRequirementType confidentialityRequirement = values.containsKey(&quot;CR&quot;) ? CvssV4Data.CiaRequirementType.fromValue(values.get(&quot;CR&quot;)) : CvssV4Data.CiaRequirementType.NOT_DEFINED;</span>
-<span class="nc bnc" id="L283" title="All 2 branches missed.">        CvssV4Data.CiaRequirementType integrityRequirement = values.containsKey(&quot;IR&quot;) ? CvssV4Data.CiaRequirementType.fromValue(values.get(&quot;IR&quot;)) : CvssV4Data.CiaRequirementType.NOT_DEFINED;</span>
-<span class="nc bnc" id="L284" title="All 2 branches missed.">        CvssV4Data.CiaRequirementType availabilityRequirement = values.containsKey(&quot;AR&quot;) ? CvssV4Data.CiaRequirementType.fromValue(values.get(&quot;AR&quot;)) : CvssV4Data.CiaRequirementType.NOT_DEFINED;</span>
-<span class="nc bnc" id="L285" title="All 2 branches missed.">        CvssV4Data.ModifiedAttackVectorType modifiedAttackVector = values.containsKey(&quot;MAV&quot;) ? CvssV4Data.ModifiedAttackVectorType.fromValue(values.get(&quot;MAV&quot;)) : CvssV4Data.ModifiedAttackVectorType.NOT_DEFINED;</span>
-<span class="nc bnc" id="L286" title="All 2 branches missed.">        CvssV4Data.ModifiedAttackComplexityType modifiedAttackComplexity = values.containsKey(&quot;MAC&quot;) ? CvssV4Data.ModifiedAttackComplexityType.fromValue(values.get(&quot;MAC&quot;)) : CvssV4Data.ModifiedAttackComplexityType.NOT_DEFINED;</span>
-<span class="nc bnc" id="L287" title="All 2 branches missed.">        CvssV4Data.ModifiedAttackRequirementsType modifiedAttackRequirements = values.containsKey(&quot;MAT&quot;) ? CvssV4Data.ModifiedAttackRequirementsType.fromValue(values.get(&quot;MAT&quot;)) : CvssV4Data.ModifiedAttackRequirementsType.NOT_DEFINED;</span>
-<span class="nc bnc" id="L288" title="All 2 branches missed.">        CvssV4Data.ModifiedPrivilegesRequiredType modifiedPrivilegesRequired = values.containsKey(&quot;MPR&quot;) ? CvssV4Data.ModifiedPrivilegesRequiredType.fromValue(values.get(&quot;MPR&quot;)) : CvssV4Data.ModifiedPrivilegesRequiredType.NOT_DEFINED;</span>
-<span class="nc bnc" id="L289" title="All 2 branches missed.">        CvssV4Data.ModifiedUserInteractionType modifiedUserInteraction = values.containsKey(&quot;MUI&quot;) ? CvssV4Data.ModifiedUserInteractionType.fromValue(values.get(&quot;MUI&quot;)) : CvssV4Data.ModifiedUserInteractionType.NOT_DEFINED;</span>
-<span class="nc bnc" id="L290" title="All 2 branches missed.">        CvssV4Data.ModifiedCiaType modifiedVulnConfidentialityImpact = values.containsKey(&quot;MVC&quot;) ? CvssV4Data.ModifiedCiaType.fromValue(values.get(&quot;MVC&quot;)) : CvssV4Data.ModifiedCiaType.NOT_DEFINED;</span>
-<span class="nc bnc" id="L291" title="All 2 branches missed.">        CvssV4Data.ModifiedCiaType modifiedVulnIntegrityImpact = values.containsKey(&quot;MVI&quot;) ? CvssV4Data.ModifiedCiaType.fromValue(values.get(&quot;MVI&quot;)) : CvssV4Data.ModifiedCiaType.NOT_DEFINED;</span>
-<span class="nc bnc" id="L292" title="All 2 branches missed.">        CvssV4Data.ModifiedCiaType modifiedVulnAvailabilityImpact = values.containsKey(&quot;MVA&quot;) ? CvssV4Data.ModifiedCiaType.fromValue(values.get(&quot;MVA&quot;)) : CvssV4Data.ModifiedCiaType.NOT_DEFINED;</span>
-<span class="nc bnc" id="L293" title="All 2 branches missed.">        CvssV4Data.ModifiedSubCType modifiedSubConfidentialityImpact = values.containsKey(&quot;MSC&quot;) ? CvssV4Data.ModifiedSubCType.fromValue(values.get(&quot;MSC&quot;)) : CvssV4Data.ModifiedSubCType.NOT_DEFINED;</span>
-<span class="nc bnc" id="L294" title="All 2 branches missed.">        CvssV4Data.ModifiedSubIaType modifiedSubIntegrityImpact = values.containsKey(&quot;MSI&quot;) ? CvssV4Data.ModifiedSubIaType.fromValue(values.get(&quot;MSI&quot;)) : CvssV4Data.ModifiedSubIaType.NOT_DEFINED;</span>
-<span class="nc bnc" id="L295" title="All 2 branches missed.">        CvssV4Data.ModifiedSubIaType modifiedSubAvailabilityImpact = values.containsKey(&quot;MSA&quot;) ? CvssV4Data.ModifiedSubIaType.fromValue(values.get(&quot;MSA&quot;)) : CvssV4Data.ModifiedSubIaType.NOT_DEFINED;</span>
-<span class="nc bnc" id="L296" title="All 2 branches missed.">        CvssV4Data.SafetyType safety = values.containsKey(&quot;S&quot;) ? CvssV4Data.SafetyType.fromValue(values.get(&quot;S&quot;)) : CvssV4Data.SafetyType.NOT_DEFINED;</span>
-<span class="nc bnc" id="L297" title="All 2 branches missed.">        CvssV4Data.AutomatableType automatable = values.containsKey(&quot;AU&quot;) ? CvssV4Data.AutomatableType.fromValue(values.get(&quot;AU&quot;)) : CvssV4Data.AutomatableType.NOT_DEFINED;</span>
-<span class="nc bnc" id="L298" title="All 2 branches missed.">        CvssV4Data.RecoveryType recovery = values.containsKey(&quot;R&quot;) ? CvssV4Data.RecoveryType.fromValue(values.get(&quot;R&quot;)) : CvssV4Data.RecoveryType.NOT_DEFINED;</span>
-<span class="nc bnc" id="L299" title="All 2 branches missed.">        CvssV4Data.ValueDensityType valueDensity = values.containsKey(&quot;V&quot;) ? CvssV4Data.ValueDensityType.fromValue(values.get(&quot;V&quot;)) : CvssV4Data.ValueDensityType.NOT_DEFINED;</span>
-<span class="nc bnc" id="L300" title="All 2 branches missed.">        CvssV4Data.VulnerabilityResponseEffortType vulnerabilityResponseEffort = values.containsKey(&quot;RE&quot;) ? CvssV4Data.VulnerabilityResponseEffortType.fromValue(values.get(&quot;RE&quot;)) : CvssV4Data.VulnerabilityResponseEffortType.NOT_DEFINED;</span>
-<span class="nc bnc" id="L301" title="All 2 branches missed.">        CvssV4Data.ProviderUrgencyType providerUrgency = values.containsKey(&quot;U&quot;) ? CvssV4Data.ProviderUrgencyType.fromValue(values.get(&quot;U&quot;)) : CvssV4Data.ProviderUrgencyType.NOT_DEFINED;</span>
+<span class="pc bpc" id="L270" title="1 of 2 branches missed.">        CvssV4Data.AttackVectorType attackVector = values.containsKey(&quot;AV&quot;) ? CvssV4Data.AttackVectorType.fromValue(values.get(&quot;AV&quot;)) : null;</span>
+<span class="pc bpc" id="L271" title="1 of 2 branches missed.">        CvssV4Data.AttackComplexityType attackComplexity = values.containsKey(&quot;AC&quot;) ? CvssV4Data.AttackComplexityType.fromValue(values.get(&quot;AC&quot;)) : null;</span>
+<span class="pc bpc" id="L272" title="1 of 2 branches missed.">        CvssV4Data.AttackRequirementsType attackRequirements = values.containsKey(&quot;AT&quot;) ? CvssV4Data.AttackRequirementsType.fromValue(values.get(&quot;AT&quot;)) : null;</span>
+<span class="pc bpc" id="L273" title="1 of 2 branches missed.">        CvssV4Data.PrivilegesRequiredType privilegesRequired = values.containsKey(&quot;PR&quot;) ? CvssV4Data.PrivilegesRequiredType.fromValue(values.get(&quot;PR&quot;)) : null;</span>
+<span class="pc bpc" id="L274" title="1 of 2 branches missed.">        CvssV4Data.UserInteractionType userInteraction = values.containsKey(&quot;UI&quot;) ? CvssV4Data.UserInteractionType.fromValue(values.get(&quot;UI&quot;)) : null;</span>
+<span class="pc bpc" id="L275" title="1 of 2 branches missed.">        CvssV4Data.CiaType vulnConfidentialityImpact = values.containsKey(&quot;VC&quot;) ? CvssV4Data.CiaType.fromValue(values.get(&quot;VC&quot;)) : null;</span>
+<span class="pc bpc" id="L276" title="1 of 2 branches missed.">        CvssV4Data.CiaType vulnIntegrityImpact = values.containsKey(&quot;VI&quot;) ? CvssV4Data.CiaType.fromValue(values.get(&quot;VI&quot;)) : null;</span>
+<span class="pc bpc" id="L277" title="1 of 2 branches missed.">        CvssV4Data.CiaType vulnAvailabilityImpact = values.containsKey(&quot;VA&quot;) ? CvssV4Data.CiaType.fromValue(values.get(&quot;VA&quot;)) : null;</span>
+<span class="pc bpc" id="L278" title="1 of 2 branches missed.">        CvssV4Data.CiaType subConfidentialityImpact = values.containsKey(&quot;SC&quot;) ? CvssV4Data.CiaType.fromValue(values.get(&quot;SC&quot;)) : null;</span>
+<span class="pc bpc" id="L279" title="1 of 2 branches missed.">        CvssV4Data.CiaType subIntegrityImpact = values.containsKey(&quot;SI&quot;) ? CvssV4Data.CiaType.fromValue(values.get(&quot;SI&quot;)) : null;</span>
+<span class="pc bpc" id="L280" title="1 of 2 branches missed.">        CvssV4Data.CiaType subAvailabilityImpact = values.containsKey(&quot;SA&quot;) ? CvssV4Data.CiaType.fromValue(values.get(&quot;SA&quot;)) : null;</span>
+<span class="pc bpc" id="L281" title="1 of 2 branches missed.">        CvssV4Data.ExploitMaturityType exploitMaturity = values.containsKey(&quot;E&quot;) ? CvssV4Data.ExploitMaturityType.fromValue(values.get(&quot;E&quot;)) : CvssV4Data.ExploitMaturityType.NOT_DEFINED;</span>
+<span class="pc bpc" id="L282" title="1 of 2 branches missed.">        CvssV4Data.CiaRequirementType confidentialityRequirement = values.containsKey(&quot;CR&quot;) ? CvssV4Data.CiaRequirementType.fromValue(values.get(&quot;CR&quot;)) : CvssV4Data.CiaRequirementType.NOT_DEFINED;</span>
+<span class="pc bpc" id="L283" title="1 of 2 branches missed.">        CvssV4Data.CiaRequirementType integrityRequirement = values.containsKey(&quot;IR&quot;) ? CvssV4Data.CiaRequirementType.fromValue(values.get(&quot;IR&quot;)) : CvssV4Data.CiaRequirementType.NOT_DEFINED;</span>
+<span class="pc bpc" id="L284" title="1 of 2 branches missed.">        CvssV4Data.CiaRequirementType availabilityRequirement = values.containsKey(&quot;AR&quot;) ? CvssV4Data.CiaRequirementType.fromValue(values.get(&quot;AR&quot;)) : CvssV4Data.CiaRequirementType.NOT_DEFINED;</span>
+<span class="pc bpc" id="L285" title="1 of 2 branches missed.">        CvssV4Data.ModifiedAttackVectorType modifiedAttackVector = values.containsKey(&quot;MAV&quot;) ? CvssV4Data.ModifiedAttackVectorType.fromValue(values.get(&quot;MAV&quot;)) : CvssV4Data.ModifiedAttackVectorType.NOT_DEFINED;</span>
+<span class="pc bpc" id="L286" title="1 of 2 branches missed.">        CvssV4Data.ModifiedAttackComplexityType modifiedAttackComplexity = values.containsKey(&quot;MAC&quot;) ? CvssV4Data.ModifiedAttackComplexityType.fromValue(values.get(&quot;MAC&quot;)) : CvssV4Data.ModifiedAttackComplexityType.NOT_DEFINED;</span>
+<span class="pc bpc" id="L287" title="1 of 2 branches missed.">        CvssV4Data.ModifiedAttackRequirementsType modifiedAttackRequirements = values.containsKey(&quot;MAT&quot;) ? CvssV4Data.ModifiedAttackRequirementsType.fromValue(values.get(&quot;MAT&quot;)) : CvssV4Data.ModifiedAttackRequirementsType.NOT_DEFINED;</span>
+<span class="pc bpc" id="L288" title="1 of 2 branches missed.">        CvssV4Data.ModifiedPrivilegesRequiredType modifiedPrivilegesRequired = values.containsKey(&quot;MPR&quot;) ? CvssV4Data.ModifiedPrivilegesRequiredType.fromValue(values.get(&quot;MPR&quot;)) : CvssV4Data.ModifiedPrivilegesRequiredType.NOT_DEFINED;</span>
+<span class="pc bpc" id="L289" title="1 of 2 branches missed.">        CvssV4Data.ModifiedUserInteractionType modifiedUserInteraction = values.containsKey(&quot;MUI&quot;) ? CvssV4Data.ModifiedUserInteractionType.fromValue(values.get(&quot;MUI&quot;)) : CvssV4Data.ModifiedUserInteractionType.NOT_DEFINED;</span>
+<span class="pc bpc" id="L290" title="1 of 2 branches missed.">        CvssV4Data.ModifiedCiaType modifiedVulnConfidentialityImpact = values.containsKey(&quot;MVC&quot;) ? CvssV4Data.ModifiedCiaType.fromValue(values.get(&quot;MVC&quot;)) : CvssV4Data.ModifiedCiaType.NOT_DEFINED;</span>
+<span class="pc bpc" id="L291" title="1 of 2 branches missed.">        CvssV4Data.ModifiedCiaType modifiedVulnIntegrityImpact = values.containsKey(&quot;MVI&quot;) ? CvssV4Data.ModifiedCiaType.fromValue(values.get(&quot;MVI&quot;)) : CvssV4Data.ModifiedCiaType.NOT_DEFINED;</span>
+<span class="pc bpc" id="L292" title="1 of 2 branches missed.">        CvssV4Data.ModifiedCiaType modifiedVulnAvailabilityImpact = values.containsKey(&quot;MVA&quot;) ? CvssV4Data.ModifiedCiaType.fromValue(values.get(&quot;MVA&quot;)) : CvssV4Data.ModifiedCiaType.NOT_DEFINED;</span>
+<span class="pc bpc" id="L293" title="1 of 2 branches missed.">        CvssV4Data.ModifiedSubCType modifiedSubConfidentialityImpact = values.containsKey(&quot;MSC&quot;) ? CvssV4Data.ModifiedSubCType.fromValue(values.get(&quot;MSC&quot;)) : CvssV4Data.ModifiedSubCType.NOT_DEFINED;</span>
+<span class="pc bpc" id="L294" title="1 of 2 branches missed.">        CvssV4Data.ModifiedSubIaType modifiedSubIntegrityImpact = values.containsKey(&quot;MSI&quot;) ? CvssV4Data.ModifiedSubIaType.fromValue(values.get(&quot;MSI&quot;)) : CvssV4Data.ModifiedSubIaType.NOT_DEFINED;</span>
+<span class="pc bpc" id="L295" title="1 of 2 branches missed.">        CvssV4Data.ModifiedSubIaType modifiedSubAvailabilityImpact = values.containsKey(&quot;MSA&quot;) ? CvssV4Data.ModifiedSubIaType.fromValue(values.get(&quot;MSA&quot;)) : CvssV4Data.ModifiedSubIaType.NOT_DEFINED;</span>
+<span class="pc bpc" id="L296" title="1 of 2 branches missed.">        CvssV4Data.SafetyType safety = values.containsKey(&quot;S&quot;) ? CvssV4Data.SafetyType.fromValue(values.get(&quot;S&quot;)) : CvssV4Data.SafetyType.NOT_DEFINED;</span>
+<span class="pc bpc" id="L297" title="1 of 2 branches missed.">        CvssV4Data.AutomatableType automatable = values.containsKey(&quot;AU&quot;) ? CvssV4Data.AutomatableType.fromValue(values.get(&quot;AU&quot;)) : CvssV4Data.AutomatableType.NOT_DEFINED;</span>
+<span class="pc bpc" id="L298" title="1 of 2 branches missed.">        CvssV4Data.RecoveryType recovery = values.containsKey(&quot;R&quot;) ? CvssV4Data.RecoveryType.fromValue(values.get(&quot;R&quot;)) : CvssV4Data.RecoveryType.NOT_DEFINED;</span>
+<span class="pc bpc" id="L299" title="1 of 2 branches missed.">        CvssV4Data.ValueDensityType valueDensity = values.containsKey(&quot;V&quot;) ? CvssV4Data.ValueDensityType.fromValue(values.get(&quot;V&quot;)) : CvssV4Data.ValueDensityType.NOT_DEFINED;</span>
+<span class="pc bpc" id="L300" title="1 of 2 branches missed.">        CvssV4Data.VulnerabilityResponseEffortType vulnerabilityResponseEffort = values.containsKey(&quot;RE&quot;) ? CvssV4Data.VulnerabilityResponseEffortType.fromValue(values.get(&quot;RE&quot;)) : CvssV4Data.VulnerabilityResponseEffortType.NOT_DEFINED;</span>
+<span class="pc bpc" id="L301" title="1 of 2 branches missed.">        CvssV4Data.ProviderUrgencyType providerUrgency = values.containsKey(&quot;U&quot;) ? CvssV4Data.ProviderUrgencyType.fromValue(values.get(&quot;U&quot;)) : CvssV4Data.ProviderUrgencyType.NOT_DEFINED;</span>
 
-<span class="nc" id="L303">        CvssV4Data.SeverityType baseSeverity = toSeverityType(baseScore);</span>
+<span class="fc" id="L303">        CvssV4Data.SeverityType baseSeverity = cvssV4ScoreToSeverity(baseScore);</span>
         // Scores and severities are not present in the vector string, set to null/defaults
-<span class="nc" id="L305">        Double threatScore = null;</span>
-<span class="nc" id="L306">        CvssV4Data.SeverityType threatSeverity = null;</span>
-<span class="nc" id="L307">        Double environmentalScore = null;</span>
-<span class="nc" id="L308">        CvssV4Data.SeverityType environmentalSeverity = null;</span>
+<span class="fc" id="L305">        Double threatScore = null;</span>
+<span class="fc" id="L306">        CvssV4Data.SeverityType threatSeverity = null;</span>
+<span class="fc" id="L307">        Double environmentalScore = null;</span>
+<span class="fc" id="L308">        CvssV4Data.SeverityType environmentalSeverity = null;</span>
 
-<span class="nc" id="L310">        CvssV4Data cvssData = new CvssV4Data(</span>
+<span class="fc" id="L310">        CvssV4Data cvssData = new CvssV4Data(</span>
                 version,
                 vectorString,
                 attackVector,
@@ -350,7 +350,7 @@ public final class CvssUtil {
                 environmentalSeverity
         );
 
-<span class="nc" id="L353">        return new CvssV4(source, type, cvssData);</span>
+<span class="fc" id="L353">        return new CvssV4(source, type, cvssData);</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

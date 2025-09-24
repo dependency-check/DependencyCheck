@@ -427,12 +427,14 @@ import org.owasp.dependencycheck.xml.assembly.GrokParseException;
      */
     @Override
     public void closeAnalyzer() throws Exception {
-<span class="fc" id="L430">        FileUtils.delete(grokAssembly.getParentFile());</span>
-<span class="fc" id="L431">    }</span>
+<span class="pc bpc" id="L430" title="1 of 2 branches missed.">        if (grokAssembly != null) {</span>
+<span class="fc" id="L431">            FileUtils.delete(grokAssembly.getParentFile());</span>
+        }
+<span class="fc" id="L433">    }</span>
 
     @Override
     protected FileFilter getFileFilter() {
-<span class="fc" id="L435">        return FILTER;</span>
+<span class="fc" id="L437">        return FILTER;</span>
     }
 
     /**
@@ -442,7 +444,7 @@ import org.owasp.dependencycheck.xml.assembly.GrokParseException;
      */
     @Override
     public String getName() {
-<span class="fc" id="L445">        return ANALYZER_NAME;</span>
+<span class="fc" id="L447">        return ANALYZER_NAME;</span>
     }
 
     /**
@@ -452,7 +454,7 @@ import org.owasp.dependencycheck.xml.assembly.GrokParseException;
      */
     @Override
     public AnalysisPhase getAnalysisPhase() {
-<span class="fc" id="L455">        return ANALYSIS_PHASE;</span>
+<span class="fc" id="L457">        return ANALYSIS_PHASE;</span>
     }
 
     /**
@@ -463,7 +465,7 @@ import org.owasp.dependencycheck.xml.assembly.GrokParseException;
      */
     @Override
     protected String getAnalyzerEnabledSettingKey() {
-<span class="fc" id="L466">        return Settings.KEYS.ANALYZER_ASSEMBLY_ENABLED;</span>
+<span class="fc" id="L468">        return Settings.KEYS.ANALYZER_ASSEMBLY_ENABLED;</span>
     }
 
     /**
@@ -473,30 +475,30 @@ import org.owasp.dependencycheck.xml.assembly.GrokParseException;
      * &lt;code&gt;false&lt;/code&gt;
      */
     private boolean isDotnetPath() {
-<span class="fc" id="L476">        final String[] args = new String[2];</span>
-<span class="fc" id="L477">        args[0] = &quot;dotnet&quot;;</span>
-<span class="fc" id="L478">        args[1] = &quot;--info&quot;;</span>
-<span class="fc" id="L479">        final ProcessBuilder pb = new ProcessBuilder(args);</span>
+<span class="fc" id="L478">        final String[] args = new String[2];</span>
+<span class="fc" id="L479">        args[0] = &quot;dotnet&quot;;</span>
+<span class="fc" id="L480">        args[1] = &quot;--info&quot;;</span>
+<span class="fc" id="L481">        final ProcessBuilder pb = new ProcessBuilder(args);</span>
         try {
-<span class="fc" id="L481">            final Process proc = pb.start();</span>
-<span class="fc" id="L482">            try (ProcessReader processReader = new ProcessReader(proc)) {</span>
-<span class="fc" id="L483">                processReader.readAll();</span>
-<span class="fc" id="L484">                final int exitValue = proc.exitValue();</span>
-<span class="pc bpc" id="L485" title="1 of 2 branches missed.">                if (exitValue == 0) {</span>
-<span class="fc" id="L486">                    return true;</span>
+<span class="fc" id="L483">            final Process proc = pb.start();</span>
+<span class="fc" id="L484">            try (ProcessReader processReader = new ProcessReader(proc)) {</span>
+<span class="fc" id="L485">                processReader.readAll();</span>
+<span class="fc" id="L486">                final int exitValue = proc.exitValue();</span>
+<span class="pc bpc" id="L487" title="1 of 2 branches missed.">                if (exitValue == 0) {</span>
+<span class="fc" id="L488">                    return true;</span>
                 }
-<span class="nc" id="L488">                final String output = processReader.getOutput();</span>
-<span class="nc bnc" id="L489" title="All 2 branches missed.">                if (output.length() &gt; 0) {</span>
-<span class="nc" id="L490">                    return true;</span>
+<span class="nc" id="L490">                final String output = processReader.getOutput();</span>
+<span class="nc bnc" id="L491" title="All 2 branches missed.">                if (output.length() &gt; 0) {</span>
+<span class="nc" id="L492">                    return true;</span>
                 }
-<span class="pc" id="L492">            }</span>
-<span class="nc" id="L493">        } catch (InterruptedException ex) {</span>
-<span class="nc" id="L494">            Thread.currentThread().interrupt();</span>
-<span class="nc" id="L495">            LOGGER.debug(&quot;Path search failed for dotnet&quot;, ex);</span>
-<span class="nc" id="L496">        } catch (IOException ex) {</span>
+<span class="pc" id="L494">            }</span>
+<span class="nc" id="L495">        } catch (InterruptedException ex) {</span>
+<span class="nc" id="L496">            Thread.currentThread().interrupt();</span>
 <span class="nc" id="L497">            LOGGER.debug(&quot;Path search failed for dotnet&quot;, ex);</span>
-<span class="nc" id="L498">        }</span>
-<span class="nc" id="L499">        return false;</span>
+<span class="nc" id="L498">        } catch (IOException ex) {</span>
+<span class="nc" id="L499">            LOGGER.debug(&quot;Path search failed for dotnet&quot;, ex);</span>
+<span class="nc" id="L500">        }</span>
+<span class="nc" id="L501">        return false;</span>
     }
 
     /**
@@ -511,21 +513,21 @@ import org.owasp.dependencycheck.xml.assembly.GrokParseException;
      * @param type the type of evidence (vendor, product, or version)
      */
     protected static void addMatchingValues(List&lt;String&gt; packages, String value, Dependency dep, EvidenceType type) {
-<span class="pc bpc" id="L514" title="4 of 8 branches missed.">        if (value == null || value.isEmpty() || packages == null || packages.isEmpty()) {</span>
-<span class="nc" id="L515">            return;</span>
+<span class="pc bpc" id="L516" title="4 of 8 branches missed.">        if (value == null || value.isEmpty() || packages == null || packages.isEmpty()) {</span>
+<span class="nc" id="L517">            return;</span>
         }
-<span class="fc bfc" id="L517" title="All 2 branches covered.">        for (String key : packages) {</span>
-<span class="fc" id="L518">            final int pos = StringUtils.indexOfIgnoreCase(value, key);</span>
-<span class="pc bpc" id="L519" title="1 of 6 branches missed.">            if ((pos == 0 &amp;&amp; (key.length() == value.length() || (key.length() &lt; value.length()</span>
-<span class="pc bpc" id="L520" title="1 of 4 branches missed.">                    &amp;&amp; !Character.isLetterOrDigit(value.charAt(key.length())))))</span>
-<span class="pc bpc" id="L521" title="1 of 2 branches missed.">                    || (pos &gt; 0 &amp;&amp; !Character.isLetterOrDigit(value.charAt(pos - 1))</span>
-<span class="pc bpc" id="L522" title="2 of 4 branches missed.">                    &amp;&amp; (pos + key.length() == value.length() || (key.length() &lt; value.length()</span>
-<span class="pc bpc" id="L523" title="1 of 2 branches missed.">                    &amp;&amp; !Character.isLetterOrDigit(value.charAt(pos + key.length())))))) {</span>
-<span class="fc" id="L524">                dep.addEvidence(type, &quot;dll&quot;, &quot;namespace&quot;, key, Confidence.HIGHEST);</span>
+<span class="fc bfc" id="L519" title="All 2 branches covered.">        for (String key : packages) {</span>
+<span class="fc" id="L520">            final int pos = StringUtils.indexOfIgnoreCase(value, key);</span>
+<span class="pc bpc" id="L521" title="1 of 6 branches missed.">            if ((pos == 0 &amp;&amp; (key.length() == value.length() || (key.length() &lt; value.length()</span>
+<span class="pc bpc" id="L522" title="1 of 4 branches missed.">                    &amp;&amp; !Character.isLetterOrDigit(value.charAt(key.length())))))</span>
+<span class="pc bpc" id="L523" title="1 of 2 branches missed.">                    || (pos &gt; 0 &amp;&amp; !Character.isLetterOrDigit(value.charAt(pos - 1))</span>
+<span class="pc bpc" id="L524" title="2 of 4 branches missed.">                    &amp;&amp; (pos + key.length() == value.length() || (key.length() &lt; value.length()</span>
+<span class="pc bpc" id="L525" title="1 of 2 branches missed.">                    &amp;&amp; !Character.isLetterOrDigit(value.charAt(pos + key.length())))))) {</span>
+<span class="fc" id="L526">                dep.addEvidence(type, &quot;dll&quot;, &quot;namespace&quot;, key, Confidence.HIGHEST);</span>
             }
 
-<span class="fc" id="L527">        }</span>
-<span class="fc" id="L528">    }</span>
+<span class="fc" id="L529">        }</span>
+<span class="fc" id="L530">    }</span>
 
     /**
      * Used in testing only - this simply returns the path to the extracted
@@ -534,7 +536,7 @@ import org.owasp.dependencycheck.xml.assembly.GrokParseException;
      * @return the path to the extracted GrokAssembly.dll
      */
     File getGrokAssemblyPath() {
-<span class="fc" id="L537">        return grokAssembly;</span>
+<span class="fc" id="L539">        return grokAssembly;</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

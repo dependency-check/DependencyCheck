@@ -237,14 +237,14 @@
 <a class="jxr_linenumber" name="L229" href="#L229">229</a>         <strong class="jxr_keyword">return</strong> cvss;
 <a class="jxr_linenumber" name="L230" href="#L230">230</a>     }
 <a class="jxr_linenumber" name="L231" href="#L231">231</a> 
-<a class="jxr_linenumber" name="L232" href="#L232">232</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> CvssV4Data.SeverityType toSeverityType(<strong class="jxr_keyword">double</strong> baseScore) {
+<a class="jxr_linenumber" name="L232" href="#L232">232</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> CvssV4Data.SeverityType cvssV4ScoreToSeverity(<strong class="jxr_keyword">double</strong> baseScore) {
 <a class="jxr_linenumber" name="L233" href="#L233">233</a>         <strong class="jxr_keyword">if</strong> (baseScore == 0.0) {
 <a class="jxr_linenumber" name="L234" href="#L234">234</a>             <strong class="jxr_keyword">return</strong> CvssV4Data.SeverityType.NONE;
-<a class="jxr_linenumber" name="L235" href="#L235">235</a>         } <strong class="jxr_keyword">else</strong> <strong class="jxr_keyword">if</strong> (baseScore &gt;= 0.1 &amp;&amp; baseScore &lt;= 3.9) {
+<a class="jxr_linenumber" name="L235" href="#L235">235</a>         } <strong class="jxr_keyword">else</strong> <strong class="jxr_keyword">if</strong> (baseScore &gt; 0.0 &amp;&amp; baseScore &lt; 4.0) {
 <a class="jxr_linenumber" name="L236" href="#L236">236</a>             <strong class="jxr_keyword">return</strong> CvssV4Data.SeverityType.LOW;
-<a class="jxr_linenumber" name="L237" href="#L237">237</a>         } <strong class="jxr_keyword">else</strong> <strong class="jxr_keyword">if</strong> (baseScore &gt;= 4.0 &amp;&amp; baseScore &lt;= 6.9) {
+<a class="jxr_linenumber" name="L237" href="#L237">237</a>         } <strong class="jxr_keyword">else</strong> <strong class="jxr_keyword">if</strong> (baseScore &gt;= 4.0 &amp;&amp; baseScore &lt; 7.0) {
 <a class="jxr_linenumber" name="L238" href="#L238">238</a>             <strong class="jxr_keyword">return</strong> CvssV4Data.SeverityType.MEDIUM;
-<a class="jxr_linenumber" name="L239" href="#L239">239</a>         } <strong class="jxr_keyword">else</strong> <strong class="jxr_keyword">if</strong> (baseScore &gt;= 7.0 &amp;&amp; baseScore &lt;= 8.9) {
+<a class="jxr_linenumber" name="L239" href="#L239">239</a>         } <strong class="jxr_keyword">else</strong> <strong class="jxr_keyword">if</strong> (baseScore &gt;= 7.0 &amp;&amp; baseScore &lt; 9.0) {
 <a class="jxr_linenumber" name="L240" href="#L240">240</a>             <strong class="jxr_keyword">return</strong> CvssV4Data.SeverityType.HIGH;
 <a class="jxr_linenumber" name="L241" href="#L241">241</a>         } <strong class="jxr_keyword">else</strong> <strong class="jxr_keyword">if</strong> (baseScore &gt;= 9.0 &amp;&amp; baseScore &lt;= 10.0) {
 <a class="jxr_linenumber" name="L242" href="#L242">242</a>             <strong class="jxr_keyword">return</strong> CvssV4Data.SeverityType.CRITICAL;
@@ -308,7 +308,7 @@
 <a class="jxr_linenumber" name="L300" href="#L300">300</a>         CvssV4Data.VulnerabilityResponseEffortType vulnerabilityResponseEffort = values.containsKey(<span class="jxr_string">"RE"</span>) ? CvssV4Data.VulnerabilityResponseEffortType.fromValue(values.get(<span class="jxr_string">"RE"</span>)) : CvssV4Data.VulnerabilityResponseEffortType.NOT_DEFINED;
 <a class="jxr_linenumber" name="L301" href="#L301">301</a>         CvssV4Data.ProviderUrgencyType providerUrgency = values.containsKey(<span class="jxr_string">"U"</span>) ? CvssV4Data.ProviderUrgencyType.fromValue(values.get(<span class="jxr_string">"U"</span>)) : CvssV4Data.ProviderUrgencyType.NOT_DEFINED;
 <a class="jxr_linenumber" name="L302" href="#L302">302</a> 
-<a class="jxr_linenumber" name="L303" href="#L303">303</a>         CvssV4Data.SeverityType baseSeverity = toSeverityType(baseScore);
+<a class="jxr_linenumber" name="L303" href="#L303">303</a>         CvssV4Data.SeverityType baseSeverity = cvssV4ScoreToSeverity(baseScore);
 <a class="jxr_linenumber" name="L304" href="#L304">304</a>         <em class="jxr_comment">// Scores and severities are not present in the vector string, set to null/defaults</em>
 <a class="jxr_linenumber" name="L305" href="#L305">305</a>         Double threatScore = <strong class="jxr_keyword">null</strong>;
 <a class="jxr_linenumber" name="L306" href="#L306">306</a>         CvssV4Data.SeverityType threatSeverity = <strong class="jxr_keyword">null</strong>;
