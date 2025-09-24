@@ -4,13 +4,13 @@ VERSION=$(mvn -q \
     -Dexec.executable="echo" \
     -Dexec.args='${project.version}' \
     --non-recursive \
-    org.codehaus.mojo:exec-maven-plugin:1.3.1:exec)
+    org.codehaus.mojo:exec-maven-plugin:3.5.1:exec)
 
 SCAN_TARGET="./cli/target/release/lib"
 
 if [ ! -d "$SCAN_TARGET" ]; then 
-  echo "Scan target does not exist: $SCAN_TARGET"
-  exit 1
+    echo "Scan target does not exist: $SCAN_TARGET"
+    exit 1
 fi
 
 if [ -f "$HOME/OWASP-Dependency-Check/reports/dependency-check-report.json" ]; then
@@ -73,8 +73,8 @@ cd -
 echo ""
 grep -oF "dependency-check-core-$VERSION.jar" $HOME/OWASP-Dependency-Check/reports/dependency-check-report.json  > /dev/null 2>&1
 if [[ "$?" -eq 0 ]] ; then
-  echo "SUCCESS - dependency-check docker test passed"
+    echo "SUCCESS - dependency-check docker test passed"
 else
-  echo "FAILED - dependency-check docker test failed"
-  exit 1
+    echo "FAILED - dependency-check docker test failed"
+    exit 1
 fi
