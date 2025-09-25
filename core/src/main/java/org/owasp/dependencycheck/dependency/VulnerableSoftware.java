@@ -28,6 +28,7 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.jetbrains.annotations.NotNull;
 import org.owasp.dependencycheck.analyzer.exception.UnexpectedAnalysisException;
+import org.owasp.dependencycheck.dependency.naming.CpeIdentifier;
 import org.owasp.dependencycheck.utils.DependencyVersion;
 import us.springett.parsers.cpe.Cpe;
 import us.springett.parsers.cpe.ICpe;
@@ -516,5 +517,9 @@ public class VulnerableSoftware extends Cpe implements Serializable {
             sb.append(" version is NOT VULNERABLE");
         }
         return sb.toString();
+    }
+
+    public String toNvdSearchUrl() {
+        return CpeIdentifier.nvdSearchUrlFor(this);
     }
 }

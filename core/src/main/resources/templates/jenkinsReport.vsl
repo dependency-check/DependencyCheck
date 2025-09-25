@@ -670,7 +670,6 @@ Getting Help: <a href="https://github.com/dependency-check/DependencyCheck/issue
                         #end
                         #set($cnt=$cnt+1)
                         <h4 id="header$cnt" class="subsectionheader white">Identifiers</h4>
-                        ##:&nbsp;<a href="https://web.nvd.nist.gov/view/vuln/search-results?adv_search=true&cves=on&cpe_version=$enc.url($cpevalue)" target="_blank">$enc.html($cpevalue)</a></h4>
                         <div id="content$cnt" class="subsectioncontent standardsubsection">
                         #if ($dependency.getSoftwareIdentifiers().size()==0 && $dependency.getVulnerableSoftwareIdentifiers().size()==0)
                             <ul><li><b>None</b></li></ul>
@@ -764,13 +763,13 @@ Getting Help: <a href="https://github.com/dependency-check/DependencyCheck/issue
                             #if ($vuln.getSource().name().equals("NVD") && $vuln.matchedVulnerableSoftware)
                                 #if ($vuln.getVulnerableSoftware().size()<2)
                                     <p>Vulnerable Software &amp; Versions:<ul>
-                                        <li class="vs$vsctr"><a target="_blank" href="https://web.nvd.nist.gov/view/vuln/search-results?adv_search=true&cves=on&cpe_version=$enc.url($vuln.matchedVulnerableSoftware.toCpe22Uri())">$enc.html($vuln.matchedVulnerableSoftware.toString())</a></li>
+                                        <li class="vs$vsctr"><a target="_blank" href="$enc.html($vuln.matchedVulnerableSoftware.toNvdSearchUrl())">$enc.html($vuln.matchedVulnerableSoftware.toString())</a></li>
                                     </ul></p>
                                 #else
                                     <p>Vulnerable Software &amp; Versions:<ul>
-                                        <li class="vs$vsctr"><a target="_blank" href="https://web.nvd.nist.gov/view/vuln/search-results?adv_search=true&cves=on&cpe_version=$enc.url($vuln.matchedVulnerableSoftware.toCpe22Uri())">$enc.html($vuln.matchedVulnerableSoftware.toString())</a></li>
+                                        <li class="vs$vsctr"><a target="_blank" href="$enc.html($vuln.matchedVulnerableSoftware.toNvdSearchUrl())">$enc.html($vuln.matchedVulnerableSoftware.toString())</a></li>
                                     #foreach($vs in $vuln.getVulnerableSoftware(true))
-                                        <li class="vs$vsctr"><a target="_blank" href="https://web.nvd.nist.gov/view/vuln/search-results?adv_search=true&cves=on&cpe_version=$enc.url($vs.toCpe22Uri())">$enc.html($vs.toString())</a></li>
+                                        <li class="vs$vsctr"><a target="_blank" href="$enc.html($vuln.matchedVulnerableSoftware.toNvdSearchUrl())">$enc.html($vs.toString())</a></li>
                                     #end
                                     </ul></p>
                                 #end
