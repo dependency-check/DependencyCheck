@@ -162,11 +162,19 @@ public class OssIndexAnalyzer extends AbstractAnalyzer {
                     final boolean warnOnly = getSettings().getBoolean(Settings.KEYS.ANALYZER_OSSINDEX_WARN_ONLY_ON_REMOTE_ERRORS, false);
                     this.setEnabled(false);
                     if (StringUtils.contains(message, "401")) {
-                        LOG.error("Invalid credentials for the OSS Index, disabling the analyzer");
-                        throw new AnalysisException("Invalid credentials provided for OSS Index", ex);
+                        if (warnOnly) {
+                            LOG.warn("Invalid credentials for theOSS Index, disabling the analyzer");
+                        } else {
+                            LOG.error("Invalid credentials for the OSS Index, disabling the analyzer");
+                            throw new AnalysisException("Invalid credentials provided for OSS Index", ex);
+                        }
                     } else if (StringUtils.contains(message, "403")) {
-                        LOG.error("OSS Index access forbidden, disabling the analyzer");
-                        throw new AnalysisException("OSS Index access forbidden", ex);
+                        if (warnOnly) {
+                            LOG.warn("OSS Index access forbidden, disabling the analyzer");
+                        } else {
+                            LOG.error("OSS Index access forbidden, disabling the analyzer");
+                            throw new AnalysisException("OSS Index access forbidden", ex);
+                        }
                     } else if (StringUtils.contains(message, "429")) {
                         if (warnOnly) {
                             LOG.warn("OSS Index rate limit exceeded, disabling the analyzer", ex);
