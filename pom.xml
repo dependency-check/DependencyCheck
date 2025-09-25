@@ -625,6 +625,7 @@ Copyright (c) 2012 - Jeremy Long
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
                     <argLine>@{surefireArgLine} -Dfile.encoding=UTF-8</argLine>
+                    <failIfNoTests>false</failIfNoTests>
                     <systemPropertyVariables>
                         <data.directory>${project.build.directory}/data</data.directory>
                         <temp.directory>${project.build.directory}/temp</temp.directory>

@@ -130,6 +130,39 @@ class OssIndexAnalyzerTest extends BaseTest {
     }
 
     @Test
+    void should_analyzeDependency_return_a_dedicated_error_message_when_401_response_from_sonatype() throws Exception {
+        // Given
+        OssIndexAnalyzer analyzer = new OssIndexAnalyzer();
+        Settings settings = getSettings();
+        setCredentials(settings);
+        settings.setBoolean(KEYS.ANALYZER_OSSINDEX_USE_CACHE, false);
+        try (Engine engine = new Engine(settings)) {
+
+            analyzer.initialize(settings);
+            analyzer.prepareAnalyzer(engine);
+
+            Identifier identifier = new PurlIdentifier("maven", "test", "test", "1.0",
+                    Confidence.HIGHEST);
+
+            Dependency dependency = new Dependency();
+            dependency.addSoftwareIdentifier(identifier);
+            engine.setDependencies(Collections.singletonList(dependency));
+
+            // When
+            AnalysisException output = new AnalysisException();
+            try {
+                analyzer.analyzeDependency(dependency, engine);
+            } catch (AnalysisException e) {
+                output = e;
+            }
+
+            // Then
+            assertEquals("Invalid credentials provided for OSS Index", output.getMessage());
+            analyzer.close();
+        }
+    }
+
+    @Test
     void should_analyzeDependency_return_a_dedicated_error_message_when_403_response_from_sonatype() throws Exception {
         // Given
         OssIndexAnalyzer analyzer = new OssIndexAnalyzerThrowing403();
