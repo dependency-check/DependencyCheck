@@ -182,10 +182,10 @@ public class OssIndexAnalyzer extends AbstractAnalyzer {
                             throw new AnalysisException("OSS Index rate limit exceeded, disabling the analyzer", ex);
                         }
                     } else if (warnOnly) {
-                        LOG.warn("Error requesting component reports, disabling the analyzer", ex);
+                        LOG.warn("Error requesting component reports, disabling the analyzer. " + ex.getMessage(), ex);
                     } else {
                         LOG.debug("Error requesting component reports, disabling the analyzer", ex);
-                        throw new AnalysisException("Failed to request component-reports", ex);
+                        throw new AnalysisException("Failed to request component-reports. " + ex.getMessage(), ex);
                     }
                 }
             }
