@@ -3880,10 +3880,10 @@
     </suppress>
     <suppress base="true">
         <notes><![CDATA[
-        several python-* PyPI packages hit a FP CPE match #3233 & #3017 & #5335
+        several python-* PyPI packages hit a FP CPE match #3233 & #3017 & #5335 & #7968
         as Python itself is not a PyPI package suppress it with a broad regex
         ]]></notes>
-        <packageUrl regex="true">^pkg:pypi/.*python\-.*$</packageUrl>
+        <packageUrl regex="true">^pkg:pypi/.*python.*$</packageUrl>
         <cpe>cpe:/a:python:python</cpe>
         <cpe>cpe:/a:python_software_foundation:python</cpe>
     </suppress>
