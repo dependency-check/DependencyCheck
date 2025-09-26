@@ -163,7 +163,7 @@ public class OssIndexAnalyzer extends AbstractAnalyzer {
                     this.setEnabled(false);
                     if (StringUtils.contains(message, "401")) {
                         if (warnOnly) {
-                            LOG.warn("Invalid credentials for theOSS Index, disabling the analyzer");
+                            LOG.warn("Invalid credentials for the OSS Index, disabling the analyzer");
                         } else {
                             LOG.error("Invalid credentials for the OSS Index, disabling the analyzer");
                             throw new AnalysisException("Invalid credentials provided for OSS Index", ex);
