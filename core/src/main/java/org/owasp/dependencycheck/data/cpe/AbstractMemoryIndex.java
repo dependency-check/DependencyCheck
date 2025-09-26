@@ -50,6 +50,7 @@ import org.owasp.dependencycheck.utils.Pair;
 import org.owasp.dependencycheck.utils.Settings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.bridge.SLF4JBridgeHandler;
 
 /**
  * <p>
@@ -66,6 +67,12 @@ import org.slf4j.LoggerFactory;
  */
 @ThreadSafe
 public abstract class AbstractMemoryIndex implements MemoryIndex {
+
+    static {
+        // Ensure Lucene uses SLF4J for logging
+        SLF4JBridgeHandler.removeHandlersForRootLogger();
+        SLF4JBridgeHandler.install();
+    }
 
     /**
      * The logger.
