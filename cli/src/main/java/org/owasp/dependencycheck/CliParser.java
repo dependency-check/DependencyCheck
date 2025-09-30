@@ -441,7 +441,7 @@ public final class CliParser {
                         "Token for bearer auth towards the --centralContentUrl"))
                 .addOption(newOptionWithArg(ARGUMENT.OSSINDEX_URL, "url",
                         "Alternative URL for the OSS Index. If not set the public Sonatype OSS Index will be used."))
-                .addOption(newOptionWithArg(ARGUMENT.OSSINDEX_USERNAME, "username",
+                .addOption(newOptionWithArg(ARGUMENT.OSSINDEX_USER, "username",
                         "The username to authenticate to Sonatype's OSS Index. If not set the Sonatype OSS Index "
                                 + "Analyzer will use an unauthenticated connection."))
                 .addOption(newOptionWithArg(ARGUMENT.OSSINDEX_PASSWORD, "password", ""
