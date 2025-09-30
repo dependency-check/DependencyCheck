@@ -433,7 +433,7 @@ public final class CliParser {
                 .addOption(newOptionWithArg(ARGUMENT.CENTRAL_CONTENT_URL, "url",
                         "Alternative URL to obtain content from an alternative repository. If not set the public Sonatype Maven Central will be used."
                         + "Use a repository endpoint, such as https://artifactory.com/artifactory/mvn-release/."))
-                .addOption(newOptionWithArg(ARGUMENT.CENTRAL_CONTENT_USERNAME, "username",
+                .addOption(newOptionWithArg(ARGUMENT.CENTRAL_CONTENT_USER, "username",
                         "Credentials for basic auth towards the --centralContentUrl."))
                 .addOption(newOptionWithArg(ARGUMENT.CENTRAL_CONTENT_PASSWORD, "password",
                         "Credentials for basic auth towards the --centralContentUrl"))
@@ -441,7 +441,7 @@ public final class CliParser {
                         "Token for bearer auth towards the --centralContentUrl"))
                 .addOption(newOptionWithArg(ARGUMENT.OSSINDEX_URL, "url",
                         "Alternative URL for the OSS Index. If not set the public Sonatype OSS Index will be used."))
-                .addOption(newOptionWithArg(ARGUMENT.OSSINDEX_USER, "username",
+                .addOption(newOptionWithArg(ARGUMENT.OSSINDEX_USERNAME, "username",
                         "The username to authenticate to Sonatype's OSS Index. If not set the Sonatype OSS Index "
                                 + "Analyzer will use an unauthenticated connection."))
                 .addOption(newOptionWithArg(ARGUMENT.OSSINDEX_PASSWORD, "password", ""
