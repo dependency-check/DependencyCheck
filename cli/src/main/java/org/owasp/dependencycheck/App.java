@@ -641,6 +641,14 @@ public class App {
                 cli.getStringArgument(CliParser.ARGUMENT.CENTRAL_PASSWORD));
         settings.setStringIfNotEmpty(Settings.KEYS.ANALYZER_CENTRAL_BEARER_TOKEN,
                 cli.getStringArgument(CliParser.ARGUMENT.CENTRAL_BEARER_TOKEN));
+        settings.setStringIfNotEmpty(Settings.KEYS.CENTRAL_CONTENT_URL,
+                cli.getStringArgument(CliParser.ARGUMENT.CENTRAL_CONTENT_URL));
+        settings.setStringIfNotEmpty(Settings.KEYS.CENTRAL_CONTENT_USER,
+                cli.getStringArgument(CliParser.ARGUMENT.CENTRAL_CONTENT_USER));
+        settings.setStringIfNotEmpty(Settings.KEYS.CENTRAL_CONTENT_PASSWORD,
+                cli.getStringArgument(CliParser.ARGUMENT.CENTRAL_CONTENT_PASSWORD));
+        settings.setStringIfNotEmpty(Settings.KEYS.CENTRAL_CONTENT_BEARER_TOKEN,
+                cli.getStringArgument(CliParser.ARGUMENT.CENTRAL_CONTENT_BEARER_TOKEN)); 
         settings.setStringIfNotEmpty(Settings.KEYS.ANALYZER_OSSINDEX_URL,
                 cli.getStringArgument(CliParser.ARGUMENT.OSSINDEX_URL));
         settings.setStringIfNotEmpty(Settings.KEYS.ANALYZER_OSSINDEX_USER,

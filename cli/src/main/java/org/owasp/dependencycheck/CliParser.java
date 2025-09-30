@@ -430,6 +430,15 @@ public final class CliParser {
                         "Credentials for basic auth towards the --centralUrl"))
                 .addOption(newOptionWithArg(ARGUMENT.CENTRAL_BEARER_TOKEN, "token",
                         "Token for bearer auth towards the --centralUrl"))
+                .addOption(newOptionWithArg(ARGUMENT.CENTRAL_CONTENT_URL, "url",
+                        "Alternative URL to obtain content from an alternative repository. If not set the public Sonatype Maven Central will be used."
+                        + "Use a repository endpoint, such as https://artifactory.com/artifactory/mvn-release/."))
+                .addOption(newOptionWithArg(ARGUMENT.CENTRAL_CONTENT_USERNAME, "username",
+                        "Credentials for basic auth towards the --centralContentUrl."))
+                .addOption(newOptionWithArg(ARGUMENT.CENTRAL_CONTENT_PASSWORD, "password",
+                        "Credentials for basic auth towards the --centralContentUrl"))
+                .addOption(newOptionWithArg(ARGUMENT.CENTRAL_CONTENT_BEARER_TOKEN, "token",
+                        "Token for bearer auth towards the --centralContentUrl"))
                 .addOption(newOptionWithArg(ARGUMENT.OSSINDEX_URL, "url",
                         "Alternative URL for the OSS Index. If not set the public Sonatype OSS Index will be used."))
                 .addOption(newOptionWithArg(ARGUMENT.OSSINDEX_USERNAME, "username",
@@ -1428,6 +1437,22 @@ public final class CliParser {
          * The token for bearer authentication to the alternative Maven Central Search.
          */
         public static final String CENTRAL_BEARER_TOKEN = "centralBearerToken";
+        /**
+         * The alternative URL to obtain content from an alternative repository.
+         */
+        public static final String CENTRAL_CONTENT_URL = "centralContentUrl";
+        /**
+         * The username for basic authentication to obtain content from an alternative repository.
+         */
+        public static final String CENTRAL_CONTENT_USER = "centralContentUsername";
+        /**
+         * The Password for basic authentication to obtain content from an alternative repository.
+         */
+        public static final String CENTRAL_CONTENT_PASSWORD = "centralContentPassword";
+        /**
+         * The token for bearer authentication to obtain content from an alternative repository.
+         */
+        public static final String CENTRAL_CONTENT_BEARER_TOKEN = "centralContentBearerToken";
         /**
          * Disables the Nexus Analyzer.
          */
