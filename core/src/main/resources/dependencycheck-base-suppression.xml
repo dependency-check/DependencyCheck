@@ -369,17 +369,24 @@
     </suppress>
     <suppress base="true">
         <notes><![CDATA[
-        FP per #7542
+        FP per #7542 and #7984 (prefixed symfony vendor packages which are not part of core symfony product)
         ]]></notes>
-        <packageUrl regex="true">^pkg:composer/symfony/polyfill-.*$</packageUrl>
+        <packageUrl regex="true">^pkg:composer/symfony/(polyfill-|ux-|panther|webpack-encore-bundle|mercure@|mercure-bundle|monolog-bundle).*$</packageUrl>
         <cpe>cpe:/a:sensiolabs:symfony</cpe>
     </suppress>
     <suppress base="true">
         <notes><![CDATA[
-        FP per #7545
+        FP per #7545 and #7984 (suffixed symfony vendor packages which are not part of core symfony product)
         ]]></notes>
-        <packageUrl regex="true">^pkg:composer/symfony/.*-contracts@.*$</packageUrl>
+        <packageUrl regex="true">^pkg:composer/symfony/.*(contracts|-pack)@.*$</packageUrl>
         <cpe>cpe:/a:sensiolabs:symfony</cpe>
+    </suppress>
+    <suppress base="true">
+        <notes><![CDATA[
+        FP per #7984 - only the pimcore/pimcore package reflects the actual pimcore product
+        ]]></notes>
+        <packageUrl regex="true">^pkg:composer/(?!pimcore/pimcore@).*$</packageUrl>
+        <cpe>cpe:/a:pimcore:pimcore</cpe>
     </suppress>
     <suppress base="true">
         <notes><![CDATA[
