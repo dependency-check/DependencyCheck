@@ -390,6 +390,35 @@
     </suppress>
     <suppress base="true">
         <notes><![CDATA[
+        FP per #7984 - only the pear/pear-core-minimal packages reflect the actual pear product
+        ]]></notes>
+        <packageUrl regex="true">^pkg:composer/(?!pear/pear@|pear/pear-core-minimal@).*$</packageUrl>
+        <cpe>cpe:/a:pear:pear</cpe>
+    </suppress>
+    <suppress base="true">
+        <notes><![CDATA[
+        FP per #7984 - only the laravel/framework packages reflect the actual laravel products (each have their own CPE)
+        ]]></notes>
+        <packageUrl regex="true">^pkg:composer/(?!laravel/framework@|laravel/laravel@).*$</packageUrl>
+        <cpe>cpe:/a:laravel:laravel</cpe>
+        <cpe>cpe:/a:laravel:framework</cpe>
+    </suppress>
+    <suppress base="true">
+        <notes><![CDATA[
+        FP per #7984 - only the drupal/services package represents the drupal services project
+        ]]></notes>
+        <packageUrl regex="true">^pkg:composer/(?!drupal/services@).*$</packageUrl>
+        <cpe>cpe:/a:services_project:services</cpe>
+    </suppress>
+    <suppress base="true">
+        <notes><![CDATA[
+        FP per #7984 - only the doctrine/orm package represents the core doctrine project
+        ]]></notes>
+        <packageUrl regex="true">^pkg:composer/(?!doctrine/orm@).*$</packageUrl>
+        <cpe>cpe:/a:doctrine-project:doctrine</cpe>
+    </suppress>
+    <suppress base="true">
+        <notes><![CDATA[
         FP per #2957
         ]]></notes>
         <packageUrl regex="true">^pkg:maven/org\.jboss\.resteasy/resteasy\-spring\-boot\-starter@.*$</packageUrl>
