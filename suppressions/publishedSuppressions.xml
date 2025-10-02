@@ -2493,4 +2493,11 @@ only pkg:maven/org.clojure:clojure@.* is the CPE cpe:/a:clojure:clojure
    <packageUrl regex="true">^pkg:maven/co\.elastic\.apm/apm-agent-api@.*$</packageUrl>
    <cpe>cpe:/a:elastic:apm_agent</cpe>
 </suppress>
+<suppress base="true">
+   <notes><![CDATA[
+   FP per issue #7998
+   ]]></notes>
+   <packageUrl regex="true">^pkg:maven/co\.elastic\.apm/apm-agent-api@.*$</packageUrl>
+   <cpe>cpe:/a:elastic:elastic_agent</cpe>
+</suppress>
 </suppressions>
