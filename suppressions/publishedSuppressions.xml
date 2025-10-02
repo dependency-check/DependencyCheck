@@ -2486,4 +2486,11 @@ only pkg:maven/org.clojure:clojure@.* is the CPE cpe:/a:clojure:clojure
    <packageUrl regex="true">^pkg:nuget/Microsoft\.AspNetCore\.Authentication\.OpenIdConnect@.*$</packageUrl>
    <cpe>cpe:/a:openid:openid</cpe>
 </suppress>
+<suppress base="true">
+   <notes><![CDATA[
+   FP per issue #7996
+   ]]></notes>
+   <packageUrl regex="true">^pkg:maven/co\.elastic\.apm/apm-agent-api@.*$</packageUrl>
+   <cpe>cpe:/a:elastic:apm_agent</cpe>
+</suppress>
 </suppressions>
