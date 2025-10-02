@@ -289,12 +289,10 @@ public class CentralAnalyzer extends AbstractFileTypeAnalyzer {
                         } else {
                             LOGGER.warn("Unable to download pom.xml for {} from Central; "
                                     + "this could result in undetected CPE/CVEs.", dependency.getFileName());
-                            if (lastException != null) {
-                                setEnabled(false);
-                                LOGGER.warn("Disabling the Central Analyzer due to repeated download failures; Central Search " +
-                                        "may be down see https://status.maven.org/\n Note that this could result in both false " +
-                                        "positives and false negatives", lastException);
-                            }
+                            setEnabled(false);
+                            LOGGER.warn("Disabling the Central Analyzer due to repeated download failures; Central Search "
+                                    + "may be down see https://status.maven.org/\n Note that this could result in both false "
+                                    + "positives and false negatives", lastException);
                         }
 
                     } catch (AnalysisException ex) {
