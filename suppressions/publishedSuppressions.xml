@@ -2488,16 +2488,18 @@ only pkg:maven/org.clojure:clojure@.* is the CPE cpe:/a:clojure:clojure
 </suppress>
 <suppress base="true">
    <notes><![CDATA[
-   FP per issue #7996
+   FP per issues #3876, #7998
    ]]></notes>
-   <packageUrl regex="true">^pkg:maven/co\.elastic\.apm/apm-agent-api@.*$</packageUrl>
-   <cpe>cpe:/a:elastic:apm_agent</cpe>
+   <packageUrl regex="true">^pkg:maven/co\.elastic\.apm/.*</packageUrl>
+   <cpe>cpe:/a:elastic:elastic_agent</cpe>
+   <cve>CVE-2019-7617</cve>
 </suppress>
+
 <suppress base="true">
    <notes><![CDATA[
-   FP per issue #7998
+   FP per issue #7661
    ]]></notes>
-   <packageUrl regex="true">^pkg:maven/co\.elastic\.apm/apm-agent-api@.*$</packageUrl>
-   <cpe>cpe:/a:elastic:elastic_agent</cpe>
+   <packageUrl regex="true">^pkg:maven/org\.eclipse\.core/org\.eclipse\.core\.expressions@.*$</packageUrl>
+   <cpe>cpe:/a:eclipse:org.eclipse.core.runtime</cpe>
 </suppress>
 </suppressions>
