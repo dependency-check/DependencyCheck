@@ -520,9 +520,9 @@ Copyright (c) 2012 - Jeremy Long
                 <artifactId>maven-enforcer-plugin</artifactId>
                 <dependencies>
                     <dependency>
-                        <groupId>org.owasp.maven.enforcer</groupId>
-                        <artifactId>class-file-format-rule</artifactId>
-                        <version>2.0.0</version>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>extra-enforcer-rules</artifactId>
+                        <version>1.11.0</version>
                     </dependency>
                 </dependencies>
                 <inherited>true</inherited>
@@ -535,23 +535,23 @@ Copyright (c) 2012 - Jeremy Long
                         <configuration>
                             <rules>
                                 <requireJavaVersion>
-                                    <version>1.8.0</version>
+                                    <version>${maven.compiler.release}</version>
                                 </requireJavaVersion>
                             </rules>
                         </configuration>
                     </execution>
                     <execution>
-                        <id>enforce-classfileformat</id>
-                        <configuration>
-                            <rules>
-                                <byteCodeRule implementation="org.owasp.maven.enforcer.rule.ClassFileFormatRule">
-                                    <supportedClassFileFormat>55</supportedClassFileFormat>
-                                </byteCodeRule>
-                            </rules>
-                        </configuration>
+                        <id>enforce-bytecode-version</id>
                         <goals>
                             <goal>enforce</goal>
                         </goals>
+                        <configuration>
+                            <rules>
+                                <enforceBytecodeVersion>
+                                    <maxJdkVersion>${maven.compiler.release}</maxJdkVersion>
+                                </enforceBytecodeVersion>
+                            </rules>
+                        </configuration>
                     </execution>
                     <execution>
                         <id>enforce-maven-3</id>
