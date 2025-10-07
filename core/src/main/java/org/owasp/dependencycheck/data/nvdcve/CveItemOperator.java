@@ -222,6 +222,7 @@ public class CveItemOperator {
         if (cve.getCve().getConfigurations() != null) {
             //cycle through to see if this is a CPE we care about (use the CPE filters
             return cve.getCve().getConfigurations().stream()
+                    .filter(config -> config.getNodes() != null)
                     .map(Config::getNodes)
                     .flatMap(List::stream)
                     .filter(Objects::nonNull)

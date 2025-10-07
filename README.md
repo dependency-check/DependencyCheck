@@ -175,7 +175,7 @@ For instructions on the use of the Ant Task, please see the [dependency-check-an
 
 For installation to pass, you must have the following components installed:
 * Java: `java -version` 11.0
-* Maven: `mvn -version` 3.5.0 and higher
+* Maven: `mvn -version` 3.6.3 and higher
 
 Tests cases require:
 * dotnet core version 8.0
@@ -363,7 +363,7 @@ Dependency-Check makes use of several other open source libraries. Please see th
 
 This product uses the NVD API but is not endorsed or certified by the NVD.
 
-Copyright (c) 2012-2024 Jeremy Long. All Rights Reserved.
+Copyright (c) 2012-2025 Jeremy Long. All Rights Reserved.
 
   [wiki]: https://github.com/dependency-check/DependencyCheck/wiki
   [notices]: https://github.com/dependency-check/DependencyCheck/blob/main/NOTICE.txt

@@ -33,6 +33,8 @@ import org.slf4j.LoggerFactory;
 import java.io.ByteArrayInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
@@ -41,7 +43,19 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+@SuppressWarnings("resource")
 class ArtifactorySearchResponseHandlerTest extends BaseTest {
+
+    private static final URL TEST_URL;
+    private static final String EXCEPTION_MESSAGE = "Artifact Dependency{ fileName='null', actualFilePath='null', filePath='null', packagePath='null'} not found in Artifactory; discovered SHA1 hits not recognized as matching Maven artifacts";
+
+    static {
+        try {
+            TEST_URL = new URL("https://example.com/artifactory/api/search/checksum?sha1=43515aa4b2f4bce7c431145e8c0a7bcc441e0532");
+        } catch (MalformedURLException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     @BeforeEach
     @Override
@@ -88,7 +102,7 @@ class ArtifactorySearchResponseHandlerTest extends BaseTest {
 
 
         // When
-        final ArtifactorySearchResponseHandler handler = new ArtifactorySearchResponseHandler(dependency);
+        final ArtifactorySearchResponseHandler handler = new ArtifactorySearchResponseHandler(TEST_URL, dependency);
         final List<MavenArtifact> mavenArtifacts = handler.handleResponse(response);
 
         // Then
@@ -118,7 +132,7 @@ class ArtifactorySearchResponseHandlerTest extends BaseTest {
 
 
         // When
-        final ArtifactorySearchResponseHandler handler = new ArtifactorySearchResponseHandler(dependency);
+        final ArtifactorySearchResponseHandler handler = new ArtifactorySearchResponseHandler(TEST_URL, dependency);
         final List<MavenArtifact> mavenArtifacts = handler.handleResponse(response);
 
         // Then
@@ -152,6 +166,7 @@ class ArtifactorySearchResponseHandlerTest extends BaseTest {
         final ListAppender<ILoggingEvent> listAppender = new ListAppender<>();
         listAppender.start();
         sutLogger.addAppender(listAppender);
+        final String logMessage = "No checksums found in Artifactory search result for '{}'. Specifically, the result set contains URI '{}' but it is missing the 'checksums' property. Please make sure that the '{}' header is retained on any (reverse-)proxy, load-balancer or Web Application Firewall in the network path to your Artifactory server.";
 
         // Given
         final Dependency dependency = new Dependency();
@@ -167,32 +182,32 @@ class ArtifactorySearchResponseHandlerTest extends BaseTest {
 
 
         // When
-        final ArtifactorySearchResponseHandler handler = new ArtifactorySearchResponseHandler(dependency);
+        final ArtifactorySearchResponseHandler handler = new ArtifactorySearchResponseHandler(TEST_URL, dependency);
 
         FileNotFoundException e = assertThrows(FileNotFoundException.class, () -> handler.handleResponse(response),
                 "Result with no details due to missing X-Result-Detail header, should throw an exception!");
 
         // Then
-        assertEquals("Artifact Dependency{ fileName='freemarker-2.3.33.jar', actualFilePath='null', filePath='null', packagePath='null'} not found in Artifactory; discovered sha1 hits not recognized as matching maven artifacts",
+        assertEquals("Artifact Dependency{ fileName='freemarker-2.3.33.jar', actualFilePath='null', filePath='null', packagePath='null'} not found in Artifactory; discovered SHA1 hits not recognized as matching Maven artifacts",
                 e.getMessage());
 
-        // There should be a WARN-log for for each of the results regarding the absence of X-Result-Detail header driven attributes
+        // There should be a WARN-log for each of the results regarding the absence of X-Result-Detail header driven attributes
         final List<ILoggingEvent> logsList = listAppender.list;
         assertEquals(2, logsList.size(), "Number of log entries for the ArtifactorySearchResponseHandler");
 
         ILoggingEvent logEvent = logsList.get(0);
         assertEquals(Level.WARN, logEvent.getLevel());
-        assertEquals("No checksums found in artifactory search result of uri {}. Please make sure that header X-Result-Detail is retained on any (reverse)-proxy, loadbalancer or WebApplicationFirewall in the network path to your Artifactory Server", logEvent.getMessage());
+        assertEquals(logMessage, logEvent.getMessage());
         Object[] args = logEvent.getArgumentArray();
-        assertEquals(1, args.length);
-        assertEquals("https://artifactory.example.com:443/artifactory/api/storage/maven-central-cache/org/freemarker/freemarker/2.3.33/freemarker-2.3.33.jar", args[0]);
+        assertEquals(3, args.length);
+        assertEquals("https://artifactory.example.com:443/artifactory/api/storage/maven-central-cache/org/freemarker/freemarker/2.3.33/freemarker-2.3.33.jar", args[1]);
 
         logEvent = logsList.get(1);
         assertEquals(Level.WARN, logEvent.getLevel());
-        assertEquals("No checksums found in artifactory search result of uri {}. Please make sure that header X-Result-Detail is retained on any (reverse)-proxy, loadbalancer or WebApplicationFirewall in the network path to your Artifactory Server", logEvent.getMessage());
+        assertEquals(logMessage, logEvent.getMessage());
         args = logEvent.getArgumentArray();
-        assertEquals(1, args.length);
-        assertEquals("https://artifactory.example.com:443/artifactory/api/storage/gradle-plugins-extended-cache/org/freemarker/freemarker/2.3.33/freemarker-2.3.33.jar", args[0]);
+        assertEquals(3, args.length);
+        assertEquals("https://artifactory.example.com:443/artifactory/api/storage/gradle-plugins-extended-cache/org/freemarker/freemarker/2.3.33/freemarker-2.3.33.jar", args[1]);
 
         // Remove our manually injected additional appender
         sutLogger.detachAppender(listAppender);
@@ -212,7 +227,7 @@ class ArtifactorySearchResponseHandlerTest extends BaseTest {
         when(responseEntity.getContent()).thenReturn(new ByteArrayInputStream(payload));
 
         // When
-        final ArtifactorySearchResponseHandler handler = new ArtifactorySearchResponseHandler(dependency);
+        final ArtifactorySearchResponseHandler handler = new ArtifactorySearchResponseHandler(TEST_URL, dependency);
         FileNotFoundException e = assertThrows(FileNotFoundException.class, () -> handler.handleResponse(response),
                 "No Match found, should throw an exception!");
         // Then
@@ -298,7 +313,7 @@ class ArtifactorySearchResponseHandlerTest extends BaseTest {
         when(responseEntity.getContent()).thenReturn(new ByteArrayInputStream(payload));
 
         // When
-        final ArtifactorySearchResponseHandler handler = new ArtifactorySearchResponseHandler(dependency);
+        final ArtifactorySearchResponseHandler handler = new ArtifactorySearchResponseHandler(TEST_URL, dependency);
         final List<MavenArtifact> mavenArtifacts = handler.handleResponse(response);
 
         // Then
@@ -419,13 +434,13 @@ class ArtifactorySearchResponseHandlerTest extends BaseTest {
         when(responseEntity.getContent()).thenReturn(new ByteArrayInputStream(payload));
 
         // When
-        final ArtifactorySearchResponseHandler handler = new ArtifactorySearchResponseHandler(dependency);
+        final ArtifactorySearchResponseHandler handler = new ArtifactorySearchResponseHandler(TEST_URL, dependency);
         FileNotFoundException e = assertThrows(FileNotFoundException.class, () -> handler.handleResponse(response),
                 "MD5 mismatching should throw an exception!");
 
         // Then
         assertEquals("Artifact " + dependency
-                + " not found in Artifactory; discovered sha1 hits not recognized as matching maven artifacts", e.getMessage());
+                + " not found in Artifactory; discovered SHA1 hits not recognized as matching Maven artifacts", e.getMessage());
     }
 
     @Test
@@ -442,12 +457,12 @@ class ArtifactorySearchResponseHandlerTest extends BaseTest {
         when(responseEntity.getContent()).thenReturn(new ByteArrayInputStream(payload));
 
         // When
-        final ArtifactorySearchResponseHandler handler = new ArtifactorySearchResponseHandler(dependency);
+        final ArtifactorySearchResponseHandler handler = new ArtifactorySearchResponseHandler(TEST_URL, dependency);
         FileNotFoundException e = assertThrows(FileNotFoundException.class, () -> handler.handleResponse(response),
                 "SHA1 mismatching should throw an exception!");
 
         // Then
-        assertEquals("Artifact Dependency{ fileName='null', actualFilePath='null', filePath='null', packagePath='null'} not found in Artifactory; discovered sha1 hits not recognized as matching maven artifacts", e.getMessage());
+        assertEquals(EXCEPTION_MESSAGE, e.getMessage());
     }
 
     @Test
@@ -464,12 +479,12 @@ class ArtifactorySearchResponseHandlerTest extends BaseTest {
         when(responseEntity.getContent()).thenReturn(new ByteArrayInputStream(payload));
 
         // When
-        final ArtifactorySearchResponseHandler handler = new ArtifactorySearchResponseHandler(dependency);
+        final ArtifactorySearchResponseHandler handler = new ArtifactorySearchResponseHandler(TEST_URL, dependency);
         FileNotFoundException e = assertThrows(FileNotFoundException.class, () -> handler.handleResponse(response),
                 "SHA256 mismatching should throw an exception!");
 
         // Then
-        assertEquals("Artifact Dependency{ fileName='null', actualFilePath='null', filePath='null', packagePath='null'} not found in Artifactory; discovered sha1 hits not recognized as matching maven artifacts", e.getMessage());
+        assertEquals(EXCEPTION_MESSAGE, e.getMessage());
     }
 
     @Test
@@ -487,12 +502,12 @@ class ArtifactorySearchResponseHandlerTest extends BaseTest {
         when(responseEntity.getContent()).thenReturn(new ByteArrayInputStream(payload));
 
         // When
-        final ArtifactorySearchResponseHandler handler = new ArtifactorySearchResponseHandler(dependency);
+        final ArtifactorySearchResponseHandler handler = new ArtifactorySearchResponseHandler(TEST_URL, dependency);
         FileNotFoundException e = assertThrows(FileNotFoundException.class, () -> handler.handleResponse(response),
                 "Maven GAV pattern mismatch for filepath should throw a not found exception!");
 
             // Then
-            assertEquals("Artifact Dependency{ fileName='null', actualFilePath='null', filePath='null', packagePath='null'} not found in Artifactory; discovered sha1 hits not recognized as matching maven artifacts", e.getMessage());
+            assertEquals(EXCEPTION_MESSAGE, e.getMessage());
     }
 
     @Test
@@ -509,7 +524,7 @@ class ArtifactorySearchResponseHandlerTest extends BaseTest {
         when(responseEntity.getContent()).thenReturn(new ByteArrayInputStream(payload));
 
         // When
-        final ArtifactorySearchResponseHandler handler = new ArtifactorySearchResponseHandler(dependency);
+        final ArtifactorySearchResponseHandler handler = new ArtifactorySearchResponseHandler(TEST_URL, dependency);
         List<MavenArtifact> result = handler.handleResponse(response);
         // Then
         assertEquals(1, result.size());

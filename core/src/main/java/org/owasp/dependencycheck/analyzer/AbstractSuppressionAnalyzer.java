@@ -200,6 +200,10 @@ public abstract class AbstractSuppressionAnalyzer extends AbstractAnalyzer {
         String suppressionFileLocation = jarLocation.getFile();
         if (suppressionFileLocation.endsWith(".jar")) {
             suppressionFileLocation = "jar:file:" + suppressionFileLocation + "!/" + BASE_SUPPRESSION_FILE;
+        } else if (suppressionFileLocation.startsWith("nested:") && suppressionFileLocation.endsWith(".jar!/")) {
+            // suppressionFileLocation -> nested:/app/app.jar/!BOOT-INF/lib/dependency-check-core-<version>.jar!/
+            // goal->                 jar:nested:/app/app.jar/!BOOT-INF/lib/dependency-check-core-<version>.jar!/dependencycheck-base-suppression.xml
+            suppressionFileLocation = "jar:" + suppressionFileLocation + BASE_SUPPRESSION_FILE;
         } else {
             suppressionFileLocation = "file:" + suppressionFileLocation + BASE_SUPPRESSION_FILE;
         }

@@ -20,7 +20,7 @@ Copyright (c) 2012 Jeremy Long. All Rights Reserved.
     <parent>
         <groupId>org.owasp</groupId>
         <artifactId>dependency-check-parent</artifactId>
-        <version>12.1.2-SNAPSHOT</version>
+        <version>12.1.7-SNAPSHOT</version>
     </parent>
 
     <artifactId>dependency-check-core</artifactId>
@@ -279,6 +279,11 @@ Copyright (c) 2012 Jeremy Long. All Rights Reserved.
             <groupId>org.apache.lucene</groupId>
             <artifactId>lucene-queryparser</artifactId>
         </dependency>
+        <!-- Allow redirection of lucene logs to slf4j -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>jul-to-slf4j</artifactId>
+        </dependency>
         <dependency>
             <groupId>org.apache.velocity</groupId>
             <artifactId>velocity-engine-core</artifactId>
@@ -466,7 +471,7 @@ Copyright (c) 2012 Jeremy Long. All Rights Reserved.
                 <dependency>
                     <groupId>org.postgresql</groupId>
                     <artifactId>postgresql</artifactId>
-                    <version>42.7.5</version>
+                    <version>42.7.8</version>
                 </dependency>
             </dependencies>
             <build>

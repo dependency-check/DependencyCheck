@@ -53,6 +53,13 @@ import org.slf4j.LoggerFactory;
 public class ArtifactorySearch {
 
     /**
+     * Required to add all extra information of the found artifact.
+     * Source: https://jfrog.com/help/r/jfrog-rest-apis/property-search
+     */
+    @SuppressWarnings("JavadocLinkAsPlainText")
+    public static final String X_RESULT_DETAIL_HEADER = "X-Result-Detail";
+
+    /**
      * Used for logging.
      */
     private static final Logger LOGGER = LoggerFactory.getLogger(ArtifactorySearch.class);
@@ -108,9 +115,13 @@ public class ArtifactorySearch {
         final StringBuilder msg = new StringBuilder("Could not connect to Artifactory at")
                 .append(url);
         try {
-            final BasicHeader artifactoryResultDetail = new BasicHeader("X-Result-Detail", "info");
-            return Downloader.getInstance().fetchAndHandle(url, new ArtifactorySearchResponseHandler(dependency), List.of(artifactoryResultDetail),
-                    allowUsingProxy);
+            final BasicHeader artifactoryResultDetail = new BasicHeader(X_RESULT_DETAIL_HEADER, "info");
+            return Downloader.getInstance().fetchAndHandle(
+                    url,
+                    new ArtifactorySearchResponseHandler(url, dependency),
+                    List.of(artifactoryResultDetail),
+                    allowUsingProxy
+            );
         } catch (TooManyRequestsException e) {
             throw new IOException(msg.append(" (429): Too manu requests").toString(), e);
         } catch (URISyntaxException e) {

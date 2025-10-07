@@ -4,7 +4,7 @@
                           https://maven.apache.org/xsd/settings-1.0.0.xsd">
     <servers>
         <server>
-            <id>ossrh</id>
+            <id>central</id>
             <username>${env.MAVEN_USERNAME}</username>
             <password>${env.MAVEN_PASSWORD}</password>
         </server>
@@ -12,9 +12,7 @@
     <profiles>
         <profile>
             <id>default</id>
-            <properties>
-
-            </properties>
+            <properties></properties>
         </profile>
     </profiles>
     <activeProfiles>

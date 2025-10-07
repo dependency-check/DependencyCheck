@@ -765,12 +765,33 @@ public abstract class BaseDependencyCheckMojo extends AbstractMojo implements Ma
     private String ossindexAnalyzerUrl;
 
     /**
-     * The id of a server defined in the settings.xml that configures the
-     * credentials (username and password) for a OSS Index service.
+     * The id of a server defined in the settings.xml to authenticate Sonatype
+     * OSS Index requests and profit from higher rate limits. Provide the OSS
+     * account email address as username and password or API token as password.
      */
     @SuppressWarnings("CanBeFinal")
     @Parameter(property = "ossIndexServerId")
     private String ossIndexServerId;
+
+    /**
+     * OSS account email address as an alternative to the indirection through
+     * the ossIndexServerId (see above). Both ossIndexUsername and
+     * ossIndexPassword must be set to use this approach instead of the server
+     * ID.
+     */
+    @SuppressWarnings("CanBeFinal")
+    @Parameter(property = "ossIndexUsername")
+    private String ossIndexUsername;
+
+    /**
+     * OSS password or API token as an alternative to the indirection through
+     * the ossIndexServerId (see above). Both ossIndexUsername and
+     * ossIndexPassword must be set to use this approach instead of the server
+     * ID.
+     */
+    @SuppressWarnings("CanBeFinal")
+    @Parameter(property = "ossIndexPassword")
+    private String ossIndexPassword;
 
     /**
      * Whether we should only warn about Sonatype OSS Index remote errors
@@ -1148,8 +1169,9 @@ public abstract class BaseDependencyCheckMojo extends AbstractMojo implements Ma
     private Retirejs retirejs;
 
     /**
-     * The list of artifacts (and their transitive dependencies) to exclude from
-     * the check.
+     * The list of patterns to exclude from the check. This is matched against the project dependencies (and will implicitly also remove transitive dependencies from matching dependencies). 
+     * Each pattern has the format {@code [groupId]:[artifactId]:[type]:[version]}. You can leave out unspecified parts (which is equal to using {@code *}).
+     * Examples: {@code org.apache.*} would match all artifacts whose group id starts with {@code org.apache.}, and {@code :::*-SNAPSHOT} would match all snapshot artifacts.
      */
     @Parameter(property = "odc.excludes")
     private List<String> excludes;
@@ -2427,7 +2449,12 @@ public abstract class BaseDependencyCheckMojo extends AbstractMojo implements Ma
         settings.setBooleanIfNotNull(Settings.KEYS.ANALYZER_SWIFT_PACKAGE_RESOLVED_ENABLED, swiftPackageResolvedAnalyzerEnabled);
         settings.setBooleanIfNotNull(Settings.KEYS.ANALYZER_OSSINDEX_ENABLED, ossindexAnalyzerEnabled);
         settings.setStringIfNotEmpty(Settings.KEYS.ANALYZER_OSSINDEX_URL, ossindexAnalyzerUrl);
-        configureServerCredentials(ossIndexServerId, Settings.KEYS.ANALYZER_OSSINDEX_USER, Settings.KEYS.ANALYZER_OSSINDEX_PASSWORD);
+        if (StringUtils.isEmpty(ossIndexUsername) || StringUtils.isEmpty(ossIndexPassword)) {
+            configureServerCredentials(ossIndexServerId, Settings.KEYS.ANALYZER_OSSINDEX_USER, Settings.KEYS.ANALYZER_OSSINDEX_PASSWORD);
+        } else {
+            settings.setStringIfNotEmpty(Settings.KEYS.ANALYZER_OSSINDEX_USER, ossIndexUsername);
+            settings.setStringIfNotEmpty(Settings.KEYS.ANALYZER_OSSINDEX_PASSWORD, ossIndexPassword);
+        }
         settings.setBooleanIfNotNull(Settings.KEYS.ANALYZER_OSSINDEX_USE_CACHE, ossindexAnalyzerUseCache);
         settings.setBooleanIfNotNull(Settings.KEYS.ANALYZER_OSSINDEX_WARN_ONLY_ON_REMOTE_ERRORS, ossIndexWarnOnlyOnRemoteErrors);
         if (retirejs != null) {
@@ -2517,8 +2544,8 @@ public abstract class BaseDependencyCheckMojo extends AbstractMojo implements Ma
      * <p>
      * When a serverId is given, then its values are used instead of the less secure direct values.<br />
      * A serverId with username/password will fill the `userKey` and `passwordKey` settings for Basic Auth. A serverId with only password
-     * filled will fill the `tokenKey` fro Bearer Auth.<br/>
-     * In absence of the serverId any non-null value will be transferred to the settings.
+     * filled will fill the `tokenKey` from Bearer Auth.<br/>
+     * In absence of the serverId, any non-null value will be transferred to the settings.
      *
      * @param serverId      The serverId specified for the connection or {@code null}
      * @param usernameValue The username specified for the connection or {@code null}

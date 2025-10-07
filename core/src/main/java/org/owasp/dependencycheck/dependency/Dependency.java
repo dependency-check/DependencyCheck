@@ -625,7 +625,7 @@ public class Dependency extends EvidenceCollection implements Serializable {
         if (sorted) {
             vulnerabilitySet = new TreeSet<>(vulnerabilities);
         } else {
-            vulnerabilitySet = vulnerabilities;
+            vulnerabilitySet = new HashSet<>(vulnerabilities);
         }
         return Collections.unmodifiableSet(vulnerabilitySet);
     }
