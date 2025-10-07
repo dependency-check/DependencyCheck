@@ -2493,3 +2493,17 @@ only pkg:maven/org.clojure:clojure@.* is the CPE cpe:/a:clojure:clojure
    <cpe>cpe:/a:elastic:apm_agent</cpe>
    <cpe>cpe:/a:elastic:elastic_agent</cpe>
 </suppress>
+<suppress base="true">
+   <notes><![CDATA[
+   FP per issue #7661
+   ]]></notes>
+   <packageUrl regex="true">^pkg:maven/org\.eclipse\.core/org\.eclipse\.core\.expressions@.*$</packageUrl>
+   <cpe>cpe:/a:eclipse:org.eclipse.core.runtime</cpe>
+</suppress>
+<suppress base="true">
+   <notes><![CDATA[
+   FP per issue #7663
+   ]]></notes>
+   <packageUrl regex="true">^pkg:maven/org\.eclipse\.platform/org\.eclipse\.equinox\.supplement@.*$</packageUrl>
+   <cpe>cpe:/a:eclipse:platform</cpe>
+</suppress>
