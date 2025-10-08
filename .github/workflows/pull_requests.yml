@@ -45,22 +45,22 @@ jobs:
           # Command to be sent to SARIF Multitool
           command: 'validate core/target/test-reports/Report.sarif'
       - name: Upload SARIF file
-        uses: github/codeql-action/upload-sarif@v3
+        uses: github/codeql-action/upload-sarif@v4
         with:
           sarif_file: utils/target/spotbugsSarif.json
           category: spotbugs-utils
       - name: Upload SARIF file
-        uses: github/codeql-action/upload-sarif@v3
+        uses: github/codeql-action/upload-sarif@v4
         with:
           sarif_file: cli/target/spotbugsSarif.json
           category: spotbugs-cli
       - name: Upload SARIF file
-        uses: github/codeql-action/upload-sarif@v3
+        uses: github/codeql-action/upload-sarif@v4
         with:
           sarif_file: ant/target/spotbugsSarif.json
           category: spotbugs-ant
       - name: Upload SARIF file
-        uses: github/codeql-action/upload-sarif@v3
+        uses: github/codeql-action/upload-sarif@v4
         with:
           sarif_file: core/target/spotbugsSarif.json
           category: spotbugs-core
@@ -120,7 +120,7 @@ jobs:
           retention-days: 7
           path: maven/target/it/**/build.log
       - name: Upload SARIF file
-        uses: github/codeql-action/upload-sarif@v3
+        uses: github/codeql-action/upload-sarif@v4
         with:
           sarif_file: maven/target/spotbugsSarif.json
           category: spotbugs-maven
@@ -152,7 +152,7 @@ jobs:
         run: |
             mvn -V -s settings.xml checkstyle:checkstyle-aggregate --no-transfer-progress --batch-mode
       - name: Upload SARIF file
-        uses: github/codeql-action/upload-sarif@v3
+        uses: github/codeql-action/upload-sarif@v4
         with:
           sarif_file: target/checkstyle-result.sarif
           category: checkstyle
