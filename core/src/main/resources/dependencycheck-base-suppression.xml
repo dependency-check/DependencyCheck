@@ -6350,24 +6350,12 @@
     <!-- end generated suppressions added to main in 8.4.0 -->
     <suppress base="true">
         <notes><![CDATA[
-            FP per #4321
+            FP per #4321, #7444, #7740, 8016
+            Redis client packages within various languages are not the same as the redis server
+            NOTE: the additional colon in the CPE is required to not match on prefix with cpe:/a:redis:redis.js etc
             ]]></notes>
-        <packageUrl regex="true">^pkg:(pypi/redis|generic/Microsoft\.Extensions\.Caching\.StackExchangeRedis|generic/HealthChecks\.Redis)@.*$</packageUrl>
-        <cve>CVE-2021-32626</cve>
-        <cve>CVE-2021-32627</cve>
-        <cve>CVE-2021-32628</cve>
-        <cve>CVE-2021-32675</cve>
-        <cve>CVE-2021-32687</cve>
-        <cve>CVE-2021-32762</cve>
-        <cve>CVE-2021-41099</cve>
-        <cve>CVE-2022-24735</cve>
-        <cve>CVE-2022-24834</cve>
-        <cve>CVE-2021-31294</cve>
-        <cve>CVE-2021-32672</cve>
-        <cve>CVE-2022-24736</cve>
-        <cve>CVE-2022-36021</cve>
-        <cve>CVE-2023-25155</cve>
-        <cve>CVE-2023-28856</cve>
+        <packageUrl regex="true">^pkg:(pypi|nuget|generic|npm|composer)/.*[rR]edis.*@.*$</packageUrl>
+        <cpe>cpe:/a:redis:redis:</cpe>
     </suppress>
     <!-- generated suppression 8.4.0 up to 9.1.0 -->
     <suppress base="true">
@@ -7084,20 +7072,6 @@
         ]]></notes>
         <packageUrl regex="true">^pkg:nuget/IronPython@.*$</packageUrl>
         <cpe>cpe:/a:python:python</cpe>
-    </suppress>
-    <suppress base="true">
-        <notes><![CDATA[
-        FP per issue #7444
-        ]]></notes>
-        <packageUrl regex="true">^pkg:nuget/.+\.Redis\..*$</packageUrl>
-        <cpe>cpe:2.3:a:redis:redis</cpe>
-    </suppress>
-    <suppress base="true">
-        <notes><![CDATA[
-        FP per issue #7740
-        ]]></notes>
-        <packageUrl regex="true">^pkg:npm/.*redis.*@.*$</packageUrl>
-        <cpe>cpe:2.3:a:redis:redis</cpe>
     </suppress>
     <suppress base="true">
         <notes><![CDATA[
