@@ -67,7 +67,7 @@ jobs:
           NVD_API_KEY: ${{ secrets.NVD_API_KEY }}
         run: mvn -V -s settings.xml -Prelease clean package verify source:jar javadoc:jar gpg:sign deploy -DreleaseTesting --no-transfer-progress --batch-mode
       - name: SARIF Multitool
-        uses: microsoft/sarif-actions@v0.1
+        uses: microsoft/sarif-actions@v0.2
         with:
           # Command to be sent to SARIF Multitool
           command: 'validate core/target/test-reports/Report.sarif'
