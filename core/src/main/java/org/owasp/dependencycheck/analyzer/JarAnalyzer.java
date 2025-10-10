@@ -427,8 +427,6 @@ public class JarAnalyzer extends AbstractFileTypeAnalyzer {
      * @return whether or not evidence was added to the dependency
      */
     protected boolean analyzePOM(Dependency dependency, List<ClassNameInformation> classes, Engine engine) throws AnalysisException {
-
-        //TODO add breakpoint on groov-all to find out why commons-cli is not added as a new dependency?
         boolean evidenceAdded = false;
         try (JarFile jar = new JarFile(dependency.getActualFilePath(), false)) {
             //check if we are scanning in a repo directory - so the pom is adjacent to the jar
@@ -437,6 +435,23 @@ public class JarAnalyzer extends AbstractFileTypeAnalyzer {
             if (repoPom.isFile()) {
                 final Model pom = PomUtils.readPom(repoPom);
                 evidenceAdded |= setPomEvidence(dependency, pom, classes, true);
+            } else if (dependency.getActualFilePath().contains(".gradle/caches/")) {
+                // Gradle cache: go up one directory and search subdirectories for the pom
+                File jarFile = new File(dependency.getActualFilePath());
+                File versionDir = jarFile.getParentFile().getParentFile(); // up from hash dir
+                String jarBaseName = FilenameUtils.getBaseName(jarFile.getName());
+                String pomFileName = jarBaseName + ".pom";
+                File[] hashDirs = versionDir.listFiles(File::isDirectory);
+                if (hashDirs != null) {
+                    for (File hashDir : hashDirs) {
+                        File pomFile = new File(hashDir, pomFileName);
+                        if (pomFile.isFile()) {
+                            final Model pom = PomUtils.readPom(pomFile);
+                            evidenceAdded |= setPomEvidence(dependency, pom, classes, true);
+                            break;
+                        }
+                    }
+                }
             }
 
             final List<String> pomEntries = retrievePomListing(jar);
