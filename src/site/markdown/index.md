@@ -37,5 +37,3 @@ OWASP dependency-check's core analysis engine can be used as:
 For help with dependency-check the following resource can be used:
 
 - Open a [github issue](https://github.com/dependency-check/DependencyCheck/issues)
-
-<div style="display: flex;align-items:center;">Sponsor Development of dependency-check:&nbsp;<iframe src="https://github.com/sponsors/jeremylong/button" title="Sponsor jeremylong" height="35" width="116" style="border: 0;"></iframe></div>

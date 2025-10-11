@@ -647,8 +647,7 @@ public class Engine implements FileFilter, AutoCloseable {
                 + "performed, or the resulting report.\n\n\n"
                 + "   About ODC: https://dependency-check.github.io/DependencyCheck/general/internals.html\n"
                 + "   False Positives: https://dependency-check.github.io/DependencyCheck/general/suppression.html\n"
-                + "\n"
-                + "💖 Sponsor: https://github.com/sponsors/jeremylong\n\n");
+                + "\n");
         LOGGER.debug("\n----------------------------------------------------\nBEGIN ANALYSIS\n----------------------------------------------------");
         LOGGER.info("Analysis Started");
         final long analysisStart = System.currentTimeMillis();
