@@ -15,3 +15,5 @@ Dependency-Check makes use of several other open source libraries. Please see th
 
   [wiki]: https://github.com/dependency-check/DependencyCheck/wiki
   [notices]: https://github.com/dependency-check/DependencyCheck/blob/main/NOTICE.txt
+
+<img referrerpolicy="no-referrer-when-downgrade" src="https://static.scarf.sh/a.png?x-pxid=c78174f3-f898-4a5d-b3ab-1202b7db8ef6" />

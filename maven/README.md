@@ -15,3 +15,5 @@ Permission to modify and redistribute is granted under the terms of the Apache 2
 Dependency-Check makes use of several other open source libraries. Please see the [NOTICE.txt][notices] file for more information.
 
   [notices]: https://github.com/dependency-check/DependencyCheck/blob/main/maven/NOTICE.txt
+
+<img referrerpolicy="no-referrer-when-downgrade" src="https://static.scarf.sh/a.png?x-pxid=c78174f3-f898-4a5d-b3ab-1202b7db8ef6" />
