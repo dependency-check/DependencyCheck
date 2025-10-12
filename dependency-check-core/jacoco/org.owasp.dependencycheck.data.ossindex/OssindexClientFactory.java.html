@@ -46,12 +46,12 @@ public final class OssindexClientFactory {
     /**
      * Static logger.
      */
-<span class="nc" id="L49">    private static final Logger LOGGER = LoggerFactory.getLogger(OssindexClientFactory.class);</span>
+<span class="fc" id="L49">    private static final Logger LOGGER = LoggerFactory.getLogger(OssindexClientFactory.class);</span>
 
     static {
         // prefer pkg scheme vs scheme-less variant
-<span class="nc" id="L53">        RenderFlavor.setDefault(RenderFlavor.SCHEME);</span>
-<span class="nc" id="L54">    }</span>
+<span class="fc" id="L53">        RenderFlavor.setDefault(RenderFlavor.SCHEME);</span>
+<span class="fc" id="L54">    }</span>
 
     /**
      * Private constructor for utility class.
@@ -67,25 +67,25 @@ public final class OssindexClientFactory {
      * @return a new OSS Index Client
      */
     public static OssindexClient create(final Settings settings) {
-<span class="nc" id="L70">        final OssindexClientConfiguration config = new OssindexClientConfiguration();</span>
+<span class="fc" id="L70">        final OssindexClientConfiguration config = new OssindexClientConfiguration();</span>
 
-<span class="nc" id="L72">        final String baseUrl = settings.getString(Settings.KEYS.ANALYZER_OSSINDEX_URL, null);</span>
-<span class="nc bnc" id="L73" title="All 2 branches missed.">        if (baseUrl != null) {</span>
+<span class="fc" id="L72">        final String baseUrl = settings.getString(Settings.KEYS.ANALYZER_OSSINDEX_URL, null);</span>
+<span class="pc bpc" id="L73" title="1 of 2 branches missed.">        if (baseUrl != null) {</span>
 <span class="nc" id="L74">            config.setBaseUrl(baseUrl);</span>
         }
 
-<span class="nc" id="L77">        final String username = settings.getString(Settings.KEYS.ANALYZER_OSSINDEX_USER);</span>
-<span class="nc" id="L78">        final String password = settings.getString(Settings.KEYS.ANALYZER_OSSINDEX_PASSWORD);</span>
+<span class="fc" id="L77">        final String username = settings.getString(Settings.KEYS.ANALYZER_OSSINDEX_USER);</span>
+<span class="fc" id="L78">        final String password = settings.getString(Settings.KEYS.ANALYZER_OSSINDEX_PASSWORD);</span>
 
-<span class="nc bnc" id="L80" title="All 4 branches missed.">        if (username != null &amp;&amp; password != null) {</span>
-<span class="nc" id="L81">            final AuthConfiguration auth = new AuthConfiguration(username, password);</span>
-<span class="nc" id="L82">            config.setAuthConfiguration(auth);</span>
+<span class="pc bpc" id="L80" title="2 of 4 branches missed.">        if (username != null &amp;&amp; password != null) {</span>
+<span class="fc" id="L81">            final AuthConfiguration auth = new AuthConfiguration(username, password);</span>
+<span class="fc" id="L82">            config.setAuthConfiguration(auth);</span>
         }
 
-<span class="nc" id="L85">        final int batchSize = settings.getInt(Settings.KEYS.ANALYZER_OSSINDEX_BATCH_SIZE, OssindexClientConfiguration.DEFAULT_BATCH_SIZE);</span>
-<span class="nc" id="L86">        config.setBatchSize(batchSize);</span>
+<span class="fc" id="L85">        final int batchSize = settings.getInt(Settings.KEYS.ANALYZER_OSSINDEX_BATCH_SIZE, OssindexClientConfiguration.DEFAULT_BATCH_SIZE);</span>
+<span class="fc" id="L86">        config.setBatchSize(batchSize);</span>
 
-<span class="nc bnc" id="L88" title="All 2 branches missed.">        if (settings.getBoolean(Settings.KEYS.ANALYZER_OSSINDEX_USE_CACHE, true)) {</span>
+<span class="pc bpc" id="L88" title="1 of 2 branches missed.">        if (settings.getBoolean(Settings.KEYS.ANALYZER_OSSINDEX_USE_CACHE, true)) {</span>
 <span class="nc" id="L89">            final DirectoryCache.Configuration cache = new DirectoryCache.Configuration();</span>
             final File data;
             try {
@@ -104,16 +104,16 @@ public final class OssindexClientFactory {
 <span class="nc" id="L104">            }</span>
         }
         // customize User-Agent for use with dependency-check
-<span class="nc" id="L107">        final UserAgentSupplier userAgent = new UserAgentSupplier(</span>
+<span class="fc" id="L107">        final UserAgentSupplier userAgent = new UserAgentSupplier(</span>
                 &quot;dependency-check&quot;,
-<span class="nc" id="L109">                settings.getString(Settings.KEYS.APPLICATION_VERSION, &quot;unknown&quot;)</span>
+<span class="fc" id="L109">                settings.getString(Settings.KEYS.APPLICATION_VERSION, &quot;unknown&quot;)</span>
         );
 
-<span class="nc" id="L112">        final Transport transport = new ODCConnectionTransport(config, userAgent);</span>
+<span class="fc" id="L112">        final Transport transport = new ODCConnectionTransport(config, userAgent);</span>
 
-<span class="nc" id="L114">        final Marshaller marshaller = new GsonMarshaller();</span>
+<span class="fc" id="L114">        final Marshaller marshaller = new GsonMarshaller();</span>
 
-<span class="nc" id="L116">        return new OssindexClientImpl(config, transport, marshaller);</span>
+<span class="fc" id="L116">        return new OssindexClientImpl(config, transport, marshaller);</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

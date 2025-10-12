@@ -20,12 +20,15 @@ package org.owasp.dependencycheck.dependency.naming;
 import org.apache.commons.lang3.builder.CompareToBuilder;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.hc.core5.net.PercentCodec;
 import org.jetbrains.annotations.NotNull;
 import org.owasp.dependencycheck.dependency.Confidence;
 import us.springett.parsers.cpe.Cpe;
 import us.springett.parsers.cpe.CpeBuilder;
 import us.springett.parsers.cpe.exceptions.CpeValidationException;
 import us.springett.parsers.cpe.values.Part;
+
+import static java.nio.charset.StandardCharsets.UTF_8;
 
 /**
  * A CPE Identifier for a dependency object.
@@ -64,11 +67,11 @@ public class CpeIdentifier implements Identifier {
      * @param cpe the CPE value
      * @param confidence the confidence in the identifiers match
      */
-<span class="fc" id="L67">    public CpeIdentifier(Cpe cpe, Confidence confidence) {</span>
-<span class="fc" id="L68">        this.cpe = cpe;</span>
-<span class="fc" id="L69">        this.confidence = confidence;</span>
-<span class="fc" id="L70">        this.url = null;</span>
-<span class="fc" id="L71">    }</span>
+<span class="fc" id="L70">    public CpeIdentifier(Cpe cpe, Confidence confidence) {</span>
+<span class="fc" id="L71">        this.cpe = cpe;</span>
+<span class="fc" id="L72">        this.confidence = confidence;</span>
+<span class="fc" id="L73">        this.url = null;</span>
+<span class="fc" id="L74">    }</span>
 
     /**
      * Constructs a new CPE Identifier from a CPE object with the given
@@ -78,11 +81,11 @@ public class CpeIdentifier implements Identifier {
      * @param url the URL for the identifier
      * @param confidence the confidence in the identifiers match
      */
-<span class="fc" id="L81">    public CpeIdentifier(Cpe cpe, String url, Confidence confidence) {</span>
-<span class="fc" id="L82">        this.cpe = cpe;</span>
-<span class="fc" id="L83">        this.confidence = confidence;</span>
-<span class="fc" id="L84">        this.url = url;</span>
-<span class="fc" id="L85">    }</span>
+<span class="fc" id="L84">    public CpeIdentifier(Cpe cpe, String url, Confidence confidence) {</span>
+<span class="fc" id="L85">        this.cpe = cpe;</span>
+<span class="fc" id="L86">        this.confidence = confidence;</span>
+<span class="fc" id="L87">        this.url = url;</span>
+<span class="fc" id="L88">    }</span>
 
     /**
      * Constructs a new CPE Identifier from a CPE object with the given
@@ -95,11 +98,11 @@ public class CpeIdentifier implements Identifier {
      * @throws CpeValidationException thrown if there is an error converting the
      * vendor, product, and version into a CPE object
      */
-<span class="fc" id="L98">    public CpeIdentifier(String vendor, String product, String version, Confidence confidence) throws CpeValidationException {</span>
-<span class="fc" id="L99">        final CpeBuilder builder = new CpeBuilder();</span>
-<span class="fc" id="L100">        this.cpe = builder.part(Part.APPLICATION).vendor(vendor).product(product).version(version).build();</span>
-<span class="fc" id="L101">        this.confidence = confidence;</span>
-<span class="fc" id="L102">    }</span>
+<span class="fc" id="L101">    public CpeIdentifier(String vendor, String product, String version, Confidence confidence) throws CpeValidationException {</span>
+<span class="fc" id="L102">        final CpeBuilder builder = new CpeBuilder();</span>
+<span class="fc" id="L103">        this.cpe = builder.part(Part.APPLICATION).vendor(vendor).product(product).version(version).build();</span>
+<span class="fc" id="L104">        this.confidence = confidence;</span>
+<span class="fc" id="L105">    }</span>
 
     /**
      * Returns the CPE object.
@@ -107,22 +110,22 @@ public class CpeIdentifier implements Identifier {
      * @return the CPE object
      */
     public Cpe getCpe() {
-<span class="fc" id="L110">        return cpe;</span>
+<span class="fc" id="L113">        return cpe;</span>
     }
 
     @Override
     public Confidence getConfidence() {
-<span class="fc" id="L115">        return confidence;</span>
+<span class="fc" id="L118">        return confidence;</span>
     }
 
     @Override
     public String getNotes() {
-<span class="fc" id="L120">        return notes;</span>
+<span class="fc" id="L123">        return notes;</span>
     }
 
     @Override
     public String getUrl() {
-<span class="fc" id="L125">        return url;</span>
+<span class="fc" id="L128">        return url;</span>
     }
 
     /**
@@ -130,25 +133,25 @@ public class CpeIdentifier implements Identifier {
      */
     @Override
     public void setConfidence(Confidence confidence) {
-<span class="fc" id="L133">        this.confidence = confidence;</span>
-<span class="fc" id="L134">    }</span>
+<span class="fc" id="L136">        this.confidence = confidence;</span>
+<span class="fc" id="L137">    }</span>
 
     /**
      * {@inheritDoc}
      */
     @Override
     public void setUrl(String url) {
-<span class="nc" id="L141">        this.url = url;</span>
-<span class="nc" id="L142">    }</span>
+<span class="nc" id="L144">        this.url = url;</span>
+<span class="nc" id="L145">    }</span>
 
     @Override
     public void setNotes(String notes) {
-<span class="fc" id="L146">        this.notes = notes;</span>
-<span class="fc" id="L147">    }</span>
+<span class="fc" id="L149">        this.notes = notes;</span>
+<span class="fc" id="L150">    }</span>
 
     @Override
     public String getValue() {
-<span class="fc" id="L151">        return cpe.toCpe23FS();</span>
+<span class="fc" id="L154">        return cpe.toCpe23FS();</span>
     }
 
     /**
@@ -158,50 +161,87 @@ public class CpeIdentifier implements Identifier {
      */
     @Override
     public String toString() {
-<span class="nc" id="L161">        return cpe.toCpe23FS();</span>
+<span class="nc" id="L164">        return cpe.toCpe23FS();</span>
     }
 
     @Override
     public int hashCode() {
-<span class="fc" id="L166">        return new HashCodeBuilder(95, 183)</span>
-<span class="fc" id="L167">                .append(this.cpe)</span>
-<span class="fc" id="L168">                .append(this.confidence)</span>
-<span class="fc" id="L169">                .append(this.url)</span>
-<span class="fc" id="L170">                .append(this.notes)</span>
-<span class="fc" id="L171">                .toHashCode();</span>
+<span class="fc" id="L169">        return new HashCodeBuilder(95, 183)</span>
+<span class="fc" id="L170">                .append(this.cpe)</span>
+<span class="fc" id="L171">                .append(this.confidence)</span>
+<span class="fc" id="L172">                .append(this.url)</span>
+<span class="fc" id="L173">                .append(this.notes)</span>
+<span class="fc" id="L174">                .toHashCode();</span>
     }
 
     @Override
     public boolean equals(Object obj) {
-<span class="pc bpc" id="L176" title="2 of 4 branches missed.">        if (obj == null || !(obj instanceof CpeIdentifier)) {</span>
-<span class="nc" id="L177">            return false;</span>
+<span class="pc bpc" id="L179" title="2 of 4 branches missed.">        if (obj == null || !(obj instanceof CpeIdentifier)) {</span>
+<span class="nc" id="L180">            return false;</span>
         }
-<span class="pc bpc" id="L179" title="1 of 2 branches missed.">        if (this == obj) {</span>
-<span class="nc" id="L180">            return true;</span>
+<span class="pc bpc" id="L182" title="1 of 2 branches missed.">        if (this == obj) {</span>
+<span class="nc" id="L183">            return true;</span>
         }
-<span class="fc" id="L182">        final CpeIdentifier other = (CpeIdentifier) obj;</span>
-<span class="fc" id="L183">        return new EqualsBuilder().append(cpe, other.cpe)</span>
-<span class="fc" id="L184">                .append(this.confidence, other.confidence)</span>
-<span class="fc" id="L185">                .append(this.url, other.url)</span>
-<span class="fc" id="L186">                .append(this.notes, other.notes).isEquals();</span>
+<span class="fc" id="L185">        final CpeIdentifier other = (CpeIdentifier) obj;</span>
+<span class="fc" id="L186">        return new EqualsBuilder().append(cpe, other.cpe)</span>
+<span class="fc" id="L187">                .append(this.confidence, other.confidence)</span>
+<span class="fc" id="L188">                .append(this.url, other.url)</span>
+<span class="fc" id="L189">                .append(this.notes, other.notes).isEquals();</span>
     }
 
     @Override
     public int compareTo(@NotNull Identifier o) {
-<span class="pc bpc" id="L191" title="1 of 2 branches missed.">        if (o instanceof CpeIdentifier) {</span>
-<span class="fc" id="L192">            final CpeIdentifier other = (CpeIdentifier) o;</span>
-<span class="fc" id="L193">            return new CompareToBuilder()</span>
-<span class="fc" id="L194">                    .append(this.cpe, other.cpe)</span>
-<span class="fc" id="L195">                    .append(this.url, other.getUrl())</span>
-<span class="fc" id="L196">                    .append(this.confidence, other.getConfidence())</span>
-<span class="fc" id="L197">                    .toComparison();</span>
+<span class="pc bpc" id="L194" title="1 of 2 branches missed.">        if (o instanceof CpeIdentifier) {</span>
+<span class="fc" id="L195">            final CpeIdentifier other = (CpeIdentifier) o;</span>
+<span class="fc" id="L196">            return new CompareToBuilder()</span>
+<span class="fc" id="L197">                    .append(this.cpe, other.cpe)</span>
+<span class="fc" id="L198">                    .append(this.url, other.getUrl())</span>
+<span class="fc" id="L199">                    .append(this.confidence, other.getConfidence())</span>
+<span class="fc" id="L200">                    .toComparison();</span>
 
         }
-<span class="nc" id="L200">        return new CompareToBuilder()</span>
-<span class="nc" id="L201">                .append(this.toString(), o.toString())</span>
-<span class="nc" id="L202">                .append(this.url, o.getUrl())</span>
-<span class="nc" id="L203">                .append(this.confidence, o.getConfidence())</span>
-<span class="nc" id="L204">                .toComparison();</span>
+<span class="nc" id="L203">        return new CompareToBuilder()</span>
+<span class="nc" id="L204">                .append(this.toString(), o.toString())</span>
+<span class="nc" id="L205">                .append(this.url, o.getUrl())</span>
+<span class="nc" id="L206">                .append(this.confidence, o.getConfidence())</span>
+<span class="nc" id="L207">                .toComparison();</span>
+    }
+
+    /**
+     * Produces an NVD search URL for a given CPE to find all applicable vulnerabilities, including all populated parts
+     * of the given CPE.
+     * &lt;p/&gt;
+     * The opened link should be sorted in descending order (sortDirection=2) by publish date (sortOrder=3).
+     */
+    public static String nvdSearchUrlFor(Cpe cpe) {
+        // Use PercentCodec to force `*` to be encoded for CPE strings inside the URL. Technically '*' is not a reserved
+        // character in the fragment of URLs, but not all browsers handle this consistently, so better to encode aggressively.
+        // URlEncoder does not distinguish between parts of URLs appropriately, as well as not forcing encoding of these.
+<span class="fc" id="L220">        return String.format(&quot;https://nvd.nist.gov/vuln/search#/nvd/home?sortOrder=3&amp;sortDirection=2&amp;cpeFilterMode=applicability&amp;resultType=records&amp;cpeName=%s&quot;,</span>
+<span class="fc" id="L221">                PercentCodec.encode(cpe.toCpe23FS(), UTF_8));</span>
+    }
+
+    /**
+     * Produces an NVD search URL for a given application vendor/product/version combination to find all applicable vulnerabilities.
+     * &lt;p/&gt;
+     * The opened link should be sorted in descending order (sortDirection=2) by publish date (sortOrder=3).
+     */
+    public static String nvdSearchUrlFor(String vendor, String product, String version) throws CpeValidationException {
+<span class="fc" id="L230">        return nvdSearchUrlFor(new CpeBuilder().part(Part.APPLICATION).vendor(vendor).product(product).version(version).build());</span>
+    }
+
+    /**
+     * Produces an NVD search URL for a given CPE to find all applicable vulnerabilities, including only the part, vendor,
+     * and product of the given CPE (if populated). Discards all other parts/discriminators of the CPE in the generated search.
+     * &lt;p/&gt;
+     * The opened link should be sorted in descending order (sortDirection=2) by publish date (sortOrder=3).
+     */
+    public static String nvdProductSearchUrlFor(Cpe cpe) {
+        try {
+<span class="fc" id="L241">            return nvdSearchUrlFor(new CpeBuilder().part(cpe.getPart()).vendor(cpe.getVendor()).product(cpe.getProduct()).build());</span>
+<span class="nc" id="L242">        } catch (CpeValidationException e) {</span>
+<span class="nc" id="L243">            throw new RuntimeException(e);</span>
+        }
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

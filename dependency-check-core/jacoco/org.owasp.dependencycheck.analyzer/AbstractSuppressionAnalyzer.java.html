@@ -269,10 +269,10 @@ import org.xml.sax.SAXException;
 <span class="fc" id="L269">                    repoEmpty = forceUpdateHostedSuppressions(engine, repoFile);</span>
                 }
             }
-<span class="fc bfc" id="L272" title="All 2 branches covered.">            if (!repoEmpty) {</span>
+<span class="pc bpc" id="L272" title="1 of 2 branches missed.">            if (!repoEmpty) {</span>
 <span class="fc" id="L273">                loadCachedHostedSuppressionsRules(parser, repoFile, engine);</span>
             } else {
-<span class="fc" id="L275">                LOGGER.warn(&quot;Empty Hosted Suppression file after update, results may contain false positives &quot;</span>
+<span class="nc" id="L275">                LOGGER.warn(&quot;Empty Hosted Suppression file after update, results may contain false positives &quot;</span>
                         + &quot;already resolved by the DependencyCheck project due to failed download of the hosted suppression file&quot;);
             }
 <span class="nc" id="L278">        } catch (IOException | InitializationException ex) {</span>

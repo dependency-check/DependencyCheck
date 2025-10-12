@@ -50,6 +50,7 @@ import org.owasp.dependencycheck.utils.Pair;
 import org.owasp.dependencycheck.utils.Settings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.bridge.SLF4JBridgeHandler;
 
 /**
  * &lt;p&gt;
@@ -65,12 +66,18 @@ import org.slf4j.LoggerFactory;
  * @author Jeremy Long
  */
 @ThreadSafe
-<span class="fc" id="L68">public abstract class AbstractMemoryIndex implements MemoryIndex {</span>
+<span class="fc" id="L69">public abstract class AbstractMemoryIndex implements MemoryIndex {</span>
+
+    static {
+        // Ensure Lucene uses SLF4J for logging
+<span class="fc" id="L73">        SLF4JBridgeHandler.removeHandlersForRootLogger();</span>
+<span class="fc" id="L74">        SLF4JBridgeHandler.install();</span>
+    }
 
     /**
      * The logger.
      */
-<span class="fc" id="L73">    private static final Logger LOGGER = LoggerFactory.getLogger(AbstractMemoryIndex.class);</span>
+<span class="fc" id="L80">    private static final Logger LOGGER = LoggerFactory.getLogger(AbstractMemoryIndex.class);</span>
     /**
      * The in memory Lucene index.
      */
@@ -103,7 +110,7 @@ import org.slf4j.LoggerFactory;
      * Track the number of current users of the Lucene index; used to track it
      * it is okay to actually close the index.
      */
-<span class="fc" id="L106">    private final AtomicInteger usageCount = new AtomicInteger(0);</span>
+<span class="fc" id="L113">    private final AtomicInteger usageCount = new AtomicInteger(0);</span>
 
     /**
      * Returns a reference to the instance.
@@ -121,21 +128,21 @@ import org.slf4j.LoggerFactory;
      */
     @Override
     public synchronized void open(Set&lt;Pair&lt;String, String&gt;&gt; data, Settings settings) throws IndexException {
-<span class="pc bpc" id="L124" title="1 of 2 branches missed.">        if (instance().usageCount.addAndGet(1) == 1) {</span>
+<span class="pc bpc" id="L131" title="1 of 2 branches missed.">        if (instance().usageCount.addAndGet(1) == 1) {</span>
             try {
-<span class="fc" id="L126">                final File temp = settings.getTempDirectory();</span>
-<span class="fc" id="L127">                index = new MMapDirectory(temp.toPath());</span>
-<span class="fc" id="L128">                buildIndex(data);</span>
+<span class="fc" id="L133">                final File temp = settings.getTempDirectory();</span>
+<span class="fc" id="L134">                index = new MMapDirectory(temp.toPath());</span>
+<span class="fc" id="L135">                buildIndex(data);</span>
 
-<span class="fc" id="L130">                indexReader = DirectoryReader.open(index);</span>
-<span class="nc" id="L131">            } catch (IOException ex) {</span>
-<span class="nc" id="L132">                throw new IndexException(ex);</span>
-<span class="fc" id="L133">            }</span>
-<span class="fc" id="L134">            indexSearcher = new IndexSearcher(indexReader);</span>
-<span class="fc" id="L135">            searchingAnalyzer = createSearchingAnalyzer();</span>
-<span class="fc" id="L136">            queryParser = new QueryParser(Fields.DOCUMENT_KEY, searchingAnalyzer);</span>
+<span class="fc" id="L137">                indexReader = DirectoryReader.open(index);</span>
+<span class="nc" id="L138">            } catch (IOException ex) {</span>
+<span class="nc" id="L139">                throw new IndexException(ex);</span>
+<span class="fc" id="L140">            }</span>
+<span class="fc" id="L141">            indexSearcher = new IndexSearcher(indexReader);</span>
+<span class="fc" id="L142">            searchingAnalyzer = createSearchingAnalyzer();</span>
+<span class="fc" id="L143">            queryParser = new QueryParser(Fields.DOCUMENT_KEY, searchingAnalyzer);</span>
         }
-<span class="fc" id="L138">    }</span>
+<span class="fc" id="L145">    }</span>
 
     /**
      * returns whether or not the index is open.
@@ -143,7 +150,7 @@ import org.slf4j.LoggerFactory;
      * @return whether or not the index is open
      */
     public synchronized boolean isOpen() {
-<span class="fc bfc" id="L146" title="All 2 branches covered.">        return instance().usageCount.get() &gt; 0;</span>
+<span class="fc bfc" id="L153" title="All 2 branches covered.">        return instance().usageCount.get() &gt; 0;</span>
     }
 
     /**
@@ -152,14 +159,14 @@ import org.slf4j.LoggerFactory;
      * @return the CPE Analyzer.
      */
     private Analyzer createSearchingAnalyzer() {
-<span class="fc" id="L155">        final Map&lt;String, Analyzer&gt; fieldAnalyzers = new HashMap&lt;&gt;();</span>
-<span class="fc" id="L156">        fieldAnalyzers.put(Fields.DOCUMENT_KEY, new KeywordAnalyzer());</span>
-<span class="fc" id="L157">        productFieldAnalyzer = new SearchFieldAnalyzer();</span>
-<span class="fc" id="L158">        vendorFieldAnalyzer = new SearchFieldAnalyzer();</span>
-<span class="fc" id="L159">        fieldAnalyzers.put(Fields.PRODUCT, productFieldAnalyzer);</span>
-<span class="fc" id="L160">        fieldAnalyzers.put(Fields.VENDOR, vendorFieldAnalyzer);</span>
+<span class="fc" id="L162">        final Map&lt;String, Analyzer&gt; fieldAnalyzers = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L163">        fieldAnalyzers.put(Fields.DOCUMENT_KEY, new KeywordAnalyzer());</span>
+<span class="fc" id="L164">        productFieldAnalyzer = new SearchFieldAnalyzer();</span>
+<span class="fc" id="L165">        vendorFieldAnalyzer = new SearchFieldAnalyzer();</span>
+<span class="fc" id="L166">        fieldAnalyzers.put(Fields.PRODUCT, productFieldAnalyzer);</span>
+<span class="fc" id="L167">        fieldAnalyzers.put(Fields.VENDOR, vendorFieldAnalyzer);</span>
 
-<span class="fc" id="L162">        return new PerFieldAnalyzerWrapper(new KeywordAnalyzer(), fieldAnalyzers);</span>
+<span class="fc" id="L169">        return new PerFieldAnalyzerWrapper(new KeywordAnalyzer(), fieldAnalyzers);</span>
     }
 
     /**
@@ -167,31 +174,31 @@ import org.slf4j.LoggerFactory;
      */
     @Override
     public synchronized void close() {
-<span class="pc bpc" id="L170" title="1 of 2 branches missed.">        if (instance().usageCount.addAndGet(-1) == 0) {</span>
-<span class="pc bpc" id="L171" title="1 of 2 branches missed.">            if (searchingAnalyzer != null) {</span>
-<span class="fc" id="L172">                searchingAnalyzer.close();</span>
-<span class="fc" id="L173">                searchingAnalyzer = null;</span>
+<span class="pc bpc" id="L177" title="1 of 2 branches missed.">        if (instance().usageCount.addAndGet(-1) == 0) {</span>
+<span class="pc bpc" id="L178" title="1 of 2 branches missed.">            if (searchingAnalyzer != null) {</span>
+<span class="fc" id="L179">                searchingAnalyzer.close();</span>
+<span class="fc" id="L180">                searchingAnalyzer = null;</span>
             }
-<span class="pc bpc" id="L175" title="1 of 2 branches missed.">            if (indexReader != null) {</span>
+<span class="pc bpc" id="L182" title="1 of 2 branches missed.">            if (indexReader != null) {</span>
                 try {
-<span class="fc" id="L177">                    indexReader.close();</span>
-<span class="nc" id="L178">                } catch (IOException ex) {</span>
-<span class="nc" id="L179">                    LOGGER.trace(&quot;&quot;, ex);</span>
-<span class="fc" id="L180">                }</span>
-<span class="fc" id="L181">                indexReader = null;</span>
+<span class="fc" id="L184">                    indexReader.close();</span>
+<span class="nc" id="L185">                } catch (IOException ex) {</span>
+<span class="nc" id="L186">                    LOGGER.trace(&quot;&quot;, ex);</span>
+<span class="fc" id="L187">                }</span>
+<span class="fc" id="L188">                indexReader = null;</span>
             }
-<span class="fc" id="L183">            queryParser = null;</span>
-<span class="fc" id="L184">            indexSearcher = null;</span>
-<span class="pc bpc" id="L185" title="1 of 2 branches missed.">            if (index != null) {</span>
+<span class="fc" id="L190">            queryParser = null;</span>
+<span class="fc" id="L191">            indexSearcher = null;</span>
+<span class="pc bpc" id="L192" title="1 of 2 branches missed.">            if (index != null) {</span>
                 try {
-<span class="fc" id="L187">                    index.close();</span>
-<span class="nc" id="L188">                } catch (IOException ex) {</span>
-<span class="nc" id="L189">                    LOGGER.trace(&quot;&quot;, ex);</span>
-<span class="fc" id="L190">                }</span>
-<span class="fc" id="L191">                index = null;</span>
+<span class="fc" id="L194">                    index.close();</span>
+<span class="nc" id="L195">                } catch (IOException ex) {</span>
+<span class="nc" id="L196">                    LOGGER.trace(&quot;&quot;, ex);</span>
+<span class="fc" id="L197">                }</span>
+<span class="fc" id="L198">                index = null;</span>
             }
         }
-<span class="fc" id="L194">    }</span>
+<span class="fc" id="L201">    }</span>
 
     /**
      * Builds the CPE Lucene Index based off of the data within the CveDB.
@@ -200,42 +207,42 @@ import org.slf4j.LoggerFactory;
      * @throws IndexException thrown if there is an issue creating the index
      */
     private void buildIndex(Set&lt;Pair&lt;String, String&gt;&gt; data) throws IndexException {
-<span class="fc" id="L203">        try (Analyzer analyzer = createSearchingAnalyzer();</span>
-<span class="fc" id="L204">                IndexWriter indexWriter = new IndexWriter(index,</span>
+<span class="fc" id="L210">        try (Analyzer analyzer = createSearchingAnalyzer();</span>
+<span class="fc" id="L211">                IndexWriter indexWriter = new IndexWriter(index,</span>
                         new IndexWriterConfig(analyzer))) {
 
-<span class="fc" id="L207">            final FieldType ft = new FieldType(TextField.TYPE_STORED);</span>
+<span class="fc" id="L214">            final FieldType ft = new FieldType(TextField.TYPE_STORED);</span>
             //ignore term frequency
-<span class="fc" id="L209">            ft.setIndexOptions(IndexOptions.DOCS);</span>
+<span class="fc" id="L216">            ft.setIndexOptions(IndexOptions.DOCS);</span>
             //ignore field length normalization
-<span class="fc" id="L211">            ft.setOmitNorms(true);</span>
+<span class="fc" id="L218">            ft.setOmitNorms(true);</span>
             // Tip: reuse the Document and Fields for performance...
             // See &quot;Re-use Document and Field instances&quot; from
             // http://wiki.apache.org/lucene-java/ImproveIndexingSpeed
-<span class="fc" id="L215">            final Document doc = new Document();</span>
-<span class="fc" id="L216">            final Field v = new Field(Fields.VENDOR, Fields.VENDOR, ft);</span>
-<span class="fc" id="L217">            final Field p = new Field(Fields.PRODUCT, Fields.PRODUCT, ft);</span>
+<span class="fc" id="L222">            final Document doc = new Document();</span>
+<span class="fc" id="L223">            final Field v = new Field(Fields.VENDOR, Fields.VENDOR, ft);</span>
+<span class="fc" id="L224">            final Field p = new Field(Fields.PRODUCT, Fields.PRODUCT, ft);</span>
 
-<span class="fc" id="L219">            doc.add(v);</span>
-<span class="fc" id="L220">            doc.add(p);</span>
+<span class="fc" id="L226">            doc.add(v);</span>
+<span class="fc" id="L227">            doc.add(p);</span>
 
-<span class="fc bfc" id="L222" title="All 2 branches covered.">            for (Pair&lt;String, String&gt; pair : data) {</span>
-<span class="pc bpc" id="L223" title="2 of 4 branches missed.">                if (pair.getLeft() != null &amp;&amp; pair.getRight() != null) {</span>
-<span class="fc" id="L224">                    v.setStringValue(pair.getLeft());</span>
-<span class="fc" id="L225">                    p.setStringValue(pair.getRight());</span>
-<span class="fc" id="L226">                    indexWriter.addDocument(doc);</span>
-<span class="fc" id="L227">                    resetAnalyzers();</span>
+<span class="fc bfc" id="L229" title="All 2 branches covered.">            for (Pair&lt;String, String&gt; pair : data) {</span>
+<span class="pc bpc" id="L230" title="2 of 4 branches missed.">                if (pair.getLeft() != null &amp;&amp; pair.getRight() != null) {</span>
+<span class="fc" id="L231">                    v.setStringValue(pair.getLeft());</span>
+<span class="fc" id="L232">                    p.setStringValue(pair.getRight());</span>
+<span class="fc" id="L233">                    indexWriter.addDocument(doc);</span>
+<span class="fc" id="L234">                    resetAnalyzers();</span>
                 }
-<span class="fc" id="L229">            }</span>
-<span class="fc" id="L230">            indexWriter.commit();</span>
+<span class="fc" id="L236">            }</span>
+<span class="fc" id="L237">            indexWriter.commit();</span>
 
-<span class="nc" id="L232">        } catch (DatabaseException ex) {</span>
-<span class="nc" id="L233">            LOGGER.debug(&quot;&quot;, ex);</span>
-<span class="nc" id="L234">            throw new IndexException(&quot;Error reading CPE data&quot;, ex);</span>
-<span class="nc" id="L235">        } catch (IOException ex) {</span>
-<span class="nc" id="L236">            throw new IndexException(&quot;Unable to close an in-memory index&quot;, ex);</span>
-<span class="fc" id="L237">        }</span>
-<span class="fc" id="L238">    }</span>
+<span class="nc" id="L239">        } catch (DatabaseException ex) {</span>
+<span class="nc" id="L240">            LOGGER.debug(&quot;&quot;, ex);</span>
+<span class="nc" id="L241">            throw new IndexException(&quot;Error reading CPE data&quot;, ex);</span>
+<span class="nc" id="L242">        } catch (IOException ex) {</span>
+<span class="nc" id="L243">            throw new IndexException(&quot;Unable to close an in-memory index&quot;, ex);</span>
+<span class="fc" id="L244">        }</span>
+<span class="fc" id="L245">    }</span>
 
     /**
      * Searches the index using the given search string.
@@ -251,8 +258,8 @@ import org.slf4j.LoggerFactory;
      */
     @Override
     public synchronized TopDocs search(String searchString, int maxQueryResults) throws ParseException, IndexException, IOException {
-<span class="fc" id="L254">        final Query query = parseQuery(searchString);</span>
-<span class="fc" id="L255">        return search(query, maxQueryResults);</span>
+<span class="fc" id="L261">        final Query query = parseQuery(searchString);</span>
+<span class="fc" id="L262">        return search(query, maxQueryResults);</span>
     }
 
     /**
@@ -266,33 +273,33 @@ import org.slf4j.LoggerFactory;
      */
     @Override
     public synchronized Query parseQuery(String searchString) throws ParseException, IndexException {
-<span class="pc bpc" id="L269" title="2 of 4 branches missed.">        if (searchString == null || searchString.trim().isEmpty()</span>
-<span class="pc bpc" id="L270" title="1 of 2 branches missed.">                || &quot;product:() AND vendor:()&quot;.equals(searchString)) {</span>
-<span class="nc" id="L271">            throw new ParseException(&quot;Query is null or empty&quot;);</span>
+<span class="pc bpc" id="L276" title="2 of 4 branches missed.">        if (searchString == null || searchString.trim().isEmpty()</span>
+<span class="pc bpc" id="L277" title="1 of 2 branches missed.">                || &quot;product:() AND vendor:()&quot;.equals(searchString)) {</span>
+<span class="nc" id="L278">            throw new ParseException(&quot;Query is null or empty&quot;);</span>
         }
-<span class="fc" id="L273">        LOGGER.debug(searchString);</span>
+<span class="fc" id="L280">        LOGGER.debug(searchString);</span>
 
         Query query;
         try {
-<span class="fc" id="L277">            query = queryParser.parse(searchString);</span>
-<span class="nc" id="L278">        } catch (BooleanQuery.TooManyClauses ex) {</span>
-<span class="nc" id="L279">            BooleanQuery.setMaxClauseCount(Integer.MAX_VALUE);</span>
-<span class="nc" id="L280">            query = queryParser.parse(searchString);</span>
-<span class="fc" id="L281">        } catch (ParseException ex) {</span>
-<span class="pc bpc" id="L282" title="2 of 4 branches missed.">            if (ex.getMessage() != null &amp;&amp; ex.getMessage().contains(&quot;too many boolean clauses&quot;)) {</span>
-<span class="fc" id="L283">                BooleanQuery.setMaxClauseCount(Integer.MAX_VALUE);</span>
-<span class="fc" id="L284">                query = queryParser.parse(searchString);</span>
+<span class="fc" id="L284">            query = queryParser.parse(searchString);</span>
+<span class="nc" id="L285">        } catch (BooleanQuery.TooManyClauses ex) {</span>
+<span class="nc" id="L286">            BooleanQuery.setMaxClauseCount(Integer.MAX_VALUE);</span>
+<span class="nc" id="L287">            query = queryParser.parse(searchString);</span>
+<span class="fc" id="L288">        } catch (ParseException ex) {</span>
+<span class="pc bpc" id="L289" title="2 of 4 branches missed.">            if (ex.getMessage() != null &amp;&amp; ex.getMessage().contains(&quot;too many boolean clauses&quot;)) {</span>
+<span class="fc" id="L290">                BooleanQuery.setMaxClauseCount(Integer.MAX_VALUE);</span>
+<span class="fc" id="L291">                query = queryParser.parse(searchString);</span>
             } else {
-<span class="nc" id="L286">                LOGGER.debug(&quot;Parse Excepction&quot;, ex);</span>
-<span class="nc" id="L287">                throw ex;</span>
+<span class="nc" id="L293">                LOGGER.debug(&quot;Parse Excepction&quot;, ex);</span>
+<span class="nc" id="L294">                throw ex;</span>
             }
-<span class="pc" id="L289">        }</span>
+<span class="pc" id="L296">        }</span>
         try {
-<span class="fc" id="L291">            resetAnalyzers();</span>
-<span class="nc" id="L292">        } catch (IOException ex) {</span>
-<span class="nc" id="L293">            throw new IndexException(&quot;Unable to reset the analyzer after parsing&quot;, ex);</span>
-<span class="fc" id="L294">        }</span>
-<span class="fc" id="L295">        return query;</span>
+<span class="fc" id="L298">            resetAnalyzers();</span>
+<span class="nc" id="L299">        } catch (IOException ex) {</span>
+<span class="nc" id="L300">            throw new IndexException(&quot;Unable to reset the analyzer after parsing&quot;, ex);</span>
+<span class="fc" id="L301">        }</span>
+<span class="fc" id="L302">        return query;</span>
     }
 
     /**
@@ -306,7 +313,7 @@ import org.slf4j.LoggerFactory;
      */
     @Override
     public synchronized TopDocs search(Query query, int maxQueryResults) throws CorruptIndexException, IOException {
-<span class="fc" id="L309">        return indexSearcher.search(query, maxQueryResults);</span>
+<span class="fc" id="L316">        return indexSearcher.search(query, maxQueryResults);</span>
     }
 
     /**
@@ -318,7 +325,7 @@ import org.slf4j.LoggerFactory;
      */
     @Override
     public synchronized Document getDocument(int documentId) throws IOException {
-<span class="fc" id="L321">        return indexSearcher.doc(documentId);</span>
+<span class="fc" id="L328">        return indexSearcher.doc(documentId);</span>
     }
 
     /**
@@ -327,10 +334,10 @@ import org.slf4j.LoggerFactory;
      * @return the number of CPE entries stored in the index
      */
     public synchronized int numDocs() {
-<span class="pc bpc" id="L330" title="1 of 2 branches missed.">        if (indexReader == null) {</span>
-<span class="nc" id="L331">            return -1;</span>
+<span class="pc bpc" id="L337" title="1 of 2 branches missed.">        if (indexReader == null) {</span>
+<span class="nc" id="L338">            return -1;</span>
         }
-<span class="fc" id="L333">        return indexReader.numDocs();</span>
+<span class="fc" id="L340">        return indexReader.numDocs();</span>
     }
 
     /**
@@ -342,7 +349,7 @@ import org.slf4j.LoggerFactory;
      * @throws IOException thrown if there is an index error
      */
     public synchronized String explain(Query query, int doc) throws IOException {
-<span class="nc" id="L345">        return indexSearcher.explain(query, doc).toString();</span>
+<span class="nc" id="L352">        return indexSearcher.explain(query, doc).toString();</span>
     }
 
     /**
@@ -351,8 +358,8 @@ import org.slf4j.LoggerFactory;
      * @throws IOException thrown if there is an index error
      */
     protected synchronized void resetAnalyzers() throws IOException {
-<span class="fc" id="L354">        productFieldAnalyzer.reset();</span>
-<span class="fc" id="L355">        vendorFieldAnalyzer.reset();</span>
-<span class="fc" id="L356">    }</span>
+<span class="fc" id="L361">        productFieldAnalyzer.reset();</span>
+<span class="fc" id="L362">        vendorFieldAnalyzer.reset();</span>
+<span class="fc" id="L363">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

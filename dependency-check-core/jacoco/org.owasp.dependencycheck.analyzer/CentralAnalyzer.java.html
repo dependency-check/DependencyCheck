@@ -247,81 +247,91 @@ import java.util.List;
 <span class="nc" id="L247">                        long sleepingTimeBetweenRetriesInMillis = BASE_RETRY_WAIT;</span>
 <span class="nc" id="L248">                        boolean success = false;</span>
 <span class="nc" id="L249">                        Model model = null;</span>
-<span class="nc bnc" id="L250" title="All 2 branches missed.">                        if (cache != null) {</span>
-<span class="nc" id="L251">                            model = cache.get(ma.getPomUrl());</span>
+<span class="nc" id="L250">                        DownloadFailedException lastException = null;</span>
+<span class="nc bnc" id="L251" title="All 2 branches missed.">                        if (cache != null) {</span>
+<span class="nc" id="L252">                            model = cache.get(ma.getPomUrl());</span>
                         }
-<span class="nc bnc" id="L253" title="All 2 branches missed.">                        if (model != null) {</span>
-<span class="nc" id="L254">                            success = true;</span>
-<span class="nc" id="L255">                            LOGGER.debug(&quot;Cache hit for {}&quot;, ma.getPomUrl());</span>
+<span class="nc bnc" id="L254" title="All 2 branches missed.">                        if (model != null) {</span>
+<span class="nc" id="L255">                            success = true;</span>
+<span class="nc" id="L256">                            LOGGER.debug(&quot;Cache hit for {}&quot;, ma.getPomUrl());</span>
                         } else {
-<span class="nc" id="L257">                            LOGGER.debug(&quot;Downloading {}&quot;, ma.getPomUrl());</span>
+<span class="nc" id="L258">                            LOGGER.debug(&quot;Downloading {}&quot;, ma.getPomUrl());</span>
                             do {
                                 //CSOFF: NestedTryDepth
                                 try {
-<span class="nc" id="L261">                                    Downloader.getInstance().fetchFile(new URL(ma.getPomUrl()), pomFile);</span>
-<span class="nc" id="L262">                                    success = true;</span>
-<span class="nc" id="L263">                                } catch (DownloadFailedException ex) {</span>
+<span class="nc" id="L262">                                    Downloader.getInstance().fetchFile(new URL(ma.getPomUrl()), pomFile);</span>
+<span class="nc" id="L263">                                    success = true;</span>
+<span class="nc" id="L264">                                } catch (DownloadFailedException ex) {</span>
+<span class="nc" id="L265">                                    lastException = ex;</span>
                                     try {
-<span class="nc" id="L265">                                        Thread.sleep(sleepingTimeBetweenRetriesInMillis);</span>
-<span class="nc" id="L266">                                    } catch (InterruptedException ex1) {</span>
-<span class="nc" id="L267">                                        Thread.currentThread().interrupt();</span>
-<span class="nc" id="L268">                                        throw new UnexpectedAnalysisException(ex1);</span>
-<span class="nc" id="L269">                                    }</span>
-<span class="nc" id="L270">                                    sleepingTimeBetweenRetriesInMillis *= 2;</span>
-<span class="nc" id="L271">                                } catch (ResourceNotFoundException ex) {</span>
-<span class="nc" id="L272">                                    LOGGER.debug(&quot;pom.xml does not exist in Central for {}&quot;, dependency.getFileName());</span>
-<span class="nc" id="L273">                                    return;</span>
-<span class="nc" id="L274">                                }</span>
+<span class="nc" id="L267">                                        Thread.sleep(sleepingTimeBetweenRetriesInMillis);</span>
+<span class="nc" id="L268">                                    } catch (InterruptedException ex1) {</span>
+<span class="nc" id="L269">                                        Thread.currentThread().interrupt();</span>
+<span class="nc" id="L270">                                        throw new UnexpectedAnalysisException(ex1);</span>
+<span class="nc" id="L271">                                    }</span>
+<span class="nc" id="L272">                                    sleepingTimeBetweenRetriesInMillis *= 2;</span>
+<span class="nc" id="L273">                                } catch (ResourceNotFoundException ex) {</span>
+<span class="nc" id="L274">                                    LOGGER.debug(&quot;pom.xml does not exist in Central for {}&quot;, dependency.getFileName());</span>
+<span class="nc" id="L275">                                    return;</span>
+<span class="nc" id="L276">                                }</span>
                                 //CSON: NestedTryDepth
-<span class="nc bnc" id="L276" title="All 4 branches missed.">                            } while (!success &amp;&amp; retryCount++ &lt; maxAttempts);</span>
+<span class="nc bnc" id="L278" title="All 4 branches missed.">                            } while (!success &amp;&amp; retryCount++ &lt; maxAttempts);</span>
                         }
-<span class="nc bnc" id="L278" title="All 2 branches missed.">                        if (success) {</span>
-<span class="nc bnc" id="L279" title="All 2 branches missed.">                            if (model == null) {</span>
-<span class="nc" id="L280">                                model = PomUtils.readPom(pomFile);</span>
-<span class="nc bnc" id="L281" title="All 2 branches missed.">                                if (cache != null) {</span>
-<span class="nc" id="L282">                                    cache.put(ma.getPomUrl(), model);</span>
+<span class="nc bnc" id="L280" title="All 2 branches missed.">                        if (success) {</span>
+<span class="nc bnc" id="L281" title="All 2 branches missed.">                            if (model == null) {</span>
+<span class="nc" id="L282">                                model = PomUtils.readPom(pomFile);</span>
+<span class="nc bnc" id="L283" title="All 2 branches missed.">                                if (cache != null) {</span>
+<span class="nc" id="L284">                                    cache.put(ma.getPomUrl(), model);</span>
                                 }
                             }
-<span class="nc bnc" id="L285" title="All 4 branches missed.">                            final boolean isMainPom = mas.size() == 1 || dependency.getActualFilePath().contains(ma.getVersion());</span>
-<span class="nc" id="L286">                            JarAnalyzer.setPomEvidence(dependency, model, null, isMainPom);</span>
-<span class="nc" id="L287">                        } else {</span>
-<span class="nc" id="L288">                            LOGGER.warn(&quot;Unable to download pom.xml for {} from Central; &quot;</span>
-<span class="nc" id="L289">                                    + &quot;this could result in undetected CPE/CVEs.&quot;, dependency.getFileName());</span>
+<span class="nc bnc" id="L287" title="All 4 branches missed.">                            final boolean isMainPom = mas.size() == 1 || dependency.getActualFilePath().contains(ma.getVersion());</span>
+<span class="nc" id="L288">                            JarAnalyzer.setPomEvidence(dependency, model, null, isMainPom);</span>
+<span class="nc" id="L289">                        } else {</span>
+<span class="nc" id="L290">                            LOGGER.warn(&quot;Unable to download pom.xml for {} from Central; &quot;</span>
+<span class="nc" id="L291">                                    + &quot;this could result in undetected CPE/CVEs.&quot;, dependency.getFileName());</span>
+<span class="nc" id="L292">                            setEnabled(false);</span>
+<span class="nc" id="L293">                            LOGGER.warn(&quot;Disabling the Central Analyzer due to repeated download failures; Central Search &quot;</span>
+                                    + &quot;may be down see https://status.maven.org/\n Note that this could result in both false &quot;
+                                    + &quot;positives and false negatives&quot;, lastException);
                         }
 
-<span class="nc" id="L292">                    } catch (AnalysisException ex) {</span>
-<span class="nc" id="L293">                        LOGGER.warn(MessageFormat.format(&quot;Unable to analyze pom.xml for {0} from Central; &quot;</span>
-<span class="nc" id="L294">                                + &quot;this could result in undetected CPE/CVEs.&quot;, dependency.getFileName()), ex);</span>
+<span class="nc" id="L298">                    } catch (AnalysisException ex) {</span>
+<span class="nc" id="L299">                        LOGGER.warn(MessageFormat.format(&quot;Unable to analyze pom.xml for {0} from Central; &quot;</span>
+<span class="nc" id="L300">                                + &quot;this could result in undetected CPE/CVEs.&quot;, dependency.getFileName()), ex);</span>
 
                     } finally {
-<span class="nc bnc" id="L297" title="All 6 branches missed.">                        if (pomFile != null &amp;&amp; pomFile.exists() &amp;&amp; !FileUtils.delete(pomFile)) {</span>
-<span class="nc" id="L298">                            LOGGER.debug(&quot;Failed to delete temporary pom file {}&quot;, pomFile);</span>
-<span class="nc" id="L299">                            pomFile.deleteOnExit();</span>
+<span class="nc bnc" id="L303" title="All 6 branches missed.">                        if (pomFile != null &amp;&amp; pomFile.exists() &amp;&amp; !FileUtils.delete(pomFile)) {</span>
+<span class="nc" id="L304">                            LOGGER.debug(&quot;Failed to delete temporary pom file {}&quot;, pomFile);</span>
+<span class="nc" id="L305">                            pomFile.deleteOnExit();</span>
                         }
                     }
                 }
-<span class="nc" id="L303">            }</span>
-<span class="nc" id="L304">        } catch (TooManyRequestsException tre) {</span>
-<span class="nc" id="L305">            this.setEnabled(false);</span>
-<span class="nc" id="L306">            final String message = &quot;Connections to Central search refused. Analysis failed.&quot;;</span>
-<span class="nc" id="L307">            LOGGER.error(message, tre);</span>
-<span class="nc" id="L308">            throw new AnalysisException(message, tre);</span>
-<span class="nc" id="L309">        } catch (IllegalArgumentException iae) {</span>
-<span class="nc" id="L310">            LOGGER.info(&quot;invalid sha1-hash on {}&quot;, dependency.getFileName());</span>
-<span class="nc" id="L311">        } catch (FileNotFoundException fnfe) {</span>
-<span class="nc" id="L312">            LOGGER.debug(&quot;Artifact not found in repository: '{}&quot;, dependency.getFileName());</span>
-<span class="nc" id="L313">        } catch (ForbiddenException e) {</span>
-<span class="nc" id="L314">            final String message = &quot;Connection to Central search refused. This is most likely not a problem with &quot; +</span>
+<span class="nc" id="L309">            }</span>
+<span class="nc" id="L310">        } catch (TooManyRequestsException tre) {</span>
+<span class="nc" id="L311">            this.setEnabled(false);</span>
+<span class="nc" id="L312">            final String message = &quot;Connections to Central search refused. Analysis failed. Disabling Central analyzer - this &quot; +</span>
+                    &quot;could lead to both false positives and false negatives.&quot;;
+<span class="nc" id="L314">            LOGGER.error(message, tre);</span>
+<span class="nc" id="L315">            throw new AnalysisException(message, tre);</span>
+<span class="nc" id="L316">        } catch (IllegalArgumentException iae) {</span>
+<span class="nc" id="L317">            LOGGER.info(&quot;invalid sha1-hash on {}&quot;, dependency.getFileName());</span>
+<span class="nc" id="L318">        } catch (FileNotFoundException fnfe) {</span>
+<span class="nc" id="L319">            LOGGER.debug(&quot;Artifact not found in repository: '{}&quot;, dependency.getFileName());</span>
+<span class="nc" id="L320">        } catch (ForbiddenException e) {</span>
+<span class="nc" id="L321">            this.setEnabled(false);</span>
+<span class="nc" id="L322">            final String message = &quot;Connection to Central search refused. This is most likely not a problem with &quot; +</span>
                     &quot;Dependency-Check itself and is related to network connectivity. Please check &quot; +
                     &quot;https://central.sonatype.org/faq/403-error-central/.&quot;;
-<span class="nc" id="L317">            LOGGER.error(message);</span>
-<span class="nc" id="L318">            throw new AnalysisException(message, e);</span>
-<span class="nc" id="L319">        } catch (IOException ioe) {</span>
-<span class="nc" id="L320">            final String message = &quot;Could not connect to Central search. Analysis failed.&quot;;</span>
-<span class="nc" id="L321">            LOGGER.error(message, ioe);</span>
-<span class="nc" id="L322">            throw new AnalysisException(message, ioe);</span>
-<span class="nc" id="L323">        }</span>
-<span class="nc" id="L324">    }</span>
+<span class="nc" id="L325">            LOGGER.error(message);</span>
+<span class="nc" id="L326">            throw new AnalysisException(message, e);</span>
+<span class="nc" id="L327">        } catch (IOException ioe) {</span>
+<span class="nc" id="L328">            this.setEnabled(false);</span>
+<span class="nc" id="L329">            final String message = &quot;Could not connect to Central search. Analysis failed; disabling Central analyzer - this &quot; +</span>
+                    &quot;could lead to both false positives and false negatives.&quot;;
+<span class="nc" id="L331">            LOGGER.error(message, ioe);</span>
+<span class="nc" id="L332">            throw new AnalysisException(message, ioe);</span>
+<span class="nc" id="L333">        }</span>
+<span class="nc" id="L334">    }</span>
 
     /**
      * Downloads the corresponding list of MavenArtifacts of the given
@@ -339,35 +349,35 @@ import java.util.List;
      */
     protected List&lt;MavenArtifact&gt; fetchMavenArtifacts(Dependency dependency) throws IOException,
             TooManyRequestsException {
-<span class="fc" id="L342">        IOException lastException = null;</span>
-<span class="fc" id="L343">        long sleepingTimeBetweenRetriesInMillis = BASE_RETRY_WAIT;</span>
-<span class="fc" id="L344">        int triesLeft = numberOfRetries;</span>
-<span class="fc bfc" id="L345" title="All 2 branches covered.">        while (triesLeft-- &gt; 0) {</span>
+<span class="fc" id="L352">        IOException lastException = null;</span>
+<span class="fc" id="L353">        long sleepingTimeBetweenRetriesInMillis = BASE_RETRY_WAIT;</span>
+<span class="fc" id="L354">        int triesLeft = numberOfRetries;</span>
+<span class="fc bfc" id="L355" title="All 2 branches covered.">        while (triesLeft-- &gt; 0) {</span>
             try {
-<span class="fc" id="L347">                return searcher.searchSha1(dependency.getSha1sum());</span>
-<span class="fc" id="L348">            } catch (FileNotFoundException fnfe) {</span>
+<span class="fc" id="L357">                return searcher.searchSha1(dependency.getSha1sum());</span>
+<span class="fc" id="L358">            } catch (FileNotFoundException fnfe) {</span>
                 // retry does not make sense, just throw the exception
-<span class="fc" id="L350">                throw fnfe;</span>
-<span class="fc" id="L351">            } catch (IOException ioe) {</span>
-<span class="fc" id="L352">                LOGGER.debug(&quot;Could not connect to Central search (tries left: {}): {}&quot;,</span>
-<span class="fc" id="L353">                        triesLeft, ioe.getMessage());</span>
-<span class="fc" id="L354">                lastException = ioe;</span>
+<span class="fc" id="L360">                throw fnfe;</span>
+<span class="fc" id="L361">            } catch (IOException ioe) {</span>
+<span class="fc" id="L362">                LOGGER.debug(&quot;Could not connect to Central search (tries left: {}): {}&quot;,</span>
+<span class="fc" id="L363">                        triesLeft, ioe.getMessage());</span>
+<span class="fc" id="L364">                lastException = ioe;</span>
 
-<span class="pc bpc" id="L356" title="1 of 2 branches missed.">                if (triesLeft &gt; 0) {</span>
+<span class="pc bpc" id="L366" title="1 of 2 branches missed.">                if (triesLeft &gt; 0) {</span>
                     try {
-<span class="nc" id="L358">                        Thread.sleep(sleepingTimeBetweenRetriesInMillis);</span>
-<span class="nc" id="L359">                    } catch (InterruptedException e) {</span>
-<span class="nc" id="L360">                        Thread.currentThread().interrupt();</span>
-<span class="nc" id="L361">                        throw new UnexpectedAnalysisException(e);</span>
-<span class="nc" id="L362">                    }</span>
-<span class="nc" id="L363">                    sleepingTimeBetweenRetriesInMillis *= 2;</span>
+<span class="nc" id="L368">                        Thread.sleep(sleepingTimeBetweenRetriesInMillis);</span>
+<span class="nc" id="L369">                    } catch (InterruptedException e) {</span>
+<span class="nc" id="L370">                        Thread.currentThread().interrupt();</span>
+<span class="nc" id="L371">                        throw new UnexpectedAnalysisException(e);</span>
+<span class="nc" id="L372">                    }</span>
+<span class="nc" id="L373">                    sleepingTimeBetweenRetriesInMillis *= 2;</span>
                 }
-<span class="fc" id="L365">            }</span>
+<span class="fc" id="L375">            }</span>
         }
 
-<span class="fc" id="L368">        final String message = &quot;Finally failed connecting to Central search.&quot;</span>
+<span class="fc" id="L378">        final String message = &quot;Finally failed connecting to Central search.&quot;</span>
                 + &quot; Giving up after &quot; + numberOfRetries + &quot; tries.&quot;;
-<span class="fc" id="L370">        throw new IOException(message, lastException);</span>
+<span class="fc" id="L380">        throw new IOException(message, lastException);</span>
     }
 
     /**
@@ -376,7 +386,7 @@ import java.util.List;
      * @param searcher the Central Search object to use.
      */
     protected void setCentralSearch(CentralSearch searcher) {
-<span class="fc" id="L379">        this.searcher = searcher;</span>
-<span class="fc" id="L380">    }</span>
+<span class="fc" id="L389">        this.searcher = searcher;</span>
+<span class="fc" id="L390">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

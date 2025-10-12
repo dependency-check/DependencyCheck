@@ -20,8 +20,6 @@ package org.owasp.dependencycheck.analyzer;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -89,12 +87,12 @@ import us.springett.parsers.cpe.values.Part;
  * @author Jeremy Long
  */
 @ThreadSafe
-<span class="fc" id="L92">public class CPEAnalyzer extends AbstractAnalyzer {</span>
+<span class="fc" id="L90">public class CPEAnalyzer extends AbstractAnalyzer {</span>
 
     /**
      * The Logger.
      */
-<span class="fc" id="L97">    private static final Logger LOGGER = LoggerFactory.getLogger(CPEAnalyzer.class);</span>
+<span class="fc" id="L95">    private static final Logger LOGGER = LoggerFactory.getLogger(CPEAnalyzer.class);</span>
     /**
      * The weighting boost to give terms when constructing the Lucene query.
      */
@@ -111,24 +109,7 @@ import us.springett.parsers.cpe.values.Part;
      * alpha characters.
      */
     private static final String CLEANSE_NONALPHA_RX = &quot;[^A-Za-z]*&quot;;
-    /**
-     * UTF-8 character set name.
-     */
-<span class="fc" id="L117">    private static final String UTF8 = StandardCharsets.UTF_8.name();</span>
-    /**
-     * The URL to search the NVD CVE data at NIST. This is used by calling:
-     * &lt;pre&gt;String.format(NVD_SEARCH_URL, vendor, product, version);&lt;/pre&gt;
-     */
-    public static final String NVD_SEARCH_URL = &quot;https://nvd.nist.gov/vuln/search/results?form_type=Advanced&amp;&quot;
-            + &quot;results_type=overview&amp;search_type=all&amp;cpe_vendor=cpe%%3A%%2F%%3A%1$s&amp;cpe_product=cpe%%3A%%2F%%3A%1$s%%3A%2$s&amp;&quot;
-            + &quot;cpe_version=cpe%%3A%%2F%%3A%1$s%%3A%2$s%%3A%3$s&quot;;
 
-    /**
-     * The URL to search the NVD CVE data at NIST. This is used by calling:
-     * &lt;pre&gt;String.format(NVD_SEARCH_URL, vendor, product);&lt;/pre&gt;
-     */
-    public static final String NVD_SEARCH_BROAD_URL = &quot;https://nvd.nist.gov/vuln/search/results?form_type=Advanced&amp;&quot;
-            + &quot;results_type=overview&amp;search_type=all&amp;cpe_vendor=cpe%%3A%%2F%%3A%1$s&amp;cpe_product=cpe%%3A%%2F%%3A%1$s%%3A%2$s&quot;;
     /**
      * The CPE in memory index.
      */
@@ -167,7 +148,7 @@ import us.springett.parsers.cpe.values.Part;
      */
     @Override
     public String getName() {
-<span class="fc" id="L170">        return &quot;CPE Analyzer&quot;;</span>
+<span class="fc" id="L151">        return &quot;CPE Analyzer&quot;;</span>
     }
 
     /**
@@ -177,7 +158,7 @@ import us.springett.parsers.cpe.values.Part;
      */
     @Override
     public AnalysisPhase getAnalysisPhase() {
-<span class="fc" id="L180">        return AnalysisPhase.IDENTIFIER_ANALYSIS;</span>
+<span class="fc" id="L161">        return AnalysisPhase.IDENTIFIER_ANALYSIS;</span>
     }
 
     /**
@@ -189,29 +170,29 @@ import us.springett.parsers.cpe.values.Part;
      */
     @Override
     public void prepareAnalyzer(Engine engine) throws InitializationException {
-<span class="fc" id="L192">        super.prepareAnalyzer(engine);</span>
-<span class="fc" id="L193">        this.engine = engine;</span>
+<span class="fc" id="L173">        super.prepareAnalyzer(engine);</span>
+<span class="fc" id="L174">        this.engine = engine;</span>
         try {
-<span class="fc" id="L195">            this.open(engine.getDatabase());</span>
-<span class="nc" id="L196">        } catch (IOException ex) {</span>
-<span class="nc" id="L197">            LOGGER.debug(&quot;Exception initializing the Lucene Index&quot;, ex);</span>
-<span class="nc" id="L198">            throw new InitializationException(&quot;An exception occurred initializing the Lucene Index&quot;, ex);</span>
-<span class="nc" id="L199">        } catch (DatabaseException ex) {</span>
-<span class="nc" id="L200">            LOGGER.debug(&quot;Exception accessing the database&quot;, ex);</span>
-<span class="nc" id="L201">            throw new InitializationException(&quot;An exception occurred accessing the database&quot;, ex);</span>
-<span class="fc" id="L202">        }</span>
-<span class="fc" id="L203">        final String[] tmp = engine.getSettings().getArray(Settings.KEYS.ECOSYSTEM_SKIP_CPEANALYZER);</span>
-<span class="pc bpc" id="L204" title="1 of 2 branches missed.">        if (tmp == null) {</span>
-<span class="nc" id="L205">            skipEcosystems = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L176">            this.open(engine.getDatabase());</span>
+<span class="nc" id="L177">        } catch (IOException ex) {</span>
+<span class="nc" id="L178">            LOGGER.debug(&quot;Exception initializing the Lucene Index&quot;, ex);</span>
+<span class="nc" id="L179">            throw new InitializationException(&quot;An exception occurred initializing the Lucene Index&quot;, ex);</span>
+<span class="nc" id="L180">        } catch (DatabaseException ex) {</span>
+<span class="nc" id="L181">            LOGGER.debug(&quot;Exception accessing the database&quot;, ex);</span>
+<span class="nc" id="L182">            throw new InitializationException(&quot;An exception occurred accessing the database&quot;, ex);</span>
+<span class="fc" id="L183">        }</span>
+<span class="fc" id="L184">        final String[] tmp = engine.getSettings().getArray(Settings.KEYS.ECOSYSTEM_SKIP_CPEANALYZER);</span>
+<span class="pc bpc" id="L185" title="1 of 2 branches missed.">        if (tmp == null) {</span>
+<span class="nc" id="L186">            skipEcosystems = new ArrayList&lt;&gt;();</span>
         } else {
-<span class="fc" id="L207">            LOGGER.debug(&quot;Skipping CPE Analysis for {}&quot;, StringUtils.join(tmp, &quot;,&quot;));</span>
-<span class="fc" id="L208">            skipEcosystems = Arrays.asList(tmp);</span>
+<span class="fc" id="L188">            LOGGER.debug(&quot;Skipping CPE Analysis for {}&quot;, StringUtils.join(tmp, &quot;,&quot;));</span>
+<span class="fc" id="L189">            skipEcosystems = Arrays.asList(tmp);</span>
         }
-<span class="fc" id="L210">        ecosystemTools = new Ecosystem(engine.getSettings());</span>
-<span class="fc" id="L211">        suppression = new CpeSuppressionAnalyzer();</span>
-<span class="fc" id="L212">        suppression.initialize(engine.getSettings());</span>
-<span class="fc" id="L213">        suppression.prepareAnalyzer(engine);</span>
-<span class="fc" id="L214">    }</span>
+<span class="fc" id="L191">        ecosystemTools = new Ecosystem(engine.getSettings());</span>
+<span class="fc" id="L192">        suppression = new CpeSuppressionAnalyzer();</span>
+<span class="fc" id="L193">        suppression.initialize(engine.getSettings());</span>
+<span class="fc" id="L194">        suppression.prepareAnalyzer(engine);</span>
+<span class="fc" id="L195">    }</span>
 
     /**
      * Opens the data source.
@@ -223,29 +204,29 @@ import us.springett.parsers.cpe.values.Part;
      * usually occurs when the database is in use by another process.
      */
     public void open(CveDB cve) throws IOException, DatabaseException {
-<span class="fc" id="L226">        this.cve = cve;</span>
-<span class="fc" id="L227">        this.cpe = CpeMemoryIndex.getInstance();</span>
+<span class="fc" id="L207">        this.cve = cve;</span>
+<span class="fc" id="L208">        this.cpe = CpeMemoryIndex.getInstance();</span>
         try {
-<span class="fc" id="L229">            final long creationStart = System.currentTimeMillis();</span>
-<span class="fc" id="L230">            cpe.open(cve.getVendorProductList(), this.getSettings());</span>
-<span class="fc" id="L231">            final long creationSeconds = TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis() - creationStart);</span>
-<span class="fc" id="L232">            LOGGER.info(&quot;Created CPE Index ({} seconds)&quot;, creationSeconds);</span>
-<span class="nc" id="L233">        } catch (IndexException ex) {</span>
-<span class="nc" id="L234">            LOGGER.debug(&quot;IndexException&quot;, ex);</span>
-<span class="nc" id="L235">            throw new DatabaseException(ex);</span>
-<span class="fc" id="L236">        }</span>
-<span class="fc" id="L237">    }</span>
+<span class="fc" id="L210">            final long creationStart = System.currentTimeMillis();</span>
+<span class="fc" id="L211">            cpe.open(cve.getVendorProductList(), this.getSettings());</span>
+<span class="fc" id="L212">            final long creationSeconds = TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis() - creationStart);</span>
+<span class="fc" id="L213">            LOGGER.info(&quot;Created CPE Index ({} seconds)&quot;, creationSeconds);</span>
+<span class="nc" id="L214">        } catch (IndexException ex) {</span>
+<span class="nc" id="L215">            LOGGER.debug(&quot;IndexException&quot;, ex);</span>
+<span class="nc" id="L216">            throw new DatabaseException(ex);</span>
+<span class="fc" id="L217">        }</span>
+<span class="fc" id="L218">    }</span>
 
     /**
      * Closes the data sources.
      */
     @Override
     public void closeAnalyzer() {
-<span class="fc bfc" id="L244" title="All 2 branches covered.">        if (cpe != null) {</span>
-<span class="fc" id="L245">            cpe.close();</span>
-<span class="fc" id="L246">            cpe = null;</span>
+<span class="fc bfc" id="L225" title="All 2 branches covered.">        if (cpe != null) {</span>
+<span class="fc" id="L226">            cpe.close();</span>
+<span class="fc" id="L227">            cpe = null;</span>
         }
-<span class="fc" id="L248">    }</span>
+<span class="fc" id="L229">    }</span>
 
     /**
      * Searches the data store of CPE entries, trying to identify the CPE for
@@ -261,55 +242,55 @@ import us.springett.parsers.cpe.values.Part;
     protected void determineCPE(Dependency dependency) throws CorruptIndexException, IOException, ParseException, AnalysisException {
         boolean identifierAdded;
 
-<span class="fc" id="L264">        final Set&lt;String&gt; majorVersions = dependency.getSoftwareIdentifiers()</span>
-<span class="fc" id="L265">                .stream()</span>
-<span class="fc" id="L266">                .filter(i -&gt; i instanceof PurlIdentifier)</span>
-<span class="fc" id="L267">                .map(i -&gt; {</span>
-<span class="fc" id="L268">                    final PurlIdentifier p = (PurlIdentifier) i;</span>
-<span class="fc" id="L269">                    final DependencyVersion depVersion = DependencyVersionUtil.parseVersion(p.getVersion(), false);</span>
-<span class="fc bfc" id="L270" title="All 2 branches covered.">                    if (depVersion != null) {</span>
-<span class="fc" id="L271">                        return depVersion.getVersionParts().get(0);</span>
+<span class="fc" id="L245">        final Set&lt;String&gt; majorVersions = dependency.getSoftwareIdentifiers()</span>
+<span class="fc" id="L246">                .stream()</span>
+<span class="fc" id="L247">                .filter(i -&gt; i instanceof PurlIdentifier)</span>
+<span class="fc" id="L248">                .map(i -&gt; {</span>
+<span class="fc" id="L249">                    final PurlIdentifier p = (PurlIdentifier) i;</span>
+<span class="fc" id="L250">                    final DependencyVersion depVersion = DependencyVersionUtil.parseVersion(p.getVersion(), false);</span>
+<span class="fc bfc" id="L251" title="All 2 branches covered.">                    if (depVersion != null) {</span>
+<span class="fc" id="L252">                        return depVersion.getVersionParts().get(0);</span>
                     }
-<span class="fc" id="L273">                    return null;</span>
-<span class="fc" id="L274">                }).collect(Collectors.toSet());</span>
+<span class="fc" id="L254">                    return null;</span>
+<span class="fc" id="L255">                }).collect(Collectors.toSet());</span>
 
-<span class="fc" id="L276">        final Map&lt;String, MutableInt&gt; vendors = new HashMap&lt;&gt;();</span>
-<span class="fc" id="L277">        final Map&lt;String, MutableInt&gt; products = new HashMap&lt;&gt;();</span>
-<span class="fc" id="L278">        final Set&lt;Integer&gt; previouslyFound = new HashSet&lt;&gt;();</span>
+<span class="fc" id="L257">        final Map&lt;String, MutableInt&gt; vendors = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L258">        final Map&lt;String, MutableInt&gt; products = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L259">        final Set&lt;Integer&gt; previouslyFound = new HashSet&lt;&gt;();</span>
 
-<span class="fc bfc" id="L280" title="All 2 branches covered.">        for (Confidence confidence : Confidence.values()) {</span>
-<span class="fc" id="L281">            collectTerms(vendors, dependency.getIterator(EvidenceType.VENDOR, confidence));</span>
-<span class="fc" id="L282">            LOGGER.trace(&quot;vendor search: {}&quot;, vendors);</span>
-<span class="fc" id="L283">            collectTerms(products, dependency.getIterator(EvidenceType.PRODUCT, confidence));</span>
-<span class="fc" id="L284">            addMajorVersionToTerms(majorVersions, products);</span>
-<span class="fc" id="L285">            LOGGER.trace(&quot;product search: {}&quot;, products);</span>
-<span class="fc bfc" id="L286" title="All 4 branches covered.">            if (!vendors.isEmpty() &amp;&amp; !products.isEmpty()) {</span>
-<span class="fc" id="L287">                final List&lt;IndexEntry&gt; entries = searchCPE(vendors, products,</span>
-<span class="fc" id="L288">                        dependency.getVendorWeightings(), dependency.getProductWeightings(),</span>
-<span class="fc" id="L289">                        dependency.getEcosystem());</span>
-<span class="pc bpc" id="L290" title="1 of 2 branches missed.">                if (entries == null) {</span>
-<span class="nc" id="L291">                    continue;</span>
+<span class="fc bfc" id="L261" title="All 2 branches covered.">        for (Confidence confidence : Confidence.values()) {</span>
+<span class="fc" id="L262">            collectTerms(vendors, dependency.getIterator(EvidenceType.VENDOR, confidence));</span>
+<span class="fc" id="L263">            LOGGER.trace(&quot;vendor search: {}&quot;, vendors);</span>
+<span class="fc" id="L264">            collectTerms(products, dependency.getIterator(EvidenceType.PRODUCT, confidence));</span>
+<span class="fc" id="L265">            addMajorVersionToTerms(majorVersions, products);</span>
+<span class="fc" id="L266">            LOGGER.trace(&quot;product search: {}&quot;, products);</span>
+<span class="fc bfc" id="L267" title="All 4 branches covered.">            if (!vendors.isEmpty() &amp;&amp; !products.isEmpty()) {</span>
+<span class="fc" id="L268">                final List&lt;IndexEntry&gt; entries = searchCPE(vendors, products,</span>
+<span class="fc" id="L269">                        dependency.getVendorWeightings(), dependency.getProductWeightings(),</span>
+<span class="fc" id="L270">                        dependency.getEcosystem());</span>
+<span class="pc bpc" id="L271" title="1 of 2 branches missed.">                if (entries == null) {</span>
+<span class="nc" id="L272">                    continue;</span>
                 }
 
-<span class="fc" id="L294">                identifierAdded = false;</span>
-<span class="fc bfc" id="L295" title="All 2 branches covered.">                for (IndexEntry e : entries) {</span>
-<span class="fc bfc" id="L296" title="All 2 branches covered.">                    if (previouslyFound.contains(e.getDocumentId()) /*|| (filter &gt; 0 &amp;&amp; e.getSearchScore() &lt; filter)*/) {</span>
-<span class="fc" id="L297">                        continue;</span>
+<span class="fc" id="L275">                identifierAdded = false;</span>
+<span class="fc bfc" id="L276" title="All 2 branches covered.">                for (IndexEntry e : entries) {</span>
+<span class="fc bfc" id="L277" title="All 2 branches covered.">                    if (previouslyFound.contains(e.getDocumentId()) /*|| (filter &gt; 0 &amp;&amp; e.getSearchScore() &lt; filter)*/) {</span>
+<span class="fc" id="L278">                        continue;</span>
                     }
-<span class="fc" id="L299">                    previouslyFound.add(e.getDocumentId());</span>
-<span class="fc bfc" id="L300" title="All 2 branches covered.">                    if (verifyEntry(e, dependency, majorVersions)) {</span>
-<span class="fc" id="L301">                        final String vendor = e.getVendor();</span>
-<span class="fc" id="L302">                        final String product = e.getProduct();</span>
-<span class="fc" id="L303">                        LOGGER.trace(&quot;identified vendor/product: {}/{}&quot;, vendor, product);</span>
-<span class="fc" id="L304">                        identifierAdded |= determineIdentifiers(dependency, vendor, product, confidence);</span>
+<span class="fc" id="L280">                    previouslyFound.add(e.getDocumentId());</span>
+<span class="fc bfc" id="L281" title="All 2 branches covered.">                    if (verifyEntry(e, dependency, majorVersions)) {</span>
+<span class="fc" id="L282">                        final String vendor = e.getVendor();</span>
+<span class="fc" id="L283">                        final String product = e.getProduct();</span>
+<span class="fc" id="L284">                        LOGGER.trace(&quot;identified vendor/product: {}/{}&quot;, vendor, product);</span>
+<span class="fc" id="L285">                        identifierAdded |= determineIdentifiers(dependency, vendor, product, confidence);</span>
                     }
-<span class="fc" id="L306">                }</span>
-<span class="fc bfc" id="L307" title="All 2 branches covered.">                if (identifierAdded) {</span>
-<span class="fc" id="L308">                    break;</span>
+<span class="fc" id="L287">                }</span>
+<span class="fc bfc" id="L288" title="All 2 branches covered.">                if (identifierAdded) {</span>
+<span class="fc" id="L289">                    break;</span>
                 }
             }
         }
-<span class="fc" id="L312">    }</span>
+<span class="fc" id="L293">    }</span>
 
     /**
      * &lt;p&gt;
@@ -326,81 +307,81 @@ import us.springett.parsers.cpe.values.Part;
     @SuppressWarnings(&quot;null&quot;)
 
     protected void collectTerms(Map&lt;String, MutableInt&gt; terms, Iterable&lt;Evidence&gt; evidence) {
-<span class="fc bfc" id="L329" title="All 2 branches covered.">        for (Evidence e : evidence) {</span>
-<span class="fc" id="L330">            String value = cleanseText(e.getValue());</span>
-<span class="fc bfc" id="L331" title="All 2 branches covered.">            if (StringUtils.isBlank(value)) {</span>
-<span class="fc" id="L332">                continue;</span>
+<span class="fc bfc" id="L310" title="All 2 branches covered.">        for (Evidence e : evidence) {</span>
+<span class="fc" id="L311">            String value = cleanseText(e.getValue());</span>
+<span class="fc bfc" id="L312" title="All 2 branches covered.">            if (StringUtils.isBlank(value)) {</span>
+<span class="fc" id="L313">                continue;</span>
             }
-<span class="fc bfc" id="L334" title="All 2 branches covered.">            if (value.length() &gt; 1000) {</span>
-<span class="fc" id="L335">                boolean trimmed = false;</span>
-<span class="fc" id="L336">                int pos = value.lastIndexOf(&quot; &quot;, 1000);</span>
-<span class="fc bfc" id="L337" title="All 2 branches covered.">                if (pos &gt; 0) {</span>
-<span class="fc" id="L338">                    value = value.substring(0, pos);</span>
-<span class="fc" id="L339">                    trimmed = true;</span>
+<span class="fc bfc" id="L315" title="All 2 branches covered.">            if (value.length() &gt; 1000) {</span>
+<span class="fc" id="L316">                boolean trimmed = false;</span>
+<span class="fc" id="L317">                int pos = value.lastIndexOf(&quot; &quot;, 1000);</span>
+<span class="fc bfc" id="L318" title="All 2 branches covered.">                if (pos &gt; 0) {</span>
+<span class="fc" id="L319">                    value = value.substring(0, pos);</span>
+<span class="fc" id="L320">                    trimmed = true;</span>
                 } else {
-<span class="fc" id="L341">                    pos = value.lastIndexOf(&quot;.&quot;, 1000);</span>
+<span class="fc" id="L322">                    pos = value.lastIndexOf(&quot;.&quot;, 1000);</span>
                 }
-<span class="fc bfc" id="L343" title="All 2 branches covered.">                if (!trimmed) {</span>
-<span class="fc bfc" id="L344" title="All 2 branches covered.">                    if (pos &gt; 0) {</span>
-<span class="fc" id="L345">                        value = value.substring(0, pos);</span>
-<span class="fc" id="L346">                        trimmed = true;</span>
+<span class="fc bfc" id="L324" title="All 2 branches covered.">                if (!trimmed) {</span>
+<span class="fc bfc" id="L325" title="All 2 branches covered.">                    if (pos &gt; 0) {</span>
+<span class="fc" id="L326">                        value = value.substring(0, pos);</span>
+<span class="fc" id="L327">                        trimmed = true;</span>
                     } else {
-<span class="fc" id="L348">                        pos = value.lastIndexOf(&quot;-&quot;, 1000);</span>
+<span class="fc" id="L329">                        pos = value.lastIndexOf(&quot;-&quot;, 1000);</span>
                     }
                 }
-<span class="fc bfc" id="L351" title="All 2 branches covered.">                if (!trimmed) {</span>
-<span class="fc bfc" id="L352" title="All 2 branches covered.">                    if (pos &gt; 0) {</span>
-<span class="fc" id="L353">                        value = value.substring(0, pos);</span>
-<span class="fc" id="L354">                        trimmed = true;</span>
+<span class="fc bfc" id="L332" title="All 2 branches covered.">                if (!trimmed) {</span>
+<span class="fc bfc" id="L333" title="All 2 branches covered.">                    if (pos &gt; 0) {</span>
+<span class="fc" id="L334">                        value = value.substring(0, pos);</span>
+<span class="fc" id="L335">                        trimmed = true;</span>
                     } else {
-<span class="fc" id="L356">                        pos = value.lastIndexOf(&quot;_&quot;, 1000);</span>
+<span class="fc" id="L337">                        pos = value.lastIndexOf(&quot;_&quot;, 1000);</span>
                     }
                 }
-<span class="fc bfc" id="L359" title="All 2 branches covered.">                if (!trimmed) {</span>
-<span class="fc bfc" id="L360" title="All 2 branches covered.">                    if (pos &gt; 0) {</span>
-<span class="fc" id="L361">                        value = value.substring(0, pos);</span>
-<span class="fc" id="L362">                        trimmed = true;</span>
+<span class="fc bfc" id="L340" title="All 2 branches covered.">                if (!trimmed) {</span>
+<span class="fc bfc" id="L341" title="All 2 branches covered.">                    if (pos &gt; 0) {</span>
+<span class="fc" id="L342">                        value = value.substring(0, pos);</span>
+<span class="fc" id="L343">                        trimmed = true;</span>
                     } else {
-<span class="fc" id="L364">                        pos = value.lastIndexOf(&quot;/&quot;, 1000);</span>
+<span class="fc" id="L345">                        pos = value.lastIndexOf(&quot;/&quot;, 1000);</span>
                     }
                 }
-<span class="pc bpc" id="L367" title="1 of 4 branches missed.">                if (!trimmed &amp;&amp; pos &gt; 0) {</span>
-<span class="fc" id="L368">                    value = value.substring(0, pos);</span>
-<span class="fc" id="L369">                    trimmed = true;</span>
+<span class="pc bpc" id="L348" title="1 of 4 branches missed.">                if (!trimmed &amp;&amp; pos &gt; 0) {</span>
+<span class="fc" id="L349">                    value = value.substring(0, pos);</span>
+<span class="fc" id="L350">                    trimmed = true;</span>
                 }
-<span class="pc bpc" id="L371" title="1 of 2 branches missed.">                if (!trimmed) {</span>
-<span class="nc" id="L372">                    value = value.substring(0, 1000);</span>
+<span class="pc bpc" id="L352" title="1 of 2 branches missed.">                if (!trimmed) {</span>
+<span class="nc" id="L353">                    value = value.substring(0, 1000);</span>
                 }
             }
-<span class="fc" id="L375">            addTerm(terms, value);</span>
-<span class="fc" id="L376">        }</span>
-<span class="fc" id="L377">    }</span>
+<span class="fc" id="L356">            addTerm(terms, value);</span>
+<span class="fc" id="L357">        }</span>
+<span class="fc" id="L358">    }</span>
 
     private void addMajorVersionToTerms(Set&lt;String&gt; majorVersions, Map&lt;String, MutableInt&gt; products) {
-<span class="fc" id="L380">        final Map&lt;String, MutableInt&gt; temp = new HashMap&lt;&gt;();</span>
-<span class="fc" id="L381">        products.entrySet().stream()</span>
-<span class="pc bpc" id="L382" title="1 of 2 branches missed.">                .filter(term -&gt; term.getKey() != null)</span>
-<span class="fc" id="L383">                .forEach(term -&gt; majorVersions.stream()</span>
-<span class="fc bfc" id="L384" title="All 2 branches covered.">                .filter(version -&gt; version != null</span>
-<span class="fc bfc" id="L385" title="All 2 branches covered.">                &amp;&amp; (!term.getKey().endsWith(version)</span>
-<span class="fc bfc" id="L386" title="All 2 branches covered.">                &amp;&amp; !Character.isDigit(term.getKey().charAt(term.getKey().length() - 1))</span>
-<span class="fc bfc" id="L387" title="All 2 branches covered.">                &amp;&amp; !products.containsKey(term.getKey() + version)))</span>
-<span class="fc" id="L388">                .forEach(version -&gt; {</span>
-<span class="fc" id="L389">                    addTerm(temp, term.getKey() + version);</span>
-<span class="fc" id="L390">                }));</span>
-<span class="fc" id="L391">        products.entrySet().stream()</span>
-<span class="pc bpc" id="L392" title="1 of 2 branches missed.">                .filter(term -&gt; term.getKey() != null)</span>
-<span class="fc" id="L393">                .forEach(term -&gt; majorVersions.stream()</span>
-<span class="fc" id="L394">                .filter(Objects::nonNull)</span>
-<span class="fc" id="L395">                .map(version -&gt; &quot;v&quot; + version)</span>
-<span class="fc bfc" id="L396" title="All 2 branches covered.">                .filter(version -&gt; (!term.getKey().endsWith(version)</span>
-<span class="fc bfc" id="L397" title="All 2 branches covered.">                &amp;&amp; !Character.isDigit(term.getKey().charAt(term.getKey().length() - 1))</span>
-<span class="fc bfc" id="L398" title="All 2 branches covered.">                &amp;&amp; !products.containsKey(term.getKey() + version)))</span>
-<span class="fc" id="L399">                .forEach(version -&gt; {</span>
-<span class="fc" id="L400">                    addTerm(temp, term.getKey() + version);</span>
-<span class="fc" id="L401">                }));</span>
-<span class="fc" id="L402">        products.putAll(temp);</span>
-<span class="fc" id="L403">    }</span>
+<span class="fc" id="L361">        final Map&lt;String, MutableInt&gt; temp = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L362">        products.entrySet().stream()</span>
+<span class="pc bpc" id="L363" title="1 of 2 branches missed.">                .filter(term -&gt; term.getKey() != null)</span>
+<span class="fc" id="L364">                .forEach(term -&gt; majorVersions.stream()</span>
+<span class="fc bfc" id="L365" title="All 2 branches covered.">                .filter(version -&gt; version != null</span>
+<span class="fc bfc" id="L366" title="All 2 branches covered.">                &amp;&amp; (!term.getKey().endsWith(version)</span>
+<span class="fc bfc" id="L367" title="All 2 branches covered.">                &amp;&amp; !Character.isDigit(term.getKey().charAt(term.getKey().length() - 1))</span>
+<span class="fc bfc" id="L368" title="All 2 branches covered.">                &amp;&amp; !products.containsKey(term.getKey() + version)))</span>
+<span class="fc" id="L369">                .forEach(version -&gt; {</span>
+<span class="fc" id="L370">                    addTerm(temp, term.getKey() + version);</span>
+<span class="fc" id="L371">                }));</span>
+<span class="fc" id="L372">        products.entrySet().stream()</span>
+<span class="pc bpc" id="L373" title="1 of 2 branches missed.">                .filter(term -&gt; term.getKey() != null)</span>
+<span class="fc" id="L374">                .forEach(term -&gt; majorVersions.stream()</span>
+<span class="fc" id="L375">                .filter(Objects::nonNull)</span>
+<span class="fc" id="L376">                .map(version -&gt; &quot;v&quot; + version)</span>
+<span class="fc bfc" id="L377" title="All 2 branches covered.">                .filter(version -&gt; (!term.getKey().endsWith(version)</span>
+<span class="fc bfc" id="L378" title="All 2 branches covered.">                &amp;&amp; !Character.isDigit(term.getKey().charAt(term.getKey().length() - 1))</span>
+<span class="fc bfc" id="L379" title="All 2 branches covered.">                &amp;&amp; !products.containsKey(term.getKey() + version)))</span>
+<span class="fc" id="L380">                .forEach(version -&gt; {</span>
+<span class="fc" id="L381">                    addTerm(temp, term.getKey() + version);</span>
+<span class="fc" id="L382">                }));</span>
+<span class="fc" id="L383">        products.putAll(temp);</span>
+<span class="fc" id="L384">    }</span>
 
     /**
      * Adds a term to the map of terms.
@@ -409,13 +390,13 @@ import us.springett.parsers.cpe.values.Part;
      * @param value the value of the term to add
      */
     private void addTerm(Map&lt;String, MutableInt&gt; terms, String value) {
-<span class="fc" id="L412">        final MutableInt count = terms.get(value);</span>
-<span class="fc bfc" id="L413" title="All 2 branches covered.">        if (count == null) {</span>
-<span class="fc" id="L414">            terms.put(value, new MutableInt(1));</span>
+<span class="fc" id="L393">        final MutableInt count = terms.get(value);</span>
+<span class="fc bfc" id="L394" title="All 2 branches covered.">        if (count == null) {</span>
+<span class="fc" id="L395">            terms.put(value, new MutableInt(1));</span>
         } else {
-<span class="fc" id="L416">            count.add(1);</span>
+<span class="fc" id="L397">            count.add(1);</span>
         }
-<span class="fc" id="L418">    }</span>
+<span class="fc" id="L399">    }</span>
 
     /**
      * &lt;p&gt;
@@ -438,47 +419,47 @@ import us.springett.parsers.cpe.values.Part;
     protected List&lt;IndexEntry&gt; searchCPE(Map&lt;String, MutableInt&gt; vendor, Map&lt;String, MutableInt&gt; product,
             Set&lt;String&gt; vendorWeightings, Set&lt;String&gt; productWeightings, String ecosystem) {
 
-<span class="fc" id="L441">        final int maxQueryResults = ecosystemTools.getLuceneMaxQueryLimitFor(ecosystem);</span>
-<span class="fc" id="L442">        final List&lt;IndexEntry&gt; ret = new ArrayList&lt;&gt;(maxQueryResults);</span>
+<span class="fc" id="L422">        final int maxQueryResults = ecosystemTools.getLuceneMaxQueryLimitFor(ecosystem);</span>
+<span class="fc" id="L423">        final List&lt;IndexEntry&gt; ret = new ArrayList&lt;&gt;(maxQueryResults);</span>
 
-<span class="fc" id="L444">        final String searchString = buildSearch(vendor, product, vendorWeightings, productWeightings);</span>
-<span class="pc bpc" id="L445" title="1 of 2 branches missed.">        if (searchString == null) {</span>
-<span class="nc" id="L446">            return ret;</span>
+<span class="fc" id="L425">        final String searchString = buildSearch(vendor, product, vendorWeightings, productWeightings);</span>
+<span class="pc bpc" id="L426" title="1 of 2 branches missed.">        if (searchString == null) {</span>
+<span class="nc" id="L427">            return ret;</span>
         }
         try {
-<span class="fc" id="L449">            final Query query = cpe.parseQuery(searchString);</span>
-<span class="fc" id="L450">            final TopDocs docs = cpe.search(query, maxQueryResults);</span>
+<span class="fc" id="L430">            final Query query = cpe.parseQuery(searchString);</span>
+<span class="fc" id="L431">            final TopDocs docs = cpe.search(query, maxQueryResults);</span>
 
-<span class="fc bfc" id="L452" title="All 2 branches covered.">            for (ScoreDoc d : docs.scoreDocs) {</span>
+<span class="fc bfc" id="L433" title="All 2 branches covered.">            for (ScoreDoc d : docs.scoreDocs) {</span>
                 //if (d.score &gt;= minLuceneScore) {
-<span class="fc" id="L454">                final Document doc = cpe.getDocument(d.doc);</span>
-<span class="fc" id="L455">                final IndexEntry entry = new IndexEntry();</span>
-<span class="fc" id="L456">                entry.setDocumentId(d.doc);</span>
-<span class="fc" id="L457">                entry.setVendor(doc.get(Fields.VENDOR));</span>
-<span class="fc" id="L458">                entry.setProduct(doc.get(Fields.PRODUCT));</span>
-<span class="fc" id="L459">                entry.setSearchScore(d.score);</span>
+<span class="fc" id="L435">                final Document doc = cpe.getDocument(d.doc);</span>
+<span class="fc" id="L436">                final IndexEntry entry = new IndexEntry();</span>
+<span class="fc" id="L437">                entry.setDocumentId(d.doc);</span>
+<span class="fc" id="L438">                entry.setVendor(doc.get(Fields.VENDOR));</span>
+<span class="fc" id="L439">                entry.setProduct(doc.get(Fields.PRODUCT));</span>
+<span class="fc" id="L440">                entry.setSearchScore(d.score);</span>
 
 //                LOGGER.error(&quot;Explanation: ---------------------&quot;);
 //                LOGGER.error(&quot;Explanation: &quot; + entry.getVendor() + &quot; &quot; + entry.getProduct() + &quot; &quot; + entry.getSearchScore());
 //                LOGGER.error(&quot;Explanation: &quot; + searchString);
 //                LOGGER.error(&quot;Explanation: &quot; + cpe.explain(query, d.doc));
-<span class="fc bfc" id="L465" title="All 2 branches covered.">                if (!ret.contains(entry)) {</span>
-<span class="fc" id="L466">                    ret.add(entry);</span>
+<span class="fc bfc" id="L446" title="All 2 branches covered.">                if (!ret.contains(entry)) {</span>
+<span class="fc" id="L447">                    ret.add(entry);</span>
                 }
                 //}
             }
-<span class="fc" id="L470">            return ret;</span>
-<span class="nc" id="L471">        } catch (ParseException ex) {</span>
-<span class="nc" id="L472">            LOGGER.warn(&quot;An error occurred querying the CPE data. See the log for more details.&quot;);</span>
-<span class="nc" id="L473">            LOGGER.info(&quot;Unable to parse: {}&quot;, searchString, ex);</span>
-<span class="nc" id="L474">        } catch (IndexException ex) {</span>
-<span class="nc" id="L475">            LOGGER.warn(&quot;An error occurred resetting the CPE index searcher. See the log for more details.&quot;);</span>
-<span class="nc" id="L476">            LOGGER.info(&quot;Unable to reset the search analyzer&quot;, ex);</span>
-<span class="nc" id="L477">        } catch (IOException ex) {</span>
-<span class="nc" id="L478">            LOGGER.warn(&quot;An error occurred reading CPE data. See the log for more details.&quot;);</span>
-<span class="nc" id="L479">            LOGGER.info(&quot;IO Error with search string: {}&quot;, searchString, ex);</span>
-<span class="nc" id="L480">        }</span>
-<span class="nc" id="L481">        return null;</span>
+<span class="fc" id="L451">            return ret;</span>
+<span class="nc" id="L452">        } catch (ParseException ex) {</span>
+<span class="nc" id="L453">            LOGGER.warn(&quot;An error occurred querying the CPE data. See the log for more details.&quot;);</span>
+<span class="nc" id="L454">            LOGGER.info(&quot;Unable to parse: {}&quot;, searchString, ex);</span>
+<span class="nc" id="L455">        } catch (IndexException ex) {</span>
+<span class="nc" id="L456">            LOGGER.warn(&quot;An error occurred resetting the CPE index searcher. See the log for more details.&quot;);</span>
+<span class="nc" id="L457">            LOGGER.info(&quot;Unable to reset the search analyzer&quot;, ex);</span>
+<span class="nc" id="L458">        } catch (IOException ex) {</span>
+<span class="nc" id="L459">            LOGGER.warn(&quot;An error occurred reading CPE data. See the log for more details.&quot;);</span>
+<span class="nc" id="L460">            LOGGER.info(&quot;IO Error with search string: {}&quot;, searchString, ex);</span>
+<span class="nc" id="L461">        }</span>
+<span class="nc" id="L462">        return null;</span>
     }
 
     /**
@@ -502,16 +483,16 @@ import us.springett.parsers.cpe.values.Part;
     protected String buildSearch(Map&lt;String, MutableInt&gt; vendor, Map&lt;String, MutableInt&gt; product,
             Set&lt;String&gt; vendorWeighting, Set&lt;String&gt; productWeightings) {
 
-<span class="fc" id="L505">        final StringBuilder sb = new StringBuilder();</span>
+<span class="fc" id="L486">        final StringBuilder sb = new StringBuilder();</span>
 
-<span class="fc bfc" id="L507" title="All 2 branches covered.">        if (!appendWeightedSearch(sb, Fields.PRODUCT, product, productWeightings)) {</span>
-<span class="fc" id="L508">            return null;</span>
+<span class="fc bfc" id="L488" title="All 2 branches covered.">        if (!appendWeightedSearch(sb, Fields.PRODUCT, product, productWeightings)) {</span>
+<span class="fc" id="L489">            return null;</span>
         }
-<span class="fc" id="L510">        sb.append(&quot; AND &quot;);</span>
-<span class="pc bpc" id="L511" title="1 of 2 branches missed.">        if (!appendWeightedSearch(sb, Fields.VENDOR, vendor, vendorWeighting)) {</span>
-<span class="nc" id="L512">            return null;</span>
+<span class="fc" id="L491">        sb.append(&quot; AND &quot;);</span>
+<span class="pc bpc" id="L492" title="1 of 2 branches missed.">        if (!appendWeightedSearch(sb, Fields.VENDOR, vendor, vendorWeighting)) {</span>
+<span class="nc" id="L493">            return null;</span>
         }
-<span class="fc" id="L514">        return sb.toString();</span>
+<span class="fc" id="L495">        return sb.toString();</span>
     }
 
     /**
@@ -530,58 +511,58 @@ import us.springett.parsers.cpe.values.Part;
      */
     @SuppressWarnings(&quot;StringSplitter&quot;)
     private boolean appendWeightedSearch(StringBuilder sb, String field, Map&lt;String, MutableInt&gt; terms, Set&lt;String&gt; weightedText) {
-<span class="pc bpc" id="L533" title="1 of 2 branches missed.">        if (terms.isEmpty()) {</span>
-<span class="nc" id="L534">            return false;</span>
+<span class="pc bpc" id="L514" title="1 of 2 branches missed.">        if (terms.isEmpty()) {</span>
+<span class="nc" id="L515">            return false;</span>
         }
-<span class="fc" id="L536">        sb.append(field).append(&quot;:(&quot;);</span>
-<span class="fc" id="L537">        boolean addSpace = false;</span>
-<span class="fc" id="L538">        boolean addedTerm = false;</span>
+<span class="fc" id="L517">        sb.append(field).append(&quot;:(&quot;);</span>
+<span class="fc" id="L518">        boolean addSpace = false;</span>
+<span class="fc" id="L519">        boolean addedTerm = false;</span>
 
-<span class="fc bfc" id="L540" title="All 2 branches covered.">        for (Map.Entry&lt;String, MutableInt&gt; entry : terms.entrySet()) {</span>
-<span class="fc" id="L541">            final StringBuilder boostedTerms = new StringBuilder();</span>
-<span class="fc" id="L542">            final int weighting = entry.getValue().intValue();</span>
-<span class="fc" id="L543">            final String[] text = entry.getKey().split(&quot; &quot;);</span>
-<span class="fc bfc" id="L544" title="All 2 branches covered.">            for (String word : text) {</span>
-<span class="fc bfc" id="L545" title="All 2 branches covered.">                if (word.isEmpty()) {</span>
-<span class="fc" id="L546">                    continue;</span>
+<span class="fc bfc" id="L521" title="All 2 branches covered.">        for (Map.Entry&lt;String, MutableInt&gt; entry : terms.entrySet()) {</span>
+<span class="fc" id="L522">            final StringBuilder boostedTerms = new StringBuilder();</span>
+<span class="fc" id="L523">            final int weighting = entry.getValue().intValue();</span>
+<span class="fc" id="L524">            final String[] text = entry.getKey().split(&quot; &quot;);</span>
+<span class="fc bfc" id="L525" title="All 2 branches covered.">            for (String word : text) {</span>
+<span class="fc bfc" id="L526" title="All 2 branches covered.">                if (word.isEmpty()) {</span>
+<span class="fc" id="L527">                    continue;</span>
                 }
-<span class="fc bfc" id="L548" title="All 2 branches covered.">                if (addSpace) {</span>
-<span class="fc" id="L549">                    sb.append(&quot; &quot;);</span>
+<span class="fc bfc" id="L529" title="All 2 branches covered.">                if (addSpace) {</span>
+<span class="fc" id="L530">                    sb.append(&quot; &quot;);</span>
                 } else {
-<span class="fc" id="L551">                    addSpace = true;</span>
+<span class="fc" id="L532">                    addSpace = true;</span>
                 }
-<span class="fc" id="L553">                addedTerm = true;</span>
-<span class="fc bfc" id="L554" title="All 2 branches covered.">                if (LuceneUtils.isKeyword(word)) {</span>
-<span class="fc" id="L555">                    sb.append(&quot;\&quot;&quot;);</span>
-<span class="fc" id="L556">                    LuceneUtils.appendEscapedLuceneQuery(sb, word);</span>
-<span class="fc" id="L557">                    sb.append(&quot;\&quot;&quot;);</span>
+<span class="fc" id="L534">                addedTerm = true;</span>
+<span class="fc bfc" id="L535" title="All 2 branches covered.">                if (LuceneUtils.isKeyword(word)) {</span>
+<span class="fc" id="L536">                    sb.append(&quot;\&quot;&quot;);</span>
+<span class="fc" id="L537">                    LuceneUtils.appendEscapedLuceneQuery(sb, word);</span>
+<span class="fc" id="L538">                    sb.append(&quot;\&quot;&quot;);</span>
                 } else {
-<span class="fc" id="L559">                    LuceneUtils.appendEscapedLuceneQuery(sb, word);</span>
+<span class="fc" id="L540">                    LuceneUtils.appendEscapedLuceneQuery(sb, word);</span>
                 }
-<span class="fc" id="L561">                final String boostTerm = findBoostTerm(word, weightedText);</span>
+<span class="fc" id="L542">                final String boostTerm = findBoostTerm(word, weightedText);</span>
 
                 //The weighting is on a full phrase rather then at a term level for vendor or products
                 //TODO - should the weighting be at a &quot;word&quot; level as opposed to phrase level? Or combined word and phrase?
                 //remember the reason we are counting the frequency of &quot;phrases&quot; as opposed to terms is that
                 //we need to keep the correct sequence of terms from the evidence so the term concatenating analyzer
                 //works correctly and will causes searches to take spring framework and produce: spring springframework framework
-<span class="fc bfc" id="L568" title="All 2 branches covered.">                if (boostTerm != null) {</span>
-<span class="fc" id="L569">                    sb.append(&quot;^&quot;).append(weighting + WEIGHTING_BOOST);</span>
-<span class="fc bfc" id="L570" title="All 2 branches covered.">                    if (!boostTerm.equals(word)) {</span>
-<span class="fc" id="L571">                        boostedTerms.append(&quot; &quot;);</span>
-<span class="fc" id="L572">                        LuceneUtils.appendEscapedLuceneQuery(boostedTerms, boostTerm);</span>
-<span class="fc" id="L573">                        boostedTerms.append(&quot;^&quot;).append(weighting + WEIGHTING_BOOST);</span>
+<span class="fc bfc" id="L549" title="All 2 branches covered.">                if (boostTerm != null) {</span>
+<span class="fc" id="L550">                    sb.append(&quot;^&quot;).append(weighting + WEIGHTING_BOOST);</span>
+<span class="fc bfc" id="L551" title="All 2 branches covered.">                    if (!boostTerm.equals(word)) {</span>
+<span class="fc" id="L552">                        boostedTerms.append(&quot; &quot;);</span>
+<span class="fc" id="L553">                        LuceneUtils.appendEscapedLuceneQuery(boostedTerms, boostTerm);</span>
+<span class="fc" id="L554">                        boostedTerms.append(&quot;^&quot;).append(weighting + WEIGHTING_BOOST);</span>
                     }
-<span class="fc bfc" id="L575" title="All 2 branches covered.">                } else if (weighting &gt; 1) {</span>
-<span class="fc" id="L576">                    sb.append(&quot;^&quot;).append(weighting);</span>
+<span class="fc bfc" id="L556" title="All 2 branches covered.">                } else if (weighting &gt; 1) {</span>
+<span class="fc" id="L557">                    sb.append(&quot;^&quot;).append(weighting);</span>
                 }
             }
-<span class="fc bfc" id="L579" title="All 2 branches covered.">            if (boostedTerms.length() &gt; 0) {</span>
-<span class="fc" id="L580">                sb.append(boostedTerms);</span>
+<span class="fc bfc" id="L560" title="All 2 branches covered.">            if (boostedTerms.length() &gt; 0) {</span>
+<span class="fc" id="L561">                sb.append(boostedTerms);</span>
             }
-<span class="fc" id="L582">        }</span>
-<span class="fc" id="L583">        sb.append(&quot;)&quot;);</span>
-<span class="fc" id="L584">        return addedTerm;</span>
+<span class="fc" id="L563">        }</span>
+<span class="fc" id="L564">        sb.append(&quot;)&quot;);</span>
+<span class="fc" id="L565">        return addedTerm;</span>
     }
 
     /**
@@ -592,7 +573,7 @@ import us.springett.parsers.cpe.values.Part;
      * @return the text having removed some characters.
      */
     private String cleanseText(String text) {
-<span class="fc" id="L595">        return text.replaceAll(CLEANSE_CHARACTER_RX, &quot; &quot;);</span>
+<span class="fc" id="L576">        return text.replaceAll(CLEANSE_CHARACTER_RX, &quot; &quot;);</span>
     }
 
     /**
@@ -605,12 +586,12 @@ import us.springett.parsers.cpe.values.Part;
      * @return the value identified
      */
     private String findBoostTerm(String term, Set&lt;String&gt; boost) {
-<span class="fc bfc" id="L608" title="All 2 branches covered.">        for (String entry : boost) {</span>
-<span class="fc bfc" id="L609" title="All 2 branches covered.">            if (equalsIgnoreCaseAndNonAlpha(term, entry)) {</span>
-<span class="fc" id="L610">                return entry;</span>
+<span class="fc bfc" id="L589" title="All 2 branches covered.">        for (String entry : boost) {</span>
+<span class="fc bfc" id="L590" title="All 2 branches covered.">            if (equalsIgnoreCaseAndNonAlpha(term, entry)) {</span>
+<span class="fc" id="L591">                return entry;</span>
             }
-<span class="fc" id="L612">        }</span>
-<span class="fc" id="L613">        return null;</span>
+<span class="fc" id="L593">        }</span>
+<span class="fc" id="L594">        return null;</span>
     }
 
     /**
@@ -622,13 +603,13 @@ import us.springett.parsers.cpe.values.Part;
      * @return whether or not the two strings are similar.
      */
     private boolean equalsIgnoreCaseAndNonAlpha(String l, String r) {
-<span class="pc bpc" id="L625" title="2 of 4 branches missed.">        if (l == null || r == null) {</span>
-<span class="nc" id="L626">            return false;</span>
+<span class="pc bpc" id="L606" title="2 of 4 branches missed.">        if (l == null || r == null) {</span>
+<span class="nc" id="L607">            return false;</span>
         }
 
-<span class="fc" id="L629">        final String left = l.replaceAll(CLEANSE_NONALPHA_RX, &quot;&quot;);</span>
-<span class="fc" id="L630">        final String right = r.replaceAll(CLEANSE_NONALPHA_RX, &quot;&quot;);</span>
-<span class="fc" id="L631">        return left.equalsIgnoreCase(right);</span>
+<span class="fc" id="L610">        final String left = l.replaceAll(CLEANSE_NONALPHA_RX, &quot;&quot;);</span>
+<span class="fc" id="L611">        final String right = r.replaceAll(CLEANSE_NONALPHA_RX, &quot;&quot;);</span>
+<span class="fc" id="L612">        return left.equalsIgnoreCase(right);</span>
     }
 
     /**
@@ -643,39 +624,39 @@ import us.springett.parsers.cpe.values.Part;
      */
     private boolean verifyEntry(final IndexEntry entry, final Dependency dependency,
             final Set&lt;String&gt; majorVersions) {
-<span class="fc" id="L646">        boolean isValid = false;</span>
+<span class="fc" id="L627">        boolean isValid = false;</span>
         //TODO - does this nullify some of the fuzzy matching that happens in the lucene search?
         // for instance CPE some-component and in the evidence we have SomeComponent.
 
         //TODO - should this have a package manager only flag instead of just looking for NPM
-<span class="fc bfc" id="L651" title="All 2 branches covered.">        if (Ecosystem.NODEJS.equals(dependency.getEcosystem())) {</span>
-<span class="fc bfc" id="L652" title="All 2 branches covered.">            for (Identifier i : dependency.getSoftwareIdentifiers()) {</span>
-<span class="pc bpc" id="L653" title="1 of 2 branches missed.">                if (i instanceof PurlIdentifier) {</span>
-<span class="fc" id="L654">                    final PurlIdentifier p = (PurlIdentifier) i;</span>
-<span class="fc bfc" id="L655" title="All 2 branches covered.">                    if (cleanPackageName(p.getName()).equals(cleanPackageName(entry.getProduct()))) {</span>
-<span class="fc" id="L656">                        isValid = true;</span>
+<span class="fc bfc" id="L632" title="All 2 branches covered.">        if (Ecosystem.NODEJS.equals(dependency.getEcosystem())) {</span>
+<span class="fc bfc" id="L633" title="All 2 branches covered.">            for (Identifier i : dependency.getSoftwareIdentifiers()) {</span>
+<span class="pc bpc" id="L634" title="1 of 2 branches missed.">                if (i instanceof PurlIdentifier) {</span>
+<span class="fc" id="L635">                    final PurlIdentifier p = (PurlIdentifier) i;</span>
+<span class="fc bfc" id="L636" title="All 2 branches covered.">                    if (cleanPackageName(p.getName()).equals(cleanPackageName(entry.getProduct()))) {</span>
+<span class="fc" id="L637">                        isValid = true;</span>
                     }
                 }
-<span class="fc" id="L659">            }</span>
-<span class="fc bfc" id="L660" title="All 2 branches covered.">        } else if (collectionContainsString(dependency.getEvidence(EvidenceType.VENDOR), entry.getVendor())) {</span>
-<span class="fc bfc" id="L661" title="All 2 branches covered.">            if (collectionContainsString(dependency.getEvidence(EvidenceType.PRODUCT), entry.getProduct())) {</span>
-<span class="fc" id="L662">                isValid = true;</span>
+<span class="fc" id="L640">            }</span>
+<span class="fc bfc" id="L641" title="All 2 branches covered.">        } else if (collectionContainsString(dependency.getEvidence(EvidenceType.VENDOR), entry.getVendor())) {</span>
+<span class="fc bfc" id="L642" title="All 2 branches covered.">            if (collectionContainsString(dependency.getEvidence(EvidenceType.PRODUCT), entry.getProduct())) {</span>
+<span class="fc" id="L643">                isValid = true;</span>
             } else {
-<span class="fc" id="L664">                isValid = majorVersions.stream().filter(version</span>
-<span class="pc bpc" id="L665" title="4 of 6 branches missed.">                        -&gt; version != null &amp;&amp; entry.getProduct().endsWith(&quot;v&quot; + version) &amp;&amp; entry.getProduct().length() &gt; version.length() + 1)</span>
-<span class="fc" id="L666">                        .anyMatch(version</span>
-<span class="nc" id="L667">                                -&gt; collectionContainsString(dependency.getEvidence(EvidenceType.PRODUCT),</span>
-<span class="nc" id="L668">                                entry.getProduct().substring(0, entry.getProduct().length() - version.length() - 1))</span>
+<span class="fc" id="L645">                isValid = majorVersions.stream().filter(version</span>
+<span class="pc bpc" id="L646" title="4 of 6 branches missed.">                        -&gt; version != null &amp;&amp; entry.getProduct().endsWith(&quot;v&quot; + version) &amp;&amp; entry.getProduct().length() &gt; version.length() + 1)</span>
+<span class="fc" id="L647">                        .anyMatch(version</span>
+<span class="nc" id="L648">                                -&gt; collectionContainsString(dependency.getEvidence(EvidenceType.PRODUCT),</span>
+<span class="nc" id="L649">                                entry.getProduct().substring(0, entry.getProduct().length() - version.length() - 1))</span>
                         );
-<span class="fc" id="L670">                isValid |= majorVersions.stream().filter(version</span>
-<span class="pc bpc" id="L671" title="2 of 6 branches missed.">                        -&gt; version != null &amp;&amp; entry.getProduct().endsWith(version) &amp;&amp; entry.getProduct().length() &gt; version.length())</span>
-<span class="fc" id="L672">                        .anyMatch(version</span>
-<span class="fc" id="L673">                                -&gt; collectionContainsString(dependency.getEvidence(EvidenceType.PRODUCT),</span>
-<span class="fc" id="L674">                                entry.getProduct().substring(0, entry.getProduct().length() - version.length()))</span>
+<span class="fc" id="L651">                isValid |= majorVersions.stream().filter(version</span>
+<span class="pc bpc" id="L652" title="2 of 6 branches missed.">                        -&gt; version != null &amp;&amp; entry.getProduct().endsWith(version) &amp;&amp; entry.getProduct().length() &gt; version.length())</span>
+<span class="fc" id="L653">                        .anyMatch(version</span>
+<span class="fc" id="L654">                                -&gt; collectionContainsString(dependency.getEvidence(EvidenceType.PRODUCT),</span>
+<span class="fc" id="L655">                                entry.getProduct().substring(0, entry.getProduct().length() - version.length()))</span>
                         );
             }
         }
-<span class="fc" id="L678">        return isValid;</span>
+<span class="fc" id="L659">        return isValid;</span>
     }
 
     /**
@@ -685,10 +666,10 @@ import us.springett.parsers.cpe.values.Part;
      * @return the cleansed packaage name
      */
     private String cleanPackageName(String name) {
-<span class="pc bpc" id="L688" title="1 of 2 branches missed.">        if (name == null) {</span>
-<span class="nc" id="L689">            return &quot;&quot;;</span>
+<span class="pc bpc" id="L669" title="1 of 2 branches missed.">        if (name == null) {</span>
+<span class="nc" id="L670">            return &quot;&quot;;</span>
         }
-<span class="fc" id="L691">        return name.replaceAll(&quot;[^a-zA-Z0-9]+&quot;, &quot;&quot;);</span>
+<span class="fc" id="L672">        return name.replaceAll(&quot;[^a-zA-Z0-9]+&quot;, &quot;&quot;);</span>
     }
 
     /**
@@ -701,70 +682,70 @@ import us.springett.parsers.cpe.values.Part;
     @SuppressWarnings(&quot;StringSplitter&quot;)
     private boolean collectionContainsString(Set&lt;Evidence&gt; evidence, String text) {
         //TODO - likely need to change the split... not sure if this will work for CPE with special chars
-<span class="pc bpc" id="L704" title="1 of 2 branches missed.">        if (text == null) {</span>
-<span class="nc" id="L705">            return false;</span>
+<span class="pc bpc" id="L685" title="1 of 2 branches missed.">        if (text == null) {</span>
+<span class="nc" id="L686">            return false;</span>
         }
         // Check if we have an exact match
-<span class="fc" id="L708">        final String textLC = text.toLowerCase();</span>
-<span class="fc bfc" id="L709" title="All 2 branches covered.">        for (Evidence e : evidence) {</span>
-<span class="fc bfc" id="L710" title="All 2 branches covered.">            if (e.getValue().toLowerCase().equals(textLC)) {</span>
-<span class="fc" id="L711">                return true;</span>
+<span class="fc" id="L689">        final String textLC = text.toLowerCase();</span>
+<span class="fc bfc" id="L690" title="All 2 branches covered.">        for (Evidence e : evidence) {</span>
+<span class="fc bfc" id="L691" title="All 2 branches covered.">            if (e.getValue().toLowerCase().equals(textLC)) {</span>
+<span class="fc" id="L692">                return true;</span>
             }
-<span class="fc" id="L713">        }</span>
+<span class="fc" id="L694">        }</span>
 
-<span class="fc" id="L715">        final String[] words = text.split(&quot;[\\s_-]+&quot;);</span>
-<span class="fc" id="L716">        final List&lt;String&gt; list = new ArrayList&lt;&gt;();</span>
-<span class="fc" id="L717">        String tempWord = null;</span>
-<span class="fc" id="L718">        final CharArraySet stopWords = SearchFieldAnalyzer.getStopWords();</span>
-<span class="fc bfc" id="L719" title="All 2 branches covered.">        for (String word : words) {</span>
+<span class="fc" id="L696">        final String[] words = text.split(&quot;[\\s_-]+&quot;);</span>
+<span class="fc" id="L697">        final List&lt;String&gt; list = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L698">        String tempWord = null;</span>
+<span class="fc" id="L699">        final CharArraySet stopWords = SearchFieldAnalyzer.getStopWords();</span>
+<span class="fc bfc" id="L700" title="All 2 branches covered.">        for (String word : words) {</span>
             /*
              single letter words should be concatenated with the next word.
              so { &quot;m&quot;, &quot;core&quot;, &quot;sample&quot; } -&gt; { &quot;mcore&quot;, &quot;sample&quot; }
              */
-<span class="fc bfc" id="L724" title="All 2 branches covered.">            if (tempWord != null) {</span>
-<span class="fc" id="L725">                list.add(tempWord + word);</span>
-<span class="fc" id="L726">                tempWord = null;</span>
-<span class="fc bfc" id="L727" title="All 2 branches covered.">            } else if (word.length() &lt;= 2) {</span>
-<span class="fc" id="L728">                tempWord = word;</span>
+<span class="fc bfc" id="L705" title="All 2 branches covered.">            if (tempWord != null) {</span>
+<span class="fc" id="L706">                list.add(tempWord + word);</span>
+<span class="fc" id="L707">                tempWord = null;</span>
+<span class="fc bfc" id="L708" title="All 2 branches covered.">            } else if (word.length() &lt;= 2) {</span>
+<span class="fc" id="L709">                tempWord = word;</span>
             } else {
-<span class="fc bfc" id="L730" title="All 2 branches covered.">                if (stopWords.contains(word)) {</span>
-<span class="fc" id="L731">                    continue;</span>
+<span class="fc bfc" id="L711" title="All 2 branches covered.">                if (stopWords.contains(word)) {</span>
+<span class="fc" id="L712">                    continue;</span>
                 }
-<span class="fc" id="L733">                list.add(word);</span>
+<span class="fc" id="L714">                list.add(word);</span>
             }
         }
-<span class="fc bfc" id="L736" title="All 2 branches covered.">        if (tempWord != null) {</span>
-<span class="fc bfc" id="L737" title="All 2 branches covered.">            if (!list.isEmpty()) {</span>
-<span class="fc" id="L738">                final String tmp = list.get(list.size() - 1) + tempWord;</span>
-<span class="fc" id="L739">                list.add(tmp);</span>
-<span class="fc" id="L740">            } else {</span>
-<span class="fc" id="L741">                list.add(tempWord);</span>
+<span class="fc bfc" id="L717" title="All 2 branches covered.">        if (tempWord != null) {</span>
+<span class="fc bfc" id="L718" title="All 2 branches covered.">            if (!list.isEmpty()) {</span>
+<span class="fc" id="L719">                final String tmp = list.get(list.size() - 1) + tempWord;</span>
+<span class="fc" id="L720">                list.add(tmp);</span>
+<span class="fc" id="L721">            } else {</span>
+<span class="fc" id="L722">                list.add(tempWord);</span>
             }
         }
-<span class="pc bpc" id="L744" title="1 of 2 branches missed.">        if (list.isEmpty()) {</span>
-<span class="nc" id="L745">            return false;</span>
+<span class="pc bpc" id="L725" title="1 of 2 branches missed.">        if (list.isEmpty()) {</span>
+<span class="nc" id="L726">            return false;</span>
         }
-<span class="fc" id="L747">        boolean isValid = true;</span>
+<span class="fc" id="L728">        boolean isValid = true;</span>
 
         // Prepare the evidence values, e.g. remove the characters we used for splitting
-<span class="fc" id="L750">        final List&lt;String&gt; evidenceValues = new ArrayList&lt;&gt;(evidence.size());</span>
-<span class="fc" id="L751">        evidence.forEach((e) -&gt; evidenceValues.add(e.getValue().toLowerCase().replaceAll(&quot;[\\s_-]+&quot;, &quot;&quot;)));</span>
+<span class="fc" id="L731">        final List&lt;String&gt; evidenceValues = new ArrayList&lt;&gt;(evidence.size());</span>
+<span class="fc" id="L732">        evidence.forEach((e) -&gt; evidenceValues.add(e.getValue().toLowerCase().replaceAll(&quot;[\\s_-]+&quot;, &quot;&quot;)));</span>
 
-<span class="fc bfc" id="L753" title="All 2 branches covered.">        for (String word : list) {</span>
-<span class="fc" id="L754">            word = word.toLowerCase();</span>
-<span class="fc" id="L755">            boolean found = false;</span>
-<span class="fc bfc" id="L756" title="All 2 branches covered.">            for (String e : evidenceValues) {</span>
-<span class="fc bfc" id="L757" title="All 2 branches covered.">                if (e.contains(word)) {</span>
-<span class="fc bfc" id="L758" title="All 4 branches covered.">                    if (&quot;http&quot;.equals(word) &amp;&amp; e.contains(&quot;http:&quot;)) {</span>
-<span class="fc" id="L759">                        continue;</span>
+<span class="fc bfc" id="L734" title="All 2 branches covered.">        for (String word : list) {</span>
+<span class="fc" id="L735">            word = word.toLowerCase();</span>
+<span class="fc" id="L736">            boolean found = false;</span>
+<span class="fc bfc" id="L737" title="All 2 branches covered.">            for (String e : evidenceValues) {</span>
+<span class="fc bfc" id="L738" title="All 2 branches covered.">                if (e.contains(word)) {</span>
+<span class="fc bfc" id="L739" title="All 4 branches covered.">                    if (&quot;http&quot;.equals(word) &amp;&amp; e.contains(&quot;http:&quot;)) {</span>
+<span class="fc" id="L740">                        continue;</span>
                     }
-<span class="fc" id="L761">                    found = true;</span>
-<span class="fc" id="L762">                    break;</span>
+<span class="fc" id="L742">                    found = true;</span>
+<span class="fc" id="L743">                    break;</span>
                 }
-<span class="fc" id="L764">            }</span>
-<span class="fc" id="L765">            isValid &amp;= found;</span>
-<span class="fc" id="L766">        }</span>
-<span class="fc" id="L767">        return isValid;</span>
+<span class="fc" id="L745">            }</span>
+<span class="fc" id="L746">            isValid &amp;= found;</span>
+<span class="fc" id="L747">        }</span>
+<span class="fc" id="L748">        return isValid;</span>
     }
 
     /**
@@ -778,19 +759,19 @@ import us.springett.parsers.cpe.values.Part;
      */
     @Override
     protected void analyzeDependency(Dependency dependency, Engine engine) throws AnalysisException {
-<span class="pc bpc" id="L781" title="1 of 2 branches missed.">        if (skipEcosystems.contains(dependency.getEcosystem())) {</span>
-<span class="nc" id="L782">            return;</span>
+<span class="pc bpc" id="L762" title="1 of 2 branches missed.">        if (skipEcosystems.contains(dependency.getEcosystem())) {</span>
+<span class="nc" id="L763">            return;</span>
         }
         try {
-<span class="fc" id="L785">            determineCPE(dependency);</span>
-<span class="nc" id="L786">        } catch (CorruptIndexException ex) {</span>
-<span class="nc" id="L787">            throw new AnalysisException(&quot;CPE Index is corrupt.&quot;, ex);</span>
-<span class="nc" id="L788">        } catch (IOException ex) {</span>
-<span class="nc" id="L789">            throw new AnalysisException(&quot;Failure opening the CPE Index.&quot;, ex);</span>
-<span class="nc" id="L790">        } catch (ParseException ex) {</span>
-<span class="nc" id="L791">            throw new AnalysisException(&quot;Unable to parse the generated Lucene query for this dependency.&quot;, ex);</span>
-<span class="fc" id="L792">        }</span>
-<span class="fc" id="L793">    }</span>
+<span class="fc" id="L766">            determineCPE(dependency);</span>
+<span class="nc" id="L767">        } catch (CorruptIndexException ex) {</span>
+<span class="nc" id="L768">            throw new AnalysisException(&quot;CPE Index is corrupt.&quot;, ex);</span>
+<span class="nc" id="L769">        } catch (IOException ex) {</span>
+<span class="nc" id="L770">            throw new AnalysisException(&quot;Failure opening the CPE Index.&quot;, ex);</span>
+<span class="nc" id="L771">        } catch (ParseException ex) {</span>
+<span class="nc" id="L772">            throw new AnalysisException(&quot;Unable to parse the generated Lucene query for this dependency.&quot;, ex);</span>
+<span class="fc" id="L773">        }</span>
+<span class="fc" id="L774">    }</span>
 
     /**
      * Retrieves a list of CPE values from the CveDB based on the vendor and
@@ -806,174 +787,171 @@ import us.springett.parsers.cpe.values.Part;
      * analysis
      * @return &lt;code&gt;true&lt;/code&gt; if an identifier was added to the dependency;
      * otherwise &lt;code&gt;false&lt;/code&gt;
-     * @throws UnsupportedEncodingException is thrown if UTF-8 is not supported
      * @throws AnalysisException thrown if the suppression rules failed
      */
     @SuppressWarnings(&quot;StringSplitter&quot;)
     protected boolean determineIdentifiers(Dependency dependency, String vendor, String product,
-            Confidence currentConfidence) throws UnsupportedEncodingException, AnalysisException {
+            Confidence currentConfidence) throws AnalysisException {
 
-<span class="fc" id="L816">        final CpeBuilder cpeBuilder = new CpeBuilder();</span>
+<span class="fc" id="L796">        final CpeBuilder cpeBuilder = new CpeBuilder();</span>
 
-<span class="fc" id="L818">        final Set&lt;CpePlus&gt; cpePlusEntries = cve.getCPEs(vendor, product);</span>
-<span class="fc" id="L819">        final Set&lt;Cpe&gt; cpes = filterEcosystem(dependency.getEcosystem(), cpePlusEntries);</span>
-<span class="pc bpc" id="L820" title="2 of 4 branches missed.">        if (cpes == null || cpes.isEmpty()) {</span>
-<span class="nc" id="L821">            return false;</span>
+<span class="fc" id="L798">        final Set&lt;CpePlus&gt; cpePlusEntries = cve.getCPEs(vendor, product);</span>
+<span class="fc" id="L799">        final Set&lt;Cpe&gt; cpes = filterEcosystem(dependency.getEcosystem(), cpePlusEntries);</span>
+<span class="pc bpc" id="L800" title="2 of 4 branches missed.">        if (cpes == null || cpes.isEmpty()) {</span>
+<span class="nc" id="L801">            return false;</span>
         }
 
         DependencyVersion bestGuess;
-<span class="pc bpc" id="L825" title="3 of 4 branches missed.">        if (&quot;Golang&quot;.equals(dependency.getEcosystem()) &amp;&amp; dependency.getVersion() == null) {</span>
-<span class="nc" id="L826">            bestGuess = new DependencyVersion(&quot;*&quot;);</span>
+<span class="pc bpc" id="L805" title="3 of 4 branches missed.">        if (&quot;Golang&quot;.equals(dependency.getEcosystem()) &amp;&amp; dependency.getVersion() == null) {</span>
+<span class="nc" id="L806">            bestGuess = new DependencyVersion(&quot;*&quot;);</span>
         } else {
-<span class="fc" id="L828">            bestGuess = new DependencyVersion(&quot;-&quot;);</span>
+<span class="fc" id="L808">            bestGuess = new DependencyVersion(&quot;-&quot;);</span>
         }
-<span class="fc" id="L830">        String bestGuessUpdate = null;</span>
-<span class="fc" id="L831">        Confidence bestGuessConf = null;</span>
-<span class="fc" id="L832">        String bestGuessURL = null;</span>
-<span class="fc" id="L833">        final Set&lt;IdentifierMatch&gt; collected = new HashSet&lt;&gt;();</span>
+<span class="fc" id="L810">        String bestGuessUpdate = null;</span>
+<span class="fc" id="L811">        Confidence bestGuessConf = null;</span>
+<span class="fc" id="L812">        String bestGuessURL = null;</span>
+<span class="fc" id="L813">        final Set&lt;IdentifierMatch&gt; collected = new HashSet&lt;&gt;();</span>
 
-<span class="fc" id="L835">        considerDependencyVersion(dependency, vendor, product, currentConfidence, collected);</span>
+<span class="fc" id="L815">        considerDependencyVersion(dependency, vendor, product, currentConfidence, collected);</span>
 
         //TODO the following algorithm incorrectly identifies things as a lower version
         // if there lower confidence evidence when the current (highest) version number
         // is newer then anything in the NVD.
-<span class="fc bfc" id="L840" title="All 2 branches covered.">        for (Confidence conf : Confidence.values()) {</span>
-<span class="fc bfc" id="L841" title="All 2 branches covered.">            for (Evidence evidence : dependency.getIterator(EvidenceType.VERSION, conf)) {</span>
-<span class="fc" id="L842">                final DependencyVersion evVer = DependencyVersionUtil.parseVersion(evidence.getValue(), true);</span>
-<span class="fc bfc" id="L843" title="All 2 branches covered.">                if (evVer == null) {</span>
-<span class="fc" id="L844">                    continue;</span>
+<span class="fc bfc" id="L820" title="All 2 branches covered.">        for (Confidence conf : Confidence.values()) {</span>
+<span class="fc bfc" id="L821" title="All 2 branches covered.">            for (Evidence evidence : dependency.getIterator(EvidenceType.VERSION, conf)) {</span>
+<span class="fc" id="L822">                final DependencyVersion evVer = DependencyVersionUtil.parseVersion(evidence.getValue(), true);</span>
+<span class="fc bfc" id="L823" title="All 2 branches covered.">                if (evVer == null) {</span>
+<span class="fc" id="L824">                    continue;</span>
                 }
-<span class="fc" id="L846">                DependencyVersion evBaseVer = null;</span>
-<span class="fc" id="L847">                String evBaseVerUpdate = null;</span>
-<span class="fc" id="L848">                final int idx = evVer.getVersionParts().size() - 1;</span>
-<span class="fc" id="L849">                if (evVer.getVersionParts().get(idx)</span>
-<span class="fc bfc" id="L850" title="All 2 branches covered.">                        .matches(&quot;^(v|release|final|snapshot|beta|alpha|u|rc|m|20\\d\\d).*$&quot;)) {</span>
+<span class="fc" id="L826">                DependencyVersion evBaseVer = null;</span>
+<span class="fc" id="L827">                String evBaseVerUpdate = null;</span>
+<span class="fc" id="L828">                final int idx = evVer.getVersionParts().size() - 1;</span>
+<span class="fc" id="L829">                if (evVer.getVersionParts().get(idx)</span>
+<span class="fc bfc" id="L830" title="All 2 branches covered.">                        .matches(&quot;^(v|release|final|snapshot|beta|alpha|u|rc|m|20\\d\\d).*$&quot;)) {</span>
                     //store the update version
-<span class="fc" id="L852">                    final String checkUpdate = evVer.getVersionParts().get(idx);</span>
-<span class="pc bpc" id="L853" title="1 of 2 branches missed.">                    if (checkUpdate.matches(&quot;^(v|release|final|snapshot|beta|alpha|u|rc|m|20\\d\\d).*$&quot;)) {</span>
-<span class="fc" id="L854">                        evBaseVerUpdate = checkUpdate;</span>
-<span class="fc" id="L855">                        evBaseVer = new DependencyVersion();</span>
-<span class="fc" id="L856">                        evBaseVer.setVersionParts(evVer.getVersionParts().subList(0, idx));</span>
+<span class="fc" id="L832">                    final String checkUpdate = evVer.getVersionParts().get(idx);</span>
+<span class="pc bpc" id="L833" title="1 of 2 branches missed.">                    if (checkUpdate.matches(&quot;^(v|release|final|snapshot|beta|alpha|u|rc|m|20\\d\\d).*$&quot;)) {</span>
+<span class="fc" id="L834">                        evBaseVerUpdate = checkUpdate;</span>
+<span class="fc" id="L835">                        evBaseVer = new DependencyVersion();</span>
+<span class="fc" id="L836">                        evBaseVer.setVersionParts(evVer.getVersionParts().subList(0, idx));</span>
                     }
                 }
                 //TODO - review and update for new JSON data
-<span class="fc bfc" id="L860" title="All 2 branches covered.">                for (Cpe vs : cpes) {</span>
-<span class="fc" id="L861">                    final DependencyVersion dbVer = DependencyVersionUtil.parseVersion(vs.getVersion());</span>
-<span class="fc" id="L862">                    DependencyVersion dbVerUpdate = dbVer;</span>
-<span class="pc bpc" id="L863" title="2 of 8 branches missed.">                    if (vs.getUpdate() != null &amp;&amp; !vs.getUpdate().isEmpty() &amp;&amp; !vs.getUpdate().startsWith(&quot;*&quot;) &amp;&amp; !vs.getUpdate().startsWith(&quot;-&quot;)) {</span>
-<span class="fc" id="L864">                        dbVerUpdate = DependencyVersionUtil.parseVersion(vs.getVersion() + '.' + vs.getUpdate(), true);</span>
+<span class="fc bfc" id="L840" title="All 2 branches covered.">                for (Cpe vs : cpes) {</span>
+<span class="fc" id="L841">                    final DependencyVersion dbVer = DependencyVersionUtil.parseVersion(vs.getVersion());</span>
+<span class="fc" id="L842">                    DependencyVersion dbVerUpdate = dbVer;</span>
+<span class="pc bpc" id="L843" title="2 of 8 branches missed.">                    if (vs.getUpdate() != null &amp;&amp; !vs.getUpdate().isEmpty() &amp;&amp; !vs.getUpdate().startsWith(&quot;*&quot;) &amp;&amp; !vs.getUpdate().startsWith(&quot;-&quot;)) {</span>
+<span class="fc" id="L844">                        dbVerUpdate = DependencyVersionUtil.parseVersion(vs.getVersion() + '.' + vs.getUpdate(), true);</span>
                     }
-<span class="fc bfc" id="L866" title="All 2 branches covered.">                    if (dbVer == null) { //special case, no version specified - everything is vulnerable</span>
-<span class="fc" id="L867">                        final String url = String.format(NVD_SEARCH_BROAD_URL, URLEncoder.encode(vs.getVendor(), UTF8),</span>
-<span class="fc" id="L868">                                URLEncoder.encode(vs.getProduct(), UTF8));</span>
-<span class="fc" id="L869">                        final IdentifierMatch match = new IdentifierMatch(vs, url, IdentifierConfidence.BROAD_MATCH, conf);</span>
-<span class="fc" id="L870">                        collected.add(match);</span>
-<span class="fc bfc" id="L871" title="All 2 branches covered.">                    } else if (evVer.equals(dbVer)) {</span>
-<span class="fc" id="L872">                        addExactMatch(vs, evBaseVerUpdate, conf, collected);</span>
-<span class="fc bfc" id="L873" title="All 6 branches covered.">                    } else if (evBaseVer != null &amp;&amp; evBaseVer.equals(dbVer)</span>
-<span class="pc bpc" id="L874" title="1 of 2 branches missed.">                            &amp;&amp; (bestGuessConf == null || bestGuessConf.compareTo(conf) &gt; 0)) {</span>
-<span class="fc" id="L875">                        bestGuessConf = conf;</span>
-<span class="fc" id="L876">                        bestGuess = dbVer;</span>
-<span class="fc" id="L877">                        bestGuessUpdate = evBaseVerUpdate;</span>
-<span class="fc" id="L878">                        bestGuessURL = String.format(NVD_SEARCH_URL, URLEncoder.encode(vs.getVendor(), UTF8),</span>
-<span class="fc" id="L879">                                URLEncoder.encode(vs.getProduct(), UTF8), URLEncoder.encode(vs.getVersion(), UTF8));</span>
-<span class="pc bpc" id="L880" title="1 of 4 branches missed.">                    } else if (dbVerUpdate != null &amp;&amp; evVer.getVersionParts().size() &lt;= dbVerUpdate.getVersionParts().size()</span>
-<span class="fc bfc" id="L881" title="All 2 branches covered.">                            &amp;&amp; evVer.matchesAtLeastThreeLevels(dbVerUpdate)) {</span>
-<span class="pc bpc" id="L882" title="1 of 4 branches missed.">                        if (bestGuessConf == null || bestGuessConf.compareTo(conf) &gt; 0) {</span>
-<span class="pc bpc" id="L883" title="1 of 2 branches missed.">                            if (bestGuess.getVersionParts().size() &lt; dbVer.getVersionParts().size()) {</span>
-<span class="fc" id="L884">                                bestGuess = dbVer;</span>
-<span class="fc" id="L885">                                bestGuessUpdate = evBaseVerUpdate;</span>
-<span class="fc" id="L886">                                bestGuessConf = conf;</span>
+<span class="fc bfc" id="L846" title="All 2 branches covered.">                    if (dbVer == null) { //special case, no version specified - everything is vulnerable</span>
+<span class="fc" id="L847">                        final String url = CpeIdentifier.nvdProductSearchUrlFor(vs);</span>
+<span class="fc" id="L848">                        final IdentifierMatch match = new IdentifierMatch(vs, url, IdentifierConfidence.BROAD_MATCH, conf);</span>
+<span class="fc" id="L849">                        collected.add(match);</span>
+<span class="fc bfc" id="L850" title="All 2 branches covered.">                    } else if (evVer.equals(dbVer)) {</span>
+<span class="fc" id="L851">                        addExactMatch(vs, evBaseVerUpdate, conf, collected);</span>
+<span class="fc bfc" id="L852" title="All 6 branches covered.">                    } else if (evBaseVer != null &amp;&amp; evBaseVer.equals(dbVer)</span>
+<span class="pc bpc" id="L853" title="1 of 2 branches missed.">                            &amp;&amp; (bestGuessConf == null || bestGuessConf.compareTo(conf) &gt; 0)) {</span>
+<span class="fc" id="L854">                        bestGuessConf = conf;</span>
+<span class="fc" id="L855">                        bestGuess = dbVer;</span>
+<span class="fc" id="L856">                        bestGuessUpdate = evBaseVerUpdate;</span>
+<span class="fc" id="L857">                        bestGuessURL = CpeIdentifier.nvdSearchUrlFor(vs);</span>
+<span class="pc bpc" id="L858" title="1 of 4 branches missed.">                    } else if (dbVerUpdate != null &amp;&amp; evVer.getVersionParts().size() &lt;= dbVerUpdate.getVersionParts().size()</span>
+<span class="fc bfc" id="L859" title="All 2 branches covered.">                            &amp;&amp; evVer.matchesAtLeastThreeLevels(dbVerUpdate)) {</span>
+<span class="pc bpc" id="L860" title="1 of 4 branches missed.">                        if (bestGuessConf == null || bestGuessConf.compareTo(conf) &gt; 0) {</span>
+<span class="pc bpc" id="L861" title="1 of 2 branches missed.">                            if (bestGuess.getVersionParts().size() &lt; dbVer.getVersionParts().size()) {</span>
+<span class="fc" id="L862">                                bestGuess = dbVer;</span>
+<span class="fc" id="L863">                                bestGuessUpdate = evBaseVerUpdate;</span>
+<span class="fc" id="L864">                                bestGuessConf = conf;</span>
                             }
                         }
                     }
-<span class="fc" id="L890">                }</span>
-<span class="pc bpc" id="L891" title="1 of 4 branches missed.">                if ((bestGuessConf == null || bestGuessConf.compareTo(conf) &gt; 0)</span>
-<span class="fc bfc" id="L892" title="All 2 branches covered.">                        &amp;&amp; bestGuess.getVersionParts().size() &lt; evVer.getVersionParts().size()) {</span>
-<span class="fc" id="L893">                    bestGuess = evVer;</span>
-<span class="fc" id="L894">                    bestGuessUpdate = evBaseVerUpdate;</span>
-<span class="fc" id="L895">                    bestGuessConf = conf;</span>
+<span class="fc" id="L868">                }</span>
+<span class="pc bpc" id="L869" title="1 of 4 branches missed.">                if ((bestGuessConf == null || bestGuessConf.compareTo(conf) &gt; 0)</span>
+<span class="fc bfc" id="L870" title="All 2 branches covered.">                        &amp;&amp; bestGuess.getVersionParts().size() &lt; evVer.getVersionParts().size()) {</span>
+<span class="fc" id="L871">                    bestGuess = evVer;</span>
+<span class="fc" id="L872">                    bestGuessUpdate = evBaseVerUpdate;</span>
+<span class="fc" id="L873">                    bestGuessConf = conf;</span>
                 }
-<span class="fc" id="L897">            }</span>
+<span class="fc" id="L875">            }</span>
         }
 
-<span class="fc" id="L900">        cpeBuilder.part(Part.APPLICATION).vendor(vendor).product(product);</span>
-<span class="fc" id="L901">        final int idx = bestGuess.getVersionParts().size() - 1;</span>
-<span class="fc" id="L902">        if (bestGuess.getVersionParts().get(idx)</span>
-<span class="fc bfc" id="L903" title="All 2 branches covered.">                .matches(&quot;^(v|release|final|snapshot|beta|alpha|u|rc|m|20\\d\\d).*$&quot;)) {</span>
-<span class="fc" id="L904">            cpeBuilder.version(StringUtils.join(bestGuess.getVersionParts().subList(0, idx), &quot;.&quot;));</span>
+<span class="fc" id="L878">        cpeBuilder.part(Part.APPLICATION).vendor(vendor).product(product);</span>
+<span class="fc" id="L879">        final int idx = bestGuess.getVersionParts().size() - 1;</span>
+<span class="fc" id="L880">        if (bestGuess.getVersionParts().get(idx)</span>
+<span class="fc bfc" id="L881" title="All 2 branches covered.">                .matches(&quot;^(v|release|final|snapshot|beta|alpha|u|rc|m|20\\d\\d).*$&quot;)) {</span>
+<span class="fc" id="L882">            cpeBuilder.version(StringUtils.join(bestGuess.getVersionParts().subList(0, idx), &quot;.&quot;));</span>
             //when written - no update versions in the NVD start with v### - they all strip the v off
-<span class="fc bfc" id="L906" title="All 2 branches covered.">            if (bestGuess.getVersionParts().get(idx).matches(&quot;^v\\d.*$&quot;)) {</span>
-<span class="fc" id="L907">                cpeBuilder.update(bestGuess.getVersionParts().get(idx).substring(1));</span>
+<span class="fc bfc" id="L884" title="All 2 branches covered.">            if (bestGuess.getVersionParts().get(idx).matches(&quot;^v\\d.*$&quot;)) {</span>
+<span class="fc" id="L885">                cpeBuilder.update(bestGuess.getVersionParts().get(idx).substring(1));</span>
             } else {
-<span class="fc" id="L909">                cpeBuilder.update(bestGuess.getVersionParts().get(idx));</span>
+<span class="fc" id="L887">                cpeBuilder.update(bestGuess.getVersionParts().get(idx));</span>
             }
         } else {
-<span class="fc" id="L912">            cpeBuilder.version(bestGuess.toString());</span>
-<span class="fc bfc" id="L913" title="All 2 branches covered.">            if (bestGuessUpdate != null) {</span>
-<span class="fc" id="L914">                cpeBuilder.update(bestGuessUpdate);</span>
+<span class="fc" id="L890">            cpeBuilder.version(bestGuess.toString());</span>
+<span class="fc bfc" id="L891" title="All 2 branches covered.">            if (bestGuessUpdate != null) {</span>
+<span class="fc" id="L892">                cpeBuilder.update(bestGuessUpdate);</span>
             }
         }
         final Cpe guessCpe;
 
         try {
-<span class="fc" id="L920">            guessCpe = cpeBuilder.build();</span>
-<span class="nc" id="L921">        } catch (CpeValidationException ex) {</span>
-<span class="nc" id="L922">            throw new AnalysisException(String.format(&quot;Unable to create a CPE for %s:%s:%s&quot;, vendor, product, bestGuess));</span>
-<span class="fc" id="L923">        }</span>
-<span class="fc bfc" id="L924" title="All 2 branches covered.">        if (!&quot;-&quot;.equals(guessCpe.getVersion())) {</span>
-<span class="fc" id="L925">            String url = null;</span>
-<span class="fc bfc" id="L926" title="All 2 branches covered.">            if (bestGuessURL != null) {</span>
-<span class="fc" id="L927">                url = bestGuessURL;</span>
+<span class="fc" id="L898">            guessCpe = cpeBuilder.build();</span>
+<span class="nc" id="L899">        } catch (CpeValidationException ex) {</span>
+<span class="nc" id="L900">            throw new AnalysisException(String.format(&quot;Unable to create a CPE for %s:%s:%s&quot;, vendor, product, bestGuess));</span>
+<span class="fc" id="L901">        }</span>
+<span class="fc bfc" id="L902" title="All 2 branches covered.">        if (!&quot;-&quot;.equals(guessCpe.getVersion())) {</span>
+<span class="fc" id="L903">            String url = null;</span>
+<span class="fc bfc" id="L904" title="All 2 branches covered.">            if (bestGuessURL != null) {</span>
+<span class="fc" id="L905">                url = bestGuessURL;</span>
             }
-<span class="pc bpc" id="L929" title="1 of 2 branches missed.">            if (bestGuessConf == null) {</span>
-<span class="nc" id="L930">                bestGuessConf = Confidence.LOW;</span>
+<span class="pc bpc" id="L907" title="1 of 2 branches missed.">            if (bestGuessConf == null) {</span>
+<span class="nc" id="L908">                bestGuessConf = Confidence.LOW;</span>
             }
-<span class="fc" id="L932">            final IdentifierMatch match = new IdentifierMatch(guessCpe, url, IdentifierConfidence.BEST_GUESS, bestGuessConf);</span>
+<span class="fc" id="L910">            final IdentifierMatch match = new IdentifierMatch(guessCpe, url, IdentifierConfidence.BEST_GUESS, bestGuessConf);</span>
 
-<span class="fc" id="L934">            collected.add(match);</span>
+<span class="fc" id="L912">            collected.add(match);</span>
         }
-<span class="fc" id="L936">        boolean identifierAdded = false;</span>
-<span class="fc bfc" id="L937" title="All 2 branches covered.">        if (!collected.isEmpty()) {</span>
-<span class="fc" id="L938">            final List&lt;IdentifierMatch&gt; items = new ArrayList&lt;&gt;(collected);</span>
+<span class="fc" id="L914">        boolean identifierAdded = false;</span>
+<span class="fc bfc" id="L915" title="All 2 branches covered.">        if (!collected.isEmpty()) {</span>
+<span class="fc" id="L916">            final List&lt;IdentifierMatch&gt; items = new ArrayList&lt;&gt;(collected);</span>
 
-<span class="fc" id="L940">            Collections.sort(items);</span>
-<span class="fc" id="L941">            final IdentifierConfidence bestIdentifierQuality = items.get(0).getIdentifierConfidence();</span>
-<span class="fc" id="L942">            final Confidence bestEvidenceQuality = items.get(0).getEvidenceConfidence();</span>
-<span class="fc" id="L943">            boolean addedNonGuess = false;</span>
-<span class="fc" id="L944">            final Confidence prevAddedConfidence = dependency.getVulnerableSoftwareIdentifiers().stream().map(Identifier::getConfidence)</span>
-<span class="fc" id="L945">                    .min(Comparator.comparing(Confidence::ordinal))</span>
-<span class="fc" id="L946">                    .orElse(Confidence.LOW);</span>
+<span class="fc" id="L918">            Collections.sort(items);</span>
+<span class="fc" id="L919">            final IdentifierConfidence bestIdentifierQuality = items.get(0).getIdentifierConfidence();</span>
+<span class="fc" id="L920">            final Confidence bestEvidenceQuality = items.get(0).getEvidenceConfidence();</span>
+<span class="fc" id="L921">            boolean addedNonGuess = false;</span>
+<span class="fc" id="L922">            final Confidence prevAddedConfidence = dependency.getVulnerableSoftwareIdentifiers().stream().map(Identifier::getConfidence)</span>
+<span class="fc" id="L923">                    .min(Comparator.comparing(Confidence::ordinal))</span>
+<span class="fc" id="L924">                    .orElse(Confidence.LOW);</span>
 
-<span class="fc bfc" id="L948" title="All 2 branches covered.">            for (IdentifierMatch m : items) {</span>
-<span class="fc bfc" id="L949" title="All 2 branches covered.">                if (bestIdentifierQuality.equals(m.getIdentifierConfidence())</span>
-<span class="fc bfc" id="L950" title="All 2 branches covered.">                        &amp;&amp; bestEvidenceQuality.equals(m.getEvidenceConfidence())) {</span>
-<span class="fc" id="L951">                    final CpeIdentifier i = m.getIdentifier();</span>
-<span class="fc bfc" id="L952" title="All 2 branches covered.">                    if (bestIdentifierQuality == IdentifierConfidence.BEST_GUESS) {</span>
-<span class="pc bpc" id="L953" title="1 of 2 branches missed.">                        if (addedNonGuess) {</span>
-<span class="nc" id="L954">                            continue;</span>
+<span class="fc bfc" id="L926" title="All 2 branches covered.">            for (IdentifierMatch m : items) {</span>
+<span class="fc bfc" id="L927" title="All 2 branches covered.">                if (bestIdentifierQuality.equals(m.getIdentifierConfidence())</span>
+<span class="fc bfc" id="L928" title="All 2 branches covered.">                        &amp;&amp; bestEvidenceQuality.equals(m.getEvidenceConfidence())) {</span>
+<span class="fc" id="L929">                    final CpeIdentifier i = m.getIdentifier();</span>
+<span class="fc bfc" id="L930" title="All 2 branches covered.">                    if (bestIdentifierQuality == IdentifierConfidence.BEST_GUESS) {</span>
+<span class="pc bpc" id="L931" title="1 of 2 branches missed.">                        if (addedNonGuess) {</span>
+<span class="nc" id="L932">                            continue;</span>
                         }
-<span class="fc" id="L956">                        i.setConfidence(Confidence.LOW);</span>
+<span class="fc" id="L934">                        i.setConfidence(Confidence.LOW);</span>
                     } else {
-<span class="fc" id="L958">                        i.setConfidence(bestEvidenceQuality);</span>
+<span class="fc" id="L936">                        i.setConfidence(bestEvidenceQuality);</span>
                     }
-<span class="fc bfc" id="L960" title="All 2 branches covered.">                    if (prevAddedConfidence.compareTo(i.getConfidence()) &lt; 0) {</span>
-<span class="fc" id="L961">                        continue;</span>
+<span class="fc bfc" id="L938" title="All 2 branches covered.">                    if (prevAddedConfidence.compareTo(i.getConfidence()) &lt; 0) {</span>
+<span class="fc" id="L939">                        continue;</span>
                     }
 
                     //TODO - while this gets the job down it is slow; consider refactoring
-<span class="fc" id="L965">                    dependency.addVulnerableSoftwareIdentifier(i);</span>
-<span class="fc" id="L966">                    suppression.analyze(dependency, engine);</span>
-<span class="fc bfc" id="L967" title="All 2 branches covered.">                    if (dependency.getVulnerableSoftwareIdentifiers().contains(i)) {</span>
-<span class="fc" id="L968">                        identifierAdded = true;</span>
-<span class="fc bfc" id="L969" title="All 4 branches covered.">                        if (!addedNonGuess &amp;&amp; bestIdentifierQuality != IdentifierConfidence.BEST_GUESS) {</span>
-<span class="fc" id="L970">                            addedNonGuess = true;</span>
+<span class="fc" id="L943">                    dependency.addVulnerableSoftwareIdentifier(i);</span>
+<span class="fc" id="L944">                    suppression.analyze(dependency, engine);</span>
+<span class="fc bfc" id="L945" title="All 2 branches covered.">                    if (dependency.getVulnerableSoftwareIdentifiers().contains(i)) {</span>
+<span class="fc" id="L946">                        identifierAdded = true;</span>
+<span class="fc bfc" id="L947" title="All 4 branches covered.">                        if (!addedNonGuess &amp;&amp; bestIdentifierQuality != IdentifierConfidence.BEST_GUESS) {</span>
+<span class="fc" id="L948">                            addedNonGuess = true;</span>
                         }
                     }
                 }
-<span class="fc" id="L974">            }</span>
+<span class="fc" id="L952">            }</span>
         }
-<span class="fc" id="L976">        return identifierAdded;</span>
+<span class="fc" id="L954">        return identifierAdded;</span>
     }
 
     /**
@@ -983,32 +961,30 @@ import us.springett.parsers.cpe.values.Part;
      * @param updateVersion the update version
      * @param conf the current confidence
      * @param collected a reference to the collected identifiers
-     * @throws UnsupportedEncodingException thrown if UTF-8 is not supported
      */
     private void addExactMatch(Cpe vs, String updateVersion, Confidence conf,
-            final Set&lt;IdentifierMatch&gt; collected) throws UnsupportedEncodingException {
+            final Set&lt;IdentifierMatch&gt; collected) {
 
-<span class="fc" id="L991">        final CpeBuilder cpeBuilder = new CpeBuilder();</span>
-<span class="fc" id="L992">        final String url = String.format(NVD_SEARCH_URL, URLEncoder.encode(vs.getVendor(), UTF8),</span>
-<span class="fc" id="L993">                URLEncoder.encode(vs.getProduct(), UTF8), URLEncoder.encode(vs.getVersion(), UTF8));</span>
+<span class="fc" id="L968">        final CpeBuilder cpeBuilder = new CpeBuilder();</span>
+<span class="fc" id="L969">        final String url = CpeIdentifier.nvdSearchUrlFor(vs);</span>
         Cpe useCpe;
-<span class="pc bpc" id="L995" title="3 of 4 branches missed.">        if (updateVersion != null &amp;&amp; &quot;*&quot;.equals(vs.getUpdate())) {</span>
+<span class="pc bpc" id="L971" title="3 of 4 branches missed.">        if (updateVersion != null &amp;&amp; &quot;*&quot;.equals(vs.getUpdate())) {</span>
             try {
-<span class="nc" id="L997">                useCpe = cpeBuilder.part(vs.getPart()).wfVendor(vs.getWellFormedVendor())</span>
-<span class="nc" id="L998">                        .wfProduct(vs.getWellFormedProduct()).wfVersion(vs.getWellFormedVersion())</span>
-<span class="nc" id="L999">                        .wfEdition(vs.getWellFormedEdition()).wfLanguage(vs.getWellFormedLanguage())</span>
-<span class="nc" id="L1000">                        .wfOther(vs.getWellFormedOther()).wfSwEdition(vs.getWellFormedSwEdition())</span>
-<span class="nc" id="L1001">                        .update(updateVersion).build();</span>
-<span class="nc" id="L1002">            } catch (CpeValidationException ex) {</span>
-<span class="nc" id="L1003">                LOGGER.debug(&quot;Error building cpe with update:&quot; + updateVersion, ex);</span>
-<span class="nc" id="L1004">                useCpe = vs;</span>
-<span class="nc" id="L1005">            }</span>
+<span class="nc" id="L973">                useCpe = cpeBuilder.part(vs.getPart()).wfVendor(vs.getWellFormedVendor())</span>
+<span class="nc" id="L974">                        .wfProduct(vs.getWellFormedProduct()).wfVersion(vs.getWellFormedVersion())</span>
+<span class="nc" id="L975">                        .wfEdition(vs.getWellFormedEdition()).wfLanguage(vs.getWellFormedLanguage())</span>
+<span class="nc" id="L976">                        .wfOther(vs.getWellFormedOther()).wfSwEdition(vs.getWellFormedSwEdition())</span>
+<span class="nc" id="L977">                        .update(updateVersion).build();</span>
+<span class="nc" id="L978">            } catch (CpeValidationException ex) {</span>
+<span class="nc" id="L979">                LOGGER.debug(&quot;Error building cpe with update:&quot; + updateVersion, ex);</span>
+<span class="nc" id="L980">                useCpe = vs;</span>
+<span class="nc" id="L981">            }</span>
         } else {
-<span class="fc" id="L1007">            useCpe = vs;</span>
+<span class="fc" id="L983">            useCpe = vs;</span>
         }
-<span class="fc" id="L1009">        final IdentifierMatch match = new IdentifierMatch(useCpe, url, IdentifierConfidence.EXACT_MATCH, conf);</span>
-<span class="fc" id="L1010">        collected.add(match);</span>
-<span class="fc" id="L1011">    }</span>
+<span class="fc" id="L985">        final IdentifierMatch match = new IdentifierMatch(useCpe, url, IdentifierConfidence.EXACT_MATCH, conf);</span>
+<span class="fc" id="L986">        collected.add(match);</span>
+<span class="fc" id="L987">    }</span>
 
     /**
      * Evaluates whether or not to use the `version` of the dependency instead
@@ -1022,46 +998,43 @@ import us.springett.parsers.cpe.values.Part;
      * @param collected a reference to the identifiers matched
      * @throws AnalysisException thrown if aliens attacked and valid input could
      * not be used to construct a CPE
-     * @throws UnsupportedEncodingException thrown if run on a system that
-     * doesn't support UTF-8
      */
     private void considerDependencyVersion(Dependency dependency,
             String vendor, String product, Confidence confidence,
             final Set&lt;IdentifierMatch&gt; collected)
-            throws AnalysisException, UnsupportedEncodingException {
+            throws AnalysisException {
 
-<span class="pc bpc" id="L1033" title="1 of 4 branches missed.">        if (dependency.getVersion() != null &amp;&amp; !dependency.getVersion().isEmpty()) {</span>
-<span class="fc" id="L1034">            final CpeBuilder cpeBuilder = new CpeBuilder();</span>
-<span class="fc" id="L1035">            boolean useDependencyVersion = true;</span>
-<span class="fc" id="L1036">            final CharArraySet stopWords = SearchFieldAnalyzer.getStopWords();</span>
-<span class="pc bpc" id="L1037" title="1 of 4 branches missed.">            if (dependency.getName() != null &amp;&amp; !dependency.getName().isEmpty()) {</span>
-<span class="fc" id="L1038">                final String name = dependency.getName();</span>
-<span class="fc bfc" id="L1039" title="All 2 branches covered.">                for (String word : product.split(&quot;[^a-zA-Z0-9]&quot;)) {</span>
-<span class="fc bfc" id="L1040" title="All 4 branches covered.">                    useDependencyVersion &amp;= name.contains(word) || stopWords.contains(word)</span>
-<span class="fc bfc" id="L1041" title="All 2 branches covered.">                            || wordMatchesEcosystem(dependency.getEcosystem(), word);</span>
+<span class="pc bpc" id="L1007" title="1 of 4 branches missed.">        if (dependency.getVersion() != null &amp;&amp; !dependency.getVersion().isEmpty()) {</span>
+<span class="fc" id="L1008">            final CpeBuilder cpeBuilder = new CpeBuilder();</span>
+<span class="fc" id="L1009">            boolean useDependencyVersion = true;</span>
+<span class="fc" id="L1010">            final CharArraySet stopWords = SearchFieldAnalyzer.getStopWords();</span>
+<span class="pc bpc" id="L1011" title="1 of 4 branches missed.">            if (dependency.getName() != null &amp;&amp; !dependency.getName().isEmpty()) {</span>
+<span class="fc" id="L1012">                final String name = dependency.getName();</span>
+<span class="fc bfc" id="L1013" title="All 2 branches covered.">                for (String word : product.split(&quot;[^a-zA-Z0-9]&quot;)) {</span>
+<span class="fc bfc" id="L1014" title="All 4 branches covered.">                    useDependencyVersion &amp;= name.contains(word) || stopWords.contains(word)</span>
+<span class="fc bfc" id="L1015" title="All 2 branches covered.">                            || wordMatchesEcosystem(dependency.getEcosystem(), word);</span>
                 }
             }
 
-<span class="fc bfc" id="L1045" title="All 2 branches covered.">            if (useDependencyVersion) {</span>
+<span class="fc bfc" id="L1019" title="All 2 branches covered.">            if (useDependencyVersion) {</span>
                 //TODO - we need to filter this so that we only use this if something in the
                 //dependency.getName() matches the vendor/product in some way
-<span class="fc" id="L1048">                final DependencyVersion depVersion = new DependencyVersion(dependency.getVersion());</span>
-<span class="pc bpc" id="L1049" title="1 of 2 branches missed.">                if (depVersion.getVersionParts().size() &gt; 0) {</span>
-<span class="fc" id="L1050">                    cpeBuilder.part(Part.APPLICATION).vendor(vendor).product(product);</span>
-<span class="fc" id="L1051">                    addVersionAndUpdate(depVersion, cpeBuilder);</span>
+<span class="fc" id="L1022">                final DependencyVersion depVersion = new DependencyVersion(dependency.getVersion());</span>
+<span class="pc bpc" id="L1023" title="1 of 2 branches missed.">                if (depVersion.getVersionParts().size() &gt; 0) {</span>
+<span class="fc" id="L1024">                    cpeBuilder.part(Part.APPLICATION).vendor(vendor).product(product);</span>
+<span class="fc" id="L1025">                    addVersionAndUpdate(depVersion, cpeBuilder);</span>
                     try {
-<span class="fc" id="L1053">                        final Cpe depCpe = cpeBuilder.build();</span>
-<span class="fc" id="L1054">                        final String url = String.format(NVD_SEARCH_URL, URLEncoder.encode(vendor, UTF8),</span>
-<span class="fc" id="L1055">                                URLEncoder.encode(product, UTF8), URLEncoder.encode(depCpe.getVersion(), UTF8));</span>
-<span class="fc" id="L1056">                        final IdentifierMatch match = new IdentifierMatch(depCpe, url, IdentifierConfidence.EXACT_MATCH, confidence);</span>
-<span class="fc" id="L1057">                        collected.add(match);</span>
-<span class="nc" id="L1058">                    } catch (CpeValidationException ex) {</span>
-<span class="nc" id="L1059">                        throw new AnalysisException(String.format(&quot;Unable to create a CPE for %s:%s:%s&quot;, vendor, product, depVersion));</span>
-<span class="fc" id="L1060">                    }</span>
+<span class="fc" id="L1027">                        final Cpe depCpe = cpeBuilder.build();</span>
+<span class="fc" id="L1028">                        final String url = CpeIdentifier.nvdSearchUrlFor(vendor, product, depCpe.getVersion());</span>
+<span class="fc" id="L1029">                        final IdentifierMatch match = new IdentifierMatch(depCpe, url, IdentifierConfidence.EXACT_MATCH, confidence);</span>
+<span class="fc" id="L1030">                        collected.add(match);</span>
+<span class="nc" id="L1031">                    } catch (CpeValidationException ex) {</span>
+<span class="nc" id="L1032">                        throw new AnalysisException(String.format(&quot;Unable to create a CPE for %s:%s:%s&quot;, vendor, product, depVersion));</span>
+<span class="fc" id="L1033">                    }</span>
                 }
             }
         }
-<span class="fc" id="L1064">    }</span>
+<span class="fc" id="L1037">    }</span>
 
     /**
      * If a CPE product word represents the ecosystem of a dependency it is not required
@@ -1077,10 +1050,10 @@ import us.springett.parsers.cpe.values.Part;
      * @see #considerDependencyVersion(Dependency, String, String, Confidence, Set)
      */
     private boolean wordMatchesEcosystem(@Nullable String ecosystem, String word) {
-<span class="fc bfc" id="L1080" title="All 2 branches covered.">        if (Ecosystem.JAVA.equalsIgnoreCase(word)) {</span>
-<span class="fc" id="L1081">            return Ecosystem.JAVA.equals(ecosystem);</span>
+<span class="fc bfc" id="L1053" title="All 2 branches covered.">        if (Ecosystem.JAVA.equalsIgnoreCase(word)) {</span>
+<span class="fc" id="L1054">            return Ecosystem.JAVA.equals(ecosystem);</span>
         }
-<span class="fc" id="L1083">        return false;</span>
+<span class="fc" id="L1056">        return false;</span>
     }
 
     /**
@@ -1091,7 +1064,7 @@ import us.springett.parsers.cpe.values.Part;
      */
     @Override
     protected String getAnalyzerEnabledSettingKey() {
-<span class="fc" id="L1094">        return Settings.KEYS.ANALYZER_CPE_ENABLED;</span>
+<span class="fc" id="L1067">        return Settings.KEYS.ANALYZER_CPE_ENABLED;</span>
     }
 
     /**
@@ -1103,21 +1076,21 @@ import us.springett.parsers.cpe.values.Part;
      * @return the filtered list of CPE entries
      */
     private Set&lt;Cpe&gt; filterEcosystem(String ecosystem, Set&lt;CpePlus&gt; entries) {
-<span class="pc bpc" id="L1106" title="2 of 4 branches missed.">        if (entries == null || entries.isEmpty()) {</span>
-<span class="nc" id="L1107">            return null;</span>
+<span class="pc bpc" id="L1079" title="2 of 4 branches missed.">        if (entries == null || entries.isEmpty()) {</span>
+<span class="nc" id="L1080">            return null;</span>
         }
-<span class="fc bfc" id="L1109" title="All 2 branches covered.">        if (ecosystem != null) {</span>
-<span class="fc" id="L1110">            return entries.stream().filter(c</span>
-<span class="pc bpc" id="L1111" title="1 of 2 branches missed.">                    -&gt; c.getEcosystem() == null</span>
-<span class="nc bnc" id="L1112" title="All 2 branches missed.">                    || c.getEcosystem().equals(ecosystem)</span>
+<span class="fc bfc" id="L1082" title="All 2 branches covered.">        if (ecosystem != null) {</span>
+<span class="fc" id="L1083">            return entries.stream().filter(c</span>
+<span class="pc bpc" id="L1084" title="1 of 2 branches missed.">                    -&gt; c.getEcosystem() == null</span>
+<span class="nc bnc" id="L1085" title="All 2 branches missed.">                    || c.getEcosystem().equals(ecosystem)</span>
                     //some ios CVE/CPEs are listed under native
-<span class="pc bnc" id="L1114" title="All 4 branches missed.">                    || (Ecosystem.IOS.equals(ecosystem) &amp;&amp; Ecosystem.NATIVE.equals(c.getEcosystem())))</span>
-<span class="fc" id="L1115">                    .map(CpePlus::getCpe)</span>
-<span class="fc" id="L1116">                    .collect(Collectors.toSet());</span>
+<span class="pc bnc" id="L1087" title="All 4 branches missed.">                    || (Ecosystem.IOS.equals(ecosystem) &amp;&amp; Ecosystem.NATIVE.equals(c.getEcosystem())))</span>
+<span class="fc" id="L1088">                    .map(CpePlus::getCpe)</span>
+<span class="fc" id="L1089">                    .collect(Collectors.toSet());</span>
         }
-<span class="fc" id="L1118">        return entries.stream()</span>
-<span class="fc" id="L1119">                .map(CpePlus::getCpe)</span>
-<span class="fc" id="L1120">                .collect(Collectors.toSet());</span>
+<span class="fc" id="L1091">        return entries.stream()</span>
+<span class="fc" id="L1092">                .map(CpePlus::getCpe)</span>
+<span class="fc" id="L1093">                .collect(Collectors.toSet());</span>
     }
 
     /**
@@ -1128,40 +1101,40 @@ import us.springett.parsers.cpe.values.Part;
      * @param cpeBuilder a reference to the CPE Builder
      */
     private void addVersionAndUpdate(DependencyVersion depVersion, final CpeBuilder cpeBuilder) {
-<span class="fc" id="L1131">        final int idx = depVersion.getVersionParts().size() - 1;</span>
-<span class="fc bfc" id="L1132" title="All 2 branches covered.">        if (idx &gt; 0 &amp;&amp; depVersion.getVersionParts().get(idx)</span>
-<span class="fc bfc" id="L1133" title="All 2 branches covered.">                .matches(&quot;^(v|final|release|snapshot|r|b|beta|a|alpha|u|rc|sp|dev|revision|service|build|pre|p|patch|update|m|20\\d\\d).*$&quot;)) {</span>
-<span class="fc" id="L1134">            cpeBuilder.version(StringUtils.join(depVersion.getVersionParts().subList(0, idx), &quot;.&quot;));</span>
+<span class="fc" id="L1104">        final int idx = depVersion.getVersionParts().size() - 1;</span>
+<span class="fc bfc" id="L1105" title="All 2 branches covered.">        if (idx &gt; 0 &amp;&amp; depVersion.getVersionParts().get(idx)</span>
+<span class="fc bfc" id="L1106" title="All 2 branches covered.">                .matches(&quot;^(v|final|release|snapshot|r|b|beta|a|alpha|u|rc|sp|dev|revision|service|build|pre|p|patch|update|m|20\\d\\d).*$&quot;)) {</span>
+<span class="fc" id="L1107">            cpeBuilder.version(StringUtils.join(depVersion.getVersionParts().subList(0, idx), &quot;.&quot;));</span>
             //when written - no update versions in the NVD start with v### - they all strip the v off
-<span class="pc bpc" id="L1136" title="1 of 2 branches missed.">            if (depVersion.getVersionParts().get(idx).matches(&quot;^v\\d.*$&quot;)) {</span>
-<span class="nc" id="L1137">                cpeBuilder.update(depVersion.getVersionParts().get(idx).substring(1));</span>
+<span class="pc bpc" id="L1109" title="1 of 2 branches missed.">            if (depVersion.getVersionParts().get(idx).matches(&quot;^v\\d.*$&quot;)) {</span>
+<span class="nc" id="L1110">                cpeBuilder.update(depVersion.getVersionParts().get(idx).substring(1));</span>
             } else {
-<span class="fc" id="L1139">                cpeBuilder.update(depVersion.getVersionParts().get(idx));</span>
+<span class="fc" id="L1112">                cpeBuilder.update(depVersion.getVersionParts().get(idx));</span>
             }
         } else {
-<span class="fc" id="L1142">            cpeBuilder.version(depVersion.toString());</span>
+<span class="fc" id="L1115">            cpeBuilder.version(depVersion.toString());</span>
         }
-<span class="fc" id="L1144">    }</span>
+<span class="fc" id="L1117">    }</span>
 
     /**
      * The confidence whether the identifier is an exact match, or a best guess.
      */
-<span class="fc" id="L1149">    private enum IdentifierConfidence {</span>
+<span class="fc" id="L1122">    private enum IdentifierConfidence {</span>
 
         /**
          * An exact match for the CPE.
          */
-<span class="fc" id="L1154">        EXACT_MATCH,</span>
+<span class="fc" id="L1127">        EXACT_MATCH,</span>
         /**
          * A best guess for the CPE.
          */
-<span class="fc" id="L1158">        BEST_GUESS,</span>
+<span class="fc" id="L1131">        BEST_GUESS,</span>
         /**
          * The entire vendor/product group must be added (without a guess at
          * version) because there is a CVE with a VS that only specifies
          * vendor/product.
          */
-<span class="fc" id="L1164">        BROAD_MATCH</span>
+<span class="fc" id="L1137">        BROAD_MATCH</span>
     }
 
     /**
@@ -1189,10 +1162,10 @@ import us.springett.parsers.cpe.values.Part;
          * @param evidenceConfidence the confidence of the evidence used to find
          * the identifier
          */
-<span class="fc" id="L1192">        IdentifierMatch(Cpe cpe, String url, IdentifierConfidence identifierConfidence, Confidence evidenceConfidence) {</span>
-<span class="fc" id="L1193">            this.identifier = new CpeIdentifier(cpe, url, evidenceConfidence);</span>
-<span class="fc" id="L1194">            this.identifierConfidence = identifierConfidence;</span>
-<span class="fc" id="L1195">        }</span>
+<span class="fc" id="L1165">        IdentifierMatch(Cpe cpe, String url, IdentifierConfidence identifierConfidence, Confidence evidenceConfidence) {</span>
+<span class="fc" id="L1166">            this.identifier = new CpeIdentifier(cpe, url, evidenceConfidence);</span>
+<span class="fc" id="L1167">            this.identifierConfidence = identifierConfidence;</span>
+<span class="fc" id="L1168">        }</span>
 
         //&lt;editor-fold defaultstate=&quot;collapsed&quot; desc=&quot;Property implementations: evidenceConfidence, confidence, identifier&quot;&gt;
         /**
@@ -1201,7 +1174,7 @@ import us.springett.parsers.cpe.values.Part;
          * @return the value of evidenceConfidence
          */
         public Confidence getEvidenceConfidence() {
-<span class="fc" id="L1204">            return this.identifier.getConfidence();</span>
+<span class="fc" id="L1177">            return this.identifier.getConfidence();</span>
         }
 
         /**
@@ -1210,8 +1183,8 @@ import us.springett.parsers.cpe.values.Part;
          * @param evidenceConfidence new value of evidenceConfidence
          */
         public void setEvidenceConfidence(Confidence evidenceConfidence) {
-<span class="nc" id="L1213">            this.identifier.setConfidence(evidenceConfidence);</span>
-<span class="nc" id="L1214">        }</span>
+<span class="nc" id="L1186">            this.identifier.setConfidence(evidenceConfidence);</span>
+<span class="nc" id="L1187">        }</span>
 
         /**
          * Get the value of confidence.
@@ -1219,7 +1192,7 @@ import us.springett.parsers.cpe.values.Part;
          * @return the value of confidence
          */
         public IdentifierConfidence getIdentifierConfidence() {
-<span class="fc" id="L1222">            return identifierConfidence;</span>
+<span class="fc" id="L1195">            return identifierConfidence;</span>
         }
 
         /**
@@ -1228,8 +1201,8 @@ import us.springett.parsers.cpe.values.Part;
          * @param confidence new value of confidence
          */
         public void setIdentifierConfidence(IdentifierConfidence confidence) {
-<span class="nc" id="L1231">            this.identifierConfidence = confidence;</span>
-<span class="nc" id="L1232">        }</span>
+<span class="nc" id="L1204">            this.identifierConfidence = confidence;</span>
+<span class="nc" id="L1205">        }</span>
 
         /**
          * Get the value of identifier.
@@ -1237,7 +1210,7 @@ import us.springett.parsers.cpe.values.Part;
          * @return the value of identifier
          */
         public CpeIdentifier getIdentifier() {
-<span class="fc" id="L1240">            return identifier;</span>
+<span class="fc" id="L1213">            return identifier;</span>
         }
 
         /**
@@ -1246,8 +1219,8 @@ import us.springett.parsers.cpe.values.Part;
          * @param identifier new value of identifier
          */
         public void setIdentifier(CpeIdentifier identifier) {
-<span class="nc" id="L1249">            this.identifier = identifier;</span>
-<span class="nc" id="L1250">        }</span>
+<span class="nc" id="L1222">            this.identifier = identifier;</span>
+<span class="nc" id="L1223">        }</span>
         //&lt;/editor-fold&gt;
         //&lt;editor-fold defaultstate=&quot;collapsed&quot; desc=&quot;Standard implementations of toString, hashCode, and equals&quot;&gt;
 
@@ -1258,7 +1231,7 @@ import us.springett.parsers.cpe.values.Part;
          */
         @Override
         public String toString() {
-<span class="nc" id="L1261">            return &quot;IdentifierMatch{ IdentifierConfidence=&quot; + identifierConfidence + &quot;, identifier=&quot; + identifier + '}';</span>
+<span class="nc" id="L1234">            return &quot;IdentifierMatch{ IdentifierConfidence=&quot; + identifierConfidence + &quot;, identifier=&quot; + identifier + '}';</span>
         }
 
         /**
@@ -1268,10 +1241,10 @@ import us.springett.parsers.cpe.values.Part;
          */
         @Override
         public int hashCode() {
-<span class="fc" id="L1271">            return new HashCodeBuilder(115, 303)</span>
-<span class="fc" id="L1272">                    .append(identifierConfidence)</span>
-<span class="fc" id="L1273">                    .append(identifier)</span>
-<span class="fc" id="L1274">                    .toHashCode();</span>
+<span class="fc" id="L1244">            return new HashCodeBuilder(115, 303)</span>
+<span class="fc" id="L1245">                    .append(identifierConfidence)</span>
+<span class="fc" id="L1246">                    .append(identifier)</span>
+<span class="fc" id="L1247">                    .toHashCode();</span>
         }
 
         /**
@@ -1282,17 +1255,17 @@ import us.springett.parsers.cpe.values.Part;
          */
         @Override
         public boolean equals(Object obj) {
-<span class="pc bpc" id="L1285" title="2 of 4 branches missed.">            if (obj == null || !(obj instanceof IdentifierMatch)) {</span>
-<span class="nc" id="L1286">                return false;</span>
+<span class="pc bpc" id="L1258" title="2 of 4 branches missed.">            if (obj == null || !(obj instanceof IdentifierMatch)) {</span>
+<span class="nc" id="L1259">                return false;</span>
             }
-<span class="pc bpc" id="L1288" title="1 of 2 branches missed.">            if (this == obj) {</span>
-<span class="nc" id="L1289">                return true;</span>
+<span class="pc bpc" id="L1261" title="1 of 2 branches missed.">            if (this == obj) {</span>
+<span class="nc" id="L1262">                return true;</span>
             }
-<span class="fc" id="L1291">            final IdentifierMatch other = (IdentifierMatch) obj;</span>
-<span class="fc" id="L1292">            return new EqualsBuilder()</span>
-<span class="fc" id="L1293">                    .append(identifierConfidence, other.identifierConfidence)</span>
-<span class="fc" id="L1294">                    .append(identifier, other.identifier)</span>
-<span class="fc" id="L1295">                    .build();</span>
+<span class="fc" id="L1264">            final IdentifierMatch other = (IdentifierMatch) obj;</span>
+<span class="fc" id="L1265">            return new EqualsBuilder()</span>
+<span class="fc" id="L1266">                    .append(identifierConfidence, other.identifierConfidence)</span>
+<span class="fc" id="L1267">                    .append(identifier, other.identifier)</span>
+<span class="fc" id="L1268">                    .build();</span>
         }
         //&lt;/editor-fold&gt;
 
@@ -1305,10 +1278,10 @@ import us.springett.parsers.cpe.values.Part;
          */
         @Override
         public int compareTo(@NotNull IdentifierMatch o) {
-<span class="fc" id="L1308">            return new CompareToBuilder()</span>
-<span class="fc" id="L1309">                    .append(identifierConfidence, o.identifierConfidence)</span>
-<span class="fc" id="L1310">                    .append(identifier, o.identifier)</span>
-<span class="fc" id="L1311">                    .toComparison();</span>
+<span class="fc" id="L1281">            return new CompareToBuilder()</span>
+<span class="fc" id="L1282">                    .append(identifierConfidence, o.identifierConfidence)</span>
+<span class="fc" id="L1283">                    .append(identifier, o.identifier)</span>
+<span class="fc" id="L1284">                    .toComparison();</span>
         }
     }
 
@@ -1319,55 +1292,55 @@ import us.springett.parsers.cpe.values.Part;
      */
     @SuppressWarnings(&quot;InfiniteLoopStatement&quot;)
     public static void main(String[] args) {
-<span class="nc" id="L1322">        final Settings props = new Settings();</span>
-<span class="nc" id="L1323">        try (Engine en = new Engine(Engine.Mode.EVIDENCE_PROCESSING, props)) {</span>
-<span class="nc" id="L1324">            en.openDatabase(false, false);</span>
-<span class="nc" id="L1325">            final CPEAnalyzer analyzer = new CPEAnalyzer();</span>
-<span class="nc" id="L1326">            analyzer.initialize(props);</span>
-<span class="nc" id="L1327">            analyzer.prepareAnalyzer(en);</span>
-<span class="nc" id="L1328">            LOGGER.error(&quot;test&quot;);</span>
-<span class="nc" id="L1329">            System.out.println(&quot;Memory index query for ODC&quot;);</span>
-<span class="nc" id="L1330">            try (BufferedReader br = new BufferedReader(new InputStreamReader(System.in, StandardCharsets.UTF_8))) {</span>
+<span class="nc" id="L1295">        final Settings props = new Settings();</span>
+<span class="nc" id="L1296">        try (Engine en = new Engine(Engine.Mode.EVIDENCE_PROCESSING, props)) {</span>
+<span class="nc" id="L1297">            en.openDatabase(false, false);</span>
+<span class="nc" id="L1298">            final CPEAnalyzer analyzer = new CPEAnalyzer();</span>
+<span class="nc" id="L1299">            analyzer.initialize(props);</span>
+<span class="nc" id="L1300">            analyzer.prepareAnalyzer(en);</span>
+<span class="nc" id="L1301">            LOGGER.error(&quot;test&quot;);</span>
+<span class="nc" id="L1302">            System.out.println(&quot;Memory index query for ODC&quot;);</span>
+<span class="nc" id="L1303">            try (BufferedReader br = new BufferedReader(new InputStreamReader(System.in, StandardCharsets.UTF_8))) {</span>
                 while (true) {
 
-<span class="nc" id="L1333">                    final Map&lt;String, MutableInt&gt; vendor = new HashMap&lt;&gt;();</span>
-<span class="nc" id="L1334">                    final Map&lt;String, MutableInt&gt; product = new HashMap&lt;&gt;();</span>
-<span class="nc" id="L1335">                    System.out.print(&quot;Vendor: &quot;);</span>
-<span class="nc" id="L1336">                    String[] parts = br.readLine().split(&quot; &quot;);</span>
-<span class="nc bnc" id="L1337" title="All 2 branches missed.">                    for (String term : parts) {</span>
-<span class="nc" id="L1338">                        final MutableInt count = vendor.get(term);</span>
-<span class="nc bnc" id="L1339" title="All 2 branches missed.">                        if (count == null) {</span>
-<span class="nc" id="L1340">                            vendor.put(term, new MutableInt(0));</span>
+<span class="nc" id="L1306">                    final Map&lt;String, MutableInt&gt; vendor = new HashMap&lt;&gt;();</span>
+<span class="nc" id="L1307">                    final Map&lt;String, MutableInt&gt; product = new HashMap&lt;&gt;();</span>
+<span class="nc" id="L1308">                    System.out.print(&quot;Vendor: &quot;);</span>
+<span class="nc" id="L1309">                    String[] parts = br.readLine().split(&quot; &quot;);</span>
+<span class="nc bnc" id="L1310" title="All 2 branches missed.">                    for (String term : parts) {</span>
+<span class="nc" id="L1311">                        final MutableInt count = vendor.get(term);</span>
+<span class="nc bnc" id="L1312" title="All 2 branches missed.">                        if (count == null) {</span>
+<span class="nc" id="L1313">                            vendor.put(term, new MutableInt(0));</span>
                         } else {
-<span class="nc" id="L1342">                            count.add(1);</span>
+<span class="nc" id="L1315">                            count.add(1);</span>
                         }
                     }
-<span class="nc" id="L1345">                    System.out.print(&quot;Product: &quot;);</span>
-<span class="nc" id="L1346">                    parts = br.readLine().split(&quot; &quot;);</span>
-<span class="nc bnc" id="L1347" title="All 2 branches missed.">                    for (String term : parts) {</span>
-<span class="nc" id="L1348">                        final MutableInt count = product.get(term);</span>
-<span class="nc bnc" id="L1349" title="All 2 branches missed.">                        if (count == null) {</span>
-<span class="nc" id="L1350">                            product.put(term, new MutableInt(0));</span>
+<span class="nc" id="L1318">                    System.out.print(&quot;Product: &quot;);</span>
+<span class="nc" id="L1319">                    parts = br.readLine().split(&quot; &quot;);</span>
+<span class="nc bnc" id="L1320" title="All 2 branches missed.">                    for (String term : parts) {</span>
+<span class="nc" id="L1321">                        final MutableInt count = product.get(term);</span>
+<span class="nc bnc" id="L1322" title="All 2 branches missed.">                        if (count == null) {</span>
+<span class="nc" id="L1323">                            product.put(term, new MutableInt(0));</span>
                         } else {
-<span class="nc" id="L1352">                            count.add(1);</span>
+<span class="nc" id="L1325">                            count.add(1);</span>
                         }
                     }
-<span class="nc" id="L1355">                    final List&lt;IndexEntry&gt; list = analyzer.searchCPE(vendor, product, new HashSet&lt;&gt;(), new HashSet&lt;&gt;(), &quot;default&quot;);</span>
-<span class="nc bnc" id="L1356" title="All 4 branches missed.">                    if (list == null || list.isEmpty()) {</span>
-<span class="nc" id="L1357">                        System.out.println(&quot;No results found&quot;);</span>
+<span class="nc" id="L1328">                    final List&lt;IndexEntry&gt; list = analyzer.searchCPE(vendor, product, new HashSet&lt;&gt;(), new HashSet&lt;&gt;(), &quot;default&quot;);</span>
+<span class="nc bnc" id="L1329" title="All 4 branches missed.">                    if (list == null || list.isEmpty()) {</span>
+<span class="nc" id="L1330">                        System.out.println(&quot;No results found&quot;);</span>
                     } else {
-<span class="nc" id="L1359">                        list.forEach((e) -&gt; System.out.printf(&quot;%s:%s (%f)%n&quot;, e.getVendor(), e.getProduct(),</span>
-<span class="nc" id="L1360">                                e.getSearchScore()));</span>
+<span class="nc" id="L1332">                        list.forEach((e) -&gt; System.out.printf(&quot;%s:%s (%f)%n&quot;, e.getVendor(), e.getProduct(),</span>
+<span class="nc" id="L1333">                                e.getSearchScore()));</span>
                     }
-<span class="nc" id="L1362">                    System.out.println();</span>
-<span class="nc" id="L1363">                    System.out.println();</span>
-<span class="nc" id="L1364">                }</span>
+<span class="nc" id="L1335">                    System.out.println();</span>
+<span class="nc" id="L1336">                    System.out.println();</span>
+<span class="nc" id="L1337">                }</span>
             }
-<span class="nc" id="L1366">        } catch (InitializationException | IOException ex) {</span>
-<span class="nc" id="L1367">            System.err.println(&quot;Lucene ODC search tool failed:&quot;);</span>
-<span class="nc" id="L1368">            System.err.println(ex.getMessage());</span>
+<span class="nc" id="L1339">        } catch (InitializationException | IOException ex) {</span>
+<span class="nc" id="L1340">            System.err.println(&quot;Lucene ODC search tool failed:&quot;);</span>
+<span class="nc" id="L1341">            System.err.println(ex.getMessage());</span>
         }
-<span class="nc" id="L1370">    }</span>
+<span class="nc" id="L1343">    }</span>
 
     /**
      * Sets the reference to the CveDB.
@@ -1375,8 +1348,8 @@ import us.springett.parsers.cpe.values.Part;
      * @param cveDb the CveDB
      */
     protected void setCveDB(CveDB cveDb) {
-<span class="fc" id="L1378">        this.cve = cveDb;</span>
-<span class="fc" id="L1379">    }</span>
+<span class="fc" id="L1351">        this.cve = cveDb;</span>
+<span class="fc" id="L1352">    }</span>
 
     /**
      * returns a reference to the CveDB.
@@ -1384,7 +1357,7 @@ import us.springett.parsers.cpe.values.Part;
      * @return a reference to the CveDB
      */
     protected CveDB getCveDB() {
-<span class="nc" id="L1387">        return this.cve;</span>
+<span class="nc" id="L1360">        return this.cve;</span>
     }
 
     /**
@@ -1393,8 +1366,8 @@ import us.springett.parsers.cpe.values.Part;
      * @param idx the memory index
      */
     protected void setMemoryIndex(MemoryIndex idx) {
-<span class="fc" id="L1396">        cpe = idx;</span>
-<span class="fc" id="L1397">    }</span>
+<span class="fc" id="L1369">        cpe = idx;</span>
+<span class="fc" id="L1370">    }</span>
 
     /**
      * Returns the memory index.
@@ -1402,7 +1375,7 @@ import us.springett.parsers.cpe.values.Part;
      * @return the memory index
      */
     protected MemoryIndex getMemoryIndex() {
-<span class="fc" id="L1405">        return cpe;</span>
+<span class="fc" id="L1378">        return cpe;</span>
     }
 
     /**
@@ -1411,7 +1384,7 @@ import us.springett.parsers.cpe.values.Part;
      * @param suppression the CPE Suppression Analyzer
      */
     protected void setCpeSuppressionAnalyzer(CpeSuppressionAnalyzer suppression) {
-<span class="nc" id="L1414">        this.suppression = suppression;</span>
-<span class="nc" id="L1415">    }</span>
+<span class="nc" id="L1387">        this.suppression = suppression;</span>
+<span class="nc" id="L1388">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

@@ -655,722 +655,721 @@
 <a class="jxr_linenumber" name="L647" href="#L647">647</a>                 + <span class="jxr_string">"performed, or the resulting report.\n\n\n"</span>
 <a class="jxr_linenumber" name="L648" href="#L648">648</a>                 + <span class="jxr_string">"   About ODC: https://dependency-check.github.io/DependencyCheck/general/internals.html\n"</span>
 <a class="jxr_linenumber" name="L649" href="#L649">649</a>                 + <span class="jxr_string">"   False Positives: https://dependency-check.github.io/DependencyCheck/general/suppression.html\n"</span>
-<a class="jxr_linenumber" name="L650" href="#L650">650</a>                 + <span class="jxr_string">"\n"</span>
-<a class="jxr_linenumber" name="L651" href="#L651">651</a>                 + <span class="jxr_string">"💖 Sponsor: https://github.com/sponsors/jeremylong\n\n"</span>);
-<a class="jxr_linenumber" name="L652" href="#L652">652</a>         LOGGER.debug(<span class="jxr_string">"\n----------------------------------------------------\nBEGIN ANALYSIS\n----------------------------------------------------"</span>);
-<a class="jxr_linenumber" name="L653" href="#L653">653</a>         LOGGER.info(<span class="jxr_string">"Analysis Started"</span>);
-<a class="jxr_linenumber" name="L654" href="#L654">654</a>         <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">long</strong> analysisStart = System.currentTimeMillis();
-<a class="jxr_linenumber" name="L655" href="#L655">655</a> 
-<a class="jxr_linenumber" name="L656" href="#L656">656</a>         <em class="jxr_comment">// analysis phases</em>
-<a class="jxr_linenumber" name="L657" href="#L657">657</a>         <strong class="jxr_keyword">for</strong> (AnalysisPhase phase : mode.getPhases()) {
-<a class="jxr_linenumber" name="L658" href="#L658">658</a>             <strong class="jxr_keyword">final</strong> List&lt;Analyzer&gt; analyzerList = analyzers.get(phase);
-<a class="jxr_linenumber" name="L659" href="#L659">659</a> 
-<a class="jxr_linenumber" name="L660" href="#L660">660</a>             <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">final</strong> Analyzer analyzer : analyzerList) {
-<a class="jxr_linenumber" name="L661" href="#L661">661</a>                 <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">long</strong> analyzerStart = System.currentTimeMillis();
-<a class="jxr_linenumber" name="L662" href="#L662">662</a>                 <strong class="jxr_keyword">try</strong> {
-<a class="jxr_linenumber" name="L663" href="#L663">663</a>                     initializeAnalyzer(analyzer);
-<a class="jxr_linenumber" name="L664" href="#L664">664</a>                 } <strong class="jxr_keyword">catch</strong> (InitializationException ex) {
-<a class="jxr_linenumber" name="L665" href="#L665">665</a>                     exceptions.add(ex);
-<a class="jxr_linenumber" name="L666" href="#L666">666</a>                     <strong class="jxr_keyword">if</strong> (ex.isFatal()) {
-<a class="jxr_linenumber" name="L667" href="#L667">667</a>                         <strong class="jxr_keyword">continue</strong>;
-<a class="jxr_linenumber" name="L668" href="#L668">668</a>                     }
-<a class="jxr_linenumber" name="L669" href="#L669">669</a>                 }
-<a class="jxr_linenumber" name="L670" href="#L670">670</a> 
-<a class="jxr_linenumber" name="L671" href="#L671">671</a>                 <strong class="jxr_keyword">if</strong> (analyzer.isEnabled()) {
-<a class="jxr_linenumber" name="L672" href="#L672">672</a>                     executeAnalysisTasks(analyzer, exceptions);
-<a class="jxr_linenumber" name="L673" href="#L673">673</a> 
-<a class="jxr_linenumber" name="L674" href="#L674">674</a>                     <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">long</strong> analyzerDurationMillis = System.currentTimeMillis() - analyzerStart;
-<a class="jxr_linenumber" name="L675" href="#L675">675</a>                     <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">long</strong> analyzerDurationSeconds = TimeUnit.MILLISECONDS.toSeconds(analyzerDurationMillis);
-<a class="jxr_linenumber" name="L676" href="#L676">676</a>                     LOGGER.info(<span class="jxr_string">"Finished {} ({} seconds)"</span>, analyzer.getName(), analyzerDurationSeconds);
-<a class="jxr_linenumber" name="L677" href="#L677">677</a>                 } <strong class="jxr_keyword">else</strong> {
-<a class="jxr_linenumber" name="L678" href="#L678">678</a>                     LOGGER.debug(<span class="jxr_string">"Skipping {} (not enabled)"</span>, analyzer.getName());
-<a class="jxr_linenumber" name="L679" href="#L679">679</a>                 }
-<a class="jxr_linenumber" name="L680" href="#L680">680</a>             }
-<a class="jxr_linenumber" name="L681" href="#L681">681</a>         }
-<a class="jxr_linenumber" name="L682" href="#L682">682</a>         mode.getPhases().stream()
-<a class="jxr_linenumber" name="L683" href="#L683">683</a>                 .map(analyzers::get)
-<a class="jxr_linenumber" name="L684" href="#L684">684</a>                 .forEach((analyzerList) -&gt; analyzerList.forEach(<strong class="jxr_keyword">this</strong>::closeAnalyzer));
-<a class="jxr_linenumber" name="L685" href="#L685">685</a> 
-<a class="jxr_linenumber" name="L686" href="#L686">686</a>         LOGGER.debug(<span class="jxr_string">"\n----------------------------------------------------\nEND ANALYSIS\n----------------------------------------------------"</span>);
-<a class="jxr_linenumber" name="L687" href="#L687">687</a>         <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">long</strong> analysisDurationSeconds = TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis() - analysisStart);
-<a class="jxr_linenumber" name="L688" href="#L688">688</a>         LOGGER.info(<span class="jxr_string">"Analysis Complete ({} seconds)"</span>, analysisDurationSeconds);
-<a class="jxr_linenumber" name="L689" href="#L689">689</a>         <strong class="jxr_keyword">if</strong> (exceptions.size() &gt; 0) {
-<a class="jxr_linenumber" name="L690" href="#L690">690</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a href="../../../org/owasp/dependencycheck/exception/ExceptionCollection.html">ExceptionCollection</a>(exceptions);
-<a class="jxr_linenumber" name="L691" href="#L691">691</a>         }
-<a class="jxr_linenumber" name="L692" href="#L692">692</a>     }
-<a class="jxr_linenumber" name="L693" href="#L693">693</a> 
-<a class="jxr_linenumber" name="L694" href="#L694">694</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L695" href="#L695">695</a> <em class="jxr_javadoccomment">     * Performs any necessary updates and initializes the database.</em>
-<a class="jxr_linenumber" name="L696" href="#L696">696</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L697" href="#L697">697</a> <em class="jxr_javadoccomment">     * @param exceptions a collection to store non-fatal exceptions</em>
-<a class="jxr_linenumber" name="L698" href="#L698">698</a> <em class="jxr_javadoccomment">     * @throws ExceptionCollection thrown if fatal exceptions occur</em>
-<a class="jxr_linenumber" name="L699" href="#L699">699</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L700" href="#L700">700</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> initializeAndUpdateDatabase(@NotNull <strong class="jxr_keyword">final</strong> List&lt;Throwable&gt; exceptions) <strong class="jxr_keyword">throws</strong> ExceptionCollection {
-<a class="jxr_linenumber" name="L701" href="#L701">701</a>         <strong class="jxr_keyword">if</strong> (!mode.isDatabaseRequired()) {
-<a class="jxr_linenumber" name="L702" href="#L702">702</a>             <strong class="jxr_keyword">return</strong>;
-<a class="jxr_linenumber" name="L703" href="#L703">703</a>         }
-<a class="jxr_linenumber" name="L704" href="#L704">704</a>         <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">boolean</strong> autoUpdate;
-<a class="jxr_linenumber" name="L705" href="#L705">705</a>         autoUpdate = settings.getBoolean(Settings.KEYS.AUTO_UPDATE, <strong class="jxr_keyword">true</strong>);
-<a class="jxr_linenumber" name="L706" href="#L706">706</a>         <strong class="jxr_keyword">if</strong> (autoUpdate) {
-<a class="jxr_linenumber" name="L707" href="#L707">707</a>             <strong class="jxr_keyword">try</strong> {
-<a class="jxr_linenumber" name="L708" href="#L708">708</a>                 doUpdates(<strong class="jxr_keyword">true</strong>);
-<a class="jxr_linenumber" name="L709" href="#L709">709</a>             } <strong class="jxr_keyword">catch</strong> (UpdateException ex) {
-<a class="jxr_linenumber" name="L710" href="#L710">710</a>                 exceptions.add(ex);
-<a class="jxr_linenumber" name="L711" href="#L711">711</a>                 LOGGER.warn(<span class="jxr_string">"Unable to update 1 or more Cached Web DataSource, using local "</span>
-<a class="jxr_linenumber" name="L712" href="#L712">712</a>                         + <span class="jxr_string">"data instead. Results may not include recent vulnerabilities."</span>);
-<a class="jxr_linenumber" name="L713" href="#L713">713</a>                 LOGGER.debug(<span class="jxr_string">"Update Error"</span>, ex);
-<a class="jxr_linenumber" name="L714" href="#L714">714</a>             } <strong class="jxr_keyword">catch</strong> (DatabaseException ex) {
-<a class="jxr_linenumber" name="L715" href="#L715">715</a>                 throwFatalDatabaseException(ex, exceptions);
-<a class="jxr_linenumber" name="L716" href="#L716">716</a>             }
-<a class="jxr_linenumber" name="L717" href="#L717">717</a>         } <strong class="jxr_keyword">else</strong> {
-<a class="jxr_linenumber" name="L718" href="#L718">718</a>             <strong class="jxr_keyword">try</strong> {
-<a class="jxr_linenumber" name="L719" href="#L719">719</a>                 <strong class="jxr_keyword">if</strong> (DatabaseManager.isH2Connection(settings) &amp;&amp; !DatabaseManager.h2DataFileExists(settings)) {
-<a class="jxr_linenumber" name="L720" href="#L720">720</a>                     <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a href="../../../org/owasp/dependencycheck/exception/ExceptionCollection.html">ExceptionCollection</a>(<strong class="jxr_keyword">new</strong> <a href="../../../org/owasp/dependencycheck/exception/NoDataException.html">NoDataException</a>(<span class="jxr_string">"Autoupdate is disabled and the database does not exist"</span>), <strong class="jxr_keyword">true</strong>);
-<a class="jxr_linenumber" name="L721" href="#L721">721</a>                 } <strong class="jxr_keyword">else</strong> {
-<a class="jxr_linenumber" name="L722" href="#L722">722</a>                     openDatabase(<strong class="jxr_keyword">true</strong>, <strong class="jxr_keyword">true</strong>);
-<a class="jxr_linenumber" name="L723" href="#L723">723</a>                 }
-<a class="jxr_linenumber" name="L724" href="#L724">724</a>             } <strong class="jxr_keyword">catch</strong> (IOException ex) {
-<a class="jxr_linenumber" name="L725" href="#L725">725</a>                 <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a href="../../../org/owasp/dependencycheck/exception/ExceptionCollection.html">ExceptionCollection</a>(<strong class="jxr_keyword">new</strong> <a href="../../../org/owasp/dependencycheck/data/nvdcve/DatabaseException.html">DatabaseException</a>(<span class="jxr_string">"Autoupdate is disabled and unable to connect to the database"</span>), <strong class="jxr_keyword">true</strong>);
-<a class="jxr_linenumber" name="L726" href="#L726">726</a>             } <strong class="jxr_keyword">catch</strong> (DatabaseException ex) {
-<a class="jxr_linenumber" name="L727" href="#L727">727</a>                 throwFatalDatabaseException(ex, exceptions);
-<a class="jxr_linenumber" name="L728" href="#L728">728</a>             }
-<a class="jxr_linenumber" name="L729" href="#L729">729</a>         }
-<a class="jxr_linenumber" name="L730" href="#L730">730</a>     }
-<a class="jxr_linenumber" name="L731" href="#L731">731</a> 
-<a class="jxr_linenumber" name="L732" href="#L732">732</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L733" href="#L733">733</a> <em class="jxr_javadoccomment">     * Utility method to throw a fatal database exception.</em>
-<a class="jxr_linenumber" name="L734" href="#L734">734</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L735" href="#L735">735</a> <em class="jxr_javadoccomment">     * @param ex the exception that was caught</em>
-<a class="jxr_linenumber" name="L736" href="#L736">736</a> <em class="jxr_javadoccomment">     * @param exceptions the exception collection</em>
-<a class="jxr_linenumber" name="L737" href="#L737">737</a> <em class="jxr_javadoccomment">     * @throws ExceptionCollection the collection of exceptions is always thrown</em>
-<a class="jxr_linenumber" name="L738" href="#L738">738</a> <em class="jxr_javadoccomment">     * as a fatal exception</em>
-<a class="jxr_linenumber" name="L739" href="#L739">739</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L740" href="#L740">740</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> throwFatalDatabaseException(<a href="../../../org/owasp/dependencycheck/data/nvdcve/DatabaseException.html">DatabaseException</a> ex, <strong class="jxr_keyword">final</strong> List&lt;Throwable&gt; exceptions) <strong class="jxr_keyword">throws</strong> ExceptionCollection {
-<a class="jxr_linenumber" name="L741" href="#L741">741</a>         <strong class="jxr_keyword">final</strong> String msg;
-<a class="jxr_linenumber" name="L742" href="#L742">742</a>         <strong class="jxr_keyword">if</strong> (ex.getMessage().contains(<span class="jxr_string">"Unable to connect"</span>) &amp;&amp; DatabaseManager.isH2Connection(settings)) {
-<a class="jxr_linenumber" name="L743" href="#L743">743</a>             msg = <span class="jxr_string">"Unable to connect to the database - if this error persists it may be "</span>
-<a class="jxr_linenumber" name="L744" href="#L744">744</a>                     + <span class="jxr_string">"due to a corrupt database. Consider running `purge` to delete the existing database"</span>;
-<a class="jxr_linenumber" name="L745" href="#L745">745</a>         } <strong class="jxr_keyword">else</strong> {
-<a class="jxr_linenumber" name="L746" href="#L746">746</a>             msg = <span class="jxr_string">"Unable to connect to the dependency-check database"</span>;
-<a class="jxr_linenumber" name="L747" href="#L747">747</a>         }
-<a class="jxr_linenumber" name="L748" href="#L748">748</a>         exceptions.add(<strong class="jxr_keyword">new</strong> <a href="../../../org/owasp/dependencycheck/data/nvdcve/DatabaseException.html">DatabaseException</a>(msg, ex));
-<a class="jxr_linenumber" name="L749" href="#L749">749</a>         <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a href="../../../org/owasp/dependencycheck/exception/ExceptionCollection.html">ExceptionCollection</a>(exceptions, <strong class="jxr_keyword">true</strong>);
-<a class="jxr_linenumber" name="L750" href="#L750">750</a>     }
-<a class="jxr_linenumber" name="L751" href="#L751">751</a> 
-<a class="jxr_linenumber" name="L752" href="#L752">752</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L753" href="#L753">753</a> <em class="jxr_javadoccomment">     * Executes executes the analyzer using multiple threads.</em>
-<a class="jxr_linenumber" name="L754" href="#L754">754</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L755" href="#L755">755</a> <em class="jxr_javadoccomment">     * @param exceptions a collection of exceptions that occurred during</em>
-<a class="jxr_linenumber" name="L756" href="#L756">756</a> <em class="jxr_javadoccomment">     * analysis</em>
-<a class="jxr_linenumber" name="L757" href="#L757">757</a> <em class="jxr_javadoccomment">     * @param analyzer the analyzer to execute</em>
-<a class="jxr_linenumber" name="L758" href="#L758">758</a> <em class="jxr_javadoccomment">     * @throws ExceptionCollection thrown if exceptions occurred during analysis</em>
-<a class="jxr_linenumber" name="L759" href="#L759">759</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L760" href="#L760">760</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">void</strong> executeAnalysisTasks(@NotNull <strong class="jxr_keyword">final</strong> <a href="../../../org/owasp/dependencycheck/analyzer/Analyzer.html">Analyzer</a> analyzer, List&lt;Throwable&gt; exceptions) <strong class="jxr_keyword">throws</strong> ExceptionCollection {
-<a class="jxr_linenumber" name="L761" href="#L761">761</a>         LOGGER.debug(<span class="jxr_string">"Starting {}"</span>, analyzer.getName());
-<a class="jxr_linenumber" name="L762" href="#L762">762</a>         <strong class="jxr_keyword">final</strong> List&lt;AnalysisTask&gt; analysisTasks = getAnalysisTasks(analyzer, exceptions);
-<a class="jxr_linenumber" name="L763" href="#L763">763</a>         <strong class="jxr_keyword">final</strong> ExecutorService executorService = getExecutorService(analyzer);
-<a class="jxr_linenumber" name="L764" href="#L764">764</a> 
-<a class="jxr_linenumber" name="L765" href="#L765">765</a>         <strong class="jxr_keyword">try</strong> {
-<a class="jxr_linenumber" name="L766" href="#L766">766</a>             <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> timeout = settings.getInt(Settings.KEYS.ANALYSIS_TIMEOUT, 180);
-<a class="jxr_linenumber" name="L767" href="#L767">767</a>             <strong class="jxr_keyword">final</strong> List&lt;Future&lt;Void&gt;&gt; results = executorService.invokeAll(analysisTasks, timeout, TimeUnit.MINUTES);
-<a class="jxr_linenumber" name="L768" href="#L768">768</a> 
-<a class="jxr_linenumber" name="L769" href="#L769">769</a>             <em class="jxr_comment">// ensure there was no exception during execution</em>
-<a class="jxr_linenumber" name="L770" href="#L770">770</a>             <strong class="jxr_keyword">for</strong> (Future&lt;Void&gt; result : results) {
-<a class="jxr_linenumber" name="L771" href="#L771">771</a>                 <strong class="jxr_keyword">try</strong> {
-<a class="jxr_linenumber" name="L772" href="#L772">772</a>                     result.get();
-<a class="jxr_linenumber" name="L773" href="#L773">773</a>                 } <strong class="jxr_keyword">catch</strong> (ExecutionException e) {
-<a class="jxr_linenumber" name="L774" href="#L774">774</a>                     throwFatalExceptionCollection(<span class="jxr_string">"Analysis task failed with a fatal exception."</span>, e, exceptions);
-<a class="jxr_linenumber" name="L775" href="#L775">775</a>                 } <strong class="jxr_keyword">catch</strong> (CancellationException e) {
-<a class="jxr_linenumber" name="L776" href="#L776">776</a>                     throwFatalExceptionCollection(<span class="jxr_string">"Analysis task was cancelled."</span>, e, exceptions);
-<a class="jxr_linenumber" name="L777" href="#L777">777</a>                 }
-<a class="jxr_linenumber" name="L778" href="#L778">778</a>             }
-<a class="jxr_linenumber" name="L779" href="#L779">779</a>         } <strong class="jxr_keyword">catch</strong> (InterruptedException e) {
-<a class="jxr_linenumber" name="L780" href="#L780">780</a>             Thread.currentThread().interrupt();
-<a class="jxr_linenumber" name="L781" href="#L781">781</a>             throwFatalExceptionCollection(<span class="jxr_string">"Analysis has been interrupted."</span>, e, exceptions);
-<a class="jxr_linenumber" name="L782" href="#L782">782</a>         } <strong class="jxr_keyword">finally</strong> {
-<a class="jxr_linenumber" name="L783" href="#L783">783</a>             executorService.shutdown();
-<a class="jxr_linenumber" name="L784" href="#L784">784</a>         }
-<a class="jxr_linenumber" name="L785" href="#L785">785</a>     }
-<a class="jxr_linenumber" name="L786" href="#L786">786</a> 
-<a class="jxr_linenumber" name="L787" href="#L787">787</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L788" href="#L788">788</a> <em class="jxr_javadoccomment">     * Returns the analysis tasks for the dependencies.</em>
-<a class="jxr_linenumber" name="L789" href="#L789">789</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L790" href="#L790">790</a> <em class="jxr_javadoccomment">     * @param analyzer the analyzer to create tasks for</em>
-<a class="jxr_linenumber" name="L791" href="#L791">791</a> <em class="jxr_javadoccomment">     * @param exceptions the collection of exceptions to collect</em>
-<a class="jxr_linenumber" name="L792" href="#L792">792</a> <em class="jxr_javadoccomment">     * @return a collection of analysis tasks</em>
-<a class="jxr_linenumber" name="L793" href="#L793">793</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L794" href="#L794">794</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">synchronized</strong> List&lt;AnalysisTask&gt; getAnalysisTasks(<a href="../../../org/owasp/dependencycheck/analyzer/Analyzer.html">Analyzer</a> analyzer, List&lt;Throwable&gt; exceptions) {
-<a class="jxr_linenumber" name="L795" href="#L795">795</a>         <strong class="jxr_keyword">final</strong> List&lt;AnalysisTask&gt; result = <strong class="jxr_keyword">new</strong> ArrayList&lt;&gt;();
-<a class="jxr_linenumber" name="L796" href="#L796">796</a>         dependencies.stream().map((dependency) -&gt; <strong class="jxr_keyword">new</strong> AnalysisTask(analyzer, dependency, <strong class="jxr_keyword">this</strong>, exceptions)).forEach(result::add);
-<a class="jxr_linenumber" name="L797" href="#L797">797</a>         <strong class="jxr_keyword">return</strong> result;
-<a class="jxr_linenumber" name="L798" href="#L798">798</a>     }
-<a class="jxr_linenumber" name="L799" href="#L799">799</a> 
-<a class="jxr_linenumber" name="L800" href="#L800">800</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L801" href="#L801">801</a> <em class="jxr_javadoccomment">     * Returns the executor service for a given analyzer.</em>
-<a class="jxr_linenumber" name="L802" href="#L802">802</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L803" href="#L803">803</a> <em class="jxr_javadoccomment">     * @param analyzer the analyzer to obtain an executor</em>
-<a class="jxr_linenumber" name="L804" href="#L804">804</a> <em class="jxr_javadoccomment">     * @return the executor service</em>
-<a class="jxr_linenumber" name="L805" href="#L805">805</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L806" href="#L806">806</a>     <strong class="jxr_keyword">protected</strong> ExecutorService getExecutorService(<a href="../../../org/owasp/dependencycheck/analyzer/Analyzer.html">Analyzer</a> analyzer) {
-<a class="jxr_linenumber" name="L807" href="#L807">807</a>         <strong class="jxr_keyword">if</strong> (analyzer.supportsParallelProcessing()) {
-<a class="jxr_linenumber" name="L808" href="#L808">808</a>             <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> maximumNumberOfThreads = Runtime.getRuntime().availableProcessors();
-<a class="jxr_linenumber" name="L809" href="#L809">809</a>             LOGGER.debug(<span class="jxr_string">"Parallel processing with up to {} threads: {}."</span>, maximumNumberOfThreads, analyzer.getName());
-<a class="jxr_linenumber" name="L810" href="#L810">810</a>             <strong class="jxr_keyword">return</strong> Executors.newFixedThreadPool(maximumNumberOfThreads);
-<a class="jxr_linenumber" name="L811" href="#L811">811</a>         } <strong class="jxr_keyword">else</strong> {
-<a class="jxr_linenumber" name="L812" href="#L812">812</a>             LOGGER.debug(<span class="jxr_string">"Parallel processing is not supported: {}."</span>, analyzer.getName());
-<a class="jxr_linenumber" name="L813" href="#L813">813</a>             <strong class="jxr_keyword">return</strong> Executors.newSingleThreadExecutor();
-<a class="jxr_linenumber" name="L814" href="#L814">814</a>         }
-<a class="jxr_linenumber" name="L815" href="#L815">815</a>     }
-<a class="jxr_linenumber" name="L816" href="#L816">816</a> 
-<a class="jxr_linenumber" name="L817" href="#L817">817</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L818" href="#L818">818</a> <em class="jxr_javadoccomment">     * Initializes the given analyzer.</em>
-<a class="jxr_linenumber" name="L819" href="#L819">819</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L820" href="#L820">820</a> <em class="jxr_javadoccomment">     * @param analyzer the analyzer to prepare</em>
-<a class="jxr_linenumber" name="L821" href="#L821">821</a> <em class="jxr_javadoccomment">     * @throws InitializationException thrown when there is a problem</em>
-<a class="jxr_linenumber" name="L822" href="#L822">822</a> <em class="jxr_javadoccomment">     * initializing the analyzer</em>
-<a class="jxr_linenumber" name="L823" href="#L823">823</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L824" href="#L824">824</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">void</strong> initializeAnalyzer(@NotNull <strong class="jxr_keyword">final</strong> <a href="../../../org/owasp/dependencycheck/analyzer/Analyzer.html">Analyzer</a> analyzer) <strong class="jxr_keyword">throws</strong> InitializationException {
-<a class="jxr_linenumber" name="L825" href="#L825">825</a>         <strong class="jxr_keyword">try</strong> {
-<a class="jxr_linenumber" name="L826" href="#L826">826</a>             LOGGER.debug(<span class="jxr_string">"Initializing {}"</span>, analyzer.getName());
-<a class="jxr_linenumber" name="L827" href="#L827">827</a>             analyzer.prepare(<strong class="jxr_keyword">this</strong>);
-<a class="jxr_linenumber" name="L828" href="#L828">828</a>         } <strong class="jxr_keyword">catch</strong> (InitializationException ex) {
-<a class="jxr_linenumber" name="L829" href="#L829">829</a>             LOGGER.error(<span class="jxr_string">"Exception occurred initializing {}."</span>, analyzer.getName());
-<a class="jxr_linenumber" name="L830" href="#L830">830</a>             LOGGER.debug(<span class="jxr_string">""</span>, ex);
-<a class="jxr_linenumber" name="L831" href="#L831">831</a>             <strong class="jxr_keyword">if</strong> (ex.isFatal()) {
-<a class="jxr_linenumber" name="L832" href="#L832">832</a>                 <strong class="jxr_keyword">try</strong> {
-<a class="jxr_linenumber" name="L833" href="#L833">833</a>                     analyzer.close();
-<a class="jxr_linenumber" name="L834" href="#L834">834</a>                 } <strong class="jxr_keyword">catch</strong> (Throwable ex1) {
-<a class="jxr_linenumber" name="L835" href="#L835">835</a>                     LOGGER.trace(<span class="jxr_string">""</span>, ex1);
-<a class="jxr_linenumber" name="L836" href="#L836">836</a>                 }
-<a class="jxr_linenumber" name="L837" href="#L837">837</a>             }
-<a class="jxr_linenumber" name="L838" href="#L838">838</a>             <strong class="jxr_keyword">throw</strong> ex;
-<a class="jxr_linenumber" name="L839" href="#L839">839</a>         } <strong class="jxr_keyword">catch</strong> (Throwable ex) {
-<a class="jxr_linenumber" name="L840" href="#L840">840</a>             LOGGER.error(<span class="jxr_string">"Unexpected exception occurred initializing {}."</span>, analyzer.getName());
-<a class="jxr_linenumber" name="L841" href="#L841">841</a>             LOGGER.debug(<span class="jxr_string">""</span>, ex);
-<a class="jxr_linenumber" name="L842" href="#L842">842</a>             <strong class="jxr_keyword">try</strong> {
-<a class="jxr_linenumber" name="L843" href="#L843">843</a>                 analyzer.close();
-<a class="jxr_linenumber" name="L844" href="#L844">844</a>             } <strong class="jxr_keyword">catch</strong> (Throwable ex1) {
-<a class="jxr_linenumber" name="L845" href="#L845">845</a>                 LOGGER.trace(<span class="jxr_string">""</span>, ex1);
-<a class="jxr_linenumber" name="L846" href="#L846">846</a>             }
-<a class="jxr_linenumber" name="L847" href="#L847">847</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a href="../../../org/owasp/dependencycheck/exception/InitializationException.html">InitializationException</a>(<span class="jxr_string">"Unexpected Exception"</span>, ex);
-<a class="jxr_linenumber" name="L848" href="#L848">848</a>         }
-<a class="jxr_linenumber" name="L849" href="#L849">849</a>     }
-<a class="jxr_linenumber" name="L850" href="#L850">850</a> 
-<a class="jxr_linenumber" name="L851" href="#L851">851</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L852" href="#L852">852</a> <em class="jxr_javadoccomment">     * Closes the given analyzer.</em>
-<a class="jxr_linenumber" name="L853" href="#L853">853</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L854" href="#L854">854</a> <em class="jxr_javadoccomment">     * @param analyzer the analyzer to close</em>
-<a class="jxr_linenumber" name="L855" href="#L855">855</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L856" href="#L856">856</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">void</strong> closeAnalyzer(@NotNull <strong class="jxr_keyword">final</strong> <a href="../../../org/owasp/dependencycheck/analyzer/Analyzer.html">Analyzer</a> analyzer) {
-<a class="jxr_linenumber" name="L857" href="#L857">857</a>         LOGGER.debug(<span class="jxr_string">"Closing Analyzer '{}'"</span>, analyzer.getName());
-<a class="jxr_linenumber" name="L858" href="#L858">858</a>         <strong class="jxr_keyword">try</strong> {
-<a class="jxr_linenumber" name="L859" href="#L859">859</a>             analyzer.close();
-<a class="jxr_linenumber" name="L860" href="#L860">860</a>         } <strong class="jxr_keyword">catch</strong> (Throwable ex) {
-<a class="jxr_linenumber" name="L861" href="#L861">861</a>             LOGGER.trace(<span class="jxr_string">""</span>, ex);
-<a class="jxr_linenumber" name="L862" href="#L862">862</a>         }
-<a class="jxr_linenumber" name="L863" href="#L863">863</a>     }
-<a class="jxr_linenumber" name="L864" href="#L864">864</a> 
-<a class="jxr_linenumber" name="L865" href="#L865">865</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L866" href="#L866">866</a> <em class="jxr_javadoccomment">     * Cycles through the cached web data sources and calls update on all of</em>
-<a class="jxr_linenumber" name="L867" href="#L867">867</a> <em class="jxr_javadoccomment">     * them.</em>
-<a class="jxr_linenumber" name="L868" href="#L868">868</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L869" href="#L869">869</a> <em class="jxr_javadoccomment">     * @throws UpdateException thrown if the operation fails</em>
-<a class="jxr_linenumber" name="L870" href="#L870">870</a> <em class="jxr_javadoccomment">     * @throws DatabaseException if the operation fails due to a local database</em>
-<a class="jxr_linenumber" name="L871" href="#L871">871</a> <em class="jxr_javadoccomment">     * failure</em>
-<a class="jxr_linenumber" name="L872" href="#L872">872</a> <em class="jxr_javadoccomment">     * @return Whether any updates actually happened</em>
-<a class="jxr_linenumber" name="L873" href="#L873">873</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L874" href="#L874">874</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">boolean</strong> doUpdates() <strong class="jxr_keyword">throws</strong> UpdateException, DatabaseException {
-<a class="jxr_linenumber" name="L875" href="#L875">875</a>         <strong class="jxr_keyword">return</strong> doUpdates(false);
-<a class="jxr_linenumber" name="L876" href="#L876">876</a>     }
-<a class="jxr_linenumber" name="L877" href="#L877">877</a> 
-<a class="jxr_linenumber" name="L878" href="#L878">878</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L879" href="#L879">879</a> <em class="jxr_javadoccomment">     * Cycles through the cached web data sources and calls update on all of</em>
-<a class="jxr_linenumber" name="L880" href="#L880">880</a> <em class="jxr_javadoccomment">     * them.</em>
-<a class="jxr_linenumber" name="L881" href="#L881">881</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L882" href="#L882">882</a> <em class="jxr_javadoccomment">     * @param remainOpen whether or not the database connection should remain</em>
-<a class="jxr_linenumber" name="L883" href="#L883">883</a> <em class="jxr_javadoccomment">     * open</em>
-<a class="jxr_linenumber" name="L884" href="#L884">884</a> <em class="jxr_javadoccomment">     * @throws UpdateException thrown if the operation fails</em>
-<a class="jxr_linenumber" name="L885" href="#L885">885</a> <em class="jxr_javadoccomment">     * @throws DatabaseException if the operation fails due to a local database</em>
-<a class="jxr_linenumber" name="L886" href="#L886">886</a> <em class="jxr_javadoccomment">     * failure</em>
-<a class="jxr_linenumber" name="L887" href="#L887">887</a> <em class="jxr_javadoccomment">     * @return Whether any updates actually happened</em>
-<a class="jxr_linenumber" name="L888" href="#L888">888</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L889" href="#L889">889</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">boolean</strong> doUpdates(<strong class="jxr_keyword">boolean</strong> remainOpen) <strong class="jxr_keyword">throws</strong> UpdateException, DatabaseException {
-<a class="jxr_linenumber" name="L890" href="#L890">890</a>         <strong class="jxr_keyword">if</strong> (mode.isDatabaseRequired()) {
-<a class="jxr_linenumber" name="L891" href="#L891">891</a>             <strong class="jxr_keyword">try</strong> (WriteLock dblock = <strong class="jxr_keyword">new</strong> WriteLock(getSettings(), DatabaseManager.isH2Connection(getSettings()))) {
-<a class="jxr_linenumber" name="L892" href="#L892">892</a>                 <em class="jxr_comment">//lock is not needed as we already have the lock held</em>
-<a class="jxr_linenumber" name="L893" href="#L893">893</a>                 openDatabase(false, false);
-<a class="jxr_linenumber" name="L894" href="#L894">894</a>                 LOGGER.info(<span class="jxr_string">"Checking for updates"</span>);
-<a class="jxr_linenumber" name="L895" href="#L895">895</a>                 <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">long</strong> updateStart = System.currentTimeMillis();
-<a class="jxr_linenumber" name="L896" href="#L896">896</a>                 <strong class="jxr_keyword">final</strong> <a href="../../../org/owasp/dependencycheck/data/update/UpdateService.html">UpdateService</a> service = <strong class="jxr_keyword">new</strong> <a href="../../../org/owasp/dependencycheck/data/update/UpdateService.html">UpdateService</a>(serviceClassLoader);
-<a class="jxr_linenumber" name="L897" href="#L897">897</a>                 <strong class="jxr_keyword">final</strong> Iterator&lt;CachedWebDataSource&gt; iterator = service.getDataSources();
-<a class="jxr_linenumber" name="L898" href="#L898">898</a>                 <strong class="jxr_keyword">boolean</strong> dbUpdatesMade = false;
-<a class="jxr_linenumber" name="L899" href="#L899">899</a>                 <a href="../../../org/owasp/dependencycheck/data/update/exception/UpdateException.html">UpdateException</a> updateException = <strong class="jxr_keyword">null</strong>;
-<a class="jxr_linenumber" name="L900" href="#L900">900</a>                 <strong class="jxr_keyword">while</strong> (iterator.hasNext()) {
-<a class="jxr_linenumber" name="L901" href="#L901">901</a>                     <strong class="jxr_keyword">try</strong> {
-<a class="jxr_linenumber" name="L902" href="#L902">902</a>                         <strong class="jxr_keyword">final</strong> <a href="../../../org/owasp/dependencycheck/data/update/CachedWebDataSource.html">CachedWebDataSource</a> source = iterator.next();
-<a class="jxr_linenumber" name="L903" href="#L903">903</a>                         dbUpdatesMade |= source.update(<strong class="jxr_keyword">this</strong>);
-<a class="jxr_linenumber" name="L904" href="#L904">904</a>                     } <strong class="jxr_keyword">catch</strong> (UpdateException ex) {
-<a class="jxr_linenumber" name="L905" href="#L905">905</a>                         updateException = ex;
-<a class="jxr_linenumber" name="L906" href="#L906">906</a>                         LOGGER.error(ex.getMessage(), ex);
-<a class="jxr_linenumber" name="L907" href="#L907">907</a>                     }
-<a class="jxr_linenumber" name="L908" href="#L908">908</a>                 }
-<a class="jxr_linenumber" name="L909" href="#L909">909</a>                 <strong class="jxr_keyword">if</strong> (dbUpdatesMade) {
-<a class="jxr_linenumber" name="L910" href="#L910">910</a>                     database.defrag();
-<a class="jxr_linenumber" name="L911" href="#L911">911</a>                 }
-<a class="jxr_linenumber" name="L912" href="#L912">912</a>                 database.close();
-<a class="jxr_linenumber" name="L913" href="#L913">913</a>                 database = <strong class="jxr_keyword">null</strong>;
-<a class="jxr_linenumber" name="L914" href="#L914">914</a>                 <strong class="jxr_keyword">if</strong> (updateException != <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="L915" href="#L915">915</a>                     <strong class="jxr_keyword">throw</strong> updateException;
-<a class="jxr_linenumber" name="L916" href="#L916">916</a>                 }
-<a class="jxr_linenumber" name="L917" href="#L917">917</a>                 LOGGER.info(<span class="jxr_string">"Check for updates complete ({} ms)"</span>, System.currentTimeMillis() - updateStart);
-<a class="jxr_linenumber" name="L918" href="#L918">918</a>                 <strong class="jxr_keyword">if</strong> (remainOpen) {
-<a class="jxr_linenumber" name="L919" href="#L919">919</a>                     <em class="jxr_comment">//lock is not needed as we already have the lock held</em>
-<a class="jxr_linenumber" name="L920" href="#L920">920</a>                     openDatabase(<strong class="jxr_keyword">true</strong>, false);
-<a class="jxr_linenumber" name="L921" href="#L921">921</a>                 }
-<a class="jxr_linenumber" name="L922" href="#L922">922</a> 
-<a class="jxr_linenumber" name="L923" href="#L923">923</a>                 <strong class="jxr_keyword">return</strong> dbUpdatesMade;
-<a class="jxr_linenumber" name="L924" href="#L924">924</a>             } <strong class="jxr_keyword">catch</strong> (WriteLockException ex) {
-<a class="jxr_linenumber" name="L925" href="#L925">925</a>                 <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a href="../../../org/owasp/dependencycheck/data/update/exception/UpdateException.html">UpdateException</a>(<span class="jxr_string">"Unable to obtain an exclusive lock on the H2 database to perform updates"</span>, ex);
-<a class="jxr_linenumber" name="L926" href="#L926">926</a>             }
-<a class="jxr_linenumber" name="L927" href="#L927">927</a>         } <strong class="jxr_keyword">else</strong> {
-<a class="jxr_linenumber" name="L928" href="#L928">928</a>             LOGGER.info(<span class="jxr_string">"Skipping update check in evidence collection mode."</span>);
-<a class="jxr_linenumber" name="L929" href="#L929">929</a>             <strong class="jxr_keyword">return</strong> false;
-<a class="jxr_linenumber" name="L930" href="#L930">930</a>         }
-<a class="jxr_linenumber" name="L931" href="#L931">931</a>     }
-<a class="jxr_linenumber" name="L932" href="#L932">932</a> 
-<a class="jxr_linenumber" name="L933" href="#L933">933</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L934" href="#L934">934</a> <em class="jxr_javadoccomment">     * Purges the cached web data sources.</em>
-<a class="jxr_linenumber" name="L935" href="#L935">935</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L936" href="#L936">936</a> <em class="jxr_javadoccomment">     * @return &lt;code&gt;true&lt;/code&gt; if the purge was successful; otherwise</em>
-<a class="jxr_linenumber" name="L937" href="#L937">937</a> <em class="jxr_javadoccomment">     * &lt;code&gt;false&lt;/code&gt;</em>
-<a class="jxr_linenumber" name="L938" href="#L938">938</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L939" href="#L939">939</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">boolean</strong> purge() {
-<a class="jxr_linenumber" name="L940" href="#L940">940</a>         <strong class="jxr_keyword">boolean</strong> result = <strong class="jxr_keyword">true</strong>;
-<a class="jxr_linenumber" name="L941" href="#L941">941</a>         <strong class="jxr_keyword">final</strong> <a href="../../../org/owasp/dependencycheck/data/update/UpdateService.html">UpdateService</a> service = <strong class="jxr_keyword">new</strong> <a href="../../../org/owasp/dependencycheck/data/update/UpdateService.html">UpdateService</a>(serviceClassLoader);
-<a class="jxr_linenumber" name="L942" href="#L942">942</a>         <strong class="jxr_keyword">final</strong> Iterator&lt;CachedWebDataSource&gt; iterator = service.getDataSources();
-<a class="jxr_linenumber" name="L943" href="#L943">943</a>         <strong class="jxr_keyword">while</strong> (iterator.hasNext()) {
-<a class="jxr_linenumber" name="L944" href="#L944">944</a>             result &amp;= iterator.next().purge(<strong class="jxr_keyword">this</strong>);
-<a class="jxr_linenumber" name="L945" href="#L945">945</a>         }
-<a class="jxr_linenumber" name="L946" href="#L946">946</a>         <strong class="jxr_keyword">try</strong> {
-<a class="jxr_linenumber" name="L947" href="#L947">947</a>             <strong class="jxr_keyword">final</strong> File cache = <strong class="jxr_keyword">new</strong> File(settings.getDataDirectory(), <span class="jxr_string">"cache"</span>);
-<a class="jxr_linenumber" name="L948" href="#L948">948</a>             <strong class="jxr_keyword">if</strong> (cache.exists()) {
-<a class="jxr_linenumber" name="L949" href="#L949">949</a>                 <strong class="jxr_keyword">if</strong> (FileUtils.delete(cache)) {
-<a class="jxr_linenumber" name="L950" href="#L950">950</a>                     LOGGER.info(<span class="jxr_string">"Cache directory purged"</span>);
-<a class="jxr_linenumber" name="L951" href="#L951">951</a>                 }
-<a class="jxr_linenumber" name="L952" href="#L952">952</a>             }
-<a class="jxr_linenumber" name="L953" href="#L953">953</a>         } <strong class="jxr_keyword">catch</strong> (IOException ex) {
-<a class="jxr_linenumber" name="L954" href="#L954">954</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> RuntimeException(ex);
-<a class="jxr_linenumber" name="L955" href="#L955">955</a>         }
-<a class="jxr_linenumber" name="L956" href="#L956">956</a>         <strong class="jxr_keyword">try</strong> {
-<a class="jxr_linenumber" name="L957" href="#L957">957</a>             <strong class="jxr_keyword">final</strong> File cache = <strong class="jxr_keyword">new</strong> File(settings.getDataDirectory(), <span class="jxr_string">"oss_cache"</span>);
-<a class="jxr_linenumber" name="L958" href="#L958">958</a>             <strong class="jxr_keyword">if</strong> (cache.exists()) {
-<a class="jxr_linenumber" name="L959" href="#L959">959</a>                 <strong class="jxr_keyword">if</strong> (FileUtils.delete(cache)) {
-<a class="jxr_linenumber" name="L960" href="#L960">960</a>                     LOGGER.info(<span class="jxr_string">"OSS Cache directory purged"</span>);
-<a class="jxr_linenumber" name="L961" href="#L961">961</a>                 }
-<a class="jxr_linenumber" name="L962" href="#L962">962</a>             }
-<a class="jxr_linenumber" name="L963" href="#L963">963</a>         } <strong class="jxr_keyword">catch</strong> (IOException ex) {
-<a class="jxr_linenumber" name="L964" href="#L964">964</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> RuntimeException(ex);
-<a class="jxr_linenumber" name="L965" href="#L965">965</a>         }
-<a class="jxr_linenumber" name="L966" href="#L966">966</a> 
-<a class="jxr_linenumber" name="L967" href="#L967">967</a>         <strong class="jxr_keyword">return</strong> result;
-<a class="jxr_linenumber" name="L968" href="#L968">968</a>     }
-<a class="jxr_linenumber" name="L969" href="#L969">969</a> 
-<a class="jxr_linenumber" name="L970" href="#L970">970</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L971" href="#L971">971</a> <em class="jxr_javadoccomment">     * &lt;p&gt;</em>
-<a class="jxr_linenumber" name="L972" href="#L972">972</a> <em class="jxr_javadoccomment">     * This method is only public for unit/integration testing. This method</em>
-<a class="jxr_linenumber" name="L973" href="#L973">973</a> <em class="jxr_javadoccomment">     * should not be called by any integration that uses</em>
-<a class="jxr_linenumber" name="L974" href="#L974">974</a> <em class="jxr_javadoccomment">     * dependency-check-core.&lt;/p&gt;</em>
-<a class="jxr_linenumber" name="L975" href="#L975">975</a> <em class="jxr_javadoccomment">     * &lt;p&gt;</em>
-<a class="jxr_linenumber" name="L976" href="#L976">976</a> <em class="jxr_javadoccomment">     * Opens the database connection.&lt;/p&gt;</em>
-<a class="jxr_linenumber" name="L977" href="#L977">977</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L978" href="#L978">978</a> <em class="jxr_javadoccomment">     * @throws DatabaseException if the database connection could not be created</em>
-<a class="jxr_linenumber" name="L979" href="#L979">979</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L980" href="#L980">980</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> openDatabase() <strong class="jxr_keyword">throws</strong> DatabaseException {
-<a class="jxr_linenumber" name="L981" href="#L981">981</a>         openDatabase(false, <strong class="jxr_keyword">true</strong>);
-<a class="jxr_linenumber" name="L982" href="#L982">982</a>     }
-<a class="jxr_linenumber" name="L983" href="#L983">983</a> 
-<a class="jxr_linenumber" name="L984" href="#L984">984</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L985" href="#L985">985</a> <em class="jxr_javadoccomment">     * &lt;p&gt;</em>
-<a class="jxr_linenumber" name="L986" href="#L986">986</a> <em class="jxr_javadoccomment">     * This method is only public for unit/integration testing. This method</em>
-<a class="jxr_linenumber" name="L987" href="#L987">987</a> <em class="jxr_javadoccomment">     * should not be called by any integration that uses</em>
-<a class="jxr_linenumber" name="L988" href="#L988">988</a> <em class="jxr_javadoccomment">     * dependency-check-core.&lt;/p&gt;</em>
-<a class="jxr_linenumber" name="L989" href="#L989">989</a> <em class="jxr_javadoccomment">     * &lt;p&gt;</em>
-<a class="jxr_linenumber" name="L990" href="#L990">990</a> <em class="jxr_javadoccomment">     * Opens the database connection; if readOnly is true a copy of the database</em>
-<a class="jxr_linenumber" name="L991" href="#L991">991</a> <em class="jxr_javadoccomment">     * will be made.&lt;/p&gt;</em>
-<a class="jxr_linenumber" name="L992" href="#L992">992</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L993" href="#L993">993</a> <em class="jxr_javadoccomment">     * @param readOnly whether or not the database connection should be readonly</em>
-<a class="jxr_linenumber" name="L994" href="#L994">994</a> <em class="jxr_javadoccomment">     * @param lockRequired whether or not a lock needs to be acquired when</em>
-<a class="jxr_linenumber" name="L995" href="#L995">995</a> <em class="jxr_javadoccomment">     * opening the database</em>
-<a class="jxr_linenumber" name="L996" href="#L996">996</a> <em class="jxr_javadoccomment">     * @throws DatabaseException if the database connection could not be created</em>
-<a class="jxr_linenumber" name="L997" href="#L997">997</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L998" href="#L998">998</a>     @SuppressWarnings(<span class="jxr_string">"try"</span>)
-<a class="jxr_linenumber" name="L999" href="#L999">999</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> openDatabase(<strong class="jxr_keyword">boolean</strong> readOnly, <strong class="jxr_keyword">boolean</strong> lockRequired) <strong class="jxr_keyword">throws</strong> DatabaseException {
-<a class="jxr_linenumber" name="L1000" href="#L1000">1000</a>         <strong class="jxr_keyword">if</strong> (mode.isDatabaseRequired() &amp;&amp; database == <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="L1001" href="#L1001">1001</a>             <strong class="jxr_keyword">try</strong> (WriteLock dblock = <strong class="jxr_keyword">new</strong> WriteLock(getSettings(), lockRequired &amp;&amp; DatabaseManager.isH2Connection(settings))) {
-<a class="jxr_linenumber" name="L1002" href="#L1002">1002</a>                 <strong class="jxr_keyword">if</strong> (readOnly
-<a class="jxr_linenumber" name="L1003" href="#L1003">1003</a>                         &amp;&amp; DatabaseManager.isH2Connection(settings)
-<a class="jxr_linenumber" name="L1004" href="#L1004">1004</a>                         &amp;&amp; settings.getString(Settings.KEYS.DB_CONNECTION_STRING).contains(<span class="jxr_string">"file:%s"</span>)) {
-<a class="jxr_linenumber" name="L1005" href="#L1005">1005</a>                     <strong class="jxr_keyword">final</strong> File db = DatabaseManager.getH2DataFile(settings);
-<a class="jxr_linenumber" name="L1006" href="#L1006">1006</a>                     <strong class="jxr_keyword">if</strong> (db.isFile()) {
-<a class="jxr_linenumber" name="L1007" href="#L1007">1007</a>                         <strong class="jxr_keyword">final</strong> File temp = settings.getTempDirectory();
-<a class="jxr_linenumber" name="L1008" href="#L1008">1008</a>                         <strong class="jxr_keyword">final</strong> File tempDB = <strong class="jxr_keyword">new</strong> File(temp, db.getName());
-<a class="jxr_linenumber" name="L1009" href="#L1009">1009</a>                         LOGGER.debug(<span class="jxr_string">"copying database {} to {}"</span>, db.toPath(), temp.toPath());
-<a class="jxr_linenumber" name="L1010" href="#L1010">1010</a>                         Files.copy(db.toPath(), tempDB.toPath());
-<a class="jxr_linenumber" name="L1011" href="#L1011">1011</a>                         settings.setString(Settings.KEYS.H2_DATA_DIRECTORY, temp.getPath());
-<a class="jxr_linenumber" name="L1012" href="#L1012">1012</a>                         <strong class="jxr_keyword">final</strong> String connStr = settings.getString(Settings.KEYS.DB_CONNECTION_STRING);
-<a class="jxr_linenumber" name="L1013" href="#L1013">1013</a>                         <strong class="jxr_keyword">if</strong> (!connStr.contains(<span class="jxr_string">"ACCESS_MODE_DATA"</span>)) {
-<a class="jxr_linenumber" name="L1014" href="#L1014">1014</a>                             settings.setString(Settings.KEYS.DB_CONNECTION_STRING, connStr + <span class="jxr_string">"ACCESS_MODE_DATA=r"</span>);
-<a class="jxr_linenumber" name="L1015" href="#L1015">1015</a>                         }
-<a class="jxr_linenumber" name="L1016" href="#L1016">1016</a>                         settings.setBoolean(Settings.KEYS.AUTO_UPDATE, false);
-<a class="jxr_linenumber" name="L1017" href="#L1017">1017</a>                         database = <strong class="jxr_keyword">new</strong> <a href="../../../org/owasp/dependencycheck/data/nvdcve/CveDB.html">CveDB</a>(settings);
-<a class="jxr_linenumber" name="L1018" href="#L1018">1018</a>                     } <strong class="jxr_keyword">else</strong> {
-<a class="jxr_linenumber" name="L1019" href="#L1019">1019</a>                         <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a href="../../../org/owasp/dependencycheck/data/nvdcve/DatabaseException.html">DatabaseException</a>(<span class="jxr_string">"Unable to open database - configured database file does not exist: "</span> + db);
-<a class="jxr_linenumber" name="L1020" href="#L1020">1020</a>                     }
-<a class="jxr_linenumber" name="L1021" href="#L1021">1021</a>                 } <strong class="jxr_keyword">else</strong> {
-<a class="jxr_linenumber" name="L1022" href="#L1022">1022</a>                     database = <strong class="jxr_keyword">new</strong> <a href="../../../org/owasp/dependencycheck/data/nvdcve/CveDB.html">CveDB</a>(settings);
-<a class="jxr_linenumber" name="L1023" href="#L1023">1023</a>                 }
-<a class="jxr_linenumber" name="L1024" href="#L1024">1024</a>             } <strong class="jxr_keyword">catch</strong> (IOException ex) {
-<a class="jxr_linenumber" name="L1025" href="#L1025">1025</a>                 <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a href="../../../org/owasp/dependencycheck/data/nvdcve/DatabaseException.html">DatabaseException</a>(<span class="jxr_string">"Unable to open database in read only mode"</span>, ex);
-<a class="jxr_linenumber" name="L1026" href="#L1026">1026</a>             } <strong class="jxr_keyword">catch</strong> (WriteLockException ex) {
-<a class="jxr_linenumber" name="L1027" href="#L1027">1027</a>                 <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a href="../../../org/owasp/dependencycheck/data/nvdcve/DatabaseException.html">DatabaseException</a>(<span class="jxr_string">"Failed to obtain lock - unable to open database"</span>, ex);
-<a class="jxr_linenumber" name="L1028" href="#L1028">1028</a>             }
-<a class="jxr_linenumber" name="L1029" href="#L1029">1029</a>             database.open();
-<a class="jxr_linenumber" name="L1030" href="#L1030">1030</a>         }
-<a class="jxr_linenumber" name="L1031" href="#L1031">1031</a>     }
-<a class="jxr_linenumber" name="L1032" href="#L1032">1032</a> 
-<a class="jxr_linenumber" name="L1033" href="#L1033">1033</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L1034" href="#L1034">1034</a> <em class="jxr_javadoccomment">     * Returns a reference to the database.</em>
-<a class="jxr_linenumber" name="L1035" href="#L1035">1035</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L1036" href="#L1036">1036</a> <em class="jxr_javadoccomment">     * @return a reference to the database</em>
-<a class="jxr_linenumber" name="L1037" href="#L1037">1037</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L1038" href="#L1038">1038</a>     <strong class="jxr_keyword">public</strong> <a href="../../../org/owasp/dependencycheck/data/nvdcve/CveDB.html">CveDB</a> getDatabase() {
-<a class="jxr_linenumber" name="L1039" href="#L1039">1039</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">this</strong>.database;
-<a class="jxr_linenumber" name="L1040" href="#L1040">1040</a>     }
-<a class="jxr_linenumber" name="L1041" href="#L1041">1041</a> 
-<a class="jxr_linenumber" name="L1042" href="#L1042">1042</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L1043" href="#L1043">1043</a> <em class="jxr_javadoccomment">     * Returns a full list of all of the analyzers. This is useful for reporting</em>
-<a class="jxr_linenumber" name="L1044" href="#L1044">1044</a> <em class="jxr_javadoccomment">     * which analyzers where used.</em>
-<a class="jxr_linenumber" name="L1045" href="#L1045">1045</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L1046" href="#L1046">1046</a> <em class="jxr_javadoccomment">     * @return a list of Analyzers</em>
-<a class="jxr_linenumber" name="L1047" href="#L1047">1047</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L1048" href="#L1048">1048</a>     @NotNull
-<a class="jxr_linenumber" name="L1049" href="#L1049">1049</a>     <strong class="jxr_keyword">public</strong> List&lt;Analyzer&gt; getAnalyzers() {
-<a class="jxr_linenumber" name="L1050" href="#L1050">1050</a>         <strong class="jxr_keyword">final</strong> List&lt;Analyzer&gt; analyzerList = <strong class="jxr_keyword">new</strong> ArrayList&lt;&gt;();
-<a class="jxr_linenumber" name="L1051" href="#L1051">1051</a>         <em class="jxr_comment">//insteae of forEach - we can just do a collect</em>
-<a class="jxr_linenumber" name="L1052" href="#L1052">1052</a>         mode.getPhases().stream()
-<a class="jxr_linenumber" name="L1053" href="#L1053">1053</a>                 .map(analyzers::get)
-<a class="jxr_linenumber" name="L1054" href="#L1054">1054</a>                 .forEachOrdered(analyzerList::addAll);
-<a class="jxr_linenumber" name="L1055" href="#L1055">1055</a>         <strong class="jxr_keyword">return</strong> analyzerList;
-<a class="jxr_linenumber" name="L1056" href="#L1056">1056</a>     }
-<a class="jxr_linenumber" name="L1057" href="#L1057">1057</a> 
-<a class="jxr_linenumber" name="L1058" href="#L1058">1058</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L1059" href="#L1059">1059</a> <em class="jxr_javadoccomment">     * Checks all analyzers to see if an extension is supported.</em>
-<a class="jxr_linenumber" name="L1060" href="#L1060">1060</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L1061" href="#L1061">1061</a> <em class="jxr_javadoccomment">     * @param file a file extension</em>
-<a class="jxr_linenumber" name="L1062" href="#L1062">1062</a> <em class="jxr_javadoccomment">     * @return true or false depending on whether or not the file extension is</em>
-<a class="jxr_linenumber" name="L1063" href="#L1063">1063</a> <em class="jxr_javadoccomment">     * supported</em>
-<a class="jxr_linenumber" name="L1064" href="#L1064">1064</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L1065" href="#L1065">1065</a>     @Override
-<a class="jxr_linenumber" name="L1066" href="#L1066">1066</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">boolean</strong> accept(@Nullable <strong class="jxr_keyword">final</strong> File file) {
-<a class="jxr_linenumber" name="L1067" href="#L1067">1067</a>         <strong class="jxr_keyword">if</strong> (file == <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="L1068" href="#L1068">1068</a>             <strong class="jxr_keyword">return</strong> false;
-<a class="jxr_linenumber" name="L1069" href="#L1069">1069</a>         }
-<a class="jxr_linenumber" name="L1070" href="#L1070">1070</a>         <em class="jxr_comment">/* note, we can't break early on this loop as the analyzers need to know if</em>
-<a class="jxr_linenumber" name="L1071" href="#L1071">1071</a> <em class="jxr_comment">        they have files to work on prior to initialization */</em>
-<a class="jxr_linenumber" name="L1072" href="#L1072">1072</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">this</strong>.fileTypeAnalyzers.stream().map((a) -&gt; a.accept(file)).reduce(false, (accumulator, result) -&gt; accumulator || result);
-<a class="jxr_linenumber" name="L1073" href="#L1073">1073</a>     }
-<a class="jxr_linenumber" name="L1074" href="#L1074">1074</a> 
-<a class="jxr_linenumber" name="L1075" href="#L1075">1075</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L1076" href="#L1076">1076</a> <em class="jxr_javadoccomment">     * Returns the set of file type analyzers.</em>
-<a class="jxr_linenumber" name="L1077" href="#L1077">1077</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L1078" href="#L1078">1078</a> <em class="jxr_javadoccomment">     * @return the set of file type analyzers</em>
-<a class="jxr_linenumber" name="L1079" href="#L1079">1079</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L1080" href="#L1080">1080</a>     <strong class="jxr_keyword">public</strong> Set&lt;FileTypeAnalyzer&gt; getFileTypeAnalyzers() {
-<a class="jxr_linenumber" name="L1081" href="#L1081">1081</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">this</strong>.fileTypeAnalyzers;
-<a class="jxr_linenumber" name="L1082" href="#L1082">1082</a>     }
-<a class="jxr_linenumber" name="L1083" href="#L1083">1083</a> 
-<a class="jxr_linenumber" name="L1084" href="#L1084">1084</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L1085" href="#L1085">1085</a> <em class="jxr_javadoccomment">     * Returns the configured settings.</em>
-<a class="jxr_linenumber" name="L1086" href="#L1086">1086</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L1087" href="#L1087">1087</a> <em class="jxr_javadoccomment">     * @return the configured settings</em>
-<a class="jxr_linenumber" name="L1088" href="#L1088">1088</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L1089" href="#L1089">1089</a>     <strong class="jxr_keyword">public</strong> Settings getSettings() {
-<a class="jxr_linenumber" name="L1090" href="#L1090">1090</a>         <strong class="jxr_keyword">return</strong> settings;
-<a class="jxr_linenumber" name="L1091" href="#L1091">1091</a>     }
-<a class="jxr_linenumber" name="L1092" href="#L1092">1092</a> 
-<a class="jxr_linenumber" name="L1093" href="#L1093">1093</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L1094" href="#L1094">1094</a> <em class="jxr_javadoccomment">     * Retrieve an object from the objects collection.</em>
-<a class="jxr_linenumber" name="L1095" href="#L1095">1095</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L1096" href="#L1096">1096</a> <em class="jxr_javadoccomment">     * @param key the key to retrieve the object</em>
-<a class="jxr_linenumber" name="L1097" href="#L1097">1097</a> <em class="jxr_javadoccomment">     * @return the object</em>
-<a class="jxr_linenumber" name="L1098" href="#L1098">1098</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L1099" href="#L1099">1099</a>     <strong class="jxr_keyword">public</strong> Object getObject(String key) {
-<a class="jxr_linenumber" name="L1100" href="#L1100">1100</a>         <strong class="jxr_keyword">return</strong> objects.get(key);
-<a class="jxr_linenumber" name="L1101" href="#L1101">1101</a>     }
-<a class="jxr_linenumber" name="L1102" href="#L1102">1102</a> 
-<a class="jxr_linenumber" name="L1103" href="#L1103">1103</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L1104" href="#L1104">1104</a> <em class="jxr_javadoccomment">     * Put an object in the object collection.</em>
-<a class="jxr_linenumber" name="L1105" href="#L1105">1105</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L1106" href="#L1106">1106</a> <em class="jxr_javadoccomment">     * @param key the key to store the object</em>
-<a class="jxr_linenumber" name="L1107" href="#L1107">1107</a> <em class="jxr_javadoccomment">     * @param object the object to store</em>
-<a class="jxr_linenumber" name="L1108" href="#L1108">1108</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L1109" href="#L1109">1109</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> putObject(String key, Object object) {
-<a class="jxr_linenumber" name="L1110" href="#L1110">1110</a>         objects.put(key, object);
-<a class="jxr_linenumber" name="L1111" href="#L1111">1111</a>     }
-<a class="jxr_linenumber" name="L1112" href="#L1112">1112</a> 
-<a class="jxr_linenumber" name="L1113" href="#L1113">1113</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L1114" href="#L1114">1114</a> <em class="jxr_javadoccomment">     * Verifies if the object exists in the object store.</em>
-<a class="jxr_linenumber" name="L1115" href="#L1115">1115</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L1116" href="#L1116">1116</a> <em class="jxr_javadoccomment">     * @param key the key to retrieve the object</em>
-<a class="jxr_linenumber" name="L1117" href="#L1117">1117</a> <em class="jxr_javadoccomment">     * @return &lt;code&gt;true&lt;/code&gt; if the object exists; otherwise</em>
-<a class="jxr_linenumber" name="L1118" href="#L1118">1118</a> <em class="jxr_javadoccomment">     * &lt;code&gt;false&lt;/code&gt;</em>
-<a class="jxr_linenumber" name="L1119" href="#L1119">1119</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L1120" href="#L1120">1120</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">boolean</strong> hasObject(String key) {
-<a class="jxr_linenumber" name="L1121" href="#L1121">1121</a>         <strong class="jxr_keyword">return</strong> objects.containsKey(key);
-<a class="jxr_linenumber" name="L1122" href="#L1122">1122</a>     }
-<a class="jxr_linenumber" name="L1123" href="#L1123">1123</a> 
-<a class="jxr_linenumber" name="L1124" href="#L1124">1124</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L1125" href="#L1125">1125</a> <em class="jxr_javadoccomment">     * Removes an object from the object store.</em>
-<a class="jxr_linenumber" name="L1126" href="#L1126">1126</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L1127" href="#L1127">1127</a> <em class="jxr_javadoccomment">     * @param key the key to the object</em>
-<a class="jxr_linenumber" name="L1128" href="#L1128">1128</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L1129" href="#L1129">1129</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> removeObject(String key) {
-<a class="jxr_linenumber" name="L1130" href="#L1130">1130</a>         objects.remove(key);
-<a class="jxr_linenumber" name="L1131" href="#L1131">1131</a>     }
-<a class="jxr_linenumber" name="L1132" href="#L1132">1132</a> 
-<a class="jxr_linenumber" name="L1133" href="#L1133">1133</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L1134" href="#L1134">1134</a> <em class="jxr_javadoccomment">     * Returns the mode of the engine.</em>
-<a class="jxr_linenumber" name="L1135" href="#L1135">1135</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L1136" href="#L1136">1136</a> <em class="jxr_javadoccomment">     * @return the mode of the engine</em>
-<a class="jxr_linenumber" name="L1137" href="#L1137">1137</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L1138" href="#L1138">1138</a>     <strong class="jxr_keyword">public</strong> <a href="../../../org/owasp/dependencycheck/Engine.html">Mode</a> getMode() {
-<a class="jxr_linenumber" name="L1139" href="#L1139">1139</a>         <strong class="jxr_keyword">return</strong> mode;
-<a class="jxr_linenumber" name="L1140" href="#L1140">1140</a>     }
-<a class="jxr_linenumber" name="L1141" href="#L1141">1141</a> 
-<a class="jxr_linenumber" name="L1142" href="#L1142">1142</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L1143" href="#L1143">1143</a> <em class="jxr_javadoccomment">     * Adds a file type analyzer. This has been added solely to assist in unit</em>
-<a class="jxr_linenumber" name="L1144" href="#L1144">1144</a> <em class="jxr_javadoccomment">     * testing the Engine.</em>
-<a class="jxr_linenumber" name="L1145" href="#L1145">1145</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L1146" href="#L1146">1146</a> <em class="jxr_javadoccomment">     * @param fta the file type analyzer to add</em>
-<a class="jxr_linenumber" name="L1147" href="#L1147">1147</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L1148" href="#L1148">1148</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">void</strong> addFileTypeAnalyzer(@NotNull <strong class="jxr_keyword">final</strong> <a href="../../../org/owasp/dependencycheck/analyzer/FileTypeAnalyzer.html">FileTypeAnalyzer</a> fta) {
-<a class="jxr_linenumber" name="L1149" href="#L1149">1149</a>         <strong class="jxr_keyword">this</strong>.fileTypeAnalyzers.add(fta);
-<a class="jxr_linenumber" name="L1150" href="#L1150">1150</a>     }
-<a class="jxr_linenumber" name="L1151" href="#L1151">1151</a> 
-<a class="jxr_linenumber" name="L1152" href="#L1152">1152</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L1153" href="#L1153">1153</a> <em class="jxr_javadoccomment">     * Checks the CPE Index to ensure documents exists. If none exist a</em>
-<a class="jxr_linenumber" name="L1154" href="#L1154">1154</a> <em class="jxr_javadoccomment">     * NoDataException is thrown.</em>
-<a class="jxr_linenumber" name="L1155" href="#L1155">1155</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L1156" href="#L1156">1156</a> <em class="jxr_javadoccomment">     * @throws NoDataException thrown if no data exists in the CPE Index</em>
-<a class="jxr_linenumber" name="L1157" href="#L1157">1157</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L1158" href="#L1158">1158</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> ensureDataExists() <strong class="jxr_keyword">throws</strong> NoDataException {
-<a class="jxr_linenumber" name="L1159" href="#L1159">1159</a>         <strong class="jxr_keyword">if</strong> (mode.isDatabaseRequired() &amp;&amp; (database == <strong class="jxr_keyword">null</strong> || !database.dataExists())) {
-<a class="jxr_linenumber" name="L1160" href="#L1160">1160</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a href="../../../org/owasp/dependencycheck/exception/NoDataException.html">NoDataException</a>(<span class="jxr_string">"No documents exist"</span>);
-<a class="jxr_linenumber" name="L1161" href="#L1161">1161</a>         }
-<a class="jxr_linenumber" name="L1162" href="#L1162">1162</a>     }
-<a class="jxr_linenumber" name="L1163" href="#L1163">1163</a> 
-<a class="jxr_linenumber" name="L1164" href="#L1164">1164</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L1165" href="#L1165">1165</a> <em class="jxr_javadoccomment">     * Constructs and throws a fatal exception collection.</em>
-<a class="jxr_linenumber" name="L1166" href="#L1166">1166</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L1167" href="#L1167">1167</a> <em class="jxr_javadoccomment">     * @param message the exception message</em>
-<a class="jxr_linenumber" name="L1168" href="#L1168">1168</a> <em class="jxr_javadoccomment">     * @param throwable the cause</em>
-<a class="jxr_linenumber" name="L1169" href="#L1169">1169</a> <em class="jxr_javadoccomment">     * @param exceptions a collection of exception to include</em>
-<a class="jxr_linenumber" name="L1170" href="#L1170">1170</a> <em class="jxr_javadoccomment">     * @throws ExceptionCollection a collection of exceptions that occurred</em>
-<a class="jxr_linenumber" name="L1171" href="#L1171">1171</a> <em class="jxr_javadoccomment">     * during analysis</em>
-<a class="jxr_linenumber" name="L1172" href="#L1172">1172</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L1173" href="#L1173">1173</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> throwFatalExceptionCollection(String message, @NotNull <strong class="jxr_keyword">final</strong> Throwable throwable,
-<a class="jxr_linenumber" name="L1174" href="#L1174">1174</a>             @NotNull <strong class="jxr_keyword">final</strong> List&lt;Throwable&gt; exceptions) <strong class="jxr_keyword">throws</strong> ExceptionCollection {
-<a class="jxr_linenumber" name="L1175" href="#L1175">1175</a>         LOGGER.error(message);
-<a class="jxr_linenumber" name="L1176" href="#L1176">1176</a>         LOGGER.debug(<span class="jxr_string">""</span>, throwable);
-<a class="jxr_linenumber" name="L1177" href="#L1177">1177</a>         exceptions.add(throwable);
-<a class="jxr_linenumber" name="L1178" href="#L1178">1178</a>         <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a href="../../../org/owasp/dependencycheck/exception/ExceptionCollection.html">ExceptionCollection</a>(exceptions, <strong class="jxr_keyword">true</strong>);
-<a class="jxr_linenumber" name="L1179" href="#L1179">1179</a>     }
-<a class="jxr_linenumber" name="L1180" href="#L1180">1180</a> 
-<a class="jxr_linenumber" name="L1181" href="#L1181">1181</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L1182" href="#L1182">1182</a> <em class="jxr_javadoccomment">     * Writes the report to the given output directory.</em>
-<a class="jxr_linenumber" name="L1183" href="#L1183">1183</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L1184" href="#L1184">1184</a> <em class="jxr_javadoccomment">     * @param applicationName the name of the application/project</em>
-<a class="jxr_linenumber" name="L1185" href="#L1185">1185</a> <em class="jxr_javadoccomment">     * @param outputDir the path to the output directory (can include the full</em>
-<a class="jxr_linenumber" name="L1186" href="#L1186">1186</a> <em class="jxr_javadoccomment">     * file name if the format is not ALL)</em>
-<a class="jxr_linenumber" name="L1187" href="#L1187">1187</a> <em class="jxr_javadoccomment">     * @param format the report format (see {@link ReportGenerator.Format})</em>
-<a class="jxr_linenumber" name="L1188" href="#L1188">1188</a> <em class="jxr_javadoccomment">     * @throws ReportException thrown if there is an error generating the report</em>
-<a class="jxr_linenumber" name="L1189" href="#L1189">1189</a> <em class="jxr_javadoccomment">     * @deprecated use</em>
-<a class="jxr_linenumber" name="L1190" href="#L1190">1190</a> <em class="jxr_javadoccomment">     * {@link #writeReports(java.lang.String, java.io.File, java.lang.String, org.owasp.dependencycheck.exception.ExceptionCollection)}</em>
-<a class="jxr_linenumber" name="L1191" href="#L1191">1191</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L1192" href="#L1192">1192</a>     @Deprecated
-<a class="jxr_linenumber" name="L1193" href="#L1193">1193</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> writeReports(String applicationName, File outputDir, String format) <strong class="jxr_keyword">throws</strong> ReportException {
-<a class="jxr_linenumber" name="L1194" href="#L1194">1194</a>         writeReports(applicationName, <strong class="jxr_keyword">null</strong>, <strong class="jxr_keyword">null</strong>, <strong class="jxr_keyword">null</strong>, outputDir, format, <strong class="jxr_keyword">null</strong>);
-<a class="jxr_linenumber" name="L1195" href="#L1195">1195</a>     }
-<a class="jxr_linenumber" name="L1196" href="#L1196">1196</a> 
-<a class="jxr_linenumber" name="L1197" href="#L1197">1197</a>     <em class="jxr_comment">//CSOFF: LineLength</em>
-<a class="jxr_linenumber" name="L1198" href="#L1198">1198</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L1199" href="#L1199">1199</a> <em class="jxr_javadoccomment">     * Writes the report to the given output directory.</em>
-<a class="jxr_linenumber" name="L1200" href="#L1200">1200</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L1201" href="#L1201">1201</a> <em class="jxr_javadoccomment">     * @param applicationName the name of the application/project</em>
-<a class="jxr_linenumber" name="L1202" href="#L1202">1202</a> <em class="jxr_javadoccomment">     * @param outputDir the path to the output directory (can include the full</em>
-<a class="jxr_linenumber" name="L1203" href="#L1203">1203</a> <em class="jxr_javadoccomment">     * file name if the format is not ALL)</em>
-<a class="jxr_linenumber" name="L1204" href="#L1204">1204</a> <em class="jxr_javadoccomment">     * @param format the report format (see {@link ReportGenerator.Format})</em>
-<a class="jxr_linenumber" name="L1205" href="#L1205">1205</a> <em class="jxr_javadoccomment">     * @param exceptions a collection of exceptions that may have occurred</em>
-<a class="jxr_linenumber" name="L1206" href="#L1206">1206</a> <em class="jxr_javadoccomment">     * during the analysis</em>
-<a class="jxr_linenumber" name="L1207" href="#L1207">1207</a> <em class="jxr_javadoccomment">     * @throws ReportException thrown if there is an error generating the report</em>
-<a class="jxr_linenumber" name="L1208" href="#L1208">1208</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L1209" href="#L1209">1209</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> writeReports(String applicationName, File outputDir, String format, <a href="../../../org/owasp/dependencycheck/exception/ExceptionCollection.html">ExceptionCollection</a> exceptions) <strong class="jxr_keyword">throws</strong> ReportException {
-<a class="jxr_linenumber" name="L1210" href="#L1210">1210</a>         writeReports(applicationName, <strong class="jxr_keyword">null</strong>, <strong class="jxr_keyword">null</strong>, <strong class="jxr_keyword">null</strong>, outputDir, format, exceptions);
-<a class="jxr_linenumber" name="L1211" href="#L1211">1211</a>     }
-<a class="jxr_linenumber" name="L1212" href="#L1212">1212</a>     <em class="jxr_comment">//CSON: LineLength</em>
-<a class="jxr_linenumber" name="L1213" href="#L1213">1213</a> 
-<a class="jxr_linenumber" name="L1214" href="#L1214">1214</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L1215" href="#L1215">1215</a> <em class="jxr_javadoccomment">     * Writes the report to the given output directory.</em>
-<a class="jxr_linenumber" name="L1216" href="#L1216">1216</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L1217" href="#L1217">1217</a> <em class="jxr_javadoccomment">     * @param applicationName the name of the application/project</em>
-<a class="jxr_linenumber" name="L1218" href="#L1218">1218</a> <em class="jxr_javadoccomment">     * @param groupId the Maven groupId</em>
-<a class="jxr_linenumber" name="L1219" href="#L1219">1219</a> <em class="jxr_javadoccomment">     * @param artifactId the Maven artifactId</em>
-<a class="jxr_linenumber" name="L1220" href="#L1220">1220</a> <em class="jxr_javadoccomment">     * @param version the Maven version</em>
-<a class="jxr_linenumber" name="L1221" href="#L1221">1221</a> <em class="jxr_javadoccomment">     * @param outputDir the path to the output directory (can include the full</em>
-<a class="jxr_linenumber" name="L1222" href="#L1222">1222</a> <em class="jxr_javadoccomment">     * file name if the format is not ALL)</em>
-<a class="jxr_linenumber" name="L1223" href="#L1223">1223</a> <em class="jxr_javadoccomment">     * @param format the report format (see {@link ReportGenerator.Format})</em>
-<a class="jxr_linenumber" name="L1224" href="#L1224">1224</a> <em class="jxr_javadoccomment">     * @throws ReportException thrown if there is an error generating the report</em>
-<a class="jxr_linenumber" name="L1225" href="#L1225">1225</a> <em class="jxr_javadoccomment">     * @deprecated use</em>
-<a class="jxr_linenumber" name="L1226" href="#L1226">1226</a> <em class="jxr_javadoccomment">     * {@link #writeReports(String, String, String, String, File, String, ExceptionCollection)}</em>
-<a class="jxr_linenumber" name="L1227" href="#L1227">1227</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L1228" href="#L1228">1228</a>     @Deprecated
-<a class="jxr_linenumber" name="L1229" href="#L1229">1229</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">synchronized</strong> <strong class="jxr_keyword">void</strong> writeReports(String applicationName, @Nullable <strong class="jxr_keyword">final</strong> String groupId,
-<a class="jxr_linenumber" name="L1230" href="#L1230">1230</a>             @Nullable <strong class="jxr_keyword">final</strong> String artifactId, @Nullable <strong class="jxr_keyword">final</strong> String version,
-<a class="jxr_linenumber" name="L1231" href="#L1231">1231</a>             @NotNull <strong class="jxr_keyword">final</strong> File outputDir, String format) <strong class="jxr_keyword">throws</strong> ReportException {
-<a class="jxr_linenumber" name="L1232" href="#L1232">1232</a>         writeReports(applicationName, groupId, artifactId, version, outputDir, format, <strong class="jxr_keyword">null</strong>);
-<a class="jxr_linenumber" name="L1233" href="#L1233">1233</a>     }
-<a class="jxr_linenumber" name="L1234" href="#L1234">1234</a> 
-<a class="jxr_linenumber" name="L1235" href="#L1235">1235</a>     <em class="jxr_comment">//CSOFF: LineLength</em>
-<a class="jxr_linenumber" name="L1236" href="#L1236">1236</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L1237" href="#L1237">1237</a> <em class="jxr_javadoccomment">     * Writes the report to the given output directory.</em>
-<a class="jxr_linenumber" name="L1238" href="#L1238">1238</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L1239" href="#L1239">1239</a> <em class="jxr_javadoccomment">     * @param applicationName the name of the application/project</em>
-<a class="jxr_linenumber" name="L1240" href="#L1240">1240</a> <em class="jxr_javadoccomment">     * @param groupId the Maven groupId</em>
-<a class="jxr_linenumber" name="L1241" href="#L1241">1241</a> <em class="jxr_javadoccomment">     * @param artifactId the Maven artifactId</em>
-<a class="jxr_linenumber" name="L1242" href="#L1242">1242</a> <em class="jxr_javadoccomment">     * @param version the Maven version</em>
-<a class="jxr_linenumber" name="L1243" href="#L1243">1243</a> <em class="jxr_javadoccomment">     * @param outputDir the path to the output directory (can include the full</em>
-<a class="jxr_linenumber" name="L1244" href="#L1244">1244</a> <em class="jxr_javadoccomment">     * file name if the format is not ALL)</em>
-<a class="jxr_linenumber" name="L1245" href="#L1245">1245</a> <em class="jxr_javadoccomment">     * @param format the report format  (see {@link ReportGenerator.Format})</em>
-<a class="jxr_linenumber" name="L1246" href="#L1246">1246</a> <em class="jxr_javadoccomment">     * @param exceptions a collection of exceptions that may have occurred</em>
-<a class="jxr_linenumber" name="L1247" href="#L1247">1247</a> <em class="jxr_javadoccomment">     * during the analysis</em>
-<a class="jxr_linenumber" name="L1248" href="#L1248">1248</a> <em class="jxr_javadoccomment">     * @throws ReportException thrown if there is an error generating the report</em>
-<a class="jxr_linenumber" name="L1249" href="#L1249">1249</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L1250" href="#L1250">1250</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">synchronized</strong> <strong class="jxr_keyword">void</strong> writeReports(String applicationName, @Nullable <strong class="jxr_keyword">final</strong> String groupId,
-<a class="jxr_linenumber" name="L1251" href="#L1251">1251</a>             @Nullable <strong class="jxr_keyword">final</strong> String artifactId, @Nullable <strong class="jxr_keyword">final</strong> String version,
-<a class="jxr_linenumber" name="L1252" href="#L1252">1252</a>             @NotNull <strong class="jxr_keyword">final</strong> File outputDir, String format, <a href="../../../org/owasp/dependencycheck/exception/ExceptionCollection.html">ExceptionCollection</a> exceptions) <strong class="jxr_keyword">throws</strong> ReportException {
-<a class="jxr_linenumber" name="L1253" href="#L1253">1253</a>         <strong class="jxr_keyword">if</strong> (mode == Mode.EVIDENCE_COLLECTION) {
-<a class="jxr_linenumber" name="L1254" href="#L1254">1254</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> UnsupportedOperationException(<span class="jxr_string">"Cannot generate report in evidence collection mode."</span>);
-<a class="jxr_linenumber" name="L1255" href="#L1255">1255</a>         }
-<a class="jxr_linenumber" name="L1256" href="#L1256">1256</a>         <strong class="jxr_keyword">final</strong> <a href="../../../org/owasp/dependencycheck/data/nvdcve/DatabaseProperties.html">DatabaseProperties</a> prop = database.getDatabaseProperties();
-<a class="jxr_linenumber" name="L1257" href="#L1257">1257</a> 
-<a class="jxr_linenumber" name="L1258" href="#L1258">1258</a>         <strong class="jxr_keyword">final</strong> <a href="../../../org/owasp/dependencycheck/reporting/ReportGenerator.html">ReportGenerator</a> r = <strong class="jxr_keyword">new</strong> <a href="../../../org/owasp/dependencycheck/reporting/ReportGenerator.html">ReportGenerator</a>(applicationName, groupId, artifactId, version,
-<a class="jxr_linenumber" name="L1259" href="#L1259">1259</a>                 dependencies, getAnalyzers(), prop, settings, exceptions);
-<a class="jxr_linenumber" name="L1260" href="#L1260">1260</a>         <strong class="jxr_keyword">try</strong> {
-<a class="jxr_linenumber" name="L1261" href="#L1261">1261</a>             r.write(outputDir.getAbsolutePath(), format);
-<a class="jxr_linenumber" name="L1262" href="#L1262">1262</a>         } <strong class="jxr_keyword">catch</strong> (ReportException ex) {
-<a class="jxr_linenumber" name="L1263" href="#L1263">1263</a>             <strong class="jxr_keyword">final</strong> String msg = String.format(<span class="jxr_string">"Error generating the report for %s"</span>, applicationName);
-<a class="jxr_linenumber" name="L1264" href="#L1264">1264</a>             LOGGER.debug(msg, ex);
-<a class="jxr_linenumber" name="L1265" href="#L1265">1265</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a href="../../../org/owasp/dependencycheck/exception/ReportException.html">ReportException</a>(msg, ex);
-<a class="jxr_linenumber" name="L1266" href="#L1266">1266</a>         }
-<a class="jxr_linenumber" name="L1267" href="#L1267">1267</a>     }
-<a class="jxr_linenumber" name="L1268" href="#L1268">1268</a>     <em class="jxr_comment">//CSON: LineLength</em>
-<a class="jxr_linenumber" name="L1269" href="#L1269">1269</a> 
-<a class="jxr_linenumber" name="L1270" href="#L1270">1270</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">boolean</strong> identifiersMatch(Set&lt;Identifier&gt; left, Set&lt;Identifier&gt; right) {
-<a class="jxr_linenumber" name="L1271" href="#L1271">1271</a>         <strong class="jxr_keyword">if</strong> (left != <strong class="jxr_keyword">null</strong> &amp;&amp; right != <strong class="jxr_keyword">null</strong> &amp;&amp; left.size() &gt; 0 &amp;&amp; left.size() == right.size()) {
-<a class="jxr_linenumber" name="L1272" href="#L1272">1272</a>             <strong class="jxr_keyword">int</strong> count = 0;
-<a class="jxr_linenumber" name="L1273" href="#L1273">1273</a>             <strong class="jxr_keyword">for</strong> (Identifier l : left) {
-<a class="jxr_linenumber" name="L1274" href="#L1274">1274</a>                 <strong class="jxr_keyword">for</strong> (Identifier r : right) {
-<a class="jxr_linenumber" name="L1275" href="#L1275">1275</a>                     <strong class="jxr_keyword">if</strong> (l.getValue().equals(r.getValue())) {
-<a class="jxr_linenumber" name="L1276" href="#L1276">1276</a>                         count += 1;
-<a class="jxr_linenumber" name="L1277" href="#L1277">1277</a>                         <strong class="jxr_keyword">break</strong>;
-<a class="jxr_linenumber" name="L1278" href="#L1278">1278</a>                     }
-<a class="jxr_linenumber" name="L1279" href="#L1279">1279</a>                 }
-<a class="jxr_linenumber" name="L1280" href="#L1280">1280</a>             }
-<a class="jxr_linenumber" name="L1281" href="#L1281">1281</a>             <strong class="jxr_keyword">return</strong> count == left.size();
-<a class="jxr_linenumber" name="L1282" href="#L1282">1282</a>         }
-<a class="jxr_linenumber" name="L1283" href="#L1283">1283</a>         <strong class="jxr_keyword">return</strong> false;
-<a class="jxr_linenumber" name="L1284" href="#L1284">1284</a>     }
-<a class="jxr_linenumber" name="L1285" href="#L1285">1285</a> 
-<a class="jxr_linenumber" name="L1286" href="#L1286">1286</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L1287" href="#L1287">1287</a> <em class="jxr_javadoccomment">     * {@link Engine} execution modes.</em>
-<a class="jxr_linenumber" name="L1288" href="#L1288">1288</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L1289" href="#L1289">1289</a>     <strong class="jxr_keyword">public</strong> enum <a href="../../../org/owasp/dependencycheck/Engine.html">Mode</a> {
-<a class="jxr_linenumber" name="L1290" href="#L1290">1290</a>         <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L1291" href="#L1291">1291</a> <em class="jxr_javadoccomment">         * In evidence collection mode the {@link Engine} only collects evidence</em>
-<a class="jxr_linenumber" name="L1292" href="#L1292">1292</a> <em class="jxr_javadoccomment">         * from the scan targets, and doesn't require a database.</em>
-<a class="jxr_linenumber" name="L1293" href="#L1293">1293</a> <em class="jxr_javadoccomment">         */</em>
-<a class="jxr_linenumber" name="L1294" href="#L1294">1294</a>         EVIDENCE_COLLECTION(
-<a class="jxr_linenumber" name="L1295" href="#L1295">1295</a>                 false,
-<a class="jxr_linenumber" name="L1296" href="#L1296">1296</a>                 INITIAL,
-<a class="jxr_linenumber" name="L1297" href="#L1297">1297</a>                 PRE_INFORMATION_COLLECTION,
-<a class="jxr_linenumber" name="L1298" href="#L1298">1298</a>                 INFORMATION_COLLECTION,
-<a class="jxr_linenumber" name="L1299" href="#L1299">1299</a>                 INFORMATION_COLLECTION2,
-<a class="jxr_linenumber" name="L1300" href="#L1300">1300</a>                 POST_INFORMATION_COLLECTION1,
-<a class="jxr_linenumber" name="L1301" href="#L1301">1301</a>                 POST_INFORMATION_COLLECTION2,
-<a class="jxr_linenumber" name="L1302" href="#L1302">1302</a>                 POST_INFORMATION_COLLECTION3
-<a class="jxr_linenumber" name="L1303" href="#L1303">1303</a>         ),
-<a class="jxr_linenumber" name="L1304" href="#L1304">1304</a>         <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L1305" href="#L1305">1305</a> <em class="jxr_javadoccomment">         * In evidence processing mode the {@link Engine} processes the evidence</em>
-<a class="jxr_linenumber" name="L1306" href="#L1306">1306</a> <em class="jxr_javadoccomment">         * collected using the {@link #EVIDENCE_COLLECTION} mode. Dependencies</em>
-<a class="jxr_linenumber" name="L1307" href="#L1307">1307</a> <em class="jxr_javadoccomment">         * should be injected into the {@link Engine} using</em>
-<a class="jxr_linenumber" name="L1308" href="#L1308">1308</a> <em class="jxr_javadoccomment">         * {@link Engine#setDependencies(List)}.</em>
-<a class="jxr_linenumber" name="L1309" href="#L1309">1309</a> <em class="jxr_javadoccomment">         */</em>
-<a class="jxr_linenumber" name="L1310" href="#L1310">1310</a>         EVIDENCE_PROCESSING(
-<a class="jxr_linenumber" name="L1311" href="#L1311">1311</a>                 <strong class="jxr_keyword">true</strong>,
-<a class="jxr_linenumber" name="L1312" href="#L1312">1312</a>                 PRE_IDENTIFIER_ANALYSIS,
-<a class="jxr_linenumber" name="L1313" href="#L1313">1313</a>                 IDENTIFIER_ANALYSIS,
-<a class="jxr_linenumber" name="L1314" href="#L1314">1314</a>                 POST_IDENTIFIER_ANALYSIS,
-<a class="jxr_linenumber" name="L1315" href="#L1315">1315</a>                 PRE_FINDING_ANALYSIS,
-<a class="jxr_linenumber" name="L1316" href="#L1316">1316</a>                 FINDING_ANALYSIS,
-<a class="jxr_linenumber" name="L1317" href="#L1317">1317</a>                 POST_FINDING_ANALYSIS,
-<a class="jxr_linenumber" name="L1318" href="#L1318">1318</a>                 FINDING_ANALYSIS_PHASE2,
-<a class="jxr_linenumber" name="L1319" href="#L1319">1319</a>                 FINAL
-<a class="jxr_linenumber" name="L1320" href="#L1320">1320</a>         ),
-<a class="jxr_linenumber" name="L1321" href="#L1321">1321</a>         <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L1322" href="#L1322">1322</a> <em class="jxr_javadoccomment">         * In standalone mode the {@link Engine} will collect and process</em>
-<a class="jxr_linenumber" name="L1323" href="#L1323">1323</a> <em class="jxr_javadoccomment">         * evidence in a single execution.</em>
-<a class="jxr_linenumber" name="L1324" href="#L1324">1324</a> <em class="jxr_javadoccomment">         */</em>
-<a class="jxr_linenumber" name="L1325" href="#L1325">1325</a>         STANDALONE(<strong class="jxr_keyword">true</strong>, AnalysisPhase.values());
-<a class="jxr_linenumber" name="L1326" href="#L1326">1326</a> 
-<a class="jxr_linenumber" name="L1327" href="#L1327">1327</a>         <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L1328" href="#L1328">1328</a> <em class="jxr_javadoccomment">         * Whether the database is required in this mode.</em>
-<a class="jxr_linenumber" name="L1329" href="#L1329">1329</a> <em class="jxr_javadoccomment">         */</em>
-<a class="jxr_linenumber" name="L1330" href="#L1330">1330</a>         <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">boolean</strong> databaseRequired;
-<a class="jxr_linenumber" name="L1331" href="#L1331">1331</a>         <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L1332" href="#L1332">1332</a> <em class="jxr_javadoccomment">         * The analysis phases included in the mode.</em>
-<a class="jxr_linenumber" name="L1333" href="#L1333">1333</a> <em class="jxr_javadoccomment">         */</em>
-<a class="jxr_linenumber" name="L1334" href="#L1334">1334</a>         <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> List&lt;AnalysisPhase&gt; phases;
-<a class="jxr_linenumber" name="L1335" href="#L1335">1335</a> 
-<a class="jxr_linenumber" name="L1336" href="#L1336">1336</a>         <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L1337" href="#L1337">1337</a> <em class="jxr_javadoccomment">         * Constructs a new mode.</em>
-<a class="jxr_linenumber" name="L1338" href="#L1338">1338</a> <em class="jxr_javadoccomment">         *</em>
-<a class="jxr_linenumber" name="L1339" href="#L1339">1339</a> <em class="jxr_javadoccomment">         * @param databaseRequired if the database is required for the mode</em>
-<a class="jxr_linenumber" name="L1340" href="#L1340">1340</a> <em class="jxr_javadoccomment">         * @param phases the analysis phases to include in the mode</em>
-<a class="jxr_linenumber" name="L1341" href="#L1341">1341</a> <em class="jxr_javadoccomment">         */</em>
-<a class="jxr_linenumber" name="L1342" href="#L1342">1342</a>         <a href="../../../org/owasp/dependencycheck/Engine.html">Mode</a>(<strong class="jxr_keyword">boolean</strong> databaseRequired, AnalysisPhase... phases) {
-<a class="jxr_linenumber" name="L1343" href="#L1343">1343</a>             <strong class="jxr_keyword">this</strong>.databaseRequired = databaseRequired;
-<a class="jxr_linenumber" name="L1344" href="#L1344">1344</a>             <strong class="jxr_keyword">this</strong>.phases = Collections.unmodifiableList(Arrays.asList(phases));
-<a class="jxr_linenumber" name="L1345" href="#L1345">1345</a>         }
-<a class="jxr_linenumber" name="L1346" href="#L1346">1346</a> 
-<a class="jxr_linenumber" name="L1347" href="#L1347">1347</a>         <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L1348" href="#L1348">1348</a> <em class="jxr_javadoccomment">         * Returns true if the database is required; otherwise false.</em>
-<a class="jxr_linenumber" name="L1349" href="#L1349">1349</a> <em class="jxr_javadoccomment">         *</em>
-<a class="jxr_linenumber" name="L1350" href="#L1350">1350</a> <em class="jxr_javadoccomment">         * @return whether or not the database is required</em>
-<a class="jxr_linenumber" name="L1351" href="#L1351">1351</a> <em class="jxr_javadoccomment">         */</em>
-<a class="jxr_linenumber" name="L1352" href="#L1352">1352</a>         <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">boolean</strong> isDatabaseRequired() {
-<a class="jxr_linenumber" name="L1353" href="#L1353">1353</a>             <strong class="jxr_keyword">return</strong> databaseRequired;
-<a class="jxr_linenumber" name="L1354" href="#L1354">1354</a>         }
-<a class="jxr_linenumber" name="L1355" href="#L1355">1355</a> 
-<a class="jxr_linenumber" name="L1356" href="#L1356">1356</a>         <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L1357" href="#L1357">1357</a> <em class="jxr_javadoccomment">         * Returns the phases for this mode.</em>
-<a class="jxr_linenumber" name="L1358" href="#L1358">1358</a> <em class="jxr_javadoccomment">         *</em>
-<a class="jxr_linenumber" name="L1359" href="#L1359">1359</a> <em class="jxr_javadoccomment">         * @return the phases for this mode</em>
-<a class="jxr_linenumber" name="L1360" href="#L1360">1360</a> <em class="jxr_javadoccomment">         */</em>
-<a class="jxr_linenumber" name="L1361" href="#L1361">1361</a>         <strong class="jxr_keyword">public</strong> List&lt;AnalysisPhase&gt; getPhases() {
-<a class="jxr_linenumber" name="L1362" href="#L1362">1362</a>             <strong class="jxr_keyword">return</strong> phases;
-<a class="jxr_linenumber" name="L1363" href="#L1363">1363</a>         }
-<a class="jxr_linenumber" name="L1364" href="#L1364">1364</a>     }
-<a class="jxr_linenumber" name="L1365" href="#L1365">1365</a> }
+<a class="jxr_linenumber" name="L650" href="#L650">650</a>                 + <span class="jxr_string">"\n"</span>);
+<a class="jxr_linenumber" name="L651" href="#L651">651</a>         LOGGER.debug(<span class="jxr_string">"\n----------------------------------------------------\nBEGIN ANALYSIS\n----------------------------------------------------"</span>);
+<a class="jxr_linenumber" name="L652" href="#L652">652</a>         LOGGER.info(<span class="jxr_string">"Analysis Started"</span>);
+<a class="jxr_linenumber" name="L653" href="#L653">653</a>         <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">long</strong> analysisStart = System.currentTimeMillis();
+<a class="jxr_linenumber" name="L654" href="#L654">654</a> 
+<a class="jxr_linenumber" name="L655" href="#L655">655</a>         <em class="jxr_comment">// analysis phases</em>
+<a class="jxr_linenumber" name="L656" href="#L656">656</a>         <strong class="jxr_keyword">for</strong> (AnalysisPhase phase : mode.getPhases()) {
+<a class="jxr_linenumber" name="L657" href="#L657">657</a>             <strong class="jxr_keyword">final</strong> List&lt;Analyzer&gt; analyzerList = analyzers.get(phase);
+<a class="jxr_linenumber" name="L658" href="#L658">658</a> 
+<a class="jxr_linenumber" name="L659" href="#L659">659</a>             <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">final</strong> Analyzer analyzer : analyzerList) {
+<a class="jxr_linenumber" name="L660" href="#L660">660</a>                 <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">long</strong> analyzerStart = System.currentTimeMillis();
+<a class="jxr_linenumber" name="L661" href="#L661">661</a>                 <strong class="jxr_keyword">try</strong> {
+<a class="jxr_linenumber" name="L662" href="#L662">662</a>                     initializeAnalyzer(analyzer);
+<a class="jxr_linenumber" name="L663" href="#L663">663</a>                 } <strong class="jxr_keyword">catch</strong> (InitializationException ex) {
+<a class="jxr_linenumber" name="L664" href="#L664">664</a>                     exceptions.add(ex);
+<a class="jxr_linenumber" name="L665" href="#L665">665</a>                     <strong class="jxr_keyword">if</strong> (ex.isFatal()) {
+<a class="jxr_linenumber" name="L666" href="#L666">666</a>                         <strong class="jxr_keyword">continue</strong>;
+<a class="jxr_linenumber" name="L667" href="#L667">667</a>                     }
+<a class="jxr_linenumber" name="L668" href="#L668">668</a>                 }
+<a class="jxr_linenumber" name="L669" href="#L669">669</a> 
+<a class="jxr_linenumber" name="L670" href="#L670">670</a>                 <strong class="jxr_keyword">if</strong> (analyzer.isEnabled()) {
+<a class="jxr_linenumber" name="L671" href="#L671">671</a>                     executeAnalysisTasks(analyzer, exceptions);
+<a class="jxr_linenumber" name="L672" href="#L672">672</a> 
+<a class="jxr_linenumber" name="L673" href="#L673">673</a>                     <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">long</strong> analyzerDurationMillis = System.currentTimeMillis() - analyzerStart;
+<a class="jxr_linenumber" name="L674" href="#L674">674</a>                     <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">long</strong> analyzerDurationSeconds = TimeUnit.MILLISECONDS.toSeconds(analyzerDurationMillis);
+<a class="jxr_linenumber" name="L675" href="#L675">675</a>                     LOGGER.info(<span class="jxr_string">"Finished {} ({} seconds)"</span>, analyzer.getName(), analyzerDurationSeconds);
+<a class="jxr_linenumber" name="L676" href="#L676">676</a>                 } <strong class="jxr_keyword">else</strong> {
+<a class="jxr_linenumber" name="L677" href="#L677">677</a>                     LOGGER.debug(<span class="jxr_string">"Skipping {} (not enabled)"</span>, analyzer.getName());
+<a class="jxr_linenumber" name="L678" href="#L678">678</a>                 }
+<a class="jxr_linenumber" name="L679" href="#L679">679</a>             }
+<a class="jxr_linenumber" name="L680" href="#L680">680</a>         }
+<a class="jxr_linenumber" name="L681" href="#L681">681</a>         mode.getPhases().stream()
+<a class="jxr_linenumber" name="L682" href="#L682">682</a>                 .map(analyzers::get)
+<a class="jxr_linenumber" name="L683" href="#L683">683</a>                 .forEach((analyzerList) -&gt; analyzerList.forEach(<strong class="jxr_keyword">this</strong>::closeAnalyzer));
+<a class="jxr_linenumber" name="L684" href="#L684">684</a> 
+<a class="jxr_linenumber" name="L685" href="#L685">685</a>         LOGGER.debug(<span class="jxr_string">"\n----------------------------------------------------\nEND ANALYSIS\n----------------------------------------------------"</span>);
+<a class="jxr_linenumber" name="L686" href="#L686">686</a>         <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">long</strong> analysisDurationSeconds = TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis() - analysisStart);
+<a class="jxr_linenumber" name="L687" href="#L687">687</a>         LOGGER.info(<span class="jxr_string">"Analysis Complete ({} seconds)"</span>, analysisDurationSeconds);
+<a class="jxr_linenumber" name="L688" href="#L688">688</a>         <strong class="jxr_keyword">if</strong> (exceptions.size() &gt; 0) {
+<a class="jxr_linenumber" name="L689" href="#L689">689</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a href="../../../org/owasp/dependencycheck/exception/ExceptionCollection.html">ExceptionCollection</a>(exceptions);
+<a class="jxr_linenumber" name="L690" href="#L690">690</a>         }
+<a class="jxr_linenumber" name="L691" href="#L691">691</a>     }
+<a class="jxr_linenumber" name="L692" href="#L692">692</a> 
+<a class="jxr_linenumber" name="L693" href="#L693">693</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L694" href="#L694">694</a> <em class="jxr_javadoccomment">     * Performs any necessary updates and initializes the database.</em>
+<a class="jxr_linenumber" name="L695" href="#L695">695</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L696" href="#L696">696</a> <em class="jxr_javadoccomment">     * @param exceptions a collection to store non-fatal exceptions</em>
+<a class="jxr_linenumber" name="L697" href="#L697">697</a> <em class="jxr_javadoccomment">     * @throws ExceptionCollection thrown if fatal exceptions occur</em>
+<a class="jxr_linenumber" name="L698" href="#L698">698</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L699" href="#L699">699</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> initializeAndUpdateDatabase(@NotNull <strong class="jxr_keyword">final</strong> List&lt;Throwable&gt; exceptions) <strong class="jxr_keyword">throws</strong> ExceptionCollection {
+<a class="jxr_linenumber" name="L700" href="#L700">700</a>         <strong class="jxr_keyword">if</strong> (!mode.isDatabaseRequired()) {
+<a class="jxr_linenumber" name="L701" href="#L701">701</a>             <strong class="jxr_keyword">return</strong>;
+<a class="jxr_linenumber" name="L702" href="#L702">702</a>         }
+<a class="jxr_linenumber" name="L703" href="#L703">703</a>         <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">boolean</strong> autoUpdate;
+<a class="jxr_linenumber" name="L704" href="#L704">704</a>         autoUpdate = settings.getBoolean(Settings.KEYS.AUTO_UPDATE, <strong class="jxr_keyword">true</strong>);
+<a class="jxr_linenumber" name="L705" href="#L705">705</a>         <strong class="jxr_keyword">if</strong> (autoUpdate) {
+<a class="jxr_linenumber" name="L706" href="#L706">706</a>             <strong class="jxr_keyword">try</strong> {
+<a class="jxr_linenumber" name="L707" href="#L707">707</a>                 doUpdates(<strong class="jxr_keyword">true</strong>);
+<a class="jxr_linenumber" name="L708" href="#L708">708</a>             } <strong class="jxr_keyword">catch</strong> (UpdateException ex) {
+<a class="jxr_linenumber" name="L709" href="#L709">709</a>                 exceptions.add(ex);
+<a class="jxr_linenumber" name="L710" href="#L710">710</a>                 LOGGER.warn(<span class="jxr_string">"Unable to update 1 or more Cached Web DataSource, using local "</span>
+<a class="jxr_linenumber" name="L711" href="#L711">711</a>                         + <span class="jxr_string">"data instead. Results may not include recent vulnerabilities."</span>);
+<a class="jxr_linenumber" name="L712" href="#L712">712</a>                 LOGGER.debug(<span class="jxr_string">"Update Error"</span>, ex);
+<a class="jxr_linenumber" name="L713" href="#L713">713</a>             } <strong class="jxr_keyword">catch</strong> (DatabaseException ex) {
+<a class="jxr_linenumber" name="L714" href="#L714">714</a>                 throwFatalDatabaseException(ex, exceptions);
+<a class="jxr_linenumber" name="L715" href="#L715">715</a>             }
+<a class="jxr_linenumber" name="L716" href="#L716">716</a>         } <strong class="jxr_keyword">else</strong> {
+<a class="jxr_linenumber" name="L717" href="#L717">717</a>             <strong class="jxr_keyword">try</strong> {
+<a class="jxr_linenumber" name="L718" href="#L718">718</a>                 <strong class="jxr_keyword">if</strong> (DatabaseManager.isH2Connection(settings) &amp;&amp; !DatabaseManager.h2DataFileExists(settings)) {
+<a class="jxr_linenumber" name="L719" href="#L719">719</a>                     <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a href="../../../org/owasp/dependencycheck/exception/ExceptionCollection.html">ExceptionCollection</a>(<strong class="jxr_keyword">new</strong> <a href="../../../org/owasp/dependencycheck/exception/NoDataException.html">NoDataException</a>(<span class="jxr_string">"Autoupdate is disabled and the database does not exist"</span>), <strong class="jxr_keyword">true</strong>);
+<a class="jxr_linenumber" name="L720" href="#L720">720</a>                 } <strong class="jxr_keyword">else</strong> {
+<a class="jxr_linenumber" name="L721" href="#L721">721</a>                     openDatabase(<strong class="jxr_keyword">true</strong>, <strong class="jxr_keyword">true</strong>);
+<a class="jxr_linenumber" name="L722" href="#L722">722</a>                 }
+<a class="jxr_linenumber" name="L723" href="#L723">723</a>             } <strong class="jxr_keyword">catch</strong> (IOException ex) {
+<a class="jxr_linenumber" name="L724" href="#L724">724</a>                 <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a href="../../../org/owasp/dependencycheck/exception/ExceptionCollection.html">ExceptionCollection</a>(<strong class="jxr_keyword">new</strong> <a href="../../../org/owasp/dependencycheck/data/nvdcve/DatabaseException.html">DatabaseException</a>(<span class="jxr_string">"Autoupdate is disabled and unable to connect to the database"</span>), <strong class="jxr_keyword">true</strong>);
+<a class="jxr_linenumber" name="L725" href="#L725">725</a>             } <strong class="jxr_keyword">catch</strong> (DatabaseException ex) {
+<a class="jxr_linenumber" name="L726" href="#L726">726</a>                 throwFatalDatabaseException(ex, exceptions);
+<a class="jxr_linenumber" name="L727" href="#L727">727</a>             }
+<a class="jxr_linenumber" name="L728" href="#L728">728</a>         }
+<a class="jxr_linenumber" name="L729" href="#L729">729</a>     }
+<a class="jxr_linenumber" name="L730" href="#L730">730</a> 
+<a class="jxr_linenumber" name="L731" href="#L731">731</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L732" href="#L732">732</a> <em class="jxr_javadoccomment">     * Utility method to throw a fatal database exception.</em>
+<a class="jxr_linenumber" name="L733" href="#L733">733</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L734" href="#L734">734</a> <em class="jxr_javadoccomment">     * @param ex the exception that was caught</em>
+<a class="jxr_linenumber" name="L735" href="#L735">735</a> <em class="jxr_javadoccomment">     * @param exceptions the exception collection</em>
+<a class="jxr_linenumber" name="L736" href="#L736">736</a> <em class="jxr_javadoccomment">     * @throws ExceptionCollection the collection of exceptions is always thrown</em>
+<a class="jxr_linenumber" name="L737" href="#L737">737</a> <em class="jxr_javadoccomment">     * as a fatal exception</em>
+<a class="jxr_linenumber" name="L738" href="#L738">738</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L739" href="#L739">739</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> throwFatalDatabaseException(<a href="../../../org/owasp/dependencycheck/data/nvdcve/DatabaseException.html">DatabaseException</a> ex, <strong class="jxr_keyword">final</strong> List&lt;Throwable&gt; exceptions) <strong class="jxr_keyword">throws</strong> ExceptionCollection {
+<a class="jxr_linenumber" name="L740" href="#L740">740</a>         <strong class="jxr_keyword">final</strong> String msg;
+<a class="jxr_linenumber" name="L741" href="#L741">741</a>         <strong class="jxr_keyword">if</strong> (ex.getMessage().contains(<span class="jxr_string">"Unable to connect"</span>) &amp;&amp; DatabaseManager.isH2Connection(settings)) {
+<a class="jxr_linenumber" name="L742" href="#L742">742</a>             msg = <span class="jxr_string">"Unable to connect to the database - if this error persists it may be "</span>
+<a class="jxr_linenumber" name="L743" href="#L743">743</a>                     + <span class="jxr_string">"due to a corrupt database. Consider running `purge` to delete the existing database"</span>;
+<a class="jxr_linenumber" name="L744" href="#L744">744</a>         } <strong class="jxr_keyword">else</strong> {
+<a class="jxr_linenumber" name="L745" href="#L745">745</a>             msg = <span class="jxr_string">"Unable to connect to the dependency-check database"</span>;
+<a class="jxr_linenumber" name="L746" href="#L746">746</a>         }
+<a class="jxr_linenumber" name="L747" href="#L747">747</a>         exceptions.add(<strong class="jxr_keyword">new</strong> <a href="../../../org/owasp/dependencycheck/data/nvdcve/DatabaseException.html">DatabaseException</a>(msg, ex));
+<a class="jxr_linenumber" name="L748" href="#L748">748</a>         <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a href="../../../org/owasp/dependencycheck/exception/ExceptionCollection.html">ExceptionCollection</a>(exceptions, <strong class="jxr_keyword">true</strong>);
+<a class="jxr_linenumber" name="L749" href="#L749">749</a>     }
+<a class="jxr_linenumber" name="L750" href="#L750">750</a> 
+<a class="jxr_linenumber" name="L751" href="#L751">751</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L752" href="#L752">752</a> <em class="jxr_javadoccomment">     * Executes executes the analyzer using multiple threads.</em>
+<a class="jxr_linenumber" name="L753" href="#L753">753</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L754" href="#L754">754</a> <em class="jxr_javadoccomment">     * @param exceptions a collection of exceptions that occurred during</em>
+<a class="jxr_linenumber" name="L755" href="#L755">755</a> <em class="jxr_javadoccomment">     * analysis</em>
+<a class="jxr_linenumber" name="L756" href="#L756">756</a> <em class="jxr_javadoccomment">     * @param analyzer the analyzer to execute</em>
+<a class="jxr_linenumber" name="L757" href="#L757">757</a> <em class="jxr_javadoccomment">     * @throws ExceptionCollection thrown if exceptions occurred during analysis</em>
+<a class="jxr_linenumber" name="L758" href="#L758">758</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L759" href="#L759">759</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">void</strong> executeAnalysisTasks(@NotNull <strong class="jxr_keyword">final</strong> <a href="../../../org/owasp/dependencycheck/analyzer/Analyzer.html">Analyzer</a> analyzer, List&lt;Throwable&gt; exceptions) <strong class="jxr_keyword">throws</strong> ExceptionCollection {
+<a class="jxr_linenumber" name="L760" href="#L760">760</a>         LOGGER.debug(<span class="jxr_string">"Starting {}"</span>, analyzer.getName());
+<a class="jxr_linenumber" name="L761" href="#L761">761</a>         <strong class="jxr_keyword">final</strong> List&lt;AnalysisTask&gt; analysisTasks = getAnalysisTasks(analyzer, exceptions);
+<a class="jxr_linenumber" name="L762" href="#L762">762</a>         <strong class="jxr_keyword">final</strong> ExecutorService executorService = getExecutorService(analyzer);
+<a class="jxr_linenumber" name="L763" href="#L763">763</a> 
+<a class="jxr_linenumber" name="L764" href="#L764">764</a>         <strong class="jxr_keyword">try</strong> {
+<a class="jxr_linenumber" name="L765" href="#L765">765</a>             <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> timeout = settings.getInt(Settings.KEYS.ANALYSIS_TIMEOUT, 180);
+<a class="jxr_linenumber" name="L766" href="#L766">766</a>             <strong class="jxr_keyword">final</strong> List&lt;Future&lt;Void&gt;&gt; results = executorService.invokeAll(analysisTasks, timeout, TimeUnit.MINUTES);
+<a class="jxr_linenumber" name="L767" href="#L767">767</a> 
+<a class="jxr_linenumber" name="L768" href="#L768">768</a>             <em class="jxr_comment">// ensure there was no exception during execution</em>
+<a class="jxr_linenumber" name="L769" href="#L769">769</a>             <strong class="jxr_keyword">for</strong> (Future&lt;Void&gt; result : results) {
+<a class="jxr_linenumber" name="L770" href="#L770">770</a>                 <strong class="jxr_keyword">try</strong> {
+<a class="jxr_linenumber" name="L771" href="#L771">771</a>                     result.get();
+<a class="jxr_linenumber" name="L772" href="#L772">772</a>                 } <strong class="jxr_keyword">catch</strong> (ExecutionException e) {
+<a class="jxr_linenumber" name="L773" href="#L773">773</a>                     throwFatalExceptionCollection(<span class="jxr_string">"Analysis task failed with a fatal exception."</span>, e, exceptions);
+<a class="jxr_linenumber" name="L774" href="#L774">774</a>                 } <strong class="jxr_keyword">catch</strong> (CancellationException e) {
+<a class="jxr_linenumber" name="L775" href="#L775">775</a>                     throwFatalExceptionCollection(<span class="jxr_string">"Analysis task was cancelled."</span>, e, exceptions);
+<a class="jxr_linenumber" name="L776" href="#L776">776</a>                 }
+<a class="jxr_linenumber" name="L777" href="#L777">777</a>             }
+<a class="jxr_linenumber" name="L778" href="#L778">778</a>         } <strong class="jxr_keyword">catch</strong> (InterruptedException e) {
+<a class="jxr_linenumber" name="L779" href="#L779">779</a>             Thread.currentThread().interrupt();
+<a class="jxr_linenumber" name="L780" href="#L780">780</a>             throwFatalExceptionCollection(<span class="jxr_string">"Analysis has been interrupted."</span>, e, exceptions);
+<a class="jxr_linenumber" name="L781" href="#L781">781</a>         } <strong class="jxr_keyword">finally</strong> {
+<a class="jxr_linenumber" name="L782" href="#L782">782</a>             executorService.shutdown();
+<a class="jxr_linenumber" name="L783" href="#L783">783</a>         }
+<a class="jxr_linenumber" name="L784" href="#L784">784</a>     }
+<a class="jxr_linenumber" name="L785" href="#L785">785</a> 
+<a class="jxr_linenumber" name="L786" href="#L786">786</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L787" href="#L787">787</a> <em class="jxr_javadoccomment">     * Returns the analysis tasks for the dependencies.</em>
+<a class="jxr_linenumber" name="L788" href="#L788">788</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L789" href="#L789">789</a> <em class="jxr_javadoccomment">     * @param analyzer the analyzer to create tasks for</em>
+<a class="jxr_linenumber" name="L790" href="#L790">790</a> <em class="jxr_javadoccomment">     * @param exceptions the collection of exceptions to collect</em>
+<a class="jxr_linenumber" name="L791" href="#L791">791</a> <em class="jxr_javadoccomment">     * @return a collection of analysis tasks</em>
+<a class="jxr_linenumber" name="L792" href="#L792">792</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L793" href="#L793">793</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">synchronized</strong> List&lt;AnalysisTask&gt; getAnalysisTasks(<a href="../../../org/owasp/dependencycheck/analyzer/Analyzer.html">Analyzer</a> analyzer, List&lt;Throwable&gt; exceptions) {
+<a class="jxr_linenumber" name="L794" href="#L794">794</a>         <strong class="jxr_keyword">final</strong> List&lt;AnalysisTask&gt; result = <strong class="jxr_keyword">new</strong> ArrayList&lt;&gt;();
+<a class="jxr_linenumber" name="L795" href="#L795">795</a>         dependencies.stream().map((dependency) -&gt; <strong class="jxr_keyword">new</strong> AnalysisTask(analyzer, dependency, <strong class="jxr_keyword">this</strong>, exceptions)).forEach(result::add);
+<a class="jxr_linenumber" name="L796" href="#L796">796</a>         <strong class="jxr_keyword">return</strong> result;
+<a class="jxr_linenumber" name="L797" href="#L797">797</a>     }
+<a class="jxr_linenumber" name="L798" href="#L798">798</a> 
+<a class="jxr_linenumber" name="L799" href="#L799">799</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L800" href="#L800">800</a> <em class="jxr_javadoccomment">     * Returns the executor service for a given analyzer.</em>
+<a class="jxr_linenumber" name="L801" href="#L801">801</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L802" href="#L802">802</a> <em class="jxr_javadoccomment">     * @param analyzer the analyzer to obtain an executor</em>
+<a class="jxr_linenumber" name="L803" href="#L803">803</a> <em class="jxr_javadoccomment">     * @return the executor service</em>
+<a class="jxr_linenumber" name="L804" href="#L804">804</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L805" href="#L805">805</a>     <strong class="jxr_keyword">protected</strong> ExecutorService getExecutorService(<a href="../../../org/owasp/dependencycheck/analyzer/Analyzer.html">Analyzer</a> analyzer) {
+<a class="jxr_linenumber" name="L806" href="#L806">806</a>         <strong class="jxr_keyword">if</strong> (analyzer.supportsParallelProcessing()) {
+<a class="jxr_linenumber" name="L807" href="#L807">807</a>             <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> maximumNumberOfThreads = Runtime.getRuntime().availableProcessors();
+<a class="jxr_linenumber" name="L808" href="#L808">808</a>             LOGGER.debug(<span class="jxr_string">"Parallel processing with up to {} threads: {}."</span>, maximumNumberOfThreads, analyzer.getName());
+<a class="jxr_linenumber" name="L809" href="#L809">809</a>             <strong class="jxr_keyword">return</strong> Executors.newFixedThreadPool(maximumNumberOfThreads);
+<a class="jxr_linenumber" name="L810" href="#L810">810</a>         } <strong class="jxr_keyword">else</strong> {
+<a class="jxr_linenumber" name="L811" href="#L811">811</a>             LOGGER.debug(<span class="jxr_string">"Parallel processing is not supported: {}."</span>, analyzer.getName());
+<a class="jxr_linenumber" name="L812" href="#L812">812</a>             <strong class="jxr_keyword">return</strong> Executors.newSingleThreadExecutor();
+<a class="jxr_linenumber" name="L813" href="#L813">813</a>         }
+<a class="jxr_linenumber" name="L814" href="#L814">814</a>     }
+<a class="jxr_linenumber" name="L815" href="#L815">815</a> 
+<a class="jxr_linenumber" name="L816" href="#L816">816</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L817" href="#L817">817</a> <em class="jxr_javadoccomment">     * Initializes the given analyzer.</em>
+<a class="jxr_linenumber" name="L818" href="#L818">818</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L819" href="#L819">819</a> <em class="jxr_javadoccomment">     * @param analyzer the analyzer to prepare</em>
+<a class="jxr_linenumber" name="L820" href="#L820">820</a> <em class="jxr_javadoccomment">     * @throws InitializationException thrown when there is a problem</em>
+<a class="jxr_linenumber" name="L821" href="#L821">821</a> <em class="jxr_javadoccomment">     * initializing the analyzer</em>
+<a class="jxr_linenumber" name="L822" href="#L822">822</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L823" href="#L823">823</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">void</strong> initializeAnalyzer(@NotNull <strong class="jxr_keyword">final</strong> <a href="../../../org/owasp/dependencycheck/analyzer/Analyzer.html">Analyzer</a> analyzer) <strong class="jxr_keyword">throws</strong> InitializationException {
+<a class="jxr_linenumber" name="L824" href="#L824">824</a>         <strong class="jxr_keyword">try</strong> {
+<a class="jxr_linenumber" name="L825" href="#L825">825</a>             LOGGER.debug(<span class="jxr_string">"Initializing {}"</span>, analyzer.getName());
+<a class="jxr_linenumber" name="L826" href="#L826">826</a>             analyzer.prepare(<strong class="jxr_keyword">this</strong>);
+<a class="jxr_linenumber" name="L827" href="#L827">827</a>         } <strong class="jxr_keyword">catch</strong> (InitializationException ex) {
+<a class="jxr_linenumber" name="L828" href="#L828">828</a>             LOGGER.error(<span class="jxr_string">"Exception occurred initializing {}."</span>, analyzer.getName());
+<a class="jxr_linenumber" name="L829" href="#L829">829</a>             LOGGER.debug(<span class="jxr_string">""</span>, ex);
+<a class="jxr_linenumber" name="L830" href="#L830">830</a>             <strong class="jxr_keyword">if</strong> (ex.isFatal()) {
+<a class="jxr_linenumber" name="L831" href="#L831">831</a>                 <strong class="jxr_keyword">try</strong> {
+<a class="jxr_linenumber" name="L832" href="#L832">832</a>                     analyzer.close();
+<a class="jxr_linenumber" name="L833" href="#L833">833</a>                 } <strong class="jxr_keyword">catch</strong> (Throwable ex1) {
+<a class="jxr_linenumber" name="L834" href="#L834">834</a>                     LOGGER.trace(<span class="jxr_string">""</span>, ex1);
+<a class="jxr_linenumber" name="L835" href="#L835">835</a>                 }
+<a class="jxr_linenumber" name="L836" href="#L836">836</a>             }
+<a class="jxr_linenumber" name="L837" href="#L837">837</a>             <strong class="jxr_keyword">throw</strong> ex;
+<a class="jxr_linenumber" name="L838" href="#L838">838</a>         } <strong class="jxr_keyword">catch</strong> (Throwable ex) {
+<a class="jxr_linenumber" name="L839" href="#L839">839</a>             LOGGER.error(<span class="jxr_string">"Unexpected exception occurred initializing {}."</span>, analyzer.getName());
+<a class="jxr_linenumber" name="L840" href="#L840">840</a>             LOGGER.debug(<span class="jxr_string">""</span>, ex);
+<a class="jxr_linenumber" name="L841" href="#L841">841</a>             <strong class="jxr_keyword">try</strong> {
+<a class="jxr_linenumber" name="L842" href="#L842">842</a>                 analyzer.close();
+<a class="jxr_linenumber" name="L843" href="#L843">843</a>             } <strong class="jxr_keyword">catch</strong> (Throwable ex1) {
+<a class="jxr_linenumber" name="L844" href="#L844">844</a>                 LOGGER.trace(<span class="jxr_string">""</span>, ex1);
+<a class="jxr_linenumber" name="L845" href="#L845">845</a>             }
+<a class="jxr_linenumber" name="L846" href="#L846">846</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a href="../../../org/owasp/dependencycheck/exception/InitializationException.html">InitializationException</a>(<span class="jxr_string">"Unexpected Exception"</span>, ex);
+<a class="jxr_linenumber" name="L847" href="#L847">847</a>         }
+<a class="jxr_linenumber" name="L848" href="#L848">848</a>     }
+<a class="jxr_linenumber" name="L849" href="#L849">849</a> 
+<a class="jxr_linenumber" name="L850" href="#L850">850</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L851" href="#L851">851</a> <em class="jxr_javadoccomment">     * Closes the given analyzer.</em>
+<a class="jxr_linenumber" name="L852" href="#L852">852</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L853" href="#L853">853</a> <em class="jxr_javadoccomment">     * @param analyzer the analyzer to close</em>
+<a class="jxr_linenumber" name="L854" href="#L854">854</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L855" href="#L855">855</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">void</strong> closeAnalyzer(@NotNull <strong class="jxr_keyword">final</strong> <a href="../../../org/owasp/dependencycheck/analyzer/Analyzer.html">Analyzer</a> analyzer) {
+<a class="jxr_linenumber" name="L856" href="#L856">856</a>         LOGGER.debug(<span class="jxr_string">"Closing Analyzer '{}'"</span>, analyzer.getName());
+<a class="jxr_linenumber" name="L857" href="#L857">857</a>         <strong class="jxr_keyword">try</strong> {
+<a class="jxr_linenumber" name="L858" href="#L858">858</a>             analyzer.close();
+<a class="jxr_linenumber" name="L859" href="#L859">859</a>         } <strong class="jxr_keyword">catch</strong> (Throwable ex) {
+<a class="jxr_linenumber" name="L860" href="#L860">860</a>             LOGGER.trace(<span class="jxr_string">""</span>, ex);
+<a class="jxr_linenumber" name="L861" href="#L861">861</a>         }
+<a class="jxr_linenumber" name="L862" href="#L862">862</a>     }
+<a class="jxr_linenumber" name="L863" href="#L863">863</a> 
+<a class="jxr_linenumber" name="L864" href="#L864">864</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L865" href="#L865">865</a> <em class="jxr_javadoccomment">     * Cycles through the cached web data sources and calls update on all of</em>
+<a class="jxr_linenumber" name="L866" href="#L866">866</a> <em class="jxr_javadoccomment">     * them.</em>
+<a class="jxr_linenumber" name="L867" href="#L867">867</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L868" href="#L868">868</a> <em class="jxr_javadoccomment">     * @throws UpdateException thrown if the operation fails</em>
+<a class="jxr_linenumber" name="L869" href="#L869">869</a> <em class="jxr_javadoccomment">     * @throws DatabaseException if the operation fails due to a local database</em>
+<a class="jxr_linenumber" name="L870" href="#L870">870</a> <em class="jxr_javadoccomment">     * failure</em>
+<a class="jxr_linenumber" name="L871" href="#L871">871</a> <em class="jxr_javadoccomment">     * @return Whether any updates actually happened</em>
+<a class="jxr_linenumber" name="L872" href="#L872">872</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L873" href="#L873">873</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">boolean</strong> doUpdates() <strong class="jxr_keyword">throws</strong> UpdateException, DatabaseException {
+<a class="jxr_linenumber" name="L874" href="#L874">874</a>         <strong class="jxr_keyword">return</strong> doUpdates(false);
+<a class="jxr_linenumber" name="L875" href="#L875">875</a>     }
+<a class="jxr_linenumber" name="L876" href="#L876">876</a> 
+<a class="jxr_linenumber" name="L877" href="#L877">877</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L878" href="#L878">878</a> <em class="jxr_javadoccomment">     * Cycles through the cached web data sources and calls update on all of</em>
+<a class="jxr_linenumber" name="L879" href="#L879">879</a> <em class="jxr_javadoccomment">     * them.</em>
+<a class="jxr_linenumber" name="L880" href="#L880">880</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L881" href="#L881">881</a> <em class="jxr_javadoccomment">     * @param remainOpen whether or not the database connection should remain</em>
+<a class="jxr_linenumber" name="L882" href="#L882">882</a> <em class="jxr_javadoccomment">     * open</em>
+<a class="jxr_linenumber" name="L883" href="#L883">883</a> <em class="jxr_javadoccomment">     * @throws UpdateException thrown if the operation fails</em>
+<a class="jxr_linenumber" name="L884" href="#L884">884</a> <em class="jxr_javadoccomment">     * @throws DatabaseException if the operation fails due to a local database</em>
+<a class="jxr_linenumber" name="L885" href="#L885">885</a> <em class="jxr_javadoccomment">     * failure</em>
+<a class="jxr_linenumber" name="L886" href="#L886">886</a> <em class="jxr_javadoccomment">     * @return Whether any updates actually happened</em>
+<a class="jxr_linenumber" name="L887" href="#L887">887</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L888" href="#L888">888</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">boolean</strong> doUpdates(<strong class="jxr_keyword">boolean</strong> remainOpen) <strong class="jxr_keyword">throws</strong> UpdateException, DatabaseException {
+<a class="jxr_linenumber" name="L889" href="#L889">889</a>         <strong class="jxr_keyword">if</strong> (mode.isDatabaseRequired()) {
+<a class="jxr_linenumber" name="L890" href="#L890">890</a>             <strong class="jxr_keyword">try</strong> (WriteLock dblock = <strong class="jxr_keyword">new</strong> WriteLock(getSettings(), DatabaseManager.isH2Connection(getSettings()))) {
+<a class="jxr_linenumber" name="L891" href="#L891">891</a>                 <em class="jxr_comment">//lock is not needed as we already have the lock held</em>
+<a class="jxr_linenumber" name="L892" href="#L892">892</a>                 openDatabase(false, false);
+<a class="jxr_linenumber" name="L893" href="#L893">893</a>                 LOGGER.info(<span class="jxr_string">"Checking for updates"</span>);
+<a class="jxr_linenumber" name="L894" href="#L894">894</a>                 <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">long</strong> updateStart = System.currentTimeMillis();
+<a class="jxr_linenumber" name="L895" href="#L895">895</a>                 <strong class="jxr_keyword">final</strong> <a href="../../../org/owasp/dependencycheck/data/update/UpdateService.html">UpdateService</a> service = <strong class="jxr_keyword">new</strong> <a href="../../../org/owasp/dependencycheck/data/update/UpdateService.html">UpdateService</a>(serviceClassLoader);
+<a class="jxr_linenumber" name="L896" href="#L896">896</a>                 <strong class="jxr_keyword">final</strong> Iterator&lt;CachedWebDataSource&gt; iterator = service.getDataSources();
+<a class="jxr_linenumber" name="L897" href="#L897">897</a>                 <strong class="jxr_keyword">boolean</strong> dbUpdatesMade = false;
+<a class="jxr_linenumber" name="L898" href="#L898">898</a>                 <a href="../../../org/owasp/dependencycheck/data/update/exception/UpdateException.html">UpdateException</a> updateException = <strong class="jxr_keyword">null</strong>;
+<a class="jxr_linenumber" name="L899" href="#L899">899</a>                 <strong class="jxr_keyword">while</strong> (iterator.hasNext()) {
+<a class="jxr_linenumber" name="L900" href="#L900">900</a>                     <strong class="jxr_keyword">try</strong> {
+<a class="jxr_linenumber" name="L901" href="#L901">901</a>                         <strong class="jxr_keyword">final</strong> <a href="../../../org/owasp/dependencycheck/data/update/CachedWebDataSource.html">CachedWebDataSource</a> source = iterator.next();
+<a class="jxr_linenumber" name="L902" href="#L902">902</a>                         dbUpdatesMade |= source.update(<strong class="jxr_keyword">this</strong>);
+<a class="jxr_linenumber" name="L903" href="#L903">903</a>                     } <strong class="jxr_keyword">catch</strong> (UpdateException ex) {
+<a class="jxr_linenumber" name="L904" href="#L904">904</a>                         updateException = ex;
+<a class="jxr_linenumber" name="L905" href="#L905">905</a>                         LOGGER.error(ex.getMessage(), ex);
+<a class="jxr_linenumber" name="L906" href="#L906">906</a>                     }
+<a class="jxr_linenumber" name="L907" href="#L907">907</a>                 }
+<a class="jxr_linenumber" name="L908" href="#L908">908</a>                 <strong class="jxr_keyword">if</strong> (dbUpdatesMade) {
+<a class="jxr_linenumber" name="L909" href="#L909">909</a>                     database.defrag();
+<a class="jxr_linenumber" name="L910" href="#L910">910</a>                 }
+<a class="jxr_linenumber" name="L911" href="#L911">911</a>                 database.close();
+<a class="jxr_linenumber" name="L912" href="#L912">912</a>                 database = <strong class="jxr_keyword">null</strong>;
+<a class="jxr_linenumber" name="L913" href="#L913">913</a>                 <strong class="jxr_keyword">if</strong> (updateException != <strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="L914" href="#L914">914</a>                     <strong class="jxr_keyword">throw</strong> updateException;
+<a class="jxr_linenumber" name="L915" href="#L915">915</a>                 }
+<a class="jxr_linenumber" name="L916" href="#L916">916</a>                 LOGGER.info(<span class="jxr_string">"Check for updates complete ({} ms)"</span>, System.currentTimeMillis() - updateStart);
+<a class="jxr_linenumber" name="L917" href="#L917">917</a>                 <strong class="jxr_keyword">if</strong> (remainOpen) {
+<a class="jxr_linenumber" name="L918" href="#L918">918</a>                     <em class="jxr_comment">//lock is not needed as we already have the lock held</em>
+<a class="jxr_linenumber" name="L919" href="#L919">919</a>                     openDatabase(<strong class="jxr_keyword">true</strong>, false);
+<a class="jxr_linenumber" name="L920" href="#L920">920</a>                 }
+<a class="jxr_linenumber" name="L921" href="#L921">921</a> 
+<a class="jxr_linenumber" name="L922" href="#L922">922</a>                 <strong class="jxr_keyword">return</strong> dbUpdatesMade;
+<a class="jxr_linenumber" name="L923" href="#L923">923</a>             } <strong class="jxr_keyword">catch</strong> (WriteLockException ex) {
+<a class="jxr_linenumber" name="L924" href="#L924">924</a>                 <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a href="../../../org/owasp/dependencycheck/data/update/exception/UpdateException.html">UpdateException</a>(<span class="jxr_string">"Unable to obtain an exclusive lock on the H2 database to perform updates"</span>, ex);
+<a class="jxr_linenumber" name="L925" href="#L925">925</a>             }
+<a class="jxr_linenumber" name="L926" href="#L926">926</a>         } <strong class="jxr_keyword">else</strong> {
+<a class="jxr_linenumber" name="L927" href="#L927">927</a>             LOGGER.info(<span class="jxr_string">"Skipping update check in evidence collection mode."</span>);
+<a class="jxr_linenumber" name="L928" href="#L928">928</a>             <strong class="jxr_keyword">return</strong> false;
+<a class="jxr_linenumber" name="L929" href="#L929">929</a>         }
+<a class="jxr_linenumber" name="L930" href="#L930">930</a>     }
+<a class="jxr_linenumber" name="L931" href="#L931">931</a> 
+<a class="jxr_linenumber" name="L932" href="#L932">932</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L933" href="#L933">933</a> <em class="jxr_javadoccomment">     * Purges the cached web data sources.</em>
+<a class="jxr_linenumber" name="L934" href="#L934">934</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L935" href="#L935">935</a> <em class="jxr_javadoccomment">     * @return &lt;code&gt;true&lt;/code&gt; if the purge was successful; otherwise</em>
+<a class="jxr_linenumber" name="L936" href="#L936">936</a> <em class="jxr_javadoccomment">     * &lt;code&gt;false&lt;/code&gt;</em>
+<a class="jxr_linenumber" name="L937" href="#L937">937</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L938" href="#L938">938</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">boolean</strong> purge() {
+<a class="jxr_linenumber" name="L939" href="#L939">939</a>         <strong class="jxr_keyword">boolean</strong> result = <strong class="jxr_keyword">true</strong>;
+<a class="jxr_linenumber" name="L940" href="#L940">940</a>         <strong class="jxr_keyword">final</strong> <a href="../../../org/owasp/dependencycheck/data/update/UpdateService.html">UpdateService</a> service = <strong class="jxr_keyword">new</strong> <a href="../../../org/owasp/dependencycheck/data/update/UpdateService.html">UpdateService</a>(serviceClassLoader);
+<a class="jxr_linenumber" name="L941" href="#L941">941</a>         <strong class="jxr_keyword">final</strong> Iterator&lt;CachedWebDataSource&gt; iterator = service.getDataSources();
+<a class="jxr_linenumber" name="L942" href="#L942">942</a>         <strong class="jxr_keyword">while</strong> (iterator.hasNext()) {
+<a class="jxr_linenumber" name="L943" href="#L943">943</a>             result &amp;= iterator.next().purge(<strong class="jxr_keyword">this</strong>);
+<a class="jxr_linenumber" name="L944" href="#L944">944</a>         }
+<a class="jxr_linenumber" name="L945" href="#L945">945</a>         <strong class="jxr_keyword">try</strong> {
+<a class="jxr_linenumber" name="L946" href="#L946">946</a>             <strong class="jxr_keyword">final</strong> File cache = <strong class="jxr_keyword">new</strong> File(settings.getDataDirectory(), <span class="jxr_string">"cache"</span>);
+<a class="jxr_linenumber" name="L947" href="#L947">947</a>             <strong class="jxr_keyword">if</strong> (cache.exists()) {
+<a class="jxr_linenumber" name="L948" href="#L948">948</a>                 <strong class="jxr_keyword">if</strong> (FileUtils.delete(cache)) {
+<a class="jxr_linenumber" name="L949" href="#L949">949</a>                     LOGGER.info(<span class="jxr_string">"Cache directory purged"</span>);
+<a class="jxr_linenumber" name="L950" href="#L950">950</a>                 }
+<a class="jxr_linenumber" name="L951" href="#L951">951</a>             }
+<a class="jxr_linenumber" name="L952" href="#L952">952</a>         } <strong class="jxr_keyword">catch</strong> (IOException ex) {
+<a class="jxr_linenumber" name="L953" href="#L953">953</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> RuntimeException(ex);
+<a class="jxr_linenumber" name="L954" href="#L954">954</a>         }
+<a class="jxr_linenumber" name="L955" href="#L955">955</a>         <strong class="jxr_keyword">try</strong> {
+<a class="jxr_linenumber" name="L956" href="#L956">956</a>             <strong class="jxr_keyword">final</strong> File cache = <strong class="jxr_keyword">new</strong> File(settings.getDataDirectory(), <span class="jxr_string">"oss_cache"</span>);
+<a class="jxr_linenumber" name="L957" href="#L957">957</a>             <strong class="jxr_keyword">if</strong> (cache.exists()) {
+<a class="jxr_linenumber" name="L958" href="#L958">958</a>                 <strong class="jxr_keyword">if</strong> (FileUtils.delete(cache)) {
+<a class="jxr_linenumber" name="L959" href="#L959">959</a>                     LOGGER.info(<span class="jxr_string">"OSS Cache directory purged"</span>);
+<a class="jxr_linenumber" name="L960" href="#L960">960</a>                 }
+<a class="jxr_linenumber" name="L961" href="#L961">961</a>             }
+<a class="jxr_linenumber" name="L962" href="#L962">962</a>         } <strong class="jxr_keyword">catch</strong> (IOException ex) {
+<a class="jxr_linenumber" name="L963" href="#L963">963</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> RuntimeException(ex);
+<a class="jxr_linenumber" name="L964" href="#L964">964</a>         }
+<a class="jxr_linenumber" name="L965" href="#L965">965</a> 
+<a class="jxr_linenumber" name="L966" href="#L966">966</a>         <strong class="jxr_keyword">return</strong> result;
+<a class="jxr_linenumber" name="L967" href="#L967">967</a>     }
+<a class="jxr_linenumber" name="L968" href="#L968">968</a> 
+<a class="jxr_linenumber" name="L969" href="#L969">969</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L970" href="#L970">970</a> <em class="jxr_javadoccomment">     * &lt;p&gt;</em>
+<a class="jxr_linenumber" name="L971" href="#L971">971</a> <em class="jxr_javadoccomment">     * This method is only public for unit/integration testing. This method</em>
+<a class="jxr_linenumber" name="L972" href="#L972">972</a> <em class="jxr_javadoccomment">     * should not be called by any integration that uses</em>
+<a class="jxr_linenumber" name="L973" href="#L973">973</a> <em class="jxr_javadoccomment">     * dependency-check-core.&lt;/p&gt;</em>
+<a class="jxr_linenumber" name="L974" href="#L974">974</a> <em class="jxr_javadoccomment">     * &lt;p&gt;</em>
+<a class="jxr_linenumber" name="L975" href="#L975">975</a> <em class="jxr_javadoccomment">     * Opens the database connection.&lt;/p&gt;</em>
+<a class="jxr_linenumber" name="L976" href="#L976">976</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L977" href="#L977">977</a> <em class="jxr_javadoccomment">     * @throws DatabaseException if the database connection could not be created</em>
+<a class="jxr_linenumber" name="L978" href="#L978">978</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L979" href="#L979">979</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> openDatabase() <strong class="jxr_keyword">throws</strong> DatabaseException {
+<a class="jxr_linenumber" name="L980" href="#L980">980</a>         openDatabase(false, <strong class="jxr_keyword">true</strong>);
+<a class="jxr_linenumber" name="L981" href="#L981">981</a>     }
+<a class="jxr_linenumber" name="L982" href="#L982">982</a> 
+<a class="jxr_linenumber" name="L983" href="#L983">983</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L984" href="#L984">984</a> <em class="jxr_javadoccomment">     * &lt;p&gt;</em>
+<a class="jxr_linenumber" name="L985" href="#L985">985</a> <em class="jxr_javadoccomment">     * This method is only public for unit/integration testing. This method</em>
+<a class="jxr_linenumber" name="L986" href="#L986">986</a> <em class="jxr_javadoccomment">     * should not be called by any integration that uses</em>
+<a class="jxr_linenumber" name="L987" href="#L987">987</a> <em class="jxr_javadoccomment">     * dependency-check-core.&lt;/p&gt;</em>
+<a class="jxr_linenumber" name="L988" href="#L988">988</a> <em class="jxr_javadoccomment">     * &lt;p&gt;</em>
+<a class="jxr_linenumber" name="L989" href="#L989">989</a> <em class="jxr_javadoccomment">     * Opens the database connection; if readOnly is true a copy of the database</em>
+<a class="jxr_linenumber" name="L990" href="#L990">990</a> <em class="jxr_javadoccomment">     * will be made.&lt;/p&gt;</em>
+<a class="jxr_linenumber" name="L991" href="#L991">991</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L992" href="#L992">992</a> <em class="jxr_javadoccomment">     * @param readOnly whether or not the database connection should be readonly</em>
+<a class="jxr_linenumber" name="L993" href="#L993">993</a> <em class="jxr_javadoccomment">     * @param lockRequired whether or not a lock needs to be acquired when</em>
+<a class="jxr_linenumber" name="L994" href="#L994">994</a> <em class="jxr_javadoccomment">     * opening the database</em>
+<a class="jxr_linenumber" name="L995" href="#L995">995</a> <em class="jxr_javadoccomment">     * @throws DatabaseException if the database connection could not be created</em>
+<a class="jxr_linenumber" name="L996" href="#L996">996</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L997" href="#L997">997</a>     @SuppressWarnings(<span class="jxr_string">"try"</span>)
+<a class="jxr_linenumber" name="L998" href="#L998">998</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> openDatabase(<strong class="jxr_keyword">boolean</strong> readOnly, <strong class="jxr_keyword">boolean</strong> lockRequired) <strong class="jxr_keyword">throws</strong> DatabaseException {
+<a class="jxr_linenumber" name="L999" href="#L999">999</a>         <strong class="jxr_keyword">if</strong> (mode.isDatabaseRequired() &amp;&amp; database == <strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="L1000" href="#L1000">1000</a>             <strong class="jxr_keyword">try</strong> (WriteLock dblock = <strong class="jxr_keyword">new</strong> WriteLock(getSettings(), lockRequired &amp;&amp; DatabaseManager.isH2Connection(settings))) {
+<a class="jxr_linenumber" name="L1001" href="#L1001">1001</a>                 <strong class="jxr_keyword">if</strong> (readOnly
+<a class="jxr_linenumber" name="L1002" href="#L1002">1002</a>                         &amp;&amp; DatabaseManager.isH2Connection(settings)
+<a class="jxr_linenumber" name="L1003" href="#L1003">1003</a>                         &amp;&amp; settings.getString(Settings.KEYS.DB_CONNECTION_STRING).contains(<span class="jxr_string">"file:%s"</span>)) {
+<a class="jxr_linenumber" name="L1004" href="#L1004">1004</a>                     <strong class="jxr_keyword">final</strong> File db = DatabaseManager.getH2DataFile(settings);
+<a class="jxr_linenumber" name="L1005" href="#L1005">1005</a>                     <strong class="jxr_keyword">if</strong> (db.isFile()) {
+<a class="jxr_linenumber" name="L1006" href="#L1006">1006</a>                         <strong class="jxr_keyword">final</strong> File temp = settings.getTempDirectory();
+<a class="jxr_linenumber" name="L1007" href="#L1007">1007</a>                         <strong class="jxr_keyword">final</strong> File tempDB = <strong class="jxr_keyword">new</strong> File(temp, db.getName());
+<a class="jxr_linenumber" name="L1008" href="#L1008">1008</a>                         LOGGER.debug(<span class="jxr_string">"copying database {} to {}"</span>, db.toPath(), temp.toPath());
+<a class="jxr_linenumber" name="L1009" href="#L1009">1009</a>                         Files.copy(db.toPath(), tempDB.toPath());
+<a class="jxr_linenumber" name="L1010" href="#L1010">1010</a>                         settings.setString(Settings.KEYS.H2_DATA_DIRECTORY, temp.getPath());
+<a class="jxr_linenumber" name="L1011" href="#L1011">1011</a>                         <strong class="jxr_keyword">final</strong> String connStr = settings.getString(Settings.KEYS.DB_CONNECTION_STRING);
+<a class="jxr_linenumber" name="L1012" href="#L1012">1012</a>                         <strong class="jxr_keyword">if</strong> (!connStr.contains(<span class="jxr_string">"ACCESS_MODE_DATA"</span>)) {
+<a class="jxr_linenumber" name="L1013" href="#L1013">1013</a>                             settings.setString(Settings.KEYS.DB_CONNECTION_STRING, connStr + <span class="jxr_string">"ACCESS_MODE_DATA=r"</span>);
+<a class="jxr_linenumber" name="L1014" href="#L1014">1014</a>                         }
+<a class="jxr_linenumber" name="L1015" href="#L1015">1015</a>                         settings.setBoolean(Settings.KEYS.AUTO_UPDATE, false);
+<a class="jxr_linenumber" name="L1016" href="#L1016">1016</a>                         database = <strong class="jxr_keyword">new</strong> <a href="../../../org/owasp/dependencycheck/data/nvdcve/CveDB.html">CveDB</a>(settings);
+<a class="jxr_linenumber" name="L1017" href="#L1017">1017</a>                     } <strong class="jxr_keyword">else</strong> {
+<a class="jxr_linenumber" name="L1018" href="#L1018">1018</a>                         <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a href="../../../org/owasp/dependencycheck/data/nvdcve/DatabaseException.html">DatabaseException</a>(<span class="jxr_string">"Unable to open database - configured database file does not exist: "</span> + db);
+<a class="jxr_linenumber" name="L1019" href="#L1019">1019</a>                     }
+<a class="jxr_linenumber" name="L1020" href="#L1020">1020</a>                 } <strong class="jxr_keyword">else</strong> {
+<a class="jxr_linenumber" name="L1021" href="#L1021">1021</a>                     database = <strong class="jxr_keyword">new</strong> <a href="../../../org/owasp/dependencycheck/data/nvdcve/CveDB.html">CveDB</a>(settings);
+<a class="jxr_linenumber" name="L1022" href="#L1022">1022</a>                 }
+<a class="jxr_linenumber" name="L1023" href="#L1023">1023</a>             } <strong class="jxr_keyword">catch</strong> (IOException ex) {
+<a class="jxr_linenumber" name="L1024" href="#L1024">1024</a>                 <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a href="../../../org/owasp/dependencycheck/data/nvdcve/DatabaseException.html">DatabaseException</a>(<span class="jxr_string">"Unable to open database in read only mode"</span>, ex);
+<a class="jxr_linenumber" name="L1025" href="#L1025">1025</a>             } <strong class="jxr_keyword">catch</strong> (WriteLockException ex) {
+<a class="jxr_linenumber" name="L1026" href="#L1026">1026</a>                 <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a href="../../../org/owasp/dependencycheck/data/nvdcve/DatabaseException.html">DatabaseException</a>(<span class="jxr_string">"Failed to obtain lock - unable to open database"</span>, ex);
+<a class="jxr_linenumber" name="L1027" href="#L1027">1027</a>             }
+<a class="jxr_linenumber" name="L1028" href="#L1028">1028</a>             database.open();
+<a class="jxr_linenumber" name="L1029" href="#L1029">1029</a>         }
+<a class="jxr_linenumber" name="L1030" href="#L1030">1030</a>     }
+<a class="jxr_linenumber" name="L1031" href="#L1031">1031</a> 
+<a class="jxr_linenumber" name="L1032" href="#L1032">1032</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L1033" href="#L1033">1033</a> <em class="jxr_javadoccomment">     * Returns a reference to the database.</em>
+<a class="jxr_linenumber" name="L1034" href="#L1034">1034</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L1035" href="#L1035">1035</a> <em class="jxr_javadoccomment">     * @return a reference to the database</em>
+<a class="jxr_linenumber" name="L1036" href="#L1036">1036</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L1037" href="#L1037">1037</a>     <strong class="jxr_keyword">public</strong> <a href="../../../org/owasp/dependencycheck/data/nvdcve/CveDB.html">CveDB</a> getDatabase() {
+<a class="jxr_linenumber" name="L1038" href="#L1038">1038</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">this</strong>.database;
+<a class="jxr_linenumber" name="L1039" href="#L1039">1039</a>     }
+<a class="jxr_linenumber" name="L1040" href="#L1040">1040</a> 
+<a class="jxr_linenumber" name="L1041" href="#L1041">1041</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L1042" href="#L1042">1042</a> <em class="jxr_javadoccomment">     * Returns a full list of all of the analyzers. This is useful for reporting</em>
+<a class="jxr_linenumber" name="L1043" href="#L1043">1043</a> <em class="jxr_javadoccomment">     * which analyzers where used.</em>
+<a class="jxr_linenumber" name="L1044" href="#L1044">1044</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L1045" href="#L1045">1045</a> <em class="jxr_javadoccomment">     * @return a list of Analyzers</em>
+<a class="jxr_linenumber" name="L1046" href="#L1046">1046</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L1047" href="#L1047">1047</a>     @NotNull
+<a class="jxr_linenumber" name="L1048" href="#L1048">1048</a>     <strong class="jxr_keyword">public</strong> List&lt;Analyzer&gt; getAnalyzers() {
+<a class="jxr_linenumber" name="L1049" href="#L1049">1049</a>         <strong class="jxr_keyword">final</strong> List&lt;Analyzer&gt; analyzerList = <strong class="jxr_keyword">new</strong> ArrayList&lt;&gt;();
+<a class="jxr_linenumber" name="L1050" href="#L1050">1050</a>         <em class="jxr_comment">//insteae of forEach - we can just do a collect</em>
+<a class="jxr_linenumber" name="L1051" href="#L1051">1051</a>         mode.getPhases().stream()
+<a class="jxr_linenumber" name="L1052" href="#L1052">1052</a>                 .map(analyzers::get)
+<a class="jxr_linenumber" name="L1053" href="#L1053">1053</a>                 .forEachOrdered(analyzerList::addAll);
+<a class="jxr_linenumber" name="L1054" href="#L1054">1054</a>         <strong class="jxr_keyword">return</strong> analyzerList;
+<a class="jxr_linenumber" name="L1055" href="#L1055">1055</a>     }
+<a class="jxr_linenumber" name="L1056" href="#L1056">1056</a> 
+<a class="jxr_linenumber" name="L1057" href="#L1057">1057</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L1058" href="#L1058">1058</a> <em class="jxr_javadoccomment">     * Checks all analyzers to see if an extension is supported.</em>
+<a class="jxr_linenumber" name="L1059" href="#L1059">1059</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L1060" href="#L1060">1060</a> <em class="jxr_javadoccomment">     * @param file a file extension</em>
+<a class="jxr_linenumber" name="L1061" href="#L1061">1061</a> <em class="jxr_javadoccomment">     * @return true or false depending on whether or not the file extension is</em>
+<a class="jxr_linenumber" name="L1062" href="#L1062">1062</a> <em class="jxr_javadoccomment">     * supported</em>
+<a class="jxr_linenumber" name="L1063" href="#L1063">1063</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L1064" href="#L1064">1064</a>     @Override
+<a class="jxr_linenumber" name="L1065" href="#L1065">1065</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">boolean</strong> accept(@Nullable <strong class="jxr_keyword">final</strong> File file) {
+<a class="jxr_linenumber" name="L1066" href="#L1066">1066</a>         <strong class="jxr_keyword">if</strong> (file == <strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="L1067" href="#L1067">1067</a>             <strong class="jxr_keyword">return</strong> false;
+<a class="jxr_linenumber" name="L1068" href="#L1068">1068</a>         }
+<a class="jxr_linenumber" name="L1069" href="#L1069">1069</a>         <em class="jxr_comment">/* note, we can't break early on this loop as the analyzers need to know if</em>
+<a class="jxr_linenumber" name="L1070" href="#L1070">1070</a> <em class="jxr_comment">        they have files to work on prior to initialization */</em>
+<a class="jxr_linenumber" name="L1071" href="#L1071">1071</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">this</strong>.fileTypeAnalyzers.stream().map((a) -&gt; a.accept(file)).reduce(false, (accumulator, result) -&gt; accumulator || result);
+<a class="jxr_linenumber" name="L1072" href="#L1072">1072</a>     }
+<a class="jxr_linenumber" name="L1073" href="#L1073">1073</a> 
+<a class="jxr_linenumber" name="L1074" href="#L1074">1074</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L1075" href="#L1075">1075</a> <em class="jxr_javadoccomment">     * Returns the set of file type analyzers.</em>
+<a class="jxr_linenumber" name="L1076" href="#L1076">1076</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L1077" href="#L1077">1077</a> <em class="jxr_javadoccomment">     * @return the set of file type analyzers</em>
+<a class="jxr_linenumber" name="L1078" href="#L1078">1078</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L1079" href="#L1079">1079</a>     <strong class="jxr_keyword">public</strong> Set&lt;FileTypeAnalyzer&gt; getFileTypeAnalyzers() {
+<a class="jxr_linenumber" name="L1080" href="#L1080">1080</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">this</strong>.fileTypeAnalyzers;
+<a class="jxr_linenumber" name="L1081" href="#L1081">1081</a>     }
+<a class="jxr_linenumber" name="L1082" href="#L1082">1082</a> 
+<a class="jxr_linenumber" name="L1083" href="#L1083">1083</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L1084" href="#L1084">1084</a> <em class="jxr_javadoccomment">     * Returns the configured settings.</em>
+<a class="jxr_linenumber" name="L1085" href="#L1085">1085</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L1086" href="#L1086">1086</a> <em class="jxr_javadoccomment">     * @return the configured settings</em>
+<a class="jxr_linenumber" name="L1087" href="#L1087">1087</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L1088" href="#L1088">1088</a>     <strong class="jxr_keyword">public</strong> Settings getSettings() {
+<a class="jxr_linenumber" name="L1089" href="#L1089">1089</a>         <strong class="jxr_keyword">return</strong> settings;
+<a class="jxr_linenumber" name="L1090" href="#L1090">1090</a>     }
+<a class="jxr_linenumber" name="L1091" href="#L1091">1091</a> 
+<a class="jxr_linenumber" name="L1092" href="#L1092">1092</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L1093" href="#L1093">1093</a> <em class="jxr_javadoccomment">     * Retrieve an object from the objects collection.</em>
+<a class="jxr_linenumber" name="L1094" href="#L1094">1094</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L1095" href="#L1095">1095</a> <em class="jxr_javadoccomment">     * @param key the key to retrieve the object</em>
+<a class="jxr_linenumber" name="L1096" href="#L1096">1096</a> <em class="jxr_javadoccomment">     * @return the object</em>
+<a class="jxr_linenumber" name="L1097" href="#L1097">1097</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L1098" href="#L1098">1098</a>     <strong class="jxr_keyword">public</strong> Object getObject(String key) {
+<a class="jxr_linenumber" name="L1099" href="#L1099">1099</a>         <strong class="jxr_keyword">return</strong> objects.get(key);
+<a class="jxr_linenumber" name="L1100" href="#L1100">1100</a>     }
+<a class="jxr_linenumber" name="L1101" href="#L1101">1101</a> 
+<a class="jxr_linenumber" name="L1102" href="#L1102">1102</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L1103" href="#L1103">1103</a> <em class="jxr_javadoccomment">     * Put an object in the object collection.</em>
+<a class="jxr_linenumber" name="L1104" href="#L1104">1104</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L1105" href="#L1105">1105</a> <em class="jxr_javadoccomment">     * @param key the key to store the object</em>
+<a class="jxr_linenumber" name="L1106" href="#L1106">1106</a> <em class="jxr_javadoccomment">     * @param object the object to store</em>
+<a class="jxr_linenumber" name="L1107" href="#L1107">1107</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L1108" href="#L1108">1108</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> putObject(String key, Object object) {
+<a class="jxr_linenumber" name="L1109" href="#L1109">1109</a>         objects.put(key, object);
+<a class="jxr_linenumber" name="L1110" href="#L1110">1110</a>     }
+<a class="jxr_linenumber" name="L1111" href="#L1111">1111</a> 
+<a class="jxr_linenumber" name="L1112" href="#L1112">1112</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L1113" href="#L1113">1113</a> <em class="jxr_javadoccomment">     * Verifies if the object exists in the object store.</em>
+<a class="jxr_linenumber" name="L1114" href="#L1114">1114</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L1115" href="#L1115">1115</a> <em class="jxr_javadoccomment">     * @param key the key to retrieve the object</em>
+<a class="jxr_linenumber" name="L1116" href="#L1116">1116</a> <em class="jxr_javadoccomment">     * @return &lt;code&gt;true&lt;/code&gt; if the object exists; otherwise</em>
+<a class="jxr_linenumber" name="L1117" href="#L1117">1117</a> <em class="jxr_javadoccomment">     * &lt;code&gt;false&lt;/code&gt;</em>
+<a class="jxr_linenumber" name="L1118" href="#L1118">1118</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L1119" href="#L1119">1119</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">boolean</strong> hasObject(String key) {
+<a class="jxr_linenumber" name="L1120" href="#L1120">1120</a>         <strong class="jxr_keyword">return</strong> objects.containsKey(key);
+<a class="jxr_linenumber" name="L1121" href="#L1121">1121</a>     }
+<a class="jxr_linenumber" name="L1122" href="#L1122">1122</a> 
+<a class="jxr_linenumber" name="L1123" href="#L1123">1123</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L1124" href="#L1124">1124</a> <em class="jxr_javadoccomment">     * Removes an object from the object store.</em>
+<a class="jxr_linenumber" name="L1125" href="#L1125">1125</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L1126" href="#L1126">1126</a> <em class="jxr_javadoccomment">     * @param key the key to the object</em>
+<a class="jxr_linenumber" name="L1127" href="#L1127">1127</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L1128" href="#L1128">1128</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> removeObject(String key) {
+<a class="jxr_linenumber" name="L1129" href="#L1129">1129</a>         objects.remove(key);
+<a class="jxr_linenumber" name="L1130" href="#L1130">1130</a>     }
+<a class="jxr_linenumber" name="L1131" href="#L1131">1131</a> 
+<a class="jxr_linenumber" name="L1132" href="#L1132">1132</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L1133" href="#L1133">1133</a> <em class="jxr_javadoccomment">     * Returns the mode of the engine.</em>
+<a class="jxr_linenumber" name="L1134" href="#L1134">1134</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L1135" href="#L1135">1135</a> <em class="jxr_javadoccomment">     * @return the mode of the engine</em>
+<a class="jxr_linenumber" name="L1136" href="#L1136">1136</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L1137" href="#L1137">1137</a>     <strong class="jxr_keyword">public</strong> <a href="../../../org/owasp/dependencycheck/Engine.html">Mode</a> getMode() {
+<a class="jxr_linenumber" name="L1138" href="#L1138">1138</a>         <strong class="jxr_keyword">return</strong> mode;
+<a class="jxr_linenumber" name="L1139" href="#L1139">1139</a>     }
+<a class="jxr_linenumber" name="L1140" href="#L1140">1140</a> 
+<a class="jxr_linenumber" name="L1141" href="#L1141">1141</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L1142" href="#L1142">1142</a> <em class="jxr_javadoccomment">     * Adds a file type analyzer. This has been added solely to assist in unit</em>
+<a class="jxr_linenumber" name="L1143" href="#L1143">1143</a> <em class="jxr_javadoccomment">     * testing the Engine.</em>
+<a class="jxr_linenumber" name="L1144" href="#L1144">1144</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L1145" href="#L1145">1145</a> <em class="jxr_javadoccomment">     * @param fta the file type analyzer to add</em>
+<a class="jxr_linenumber" name="L1146" href="#L1146">1146</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L1147" href="#L1147">1147</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">void</strong> addFileTypeAnalyzer(@NotNull <strong class="jxr_keyword">final</strong> <a href="../../../org/owasp/dependencycheck/analyzer/FileTypeAnalyzer.html">FileTypeAnalyzer</a> fta) {
+<a class="jxr_linenumber" name="L1148" href="#L1148">1148</a>         <strong class="jxr_keyword">this</strong>.fileTypeAnalyzers.add(fta);
+<a class="jxr_linenumber" name="L1149" href="#L1149">1149</a>     }
+<a class="jxr_linenumber" name="L1150" href="#L1150">1150</a> 
+<a class="jxr_linenumber" name="L1151" href="#L1151">1151</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L1152" href="#L1152">1152</a> <em class="jxr_javadoccomment">     * Checks the CPE Index to ensure documents exists. If none exist a</em>
+<a class="jxr_linenumber" name="L1153" href="#L1153">1153</a> <em class="jxr_javadoccomment">     * NoDataException is thrown.</em>
+<a class="jxr_linenumber" name="L1154" href="#L1154">1154</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L1155" href="#L1155">1155</a> <em class="jxr_javadoccomment">     * @throws NoDataException thrown if no data exists in the CPE Index</em>
+<a class="jxr_linenumber" name="L1156" href="#L1156">1156</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L1157" href="#L1157">1157</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> ensureDataExists() <strong class="jxr_keyword">throws</strong> NoDataException {
+<a class="jxr_linenumber" name="L1158" href="#L1158">1158</a>         <strong class="jxr_keyword">if</strong> (mode.isDatabaseRequired() &amp;&amp; (database == <strong class="jxr_keyword">null</strong> || !database.dataExists())) {
+<a class="jxr_linenumber" name="L1159" href="#L1159">1159</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a href="../../../org/owasp/dependencycheck/exception/NoDataException.html">NoDataException</a>(<span class="jxr_string">"No documents exist"</span>);
+<a class="jxr_linenumber" name="L1160" href="#L1160">1160</a>         }
+<a class="jxr_linenumber" name="L1161" href="#L1161">1161</a>     }
+<a class="jxr_linenumber" name="L1162" href="#L1162">1162</a> 
+<a class="jxr_linenumber" name="L1163" href="#L1163">1163</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L1164" href="#L1164">1164</a> <em class="jxr_javadoccomment">     * Constructs and throws a fatal exception collection.</em>
+<a class="jxr_linenumber" name="L1165" href="#L1165">1165</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L1166" href="#L1166">1166</a> <em class="jxr_javadoccomment">     * @param message the exception message</em>
+<a class="jxr_linenumber" name="L1167" href="#L1167">1167</a> <em class="jxr_javadoccomment">     * @param throwable the cause</em>
+<a class="jxr_linenumber" name="L1168" href="#L1168">1168</a> <em class="jxr_javadoccomment">     * @param exceptions a collection of exception to include</em>
+<a class="jxr_linenumber" name="L1169" href="#L1169">1169</a> <em class="jxr_javadoccomment">     * @throws ExceptionCollection a collection of exceptions that occurred</em>
+<a class="jxr_linenumber" name="L1170" href="#L1170">1170</a> <em class="jxr_javadoccomment">     * during analysis</em>
+<a class="jxr_linenumber" name="L1171" href="#L1171">1171</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L1172" href="#L1172">1172</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> throwFatalExceptionCollection(String message, @NotNull <strong class="jxr_keyword">final</strong> Throwable throwable,
+<a class="jxr_linenumber" name="L1173" href="#L1173">1173</a>             @NotNull <strong class="jxr_keyword">final</strong> List&lt;Throwable&gt; exceptions) <strong class="jxr_keyword">throws</strong> ExceptionCollection {
+<a class="jxr_linenumber" name="L1174" href="#L1174">1174</a>         LOGGER.error(message);
+<a class="jxr_linenumber" name="L1175" href="#L1175">1175</a>         LOGGER.debug(<span class="jxr_string">""</span>, throwable);
+<a class="jxr_linenumber" name="L1176" href="#L1176">1176</a>         exceptions.add(throwable);
+<a class="jxr_linenumber" name="L1177" href="#L1177">1177</a>         <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a href="../../../org/owasp/dependencycheck/exception/ExceptionCollection.html">ExceptionCollection</a>(exceptions, <strong class="jxr_keyword">true</strong>);
+<a class="jxr_linenumber" name="L1178" href="#L1178">1178</a>     }
+<a class="jxr_linenumber" name="L1179" href="#L1179">1179</a> 
+<a class="jxr_linenumber" name="L1180" href="#L1180">1180</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L1181" href="#L1181">1181</a> <em class="jxr_javadoccomment">     * Writes the report to the given output directory.</em>
+<a class="jxr_linenumber" name="L1182" href="#L1182">1182</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L1183" href="#L1183">1183</a> <em class="jxr_javadoccomment">     * @param applicationName the name of the application/project</em>
+<a class="jxr_linenumber" name="L1184" href="#L1184">1184</a> <em class="jxr_javadoccomment">     * @param outputDir the path to the output directory (can include the full</em>
+<a class="jxr_linenumber" name="L1185" href="#L1185">1185</a> <em class="jxr_javadoccomment">     * file name if the format is not ALL)</em>
+<a class="jxr_linenumber" name="L1186" href="#L1186">1186</a> <em class="jxr_javadoccomment">     * @param format the report format (see {@link ReportGenerator.Format})</em>
+<a class="jxr_linenumber" name="L1187" href="#L1187">1187</a> <em class="jxr_javadoccomment">     * @throws ReportException thrown if there is an error generating the report</em>
+<a class="jxr_linenumber" name="L1188" href="#L1188">1188</a> <em class="jxr_javadoccomment">     * @deprecated use</em>
+<a class="jxr_linenumber" name="L1189" href="#L1189">1189</a> <em class="jxr_javadoccomment">     * {@link #writeReports(java.lang.String, java.io.File, java.lang.String, org.owasp.dependencycheck.exception.ExceptionCollection)}</em>
+<a class="jxr_linenumber" name="L1190" href="#L1190">1190</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L1191" href="#L1191">1191</a>     @Deprecated
+<a class="jxr_linenumber" name="L1192" href="#L1192">1192</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> writeReports(String applicationName, File outputDir, String format) <strong class="jxr_keyword">throws</strong> ReportException {
+<a class="jxr_linenumber" name="L1193" href="#L1193">1193</a>         writeReports(applicationName, <strong class="jxr_keyword">null</strong>, <strong class="jxr_keyword">null</strong>, <strong class="jxr_keyword">null</strong>, outputDir, format, <strong class="jxr_keyword">null</strong>);
+<a class="jxr_linenumber" name="L1194" href="#L1194">1194</a>     }
+<a class="jxr_linenumber" name="L1195" href="#L1195">1195</a> 
+<a class="jxr_linenumber" name="L1196" href="#L1196">1196</a>     <em class="jxr_comment">//CSOFF: LineLength</em>
+<a class="jxr_linenumber" name="L1197" href="#L1197">1197</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L1198" href="#L1198">1198</a> <em class="jxr_javadoccomment">     * Writes the report to the given output directory.</em>
+<a class="jxr_linenumber" name="L1199" href="#L1199">1199</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L1200" href="#L1200">1200</a> <em class="jxr_javadoccomment">     * @param applicationName the name of the application/project</em>
+<a class="jxr_linenumber" name="L1201" href="#L1201">1201</a> <em class="jxr_javadoccomment">     * @param outputDir the path to the output directory (can include the full</em>
+<a class="jxr_linenumber" name="L1202" href="#L1202">1202</a> <em class="jxr_javadoccomment">     * file name if the format is not ALL)</em>
+<a class="jxr_linenumber" name="L1203" href="#L1203">1203</a> <em class="jxr_javadoccomment">     * @param format the report format (see {@link ReportGenerator.Format})</em>
+<a class="jxr_linenumber" name="L1204" href="#L1204">1204</a> <em class="jxr_javadoccomment">     * @param exceptions a collection of exceptions that may have occurred</em>
+<a class="jxr_linenumber" name="L1205" href="#L1205">1205</a> <em class="jxr_javadoccomment">     * during the analysis</em>
+<a class="jxr_linenumber" name="L1206" href="#L1206">1206</a> <em class="jxr_javadoccomment">     * @throws ReportException thrown if there is an error generating the report</em>
+<a class="jxr_linenumber" name="L1207" href="#L1207">1207</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L1208" href="#L1208">1208</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> writeReports(String applicationName, File outputDir, String format, <a href="../../../org/owasp/dependencycheck/exception/ExceptionCollection.html">ExceptionCollection</a> exceptions) <strong class="jxr_keyword">throws</strong> ReportException {
+<a class="jxr_linenumber" name="L1209" href="#L1209">1209</a>         writeReports(applicationName, <strong class="jxr_keyword">null</strong>, <strong class="jxr_keyword">null</strong>, <strong class="jxr_keyword">null</strong>, outputDir, format, exceptions);
+<a class="jxr_linenumber" name="L1210" href="#L1210">1210</a>     }
+<a class="jxr_linenumber" name="L1211" href="#L1211">1211</a>     <em class="jxr_comment">//CSON: LineLength</em>
+<a class="jxr_linenumber" name="L1212" href="#L1212">1212</a> 
+<a class="jxr_linenumber" name="L1213" href="#L1213">1213</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L1214" href="#L1214">1214</a> <em class="jxr_javadoccomment">     * Writes the report to the given output directory.</em>
+<a class="jxr_linenumber" name="L1215" href="#L1215">1215</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L1216" href="#L1216">1216</a> <em class="jxr_javadoccomment">     * @param applicationName the name of the application/project</em>
+<a class="jxr_linenumber" name="L1217" href="#L1217">1217</a> <em class="jxr_javadoccomment">     * @param groupId the Maven groupId</em>
+<a class="jxr_linenumber" name="L1218" href="#L1218">1218</a> <em class="jxr_javadoccomment">     * @param artifactId the Maven artifactId</em>
+<a class="jxr_linenumber" name="L1219" href="#L1219">1219</a> <em class="jxr_javadoccomment">     * @param version the Maven version</em>
+<a class="jxr_linenumber" name="L1220" href="#L1220">1220</a> <em class="jxr_javadoccomment">     * @param outputDir the path to the output directory (can include the full</em>
+<a class="jxr_linenumber" name="L1221" href="#L1221">1221</a> <em class="jxr_javadoccomment">     * file name if the format is not ALL)</em>
+<a class="jxr_linenumber" name="L1222" href="#L1222">1222</a> <em class="jxr_javadoccomment">     * @param format the report format (see {@link ReportGenerator.Format})</em>
+<a class="jxr_linenumber" name="L1223" href="#L1223">1223</a> <em class="jxr_javadoccomment">     * @throws ReportException thrown if there is an error generating the report</em>
+<a class="jxr_linenumber" name="L1224" href="#L1224">1224</a> <em class="jxr_javadoccomment">     * @deprecated use</em>
+<a class="jxr_linenumber" name="L1225" href="#L1225">1225</a> <em class="jxr_javadoccomment">     * {@link #writeReports(String, String, String, String, File, String, ExceptionCollection)}</em>
+<a class="jxr_linenumber" name="L1226" href="#L1226">1226</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L1227" href="#L1227">1227</a>     @Deprecated
+<a class="jxr_linenumber" name="L1228" href="#L1228">1228</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">synchronized</strong> <strong class="jxr_keyword">void</strong> writeReports(String applicationName, @Nullable <strong class="jxr_keyword">final</strong> String groupId,
+<a class="jxr_linenumber" name="L1229" href="#L1229">1229</a>             @Nullable <strong class="jxr_keyword">final</strong> String artifactId, @Nullable <strong class="jxr_keyword">final</strong> String version,
+<a class="jxr_linenumber" name="L1230" href="#L1230">1230</a>             @NotNull <strong class="jxr_keyword">final</strong> File outputDir, String format) <strong class="jxr_keyword">throws</strong> ReportException {
+<a class="jxr_linenumber" name="L1231" href="#L1231">1231</a>         writeReports(applicationName, groupId, artifactId, version, outputDir, format, <strong class="jxr_keyword">null</strong>);
+<a class="jxr_linenumber" name="L1232" href="#L1232">1232</a>     }
+<a class="jxr_linenumber" name="L1233" href="#L1233">1233</a> 
+<a class="jxr_linenumber" name="L1234" href="#L1234">1234</a>     <em class="jxr_comment">//CSOFF: LineLength</em>
+<a class="jxr_linenumber" name="L1235" href="#L1235">1235</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L1236" href="#L1236">1236</a> <em class="jxr_javadoccomment">     * Writes the report to the given output directory.</em>
+<a class="jxr_linenumber" name="L1237" href="#L1237">1237</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L1238" href="#L1238">1238</a> <em class="jxr_javadoccomment">     * @param applicationName the name of the application/project</em>
+<a class="jxr_linenumber" name="L1239" href="#L1239">1239</a> <em class="jxr_javadoccomment">     * @param groupId the Maven groupId</em>
+<a class="jxr_linenumber" name="L1240" href="#L1240">1240</a> <em class="jxr_javadoccomment">     * @param artifactId the Maven artifactId</em>
+<a class="jxr_linenumber" name="L1241" href="#L1241">1241</a> <em class="jxr_javadoccomment">     * @param version the Maven version</em>
+<a class="jxr_linenumber" name="L1242" href="#L1242">1242</a> <em class="jxr_javadoccomment">     * @param outputDir the path to the output directory (can include the full</em>
+<a class="jxr_linenumber" name="L1243" href="#L1243">1243</a> <em class="jxr_javadoccomment">     * file name if the format is not ALL)</em>
+<a class="jxr_linenumber" name="L1244" href="#L1244">1244</a> <em class="jxr_javadoccomment">     * @param format the report format  (see {@link ReportGenerator.Format})</em>
+<a class="jxr_linenumber" name="L1245" href="#L1245">1245</a> <em class="jxr_javadoccomment">     * @param exceptions a collection of exceptions that may have occurred</em>
+<a class="jxr_linenumber" name="L1246" href="#L1246">1246</a> <em class="jxr_javadoccomment">     * during the analysis</em>
+<a class="jxr_linenumber" name="L1247" href="#L1247">1247</a> <em class="jxr_javadoccomment">     * @throws ReportException thrown if there is an error generating the report</em>
+<a class="jxr_linenumber" name="L1248" href="#L1248">1248</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L1249" href="#L1249">1249</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">synchronized</strong> <strong class="jxr_keyword">void</strong> writeReports(String applicationName, @Nullable <strong class="jxr_keyword">final</strong> String groupId,
+<a class="jxr_linenumber" name="L1250" href="#L1250">1250</a>             @Nullable <strong class="jxr_keyword">final</strong> String artifactId, @Nullable <strong class="jxr_keyword">final</strong> String version,
+<a class="jxr_linenumber" name="L1251" href="#L1251">1251</a>             @NotNull <strong class="jxr_keyword">final</strong> File outputDir, String format, <a href="../../../org/owasp/dependencycheck/exception/ExceptionCollection.html">ExceptionCollection</a> exceptions) <strong class="jxr_keyword">throws</strong> ReportException {
+<a class="jxr_linenumber" name="L1252" href="#L1252">1252</a>         <strong class="jxr_keyword">if</strong> (mode == Mode.EVIDENCE_COLLECTION) {
+<a class="jxr_linenumber" name="L1253" href="#L1253">1253</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> UnsupportedOperationException(<span class="jxr_string">"Cannot generate report in evidence collection mode."</span>);
+<a class="jxr_linenumber" name="L1254" href="#L1254">1254</a>         }
+<a class="jxr_linenumber" name="L1255" href="#L1255">1255</a>         <strong class="jxr_keyword">final</strong> <a href="../../../org/owasp/dependencycheck/data/nvdcve/DatabaseProperties.html">DatabaseProperties</a> prop = database.getDatabaseProperties();
+<a class="jxr_linenumber" name="L1256" href="#L1256">1256</a> 
+<a class="jxr_linenumber" name="L1257" href="#L1257">1257</a>         <strong class="jxr_keyword">final</strong> <a href="../../../org/owasp/dependencycheck/reporting/ReportGenerator.html">ReportGenerator</a> r = <strong class="jxr_keyword">new</strong> <a href="../../../org/owasp/dependencycheck/reporting/ReportGenerator.html">ReportGenerator</a>(applicationName, groupId, artifactId, version,
+<a class="jxr_linenumber" name="L1258" href="#L1258">1258</a>                 dependencies, getAnalyzers(), prop, settings, exceptions);
+<a class="jxr_linenumber" name="L1259" href="#L1259">1259</a>         <strong class="jxr_keyword">try</strong> {
+<a class="jxr_linenumber" name="L1260" href="#L1260">1260</a>             r.write(outputDir.getAbsolutePath(), format);
+<a class="jxr_linenumber" name="L1261" href="#L1261">1261</a>         } <strong class="jxr_keyword">catch</strong> (ReportException ex) {
+<a class="jxr_linenumber" name="L1262" href="#L1262">1262</a>             <strong class="jxr_keyword">final</strong> String msg = String.format(<span class="jxr_string">"Error generating the report for %s"</span>, applicationName);
+<a class="jxr_linenumber" name="L1263" href="#L1263">1263</a>             LOGGER.debug(msg, ex);
+<a class="jxr_linenumber" name="L1264" href="#L1264">1264</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a href="../../../org/owasp/dependencycheck/exception/ReportException.html">ReportException</a>(msg, ex);
+<a class="jxr_linenumber" name="L1265" href="#L1265">1265</a>         }
+<a class="jxr_linenumber" name="L1266" href="#L1266">1266</a>     }
+<a class="jxr_linenumber" name="L1267" href="#L1267">1267</a>     <em class="jxr_comment">//CSON: LineLength</em>
+<a class="jxr_linenumber" name="L1268" href="#L1268">1268</a> 
+<a class="jxr_linenumber" name="L1269" href="#L1269">1269</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">boolean</strong> identifiersMatch(Set&lt;Identifier&gt; left, Set&lt;Identifier&gt; right) {
+<a class="jxr_linenumber" name="L1270" href="#L1270">1270</a>         <strong class="jxr_keyword">if</strong> (left != <strong class="jxr_keyword">null</strong> &amp;&amp; right != <strong class="jxr_keyword">null</strong> &amp;&amp; left.size() &gt; 0 &amp;&amp; left.size() == right.size()) {
+<a class="jxr_linenumber" name="L1271" href="#L1271">1271</a>             <strong class="jxr_keyword">int</strong> count = 0;
+<a class="jxr_linenumber" name="L1272" href="#L1272">1272</a>             <strong class="jxr_keyword">for</strong> (Identifier l : left) {
+<a class="jxr_linenumber" name="L1273" href="#L1273">1273</a>                 <strong class="jxr_keyword">for</strong> (Identifier r : right) {
+<a class="jxr_linenumber" name="L1274" href="#L1274">1274</a>                     <strong class="jxr_keyword">if</strong> (l.getValue().equals(r.getValue())) {
+<a class="jxr_linenumber" name="L1275" href="#L1275">1275</a>                         count += 1;
+<a class="jxr_linenumber" name="L1276" href="#L1276">1276</a>                         <strong class="jxr_keyword">break</strong>;
+<a class="jxr_linenumber" name="L1277" href="#L1277">1277</a>                     }
+<a class="jxr_linenumber" name="L1278" href="#L1278">1278</a>                 }
+<a class="jxr_linenumber" name="L1279" href="#L1279">1279</a>             }
+<a class="jxr_linenumber" name="L1280" href="#L1280">1280</a>             <strong class="jxr_keyword">return</strong> count == left.size();
+<a class="jxr_linenumber" name="L1281" href="#L1281">1281</a>         }
+<a class="jxr_linenumber" name="L1282" href="#L1282">1282</a>         <strong class="jxr_keyword">return</strong> false;
+<a class="jxr_linenumber" name="L1283" href="#L1283">1283</a>     }
+<a class="jxr_linenumber" name="L1284" href="#L1284">1284</a> 
+<a class="jxr_linenumber" name="L1285" href="#L1285">1285</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L1286" href="#L1286">1286</a> <em class="jxr_javadoccomment">     * {@link Engine} execution modes.</em>
+<a class="jxr_linenumber" name="L1287" href="#L1287">1287</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L1288" href="#L1288">1288</a>     <strong class="jxr_keyword">public</strong> enum <a href="../../../org/owasp/dependencycheck/Engine.html">Mode</a> {
+<a class="jxr_linenumber" name="L1289" href="#L1289">1289</a>         <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L1290" href="#L1290">1290</a> <em class="jxr_javadoccomment">         * In evidence collection mode the {@link Engine} only collects evidence</em>
+<a class="jxr_linenumber" name="L1291" href="#L1291">1291</a> <em class="jxr_javadoccomment">         * from the scan targets, and doesn't require a database.</em>
+<a class="jxr_linenumber" name="L1292" href="#L1292">1292</a> <em class="jxr_javadoccomment">         */</em>
+<a class="jxr_linenumber" name="L1293" href="#L1293">1293</a>         EVIDENCE_COLLECTION(
+<a class="jxr_linenumber" name="L1294" href="#L1294">1294</a>                 false,
+<a class="jxr_linenumber" name="L1295" href="#L1295">1295</a>                 INITIAL,
+<a class="jxr_linenumber" name="L1296" href="#L1296">1296</a>                 PRE_INFORMATION_COLLECTION,
+<a class="jxr_linenumber" name="L1297" href="#L1297">1297</a>                 INFORMATION_COLLECTION,
+<a class="jxr_linenumber" name="L1298" href="#L1298">1298</a>                 INFORMATION_COLLECTION2,
+<a class="jxr_linenumber" name="L1299" href="#L1299">1299</a>                 POST_INFORMATION_COLLECTION1,
+<a class="jxr_linenumber" name="L1300" href="#L1300">1300</a>                 POST_INFORMATION_COLLECTION2,
+<a class="jxr_linenumber" name="L1301" href="#L1301">1301</a>                 POST_INFORMATION_COLLECTION3
+<a class="jxr_linenumber" name="L1302" href="#L1302">1302</a>         ),
+<a class="jxr_linenumber" name="L1303" href="#L1303">1303</a>         <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L1304" href="#L1304">1304</a> <em class="jxr_javadoccomment">         * In evidence processing mode the {@link Engine} processes the evidence</em>
+<a class="jxr_linenumber" name="L1305" href="#L1305">1305</a> <em class="jxr_javadoccomment">         * collected using the {@link #EVIDENCE_COLLECTION} mode. Dependencies</em>
+<a class="jxr_linenumber" name="L1306" href="#L1306">1306</a> <em class="jxr_javadoccomment">         * should be injected into the {@link Engine} using</em>
+<a class="jxr_linenumber" name="L1307" href="#L1307">1307</a> <em class="jxr_javadoccomment">         * {@link Engine#setDependencies(List)}.</em>
+<a class="jxr_linenumber" name="L1308" href="#L1308">1308</a> <em class="jxr_javadoccomment">         */</em>
+<a class="jxr_linenumber" name="L1309" href="#L1309">1309</a>         EVIDENCE_PROCESSING(
+<a class="jxr_linenumber" name="L1310" href="#L1310">1310</a>                 <strong class="jxr_keyword">true</strong>,
+<a class="jxr_linenumber" name="L1311" href="#L1311">1311</a>                 PRE_IDENTIFIER_ANALYSIS,
+<a class="jxr_linenumber" name="L1312" href="#L1312">1312</a>                 IDENTIFIER_ANALYSIS,
+<a class="jxr_linenumber" name="L1313" href="#L1313">1313</a>                 POST_IDENTIFIER_ANALYSIS,
+<a class="jxr_linenumber" name="L1314" href="#L1314">1314</a>                 PRE_FINDING_ANALYSIS,
+<a class="jxr_linenumber" name="L1315" href="#L1315">1315</a>                 FINDING_ANALYSIS,
+<a class="jxr_linenumber" name="L1316" href="#L1316">1316</a>                 POST_FINDING_ANALYSIS,
+<a class="jxr_linenumber" name="L1317" href="#L1317">1317</a>                 FINDING_ANALYSIS_PHASE2,
+<a class="jxr_linenumber" name="L1318" href="#L1318">1318</a>                 FINAL
+<a class="jxr_linenumber" name="L1319" href="#L1319">1319</a>         ),
+<a class="jxr_linenumber" name="L1320" href="#L1320">1320</a>         <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L1321" href="#L1321">1321</a> <em class="jxr_javadoccomment">         * In standalone mode the {@link Engine} will collect and process</em>
+<a class="jxr_linenumber" name="L1322" href="#L1322">1322</a> <em class="jxr_javadoccomment">         * evidence in a single execution.</em>
+<a class="jxr_linenumber" name="L1323" href="#L1323">1323</a> <em class="jxr_javadoccomment">         */</em>
+<a class="jxr_linenumber" name="L1324" href="#L1324">1324</a>         STANDALONE(<strong class="jxr_keyword">true</strong>, AnalysisPhase.values());
+<a class="jxr_linenumber" name="L1325" href="#L1325">1325</a> 
+<a class="jxr_linenumber" name="L1326" href="#L1326">1326</a>         <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L1327" href="#L1327">1327</a> <em class="jxr_javadoccomment">         * Whether the database is required in this mode.</em>
+<a class="jxr_linenumber" name="L1328" href="#L1328">1328</a> <em class="jxr_javadoccomment">         */</em>
+<a class="jxr_linenumber" name="L1329" href="#L1329">1329</a>         <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">boolean</strong> databaseRequired;
+<a class="jxr_linenumber" name="L1330" href="#L1330">1330</a>         <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L1331" href="#L1331">1331</a> <em class="jxr_javadoccomment">         * The analysis phases included in the mode.</em>
+<a class="jxr_linenumber" name="L1332" href="#L1332">1332</a> <em class="jxr_javadoccomment">         */</em>
+<a class="jxr_linenumber" name="L1333" href="#L1333">1333</a>         <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> List&lt;AnalysisPhase&gt; phases;
+<a class="jxr_linenumber" name="L1334" href="#L1334">1334</a> 
+<a class="jxr_linenumber" name="L1335" href="#L1335">1335</a>         <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L1336" href="#L1336">1336</a> <em class="jxr_javadoccomment">         * Constructs a new mode.</em>
+<a class="jxr_linenumber" name="L1337" href="#L1337">1337</a> <em class="jxr_javadoccomment">         *</em>
+<a class="jxr_linenumber" name="L1338" href="#L1338">1338</a> <em class="jxr_javadoccomment">         * @param databaseRequired if the database is required for the mode</em>
+<a class="jxr_linenumber" name="L1339" href="#L1339">1339</a> <em class="jxr_javadoccomment">         * @param phases the analysis phases to include in the mode</em>
+<a class="jxr_linenumber" name="L1340" href="#L1340">1340</a> <em class="jxr_javadoccomment">         */</em>
+<a class="jxr_linenumber" name="L1341" href="#L1341">1341</a>         <a href="../../../org/owasp/dependencycheck/Engine.html">Mode</a>(<strong class="jxr_keyword">boolean</strong> databaseRequired, AnalysisPhase... phases) {
+<a class="jxr_linenumber" name="L1342" href="#L1342">1342</a>             <strong class="jxr_keyword">this</strong>.databaseRequired = databaseRequired;
+<a class="jxr_linenumber" name="L1343" href="#L1343">1343</a>             <strong class="jxr_keyword">this</strong>.phases = Collections.unmodifiableList(Arrays.asList(phases));
+<a class="jxr_linenumber" name="L1344" href="#L1344">1344</a>         }
+<a class="jxr_linenumber" name="L1345" href="#L1345">1345</a> 
+<a class="jxr_linenumber" name="L1346" href="#L1346">1346</a>         <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L1347" href="#L1347">1347</a> <em class="jxr_javadoccomment">         * Returns true if the database is required; otherwise false.</em>
+<a class="jxr_linenumber" name="L1348" href="#L1348">1348</a> <em class="jxr_javadoccomment">         *</em>
+<a class="jxr_linenumber" name="L1349" href="#L1349">1349</a> <em class="jxr_javadoccomment">         * @return whether or not the database is required</em>
+<a class="jxr_linenumber" name="L1350" href="#L1350">1350</a> <em class="jxr_javadoccomment">         */</em>
+<a class="jxr_linenumber" name="L1351" href="#L1351">1351</a>         <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">boolean</strong> isDatabaseRequired() {
+<a class="jxr_linenumber" name="L1352" href="#L1352">1352</a>             <strong class="jxr_keyword">return</strong> databaseRequired;
+<a class="jxr_linenumber" name="L1353" href="#L1353">1353</a>         }
+<a class="jxr_linenumber" name="L1354" href="#L1354">1354</a> 
+<a class="jxr_linenumber" name="L1355" href="#L1355">1355</a>         <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L1356" href="#L1356">1356</a> <em class="jxr_javadoccomment">         * Returns the phases for this mode.</em>
+<a class="jxr_linenumber" name="L1357" href="#L1357">1357</a> <em class="jxr_javadoccomment">         *</em>
+<a class="jxr_linenumber" name="L1358" href="#L1358">1358</a> <em class="jxr_javadoccomment">         * @return the phases for this mode</em>
+<a class="jxr_linenumber" name="L1359" href="#L1359">1359</a> <em class="jxr_javadoccomment">         */</em>
+<a class="jxr_linenumber" name="L1360" href="#L1360">1360</a>         <strong class="jxr_keyword">public</strong> List&lt;AnalysisPhase&gt; getPhases() {
+<a class="jxr_linenumber" name="L1361" href="#L1361">1361</a>             <strong class="jxr_keyword">return</strong> phases;
+<a class="jxr_linenumber" name="L1362" href="#L1362">1362</a>         }
+<a class="jxr_linenumber" name="L1363" href="#L1363">1363</a>     }
+<a class="jxr_linenumber" name="L1364" href="#L1364">1364</a> }
 </pre>
 <hr/>
 <div id="footer">Copyright &#169; 2012&#x2013;2025 <a href="https://www.owasp.org">OWASP</a>. All rights reserved.</div>

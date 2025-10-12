@@ -107,11 +107,11 @@ public class CentralSearch {
 <span class="fc" id="L107">        this.query = queryStr;</span>
 <span class="fc" id="L108">        LOGGER.debug(&quot;Central Search Full URL: {}&quot;, String.format(query, rootURL, &quot;[SHA1]&quot;));</span>
 <span class="pc bpc" id="L109" title="2 of 4 branches missed.">        if (null != settings.getString(Settings.KEYS.PROXY_SERVER) || null != System.getProperty(&quot;https.proxyHost&quot;)) {</span>
-<span class="fc" id="L110">            useProxy = true;</span>
-<span class="fc" id="L111">            LOGGER.debug(&quot;Using proxy&quot;);</span>
+<span class="nc" id="L110">            useProxy = true;</span>
+<span class="nc" id="L111">            LOGGER.debug(&quot;Using proxy&quot;);</span>
         } else {
-<span class="nc" id="L113">            useProxy = false;</span>
-<span class="nc" id="L114">            LOGGER.debug(&quot;Not using proxy&quot;);</span>
+<span class="fc" id="L113">            useProxy = false;</span>
+<span class="fc" id="L114">            LOGGER.debug(&quot;Not using proxy&quot;);</span>
         }
 <span class="pc bpc" id="L116" title="1 of 2 branches missed.">        if (settings.getBoolean(Settings.KEYS.ANALYZER_CENTRAL_USE_CACHE, true)) {</span>
             try {
