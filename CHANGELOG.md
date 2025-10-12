@@ -1,5 +1,22 @@
 # Change Log
 
+## [Version 12.1.7](https://github.com/dependency-check/DependencyCheck/releases/tag/v12.1.7) (2025-10-12)
+
+- fix: disable central analyzer after failures ([#7993](https://github.com/dependency-check/DependencyCheck/pull/7993))
+- fix: Suppress JVM warnings from Lucene within CLI ([#8003](https://github.com/dependency-check/DependencyCheck/pull/8003))
+- fix: Clean up Apache Lucene logging via SLF4j redirect ([#7979](https://github.com/dependency-check/DependencyCheck/pull/7979))
+- fix: Correct Archive Analyzer behaviour on certain tgz archives ([#7986](https://github.com/dependency-check/DependencyCheck/pull/7986))
+- fix: Update NVD CPE search URLs in generated reports to match new search interface ([#7970](https://github.com/dependency-check/DependencyCheck/pull/7970))
+- fix: improve OSS Index Error Reporting ([#7977](https://github.com/dependency-check/DependencyCheck/pull/7977))
+- fix(fp): Consolidate false positive suppression for false positives on Redis client libs ([#8017](https://github.com/dependency-check/DependencyCheck/pull/8017))
+- fix(fp): Fix more common false positives for popular PHP/composer frameworks with generic names ([#7994](https://github.com/dependency-check/DependencyCheck/pull/7994))
+- docs: improve slack notification documentation ([#8026](https://github.com/dependency-check/DependencyCheck/pull/8026))
+- docs: Documentation artifactory settings fix ([#7999](https://github.com/dependency-check/DependencyCheck/pull/7999))
+- docs: Clarify Nexus Analyzer requirements and usage ([#8000](https://github.com/dependency-check/DependencyCheck/pull/8000))
+- build: Build amd64 and arm64 multi-platform Docker image ([#7952](https://github.com/dependency-check/DependencyCheck/pull/7952))
+
+See the full listing of [changes](https://github.com/dependency-check/DependencyCheck/milestone/100?closed=1)
+
 ## [Version 12.1.6](https://github.com/dependency-check/DependencyCheck/releases/tag/v12.1.6) (2025-09-24)
 
 - fix: Disable OSS Index if its credentials are missing ([#7963](https://github.com/dependency-check/DependencyCheck/pull/7963))
