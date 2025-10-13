@@ -2516,4 +2516,11 @@ only pkg:maven/org.clojure:clojure@.* is the CPE cpe:/a:clojure:clojure
    <packageUrl regex="true">^pkg:maven/com\.hazelcast/hazelcast-eureka-two@.*$</packageUrl>
    <cpe>cpe:/a:hazelcast:hazelcast</cpe>
 </suppress>
+<suppress base="true">
+   <notes><![CDATA[
+   FP per issue #8040
+   ]]></notes>
+   <packageUrl regex="true">^pkg:maven/com\.pinterest\.ktlint/ktlint-cli-reporter-checkstyle@.*$</packageUrl>
+   <cpe>cpe:/a:checkstyle:checkstyle</cpe>
+</suppress>
 </suppressions>
