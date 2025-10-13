@@ -124,16 +124,25 @@ public class VulnerableSoftware extends Cpe implements Serializable {
     }
     //CSON: ParameterNumber
 
+    /**
+     * Normalizes null and empty strings to null for consistent comparison.
+     * @param s the string to normalize
+     * @return null if s is null or empty, otherwise s
+     */
+    private static String normalizeForComparison(String s) {
+        return (s == null || s.isEmpty()) ? null : s;
+    }
+
     @Override
     public int compareTo(@NotNull ICpe o) {
         if (o instanceof VulnerableSoftware) {
             final VulnerableSoftware other = (VulnerableSoftware) o;
             return new CompareToBuilder()
                     .appendSuper(super.compareTo(other))
-                    .append(versionStartIncluding, other.versionStartIncluding)
-                    .append(versionStartExcluding, other.versionStartExcluding)
-                    .append(versionEndIncluding, other.versionEndIncluding)
-                    .append(versionEndExcluding, other.versionEndExcluding)
+                    .append(normalizeForComparison(versionStartIncluding), normalizeForComparison(other.versionStartIncluding))
+                    .append(normalizeForComparison(versionStartExcluding), normalizeForComparison(other.versionStartExcluding))
+                    .append(normalizeForComparison(versionEndIncluding), normalizeForComparison(other.versionEndIncluding))
+                    .append(normalizeForComparison(versionEndExcluding), normalizeForComparison(other.versionEndExcluding))
                     .append(this.vulnerable, other.vulnerable)
                     .build();
         } else if (o instanceof Cpe) {
