@@ -1,5 +1,14 @@
 # Change Log
 
+## [Version 12.1.8](https://github.com/dependency-check/DependencyCheck/releases/tag/v12.1.8) (2025-10-13)
+
+- fix: improve VulnerableSoftware comparison ([#8031](https://github.com/dependency-check/DependencyCheck/pull/8031))
+- build: fix flaky central test ([#8039](https://github.com/dependency-check/DependencyCheck/pull/8039))
+- docs: Improve Gradle docs wrt experimental analyzers, use of Central and Proxy configuration ([#8036](https://github.com/dependency-check/DependencyCheck/pull/8036))
+- docs: add note about central analyzer for gradle ([#8038](https://github.com/dependency-check/DependencyCheck/pull/8038))
+
+See the full listing of [changes](https://github.com/dependency-check/DependencyCheck/milestone/101?closed=1)
+
 ## [Version 12.1.7](https://github.com/dependency-check/DependencyCheck/releases/tag/v12.1.7) (2025-10-12)
 
 - fix: disable central analyzer after failures ([#7993](https://github.com/dependency-check/DependencyCheck/pull/7993))
