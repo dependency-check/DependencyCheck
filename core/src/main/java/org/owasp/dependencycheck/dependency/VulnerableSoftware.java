@@ -157,10 +157,10 @@ public class VulnerableSoftware extends Cpe implements Serializable {
         // ideally different for each class
         return new HashCodeBuilder(13, 59)
                 .appendSuper(super.hashCode())
-                .append(versionEndExcluding)
-                .append(versionEndIncluding)
-                .append(versionStartExcluding)
-                .append(versionStartIncluding)
+                .append(normalizeForComparison(versionEndExcluding))
+                .append(normalizeForComparison(versionEndIncluding))
+                .append(normalizeForComparison(versionStartExcluding))
+                .append(normalizeForComparison(versionStartIncluding))
                 .toHashCode();
     }
 
@@ -175,10 +175,10 @@ public class VulnerableSoftware extends Cpe implements Serializable {
         final VulnerableSoftware rhs = (VulnerableSoftware) obj;
         return new EqualsBuilder()
                 .appendSuper(super.equals(obj))
-                .append(versionEndExcluding, rhs.versionEndExcluding)
-                .append(versionEndIncluding, rhs.versionEndIncluding)
-                .append(versionStartExcluding, rhs.versionStartExcluding)
-                .append(versionStartIncluding, rhs.versionStartIncluding)
+                .append(normalizeForComparison(versionEndExcluding), normalizeForComparison(rhs.versionEndExcluding))
+                .append(normalizeForComparison(versionEndIncluding), normalizeForComparison(rhs.versionEndIncluding))
+                .append(normalizeForComparison(versionStartExcluding), normalizeForComparison(rhs.versionStartExcluding))
+                .append(normalizeForComparison(versionStartIncluding), normalizeForComparison(rhs.versionStartIncluding))
                 .isEquals();
     }
 
