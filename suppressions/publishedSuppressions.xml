@@ -2523,4 +2523,11 @@ only pkg:maven/org.clojure:clojure@.* is the CPE cpe:/a:clojure:clojure
    <packageUrl regex="true">^pkg:maven/com\.pinterest\.ktlint/ktlint-cli-reporter-checkstyle@.*$</packageUrl>
    <cpe>cpe:/a:checkstyle:checkstyle</cpe>
 </suppress>
+<suppress base="true">
+   <notes><![CDATA[
+   FP per issue #8051
+   ]]></notes>
+   <packageUrl regex="true">^pkg:maven/org\.spdx/spdx-java-model-2_X@.*$</packageUrl>
+   <cpe>cpe:/a:x.org:x.org</cpe>
+</suppress>
 </suppressions>
