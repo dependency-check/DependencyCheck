@@ -7080,4 +7080,15 @@
         <packageUrl regex="true">^pkg:maven/(?!.*org\.eclipse\.equinox\.p2).*$</packageUrl>
         <cve>CVE-2021-41033</cve>
     </suppress>
+    <suppress base="true">
+        <notes><![CDATA[
+        FP per issue #7854 - protobuf-java has its own dedicated CPE at cpe:/a:google:protobuf-java - other language vulns are
+        managed within the core CPE for those based on native implementations.
+        Correct CPE vulns: https://nvd.nist.gov/vuln/search#/nvd/home?cpeFilterMode=applicability&cpeName=cpe:2.3:a:*:protobuf-java:*:*:*:*:*:*:*:*&resultType=records
+        Wrong CPE vulns: https://nvd.nist.gov/vuln/search#/nvd/home?cpeFilterMode=applicability&cpeName=cpe:2.3:a:*:protobuf:*:*:*:*:*:*:*:*&resultType=records
+        ]]></notes>
+        <packageUrl regex="true">^pkg:maven/com\.google\.protobuf/protobuf-.*@.*$</packageUrl>
+        <cpe>cpe:/a:protobuf:protobuf:</cpe>
+        <cpe>cpe:/a:google:protobuf:</cpe>
+    </suppress>
 </suppressions>
