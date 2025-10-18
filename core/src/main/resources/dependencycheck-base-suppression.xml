@@ -2644,66 +2644,38 @@
         False positive per issue #851 and #1073 and #4414;
         the CVEs listed are in the C++ part of the ICU project (and are currently all CVEs listed
         against ICU project; nevertheless we should not suppress the CPE itself to avoid false negatives
-        when the CVE is in the icu4j (cpe:2.3:a:icu-project:international_components_for_unicode:*:*:*:*:*:java:*:*
-        / cpe:2.3:a:unicode:international_components_for_unicode:*:*:*:*:*:java:*:*) CPE
-        cpe cpe:/a:unicode:unicode is the unicode specification
+        when the CVE is in the icu4j CPEs:
+           cpe:2.3:a:icu-project:international_components_for_unicode:*:*:*:*:*:java:*:*
+           cpe:2.3:a:unicode:international_components_for_unicode:*:*:*:*:*:java:*:*
+            --> https://nvd.nist.gov/vuln/search#/nvd/home?sortOrder=1&sortDirection=1&cpeFilterMode=applicability&cpeName=cpe:2.3:a:*:international_components_for_unicode:*:*:*:*:*:*:*:*&resultType=records
+         We can suppress cpe cpe:/a:unicode:unicode which is the unicode specification
         ]]></notes>
-        <packageUrl regex="true">^pkg:maven/com\.ibm\.icu/icu4j@.*$</packageUrl>
-        <cve>CVE-2020-21913</cve>
-        <cve>CVE-2014-9654</cve>
-        <cve>CVE-2014-9911</cve>
-        <cve>CVE-2016-6293</cve>
-        <cve>CVE-2016-7415</cve>
-        <cve>CVE-2017-14952</cve>
-        <cve>CVE-2017-17484</cve>
-        <cve>CVE-2015-5922</cve>
+        <packageUrl regex="true">^pkg:maven/(com\.ibm\.icu|org\.graalvm\.shadowed)/icu4j.*@.*$</packageUrl>
+        <cve>CVE-2007-4770</cve>
         <cve>CVE-2007-4771</cve>
-        <cve>CVE-2020-10531</cve>
         <cve>CVE-2011-4599</cve>
         <cve>CVE-2014-7923</cve>
         <cve>CVE-2014-7926</cve>
         <cve>CVE-2014-7940</cve>
         <cve>CVE-2014-8146</cve>
         <cve>CVE-2014-8147</cve>
-        <cve>CVE-2017-7867</cve>
-        <cve>CVE-2017-7868</cve>
-        <cve>CVE-2007-4770</cve>
-        <cve>CVE-2017-15396</cve>
-        <cve>CVE-2017-15422</cve>
-        <cpe>cpe:/a:apple:java</cpe>
-        <cpe>cpe:/a:unicode:unicode:</cpe>
-    </suppress>
-    <suppress base="true">
-        <notes><![CDATA[
-        False positive per issue #7706; DUPlICATE of above rule
-        the CVEs listed are in the C++ part of the ICU project (and are currently all CVEs listed
-        against ICU project; nevertheless we should not suppress the CPE itself to avoid false negatives
-        when the CVE is in the icu4j (cpe:2.3:a:icu-project:international_components_for_unicode:*:*:*:*:*:java:*:*
-        / cpe:2.3:a:unicode:international_components_for_unicode:*:*:*:*:*:java:*:*) CPE
-        cpe cpe:/a:unicode:unicode is the unicode specification
-        ]]></notes>
-        <packageUrl regex="true">^pkg:maven/org\.graalvm\.shadowed/icu4j@.*$</packageUrl>
-        <cve>CVE-2020-21913</cve>
         <cve>CVE-2014-9654</cve>
         <cve>CVE-2014-9911</cve>
+        <cve>CVE-2015-5922</cve>
         <cve>CVE-2016-6293</cve>
         <cve>CVE-2016-7415</cve>
         <cve>CVE-2017-14952</cve>
-        <cve>CVE-2017-17484</cve>
-        <cve>CVE-2015-5922</cve>
-        <cve>CVE-2007-4771</cve>
-        <cve>CVE-2020-10531</cve>
-        <cve>CVE-2011-4599</cve>
-        <cve>CVE-2014-7923</cve>
-        <cve>CVE-2014-7926</cve>
-        <cve>CVE-2014-7940</cve>
-        <cve>CVE-2014-8146</cve>
-        <cve>CVE-2014-8147</cve>
-        <cve>CVE-2017-7867</cve>
-        <cve>CVE-2017-7868</cve>
-        <cve>CVE-2007-4770</cve>
         <cve>CVE-2017-15396</cve>
         <cve>CVE-2017-15422</cve>
+        <cve>CVE-2017-17484</cve>
+        <cve>CVE-2017-7867</cve>
+        <cve>CVE-2017-7868</cve>
+        <cve>CVE-2018-18928</cve>
+        <cve>CVE-2020-10531</cve>
+
+        <cve>CVE-2020-21913</cve>
+        <cve>CVE-2025-5222</cve>
+
         <cpe>cpe:/a:apple:java</cpe>
         <cpe>cpe:/a:unicode:unicode:</cpe>
     </suppress>
