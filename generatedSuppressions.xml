@@ -2523,10 +2523,17 @@ only pkg:maven/org.clojure:clojure@.* is the CPE cpe:/a:clojure:clojure
    <cpe>cpe:/a:checkstyle:checkstyle</cpe>
 </suppress>
 <suppress base="true">
-    <notes><![CDATA[
-       hand-curated better suppression for FP per issue #8057. The sentry server is/was only available on the specific
-       pypi package here. Not suppressed for other ecosystems as Sentry Server is still available open-source elsewhere.
-       ]]></notes>
-    <packageUrl regex="true">^pkg:pypi/(?!sentry@).*$</packageUrl>
-    <cpe>cpe:/a:sentry:sentry:</cpe>
+   <notes><![CDATA[
+   hand-curated better suppression for FP per issue #8057. The sentry server is/was only available on the specific
+   pypi package here. Not suppressed for other ecosystems as Sentry Server is still available open-source elsewhere.
+   ]]></notes>
+   <packageUrl regex="true">^pkg:pypi/(?!sentry@).*$</packageUrl>
+   <cpe>cpe:/a:sentry:sentry:</cpe>
+</suppress>
+<suppress base="true">
+  <notes><![CDATA[
+   FP per issue #8051
+   ]]></notes>
+   <packageUrl regex="true">^pkg:maven/org\.spdx/spdx-java-model-2_X@.*$</packageUrl>
+   <cpe>cpe:/a:x.org:x.org</cpe>
 </suppress>
