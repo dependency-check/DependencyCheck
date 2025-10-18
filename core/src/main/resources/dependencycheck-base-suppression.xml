@@ -681,6 +681,7 @@
             62. cpe:/a:pivotal_software:rabbitmq is software build in Erlang #4178
             63. cpe:/a:saml_project:saml is a SAML implementation in Go #5167
             64. cpe:/a:yaml_project:yaml is a YAML implementation in Go #5233 and #5234
+            65. cpe:/a:web_project:web is a Web Server library in Go
         ]]></notes>
         <filePath regex="true">.*(\.(dll|jar|ear|war|pom|nupkg|nuspec|aar)|pom\.xml|package.json|packages.config)$</filePath>
         <cpe>cpe:/a:sandbox:sandbox</cpe>
@@ -747,6 +748,7 @@
         <cpe>cpe:/a:pivotal_software:rabbitmq</cpe>
         <cpe regex="true">cpe:/a:saml(_project)?:saml.*</cpe>
         <cpe regex="true">cpe:/a:yaml(_project)?:yaml.*</cpe>
+        <cpe regex="true">cpe:/a:web(_project)?:web.*</cpe>
     </suppress>
     <suppress base="true">
         <notes><![CDATA[
@@ -5830,9 +5832,9 @@
     </suppress>
     <suppress base="true">
         <notes><![CDATA[
-        FP per issue #5462
+        hand-curated better suppression FP per issue #5462, #6369, #6906 (and others)
         ]]></notes>
-        <packageUrl regex="true">^pkg:maven/org\.apache\.ws\.commons\.axiom/axiom-impl@.*$</packageUrl>
+        <packageUrl regex="true">^pkg:(?!golang/github.com/ecnepsnai/web).*$</packageUrl>
         <cpe regex="true">cpe:/a:web(_project)?:web.*</cpe>
     </suppress>
     <suppress base="true">
@@ -6577,13 +6579,6 @@
     </suppress>
     <suppress base="true">
         <notes><![CDATA[
-   FP per issue #6369
-   ]]></notes>
-        <packageUrl regex="true">^pkg:maven/org\.wildfly\.security\.elytron-web/undertow-server@.*$</packageUrl>
-        <cpe regex="true">cpe:/a:web(_project)?:web.*</cpe>
-    </suppress>
-    <suppress base="true">
-        <notes><![CDATA[
    FP per issue #6368
    ]]></notes>
         <packageUrl regex="true">^pkg:maven/org\.jgroups\.azure/jgroups-azure@.*$</packageUrl>
@@ -6877,13 +6872,6 @@
         ]]></notes>
         <packageUrl regex="true">^pkg:maven/io\.pivotal\.cfenv/java-cfenv-boot@.*$</packageUrl>
         <cpe>cpe:/a:vmware:spring_boot</cpe>
-    </suppress>
-    <suppress base="true">
-        <notes><![CDATA[
-        FP per issue #6906
-        ]]></notes>
-        <packageUrl regex="true">^pkg:maven/org\.jeecgframework/autopoi-web@.*$</packageUrl>
-        <cpe regex="true">cpe:/a:web(_project)?:web.*</cpe>
     </suppress>
     <suppress base="true">
         <notes><![CDATA[
