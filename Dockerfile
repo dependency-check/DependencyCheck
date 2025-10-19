@@ -15,6 +15,7 @@ ARG GID=1000
 ENV user=dependencycheck
 ENV JAVA_HOME=/opt/jdk
 ENV JAVA_OPTS="-Danalyzer.assembly.dotnet.path=/usr/bin/dotnet -Danalyzer.bundle.audit.path=/usr/bin/bundle-audit -Danalyzer.golang.path=/usr/local/go/bin/go"
+ENV ODC_NAME=dependency-check-docker
 
 COPY --from=jlink /jlinked /opt/jdk/
 COPY --from=go /usr/local/go/ /usr/local/go/

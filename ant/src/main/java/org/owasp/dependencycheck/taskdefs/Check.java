@@ -45,6 +45,7 @@ import org.owasp.dependencycheck.utils.Downloader;
 import org.owasp.dependencycheck.utils.InvalidSettingException;
 import org.owasp.dependencycheck.utils.Settings;
 import org.owasp.dependencycheck.utils.SeverityUtil;
+import org.owasp.dependencycheck.utils.scarf.TelemetryCollector;
 import org.slf4j.impl.StaticLoggerBinder;
 
 //CSOFF: MethodCount
@@ -1335,6 +1336,7 @@ public class Check extends Update {
         } catch (InvalidSettingException e) {
             throw new BuildException(e);
         }
+        TelemetryCollector.send(getSettings());
         try (Engine engine = new Engine(Check.class.getClassLoader(), getSettings())) {
             for (Resource resource : getPath()) {
                 final FileProvider provider = resource.as(FileProvider.class);

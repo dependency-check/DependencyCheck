@@ -72,3 +72,7 @@ OWASP dependency-check includes support to consult the [Sonatype OSS Index](http
 to enrich the report with supplemental vulnerability information.
 
 For more details on this integration see [Sonatype OSS Index](./ossindex.html).
+
+## Telemetry
+
+See the [telemetry documentation](../general/telemetry.html) for more information about telemetry data collection.
