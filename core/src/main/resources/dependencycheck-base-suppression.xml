@@ -296,34 +296,41 @@
     </suppress>
     <suppress base="true">
         <notes><![CDATA[
-        FP per #3002
+        FP per #3002 CPE is for GRPC core
         ]]></notes>
         <packageUrl regex="true">^pkg:maven/io\.opencensus/opencensus\-contrib\-grpc\-metrics@.*$</packageUrl>
         <cpe>cpe:/a:grpc:grpc</cpe>
     </suppress>
     <suppress base="true">
         <notes><![CDATA[
-        FP per #3002, CVE is for grpc-js and c
+        FP per #3002 and #5890 - CVE are for GRPC C/ruby/python etc. Suppressing individual CVEs because ODC cannot understand the target SW
+        field. NVD search to review in future (not that some are marked incorrectly as affecting all languages)
+        --> https://nvd.nist.gov/vuln/search#/nvd/home?sortOrder=1&sortDirection=1&cpeFilterMode=applicability&cpeName=cpe:2.3:a:grpc:grpc:*:*:*:*:*:*:*:*&resultType=records
         ]]></notes>
         <packageUrl regex="true">^pkg:maven/io\.grpc/grpc\-.*$</packageUrl>
-        <cve>CVE-2020-7768</cve>
+        <cve>CVE-2017-7860</cve>
         <cve>CVE-2017-7861</cve>
         <cve>CVE-2017-8359</cve>
         <cve>CVE-2017-9431</cve>
+        <cve>CVE-2020-7768</cve>
+        <cve>CVE-2023-1428</cve>
+        <cve>CVE-2023-32731</cve>
+        <cve>CVE-2023-32732</cve>
+        <cve>CVE-2023-33953</cve>
+        <cve>CVE-2023-4785</cve>
+        <cve>CVE-2024-11407</cve>
+        <cve>CVE-2024-7246</cve>
     </suppress>
     <suppress base="true">
         <notes><![CDATA[
-        FP per #3002, CVE is for grpc-js and c
+        FP per #3002, CPE is for GRPC core
         ]]></notes>
         <packageUrl regex="true">^pkg:maven/com\.google\.api\.grpc/grpc\-google\-common\-protos@.*$</packageUrl>
-        <cve>CVE-2020-7768</cve>
-        <cve>CVE-2017-7861</cve>
-        <cve>CVE-2017-8359</cve>
-        <cve>CVE-2017-9431</cve>
+        <cpe>cpe:/a:grpc:grpc</cpe>
     </suppress>
     <suppress base="true">
         <notes><![CDATA[
-        FP per #3002, CVE is for grpc-js
+        FP per #3002, CPE is for GRPC core
         ]]></notes>
         <packageUrl regex="true">^pkg:maven/com\.lightstep\.tracer/.*$</packageUrl>
         <cpe>cpe:/a:grpc:grpc</cpe>
@@ -674,6 +681,7 @@
             62. cpe:/a:pivotal_software:rabbitmq is software build in Erlang #4178
             63. cpe:/a:saml_project:saml is a SAML implementation in Go #5167
             64. cpe:/a:yaml_project:yaml is a YAML implementation in Go #5233 and #5234
+            65. cpe:/a:web_project:web is a Web Server library in Go
         ]]></notes>
         <filePath regex="true">.*(\.(dll|jar|ear|war|pom|nupkg|nuspec|aar)|pom\.xml|package.json|packages.config)$</filePath>
         <cpe>cpe:/a:sandbox:sandbox</cpe>
@@ -740,6 +748,7 @@
         <cpe>cpe:/a:pivotal_software:rabbitmq</cpe>
         <cpe regex="true">cpe:/a:saml(_project)?:saml.*</cpe>
         <cpe regex="true">cpe:/a:yaml(_project)?:yaml.*</cpe>
+        <cpe regex="true">cpe:/a:web(_project)?:web.*</cpe>
     </suppress>
     <suppress base="true">
         <notes><![CDATA[
@@ -2637,66 +2646,38 @@
         False positive per issue #851 and #1073 and #4414;
         the CVEs listed are in the C++ part of the ICU project (and are currently all CVEs listed
         against ICU project; nevertheless we should not suppress the CPE itself to avoid false negatives
-        when the CVE is in the icu4j (cpe:2.3:a:icu-project:international_components_for_unicode:*:*:*:*:*:java:*:*
-        / cpe:2.3:a:unicode:international_components_for_unicode:*:*:*:*:*:java:*:*) CPE
-        cpe cpe:/a:unicode:unicode is the unicode specification
+        when the CVE is in the icu4j CPEs:
+           cpe:2.3:a:icu-project:international_components_for_unicode:*:*:*:*:*:java:*:*
+           cpe:2.3:a:unicode:international_components_for_unicode:*:*:*:*:*:java:*:*
+            --> https://nvd.nist.gov/vuln/search#/nvd/home?sortOrder=1&sortDirection=1&cpeFilterMode=applicability&cpeName=cpe:2.3:a:*:international_components_for_unicode:*:*:*:*:*:*:*:*&resultType=records
+         We can suppress cpe cpe:/a:unicode:unicode which is the unicode specification
         ]]></notes>
-        <packageUrl regex="true">^pkg:maven/com\.ibm\.icu/icu4j@.*$</packageUrl>
-        <cve>CVE-2020-21913</cve>
-        <cve>CVE-2014-9654</cve>
-        <cve>CVE-2014-9911</cve>
-        <cve>CVE-2016-6293</cve>
-        <cve>CVE-2016-7415</cve>
-        <cve>CVE-2017-14952</cve>
-        <cve>CVE-2017-17484</cve>
-        <cve>CVE-2015-5922</cve>
+        <packageUrl regex="true">^pkg:maven/(com\.ibm\.icu|org\.graalvm\.shadowed)/icu4j.*@.*$</packageUrl>
+        <cve>CVE-2007-4770</cve>
         <cve>CVE-2007-4771</cve>
-        <cve>CVE-2020-10531</cve>
         <cve>CVE-2011-4599</cve>
         <cve>CVE-2014-7923</cve>
         <cve>CVE-2014-7926</cve>
         <cve>CVE-2014-7940</cve>
         <cve>CVE-2014-8146</cve>
         <cve>CVE-2014-8147</cve>
-        <cve>CVE-2017-7867</cve>
-        <cve>CVE-2017-7868</cve>
-        <cve>CVE-2007-4770</cve>
-        <cve>CVE-2017-15396</cve>
-        <cve>CVE-2017-15422</cve>
-        <cpe>cpe:/a:apple:java</cpe>
-        <cpe>cpe:/a:unicode:unicode:</cpe>
-    </suppress>
-    <suppress base="true">
-        <notes><![CDATA[
-        False positive per issue #7706; DUPlICATE of above rule
-        the CVEs listed are in the C++ part of the ICU project (and are currently all CVEs listed
-        against ICU project; nevertheless we should not suppress the CPE itself to avoid false negatives
-        when the CVE is in the icu4j (cpe:2.3:a:icu-project:international_components_for_unicode:*:*:*:*:*:java:*:*
-        / cpe:2.3:a:unicode:international_components_for_unicode:*:*:*:*:*:java:*:*) CPE
-        cpe cpe:/a:unicode:unicode is the unicode specification
-        ]]></notes>
-        <packageUrl regex="true">^pkg:maven/org\.graalvm\.shadowed/icu4j@.*$</packageUrl>
-        <cve>CVE-2020-21913</cve>
         <cve>CVE-2014-9654</cve>
         <cve>CVE-2014-9911</cve>
+        <cve>CVE-2015-5922</cve>
         <cve>CVE-2016-6293</cve>
         <cve>CVE-2016-7415</cve>
         <cve>CVE-2017-14952</cve>
-        <cve>CVE-2017-17484</cve>
-        <cve>CVE-2015-5922</cve>
-        <cve>CVE-2007-4771</cve>
-        <cve>CVE-2020-10531</cve>
-        <cve>CVE-2011-4599</cve>
-        <cve>CVE-2014-7923</cve>
-        <cve>CVE-2014-7926</cve>
-        <cve>CVE-2014-7940</cve>
-        <cve>CVE-2014-8146</cve>
-        <cve>CVE-2014-8147</cve>
-        <cve>CVE-2017-7867</cve>
-        <cve>CVE-2017-7868</cve>
-        <cve>CVE-2007-4770</cve>
         <cve>CVE-2017-15396</cve>
         <cve>CVE-2017-15422</cve>
+        <cve>CVE-2017-17484</cve>
+        <cve>CVE-2017-7867</cve>
+        <cve>CVE-2017-7868</cve>
+        <cve>CVE-2018-18928</cve>
+        <cve>CVE-2020-10531</cve>
+
+        <cve>CVE-2020-21913</cve>
+        <cve>CVE-2025-5222</cve>
+
         <cpe>cpe:/a:apple:java</cpe>
         <cpe>cpe:/a:unicode:unicode:</cpe>
     </suppress>
@@ -5851,9 +5832,9 @@
     </suppress>
     <suppress base="true">
         <notes><![CDATA[
-        FP per issue #5462
+        hand-curated better suppression FP per issue #5462, #6369, #6906 (and others)
         ]]></notes>
-        <packageUrl regex="true">^pkg:maven/org\.apache\.ws\.commons\.axiom/axiom-impl@.*$</packageUrl>
+        <packageUrl regex="true">^pkg:(?!golang/github.com/ecnepsnai/web).*$</packageUrl>
         <cpe regex="true">cpe:/a:web(_project)?:web.*</cpe>
     </suppress>
     <suppress base="true">
@@ -6598,13 +6579,6 @@
     </suppress>
     <suppress base="true">
         <notes><![CDATA[
-   FP per issue #6369
-   ]]></notes>
-        <packageUrl regex="true">^pkg:maven/org\.wildfly\.security\.elytron-web/undertow-server@.*$</packageUrl>
-        <cpe regex="true">cpe:/a:web(_project)?:web.*</cpe>
-    </suppress>
-    <suppress base="true">
-        <notes><![CDATA[
    FP per issue #6368
    ]]></notes>
         <packageUrl regex="true">^pkg:maven/org\.jgroups\.azure/jgroups-azure@.*$</packageUrl>
@@ -6901,13 +6875,6 @@
     </suppress>
     <suppress base="true">
         <notes><![CDATA[
-        FP per issue #6906
-        ]]></notes>
-        <packageUrl regex="true">^pkg:maven/org\.jeecgframework/autopoi-web@.*$</packageUrl>
-        <cpe regex="true">cpe:/a:web(_project)?:web.*</cpe>
-    </suppress>
-    <suppress base="true">
-        <notes><![CDATA[
         FP per issue #6901
         ]]></notes>
         <packageUrl regex="true">^pkg:maven/com\.yahoo\.datasketches/sketches-core@.*$</packageUrl>
@@ -7079,5 +7046,16 @@
         ]]></notes>
         <packageUrl regex="true">^pkg:maven/(?!.*org\.eclipse\.equinox\.p2).*$</packageUrl>
         <cve>CVE-2021-41033</cve>
+    </suppress>
+    <suppress base="true">
+        <notes><![CDATA[
+        FP per issue #7854 - protobuf-java has its own dedicated CPE at cpe:/a:google:protobuf-java - other language vulns are
+        managed within the core CPE for those based on native implementations.
+        Correct CPE vulns: https://nvd.nist.gov/vuln/search#/nvd/home?cpeFilterMode=applicability&cpeName=cpe:2.3:a:*:protobuf-java:*:*:*:*:*:*:*:*&resultType=records
+        Wrong CPE vulns: https://nvd.nist.gov/vuln/search#/nvd/home?cpeFilterMode=applicability&cpeName=cpe:2.3:a:*:protobuf:*:*:*:*:*:*:*:*&resultType=records
+        ]]></notes>
+        <packageUrl regex="true">^pkg:maven/com\.google\.protobuf/protobuf-.*@.*$</packageUrl>
+        <cpe>cpe:/a:protobuf:protobuf:</cpe>
+        <cpe>cpe:/a:google:protobuf:</cpe>
     </suppress>
 </suppressions>
