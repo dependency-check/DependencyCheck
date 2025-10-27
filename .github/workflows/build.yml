@@ -107,7 +107,7 @@ jobs:
 #    needs: build
 #    steps:
 #      - name: Download coverage reports
-#        uses: actions/download-artifact@v5
+#        uses: actions/download-artifact@v6
 #        with:
 #          name: code-coverage-report
 #      - name: Run codacy-coverage-reporter
@@ -138,7 +138,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-maven-
       - name: Download release build
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@v6
         with:
           name: archive-snapshot
       - name: Set up Docker
