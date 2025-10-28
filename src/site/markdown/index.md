@@ -12,7 +12,7 @@ configuration.
 
 The problem with using known vulnerable components was covered in a paper by
 Jeff Williams and Arshan Dabirsiaghi titled, "[The Unfortunate Reality of
-Insecure Libraries](http://www1.contrastsecurity.com/the-unfortunate-reality-of-insecure-libraries?&amp;__hssc=92971330.1.1412763139545&amp;__hstc=92971330.5d71a97ce2c038f53e4109bfd029b71e.1412763139545.1412763139545.1412763139545.1&amp;hsCtaTracking=7bbb964b-eac1-454d-9d5b-cc1089659590%7C816e01cf-4d75-449a-8691-bd0c6f9946a5)"
+Insecure Libraries](https://www.scribd.com/document/175866686/Aspect-Security-the-Unfortunate-Reality-of-Insecure-Libraries)"
 (registration required). The gist of the paper is that we as a development
 community include third party libraries in our applications that contain well
 known published vulnerabilities \(such as those at the
