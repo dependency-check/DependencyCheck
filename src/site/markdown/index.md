@@ -32,7 +32,9 @@ OWASP dependency-check's core analysis engine can be used as:
 - [Gradle Plugin](dependency-check-gradle/index.html)
 - [Jenkins Plugin](dependency-check-jenkins/index.html)
 - [Maven Plugin](dependency-check-maven/index.html) - Maven 3.6.3 or newer required
-- [SBT Plugin](https://github.com/albuch/sbt-dependency-check)
+
+Unofficial (Not endorsed by OWASP)
+- [SBT Plugin](https://github.com/nMoncho/sbt-dependency-check)
 
 For help with dependency-check the following resource can be used:
 
