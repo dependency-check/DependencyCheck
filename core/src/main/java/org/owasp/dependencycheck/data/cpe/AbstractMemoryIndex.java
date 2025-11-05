@@ -39,7 +39,6 @@ import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.queryparser.classic.QueryParser;
-import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.TopDocs;
@@ -282,15 +281,15 @@ public abstract class AbstractMemoryIndex implements MemoryIndex {
         Query query;
         try {
             query = queryParser.parse(searchString);
-        } catch (BooleanQuery.TooManyClauses ex) {
-            BooleanQuery.setMaxClauseCount(Integer.MAX_VALUE);
+        } catch (IndexSearcher.TooManyClauses ex) {
+            IndexSearcher.setMaxClauseCount(Integer.MAX_VALUE);
             query = queryParser.parse(searchString);
         } catch (ParseException ex) {
             if (ex.getMessage() != null && ex.getMessage().contains("too many boolean clauses")) {
-                BooleanQuery.setMaxClauseCount(Integer.MAX_VALUE);
+                IndexSearcher.setMaxClauseCount(Integer.MAX_VALUE);
                 query = queryParser.parse(searchString);
             } else {
-                LOGGER.debug("Parse Excepction", ex);
+                LOGGER.debug("Parse Exception", ex);
                 throw ex;
             }
         }
@@ -325,7 +324,7 @@ public abstract class AbstractMemoryIndex implements MemoryIndex {
      */
     @Override
     public synchronized Document getDocument(int documentId) throws IOException {
-        return indexSearcher.doc(documentId);
+        return indexSearcher.storedFields().document(documentId);
     }
 
     /**

@@ -82,7 +82,7 @@ HTML version of the report. The other common scenario would be to ignore all CVE
         This suppresses false positives identified on spring security.
         ]]></notes>
         <gav regex="true">org\.springframework\.security:spring.*</gav>
-        <vulnerabilityName regex="true"></vulnerabilityName>
+        <vulnerabilityName regex="true">.*</vulnerabilityName>
     </suppress>
     <suppress until="2020-01-01Z">
         <notes><![CDATA[

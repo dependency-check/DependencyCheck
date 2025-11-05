@@ -31,7 +31,8 @@ import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
-import org.apache.lucene.search.TopScoreDocCollector;
+import org.apache.lucene.search.TopDocs;
+import org.apache.lucene.search.TopScoreDocCollectorManager;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.MMapDirectory;
 import org.junit.jupiter.api.Test;
@@ -88,13 +89,15 @@ class FieldAnalyzerTest extends BaseTest {
 
         IndexReader reader = DirectoryReader.open(index);
         IndexSearcher searcher = new IndexSearcher(reader);
-        TopScoreDocCollector collector = TopScoreDocCollector.create(hitsPerPage, hitsThreshold);
-        searcher.search(q, collector);
-        ScoreDoc[] hits = collector.topDocs().scoreDocs;
+        TopScoreDocCollectorManager manager =
+                new TopScoreDocCollectorManager(hitsPerPage, null, hitsThreshold, false);
+
+        TopDocs topDocs = searcher.search(q, manager);
+        ScoreDoc[] hits = topDocs.scoreDocs;
 
         assertEquals(1, hits.length, "Did not find 1 document?");
-        assertEquals("springframework", searcher.doc(hits[0].doc).get(field1));
-        assertEquals("springsource", searcher.doc(hits[0].doc).get(field2));
+        assertEquals("springframework", searcher.storedFields().document(hits[0].doc).get(field1));
+        assertEquals("springsource", searcher.storedFields().document(hits[0].doc).get(field2));
 
         querystr = "product:(Apache Struts) vendor:(Apache)";
 
@@ -105,11 +108,11 @@ class FieldAnalyzerTest extends BaseTest {
         querystr = "product:(  x-stream^5 )  AND  vendor:(  thoughtworks.xstream )";
         reset(searchAnalyzerProduct, searchAnalyzerVendor);
         Query q3 = parser.parse(querystr);
-        collector = TopScoreDocCollector.create(hitsPerPage, hitsThreshold);
-        searcher.search(q3, collector);
-        hits = collector.topDocs().scoreDocs;
-        assertEquals("x-stream", searcher.doc(hits[0].doc).get(field1));
-        assertEquals("xstream", searcher.doc(hits[0].doc).get(field2));
+        manager = new TopScoreDocCollectorManager(hitsPerPage, null, hitsThreshold, false);
+        topDocs = searcher.search(q3, manager);
+        hits = topDocs.scoreDocs;
+        assertEquals("x-stream", searcher.storedFields().document(hits[0].doc).get(field1));
+        assertEquals("xstream", searcher.storedFields().document(hits[0].doc).get(field2));
     }
 
     private IndexWriter createIndex(Analyzer analyzer, Directory index) throws IOException {

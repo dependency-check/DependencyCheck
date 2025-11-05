@@ -41,7 +41,7 @@ jobs:
         with:
           issue-body: ${{ github.event.issue.body }}
           template-path: odc/.github/ISSUE_TEMPLATE/false-positive-report.yml
-      - uses: actions/setup-node@v5.0.0
+      - uses: actions/setup-node@v6.0.0
         with:
           node-version: 14
       - name: Initialize npm
@@ -144,7 +144,7 @@ jobs:
             --ossIndexPassword ${{ secrets.OSS_INDEX_API_TOKEN }}
       - name: Upload FP Report
         if: steps.check_files.outputs.files_exists == 'true'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
            name: FP Report
            path: ${{github.workspace}}/reports

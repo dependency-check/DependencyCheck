@@ -74,14 +74,14 @@ jobs:
       - name: Archive IT test logs
         id: archive-logs
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: it-test-logs
           retention-days: 7
           path: maven/target/it/**/build.log
       - name: Archive code coverage results
         id: archive-coverage
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: code-coverage-report
           retention-days: 7
@@ -90,7 +90,7 @@ jobs:
             **/target/jacoco-results/**/*.html
       - name: Archive Snapshot
         id: archive-snapshot
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: archive-snapshot
           retention-days: 7
@@ -107,7 +107,7 @@ jobs:
 #    needs: build
 #    steps:
 #      - name: Download coverage reports
-#        uses: actions/download-artifact@v5
+#        uses: actions/download-artifact@v6
 #        with:
 #          name: code-coverage-report
 #      - name: Run codacy-coverage-reporter
@@ -138,7 +138,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-maven-
       - name: Download release build
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@v6
         with:
           name: archive-snapshot
       - name: Set up Docker
