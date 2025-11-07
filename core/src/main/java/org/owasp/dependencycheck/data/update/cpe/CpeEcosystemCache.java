@@ -45,7 +45,7 @@ public final class CpeEcosystemCache {
     private static Map<Pair<String, String>, String> changed = new HashMap<>();
 
     private CpeEcosystemCache() {
-        //empty constructor for utiilty class
+        //empty constructor for utility class
     }
     /**
      * The logger.

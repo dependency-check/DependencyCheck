@@ -410,7 +410,7 @@ public class Check extends Update {
     private Boolean versionCheckEnabled;
 
     /**
-     * whether an unsused suppression rule should get force the build to fail
+     * whether an unused suppression rule should get force the build to fail
      */
     private boolean failBuildOnUnusedSuppressionRule = false;
 
