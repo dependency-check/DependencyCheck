@@ -207,7 +207,7 @@ public class VulnerableSoftware extends Cpe implements Serializable {
         //TODO implement versionStart etc.
         result &= compareVersionRange(target.getVersion());
 
-        //todo - if the vulnerablity has an update we are might not be collecting it correctly...
+        //todo - if the vulnerability has an update we are might not be collecting it correctly...
         // as such, this check might cause FN if the CVE has an update in the data set
         result &= compareUpdateAttributes(this.getUpdate(), target.getUpdate());
         result &= compareAttributes(this.getEdition(), target.getEdition());
@@ -348,7 +348,7 @@ public class VulnerableSoftware extends Cpe implements Serializable {
             result &= compareAttributes(left.getWellFormedVersion(), right.getWellFormedVersion());
         }
 
-        //todo - if the vulnerablity has an update we are might not be collecting it correctly...
+        //todo - if the vulnerability has an update we are might not be collecting it correctly...
         // as such, this check might cause FN if the CVE has an update in the data set
         result &= compareUpdateAttributes(left.getWellFormedUpdate(), right.getWellFormedUpdate());
         result &= compareAttributes(left.getWellFormedEdition(), right.getWellFormedEdition());
