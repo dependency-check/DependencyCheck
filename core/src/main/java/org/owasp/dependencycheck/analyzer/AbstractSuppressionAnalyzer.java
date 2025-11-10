@@ -69,6 +69,10 @@ public abstract class AbstractSuppressionAnalyzer extends AbstractAnalyzer {
      */
     private static final String BASE_SUPPRESSION_FILE = "dependencycheck-base-suppression.xml";
     /**
+     * The file name of the generated suppression XML file.
+     */
+    private static final String GENERATED_SUPPRESSION_FILE = "generated-suppressions.xml";
+    /**
      * The key used to store and retrieve the suppression files.
      */
     public static final String SUPPRESSION_OBJECT_KEY = "suppression.rules";
@@ -195,17 +199,28 @@ public abstract class AbstractSuppressionAnalyzer extends AbstractAnalyzer {
      * @throws SuppressionParseException thrown if the XML cannot be parsed.
      */
     private void loadPackagedSuppressionBaseData(final SuppressionParser parser, final Engine engine) throws SuppressionParseException {
+        loadPackagedSuppressionBaseData(BASE_SUPPRESSION_FILE, parser, engine);
+        loadPackagedSuppressionBaseData(GENERATED_SUPPRESSION_FILE, parser, engine);
+    }
+    /**
+     * Loads the base suppression rules packaged with the application.
+     *
+     * @param parser The suppression parser to use
+     * @param engine a reference the dependency-check engine
+     * @throws SuppressionParseException thrown if the XML cannot be parsed.
+     */
+    private void loadPackagedSuppressionBaseData(final String packagedFileName, final SuppressionParser parser, final Engine engine) throws SuppressionParseException {
         List<SuppressionRule> ruleList = null;
         final URL jarLocation = AbstractSuppressionAnalyzer.class.getProtectionDomain().getCodeSource().getLocation();
         String suppressionFileLocation = jarLocation.getFile();
         if (suppressionFileLocation.endsWith(".jar")) {
-            suppressionFileLocation = "jar:file:" + suppressionFileLocation + "!/" + BASE_SUPPRESSION_FILE;
+            suppressionFileLocation = "jar:file:" + suppressionFileLocation + "!/" + packagedFileName;
         } else if (suppressionFileLocation.startsWith("nested:") && suppressionFileLocation.endsWith(".jar!/")) {
             // suppressionFileLocation -> nested:/app/app.jar/!BOOT-INF/lib/dependency-check-core-<version>.jar!/
             // goal->                 jar:nested:/app/app.jar/!BOOT-INF/lib/dependency-check-core-<version>.jar!/dependencycheck-base-suppression.xml
-            suppressionFileLocation = "jar:" + suppressionFileLocation + BASE_SUPPRESSION_FILE;
+            suppressionFileLocation = "jar:" + suppressionFileLocation + packagedFileName;
         } else {
-            suppressionFileLocation = "file:" + suppressionFileLocation + BASE_SUPPRESSION_FILE;
+            suppressionFileLocation = "file:" + suppressionFileLocation + packagedFileName;
         }
         URL baseSuppresssionURL = null;
         try {
