@@ -17,7 +17,6 @@
  */
 package org.owasp.dependencycheck.taskdefs;
 
-import io.github.jeremylong.jcs3.slf4j.Slf4jAdapter;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -128,9 +127,6 @@ public class Purge extends Task {
      * Hacky method of muting the noisy logging from JCS.
      */
     private void muteNoisyLoggers() {
-        System.setProperty("jcs.logSystem", "slf4j");
-        Slf4jAdapter.muteLogging(true);
-
         final String[] noisyLoggers = {
             "org.apache.hc"
         };

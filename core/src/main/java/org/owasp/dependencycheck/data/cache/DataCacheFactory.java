@@ -22,6 +22,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 import java.util.Properties;
+
+import io.github.jeremylong.jcs3.slf4j.Slf4jAdapter;
 import org.apache.commons.jcs3.JCS;
 import org.apache.commons.jcs3.access.CacheAccess;
 import org.apache.commons.jcs3.access.exception.CacheException;
@@ -75,6 +77,13 @@ public class DataCacheFactory {
          * Used to store POM files retrieved from central.
          */
         POM
+    }
+
+    static {
+        System.setProperty("jcs.logSystem", "slf4j");
+        if (!LOGGER.isTraceEnabled()) {
+            Slf4jAdapter.muteLogging(true);
+        }
     }
 
     /**

@@ -197,14 +197,14 @@ Copyright (c) 2012 Jeremy Long. All Rights Reserved.
             <groupId>org.whitesource</groupId>
             <artifactId>pecoff4j</artifactId>
         </dependency>
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-jcs3-core</artifactId>
-        </dependency>
+        <!-- JCS 3 logging adapter; intentionally higher on classpath than JCS itself -->
         <dependency>
             <groupId>io.github.jeremylong</groupId>
             <artifactId>jcs3-slf4j</artifactId>
-            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-jcs3-core</artifactId>
         </dependency>
         <dependency>
             <groupId>com.github.package-url</groupId>
