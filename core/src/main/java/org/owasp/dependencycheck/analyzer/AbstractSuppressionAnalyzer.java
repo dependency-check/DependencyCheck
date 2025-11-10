@@ -203,8 +203,9 @@ public abstract class AbstractSuppressionAnalyzer extends AbstractAnalyzer {
         loadPackagedSuppressionBaseData(GENERATED_SUPPRESSION_FILE, parser, engine);
     }
     /**
-     * Loads the base suppression rules packaged with the application.
+     * Loads the suppression rules packaged with the application.
      *
+     * @param packagedFileName the name of the packaged suppression file to load
      * @param parser The suppression parser to use
      * @param engine a reference the dependency-check engine
      * @throws SuppressionParseException thrown if the XML cannot be parsed.
