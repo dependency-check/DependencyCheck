@@ -101,24 +101,23 @@ Copyright (c) 2012 Jeremy Long. All Rights Reserved.
         </testResources>
         <plugins>
             <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>exec-maven-plugin</artifactId>
+                <groupId>com.googlecode.maven-download-plugin</groupId>
+                <artifactId>download-maven-plugin</artifactId>
+                <version>1.6.3</version>
                 <executions>
                     <execution>
+                        <id>download-published-suppressions</id>
                         <phase>process-resources</phase>
                         <goals>
-                            <goal>exec</goal>
+                            <goal>wget</goal>
                         </goals>
+                        <configuration>
+                            <url>https://dependency-check.github.io/DependencyCheck/suppressions/publishedSuppressions.xml</url>
+                            <outputDirectory>${project.build.directory}/classes</outputDirectory>
+                            <outputFileName>generated-suppressions.xml</outputFileName>
+                        </configuration>
                     </execution>
                 </executions>
-                <configuration>
-                    <executable>wget</executable>
-                    <arguments>
-                        <argument>-O</argument>
-                        <argument>${project.build.directory}/classes/generated-suppressions.xml</argument>
-                        <argument>https://dependency-check.github.io/DependencyCheck/suppressions/publishedSuppressions.xml</argument>
-                    </arguments>
-                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.jsonschema2pojo</groupId>
