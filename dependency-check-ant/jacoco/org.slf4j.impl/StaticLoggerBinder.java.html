@@ -63,7 +63,7 @@ public class StaticLoggerBinder implements LoggerFactoryBinder {
 
     /**
      * The ILoggerFactory instance returned by the {@link #getLoggerFactory}
-     * method should always be the smae object
+     * method should always be the same object
      */
     private ILoggerFactory loggerFactory;
 

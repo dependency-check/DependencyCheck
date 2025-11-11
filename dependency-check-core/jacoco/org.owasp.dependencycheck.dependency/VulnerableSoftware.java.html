@@ -157,10 +157,10 @@ public class VulnerableSoftware extends Cpe implements Serializable {
         // ideally different for each class
 <span class="fc" id="L158">        return new HashCodeBuilder(13, 59)</span>
 <span class="fc" id="L159">                .appendSuper(super.hashCode())</span>
-<span class="fc" id="L160">                .append(versionEndExcluding)</span>
-<span class="fc" id="L161">                .append(versionEndIncluding)</span>
-<span class="fc" id="L162">                .append(versionStartExcluding)</span>
-<span class="fc" id="L163">                .append(versionStartIncluding)</span>
+<span class="fc" id="L160">                .append(normalizeForComparison(versionEndExcluding))</span>
+<span class="fc" id="L161">                .append(normalizeForComparison(versionEndIncluding))</span>
+<span class="fc" id="L162">                .append(normalizeForComparison(versionStartExcluding))</span>
+<span class="fc" id="L163">                .append(normalizeForComparison(versionStartIncluding))</span>
 <span class="fc" id="L164">                .toHashCode();</span>
     }
 
@@ -175,10 +175,10 @@ public class VulnerableSoftware extends Cpe implements Serializable {
 <span class="fc" id="L175">        final VulnerableSoftware rhs = (VulnerableSoftware) obj;</span>
 <span class="fc" id="L176">        return new EqualsBuilder()</span>
 <span class="fc" id="L177">                .appendSuper(super.equals(obj))</span>
-<span class="fc" id="L178">                .append(versionEndExcluding, rhs.versionEndExcluding)</span>
-<span class="fc" id="L179">                .append(versionEndIncluding, rhs.versionEndIncluding)</span>
-<span class="fc" id="L180">                .append(versionStartExcluding, rhs.versionStartExcluding)</span>
-<span class="fc" id="L181">                .append(versionStartIncluding, rhs.versionStartIncluding)</span>
+<span class="fc" id="L178">                .append(normalizeForComparison(versionEndExcluding), normalizeForComparison(rhs.versionEndExcluding))</span>
+<span class="fc" id="L179">                .append(normalizeForComparison(versionEndIncluding), normalizeForComparison(rhs.versionEndIncluding))</span>
+<span class="fc" id="L180">                .append(normalizeForComparison(versionStartExcluding), normalizeForComparison(rhs.versionStartExcluding))</span>
+<span class="fc" id="L181">                .append(normalizeForComparison(versionStartIncluding), normalizeForComparison(rhs.versionStartIncluding))</span>
 <span class="fc" id="L182">                .isEquals();</span>
     }
 
@@ -207,7 +207,7 @@ public class VulnerableSoftware extends Cpe implements Serializable {
         //TODO implement versionStart etc.
 <span class="fc" id="L208">        result &amp;= compareVersionRange(target.getVersion());</span>
 
-        //todo - if the vulnerablity has an update we are might not be collecting it correctly...
+        //todo - if the vulnerability has an update we are might not be collecting it correctly...
         // as such, this check might cause FN if the CVE has an update in the data set
 <span class="fc" id="L212">        result &amp;= compareUpdateAttributes(this.getUpdate(), target.getUpdate());</span>
 <span class="fc" id="L213">        result &amp;= compareAttributes(this.getEdition(), target.getEdition());</span>
@@ -348,7 +348,7 @@ public class VulnerableSoftware extends Cpe implements Serializable {
 <span class="nc" id="L348">            result &amp;= compareAttributes(left.getWellFormedVersion(), right.getWellFormedVersion());</span>
         }
 
-        //todo - if the vulnerablity has an update we are might not be collecting it correctly...
+        //todo - if the vulnerability has an update we are might not be collecting it correctly...
         // as such, this check might cause FN if the CVE has an update in the data set
 <span class="nc" id="L353">        result &amp;= compareUpdateAttributes(left.getWellFormedUpdate(), right.getWellFormedUpdate());</span>
 <span class="nc" id="L354">        result &amp;= compareAttributes(left.getWellFormedEdition(), right.getWellFormedEdition());</span>

@@ -125,7 +125,7 @@
 <a class="jxr_linenumber" name="L117" href="#L117">117</a> <em class="jxr_javadoccomment">     * the lower bound of the CVSSv3 baseScore for that severity. For recognized</em>
 <a class="jxr_linenumber" name="L118" href="#L118">118</a> <em class="jxr_javadoccomment">     * critical severities it returns a score in-between the upper bound of the</em>
 <a class="jxr_linenumber" name="L119" href="#L119">119</a> <em class="jxr_javadoccomment">     * HIGH CVSSv2 score and the lowest sort-adjusted CVSSv3 critical score, so</em>
-<a class="jxr_linenumber" name="L120" href="#L120">120</a> <em class="jxr_javadoccomment">     * that unscored critical vulnerabilties are ordered in between CRITICAL</em>
+<a class="jxr_linenumber" name="L120" href="#L120">120</a> <em class="jxr_javadoccomment">     * that unscored critical vulnerabilities are ordered in between CRITICAL</em>
 <a class="jxr_linenumber" name="L121" href="#L121">121</a> <em class="jxr_javadoccomment">     * scored CVSSv3 rated vulnerabilities and HIGH-scored CVSSv2 rated</em>
 <a class="jxr_linenumber" name="L122" href="#L122">122</a> <em class="jxr_javadoccomment">     * vulnerabilities. For unrecognized severities it returns a score</em>
 <a class="jxr_linenumber" name="L123" href="#L123">123</a> <em class="jxr_javadoccomment">     * in-between the top HIGH CVSSv2 score and the estimatedSortAdjustedCVSSv3</em>
@@ -181,7 +181,7 @@
 <a class="jxr_linenumber" name="L173" href="#L173">173</a> 
 <a class="jxr_linenumber" name="L174" href="#L174">174</a>     <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L175" href="#L175">175</a> <em class="jxr_javadoccomment">     * An enum to translate unscored severity texts to a severity level of a</em>
-<a class="jxr_linenumber" name="L176" href="#L176">176</a> <em class="jxr_javadoccomment">     * defined set of severities. Allows for re-use of the text-to-severity</em>
+<a class="jxr_linenumber" name="L176" href="#L176">176</a> <em class="jxr_javadoccomment">     * defined set of severities. Allows for reuse of the text-to-severity</em>
 <a class="jxr_linenumber" name="L177" href="#L177">177</a> <em class="jxr_javadoccomment">     * mapping in multiple helper methods.</em>
 <a class="jxr_linenumber" name="L178" href="#L178">178</a> <em class="jxr_javadoccomment">     */</em>
 <a class="jxr_linenumber" name="L179" href="#L179">179</a>     <strong class="jxr_keyword">private</strong> enum <a href="../../../../org/owasp/dependencycheck/utils/SeverityUtil.html">Severity</a> {
@@ -192,7 +192,7 @@
 <a class="jxr_linenumber" name="L184" href="#L184">184</a>         CRITICAL,
 <a class="jxr_linenumber" name="L185" href="#L185">185</a>         <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L186" href="#L186">186</a> <em class="jxr_javadoccomment">         * A severity level for textual values that are not recognized and</em>
-<a class="jxr_linenumber" name="L187" href="#L187">187</a> <em class="jxr_javadoccomment">         * therefor assumed to be accompanying a critical severity vulnerability</em>
+<a class="jxr_linenumber" name="L187" href="#L187">187</a> <em class="jxr_javadoccomment">         * therefore assumed to be accompanying a critical severity vulnerability</em>
 <a class="jxr_linenumber" name="L188" href="#L188">188</a> <em class="jxr_javadoccomment">         */</em>
 <a class="jxr_linenumber" name="L189" href="#L189">189</a>         ASSUMED_CRITICAL,
 <a class="jxr_linenumber" name="L190" href="#L190">190</a>         <em class="jxr_javadoccomment">/**</em>

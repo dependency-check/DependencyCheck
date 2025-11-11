@@ -47,329 +47,328 @@
 <a class="jxr_linenumber" name="L39" href="#L39">39</a>  <strong class="jxr_keyword">import</strong> org.apache.lucene.index.IndexWriterConfig;
 <a class="jxr_linenumber" name="L40" href="#L40">40</a>  <strong class="jxr_keyword">import</strong> org.apache.lucene.queryparser.classic.ParseException;
 <a class="jxr_linenumber" name="L41" href="#L41">41</a>  <strong class="jxr_keyword">import</strong> org.apache.lucene.queryparser.classic.QueryParser;
-<a class="jxr_linenumber" name="L42" href="#L42">42</a>  <strong class="jxr_keyword">import</strong> org.apache.lucene.search.BooleanQuery;
-<a class="jxr_linenumber" name="L43" href="#L43">43</a>  <strong class="jxr_keyword">import</strong> org.apache.lucene.search.IndexSearcher;
-<a class="jxr_linenumber" name="L44" href="#L44">44</a>  <strong class="jxr_keyword">import</strong> org.apache.lucene.search.Query;
-<a class="jxr_linenumber" name="L45" href="#L45">45</a>  <strong class="jxr_keyword">import</strong> org.apache.lucene.search.TopDocs;
-<a class="jxr_linenumber" name="L46" href="#L46">46</a>  <strong class="jxr_keyword">import</strong> org.apache.lucene.store.MMapDirectory;
-<a class="jxr_linenumber" name="L47" href="#L47">47</a>  <strong class="jxr_keyword">import</strong> org.owasp.dependencycheck.data.lucene.SearchFieldAnalyzer;
-<a class="jxr_linenumber" name="L48" href="#L48">48</a>  <strong class="jxr_keyword">import</strong> org.owasp.dependencycheck.data.nvdcve.DatabaseException;
-<a class="jxr_linenumber" name="L49" href="#L49">49</a>  <strong class="jxr_keyword">import</strong> org.owasp.dependencycheck.utils.Pair;
-<a class="jxr_linenumber" name="L50" href="#L50">50</a>  <strong class="jxr_keyword">import</strong> org.owasp.dependencycheck.utils.Settings;
-<a class="jxr_linenumber" name="L51" href="#L51">51</a>  <strong class="jxr_keyword">import</strong> org.slf4j.Logger;
-<a class="jxr_linenumber" name="L52" href="#L52">52</a>  <strong class="jxr_keyword">import</strong> org.slf4j.LoggerFactory;
-<a class="jxr_linenumber" name="L53" href="#L53">53</a>  <strong class="jxr_keyword">import</strong> org.slf4j.bridge.SLF4JBridgeHandler;
-<a class="jxr_linenumber" name="L54" href="#L54">54</a>  
-<a class="jxr_linenumber" name="L55" href="#L55">55</a>  <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L56" href="#L56">56</a>  <em class="jxr_javadoccomment"> * &lt;p&gt;</em>
-<a class="jxr_linenumber" name="L57" href="#L57">57</a>  <em class="jxr_javadoccomment"> * An in memory Lucene index that contains the vendor/product combinations from</em>
-<a class="jxr_linenumber" name="L58" href="#L58">58</a>  <em class="jxr_javadoccomment"> * the CPE (application) identifiers within the NVD CVE data.&lt;/p&gt;</em>
-<a class="jxr_linenumber" name="L59" href="#L59">59</a>  <em class="jxr_javadoccomment"> *</em>
-<a class="jxr_linenumber" name="L60" href="#L60">60</a>  <em class="jxr_javadoccomment"> * This is the last remaining singleton in dependency-check-core; The use of</em>
-<a class="jxr_linenumber" name="L61" href="#L61">61</a>  <em class="jxr_javadoccomment"> * this singleton - while it may not technically be thread-safe (one database</em>
-<a class="jxr_linenumber" name="L62" href="#L62">62</a>  <em class="jxr_javadoccomment"> * used to build this index may not have the same entries as another) the risk</em>
-<a class="jxr_linenumber" name="L63" href="#L63">63</a>  <em class="jxr_javadoccomment"> * of this is currently believed to be small. As this memory index consumes a</em>
-<a class="jxr_linenumber" name="L64" href="#L64">64</a>  <em class="jxr_javadoccomment"> * large amount of memory we will remain using the singleton pattern for now.</em>
-<a class="jxr_linenumber" name="L65" href="#L65">65</a>  <em class="jxr_javadoccomment"> *</em>
-<a class="jxr_linenumber" name="L66" href="#L66">66</a>  <em class="jxr_javadoccomment"> * @author Jeremy Long</em>
-<a class="jxr_linenumber" name="L67" href="#L67">67</a>  <em class="jxr_javadoccomment"> */</em>
-<a class="jxr_linenumber" name="L68" href="#L68">68</a>  @ThreadSafe
-<a class="jxr_linenumber" name="L69" href="#L69">69</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">abstract</strong> <strong class="jxr_keyword">class</strong> <a href="../../../../../org/owasp/dependencycheck/data/cpe/AbstractMemoryIndex.html">AbstractMemoryIndex</a> <strong class="jxr_keyword">implements</strong> <a href="../../../../../org/owasp/dependencycheck/data/cpe/MemoryIndex.html">MemoryIndex</a> {
-<a class="jxr_linenumber" name="L70" href="#L70">70</a>  
-<a class="jxr_linenumber" name="L71" href="#L71">71</a>      <strong class="jxr_keyword">static</strong> {
-<a class="jxr_linenumber" name="L72" href="#L72">72</a>          <em class="jxr_comment">// Ensure Lucene uses SLF4J for logging</em>
-<a class="jxr_linenumber" name="L73" href="#L73">73</a>          SLF4JBridgeHandler.removeHandlersForRootLogger();
-<a class="jxr_linenumber" name="L74" href="#L74">74</a>          SLF4JBridgeHandler.install();
-<a class="jxr_linenumber" name="L75" href="#L75">75</a>      }
-<a class="jxr_linenumber" name="L76" href="#L76">76</a>  
-<a class="jxr_linenumber" name="L77" href="#L77">77</a>      <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L78" href="#L78">78</a>  <em class="jxr_javadoccomment">     * The logger.</em>
-<a class="jxr_linenumber" name="L79" href="#L79">79</a>  <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L80" href="#L80">80</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> Logger LOGGER = LoggerFactory.getLogger(AbstractMemoryIndex.<strong class="jxr_keyword">class</strong>);
-<a class="jxr_linenumber" name="L81" href="#L81">81</a>      <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L82" href="#L82">82</a>  <em class="jxr_javadoccomment">     * The in memory Lucene index.</em>
-<a class="jxr_linenumber" name="L83" href="#L83">83</a>  <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L84" href="#L84">84</a>      <strong class="jxr_keyword">private</strong> MMapDirectory index;
-<a class="jxr_linenumber" name="L85" href="#L85">85</a>      <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L86" href="#L86">86</a>  <em class="jxr_javadoccomment">     * The Lucene IndexReader.</em>
-<a class="jxr_linenumber" name="L87" href="#L87">87</a>  <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L88" href="#L88">88</a>      <strong class="jxr_keyword">private</strong> IndexReader indexReader;
-<a class="jxr_linenumber" name="L89" href="#L89">89</a>      <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L90" href="#L90">90</a>  <em class="jxr_javadoccomment">     * The Lucene IndexSearcher.</em>
-<a class="jxr_linenumber" name="L91" href="#L91">91</a>  <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L92" href="#L92">92</a>      <strong class="jxr_keyword">private</strong> IndexSearcher indexSearcher;
-<a class="jxr_linenumber" name="L93" href="#L93">93</a>      <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L94" href="#L94">94</a>  <em class="jxr_javadoccomment">     * The Lucene Analyzer used for Searching.</em>
-<a class="jxr_linenumber" name="L95" href="#L95">95</a>  <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L96" href="#L96">96</a>      <strong class="jxr_keyword">private</strong> Analyzer searchingAnalyzer;
-<a class="jxr_linenumber" name="L97" href="#L97">97</a>      <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L98" href="#L98">98</a>  <em class="jxr_javadoccomment">     * The Lucene QueryParser used for Searching.</em>
-<a class="jxr_linenumber" name="L99" href="#L99">99</a>  <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L100" href="#L100">100</a>     <strong class="jxr_keyword">private</strong> QueryParser queryParser;
-<a class="jxr_linenumber" name="L101" href="#L101">101</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L102" href="#L102">102</a> <em class="jxr_javadoccomment">     * The product field analyzer.</em>
-<a class="jxr_linenumber" name="L103" href="#L103">103</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L104" href="#L104">104</a>     <strong class="jxr_keyword">private</strong> <a href="../../../../../org/owasp/dependencycheck/data/lucene/SearchFieldAnalyzer.html">SearchFieldAnalyzer</a> productFieldAnalyzer;
-<a class="jxr_linenumber" name="L105" href="#L105">105</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L106" href="#L106">106</a> <em class="jxr_javadoccomment">     * The vendor field analyzer.</em>
-<a class="jxr_linenumber" name="L107" href="#L107">107</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L108" href="#L108">108</a>     <strong class="jxr_keyword">private</strong> <a href="../../../../../org/owasp/dependencycheck/data/lucene/SearchFieldAnalyzer.html">SearchFieldAnalyzer</a> vendorFieldAnalyzer;
-<a class="jxr_linenumber" name="L109" href="#L109">109</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L110" href="#L110">110</a> <em class="jxr_javadoccomment">     * Track the number of current users of the Lucene index; used to track it</em>
-<a class="jxr_linenumber" name="L111" href="#L111">111</a> <em class="jxr_javadoccomment">     * it is okay to actually close the index.</em>
-<a class="jxr_linenumber" name="L112" href="#L112">112</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L113" href="#L113">113</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> AtomicInteger usageCount = <strong class="jxr_keyword">new</strong> AtomicInteger(0);
-<a class="jxr_linenumber" name="L114" href="#L114">114</a> 
-<a class="jxr_linenumber" name="L115" href="#L115">115</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L116" href="#L116">116</a> <em class="jxr_javadoccomment">     * Returns a reference to the instance.</em>
-<a class="jxr_linenumber" name="L117" href="#L117">117</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L118" href="#L118">118</a> <em class="jxr_javadoccomment">     * @return a reference to the instance</em>
-<a class="jxr_linenumber" name="L119" href="#L119">119</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L120" href="#L120">120</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">abstract</strong> <a href="../../../../../org/owasp/dependencycheck/data/cpe/AbstractMemoryIndex.html">AbstractMemoryIndex</a> instance();
-<a class="jxr_linenumber" name="L121" href="#L121">121</a> 
-<a class="jxr_linenumber" name="L122" href="#L122">122</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L123" href="#L123">123</a> <em class="jxr_javadoccomment">     * Creates and loads data into an in memory index.</em>
-<a class="jxr_linenumber" name="L124" href="#L124">124</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L125" href="#L125">125</a> <em class="jxr_javadoccomment">     * @param data the CPE data</em>
-<a class="jxr_linenumber" name="L126" href="#L126">126</a> <em class="jxr_javadoccomment">     * @param settings a reference to the dependency-check settings</em>
-<a class="jxr_linenumber" name="L127" href="#L127">127</a> <em class="jxr_javadoccomment">     * @throws IndexException thrown if there is an error creating the index</em>
-<a class="jxr_linenumber" name="L128" href="#L128">128</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L129" href="#L129">129</a>     @Override
-<a class="jxr_linenumber" name="L130" href="#L130">130</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">synchronized</strong> <strong class="jxr_keyword">void</strong> open(Set&lt;Pair&lt;String, String&gt;&gt; data, Settings settings) <strong class="jxr_keyword">throws</strong> IndexException {
-<a class="jxr_linenumber" name="L131" href="#L131">131</a>         <strong class="jxr_keyword">if</strong> (instance().usageCount.addAndGet(1) == 1) {
-<a class="jxr_linenumber" name="L132" href="#L132">132</a>             <strong class="jxr_keyword">try</strong> {
-<a class="jxr_linenumber" name="L133" href="#L133">133</a>                 <strong class="jxr_keyword">final</strong> File temp = settings.getTempDirectory();
-<a class="jxr_linenumber" name="L134" href="#L134">134</a>                 index = <strong class="jxr_keyword">new</strong> MMapDirectory(temp.toPath());
-<a class="jxr_linenumber" name="L135" href="#L135">135</a>                 buildIndex(data);
-<a class="jxr_linenumber" name="L136" href="#L136">136</a> 
-<a class="jxr_linenumber" name="L137" href="#L137">137</a>                 indexReader = DirectoryReader.open(index);
-<a class="jxr_linenumber" name="L138" href="#L138">138</a>             } <strong class="jxr_keyword">catch</strong> (IOException ex) {
-<a class="jxr_linenumber" name="L139" href="#L139">139</a>                 <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a href="../../../../../org/owasp/dependencycheck/data/cpe/IndexException.html">IndexException</a>(ex);
-<a class="jxr_linenumber" name="L140" href="#L140">140</a>             }
-<a class="jxr_linenumber" name="L141" href="#L141">141</a>             indexSearcher = <strong class="jxr_keyword">new</strong> IndexSearcher(indexReader);
-<a class="jxr_linenumber" name="L142" href="#L142">142</a>             searchingAnalyzer = createSearchingAnalyzer();
-<a class="jxr_linenumber" name="L143" href="#L143">143</a>             queryParser = <strong class="jxr_keyword">new</strong> QueryParser(Fields.DOCUMENT_KEY, searchingAnalyzer);
-<a class="jxr_linenumber" name="L144" href="#L144">144</a>         }
-<a class="jxr_linenumber" name="L145" href="#L145">145</a>     }
-<a class="jxr_linenumber" name="L146" href="#L146">146</a> 
-<a class="jxr_linenumber" name="L147" href="#L147">147</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L148" href="#L148">148</a> <em class="jxr_javadoccomment">     * returns whether or not the index is open.</em>
-<a class="jxr_linenumber" name="L149" href="#L149">149</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L150" href="#L150">150</a> <em class="jxr_javadoccomment">     * @return whether or not the index is open</em>
-<a class="jxr_linenumber" name="L151" href="#L151">151</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L152" href="#L152">152</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">synchronized</strong> <strong class="jxr_keyword">boolean</strong> isOpen() {
-<a class="jxr_linenumber" name="L153" href="#L153">153</a>         <strong class="jxr_keyword">return</strong> instance().usageCount.get() &gt; 0;
-<a class="jxr_linenumber" name="L154" href="#L154">154</a>     }
-<a class="jxr_linenumber" name="L155" href="#L155">155</a> 
-<a class="jxr_linenumber" name="L156" href="#L156">156</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L157" href="#L157">157</a> <em class="jxr_javadoccomment">     * Creates an Analyzer for searching the CPE Index.</em>
-<a class="jxr_linenumber" name="L158" href="#L158">158</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L159" href="#L159">159</a> <em class="jxr_javadoccomment">     * @return the CPE Analyzer.</em>
-<a class="jxr_linenumber" name="L160" href="#L160">160</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L161" href="#L161">161</a>     <strong class="jxr_keyword">private</strong> Analyzer createSearchingAnalyzer() {
-<a class="jxr_linenumber" name="L162" href="#L162">162</a>         <strong class="jxr_keyword">final</strong> Map&lt;String, Analyzer&gt; fieldAnalyzers = <strong class="jxr_keyword">new</strong> HashMap&lt;&gt;();
-<a class="jxr_linenumber" name="L163" href="#L163">163</a>         fieldAnalyzers.put(Fields.DOCUMENT_KEY, <strong class="jxr_keyword">new</strong> KeywordAnalyzer());
-<a class="jxr_linenumber" name="L164" href="#L164">164</a>         productFieldAnalyzer = <strong class="jxr_keyword">new</strong> <a href="../../../../../org/owasp/dependencycheck/data/lucene/SearchFieldAnalyzer.html">SearchFieldAnalyzer</a>();
-<a class="jxr_linenumber" name="L165" href="#L165">165</a>         vendorFieldAnalyzer = <strong class="jxr_keyword">new</strong> <a href="../../../../../org/owasp/dependencycheck/data/lucene/SearchFieldAnalyzer.html">SearchFieldAnalyzer</a>();
-<a class="jxr_linenumber" name="L166" href="#L166">166</a>         fieldAnalyzers.put(Fields.PRODUCT, productFieldAnalyzer);
-<a class="jxr_linenumber" name="L167" href="#L167">167</a>         fieldAnalyzers.put(Fields.VENDOR, vendorFieldAnalyzer);
-<a class="jxr_linenumber" name="L168" href="#L168">168</a> 
-<a class="jxr_linenumber" name="L169" href="#L169">169</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> PerFieldAnalyzerWrapper(<strong class="jxr_keyword">new</strong> KeywordAnalyzer(), fieldAnalyzers);
-<a class="jxr_linenumber" name="L170" href="#L170">170</a>     }
-<a class="jxr_linenumber" name="L171" href="#L171">171</a> 
-<a class="jxr_linenumber" name="L172" href="#L172">172</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L173" href="#L173">173</a> <em class="jxr_javadoccomment">     * Closes the CPE Index.</em>
-<a class="jxr_linenumber" name="L174" href="#L174">174</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L175" href="#L175">175</a>     @Override
-<a class="jxr_linenumber" name="L176" href="#L176">176</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">synchronized</strong> <strong class="jxr_keyword">void</strong> close() {
-<a class="jxr_linenumber" name="L177" href="#L177">177</a>         <strong class="jxr_keyword">if</strong> (instance().usageCount.addAndGet(-1) == 0) {
-<a class="jxr_linenumber" name="L178" href="#L178">178</a>             <strong class="jxr_keyword">if</strong> (searchingAnalyzer != <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="L179" href="#L179">179</a>                 searchingAnalyzer.close();
-<a class="jxr_linenumber" name="L180" href="#L180">180</a>                 searchingAnalyzer = <strong class="jxr_keyword">null</strong>;
-<a class="jxr_linenumber" name="L181" href="#L181">181</a>             }
-<a class="jxr_linenumber" name="L182" href="#L182">182</a>             <strong class="jxr_keyword">if</strong> (indexReader != <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="L183" href="#L183">183</a>                 <strong class="jxr_keyword">try</strong> {
-<a class="jxr_linenumber" name="L184" href="#L184">184</a>                     indexReader.close();
-<a class="jxr_linenumber" name="L185" href="#L185">185</a>                 } <strong class="jxr_keyword">catch</strong> (IOException ex) {
-<a class="jxr_linenumber" name="L186" href="#L186">186</a>                     LOGGER.trace(<span class="jxr_string">""</span>, ex);
-<a class="jxr_linenumber" name="L187" href="#L187">187</a>                 }
-<a class="jxr_linenumber" name="L188" href="#L188">188</a>                 indexReader = <strong class="jxr_keyword">null</strong>;
-<a class="jxr_linenumber" name="L189" href="#L189">189</a>             }
-<a class="jxr_linenumber" name="L190" href="#L190">190</a>             queryParser = <strong class="jxr_keyword">null</strong>;
-<a class="jxr_linenumber" name="L191" href="#L191">191</a>             indexSearcher = <strong class="jxr_keyword">null</strong>;
-<a class="jxr_linenumber" name="L192" href="#L192">192</a>             <strong class="jxr_keyword">if</strong> (index != <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="L193" href="#L193">193</a>                 <strong class="jxr_keyword">try</strong> {
-<a class="jxr_linenumber" name="L194" href="#L194">194</a>                     index.close();
-<a class="jxr_linenumber" name="L195" href="#L195">195</a>                 } <strong class="jxr_keyword">catch</strong> (IOException ex) {
-<a class="jxr_linenumber" name="L196" href="#L196">196</a>                     LOGGER.trace(<span class="jxr_string">""</span>, ex);
-<a class="jxr_linenumber" name="L197" href="#L197">197</a>                 }
-<a class="jxr_linenumber" name="L198" href="#L198">198</a>                 index = <strong class="jxr_keyword">null</strong>;
-<a class="jxr_linenumber" name="L199" href="#L199">199</a>             }
-<a class="jxr_linenumber" name="L200" href="#L200">200</a>         }
-<a class="jxr_linenumber" name="L201" href="#L201">201</a>     }
-<a class="jxr_linenumber" name="L202" href="#L202">202</a> 
-<a class="jxr_linenumber" name="L203" href="#L203">203</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L204" href="#L204">204</a> <em class="jxr_javadoccomment">     * Builds the CPE Lucene Index based off of the data within the CveDB.</em>
-<a class="jxr_linenumber" name="L205" href="#L205">205</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L206" href="#L206">206</a> <em class="jxr_javadoccomment">     * @param data the CPE data</em>
-<a class="jxr_linenumber" name="L207" href="#L207">207</a> <em class="jxr_javadoccomment">     * @throws IndexException thrown if there is an issue creating the index</em>
-<a class="jxr_linenumber" name="L208" href="#L208">208</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L209" href="#L209">209</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> buildIndex(Set&lt;Pair&lt;String, String&gt;&gt; data) <strong class="jxr_keyword">throws</strong> IndexException {
-<a class="jxr_linenumber" name="L210" href="#L210">210</a>         <strong class="jxr_keyword">try</strong> (Analyzer analyzer = createSearchingAnalyzer();
-<a class="jxr_linenumber" name="L211" href="#L211">211</a>                 IndexWriter indexWriter = <strong class="jxr_keyword">new</strong> IndexWriter(index,
-<a class="jxr_linenumber" name="L212" href="#L212">212</a>                         <strong class="jxr_keyword">new</strong> IndexWriterConfig(analyzer))) {
-<a class="jxr_linenumber" name="L213" href="#L213">213</a> 
-<a class="jxr_linenumber" name="L214" href="#L214">214</a>             <strong class="jxr_keyword">final</strong> FieldType ft = <strong class="jxr_keyword">new</strong> FieldType(TextField.TYPE_STORED);
-<a class="jxr_linenumber" name="L215" href="#L215">215</a>             <em class="jxr_comment">//ignore term frequency</em>
-<a class="jxr_linenumber" name="L216" href="#L216">216</a>             ft.setIndexOptions(IndexOptions.DOCS);
-<a class="jxr_linenumber" name="L217" href="#L217">217</a>             <em class="jxr_comment">//ignore field length normalization</em>
-<a class="jxr_linenumber" name="L218" href="#L218">218</a>             ft.setOmitNorms(<strong class="jxr_keyword">true</strong>);
-<a class="jxr_linenumber" name="L219" href="#L219">219</a>             <em class="jxr_comment">// Tip: reuse the Document and Fields for performance...</em>
-<a class="jxr_linenumber" name="L220" href="#L220">220</a>             <em class="jxr_comment">// See "Re-use Document and Field instances" from</em>
-<a class="jxr_linenumber" name="L221" href="#L221">221</a>             <em class="jxr_comment">// http://wiki.apache.org/lucene-java/ImproveIndexingSpeed</em>
-<a class="jxr_linenumber" name="L222" href="#L222">222</a>             <strong class="jxr_keyword">final</strong> Document doc = <strong class="jxr_keyword">new</strong> Document();
-<a class="jxr_linenumber" name="L223" href="#L223">223</a>             <strong class="jxr_keyword">final</strong> Field v = <strong class="jxr_keyword">new</strong> Field(Fields.VENDOR, Fields.VENDOR, ft);
-<a class="jxr_linenumber" name="L224" href="#L224">224</a>             <strong class="jxr_keyword">final</strong> Field p = <strong class="jxr_keyword">new</strong> Field(Fields.PRODUCT, Fields.PRODUCT, ft);
-<a class="jxr_linenumber" name="L225" href="#L225">225</a> 
-<a class="jxr_linenumber" name="L226" href="#L226">226</a>             doc.add(v);
-<a class="jxr_linenumber" name="L227" href="#L227">227</a>             doc.add(p);
-<a class="jxr_linenumber" name="L228" href="#L228">228</a> 
-<a class="jxr_linenumber" name="L229" href="#L229">229</a>             <strong class="jxr_keyword">for</strong> (Pair&lt;String, String&gt; pair : data) {
-<a class="jxr_linenumber" name="L230" href="#L230">230</a>                 <strong class="jxr_keyword">if</strong> (pair.getLeft() != <strong class="jxr_keyword">null</strong> &amp;&amp; pair.getRight() != <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="L231" href="#L231">231</a>                     v.setStringValue(pair.getLeft());
-<a class="jxr_linenumber" name="L232" href="#L232">232</a>                     p.setStringValue(pair.getRight());
-<a class="jxr_linenumber" name="L233" href="#L233">233</a>                     indexWriter.addDocument(doc);
-<a class="jxr_linenumber" name="L234" href="#L234">234</a>                     resetAnalyzers();
-<a class="jxr_linenumber" name="L235" href="#L235">235</a>                 }
-<a class="jxr_linenumber" name="L236" href="#L236">236</a>             }
-<a class="jxr_linenumber" name="L237" href="#L237">237</a>             indexWriter.commit();
-<a class="jxr_linenumber" name="L238" href="#L238">238</a> 
-<a class="jxr_linenumber" name="L239" href="#L239">239</a>         } <strong class="jxr_keyword">catch</strong> (DatabaseException ex) {
-<a class="jxr_linenumber" name="L240" href="#L240">240</a>             LOGGER.debug(<span class="jxr_string">""</span>, ex);
-<a class="jxr_linenumber" name="L241" href="#L241">241</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a href="../../../../../org/owasp/dependencycheck/data/cpe/IndexException.html">IndexException</a>(<span class="jxr_string">"Error reading CPE data"</span>, ex);
-<a class="jxr_linenumber" name="L242" href="#L242">242</a>         } <strong class="jxr_keyword">catch</strong> (IOException ex) {
-<a class="jxr_linenumber" name="L243" href="#L243">243</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a href="../../../../../org/owasp/dependencycheck/data/cpe/IndexException.html">IndexException</a>(<span class="jxr_string">"Unable to close an in-memory index"</span>, ex);
-<a class="jxr_linenumber" name="L244" href="#L244">244</a>         }
-<a class="jxr_linenumber" name="L245" href="#L245">245</a>     }
-<a class="jxr_linenumber" name="L246" href="#L246">246</a> 
-<a class="jxr_linenumber" name="L247" href="#L247">247</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L248" href="#L248">248</a> <em class="jxr_javadoccomment">     * Searches the index using the given search string.</em>
-<a class="jxr_linenumber" name="L249" href="#L249">249</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L250" href="#L250">250</a> <em class="jxr_javadoccomment">     * @param searchString the query text</em>
-<a class="jxr_linenumber" name="L251" href="#L251">251</a> <em class="jxr_javadoccomment">     * @param maxQueryResults the maximum number of documents to return</em>
-<a class="jxr_linenumber" name="L252" href="#L252">252</a> <em class="jxr_javadoccomment">     * @return the TopDocs found by the search</em>
-<a class="jxr_linenumber" name="L253" href="#L253">253</a> <em class="jxr_javadoccomment">     * @throws ParseException thrown when the searchString is invalid</em>
-<a class="jxr_linenumber" name="L254" href="#L254">254</a> <em class="jxr_javadoccomment">     * @throws IndexException thrown when there is an internal error resetting</em>
-<a class="jxr_linenumber" name="L255" href="#L255">255</a> <em class="jxr_javadoccomment">     * the search analyzer</em>
-<a class="jxr_linenumber" name="L256" href="#L256">256</a> <em class="jxr_javadoccomment">     * @throws IOException is thrown if there is an issue with the underlying</em>
-<a class="jxr_linenumber" name="L257" href="#L257">257</a> <em class="jxr_javadoccomment">     * Index</em>
-<a class="jxr_linenumber" name="L258" href="#L258">258</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L259" href="#L259">259</a>     @Override
-<a class="jxr_linenumber" name="L260" href="#L260">260</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">synchronized</strong> TopDocs search(String searchString, <strong class="jxr_keyword">int</strong> maxQueryResults) <strong class="jxr_keyword">throws</strong> ParseException, IndexException, IOException {
-<a class="jxr_linenumber" name="L261" href="#L261">261</a>         <strong class="jxr_keyword">final</strong> Query query = parseQuery(searchString);
-<a class="jxr_linenumber" name="L262" href="#L262">262</a>         <strong class="jxr_keyword">return</strong> search(query, maxQueryResults);
-<a class="jxr_linenumber" name="L263" href="#L263">263</a>     }
-<a class="jxr_linenumber" name="L264" href="#L264">264</a> 
-<a class="jxr_linenumber" name="L265" href="#L265">265</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L266" href="#L266">266</a> <em class="jxr_javadoccomment">     * Parses the given string into a Lucene Query.</em>
-<a class="jxr_linenumber" name="L267" href="#L267">267</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L268" href="#L268">268</a> <em class="jxr_javadoccomment">     * @param searchString the search text</em>
-<a class="jxr_linenumber" name="L269" href="#L269">269</a> <em class="jxr_javadoccomment">     * @return the Query object</em>
-<a class="jxr_linenumber" name="L270" href="#L270">270</a> <em class="jxr_javadoccomment">     * @throws ParseException thrown if the search text cannot be parsed</em>
-<a class="jxr_linenumber" name="L271" href="#L271">271</a> <em class="jxr_javadoccomment">     * @throws IndexException thrown if there is an error resetting the</em>
-<a class="jxr_linenumber" name="L272" href="#L272">272</a> <em class="jxr_javadoccomment">     * analyzers</em>
-<a class="jxr_linenumber" name="L273" href="#L273">273</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L274" href="#L274">274</a>     @Override
-<a class="jxr_linenumber" name="L275" href="#L275">275</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">synchronized</strong> Query parseQuery(String searchString) <strong class="jxr_keyword">throws</strong> ParseException, IndexException {
-<a class="jxr_linenumber" name="L276" href="#L276">276</a>         <strong class="jxr_keyword">if</strong> (searchString == <strong class="jxr_keyword">null</strong> || searchString.trim().isEmpty()
-<a class="jxr_linenumber" name="L277" href="#L277">277</a>                 || <span class="jxr_string">"product:() AND vendor:()"</span>.equals(searchString)) {
-<a class="jxr_linenumber" name="L278" href="#L278">278</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> ParseException(<span class="jxr_string">"Query is null or empty"</span>);
-<a class="jxr_linenumber" name="L279" href="#L279">279</a>         }
-<a class="jxr_linenumber" name="L280" href="#L280">280</a>         LOGGER.debug(searchString);
-<a class="jxr_linenumber" name="L281" href="#L281">281</a> 
-<a class="jxr_linenumber" name="L282" href="#L282">282</a>         Query query;
-<a class="jxr_linenumber" name="L283" href="#L283">283</a>         <strong class="jxr_keyword">try</strong> {
-<a class="jxr_linenumber" name="L284" href="#L284">284</a>             query = queryParser.parse(searchString);
-<a class="jxr_linenumber" name="L285" href="#L285">285</a>         } <strong class="jxr_keyword">catch</strong> (BooleanQuery.TooManyClauses ex) {
-<a class="jxr_linenumber" name="L286" href="#L286">286</a>             BooleanQuery.setMaxClauseCount(Integer.MAX_VALUE);
-<a class="jxr_linenumber" name="L287" href="#L287">287</a>             query = queryParser.parse(searchString);
-<a class="jxr_linenumber" name="L288" href="#L288">288</a>         } <strong class="jxr_keyword">catch</strong> (ParseException ex) {
-<a class="jxr_linenumber" name="L289" href="#L289">289</a>             <strong class="jxr_keyword">if</strong> (ex.getMessage() != <strong class="jxr_keyword">null</strong> &amp;&amp; ex.getMessage().contains(<span class="jxr_string">"too many boolean clauses"</span>)) {
-<a class="jxr_linenumber" name="L290" href="#L290">290</a>                 BooleanQuery.setMaxClauseCount(Integer.MAX_VALUE);
-<a class="jxr_linenumber" name="L291" href="#L291">291</a>                 query = queryParser.parse(searchString);
-<a class="jxr_linenumber" name="L292" href="#L292">292</a>             } <strong class="jxr_keyword">else</strong> {
-<a class="jxr_linenumber" name="L293" href="#L293">293</a>                 LOGGER.debug(<span class="jxr_string">"Parse Excepction"</span>, ex);
-<a class="jxr_linenumber" name="L294" href="#L294">294</a>                 <strong class="jxr_keyword">throw</strong> ex;
-<a class="jxr_linenumber" name="L295" href="#L295">295</a>             }
-<a class="jxr_linenumber" name="L296" href="#L296">296</a>         }
-<a class="jxr_linenumber" name="L297" href="#L297">297</a>         <strong class="jxr_keyword">try</strong> {
-<a class="jxr_linenumber" name="L298" href="#L298">298</a>             resetAnalyzers();
-<a class="jxr_linenumber" name="L299" href="#L299">299</a>         } <strong class="jxr_keyword">catch</strong> (IOException ex) {
-<a class="jxr_linenumber" name="L300" href="#L300">300</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a href="../../../../../org/owasp/dependencycheck/data/cpe/IndexException.html">IndexException</a>(<span class="jxr_string">"Unable to reset the analyzer after parsing"</span>, ex);
-<a class="jxr_linenumber" name="L301" href="#L301">301</a>         }
-<a class="jxr_linenumber" name="L302" href="#L302">302</a>         <strong class="jxr_keyword">return</strong> query;
-<a class="jxr_linenumber" name="L303" href="#L303">303</a>     }
-<a class="jxr_linenumber" name="L304" href="#L304">304</a> 
-<a class="jxr_linenumber" name="L305" href="#L305">305</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L306" href="#L306">306</a> <em class="jxr_javadoccomment">     * Searches the index using the given query.</em>
-<a class="jxr_linenumber" name="L307" href="#L307">307</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L308" href="#L308">308</a> <em class="jxr_javadoccomment">     * @param query the query used to search the index</em>
-<a class="jxr_linenumber" name="L309" href="#L309">309</a> <em class="jxr_javadoccomment">     * @param maxQueryResults the max number of results to return</em>
-<a class="jxr_linenumber" name="L310" href="#L310">310</a> <em class="jxr_javadoccomment">     * @return the TopDocs found be the query</em>
-<a class="jxr_linenumber" name="L311" href="#L311">311</a> <em class="jxr_javadoccomment">     * @throws CorruptIndexException thrown if the Index is corrupt</em>
-<a class="jxr_linenumber" name="L312" href="#L312">312</a> <em class="jxr_javadoccomment">     * @throws IOException thrown if there is an IOException</em>
-<a class="jxr_linenumber" name="L313" href="#L313">313</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L314" href="#L314">314</a>     @Override
-<a class="jxr_linenumber" name="L315" href="#L315">315</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">synchronized</strong> TopDocs search(Query query, <strong class="jxr_keyword">int</strong> maxQueryResults) <strong class="jxr_keyword">throws</strong> CorruptIndexException, IOException {
-<a class="jxr_linenumber" name="L316" href="#L316">316</a>         <strong class="jxr_keyword">return</strong> indexSearcher.search(query, maxQueryResults);
-<a class="jxr_linenumber" name="L317" href="#L317">317</a>     }
-<a class="jxr_linenumber" name="L318" href="#L318">318</a> 
-<a class="jxr_linenumber" name="L319" href="#L319">319</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L320" href="#L320">320</a> <em class="jxr_javadoccomment">     * Retrieves a document from the Index.</em>
-<a class="jxr_linenumber" name="L321" href="#L321">321</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L322" href="#L322">322</a> <em class="jxr_javadoccomment">     * @param documentId the id of the document to retrieve</em>
-<a class="jxr_linenumber" name="L323" href="#L323">323</a> <em class="jxr_javadoccomment">     * @return the Document</em>
-<a class="jxr_linenumber" name="L324" href="#L324">324</a> <em class="jxr_javadoccomment">     * @throws IOException thrown if there is an IOException</em>
-<a class="jxr_linenumber" name="L325" href="#L325">325</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L326" href="#L326">326</a>     @Override
-<a class="jxr_linenumber" name="L327" href="#L327">327</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">synchronized</strong> Document getDocument(<strong class="jxr_keyword">int</strong> documentId) <strong class="jxr_keyword">throws</strong> IOException {
-<a class="jxr_linenumber" name="L328" href="#L328">328</a>         <strong class="jxr_keyword">return</strong> indexSearcher.doc(documentId);
-<a class="jxr_linenumber" name="L329" href="#L329">329</a>     }
-<a class="jxr_linenumber" name="L330" href="#L330">330</a> 
-<a class="jxr_linenumber" name="L331" href="#L331">331</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L332" href="#L332">332</a> <em class="jxr_javadoccomment">     * Returns the number of CPE entries stored in the index.</em>
-<a class="jxr_linenumber" name="L333" href="#L333">333</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L334" href="#L334">334</a> <em class="jxr_javadoccomment">     * @return the number of CPE entries stored in the index</em>
-<a class="jxr_linenumber" name="L335" href="#L335">335</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L336" href="#L336">336</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">synchronized</strong> <strong class="jxr_keyword">int</strong> numDocs() {
-<a class="jxr_linenumber" name="L337" href="#L337">337</a>         <strong class="jxr_keyword">if</strong> (indexReader == <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="L338" href="#L338">338</a>             <strong class="jxr_keyword">return</strong> -1;
-<a class="jxr_linenumber" name="L339" href="#L339">339</a>         }
-<a class="jxr_linenumber" name="L340" href="#L340">340</a>         <strong class="jxr_keyword">return</strong> indexReader.numDocs();
-<a class="jxr_linenumber" name="L341" href="#L341">341</a>     }
-<a class="jxr_linenumber" name="L342" href="#L342">342</a> 
-<a class="jxr_linenumber" name="L343" href="#L343">343</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L344" href="#L344">344</a> <em class="jxr_javadoccomment">     * Method to explain queries matches.</em>
-<a class="jxr_linenumber" name="L345" href="#L345">345</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L346" href="#L346">346</a> <em class="jxr_javadoccomment">     * @param query the query used</em>
-<a class="jxr_linenumber" name="L347" href="#L347">347</a> <em class="jxr_javadoccomment">     * @param doc the document matched</em>
-<a class="jxr_linenumber" name="L348" href="#L348">348</a> <em class="jxr_javadoccomment">     * @return the explanation</em>
-<a class="jxr_linenumber" name="L349" href="#L349">349</a> <em class="jxr_javadoccomment">     * @throws IOException thrown if there is an index error</em>
-<a class="jxr_linenumber" name="L350" href="#L350">350</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L351" href="#L351">351</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">synchronized</strong> String explain(Query query, <strong class="jxr_keyword">int</strong> doc) <strong class="jxr_keyword">throws</strong> IOException {
-<a class="jxr_linenumber" name="L352" href="#L352">352</a>         <strong class="jxr_keyword">return</strong> indexSearcher.explain(query, doc).toString();
-<a class="jxr_linenumber" name="L353" href="#L353">353</a>     }
-<a class="jxr_linenumber" name="L354" href="#L354">354</a> 
-<a class="jxr_linenumber" name="L355" href="#L355">355</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L356" href="#L356">356</a> <em class="jxr_javadoccomment">     * Common method to reset the searching analyzers.</em>
-<a class="jxr_linenumber" name="L357" href="#L357">357</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L358" href="#L358">358</a> <em class="jxr_javadoccomment">     * @throws IOException thrown if there is an index error</em>
-<a class="jxr_linenumber" name="L359" href="#L359">359</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L360" href="#L360">360</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">synchronized</strong> <strong class="jxr_keyword">void</strong> resetAnalyzers() <strong class="jxr_keyword">throws</strong> IOException {
-<a class="jxr_linenumber" name="L361" href="#L361">361</a>         productFieldAnalyzer.reset();
-<a class="jxr_linenumber" name="L362" href="#L362">362</a>         vendorFieldAnalyzer.reset();
-<a class="jxr_linenumber" name="L363" href="#L363">363</a>     }
-<a class="jxr_linenumber" name="L364" href="#L364">364</a> }
+<a class="jxr_linenumber" name="L42" href="#L42">42</a>  <strong class="jxr_keyword">import</strong> org.apache.lucene.search.IndexSearcher;
+<a class="jxr_linenumber" name="L43" href="#L43">43</a>  <strong class="jxr_keyword">import</strong> org.apache.lucene.search.Query;
+<a class="jxr_linenumber" name="L44" href="#L44">44</a>  <strong class="jxr_keyword">import</strong> org.apache.lucene.search.TopDocs;
+<a class="jxr_linenumber" name="L45" href="#L45">45</a>  <strong class="jxr_keyword">import</strong> org.apache.lucene.store.MMapDirectory;
+<a class="jxr_linenumber" name="L46" href="#L46">46</a>  <strong class="jxr_keyword">import</strong> org.owasp.dependencycheck.data.lucene.SearchFieldAnalyzer;
+<a class="jxr_linenumber" name="L47" href="#L47">47</a>  <strong class="jxr_keyword">import</strong> org.owasp.dependencycheck.data.nvdcve.DatabaseException;
+<a class="jxr_linenumber" name="L48" href="#L48">48</a>  <strong class="jxr_keyword">import</strong> org.owasp.dependencycheck.utils.Pair;
+<a class="jxr_linenumber" name="L49" href="#L49">49</a>  <strong class="jxr_keyword">import</strong> org.owasp.dependencycheck.utils.Settings;
+<a class="jxr_linenumber" name="L50" href="#L50">50</a>  <strong class="jxr_keyword">import</strong> org.slf4j.Logger;
+<a class="jxr_linenumber" name="L51" href="#L51">51</a>  <strong class="jxr_keyword">import</strong> org.slf4j.LoggerFactory;
+<a class="jxr_linenumber" name="L52" href="#L52">52</a>  <strong class="jxr_keyword">import</strong> org.slf4j.bridge.SLF4JBridgeHandler;
+<a class="jxr_linenumber" name="L53" href="#L53">53</a>  
+<a class="jxr_linenumber" name="L54" href="#L54">54</a>  <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L55" href="#L55">55</a>  <em class="jxr_javadoccomment"> * &lt;p&gt;</em>
+<a class="jxr_linenumber" name="L56" href="#L56">56</a>  <em class="jxr_javadoccomment"> * An in memory Lucene index that contains the vendor/product combinations from</em>
+<a class="jxr_linenumber" name="L57" href="#L57">57</a>  <em class="jxr_javadoccomment"> * the CPE (application) identifiers within the NVD CVE data.&lt;/p&gt;</em>
+<a class="jxr_linenumber" name="L58" href="#L58">58</a>  <em class="jxr_javadoccomment"> *</em>
+<a class="jxr_linenumber" name="L59" href="#L59">59</a>  <em class="jxr_javadoccomment"> * This is the last remaining singleton in dependency-check-core; The use of</em>
+<a class="jxr_linenumber" name="L60" href="#L60">60</a>  <em class="jxr_javadoccomment"> * this singleton - while it may not technically be thread-safe (one database</em>
+<a class="jxr_linenumber" name="L61" href="#L61">61</a>  <em class="jxr_javadoccomment"> * used to build this index may not have the same entries as another) the risk</em>
+<a class="jxr_linenumber" name="L62" href="#L62">62</a>  <em class="jxr_javadoccomment"> * of this is currently believed to be small. As this memory index consumes a</em>
+<a class="jxr_linenumber" name="L63" href="#L63">63</a>  <em class="jxr_javadoccomment"> * large amount of memory we will remain using the singleton pattern for now.</em>
+<a class="jxr_linenumber" name="L64" href="#L64">64</a>  <em class="jxr_javadoccomment"> *</em>
+<a class="jxr_linenumber" name="L65" href="#L65">65</a>  <em class="jxr_javadoccomment"> * @author Jeremy Long</em>
+<a class="jxr_linenumber" name="L66" href="#L66">66</a>  <em class="jxr_javadoccomment"> */</em>
+<a class="jxr_linenumber" name="L67" href="#L67">67</a>  @ThreadSafe
+<a class="jxr_linenumber" name="L68" href="#L68">68</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">abstract</strong> <strong class="jxr_keyword">class</strong> <a href="../../../../../org/owasp/dependencycheck/data/cpe/AbstractMemoryIndex.html">AbstractMemoryIndex</a> <strong class="jxr_keyword">implements</strong> <a href="../../../../../org/owasp/dependencycheck/data/cpe/MemoryIndex.html">MemoryIndex</a> {
+<a class="jxr_linenumber" name="L69" href="#L69">69</a>  
+<a class="jxr_linenumber" name="L70" href="#L70">70</a>      <strong class="jxr_keyword">static</strong> {
+<a class="jxr_linenumber" name="L71" href="#L71">71</a>          <em class="jxr_comment">// Ensure Lucene uses SLF4J for logging</em>
+<a class="jxr_linenumber" name="L72" href="#L72">72</a>          SLF4JBridgeHandler.removeHandlersForRootLogger();
+<a class="jxr_linenumber" name="L73" href="#L73">73</a>          SLF4JBridgeHandler.install();
+<a class="jxr_linenumber" name="L74" href="#L74">74</a>      }
+<a class="jxr_linenumber" name="L75" href="#L75">75</a>  
+<a class="jxr_linenumber" name="L76" href="#L76">76</a>      <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L77" href="#L77">77</a>  <em class="jxr_javadoccomment">     * The logger.</em>
+<a class="jxr_linenumber" name="L78" href="#L78">78</a>  <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L79" href="#L79">79</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> Logger LOGGER = LoggerFactory.getLogger(AbstractMemoryIndex.<strong class="jxr_keyword">class</strong>);
+<a class="jxr_linenumber" name="L80" href="#L80">80</a>      <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L81" href="#L81">81</a>  <em class="jxr_javadoccomment">     * The in memory Lucene index.</em>
+<a class="jxr_linenumber" name="L82" href="#L82">82</a>  <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L83" href="#L83">83</a>      <strong class="jxr_keyword">private</strong> MMapDirectory index;
+<a class="jxr_linenumber" name="L84" href="#L84">84</a>      <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L85" href="#L85">85</a>  <em class="jxr_javadoccomment">     * The Lucene IndexReader.</em>
+<a class="jxr_linenumber" name="L86" href="#L86">86</a>  <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L87" href="#L87">87</a>      <strong class="jxr_keyword">private</strong> IndexReader indexReader;
+<a class="jxr_linenumber" name="L88" href="#L88">88</a>      <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L89" href="#L89">89</a>  <em class="jxr_javadoccomment">     * The Lucene IndexSearcher.</em>
+<a class="jxr_linenumber" name="L90" href="#L90">90</a>  <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L91" href="#L91">91</a>      <strong class="jxr_keyword">private</strong> IndexSearcher indexSearcher;
+<a class="jxr_linenumber" name="L92" href="#L92">92</a>      <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L93" href="#L93">93</a>  <em class="jxr_javadoccomment">     * The Lucene Analyzer used for Searching.</em>
+<a class="jxr_linenumber" name="L94" href="#L94">94</a>  <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L95" href="#L95">95</a>      <strong class="jxr_keyword">private</strong> Analyzer searchingAnalyzer;
+<a class="jxr_linenumber" name="L96" href="#L96">96</a>      <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L97" href="#L97">97</a>  <em class="jxr_javadoccomment">     * The Lucene QueryParser used for Searching.</em>
+<a class="jxr_linenumber" name="L98" href="#L98">98</a>  <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L99" href="#L99">99</a>      <strong class="jxr_keyword">private</strong> QueryParser queryParser;
+<a class="jxr_linenumber" name="L100" href="#L100">100</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L101" href="#L101">101</a> <em class="jxr_javadoccomment">     * The product field analyzer.</em>
+<a class="jxr_linenumber" name="L102" href="#L102">102</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L103" href="#L103">103</a>     <strong class="jxr_keyword">private</strong> <a href="../../../../../org/owasp/dependencycheck/data/lucene/SearchFieldAnalyzer.html">SearchFieldAnalyzer</a> productFieldAnalyzer;
+<a class="jxr_linenumber" name="L104" href="#L104">104</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L105" href="#L105">105</a> <em class="jxr_javadoccomment">     * The vendor field analyzer.</em>
+<a class="jxr_linenumber" name="L106" href="#L106">106</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L107" href="#L107">107</a>     <strong class="jxr_keyword">private</strong> <a href="../../../../../org/owasp/dependencycheck/data/lucene/SearchFieldAnalyzer.html">SearchFieldAnalyzer</a> vendorFieldAnalyzer;
+<a class="jxr_linenumber" name="L108" href="#L108">108</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L109" href="#L109">109</a> <em class="jxr_javadoccomment">     * Track the number of current users of the Lucene index; used to track it</em>
+<a class="jxr_linenumber" name="L110" href="#L110">110</a> <em class="jxr_javadoccomment">     * it is okay to actually close the index.</em>
+<a class="jxr_linenumber" name="L111" href="#L111">111</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L112" href="#L112">112</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> AtomicInteger usageCount = <strong class="jxr_keyword">new</strong> AtomicInteger(0);
+<a class="jxr_linenumber" name="L113" href="#L113">113</a> 
+<a class="jxr_linenumber" name="L114" href="#L114">114</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L115" href="#L115">115</a> <em class="jxr_javadoccomment">     * Returns a reference to the instance.</em>
+<a class="jxr_linenumber" name="L116" href="#L116">116</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L117" href="#L117">117</a> <em class="jxr_javadoccomment">     * @return a reference to the instance</em>
+<a class="jxr_linenumber" name="L118" href="#L118">118</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L119" href="#L119">119</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">abstract</strong> <a href="../../../../../org/owasp/dependencycheck/data/cpe/AbstractMemoryIndex.html">AbstractMemoryIndex</a> instance();
+<a class="jxr_linenumber" name="L120" href="#L120">120</a> 
+<a class="jxr_linenumber" name="L121" href="#L121">121</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L122" href="#L122">122</a> <em class="jxr_javadoccomment">     * Creates and loads data into an in memory index.</em>
+<a class="jxr_linenumber" name="L123" href="#L123">123</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L124" href="#L124">124</a> <em class="jxr_javadoccomment">     * @param data the CPE data</em>
+<a class="jxr_linenumber" name="L125" href="#L125">125</a> <em class="jxr_javadoccomment">     * @param settings a reference to the dependency-check settings</em>
+<a class="jxr_linenumber" name="L126" href="#L126">126</a> <em class="jxr_javadoccomment">     * @throws IndexException thrown if there is an error creating the index</em>
+<a class="jxr_linenumber" name="L127" href="#L127">127</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L128" href="#L128">128</a>     @Override
+<a class="jxr_linenumber" name="L129" href="#L129">129</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">synchronized</strong> <strong class="jxr_keyword">void</strong> open(Set&lt;Pair&lt;String, String&gt;&gt; data, Settings settings) <strong class="jxr_keyword">throws</strong> IndexException {
+<a class="jxr_linenumber" name="L130" href="#L130">130</a>         <strong class="jxr_keyword">if</strong> (instance().usageCount.addAndGet(1) == 1) {
+<a class="jxr_linenumber" name="L131" href="#L131">131</a>             <strong class="jxr_keyword">try</strong> {
+<a class="jxr_linenumber" name="L132" href="#L132">132</a>                 <strong class="jxr_keyword">final</strong> File temp = settings.getTempDirectory();
+<a class="jxr_linenumber" name="L133" href="#L133">133</a>                 index = <strong class="jxr_keyword">new</strong> MMapDirectory(temp.toPath());
+<a class="jxr_linenumber" name="L134" href="#L134">134</a>                 buildIndex(data);
+<a class="jxr_linenumber" name="L135" href="#L135">135</a> 
+<a class="jxr_linenumber" name="L136" href="#L136">136</a>                 indexReader = DirectoryReader.open(index);
+<a class="jxr_linenumber" name="L137" href="#L137">137</a>             } <strong class="jxr_keyword">catch</strong> (IOException ex) {
+<a class="jxr_linenumber" name="L138" href="#L138">138</a>                 <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a href="../../../../../org/owasp/dependencycheck/data/cpe/IndexException.html">IndexException</a>(ex);
+<a class="jxr_linenumber" name="L139" href="#L139">139</a>             }
+<a class="jxr_linenumber" name="L140" href="#L140">140</a>             indexSearcher = <strong class="jxr_keyword">new</strong> IndexSearcher(indexReader);
+<a class="jxr_linenumber" name="L141" href="#L141">141</a>             searchingAnalyzer = createSearchingAnalyzer();
+<a class="jxr_linenumber" name="L142" href="#L142">142</a>             queryParser = <strong class="jxr_keyword">new</strong> QueryParser(Fields.DOCUMENT_KEY, searchingAnalyzer);
+<a class="jxr_linenumber" name="L143" href="#L143">143</a>         }
+<a class="jxr_linenumber" name="L144" href="#L144">144</a>     }
+<a class="jxr_linenumber" name="L145" href="#L145">145</a> 
+<a class="jxr_linenumber" name="L146" href="#L146">146</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L147" href="#L147">147</a> <em class="jxr_javadoccomment">     * returns whether or not the index is open.</em>
+<a class="jxr_linenumber" name="L148" href="#L148">148</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L149" href="#L149">149</a> <em class="jxr_javadoccomment">     * @return whether or not the index is open</em>
+<a class="jxr_linenumber" name="L150" href="#L150">150</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L151" href="#L151">151</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">synchronized</strong> <strong class="jxr_keyword">boolean</strong> isOpen() {
+<a class="jxr_linenumber" name="L152" href="#L152">152</a>         <strong class="jxr_keyword">return</strong> instance().usageCount.get() &gt; 0;
+<a class="jxr_linenumber" name="L153" href="#L153">153</a>     }
+<a class="jxr_linenumber" name="L154" href="#L154">154</a> 
+<a class="jxr_linenumber" name="L155" href="#L155">155</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L156" href="#L156">156</a> <em class="jxr_javadoccomment">     * Creates an Analyzer for searching the CPE Index.</em>
+<a class="jxr_linenumber" name="L157" href="#L157">157</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L158" href="#L158">158</a> <em class="jxr_javadoccomment">     * @return the CPE Analyzer.</em>
+<a class="jxr_linenumber" name="L159" href="#L159">159</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L160" href="#L160">160</a>     <strong class="jxr_keyword">private</strong> Analyzer createSearchingAnalyzer() {
+<a class="jxr_linenumber" name="L161" href="#L161">161</a>         <strong class="jxr_keyword">final</strong> Map&lt;String, Analyzer&gt; fieldAnalyzers = <strong class="jxr_keyword">new</strong> HashMap&lt;&gt;();
+<a class="jxr_linenumber" name="L162" href="#L162">162</a>         fieldAnalyzers.put(Fields.DOCUMENT_KEY, <strong class="jxr_keyword">new</strong> KeywordAnalyzer());
+<a class="jxr_linenumber" name="L163" href="#L163">163</a>         productFieldAnalyzer = <strong class="jxr_keyword">new</strong> <a href="../../../../../org/owasp/dependencycheck/data/lucene/SearchFieldAnalyzer.html">SearchFieldAnalyzer</a>();
+<a class="jxr_linenumber" name="L164" href="#L164">164</a>         vendorFieldAnalyzer = <strong class="jxr_keyword">new</strong> <a href="../../../../../org/owasp/dependencycheck/data/lucene/SearchFieldAnalyzer.html">SearchFieldAnalyzer</a>();
+<a class="jxr_linenumber" name="L165" href="#L165">165</a>         fieldAnalyzers.put(Fields.PRODUCT, productFieldAnalyzer);
+<a class="jxr_linenumber" name="L166" href="#L166">166</a>         fieldAnalyzers.put(Fields.VENDOR, vendorFieldAnalyzer);
+<a class="jxr_linenumber" name="L167" href="#L167">167</a> 
+<a class="jxr_linenumber" name="L168" href="#L168">168</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> PerFieldAnalyzerWrapper(<strong class="jxr_keyword">new</strong> KeywordAnalyzer(), fieldAnalyzers);
+<a class="jxr_linenumber" name="L169" href="#L169">169</a>     }
+<a class="jxr_linenumber" name="L170" href="#L170">170</a> 
+<a class="jxr_linenumber" name="L171" href="#L171">171</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L172" href="#L172">172</a> <em class="jxr_javadoccomment">     * Closes the CPE Index.</em>
+<a class="jxr_linenumber" name="L173" href="#L173">173</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L174" href="#L174">174</a>     @Override
+<a class="jxr_linenumber" name="L175" href="#L175">175</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">synchronized</strong> <strong class="jxr_keyword">void</strong> close() {
+<a class="jxr_linenumber" name="L176" href="#L176">176</a>         <strong class="jxr_keyword">if</strong> (instance().usageCount.addAndGet(-1) == 0) {
+<a class="jxr_linenumber" name="L177" href="#L177">177</a>             <strong class="jxr_keyword">if</strong> (searchingAnalyzer != <strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="L178" href="#L178">178</a>                 searchingAnalyzer.close();
+<a class="jxr_linenumber" name="L179" href="#L179">179</a>                 searchingAnalyzer = <strong class="jxr_keyword">null</strong>;
+<a class="jxr_linenumber" name="L180" href="#L180">180</a>             }
+<a class="jxr_linenumber" name="L181" href="#L181">181</a>             <strong class="jxr_keyword">if</strong> (indexReader != <strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="L182" href="#L182">182</a>                 <strong class="jxr_keyword">try</strong> {
+<a class="jxr_linenumber" name="L183" href="#L183">183</a>                     indexReader.close();
+<a class="jxr_linenumber" name="L184" href="#L184">184</a>                 } <strong class="jxr_keyword">catch</strong> (IOException ex) {
+<a class="jxr_linenumber" name="L185" href="#L185">185</a>                     LOGGER.trace(<span class="jxr_string">""</span>, ex);
+<a class="jxr_linenumber" name="L186" href="#L186">186</a>                 }
+<a class="jxr_linenumber" name="L187" href="#L187">187</a>                 indexReader = <strong class="jxr_keyword">null</strong>;
+<a class="jxr_linenumber" name="L188" href="#L188">188</a>             }
+<a class="jxr_linenumber" name="L189" href="#L189">189</a>             queryParser = <strong class="jxr_keyword">null</strong>;
+<a class="jxr_linenumber" name="L190" href="#L190">190</a>             indexSearcher = <strong class="jxr_keyword">null</strong>;
+<a class="jxr_linenumber" name="L191" href="#L191">191</a>             <strong class="jxr_keyword">if</strong> (index != <strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="L192" href="#L192">192</a>                 <strong class="jxr_keyword">try</strong> {
+<a class="jxr_linenumber" name="L193" href="#L193">193</a>                     index.close();
+<a class="jxr_linenumber" name="L194" href="#L194">194</a>                 } <strong class="jxr_keyword">catch</strong> (IOException ex) {
+<a class="jxr_linenumber" name="L195" href="#L195">195</a>                     LOGGER.trace(<span class="jxr_string">""</span>, ex);
+<a class="jxr_linenumber" name="L196" href="#L196">196</a>                 }
+<a class="jxr_linenumber" name="L197" href="#L197">197</a>                 index = <strong class="jxr_keyword">null</strong>;
+<a class="jxr_linenumber" name="L198" href="#L198">198</a>             }
+<a class="jxr_linenumber" name="L199" href="#L199">199</a>         }
+<a class="jxr_linenumber" name="L200" href="#L200">200</a>     }
+<a class="jxr_linenumber" name="L201" href="#L201">201</a> 
+<a class="jxr_linenumber" name="L202" href="#L202">202</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L203" href="#L203">203</a> <em class="jxr_javadoccomment">     * Builds the CPE Lucene Index based off of the data within the CveDB.</em>
+<a class="jxr_linenumber" name="L204" href="#L204">204</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L205" href="#L205">205</a> <em class="jxr_javadoccomment">     * @param data the CPE data</em>
+<a class="jxr_linenumber" name="L206" href="#L206">206</a> <em class="jxr_javadoccomment">     * @throws IndexException thrown if there is an issue creating the index</em>
+<a class="jxr_linenumber" name="L207" href="#L207">207</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L208" href="#L208">208</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> buildIndex(Set&lt;Pair&lt;String, String&gt;&gt; data) <strong class="jxr_keyword">throws</strong> IndexException {
+<a class="jxr_linenumber" name="L209" href="#L209">209</a>         <strong class="jxr_keyword">try</strong> (Analyzer analyzer = createSearchingAnalyzer();
+<a class="jxr_linenumber" name="L210" href="#L210">210</a>                 IndexWriter indexWriter = <strong class="jxr_keyword">new</strong> IndexWriter(index,
+<a class="jxr_linenumber" name="L211" href="#L211">211</a>                         <strong class="jxr_keyword">new</strong> IndexWriterConfig(analyzer))) {
+<a class="jxr_linenumber" name="L212" href="#L212">212</a> 
+<a class="jxr_linenumber" name="L213" href="#L213">213</a>             <strong class="jxr_keyword">final</strong> FieldType ft = <strong class="jxr_keyword">new</strong> FieldType(TextField.TYPE_STORED);
+<a class="jxr_linenumber" name="L214" href="#L214">214</a>             <em class="jxr_comment">//ignore term frequency</em>
+<a class="jxr_linenumber" name="L215" href="#L215">215</a>             ft.setIndexOptions(IndexOptions.DOCS);
+<a class="jxr_linenumber" name="L216" href="#L216">216</a>             <em class="jxr_comment">//ignore field length normalization</em>
+<a class="jxr_linenumber" name="L217" href="#L217">217</a>             ft.setOmitNorms(<strong class="jxr_keyword">true</strong>);
+<a class="jxr_linenumber" name="L218" href="#L218">218</a>             <em class="jxr_comment">// Tip: reuse the Document and Fields for performance...</em>
+<a class="jxr_linenumber" name="L219" href="#L219">219</a>             <em class="jxr_comment">// See "Re-use Document and Field instances" from</em>
+<a class="jxr_linenumber" name="L220" href="#L220">220</a>             <em class="jxr_comment">// http://wiki.apache.org/lucene-java/ImproveIndexingSpeed</em>
+<a class="jxr_linenumber" name="L221" href="#L221">221</a>             <strong class="jxr_keyword">final</strong> Document doc = <strong class="jxr_keyword">new</strong> Document();
+<a class="jxr_linenumber" name="L222" href="#L222">222</a>             <strong class="jxr_keyword">final</strong> Field v = <strong class="jxr_keyword">new</strong> Field(Fields.VENDOR, Fields.VENDOR, ft);
+<a class="jxr_linenumber" name="L223" href="#L223">223</a>             <strong class="jxr_keyword">final</strong> Field p = <strong class="jxr_keyword">new</strong> Field(Fields.PRODUCT, Fields.PRODUCT, ft);
+<a class="jxr_linenumber" name="L224" href="#L224">224</a> 
+<a class="jxr_linenumber" name="L225" href="#L225">225</a>             doc.add(v);
+<a class="jxr_linenumber" name="L226" href="#L226">226</a>             doc.add(p);
+<a class="jxr_linenumber" name="L227" href="#L227">227</a> 
+<a class="jxr_linenumber" name="L228" href="#L228">228</a>             <strong class="jxr_keyword">for</strong> (Pair&lt;String, String&gt; pair : data) {
+<a class="jxr_linenumber" name="L229" href="#L229">229</a>                 <strong class="jxr_keyword">if</strong> (pair.getLeft() != <strong class="jxr_keyword">null</strong> &amp;&amp; pair.getRight() != <strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="L230" href="#L230">230</a>                     v.setStringValue(pair.getLeft());
+<a class="jxr_linenumber" name="L231" href="#L231">231</a>                     p.setStringValue(pair.getRight());
+<a class="jxr_linenumber" name="L232" href="#L232">232</a>                     indexWriter.addDocument(doc);
+<a class="jxr_linenumber" name="L233" href="#L233">233</a>                     resetAnalyzers();
+<a class="jxr_linenumber" name="L234" href="#L234">234</a>                 }
+<a class="jxr_linenumber" name="L235" href="#L235">235</a>             }
+<a class="jxr_linenumber" name="L236" href="#L236">236</a>             indexWriter.commit();
+<a class="jxr_linenumber" name="L237" href="#L237">237</a> 
+<a class="jxr_linenumber" name="L238" href="#L238">238</a>         } <strong class="jxr_keyword">catch</strong> (DatabaseException ex) {
+<a class="jxr_linenumber" name="L239" href="#L239">239</a>             LOGGER.debug(<span class="jxr_string">""</span>, ex);
+<a class="jxr_linenumber" name="L240" href="#L240">240</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a href="../../../../../org/owasp/dependencycheck/data/cpe/IndexException.html">IndexException</a>(<span class="jxr_string">"Error reading CPE data"</span>, ex);
+<a class="jxr_linenumber" name="L241" href="#L241">241</a>         } <strong class="jxr_keyword">catch</strong> (IOException ex) {
+<a class="jxr_linenumber" name="L242" href="#L242">242</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a href="../../../../../org/owasp/dependencycheck/data/cpe/IndexException.html">IndexException</a>(<span class="jxr_string">"Unable to close an in-memory index"</span>, ex);
+<a class="jxr_linenumber" name="L243" href="#L243">243</a>         }
+<a class="jxr_linenumber" name="L244" href="#L244">244</a>     }
+<a class="jxr_linenumber" name="L245" href="#L245">245</a> 
+<a class="jxr_linenumber" name="L246" href="#L246">246</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L247" href="#L247">247</a> <em class="jxr_javadoccomment">     * Searches the index using the given search string.</em>
+<a class="jxr_linenumber" name="L248" href="#L248">248</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L249" href="#L249">249</a> <em class="jxr_javadoccomment">     * @param searchString the query text</em>
+<a class="jxr_linenumber" name="L250" href="#L250">250</a> <em class="jxr_javadoccomment">     * @param maxQueryResults the maximum number of documents to return</em>
+<a class="jxr_linenumber" name="L251" href="#L251">251</a> <em class="jxr_javadoccomment">     * @return the TopDocs found by the search</em>
+<a class="jxr_linenumber" name="L252" href="#L252">252</a> <em class="jxr_javadoccomment">     * @throws ParseException thrown when the searchString is invalid</em>
+<a class="jxr_linenumber" name="L253" href="#L253">253</a> <em class="jxr_javadoccomment">     * @throws IndexException thrown when there is an internal error resetting</em>
+<a class="jxr_linenumber" name="L254" href="#L254">254</a> <em class="jxr_javadoccomment">     * the search analyzer</em>
+<a class="jxr_linenumber" name="L255" href="#L255">255</a> <em class="jxr_javadoccomment">     * @throws IOException is thrown if there is an issue with the underlying</em>
+<a class="jxr_linenumber" name="L256" href="#L256">256</a> <em class="jxr_javadoccomment">     * Index</em>
+<a class="jxr_linenumber" name="L257" href="#L257">257</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L258" href="#L258">258</a>     @Override
+<a class="jxr_linenumber" name="L259" href="#L259">259</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">synchronized</strong> TopDocs search(String searchString, <strong class="jxr_keyword">int</strong> maxQueryResults) <strong class="jxr_keyword">throws</strong> ParseException, IndexException, IOException {
+<a class="jxr_linenumber" name="L260" href="#L260">260</a>         <strong class="jxr_keyword">final</strong> Query query = parseQuery(searchString);
+<a class="jxr_linenumber" name="L261" href="#L261">261</a>         <strong class="jxr_keyword">return</strong> search(query, maxQueryResults);
+<a class="jxr_linenumber" name="L262" href="#L262">262</a>     }
+<a class="jxr_linenumber" name="L263" href="#L263">263</a> 
+<a class="jxr_linenumber" name="L264" href="#L264">264</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L265" href="#L265">265</a> <em class="jxr_javadoccomment">     * Parses the given string into a Lucene Query.</em>
+<a class="jxr_linenumber" name="L266" href="#L266">266</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L267" href="#L267">267</a> <em class="jxr_javadoccomment">     * @param searchString the search text</em>
+<a class="jxr_linenumber" name="L268" href="#L268">268</a> <em class="jxr_javadoccomment">     * @return the Query object</em>
+<a class="jxr_linenumber" name="L269" href="#L269">269</a> <em class="jxr_javadoccomment">     * @throws ParseException thrown if the search text cannot be parsed</em>
+<a class="jxr_linenumber" name="L270" href="#L270">270</a> <em class="jxr_javadoccomment">     * @throws IndexException thrown if there is an error resetting the</em>
+<a class="jxr_linenumber" name="L271" href="#L271">271</a> <em class="jxr_javadoccomment">     * analyzers</em>
+<a class="jxr_linenumber" name="L272" href="#L272">272</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L273" href="#L273">273</a>     @Override
+<a class="jxr_linenumber" name="L274" href="#L274">274</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">synchronized</strong> Query parseQuery(String searchString) <strong class="jxr_keyword">throws</strong> ParseException, IndexException {
+<a class="jxr_linenumber" name="L275" href="#L275">275</a>         <strong class="jxr_keyword">if</strong> (searchString == <strong class="jxr_keyword">null</strong> || searchString.trim().isEmpty()
+<a class="jxr_linenumber" name="L276" href="#L276">276</a>                 || <span class="jxr_string">"product:() AND vendor:()"</span>.equals(searchString)) {
+<a class="jxr_linenumber" name="L277" href="#L277">277</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> ParseException(<span class="jxr_string">"Query is null or empty"</span>);
+<a class="jxr_linenumber" name="L278" href="#L278">278</a>         }
+<a class="jxr_linenumber" name="L279" href="#L279">279</a>         LOGGER.debug(searchString);
+<a class="jxr_linenumber" name="L280" href="#L280">280</a> 
+<a class="jxr_linenumber" name="L281" href="#L281">281</a>         Query query;
+<a class="jxr_linenumber" name="L282" href="#L282">282</a>         <strong class="jxr_keyword">try</strong> {
+<a class="jxr_linenumber" name="L283" href="#L283">283</a>             query = queryParser.parse(searchString);
+<a class="jxr_linenumber" name="L284" href="#L284">284</a>         } <strong class="jxr_keyword">catch</strong> (IndexSearcher.TooManyClauses ex) {
+<a class="jxr_linenumber" name="L285" href="#L285">285</a>             IndexSearcher.setMaxClauseCount(Integer.MAX_VALUE);
+<a class="jxr_linenumber" name="L286" href="#L286">286</a>             query = queryParser.parse(searchString);
+<a class="jxr_linenumber" name="L287" href="#L287">287</a>         } <strong class="jxr_keyword">catch</strong> (ParseException ex) {
+<a class="jxr_linenumber" name="L288" href="#L288">288</a>             <strong class="jxr_keyword">if</strong> (ex.getMessage() != <strong class="jxr_keyword">null</strong> &amp;&amp; ex.getMessage().contains(<span class="jxr_string">"too many boolean clauses"</span>)) {
+<a class="jxr_linenumber" name="L289" href="#L289">289</a>                 IndexSearcher.setMaxClauseCount(Integer.MAX_VALUE);
+<a class="jxr_linenumber" name="L290" href="#L290">290</a>                 query = queryParser.parse(searchString);
+<a class="jxr_linenumber" name="L291" href="#L291">291</a>             } <strong class="jxr_keyword">else</strong> {
+<a class="jxr_linenumber" name="L292" href="#L292">292</a>                 LOGGER.debug(<span class="jxr_string">"Parse Exception"</span>, ex);
+<a class="jxr_linenumber" name="L293" href="#L293">293</a>                 <strong class="jxr_keyword">throw</strong> ex;
+<a class="jxr_linenumber" name="L294" href="#L294">294</a>             }
+<a class="jxr_linenumber" name="L295" href="#L295">295</a>         }
+<a class="jxr_linenumber" name="L296" href="#L296">296</a>         <strong class="jxr_keyword">try</strong> {
+<a class="jxr_linenumber" name="L297" href="#L297">297</a>             resetAnalyzers();
+<a class="jxr_linenumber" name="L298" href="#L298">298</a>         } <strong class="jxr_keyword">catch</strong> (IOException ex) {
+<a class="jxr_linenumber" name="L299" href="#L299">299</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a href="../../../../../org/owasp/dependencycheck/data/cpe/IndexException.html">IndexException</a>(<span class="jxr_string">"Unable to reset the analyzer after parsing"</span>, ex);
+<a class="jxr_linenumber" name="L300" href="#L300">300</a>         }
+<a class="jxr_linenumber" name="L301" href="#L301">301</a>         <strong class="jxr_keyword">return</strong> query;
+<a class="jxr_linenumber" name="L302" href="#L302">302</a>     }
+<a class="jxr_linenumber" name="L303" href="#L303">303</a> 
+<a class="jxr_linenumber" name="L304" href="#L304">304</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L305" href="#L305">305</a> <em class="jxr_javadoccomment">     * Searches the index using the given query.</em>
+<a class="jxr_linenumber" name="L306" href="#L306">306</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L307" href="#L307">307</a> <em class="jxr_javadoccomment">     * @param query the query used to search the index</em>
+<a class="jxr_linenumber" name="L308" href="#L308">308</a> <em class="jxr_javadoccomment">     * @param maxQueryResults the max number of results to return</em>
+<a class="jxr_linenumber" name="L309" href="#L309">309</a> <em class="jxr_javadoccomment">     * @return the TopDocs found be the query</em>
+<a class="jxr_linenumber" name="L310" href="#L310">310</a> <em class="jxr_javadoccomment">     * @throws CorruptIndexException thrown if the Index is corrupt</em>
+<a class="jxr_linenumber" name="L311" href="#L311">311</a> <em class="jxr_javadoccomment">     * @throws IOException thrown if there is an IOException</em>
+<a class="jxr_linenumber" name="L312" href="#L312">312</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L313" href="#L313">313</a>     @Override
+<a class="jxr_linenumber" name="L314" href="#L314">314</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">synchronized</strong> TopDocs search(Query query, <strong class="jxr_keyword">int</strong> maxQueryResults) <strong class="jxr_keyword">throws</strong> CorruptIndexException, IOException {
+<a class="jxr_linenumber" name="L315" href="#L315">315</a>         <strong class="jxr_keyword">return</strong> indexSearcher.search(query, maxQueryResults);
+<a class="jxr_linenumber" name="L316" href="#L316">316</a>     }
+<a class="jxr_linenumber" name="L317" href="#L317">317</a> 
+<a class="jxr_linenumber" name="L318" href="#L318">318</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L319" href="#L319">319</a> <em class="jxr_javadoccomment">     * Retrieves a document from the Index.</em>
+<a class="jxr_linenumber" name="L320" href="#L320">320</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L321" href="#L321">321</a> <em class="jxr_javadoccomment">     * @param documentId the id of the document to retrieve</em>
+<a class="jxr_linenumber" name="L322" href="#L322">322</a> <em class="jxr_javadoccomment">     * @return the Document</em>
+<a class="jxr_linenumber" name="L323" href="#L323">323</a> <em class="jxr_javadoccomment">     * @throws IOException thrown if there is an IOException</em>
+<a class="jxr_linenumber" name="L324" href="#L324">324</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L325" href="#L325">325</a>     @Override
+<a class="jxr_linenumber" name="L326" href="#L326">326</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">synchronized</strong> Document getDocument(<strong class="jxr_keyword">int</strong> documentId) <strong class="jxr_keyword">throws</strong> IOException {
+<a class="jxr_linenumber" name="L327" href="#L327">327</a>         <strong class="jxr_keyword">return</strong> indexSearcher.storedFields().document(documentId);
+<a class="jxr_linenumber" name="L328" href="#L328">328</a>     }
+<a class="jxr_linenumber" name="L329" href="#L329">329</a> 
+<a class="jxr_linenumber" name="L330" href="#L330">330</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L331" href="#L331">331</a> <em class="jxr_javadoccomment">     * Returns the number of CPE entries stored in the index.</em>
+<a class="jxr_linenumber" name="L332" href="#L332">332</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L333" href="#L333">333</a> <em class="jxr_javadoccomment">     * @return the number of CPE entries stored in the index</em>
+<a class="jxr_linenumber" name="L334" href="#L334">334</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L335" href="#L335">335</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">synchronized</strong> <strong class="jxr_keyword">int</strong> numDocs() {
+<a class="jxr_linenumber" name="L336" href="#L336">336</a>         <strong class="jxr_keyword">if</strong> (indexReader == <strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="L337" href="#L337">337</a>             <strong class="jxr_keyword">return</strong> -1;
+<a class="jxr_linenumber" name="L338" href="#L338">338</a>         }
+<a class="jxr_linenumber" name="L339" href="#L339">339</a>         <strong class="jxr_keyword">return</strong> indexReader.numDocs();
+<a class="jxr_linenumber" name="L340" href="#L340">340</a>     }
+<a class="jxr_linenumber" name="L341" href="#L341">341</a> 
+<a class="jxr_linenumber" name="L342" href="#L342">342</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L343" href="#L343">343</a> <em class="jxr_javadoccomment">     * Method to explain queries matches.</em>
+<a class="jxr_linenumber" name="L344" href="#L344">344</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L345" href="#L345">345</a> <em class="jxr_javadoccomment">     * @param query the query used</em>
+<a class="jxr_linenumber" name="L346" href="#L346">346</a> <em class="jxr_javadoccomment">     * @param doc the document matched</em>
+<a class="jxr_linenumber" name="L347" href="#L347">347</a> <em class="jxr_javadoccomment">     * @return the explanation</em>
+<a class="jxr_linenumber" name="L348" href="#L348">348</a> <em class="jxr_javadoccomment">     * @throws IOException thrown if there is an index error</em>
+<a class="jxr_linenumber" name="L349" href="#L349">349</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L350" href="#L350">350</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">synchronized</strong> String explain(Query query, <strong class="jxr_keyword">int</strong> doc) <strong class="jxr_keyword">throws</strong> IOException {
+<a class="jxr_linenumber" name="L351" href="#L351">351</a>         <strong class="jxr_keyword">return</strong> indexSearcher.explain(query, doc).toString();
+<a class="jxr_linenumber" name="L352" href="#L352">352</a>     }
+<a class="jxr_linenumber" name="L353" href="#L353">353</a> 
+<a class="jxr_linenumber" name="L354" href="#L354">354</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L355" href="#L355">355</a> <em class="jxr_javadoccomment">     * Common method to reset the searching analyzers.</em>
+<a class="jxr_linenumber" name="L356" href="#L356">356</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L357" href="#L357">357</a> <em class="jxr_javadoccomment">     * @throws IOException thrown if there is an index error</em>
+<a class="jxr_linenumber" name="L358" href="#L358">358</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L359" href="#L359">359</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">synchronized</strong> <strong class="jxr_keyword">void</strong> resetAnalyzers() <strong class="jxr_keyword">throws</strong> IOException {
+<a class="jxr_linenumber" name="L360" href="#L360">360</a>         productFieldAnalyzer.reset();
+<a class="jxr_linenumber" name="L361" href="#L361">361</a>         vendorFieldAnalyzer.reset();
+<a class="jxr_linenumber" name="L362" href="#L362">362</a>     }
+<a class="jxr_linenumber" name="L363" href="#L363">363</a> }
 </pre>
 <hr/>
 <div id="footer">Copyright &#169; 2012&#x2013;2025 <a href="https://www.owasp.org">OWASP</a>. All rights reserved.</div>

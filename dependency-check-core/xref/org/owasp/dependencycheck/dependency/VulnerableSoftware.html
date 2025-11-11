@@ -165,10 +165,10 @@
 <a class="jxr_linenumber" name="L157" href="#L157">157</a>         <em class="jxr_comment">// ideally different for each class</em>
 <a class="jxr_linenumber" name="L158" href="#L158">158</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> HashCodeBuilder(13, 59)
 <a class="jxr_linenumber" name="L159" href="#L159">159</a>                 .appendSuper(<strong class="jxr_keyword">super</strong>.hashCode())
-<a class="jxr_linenumber" name="L160" href="#L160">160</a>                 .append(versionEndExcluding)
-<a class="jxr_linenumber" name="L161" href="#L161">161</a>                 .append(versionEndIncluding)
-<a class="jxr_linenumber" name="L162" href="#L162">162</a>                 .append(versionStartExcluding)
-<a class="jxr_linenumber" name="L163" href="#L163">163</a>                 .append(versionStartIncluding)
+<a class="jxr_linenumber" name="L160" href="#L160">160</a>                 .append(normalizeForComparison(versionEndExcluding))
+<a class="jxr_linenumber" name="L161" href="#L161">161</a>                 .append(normalizeForComparison(versionEndIncluding))
+<a class="jxr_linenumber" name="L162" href="#L162">162</a>                 .append(normalizeForComparison(versionStartExcluding))
+<a class="jxr_linenumber" name="L163" href="#L163">163</a>                 .append(normalizeForComparison(versionStartIncluding))
 <a class="jxr_linenumber" name="L164" href="#L164">164</a>                 .toHashCode();
 <a class="jxr_linenumber" name="L165" href="#L165">165</a>     }
 <a class="jxr_linenumber" name="L166" href="#L166">166</a> 
@@ -183,10 +183,10 @@
 <a class="jxr_linenumber" name="L175" href="#L175">175</a>         <strong class="jxr_keyword">final</strong> <a href="../../../../org/owasp/dependencycheck/dependency/VulnerableSoftware.html">VulnerableSoftware</a> rhs = (VulnerableSoftware) obj;
 <a class="jxr_linenumber" name="L176" href="#L176">176</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> EqualsBuilder()
 <a class="jxr_linenumber" name="L177" href="#L177">177</a>                 .appendSuper(<strong class="jxr_keyword">super</strong>.equals(obj))
-<a class="jxr_linenumber" name="L178" href="#L178">178</a>                 .append(versionEndExcluding, rhs.versionEndExcluding)
-<a class="jxr_linenumber" name="L179" href="#L179">179</a>                 .append(versionEndIncluding, rhs.versionEndIncluding)
-<a class="jxr_linenumber" name="L180" href="#L180">180</a>                 .append(versionStartExcluding, rhs.versionStartExcluding)
-<a class="jxr_linenumber" name="L181" href="#L181">181</a>                 .append(versionStartIncluding, rhs.versionStartIncluding)
+<a class="jxr_linenumber" name="L178" href="#L178">178</a>                 .append(normalizeForComparison(versionEndExcluding), normalizeForComparison(rhs.versionEndExcluding))
+<a class="jxr_linenumber" name="L179" href="#L179">179</a>                 .append(normalizeForComparison(versionEndIncluding), normalizeForComparison(rhs.versionEndIncluding))
+<a class="jxr_linenumber" name="L180" href="#L180">180</a>                 .append(normalizeForComparison(versionStartExcluding), normalizeForComparison(rhs.versionStartExcluding))
+<a class="jxr_linenumber" name="L181" href="#L181">181</a>                 .append(normalizeForComparison(versionStartIncluding), normalizeForComparison(rhs.versionStartIncluding))
 <a class="jxr_linenumber" name="L182" href="#L182">182</a>                 .isEquals();
 <a class="jxr_linenumber" name="L183" href="#L183">183</a>     }
 <a class="jxr_linenumber" name="L184" href="#L184">184</a> 
@@ -215,7 +215,7 @@
 <a class="jxr_linenumber" name="L207" href="#L207">207</a>         <em class="jxr_comment">//TODO implement versionStart etc.</em>
 <a class="jxr_linenumber" name="L208" href="#L208">208</a>         result &amp;= compareVersionRange(target.getVersion());
 <a class="jxr_linenumber" name="L209" href="#L209">209</a> 
-<a class="jxr_linenumber" name="L210" href="#L210">210</a>         <em class="jxr_comment">//todo - if the vulnerablity has an update we are might not be collecting it correctly...</em>
+<a class="jxr_linenumber" name="L210" href="#L210">210</a>         <em class="jxr_comment">//todo - if the vulnerability has an update we are might not be collecting it correctly...</em>
 <a class="jxr_linenumber" name="L211" href="#L211">211</a>         <em class="jxr_comment">// as such, this check might cause FN if the CVE has an update in the data set</em>
 <a class="jxr_linenumber" name="L212" href="#L212">212</a>         result &amp;= compareUpdateAttributes(<strong class="jxr_keyword">this</strong>.getUpdate(), target.getUpdate());
 <a class="jxr_linenumber" name="L213" href="#L213">213</a>         result &amp;= compareAttributes(<strong class="jxr_keyword">this</strong>.getEdition(), target.getEdition());
@@ -356,7 +356,7 @@
 <a class="jxr_linenumber" name="L348" href="#L348">348</a>             result &amp;= compareAttributes(left.getWellFormedVersion(), right.getWellFormedVersion());
 <a class="jxr_linenumber" name="L349" href="#L349">349</a>         }
 <a class="jxr_linenumber" name="L350" href="#L350">350</a> 
-<a class="jxr_linenumber" name="L351" href="#L351">351</a>         <em class="jxr_comment">//todo - if the vulnerablity has an update we are might not be collecting it correctly...</em>
+<a class="jxr_linenumber" name="L351" href="#L351">351</a>         <em class="jxr_comment">//todo - if the vulnerability has an update we are might not be collecting it correctly...</em>
 <a class="jxr_linenumber" name="L352" href="#L352">352</a>         <em class="jxr_comment">// as such, this check might cause FN if the CVE has an update in the data set</em>
 <a class="jxr_linenumber" name="L353" href="#L353">353</a>         result &amp;= compareUpdateAttributes(left.getWellFormedUpdate(), right.getWellFormedUpdate());
 <a class="jxr_linenumber" name="L354" href="#L354">354</a>         result &amp;= compareAttributes(left.getWellFormedEdition(), right.getWellFormedEdition());
