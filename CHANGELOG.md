@@ -1,5 +1,21 @@
 # Change Log
 
+## [Version 12.1.9](https://github.com/dependency-check/DependencyCheck/releases/tag/v12.1.9) (2025-11-11)
+
+- fix: correct bundle audit gem in Dockerfile ([#8121](https://github.com/dependency-check/DependencyCheck/pull/8121))
+- fix: normalization during comparisons ([#8046](https://github.com/dependency-check/DependencyCheck/pull/8046))
+- docs: document multiple configurations for gradle ([#8111](https://github.com/dependency-check/DependencyCheck/pull/8111))
+- docs: fix typos in some files ([#8106](https://github.com/dependency-check/DependencyCheck/pull/8106))
+- docs: Update SBT plugin link; fix dead report link ([#8086](https://github.com/dependency-check/DependencyCheck/pull/8086))
+- chore: Replace deprecated lucene methods ([#8079](https://github.com/dependency-check/DependencyCheck/pull/8079))
+- docs: fix [#8076](https://github.com/dependency-check/DependencyCheck/pull/8076) - Error in documentation "Suppressing False Positives" ([#8077](https://github.com/dependency-check/DependencyCheck/pull/8077))
+- fix(fp): Improve false positive suppression for matches against golang web_project ([#8059](https://github.com/dependency-check/DependencyCheck/pull/8059))
+- fix(fp): Consolidate/update icu4j suppressions for false positives ([#8062](https://github.com/dependency-check/DependencyCheck/pull/8062))
+- fix(fp): Correct GRPC java suppressions for newer C/C++/native false positives ([#8063](https://github.com/dependency-check/DependencyCheck/pull/8063))
+- fix(fp): Suppress false positive CPEs for protobuf-java per [#7854](https://github.com/dependency-check/DependencyCheck/pull/7854) ([#8064](https://github.com/dependency-check/DependencyCheck/pull/8064))
+
+See the full listing of [changes](https://github.com/dependency-check/DependencyCheck/milestone/102?closed=1)
+
 ## [Version 12.1.8](https://github.com/dependency-check/DependencyCheck/releases/tag/v12.1.8) (2025-10-13)
 
 - fix: improve VulnerableSoftware comparison ([#8031](https://github.com/dependency-check/DependencyCheck/pull/8031))
