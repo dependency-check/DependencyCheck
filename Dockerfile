@@ -24,7 +24,7 @@ ADD cli/target/dependency-check-${VERSION}-release.zip /
 RUN apk update                                                                                       && \
     apk add --no-cache --virtual .build-deps curl tar                                                && \
     apk add --no-cache git ruby ruby-rdoc npm                                                        && \
-    gem install bundle-audit                                                                         && \
+    gem install bundler-audit                                                                        && \
     bundle audit update                                                                              && \
     mkdir /opt/yarn                                                                                  && \
     curl -Ls https://yarnpkg.com/latest.tar.gz | tar -xz --strip-components=1 --directory /opt/yarn  && \
