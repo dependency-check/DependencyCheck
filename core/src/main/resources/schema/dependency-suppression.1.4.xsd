@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema id="suppressions"
+           xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           elementFormDefault="qualified"
+           targetNamespace="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.4.xsd"
+           xmlns:dc="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.4.xsd">
+
+    <xs:complexType name="regexStringType">
+        <xs:simpleContent>
+            <xs:extension base="xs:string">
+                <xs:attribute name="regex" use="optional" type="xs:boolean" default="false"/>
+                <xs:attribute name="caseSensitive" use="optional" type="xs:boolean" default="false"/>
+            </xs:extension>
+        </xs:simpleContent>
+    </xs:complexType>
+    <xs:simpleType name="cvssScoreType">
+        <xs:restriction base="xs:decimal">
+            <xs:minInclusive value="0"/>
+            <xs:maxInclusive value="10"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:simpleType name="cveType">
+        <xs:restriction base="xs:string">
+            <xs:pattern value="((\w+\-)?CVE\-\d\d\d\d\-\d+|\d+)"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:simpleType name="sha1Type">
+        <xs:restriction base="xs:string">
+            <xs:pattern value="[a-fA-F0-9]{40}"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:complexType name="suppressType">
+        <xs:sequence>
+            <xs:sequence minOccurs="0" maxOccurs="1">
+                <xs:element name="notes" type="xs:string"/>
+            </xs:sequence>
+
+            <xs:choice minOccurs="0" maxOccurs="1">
+                <xs:element name="filePath" type="dc:regexStringType"/>
+                <xs:element name="sha1" type="dc:sha1Type"/>
+                <xs:element name="gav" type="dc:regexStringType"/>
+                <xs:element name="packageUrl" type="dc:regexStringType"/>
+            </xs:choice>
+
+            <xs:choice minOccurs="1" maxOccurs="unbounded">
+                <xs:element name="cpe" type="dc:regexStringType"/>
+                <xs:element name="cve" type="dc:cveType"/>
+                <xs:element name="vulnerabilityName" type="dc:regexStringType"/>
+                <xs:element name="cwe" type="xs:positiveInteger"/>
+                <xs:element name="cvssBelow" type="dc:cvssScoreType"/>
+            </xs:choice>
+        </xs:sequence>
+        <xs:attribute name="until" type="xs:date"/>
+    </xs:complexType>
+
+    <xs:complexType name="suppressionGroupType">
+        <xs:sequence>
+            <xs:sequence minOccurs="0" maxOccurs="1">
+                <xs:element name="notes" type="xs:string"/>
+            </xs:sequence>
+            <xs:element name="suppress" minOccurs="1" maxOccurs="unbounded">
+                <xs:complexType>
+                    <xs:complexContent>
+                        <xs:extension base="dc:suppressType">
+                            <!-- Suppression has no default value for "base" when part of a group. Group value is used as default. -->
+                            <xs:attribute name="base" type="xs:boolean"/>
+                        </xs:extension>
+                    </xs:complexContent>
+                </xs:complexType>
+            </xs:element>
+        </xs:sequence>
+        <xs:attribute name="name" type="xs:string"/>
+        <xs:attribute name="until" type="xs:date"/>
+        <xs:attribute name="base" type="xs:boolean" default="false"/>
+    </xs:complexType>
+
+    <xs:element name="suppressions">
+        <xs:complexType>
+            <xs:choice minOccurs="0" maxOccurs="unbounded">
+                <xs:element name="suppress" >
+                    <xs:complexType>
+                        <xs:complexContent>
+                            <xs:extension base="dc:suppressType">
+                                <!-- Default values present in standalone suppression -->
+                                <xs:attribute use="optional" name="base" default="false"/>
+                            </xs:extension>
+                        </xs:complexContent>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name="suppressionGroup" type="dc:suppressionGroupType"/>
+            </xs:choice>
+        </xs:complexType>
+    </xs:element>
+</xs:schema>
