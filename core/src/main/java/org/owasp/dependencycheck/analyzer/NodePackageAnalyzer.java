@@ -196,7 +196,7 @@ public class NodePackageAnalyzer extends AbstractNpmAnalyzer {
                     try {
                         ((AbstractNpmAnalyzer) a).prepareFileTypeAnalyzer(engine);
                     } catch (InitializationException ex) {
-                        String message = "Error initializing the " + a.getName();
+                        final String message = "Error initializing the " + a.getName();
                         LOGGER.debug(message, ex);
                     }
                 }
