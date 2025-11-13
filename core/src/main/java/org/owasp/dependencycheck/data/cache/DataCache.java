@@ -38,7 +38,7 @@ public class DataCache<T> {
      *
      * @param cache a reference to the underlying cache implementation.
      */
-    public DataCache(CacheAccess<String, T> cache) {
+    DataCache(CacheAccess<String, T> cache) {
         this.cache = cache;
     }
 

@@ -88,10 +88,6 @@ public class App {
      */
     @SuppressWarnings("squid:S4823")
     public static void main(String[] args) {
-        System.setProperty("jcs.logSystem", "slf4j");
-        if (!LOGGER.isDebugEnabled()) {
-            Slf4jAdapter.muteLogging(true);
-        }
         final int exitCode;
         final App app = new App();
         exitCode = app.run(args);

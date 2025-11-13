@@ -67,7 +67,11 @@ Copyright (c) 2012 - Jeremy Long. All Rights Reserved.
                     <archive>
                         <manifest>
                             <mainClass>org.owasp.dependencycheck.App</mainClass>
+                            <addClasspath>true</addClasspath>
                         </manifest>
+                        <manifestEntries>
+                            <Premain-Class>org.owasp.dependencycheck.PluginLoader</Premain-Class>
+                        </manifestEntries>
                     </archive>
                 </configuration>
             </plugin>
@@ -79,6 +83,11 @@ Copyright (c) 2012 - Jeremy Long. All Rights Reserved.
                         <program>
                             <mainClass>org.owasp.dependencycheck.App</mainClass>
                             <id>dependency-check</id>
+                            <commandLineArguments>
+                                <commandLineArgument>-javaagent:@REPO@/${project.artifactId}-${project.version}.jar=@BASEDIR@/plugins</commandLineArgument>
+                                <commandLineArgument>-jar</commandLineArgument>
+                                <commandLineArgument>@REPO@/${project.artifactId}-${project.version}.jar</commandLineArgument>
+                            </commandLineArguments>
                         </program>
                     </programs>
                     <assembleDirectory>${project.build.directory}/release</assembleDirectory>
@@ -88,10 +97,8 @@ Copyright (c) 2012 - Jeremy Long. All Rights Reserved.
                     </binFileExtensions>
                     <repositoryLayout>flat</repositoryLayout>
                     <repositoryName>lib</repositoryName>
-                    <useWildcardClassPath>true</useWildcardClassPath>
-                    <configurationDirectory>plugins/*</configurationDirectory>
-                    <includeConfigurationDirectoryInClasspath>true</includeConfigurationDirectoryInClasspath>
-                    <unixScriptTemplate>${project.basedir}/src/main/conf/unixBinTemplate</unixScriptTemplate>
+                    <unixScriptTemplate>${project.basedir}/src/main/conf/unixBinTemplate.sh</unixScriptTemplate>
+                    <windowsScriptTemplate>${project.basedir}/src/main/conf/windowsBinTemplate.bat</windowsScriptTemplate>
                     <!--
                        enable-native-access=ALL-UNNAMED
                             Java 21+: Needed by Lucene indexes unless we do -Dorg.apache.lucene.store.MMapDirectory.enableMemorySegments=false
@@ -107,25 +114,6 @@ Copyright (c) 2012 - Jeremy Long. All Rights Reserved.
                         <goals>
                             <goal>assemble</goal>
                         </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-antrun-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>fix-windows-shell-script</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>run</goal>
-                        </goals>
-                        <configuration>
-                            <!-- Hack/workaround for https://github.com/mojohaus/appassembler/issues/114 -->
-                            <target>
-                                <replace file="${project.build.directory}/release/bin/dependency-check.bat" token="%JAVACMD% %JAVA_OPTS%" value="&quot;%JAVACMD%&quot; %JAVA_OPTS%" failOnNoReplacements="true" />
-                            </target>
-                        </configuration>
                     </execution>
                 </executions>
             </plugin>
@@ -180,10 +168,6 @@ Copyright (c) 2012 - Jeremy Long. All Rights Reserved.
             <artifactId>slf4j-api</artifactId>
         </dependency>
         <dependency>
-            <groupId>io.github.jeremylong</groupId>
-            <artifactId>jcs3-slf4j</artifactId>
-        </dependency>
-        <dependency>
             <!-- not visible in imports due to method chaining, but App code uses classes from this library -->
             <groupId>io.github.jeremylong</groupId>
             <artifactId>open-vulnerability-clients</artifactId>
@@ -201,6 +185,11 @@ Copyright (c) 2012 - Jeremy Long. All Rights Reserved.
                     <artifactId>tools</artifactId>
                 </exclusion>
             </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 </project>
