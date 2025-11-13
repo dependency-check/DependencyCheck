@@ -59,10 +59,10 @@ import java.util.regex.Pattern;
 import java.net.SocketTimeoutException;
 
 import javax.annotation.Nullable;
+
 import org.apache.commons.lang3.StringUtils;
 import org.owasp.dependencycheck.utils.CvssUtil;
 import org.sonatype.goodies.packageurl.InvalidException;
-import org.sonatype.ossindex.service.client.transport.Transport.TransportException;
 
 /**
  * Enrich dependency information from Sonatype OSS index.
@@ -131,13 +131,14 @@ public class OssIndexAnalyzer extends AbstractAnalyzer {
 
     @Override
     protected void prepareAnalyzer(Engine engine) throws InitializationException {
-      synchronized (FETCH_MUTIX) {
-        if (StringUtils.isEmpty(getSettings().getString(KEYS.ANALYZER_OSSINDEX_USER, StringUtils.EMPTY)) ||
-            StringUtils.isEmpty(getSettings().getString(KEYS.ANALYZER_OSSINDEX_PASSWORD, StringUtils.EMPTY))) {
-          LOG.warn("Disabling OSS Index analyzer due to missing user/password credentials. Authentication is now required: https://ossindex.sonatype.org/doc/auth-required");
-          setEnabled(false);
+        synchronized (FETCH_MUTIX) {
+            if (StringUtils.isEmpty(getSettings().getString(KEYS.ANALYZER_OSSINDEX_USER, StringUtils.EMPTY))
+                    || StringUtils.isEmpty(getSettings().getString(KEYS.ANALYZER_OSSINDEX_PASSWORD, StringUtils.EMPTY))) {
+                LOG.warn("Disabling OSS Index analyzer due to missing user/password credentials. Authentication is now " +
+                        "required: https://ossindex.sonatype.org/doc/auth-required");
+                setEnabled(false);
+            }
         }
-      }
     }
 
     @Override

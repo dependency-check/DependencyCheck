@@ -27,6 +27,7 @@ import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.owasp.dependencycheck.Engine;
 import org.owasp.dependencycheck.exception.ExceptionCollection;
+import org.owasp.dependencycheck.utils.scarf.TelemetryCollector;
 
 /**
  * Maven Plugin that checks the project dependencies to see if they have any
@@ -106,6 +107,7 @@ public class CheckMojo extends BaseDependencyCheckMojo {
      */
     @Override
     protected ExceptionCollection scanDependencies(final Engine engine) throws MojoExecutionException {
+        TelemetryCollector.send(getSettings());
         return scanArtifacts(getProject(), engine);
     }
 

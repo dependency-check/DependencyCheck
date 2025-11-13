@@ -528,6 +528,11 @@ public class VulnerableSoftware extends Cpe implements Serializable {
         return sb.toString();
     }
 
+    /**
+     * Returns the NVD search URL for this vulnerable software.
+     *
+     * @return the NVD search URL
+     */
     public String toNvdSearchUrl() {
         return CpeIdentifier.nvdSearchUrlFor(this);
     }

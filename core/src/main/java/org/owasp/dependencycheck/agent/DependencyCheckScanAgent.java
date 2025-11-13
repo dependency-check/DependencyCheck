@@ -35,6 +35,7 @@ import org.owasp.dependencycheck.exception.ScanAgentException;
 import org.owasp.dependencycheck.reporting.ReportGenerator;
 import org.owasp.dependencycheck.utils.Settings;
 import org.owasp.dependencycheck.utils.SeverityUtil;
+import org.owasp.dependencycheck.utils.scarf.TelemetryCollector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -888,6 +889,8 @@ public class DependencyCheckScanAgent {
     @SuppressWarnings("squid:S2095")
     private Engine executeDependencyCheck() throws ExceptionCollection {
         populateSettings();
+        String version = settings.getString(Settings.KEYS.APPLICATION_VERSION, "Unknown");
+        TelemetryCollector.send(settings, "dependency-check-scan-agent", version);
         final Engine engine;
         try {
             engine = new Engine(settings);
