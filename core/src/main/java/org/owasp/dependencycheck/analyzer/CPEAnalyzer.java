@@ -578,7 +578,7 @@ public class CPEAnalyzer extends AbstractAnalyzer {
 
     /**
      * Searches the collection of boost terms for the given term. The elements
-     * are case insensitive matched using only the alpha-numeric contents of the
+     * are case insensitive matched using only the alphanumeric contents of the
      * terms; all other characters are removed.
      *
      * @param term the term to search for
@@ -663,7 +663,7 @@ public class CPEAnalyzer extends AbstractAnalyzer {
      * Only returns alpha numeric characters contained in a given package name.
      *
      * @param name the package name to cleanse
-     * @return the cleansed packaage name
+     * @return the cleansed package name
      */
     private String cleanPackageName(String name) {
         if (name == null) {
