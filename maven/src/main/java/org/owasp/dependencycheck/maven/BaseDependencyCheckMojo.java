@@ -20,7 +20,6 @@ package org.owasp.dependencycheck.maven;
 import com.github.packageurl.MalformedPackageURLException;
 import com.github.packageurl.PackageURL.StandardTypes;
 import com.github.packageurl.PackageURL;
-import io.github.jeremylong.jcs3.slf4j.Slf4jAdapter;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -2731,11 +2730,6 @@ public abstract class BaseDependencyCheckMojo extends AbstractMojo implements Ma
      * Hacky method of muting the noisy logging from JCS
      */
     protected void muteNoisyLoggers() {
-        System.setProperty("jcs.logSystem", "slf4j");
-        if (!getLog().isDebugEnabled()) {
-            Slf4jAdapter.muteLogging(true);
-        }
-
         final String[] noisyLoggers = {
             "org.apache.hc"
         };

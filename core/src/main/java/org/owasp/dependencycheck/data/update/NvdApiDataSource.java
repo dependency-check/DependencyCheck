@@ -315,12 +315,11 @@ public class NvdApiDataSource implements CachedWebDataSource {
         if (key != null) {
             //using a higher delay as the system may not be able to process these faster.
             builder.withApiKey(key)
-                    .withDelay(5000)
-                    .withThreadCount(4);
+                    .withrequestsPerThirtySeconds(settings.getInt(Settings.KEYS.NVD_API_REQUESTS_PER_30_SECONDS_WITH_API_KEY, 50));
         } else {
             LOGGER.warn("An NVD API Key was not provided - it is highly recommended to use "
                     + "an NVD API key as the update can take a VERY long time without an API Key");
-            builder.withDelay(10000);
+            builder.withrequestsPerThirtySeconds(settings.getInt(Settings.KEYS.NVD_API_REQUESTS_PER_30_SECONDS_WITHOUT_API_KEY, 5));
         }
 
         final int resultsPerPage = Math.min(settings.getInt(Settings.KEYS.NVD_API_RESULTS_PER_PAGE, RESULTS_PER_PAGE), RESULTS_PER_PAGE);

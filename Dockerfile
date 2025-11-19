@@ -15,6 +15,7 @@ ARG GID=1000
 ENV user=dependencycheck
 ENV JAVA_HOME=/opt/jdk
 ENV JAVA_OPTS="-Danalyzer.assembly.dotnet.path=/usr/bin/dotnet -Danalyzer.bundle.audit.path=/usr/bin/bundle-audit -Danalyzer.golang.path=/usr/local/go/bin/go"
+ENV ODC_NAME=dependency-check-docker
 
 COPY --from=jlink /jlinked /opt/jdk/
 COPY --from=go /usr/local/go/ /usr/local/go/
@@ -24,7 +25,7 @@ ADD cli/target/dependency-check-${VERSION}-release.zip /
 RUN apk update                                                                                       && \
     apk add --no-cache --virtual .build-deps curl tar                                                && \
     apk add --no-cache git ruby ruby-rdoc npm                                                        && \
-    gem install bundle-audit                                                                         && \
+    gem install bundler-audit                                                                        && \
     bundle audit update                                                                              && \
     mkdir /opt/yarn                                                                                  && \
     curl -Ls https://yarnpkg.com/latest.tar.gz | tar -xz --strip-components=1 --directory /opt/yarn  && \

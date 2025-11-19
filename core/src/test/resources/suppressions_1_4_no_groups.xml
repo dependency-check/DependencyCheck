@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<suppressions xmlns="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.4.xsd"
+              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:schemaLocation="https://dependency-check.github.io/DependencyCheck/dependency-suppression.1.4.xsd">
+    <!-- Contentwise same as suppression_1_3.xml. Still valid according to schema 1.4 -->
+    <suppress>
+        <notes><![CDATA[
+        This suppresses cpe:/a:csv:csv:1.0 for some.jar in the "c:\path\to" directory.
+        ]]></notes>
+        <filePath>c:\path\to\some.jar</filePath>
+        <cpe>cpe:/a:csv:csv:1.0</cpe>
+    </suppress>
+    <suppress base="true">
+        <notes><![CDATA[
+        This suppresses any jboss:jboss cpe for any test.jar in any directory.
+        ]]></notes>
+        <filePath regex="true">.*\btest\.jar</filePath>
+        <cpe>cpe:/a:jboss:jboss</cpe>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
+        This suppresses a specific cve for any test.jar in any directory.
+        ]]></notes>
+        <filePath regex="true">.*\btest\.jar</filePath>
+        <cve>CVE-2013-1337</cve>
+    </suppress>
+    <suppress until="2014-01-01Z">
+        <notes><![CDATA[
+        This suppresses a specific cve for any dependency in any directory that has the specified sha1 checksum. If current date is not yet on or beyond 1 Jan 2014
+        ]]></notes>
+        <sha1>384FAA82E193D4E4B0546059CA09572654BC3970</sha1>
+        <cve>CVE-2013-1337</cve>
+    </suppress>
+    <suppress until="9999-03-25Z">
+        <notes><![CDATA[
+        This suppresses all CVE entries that have a score below CVSS 7.  
+        But only if current date is not yet on or beyond 31 Dec 9999 
+        (which is expected to be sufficiently far in the future to have this 
+            rule still be active when the test-cases run)
+        ]]></notes>
+        <cvssBelow>7</cvssBelow>
+    </suppress>
+</suppressions>
