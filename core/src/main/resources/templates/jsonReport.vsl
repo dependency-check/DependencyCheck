@@ -97,7 +97,6 @@
                                 "id": "$id.value"
                                 #if ($id.url),"url": "$enc.json($id.url)"#end
                                 #if ($id.notes),"notes": "$enc.json($id.notes)"#end
-                                #if ($id.description),"description":"$enc.json($id.description)"#end
                             }
                         #end
                     ]#end
@@ -149,7 +148,6 @@
                         "id": "$enc.json($id.value)"
                         #if($id.confidence),"confidence": "$enc.json($id.confidence)"#end
                         #if($id.url),"url": "$enc.json($id.url)"#end
-                        #if($id.description),"description": "$enc.json($id.description)"#end
                         #if($id.notes),"notes": "$enc.json($id.notes)"#end
                     }
                 #end
@@ -162,7 +160,6 @@
                     "id": "$enc.json($id.value)"
                     #if($id.confidence),"confidence": "$enc.json($id.confidence)"#end
                     #if($id.url),"url": "$enc.json($id.url)"#end
-                    #if($id.description),"description": "$enc.json($id.description)"#end
                     #if($id.notes),"notes": "$enc.json($id.notes)"#end
                 }
                 #end
@@ -175,7 +172,6 @@
                         "id": "$enc.json($id.value)"
                         #if($id.confidence),"confidence": "$enc.json($id.confidence)"#end
                         #if($id.url),"url": "$enc.json($id.url)"#end
-                        #if($id.description),"description": "$enc.json($id.description)"#end
                         #if($id.notes),"notes": "$enc.json($id.notes)"#end
                     }
                 #end

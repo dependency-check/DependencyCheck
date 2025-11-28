@@ -116,9 +116,6 @@ Copyright (c) 2018 Jeremy Long. All Rights Reserved.
 #if( $id.url )
                             <url>$enc.xml($id.url)</url>
 #end
-#if( $id.description )
-                            <description>$enc.xml($id.description)</description>
-#end
 #if ($id.notes)
                             <notes>$enc.xml($id.notes)</notes>
 #end
@@ -161,9 +158,6 @@ Copyright (c) 2018 Jeremy Long. All Rights Reserved.
 #if( $id.url )
                     <url>$enc.xml($id.url)</url>
 #end
-#if( $id.description )
-                    <description>$enc.xml($id.description)</description>
-#end
 #if ($id.notes)
                     <notes>$enc.xml($id.notes)</notes>
 #end
@@ -175,8 +169,6 @@ Copyright (c) 2018 Jeremy Long. All Rights Reserved.
 #if( $id.url )
                     <url>$enc.xml($id.url)</url>
 #end
-#if($id.description)<description>$enc.xml($id.description)</description>
-#end
 #if ($id.notes)     <notes>$enc.xml($id.notes)</notes>
 #end
                 </vulnerabilityIds>
@@ -186,9 +178,6 @@ Copyright (c) 2018 Jeremy Long. All Rights Reserved.
                     <id>$enc.xml($id.value)</id>
 #if( $id.url )
                     <url>$enc.xml($id.url)</url>
-#end
-#if( $id.description )
-                    <description>$enc.xml($id.description)</description>
 #end
 #if ($id.notes)
                     <notes>$enc.xml($id.notes)</notes>
