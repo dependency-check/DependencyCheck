@@ -369,7 +369,7 @@
 #end
                     },
 #end
-#if (!$vuln.cwe.cwes.isEmpty())
+#if (!$vuln.cwes.isEmpty())
                     "cwes": [
 #set($addComma=0)
 #foreach($cweEntry in $vuln.cwes.entries)
