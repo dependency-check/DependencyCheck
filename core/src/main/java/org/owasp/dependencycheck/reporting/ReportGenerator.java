@@ -260,10 +260,12 @@ public class ReportGenerator {
         final String scanDateJunit = DateTimeFormatter.ISO_LOCAL_DATE_TIME.format(dt);
         final String scanDateGitLab = DateTimeFormatter.ISO_LOCAL_DATE_TIME.format(dt.withNano(0));
 
+        // Remember to update type definitions at templates/velocity_implicit.vm
         final VelocityContext ctxt = new VelocityContext();
         ctxt.put("applicationName", applicationName);
         dependencies.sort(Dependency.NAME_COMPARATOR);
         ctxt.put("dependencies", dependencies);
+        ctxt.put("analyzers", analyzers);
         ctxt.put("properties", properties);
         ctxt.put("scanDate", scanDate);
         ctxt.put("scanDateXML", scanDateXML);

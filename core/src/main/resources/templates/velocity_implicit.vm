@@ -2,12 +2,15 @@
 
 ## See org.owasp.dependencycheck.reporting.ReportGenerator#createContext
 
-## Scan output and metadata
+## Scan output
 #* @vtlvariable name="dependencies" type="java.util.List<org.owasp.dependencycheck.dependency.Dependency>" *#
-#* @vtlvariable name="properties" type="org.owasp.dependencycheck.data.nvdcve.DatabaseProperties" *#
-#* @vtlvariable name="version" type="java.lang.String" *#
-#* @vtlvariable name="settings" type="org.owasp.dependencycheck.utils.Settings" *#
 #* @vtlvariable name="exceptions" type="java.util.List<java.lang.Throwable>" *#
+
+## Scan metadata
+#* @vtlvariable name="version" type="java.lang.String" *#
+#* @vtlvariable name="properties" type="org.owasp.dependencycheck.data.nvdcve.DatabaseProperties" *#
+#* @vtlvariable name="settings" type="org.owasp.dependencycheck.utils.Settings" *#
+#* @vtlvariable name="analyzers" type="java.util.List<org.owasp.dependencycheck.analyzer.Analyzer>" *#
 
 ## Pre-formatted convenience timestamps
 #* @vtlvariable name="scanDate" type="java.lang.String" *#
@@ -15,7 +18,7 @@
 #* @vtlvariable name="scanDateJunit" type="java.lang.String" *#
 #* @vtlvariable name="scanDateGitLab" type="java.lang.String" *#
 
-## Tools
+## Velocity Tools
 #* @vtlvariable name="enc" type="org.owasp.dependencycheck.reporting.EscapeTool" *#
 #* @vtlvariable name="rpt" type="org.owasp.dependencycheck.reporting.ReportTool" *#
 #* @vtlvariable name="checksum" type="org.owasp.dependencycheck.utils.Checksum" *#
@@ -32,5 +35,3 @@
 #* @vtlvariable name="artifactID" type="java.lang.String" *#
 #* @vtlvariable name="applicationName" type="java.lang.String" *#
 #* @vtlvariable name="applicationVersion" type="java.lang.String" *#
-
-
