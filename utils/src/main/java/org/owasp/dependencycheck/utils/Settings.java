@@ -429,6 +429,10 @@ public final class Settings {
          */
         public static final String ANALYZER_PNPM_AUDIT_ENABLED = "analyzer.pnpm.audit.enabled";
         /**
+         * The properties key for the Pnpm registry url.
+         */
+        public static final String ANALYZER_PNPM_AUDIT_REGISTRY = "analyzer.pnpm.audit.registry";
+        /**
          * The properties key for supplying the URL to the Node Audit API.
          */
         public static final String ANALYZER_NODE_AUDIT_URL = "analyzer.node.audit.url";

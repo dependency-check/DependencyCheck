@@ -61,6 +61,11 @@ public class PnpmAuditAnalyzer extends AbstractNpmAnalyzer {
     public static final String PNPM_PACKAGE_LOCK = "pnpm-lock.yaml";
 
     /**
+     * The default registry parameter to pass to the pnpm audit execution.
+     */
+    public static final String DEFAULT_REGISTRY = "https://registry.npmjs.org/";
+
+    /**
      * Filter that detects files named "pnpm-lock.yaml"
      */
     private static final FileFilter LOCK_FILE_FILTER = FileFilterBuilder.newInstance()
@@ -202,9 +207,9 @@ public class PnpmAuditAnalyzer extends AbstractNpmAnalyzer {
             }
             // pnpm audit returns a json compliant with NpmAuditParser
             args.add("--json");
-            // ensure we are using the right registry despite .npmrc
+            // ensure we are using the right registry despite .npmrc, but allow override
             args.add("--registry");
-            args.add("https://registry.npmjs.org/");
+            args.add(getSettings().getString(Settings.KEYS.ANALYZER_PNPM_AUDIT_REGISTRY, DEFAULT_REGISTRY));
             final ProcessBuilder builder = new ProcessBuilder(args);
             builder.directory(folder);
             // Workaround 64k limitation of InputStream, redirect stdout to a file that we will read later
