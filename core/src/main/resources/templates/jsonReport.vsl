@@ -13,6 +13,9 @@
 
     #if($exceptions)
         #macro( writeJsonException $type $ex $depth)
+            #* @vtlvariable name="type" type="java.lang.String" *#
+            #* @vtlvariable name="ex" type="java.lang.Throwable" *#
+            #* @vtlvariable name="depth" type="java.lang.Integer" *#
             "$type":{"message":"$enc.json($ex.toString())"
             #if($ex.getStackTrace())
                 ,"stackTrace":[

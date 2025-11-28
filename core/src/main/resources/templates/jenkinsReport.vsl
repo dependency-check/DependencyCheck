@@ -479,6 +479,9 @@ Getting Help: <a href="https://github.com/dependency-check/DependencyCheck/issue
                 #set($cnt=0)
 #if($exceptions)
     #macro( writeHtmlException $type $ex $depth)
+        #* @vtlvariable name="type" type="java.lang.String" *#
+        #* @vtlvariable name="ex" type="java.lang.Throwable" *#
+        #* @vtlvariable name="depth" type="java.lang.Integer" *#
         #set($cnt=$cnt+1)
         <h4 id="header$cnt" class="subsectionheader white">$enc.html($ex.getMessage())</h4>
         <div id="content$cnt" class="subsectioncontent standardsubsection">

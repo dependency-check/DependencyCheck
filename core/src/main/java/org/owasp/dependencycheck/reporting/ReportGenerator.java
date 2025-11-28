@@ -264,7 +264,6 @@ public class ReportGenerator {
         ctxt.put("applicationName", applicationName);
         dependencies.sort(Dependency.NAME_COMPARATOR);
         ctxt.put("dependencies", dependencies);
-        ctxt.put("analyzers", analyzers);
         ctxt.put("properties", properties);
         ctxt.put("scanDate", scanDate);
         ctxt.put("scanDateXML", scanDateXML);

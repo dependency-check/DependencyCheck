@@ -30,6 +30,9 @@ Copyright (c) 2018 Jeremy Long. All Rights Reserved.
 #end
 #if($exceptions)
     #macro( writeXmlException $type $ex $depth)
+        #* @vtlvariable name="type" type="java.lang.String" *#
+        #* @vtlvariable name="ex" type="java.lang.Throwable" *#
+        #* @vtlvariable name="depth" type="java.lang.Integer" *#
         <$type><message>$enc.xml($ex.toString())</message>
         #if($ex.getStackTrace())
             <stackTrace>
