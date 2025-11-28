@@ -268,35 +268,35 @@
 #if($vuln.cvssV4.cvssData.userInteraction)
                         ,"userInteraction": "$enc.json($vuln.cvssV4.cvssData.userInteraction)"
 #end
-#if($vuln.cvssV4.cvssData.vulnerableSystemConfidentiality)
-                        ,"vulnerableSystemConfidentiality": "$enc.json($vuln.cvssV4.cvssData.vulnerableSystemConfidentiality)"
+#if($vuln.cvssV4.cvssData.vulnConfidentialityImpact)
+                        ,"vulnerableSystemConfidentiality": "$enc.json($vuln.cvssV4.cvssData.vulnConfidentialityImpact)"
 #end
-#if($vuln.cvssV4.cvssData.vulnerableSystemIntegrity)
-                        ,"vulnerableSystemIntegrity": "$enc.json($vuln.cvssV4.cvssData.vulnerableSystemIntegrity)"
+#if($vuln.cvssV4.cvssData.vulnIntegrityImpact)
+                        ,"vulnerableSystemIntegrity": "$enc.json($vuln.cvssV4.cvssData.vulnIntegrityImpact)"
 #end
-#if($vuln.cvssV4.cvssData.vulnerableSystemAvailability)
-                        ,"vulnerableSystemAvailability": "$enc.json($vuln.cvssV4.cvssData.vulnerableSystemAvailability)"
+#if($vuln.cvssV4.cvssData.vulnAvailabilityImpact)
+                        ,"vulnerableSystemAvailability": "$enc.json($vuln.cvssV4.cvssData.vulnAvailabilityImpact)"
 #end
-#if($vuln.cvssV4.cvssData.subsequentSystemConfidentiality)
-                        ,"subsequentSystemConfidentiality": "$enc.json($vuln.cvssV4.cvssData.subsequentSystemConfidentiality)"
+#if($vuln.cvssV4.cvssData.subConfidentialityImpact)
+                        ,"subsequentSystemConfidentiality": "$enc.json($vuln.cvssV4.cvssData.subConfidentialityImpact)"
 #end
-#if($vuln.cvssV4.cvssData.subsequentSystemIntegrity)
-                        ,"subsequentSystemIntegrity": "$enc.json($vuln.cvssV4.cvssData.subsequentSystemIntegrity)"
+#if($vuln.cvssV4.cvssData.subIntegrityImpact)
+                        ,"subsequentSystemIntegrity": "$enc.json($vuln.cvssV4.cvssData.subIntegrityImpact)"
 #end
-#if($vuln.cvssV4.cvssData.subsequentSystemAvailability)
-                        ,"subsequentSystemAvailability": "$enc.json($vuln.cvssV4.cvssData.subsequentSystemAvailability)"
+#if($vuln.cvssV4.cvssData.subAvailabilityImpact)
+                        ,"subsequentSystemAvailability": "$enc.json($vuln.cvssV4.cvssData.subAvailabilityImpact)"
 #end
 #if($vuln.cvssV4.cvssData.exploitMaturity)
                         ,"exploitMaturity": "$enc.json($vuln.cvssV4.cvssData.exploitMaturity)"
 #end
-#if($vuln.cvssV4.cvssData.confidentialityRequirements)
-                        ,"confidentialityRequirements": "$enc.json($vuln.cvssV4.cvssData.confidentialityRequirements)"
+#if($vuln.cvssV4.cvssData.confidentialityRequirement)
+                        ,"confidentialityRequirements": "$enc.json($vuln.cvssV4.cvssData.confidentialityRequirement)"
 #end
-#if($vuln.cvssV4.cvssData.integrityRequirements)
-                        ,"integrityRequirements": "$enc.json($vuln.cvssV4.cvssData.integrityRequirements)"
+#if($vuln.cvssV4.cvssData.integrityRequirement)
+                        ,"integrityRequirements": "$enc.json($vuln.cvssV4.cvssData.integrityRequirement)"
 #end
-#if($vuln.cvssV4.cvssData.availabilityRequirements)
-                        ,"availabilityRequirements": "$enc.json($vuln.cvssV4.cvssData.availabilityRequirements)"
+#if($vuln.cvssV4.cvssData.availabilityRequirement)
+                        ,"availabilityRequirements": "$enc.json($vuln.cvssV4.cvssData.availabilityRequirement)"
 #end
 #if($vuln.cvssV4.cvssData.modifiedAttackVector)
                         ,"modifiedAttackVector": "$enc.json($vuln.cvssV4.cvssData.modifiedAttackVector)"
@@ -313,23 +313,23 @@
 #if($vuln.cvssV4.cvssData.modifiedUserInteraction)
                         ,"modifiedUserInteraction": "$enc.json($vuln.cvssV4.cvssData.modifiedUserInteraction)"
 #end
-#if($vuln.cvssV4.cvssData.modifiedVulnerableSystemConfidentiality)
-                        ,"modifiedVulnerableSystemConfidentiality": "$enc.json($vuln.cvssV4.cvssData.modifiedVulnerableSystemConfidentiality)"
+#if($vuln.cvssV4.cvssData.modifiedVulnConfidentialityImpact)
+                        ,"modifiedVulnerableSystemConfidentiality": "$enc.json($vuln.cvssV4.cvssData.modifiedVulnConfidentialityImpact)"
 #end
-#if($vuln.cvssV4.cvssData.modifiedVulnerableSystemIntegrity)
-                        ,"modifiedVulnerableSystemIntegrity": "$enc.json($vuln.cvssV4.cvssData.modifiedVulnerableSystemIntegrity)"
+#if($vuln.cvssV4.cvssData.modifiedVulnIntegrityImpact)
+                        ,"modifiedVulnerableSystemIntegrity": "$enc.json($vuln.cvssV4.cvssData.modifiedVulnIntegrityImpact)"
 #end
-#if($vuln.cvssV4.cvssData.modifiedVulnerableSystemAvailability)
-                        ,"modifiedVulnerableSystemAvailability": "$enc.json($vuln.cvssV4.cvssData.modifiedVulnerableSystemAvailability)"
+#if($vuln.cvssV4.cvssData.modifiedVulnAvailabilityImpact)
+                        ,"modifiedVulnerableSystemAvailability": "$enc.json($vuln.cvssV4.cvssData.modifiedVulnAvailabilityImpact)"
 #end
-#if($vuln.cvssV4.cvssData.modifiedSubsequentSystemConfidentiality)
-                        ,"modifiedSubsequentSystemConfidentiality": "$enc.json($vuln.cvssV4.cvssData.modifiedSubsequentSystemConfidentiality)"
+#if($vuln.cvssV4.cvssData.modifiedSubConfidentialityImpact)
+                        ,"modifiedSubsequentSystemConfidentiality": "$enc.json($vuln.cvssV4.cvssData.modifiedSubConfidentialityImpact)"
 #end
-#if($vuln.cvssV4.cvssData.modifiedSubsequentSystemIntegrity)
-                        ,"modifiedSubsequentSystemIntegrity": "$enc.json($vuln.cvssV4.cvssData.modifiedSubsequentSystemIntegrity)"
+#if($vuln.cvssV4.cvssData.modifiedSubIntegrityImpact)
+                        ,"modifiedSubsequentSystemIntegrity": "$enc.json($vuln.cvssV4.cvssData.modifiedSubIntegrityImpact)"
 #end
-#if($vuln.cvssV4.cvssData.modifiedSubsequentSystemAvailability)
-                        ,"modifiedSubsequentSystemAvailability": "$enc.json($vuln.cvssV4.cvssData.modifiedSubsequentSystemAvailability)"
+#if($vuln.cvssV4.cvssData.modifiedSubAvailabilityImpact)
+                        ,"modifiedSubsequentSystemAvailability": "$enc.json($vuln.cvssV4.cvssData.modifiedSubAvailabilityImpact)"
 #end
 #if($vuln.cvssV4.cvssData.safety)
                         ,"safety": "$enc.json($vuln.cvssV4.cvssData.safety)"
@@ -475,35 +475,35 @@
 #if($vuln.cvssV4.cvssData.userInteraction)
                         ,"userInteraction": "$enc.json($vuln.cvssV4.cvssData.userInteraction)"
 #end
-#if($vuln.cvssV4.cvssData.vulnerableSystemConfidentiality)
-                        ,"vulnerableSystemConfidentiality": "$enc.json($vuln.cvssV4.cvssData.vulnerableSystemConfidentiality)"
+#if($vuln.cvssV4.cvssData.vulnConfidentialityImpact)
+                        ,"vulnerableSystemConfidentiality": "$enc.json($vuln.cvssV4.cvssData.vulnConfidentialityImpact)"
 #end
-#if($vuln.cvssV4.cvssData.vulnerableSystemIntegrity)
-                        ,"vulnerableSystemIntegrity": "$enc.json($vuln.cvssV4.cvssData.vulnerableSystemIntegrity)"
+#if($vuln.cvssV4.cvssData.vulnIntegrityImpact)
+                        ,"vulnerableSystemIntegrity": "$enc.json($vuln.cvssV4.cvssData.vulnIntegrityImpact)"
 #end
-#if($vuln.cvssV4.cvssData.vulnerableSystemAvailability)
-                        ,"vulnerableSystemAvailability": "$enc.json($vuln.cvssV4.cvssData.vulnerableSystemAvailability)"
+#if($vuln.cvssV4.cvssData.vulnAvailabilityImpact)
+                        ,"vulnerableSystemAvailability": "$enc.json($vuln.cvssV4.cvssData.vulnAvailabilityImpact)"
 #end
-#if($vuln.cvssV4.cvssData.subsequentSystemConfidentiality)
-                        ,"subsequentSystemConfidentiality": "$enc.json($vuln.cvssV4.cvssData.subsequentSystemConfidentiality)"
+#if($vuln.cvssV4.cvssData.subConfidentialityImpact)
+                        ,"subsequentSystemConfidentiality": "$enc.json($vuln.cvssV4.cvssData.subConfidentialityImpact)"
 #end
-#if($vuln.cvssV4.cvssData.subsequentSystemIntegrity)
-                        ,"subsequentSystemIntegrity": "$enc.json($vuln.cvssV4.cvssData.subsequentSystemIntegrity)"
+#if($vuln.cvssV4.cvssData.subIntegrityImpact)
+                        ,"subsequentSystemIntegrity": "$enc.json($vuln.cvssV4.cvssData.subIntegrityImpact)"
 #end
-#if($vuln.cvssV4.cvssData.subsequentSystemAvailability)
-                        ,"subsequentSystemAvailability": "$enc.json($vuln.cvssV4.cvssData.subsequentSystemAvailability)"
+#if($vuln.cvssV4.cvssData.subAvailabilityImpact)
+                        ,"subsequentSystemAvailability": "$enc.json($vuln.cvssV4.cvssData.subAvailabilityImpact)"
 #end
 #if($vuln.cvssV4.cvssData.exploitMaturity)
                         ,"exploitMaturity": "$enc.json($vuln.cvssV4.cvssData.exploitMaturity)"
 #end
-#if($vuln.cvssV4.cvssData.confidentialityRequirements)
-                        ,"confidentialityRequirements": "$enc.json($vuln.cvssV4.cvssData.confidentialityRequirements)"
+#if($vuln.cvssV4.cvssData.confidentialityRequirement)
+                        ,"confidentialityRequirements": "$enc.json($vuln.cvssV4.cvssData.confidentialityRequirement)"
 #end
-#if($vuln.cvssV4.cvssData.integrityRequirements)
-                        ,"integrityRequirements": "$enc.json($vuln.cvssV4.cvssData.integrityRequirements)"
+#if($vuln.cvssV4.cvssData.integrityRequirement)
+                        ,"integrityRequirements": "$enc.json($vuln.cvssV4.cvssData.integrityRequirement)"
 #end
-#if($vuln.cvssV4.cvssData.availabilityRequirements)
-                        ,"availabilityRequirements": "$enc.json($vuln.cvssV4.cvssData.availabilityRequirements)"
+#if($vuln.cvssV4.cvssData.availabilityRequirement)
+                        ,"availabilityRequirements": "$enc.json($vuln.cvssV4.cvssData.availabilityRequirement)"
 #end
 #if($vuln.cvssV4.cvssData.modifiedAttackVector)
                         ,"modifiedAttackVector": "$enc.json($vuln.cvssV4.cvssData.modifiedAttackVector)"
@@ -520,23 +520,23 @@
 #if($vuln.cvssV4.cvssData.modifiedUserInteraction)
                         ,"modifiedUserInteraction": "$enc.json($vuln.cvssV4.cvssData.modifiedUserInteraction)"
 #end
-#if($vuln.cvssV4.cvssData.modifiedVulnerableSystemConfidentiality)
-                        ,"modifiedVulnerableSystemConfidentiality": "$enc.json($vuln.cvssV4.cvssData.modifiedVulnerableSystemConfidentiality)"
+#if($vuln.cvssV4.cvssData.modifiedVulnConfidentialityImpact)
+                        ,"modifiedVulnerableSystemConfidentiality": "$enc.json($vuln.cvssV4.cvssData.modifiedVulnConfidentialityImpact)"
 #end
-#if($vuln.cvssV4.cvssData.modifiedVulnerableSystemIntegrity)
-                        ,"modifiedVulnerableSystemIntegrity": "$enc.json($vuln.cvssV4.cvssData.modifiedVulnerableSystemIntegrity)"
+#if($vuln.cvssV4.cvssData.modifiedVulnIntegrityImpact)
+                        ,"modifiedVulnerableSystemIntegrity": "$enc.json($vuln.cvssV4.cvssData.modifiedVulnIntegrityImpact)"
 #end
-#if($vuln.cvssV4.cvssData.modifiedVulnerableSystemAvailability)
-                        ,"modifiedVulnerableSystemAvailability": "$enc.json($vuln.cvssV4.cvssData.modifiedVulnerableSystemAvailability)"
+#if($vuln.cvssV4.cvssData.modifiedVulnAvailabilityImpact)
+                        ,"modifiedVulnerableSystemAvailability": "$enc.json($vuln.cvssV4.cvssData.modifiedVulnAvailabilityImpact)"
 #end
-#if($vuln.cvssV4.cvssData.modifiedSubsequentSystemConfidentiality)
-                        ,"modifiedSubsequentSystemConfidentiality": "$enc.json($vuln.cvssV4.cvssData.modifiedSubsequentSystemConfidentiality)"
+#if($vuln.cvssV4.cvssData.modifiedSubConfidentialityImpact)
+                        ,"modifiedSubsequentSystemConfidentiality": "$enc.json($vuln.cvssV4.cvssData.modifiedSubConfidentialityImpact)"
 #end
-#if($vuln.cvssV4.cvssData.modifiedSubsequentSystemIntegrity)
-                        ,"modifiedSubsequentSystemIntegrity": "$enc.json($vuln.cvssV4.cvssData.modifiedSubsequentSystemIntegrity)"
+#if($vuln.cvssV4.cvssData.modifiedSubIntegrityImpact)
+                        ,"modifiedSubsequentSystemIntegrity": "$enc.json($vuln.cvssV4.cvssData.modifiedSubIntegrityImpact)"
 #end
-#if($vuln.cvssV4.cvssData.modifiedSubsequentSystemAvailability)
-                        ,"modifiedSubsequentSystemAvailability": "$enc.json($vuln.cvssV4.cvssData.modifiedSubsequentSystemAvailability)"
+#if($vuln.cvssV4.cvssData.modifiedSubAvailabilityImpact)
+                        ,"modifiedSubsequentSystemAvailability": "$enc.json($vuln.cvssV4.cvssData.modifiedSubAvailabilityImpact)"
 #end
 #if($vuln.cvssV4.cvssData.safety)
                         ,"safety": "$enc.json($vuln.cvssV4.cvssData.safety)"
