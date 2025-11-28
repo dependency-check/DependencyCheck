@@ -1052,7 +1052,7 @@ Getting Help: <a href="https://github.com/dependency-check/DependencyCheck/issue
                                 #foreach($ref in $vuln.getReferences(true))
                                     #if ($ref.url && $ref.name)
                                     <li>$enc.html($ref.source) - <a target="_blank" href="$enc.html($ref.url)">$enc.html($ref.name)</a></li>
-                                    #elseif ($ref.uri)
+                                    #elseif ($ref.url)
                                     <li>$enc.html($ref.source) - <a target="_blank" href="$enc.html($ref.url)">$enc.html($ref.url)</a></li>
                                     #elseif ($ref.name)
                                     <li>$enc.html($ref.source) - $enc.html($ref.name)</li>
@@ -1258,7 +1258,7 @@ Getting Help: <a href="https://github.com/dependency-check/DependencyCheck/issue
                                         #foreach($ref in $vuln.getReferences(true))
                                             #if ($ref.url && $ref.name)
                                             <li>$enc.html($ref.source) - <a target="_blank" href="$enc.html($ref.url)">$enc.html($ref.name)</a></li>
-                                            #elseif ($ref.uri)
+                                            #elseif ($ref.url)
                                             <li>$enc.html($ref.source) - <a target="_blank" href="$enc.html($ref.url)">$enc.html($ref.url)</a></li>
                                             #elseif ($ref.name)
                                             <li>$enc.html($ref.source) - $enc.html($ref.name)</li>
