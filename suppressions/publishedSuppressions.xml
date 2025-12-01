@@ -2420,4 +2420,11 @@ only pkg:maven/org.clojure:clojure@.* is the CPE cpe:/a:clojure:clojure
    <packageUrl regex="true">^pkg:maven/org\.springframework\.boot/spring-boot-starter-liquibase@.*$</packageUrl>
    <cpe>cpe:/a:liquibase:liquibase</cpe>
 </suppress>
+<suppress base="true">
+   <notes><![CDATA[
+   FP per issue #8165
+   ]]></notes>
+   <packageUrl regex="true">^pkg:maven/org\.springframework\.boot/spring-boot-liquibase@.*$</packageUrl>
+   <cpe>cpe:/a:liquibase:liquibase</cpe>
+</suppress>
 </suppressions>
