@@ -2427,4 +2427,11 @@ only pkg:maven/org.clojure:clojure@.* is the CPE cpe:/a:clojure:clojure
    <packageUrl regex="true">^pkg:maven/org\.springframework\.boot/spring-boot-liquibase@.*$</packageUrl>
    <cpe>cpe:/a:liquibase:liquibase</cpe>
 </suppress>
+<suppress base="true">
+   <notes><![CDATA[
+   FP per issue #8168
+   ]]></notes>
+   <packageUrl regex="true">^pkg:maven/io\.micronaut\.jsonschema/micronaut-json-schema-utils@.*$</packageUrl>
+   <cpe>cpe:/a:utils_project:utils</cpe>
+</suppress>
 </suppressions>
