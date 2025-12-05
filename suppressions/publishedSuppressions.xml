@@ -2441,4 +2441,11 @@ only pkg:maven/org.clojure:clojure@.* is the CPE cpe:/a:clojure:clojure
    <packageUrl regex="true">^pkg:maven/io\.micronaut\.jsonschema/micronaut-json-schema-utils@.*$</packageUrl>
    <cpe>cpe:/a:cron-utils_project:cron-utils</cpe>
 </suppress>
+<suppress base="true">
+   <notes><![CDATA[
+   FP per issue #8176
+   ]]></notes>
+   <packageUrl regex="true">^pkg:maven/jakarta\.enterprise/jakarta\.enterprise\.lang-model@.*$</packageUrl>
+   <cpe>cpe:/a:model_project:model</cpe>
+</suppress>
 </suppressions>
