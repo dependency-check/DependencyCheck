@@ -2455,4 +2455,11 @@ only pkg:maven/org.clojure:clojure@.* is the CPE cpe:/a:clojure:clojure
    <packageUrl regex="true">^pkg:maven/org\.jetbrains\.exposed/exposed-kotlin-datetime@.*$</packageUrl>
    <cpe>cpe:/a:jetbrains:kotlin</cpe>
 </suppress>
+<suppress base="true">
+   <notes><![CDATA[
+   FP per issue #8184
+   ]]></notes>
+   <packageUrl regex="true">^pkg:maven/io\.opentelemetry/opentelemetry-exporter-prometheus@.*$</packageUrl>
+   <cpe>cpe:/a:prometheus:prometheus</cpe>
+</suppress>
 </suppressions>
