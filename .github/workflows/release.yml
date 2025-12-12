@@ -29,19 +29,19 @@ jobs:
       - uses: actions/checkout@v6
       - name: Check Maven Cache
         id: maven-cache
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: ~/.m2/repository/
           key: mvn-repo
       - name: Check Local Maven Cache
         id: maven-it-cache
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: maven/target/local-repo
           key: mvn-it-repo
       - name: Check ODC Data Cache
         id: odc-data-cache
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: core/target/data
           key: odc-data
@@ -133,13 +133,13 @@ jobs:
     steps:
       - name: Check Maven Cache
         id: maven-cache
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: ~/.m2/repository/
           key: mvn-repo
       - name: Check Docker ODC Cache
         id: docker-odc-cache
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: ~/OWASP-Dependency-Check
           key: docker-repo
