@@ -202,8 +202,8 @@ public abstract class AbstractSuppressionAnalyzer extends AbstractAnalyzer {
      */
     private void loadPackagedSuppressionBaseData(final SuppressionParser parser, final Engine engine) throws SuppressionParseException {
         List<SuppressionRule> ruleList = null;
-        URL baseSuppresssionURL = getPackagedFile(BASE_SUPPRESSION_FILE);
-        try (InputStream in = baseSuppresssionURL.openStream()) {
+        URL baseSuppressionURL = getPackagedFile(BASE_SUPPRESSION_FILE);
+        try (InputStream in = baseSuppressionURL.openStream()) {
             ruleList = parser.parseSuppressionRules(in);
         } catch (SAXException | IOException ex) {
             throw new SuppressionParseException("Unable to parse the base suppression data file", ex);
@@ -231,13 +231,13 @@ public abstract class AbstractSuppressionAnalyzer extends AbstractAnalyzer {
         } else {
             suppressionFileLocation = "file:" + suppressionFileLocation + packagedFileName;
         }
-        URL baseSuppresssionURL = null;
+        URL baseSuppressionURL = null;
         try {
-            baseSuppresssionURL = new URL(suppressionFileLocation);
+            baseSuppressionURL = new URL(suppressionFileLocation);
         } catch (MalformedURLException e) {
             throw new SuppressionParseException("Unable to load the packaged file: " + packagedFileName, e);
         }
-        return baseSuppresssionURL;
+        return baseSuppressionURL;
     }
 
     /**
