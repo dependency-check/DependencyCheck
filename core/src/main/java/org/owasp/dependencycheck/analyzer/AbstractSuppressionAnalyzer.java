@@ -235,7 +235,7 @@ public abstract class AbstractSuppressionAnalyzer extends AbstractAnalyzer {
         try {
             baseSuppresssionURL = new URL(suppressionFileLocation);
         } catch (MalformedURLException e) {
-            throw new SuppressionParseException("Unable to load the base suppression data file", e);
+            throw new SuppressionParseException("Unable to load the packaged file: " + packagedFileName, e);
         }
         return baseSuppresssionURL;
     }
