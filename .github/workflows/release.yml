@@ -80,7 +80,7 @@ jobs:
           mvn -V -s settings.xml -Prelease clean package source:jar javadoc:jar gpg:sign deploy site site:stage -DreleaseTesting --no-transfer-progress --batch-mode
       - name: Archive code coverage results
         id: archive-coverage
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: code-coverage-report
           retention-days: 7
@@ -89,7 +89,7 @@ jobs:
             **/target/jacoco-results/**/*.html
       - name: Archive Release
         id: archive-release
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: archive-release
           retention-days: 7
@@ -102,7 +102,7 @@ jobs:
             target/*.buildinfo
       - name: Archive Site
         id: archive-site
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: archive-site
           retention-days: 7

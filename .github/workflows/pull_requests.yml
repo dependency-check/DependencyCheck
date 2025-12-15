@@ -66,7 +66,7 @@ jobs:
           category: spotbugs-core
       - name: Archive Snapshot
         id: archive-snapshot
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: archive-snapshot
           retention-days: 1
@@ -114,7 +114,7 @@ jobs:
       - name: Archive IT test logs
         id: archive-logs
         if: always()
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: it-test-logs
           retention-days: 7
