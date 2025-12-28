@@ -1,7 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project name="Dependency-Check Test Build" default="test.fileset" basedir=".">
+    <!-- Load Ivy Ant tasks -->
+    <taskdef resource="org/apache/ivy/ant/antlib.xml"/>
 
-    <taskdef name="dependency-check" classname="org.owasp.dependencycheck.taskdefs.Check" />
+    <!-- Resolve dependencies defined in ivy.xml into the 'lib' folder -->
+    <ivy:settings/>
+    <ivy:retrieve pattern="lib/[artifact]-[revision].[ext]"/>
+
+    <!-- Register Dependency-Check Ant task with correct classpath -->
+    <taskdef resource="dependency-check-taskdefs.properties">
+        <classpath>
+            <fileset dir="lib">
+                <include name="*.jar"/>
+            </fileset>
+        </classpath>
+    </taskdef>
+<!--    <taskdef name="dependency-check" classname="org.owasp.dependencycheck.taskdefs.Check" />-->
 
     <!-- HACK: disabling ossindex analyzer as it may cause failures due to rate-limiting -->
 

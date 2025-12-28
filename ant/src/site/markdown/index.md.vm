@@ -40,9 +40,22 @@ Apache Ivy can be used to automatically provision the required dependencies.
 This approach helps ensure consistent versions across multiple environments
 and simplifies setup.
 
-Below is an example `build.xml` configuration using Apache Ivy.
+### 1. `ivy.xml` (Dependency Declarations)
 
-#[[
+Create an `ivy.xml` file in your project directory with:
+
+```xml
+<ivy-module version="2.0">
+  <info organisation="example" module="dependency-check-ant-example"/>
+  <dependencies>
+    <dependency org="org.owasp" name="dependency-check-ant" rev="${project.version}"/>
+  </dependencies>
+</ivy-module>
+```
+> Replace `${project.version}` with your desired Dependency-Check version, such as `8.4.0`.
+
+### 2. `build.xml` (Ant/Ivy Integration)
+
 ```xml
 <project name="dependency-check-ivy" default="check"
          xmlns:ivy="antlib:org.apache.ivy.ant">
@@ -55,8 +68,7 @@ Below is an example `build.xml` configuration using Apache Ivy.
     <ivy:retrieve pattern="lib/[artifact]-[revision].[ext]"/>
 
     <!-- Register Dependency-Check Ant task -->
-    <taskdef
-        resource="dependency-check-taskdefs.properties">
+    <taskdef resource="dependency-check-taskdefs.properties">
         <classpath>
             <fileset dir="lib">
                 <include name="*.jar"/>
@@ -67,10 +79,16 @@ Below is an example `build.xml` configuration using Apache Ivy.
     <target name="check">
         <dependency-check
             projectName="Example Project"
-            scanSet="src"
-            format="HTML"/>
+            reportFormat="HTML">
+            <fileset dir="src">
+                <include name="**/*.jar"/>
+            </fileset>
+        </dependency-check>
     </target>
 </project>
+```
+
+Both `build.xml` and `ivy.xml` must be located in the same directory, unless Ivy is configured otherwise.
 
 It is important to understand that the first time this task is executed it may
 take 10 minutes or more as it downloads and processes the data from the National
