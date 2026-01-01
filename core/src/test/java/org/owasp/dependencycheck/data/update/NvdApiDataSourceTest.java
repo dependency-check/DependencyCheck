@@ -17,10 +17,16 @@
  */
 package org.owasp.dependencycheck.data.update;
 
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
+import java.net.URI;
+import java.util.NoSuchElementException;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.owasp.dependencycheck.data.update.NvdApiDataSource.FeedUrl.DEFAULT_FILE_PATTERN;
+import static org.owasp.dependencycheck.data.update.NvdApiDataSource.FeedUrl.extractFromUrlOptionalPattern;
 
 /**
  *
@@ -28,44 +34,60 @@ import static org.junit.jupiter.api.Assertions.assertNull;
  */
 class NvdApiDataSourceTest {
 
-    /**
-     * Test of extractUrlData method, of class NvdApiDataSource.
-     */
-    @Test
-    void testExtractUrlData() {
-        String nvdDataFeedUrl = "https://internal.server/nist/nvdcve-{0}.json.gz";
-        NvdApiDataSource instance = new NvdApiDataSource();
-        String expectedUrl = "https://internal.server/nist/";
-        String expectedPattern = "nvdcve-{0}.json.gz";
-        NvdApiDataSource.UrlData result = instance.extractUrlData(nvdDataFeedUrl);
+    @Nested
+    class FeedUrl {
 
-        nvdDataFeedUrl = "https://internal.server/nist/";
-        expectedUrl = "https://internal.server/nist/";
-        result = instance.extractUrlData(nvdDataFeedUrl);
+        @Test
+        void shouldExtractUrlWithPattern() throws Exception {
+            String nvdDataFeedUrl = "https://internal.server/nist/nvdcve-{0}.json.gz";
+            String expectedUrl = "https://internal.server/nist/nvdcve-2045.json.gz";
+            NvdApiDataSource.FeedUrl result = extractFromUrlOptionalPattern(nvdDataFeedUrl);
 
-        assertEquals(expectedUrl, result.getUrl());
-        assertNull(result.getPattern());
+            assertEquals(expectedUrl, result.toFormattedUrlString("2045"));
+            assertEquals(URI.create(expectedUrl).toURL(), result.toFormattedUrl("2045"));
+            assertEquals(URI.create("https://internal.server/nist/some-file.txt").toURL(), result.toSuffixedUrl("some-file.txt"));
 
-        nvdDataFeedUrl = "https://internal.server/nist";
-        expectedUrl = "https://internal.server/nist/";
-        result = instance.extractUrlData(nvdDataFeedUrl);
+            assertEquals(expectedUrl, result.toFormattedUrlString(2045));
+            assertEquals(URI.create(expectedUrl).toURL(), result.toFormattedUrl(2045));
+        }
 
-        assertEquals(expectedUrl, result.getUrl());
-        assertNull(result.getPattern());
+        @Test
+        void shouldAllowTransformingFilePattern() throws Exception {
+            NvdApiDataSource.FeedUrl result = extractFromUrlOptionalPattern("https://internal.server/nist/nvdcve-{0}.json.gz")
+                    .withPattern(p -> p.orElseThrow().replace(".json.gz", ".something"));
+            assertEquals("https://internal.server/nist/nvdcve-ok.something", result.toFormattedUrlString("ok"));
+
+            NvdApiDataSource.FeedUrl resultNoPattern = extractFromUrlOptionalPattern("https://internal.server/nist/")
+                    .withPattern(p -> p.orElse("my-suffix-{0}.json.gz"));
+            assertEquals("https://internal.server/nist/my-suffix-ok.json.gz", resultNoPattern.toFormattedUrlString("ok"));
+        }
+
+        @Test
+        void shouldExtractUrlWithoutPattern() throws Exception {
+            String nvdDataFeedUrl = "https://internal.server/nist/";
+            NvdApiDataSource.FeedUrl result = extractFromUrlOptionalPattern(nvdDataFeedUrl);
+
+            assertThrows(NoSuchElementException.class, () -> result.toFormattedUrlString("2045"));
+            assertThrows(NoSuchElementException.class, () -> result.toFormattedUrl("2045"));
+            assertEquals(URI.create("https://internal.server/nist/some-file.txt").toURL(), result.toSuffixedUrl("some-file.txt"));
+
+            String expectedUrl = "https://internal.server/nist/nvdcve-2045.json.gz";
+            NvdApiDataSource.FeedUrl resultWithPattern = extractFromUrlOptionalPattern(nvdDataFeedUrl)
+                    .withPattern(p -> p.orElse(DEFAULT_FILE_PATTERN));
+
+            assertEquals(expectedUrl, resultWithPattern.toFormattedUrlString("2045"));
+            assertEquals(URI.create(expectedUrl).toURL(), resultWithPattern.toFormattedUrl("2045"));
+        }
+
+        @Test
+        void extractUrlWithoutPatternShouldAddTrailingSlashes() throws Exception {
+            String nvdDataFeedUrl = "https://internal.server/nist";
+            String expectedUrl = "https://internal.server/nist/nvdcve-2045.json.gz";
+
+            NvdApiDataSource.FeedUrl result = extractFromUrlOptionalPattern(nvdDataFeedUrl)
+                    .withPattern(p -> p.orElse(DEFAULT_FILE_PATTERN));
+
+            assertEquals(expectedUrl, result.toFormattedUrlString("2045"));
+        }
     }
-
-//    /**
-//     * Test of getRemoteCacheProperties method, of class NvdApiDataSource.
-//     */
-//    @Test
-//    public void testGetRemoteCacheProperties() throws Exception {
-//        System.out.println("getRemoteCacheProperties");
-//        String url = "";
-//        NvdApiDataSource instance = new NvdApiDataSource();
-//        Properties expResult = null;
-//        Properties result = instance.getRemoteCacheProperties(url);
-//        assertEquals(expResult, result);
-//        // TODO review the generated test code and remove the default call to fail.
-//        fail("The test case is a prototype.");
-//    }
 }
