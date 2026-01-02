@@ -33,14 +33,18 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.text.MessageFormat;
 import java.time.Duration;
+import java.time.LocalDate;
 import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Properties;
 import java.util.Set;
@@ -63,6 +67,7 @@ import org.owasp.dependencycheck.utils.DateUtil;
 import org.owasp.dependencycheck.utils.DownloadFailedException;
 import org.owasp.dependencycheck.utils.Downloader;
 import org.owasp.dependencycheck.utils.InvalidSettingException;
+import org.owasp.dependencycheck.utils.Pair;
 import org.owasp.dependencycheck.utils.ResourceNotFoundException;
 import org.owasp.dependencycheck.utils.Settings;
 import org.owasp.dependencycheck.utils.TooManyRequestsException;
@@ -132,7 +137,7 @@ public class NvdApiDataSource implements CachedWebDataSource {
                 final Properties cacheProperties = getRemoteDataFeedCacheProperties(urlData);
                 urlData = urlData.withPattern(p -> p.orElse(cacheProperties.getProperty("prefix", FeedUrl.DEFAULT_FILE_PATTERN_PREFIX) + FeedUrl.DEFAULT_FILE_PATTERN_SUFFIX));
 
-                final ZonedDateTime now = ZonedDateTime.now(ZoneId.of("UTC"));
+                final ZonedDateTime now = ZonedDateTime.now(ZoneOffset.UTC);
                 final Map<String, String> updateable = getUpdatesNeeded(urlData, cacheProperties, now);
                 if (!updateable.isEmpty()) {
                     final int max = settings.getInt(Settings.KEYS.MAX_DOWNLOAD_THREAD_POOL_SIZE, 1);
@@ -525,15 +530,13 @@ public class NvdApiDataSource implements CachedWebDataSource {
         LOGGER.debug("starting getUpdatesNeeded() ...");
         final Map<String, String> updates = new HashMap<>();
         if (dbProperties != null && !dbProperties.isEmpty()) {
-            final int startYear = settings.getInt(Settings.KEYS.NVD_API_DATAFEED_START_YEAR, 2002);
-            // for establishing the current year use the timezone where the new year starts first
-            // as from that moment on CNAs might start assigning CVEs with the new year depending
-            // on the CNA's timezone
-            final int endYear = now.withZoneSameInstant(ZoneId.of("UTC+14:00")).getYear();
+            Pair<Integer, Integer> yearRange = FeedUrl.toYearRange(settings, now);
+            int startYear = yearRange.getLeft();
+            int endYear = yearRange.getRight();
             boolean needsFullUpdate = false;
             for (int y = startYear; y <= endYear; y++) {
                 final ZonedDateTime val = dbProperties.getTimestamp(DatabaseProperties.NVD_CACHE_LAST_MODIFIED + "." + y);
-                if (val == null) {
+                if (val == null && FeedUrl.isMandatoryFeedYear(now, y)) {
                     needsFullUpdate = true;
                     break;
                 }
@@ -611,27 +614,13 @@ public class NvdApiDataSource implements CachedWebDataSource {
         );
 
         final Properties properties = new Properties();
-        try {
-            String content = Downloader.getInstance().fetchContent(metaFeedUrl.toFormattedUrl("modified"), UTF_8);
-            final Properties props = new Properties();
-            props.load(new StringReader(content));
-            ZonedDateTime lmd = DatabaseProperties.getIsoTimestamp(props, "lastModifiedDate");
-            DatabaseProperties.setTimestamp(properties, "lastModifiedDate.modified", lmd);
-            DatabaseProperties.setTimestamp(properties, "lastModifiedDate", lmd);
-            final int startYear = settings.getInt(Settings.KEYS.NVD_API_DATAFEED_START_YEAR, 2002);
-            final ZonedDateTime now = ZonedDateTime.now(ZoneId.of("UTC"));
-            final int endYear = now.withZoneSameInstant(ZoneId.of("UTC+14:00")).getYear();
-            for (int y = startYear; y <= endYear; y++) {
-                content = Downloader.getInstance().fetchContent(metaFeedUrl.toFormattedUrl(y), UTF_8);
-                props.clear();
-                props.load(new StringReader(content));
-                lmd = DatabaseProperties.getIsoTimestamp(props, "lastModifiedDate");
-                DatabaseProperties.setTimestamp(properties, "lastModifiedDate." + y, lmd);
-            }
-            return properties;
-        } catch (URISyntaxException | TooManyRequestsException | ResourceNotFoundException | IOException ex) {
-            throw new UpdateException("Unable to download the data feed META files", ex);
-        }
+        ZonedDateTime lmd = metaFeedUrl.getLastModifiedFor("modified");
+        DatabaseProperties.setTimestamp(properties, NVD_API_CACHE_MODIFIED_DATE + ".modified", lmd);
+        DatabaseProperties.setTimestamp(properties, NVD_API_CACHE_MODIFIED_DATE, lmd);
+
+        metaFeedUrl.getLastModifiedDatePropertiesByYear(this.settings, ZonedDateTime.now(ZoneOffset.UTC))
+                .forEach((k, v) -> DatabaseProperties.setTimestamp(properties, k, v));
+        return properties;
     }
 
     protected static class FeedUrl {
@@ -648,6 +637,15 @@ public class NvdApiDataSource implements CachedWebDataSource {
          * Default file pattern for NVD caches; generally those generated by vulnz / Open Vulnerability Clients
          */
         static final String DEFAULT_FILE_PATTERN = DEFAULT_FILE_PATTERN_PREFIX + DEFAULT_FILE_PATTERN_SUFFIX;
+
+        /**
+         * The timezone where the new year starts first.
+         */
+        static final ZoneId ZONE_GLOBAL_EARLIEST = ZoneId.of("UTC+14:00");
+        /**
+         * The timezone where the new year starts last.
+         */
+        static final ZoneId ZONE_GLOBAL_LATEST = ZoneId.of("UTC-12:00");
 
         /**
          * The base URL to download resources from.
@@ -680,10 +678,6 @@ public class NvdApiDataSource implements CachedWebDataSource {
             return new URI(toFormattedUrlString(formatArg)).toURL();
         }
 
-        @NotNull URL toFormattedUrl(int formatArg) throws MalformedURLException, URISyntaxException {
-            return toFormattedUrl(String.valueOf(formatArg));
-        }
-
         @SuppressWarnings("SameParameterValue")
         @NotNull URL toSuffixedUrl(String suffix) throws MalformedURLException, URISyntaxException {
             return new URI(url + suffix).toURL();
@@ -692,7 +686,7 @@ public class NvdApiDataSource implements CachedWebDataSource {
         /**
          * @param url A NVD data feed URL which may be just a base URL such as https://my-nvd-cache/nvd_cache or
          *            may include a formatted URL ending with .json.gz such as https://nvd.nist.gov/feeds/json/cve/2.0/nvdcve-2.0-{0}.json.gz
-         * @return A constructed URLData object
+         * @return A constructed FeedUrl object
          */
         @SuppressWarnings("JavadocLinkAsPlainText")
         protected static FeedUrl extractFromUrlOptionalPattern(String url) {
@@ -709,6 +703,63 @@ public class NvdApiDataSource implements CachedWebDataSource {
                 baseUrl += "/";
             }
             return new FeedUrl(baseUrl, pattern);
+        }
+
+        private static @NotNull Pair<Integer, Integer> toYearRange(Settings settings, ZonedDateTime now) {
+            // for establishing the current year use the timezone where the new year starts first
+            // as from that moment on CNAs might start assigning CVEs with the new year depending
+            // on the CNA's timezone
+            final int startYear = settings.getInt(Settings.KEYS.NVD_API_DATAFEED_START_YEAR, 2002);
+            final int endYear = now.withZoneSameInstant(ZONE_GLOBAL_EARLIEST).getYear();
+            return new Pair<>(startYear, endYear);
+        }
+
+        private @NotNull ZonedDateTime getLastModifiedFor(int year) throws UpdateException {
+            return getLastModifiedFor(String.valueOf(year));
+        }
+
+        private @NotNull ZonedDateTime getLastModifiedFor(String fileVersion) throws UpdateException {
+            try {
+                String content = Downloader.getInstance().fetchContent(toFormattedUrl(fileVersion), UTF_8);
+                Properties props = new Properties();
+                props.load(new StringReader(content));
+                return Objects.requireNonNull(DatabaseProperties.getIsoTimestamp(props, NVD_API_CACHE_MODIFIED_DATE));
+            } catch (Exception ex) {
+                throw new UpdateException("Unable to download & parse the data feed .meta file for " + fileVersion, ex);
+            }
+        }
+
+        Map<String, ZonedDateTime> getLastModifiedDatePropertiesByYear(Settings settings, ZonedDateTime now) throws UpdateException {
+            Pair<Integer, Integer> yearRange = toYearRange(settings, now);
+            Map<String, ZonedDateTime> lastModifiedDateProperties = new LinkedHashMap<>();
+            for (int y = yearRange.getLeft(); y <= yearRange.getRight(); y++) {
+                try {
+                    lastModifiedDateProperties.put(NVD_API_CACHE_MODIFIED_DATE + "." + y, getLastModifiedFor(y));
+                } catch (UpdateException e) {
+                    if (isMandatoryFeedYear(now, y)) {
+                        throw e;
+                    }
+                    LOGGER.debug("Ignoring data feed metadata retrieval failure for {}, it is still January 1st in some TZ; so feed files may not yet be generated. Error was {}", y, e.toString());
+                }
+            }
+            return lastModifiedDateProperties;
+        }
+
+        /**
+         * @param now        The current time in any timezone
+         * @param targetYear Target year's feed data to retrieve
+         * @return Whether or not the targetYear is considered a mandatory feed file to retrieve given the target year and current time.
+         */
+        static boolean isMandatoryFeedYear(ZonedDateTime now, int targetYear) {
+            return isNotTargetYearInAnyTZ(now, targetYear) || isAfterJanuary1InEveryTZ(now, targetYear);
+        }
+
+        private static boolean isNotTargetYearInAnyTZ(ZonedDateTime now, int targetYear) {
+            return targetYear != now.withZoneSameInstant(ZONE_GLOBAL_EARLIEST).getYear();
+        }
+
+        private static boolean isAfterJanuary1InEveryTZ(ZonedDateTime now, int targetYear) {
+            return now.isAfter(LocalDate.of(targetYear, 1, 2).atStartOfDay().atZone(ZONE_GLOBAL_LATEST));
         }
     }
 }
