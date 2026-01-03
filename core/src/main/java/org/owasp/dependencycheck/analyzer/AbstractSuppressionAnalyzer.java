@@ -148,7 +148,7 @@ public abstract class AbstractSuppressionAnalyzer extends AbstractAnalyzer {
      */
     private void loadSuppressionData(Engine engine) throws SuppressionParseException {
         final List<SuppressionRule> ruleList = new ArrayList<>();
-        final SuppressionParser parser = new SuppressionParser();
+        final SuppressionParser parser = SuppressionParser.newInstance();
         final String[] suppressionFilePaths = getSettings().getArray(Settings.KEYS.SUPPRESSION_FILE);
         final List<String> failedLoadingFiles = new ArrayList<>();
         if (suppressionFilePaths != null && suppressionFilePaths.length > 0) {
@@ -188,7 +188,7 @@ public abstract class AbstractSuppressionAnalyzer extends AbstractAnalyzer {
      * @throws SuppressionParseException thrown if the XML cannot be parsed.
      */
     private void loadSuppressionBaseData(final Engine engine) throws SuppressionParseException {
-        final SuppressionParser parser = new SuppressionParser();
+        final SuppressionParser parser = SuppressionParser.newInstance();
         loadPackagedSuppressionBaseData(parser, engine);
         loadHostedSuppressionBaseData(parser, engine);
     }

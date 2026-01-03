@@ -30,6 +30,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.nio.charset.StandardCharsets;
+import java.util.Calendar;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -50,7 +51,7 @@ class SuppressionHandlerTest extends BaseTest {
         File file = BaseTest.getResourceAsFile(this, "suppressions.xml");
         InputStream schemaStream = BaseTest.getResourceAsStream(this, "schema/suppression.xsd");
 
-        SuppressionHandler handler = new SuppressionHandler();
+        SuppressionHandler handler = new SuppressionHandler(Calendar.getInstance());
         SAXParser saxParser = XmlUtils.buildSecureSaxParser(schemaStream);
         XMLReader xmlReader = saxParser.getXMLReader();
         xmlReader.setErrorHandler(new SuppressionErrorHandler());

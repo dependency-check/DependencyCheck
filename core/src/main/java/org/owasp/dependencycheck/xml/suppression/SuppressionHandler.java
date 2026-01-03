@@ -125,7 +125,26 @@ public class SuppressionHandler extends DefaultHandler {
 
     private Boolean groupBase = null;
     private Calendar groupUntil = null;
+    private final Calendar now;
 
+    /**
+     * Constructs a new suppression handler.
+     *
+     * @deprecated use {@link SuppressionHandler#SuppressionHandler(Calendar)}
+     */
+    @Deprecated(forRemoval = true)
+    public SuppressionHandler() {
+        this(Calendar.getInstance());
+    }
+
+    /**
+     * Constructs a new suppression handler.
+     *
+     * @param now represents current time. Used to compare suppression expiration dates set within the 'until' attribute.
+     */
+    SuppressionHandler(Calendar now) {
+        this.now = now;
+    }
 
     /**
      * Get the value of suppressionRules.
@@ -199,7 +218,7 @@ public class SuppressionHandler extends DefaultHandler {
         if (null != qName) {
             switch (qName) {
                 case SUPPRESS:
-                    if (rule.getUntil() != null && rule.getUntil().before(Calendar.getInstance())) {
+                    if (rule.getUntil() != null && rule.getUntil().before(now)) {
                         LOGGER.info("Suppression is expired for rule: {}", rule);
                     } else {
                         suppressionRules.add(rule);

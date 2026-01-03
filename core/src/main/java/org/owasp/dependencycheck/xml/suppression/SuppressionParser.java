@@ -25,6 +25,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.nio.charset.StandardCharsets;
+import java.util.Calendar;
 import java.util.List;
 import javax.annotation.concurrent.ThreadSafe;
 import javax.xml.parsers.ParserConfigurationException;
@@ -76,6 +77,31 @@ public class SuppressionParser {
      */
     private static final String SUPPRESSION_SCHEMA_1_0 = "schema/suppression.xsd";
 
+    private final Calendar now;
+
+    public static SuppressionParser newInstance() {
+        return new SuppressionParser(Calendar.getInstance());
+    }
+
+    /**
+     * Constructs a new SuppressionParser.
+     *
+     * @deprecated use {@link SuppressionParser#newInstance()}
+     */
+    @Deprecated(forRemoval = true)
+    public SuppressionParser() {
+        this(Calendar.getInstance());
+    }
+
+    /**
+     * Constructs a new SuppressionParser.
+     *
+     * @param now represents current time. Used to compare suppression expiration dates set within the 'until' attribute.
+     */
+    SuppressionParser(Calendar now) {
+        this.now = now;
+    }
+
     /**
      * Parses the given XML file and returns a list of the suppression rules
      * contained.
@@ -117,7 +143,7 @@ public class SuppressionParser {
             final String defaultEncoding = StandardCharsets.UTF_8.name();
             final String charsetName = bom == null ? defaultEncoding : bom.getCharsetName();
 
-            final SuppressionHandler handler = new SuppressionHandler();
+            final SuppressionHandler handler = new SuppressionHandler(now);
             final SAXParser saxParser = XmlUtils.buildSecureSaxParser(schemaStream14, schemaStream13, schemaStream12, schemaStream11, schemaStream10);
             final XMLReader xmlReader = saxParser.getXMLReader();
             xmlReader.setErrorHandler(new SuppressionErrorHandler());

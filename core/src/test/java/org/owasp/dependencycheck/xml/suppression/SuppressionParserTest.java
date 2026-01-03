@@ -24,6 +24,7 @@ import java.io.File;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneOffset;
+import java.util.Calendar;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -36,6 +37,23 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 class SuppressionParserTest extends BaseTest {
 
+
+    private static final Calendar NOW_AS_OF_2013_11_13 = new Calendar.Builder()
+            .setDate(2013, 10, 13)
+            .build();
+
+    private static final Calendar NOW_AS_OF_2018_04_08 = new Calendar.Builder()
+            .setDate(2018, 3, 8)
+            .build();
+
+    private static final Calendar NOW_AS_OF_2019_07_21 = new Calendar.Builder()
+            .setDate(2019, 6, 21)
+            .build();
+
+    private static final Calendar NOW_AS_OF_2025_11_13 = new Calendar.Builder()
+            .setDate(2025, 10, 13)
+            .build();
+
     /**
      * Test of parseSuppressionRules method, of class SuppressionParser for the
      * v1.0 suppression XML Schema.
@@ -44,7 +62,7 @@ class SuppressionParserTest extends BaseTest {
     void testParseSuppressionRulesV1dot0() throws Exception {
         //File file = new File(this.getClass().getClassLoader().getResource("suppressions.xml").getPath());
         File file = BaseTest.getResourceAsFile(this, "suppressions.xml");
-        SuppressionParser instance = new SuppressionParser();
+        SuppressionParser instance = new SuppressionParser(NOW_AS_OF_2013_11_13);
         List<SuppressionRule> result = instance.parseSuppressionRules(file);
         assertEquals(5, result.size());
     }
@@ -57,7 +75,7 @@ class SuppressionParserTest extends BaseTest {
     void testParseSuppressionRulesV1dot1() throws Exception {
         //File file = new File(this.getClass().getClassLoader().getResource("suppressions.xml").getPath());
         File file = BaseTest.getResourceAsFile(this, "suppressions_1_1.xml");
-        SuppressionParser instance = new SuppressionParser();
+        SuppressionParser instance = new SuppressionParser(NOW_AS_OF_2018_04_08);
         List<SuppressionRule> result = instance.parseSuppressionRules(file);
         assertEquals(5, result.size());
     }
@@ -70,7 +88,7 @@ class SuppressionParserTest extends BaseTest {
     void testParseSuppressionRulesV1dot2() throws Exception {
         //File file = new File(this.getClass().getClassLoader().getResource("suppressions.xml").getPath());
         File file = BaseTest.getResourceAsFile(this, "suppressions_1_2.xml");
-        SuppressionParser instance = new SuppressionParser();
+        SuppressionParser instance = new SuppressionParser(NOW_AS_OF_2018_04_08);
         List<SuppressionRule> result = instance.parseSuppressionRules(file);
         assertEquals(4, result.size());
     }
@@ -83,7 +101,7 @@ class SuppressionParserTest extends BaseTest {
     void testParseSuppressionRulesV1dot3() throws Exception {
         //File file = new File(this.getClass().getClassLoader().getResource("suppressions.xml").getPath());
         File file = BaseTest.getResourceAsFile(this, "suppressions_1_3.xml");
-        SuppressionParser instance = new SuppressionParser();
+        SuppressionParser instance = new SuppressionParser(NOW_AS_OF_2019_07_21);
         List<SuppressionRule> result = instance.parseSuppressionRules(file);
         assertEquals(4, result.size());
     }
@@ -95,7 +113,7 @@ class SuppressionParserTest extends BaseTest {
     @Test
     void testParseSuppressionRulesV1dot4() throws SuppressionParseException {
         File file = BaseTest.getResourceAsFile(this, "suppressions_1_4.xml");
-        SuppressionParser instance = new SuppressionParser();
+        SuppressionParser instance = new SuppressionParser(NOW_AS_OF_2025_11_13);
         List<SuppressionRule> suppressionRules = instance.parseSuppressionRules(file);
 
         assertEquals(7, suppressionRules.size());
@@ -108,7 +126,7 @@ class SuppressionParserTest extends BaseTest {
     void testParseSuppressionRulesV1dot4BackwardsCompability() throws SuppressionParseException {
         // 'suppressions_1_4_no_groups.xml' has the same content as 'suppressions_1_3.xml'. But follows schema 1.4
         File file = BaseTest.getResourceAsFile(this, "suppressions_1_4_no_groups.xml");
-        SuppressionParser instance = new SuppressionParser();
+        SuppressionParser instance = new SuppressionParser(NOW_AS_OF_2025_11_13);
         List<SuppressionRule> suppressionRules = instance.parseSuppressionRules(file);
 
         assertEquals(4, suppressionRules.size());
@@ -121,7 +139,7 @@ class SuppressionParserTest extends BaseTest {
     @Test
     void testParseSuppressionV1dot4Inherits() throws SuppressionParseException {
         File file = BaseTest.getResourceAsFile(this, "suppressions_1_4.xml");
-        SuppressionParser instance = new SuppressionParser();
+        SuppressionParser instance = new SuppressionParser(NOW_AS_OF_2025_11_13);
         List<SuppressionRule> suppressionRules = instance.parseSuppressionRules(file);
 
         // CVE-2013-1338 in test xml has no attributes and should inherit the ones set on group level.
@@ -144,7 +162,7 @@ class SuppressionParserTest extends BaseTest {
     @Test
     void testParseSuppressionV1dot4AttributeOverrides() throws SuppressionParseException {
         File file = BaseTest.getResourceAsFile(this, "suppressions_1_4.xml");
-        SuppressionParser instance = new SuppressionParser();
+        SuppressionParser instance = new SuppressionParser(NOW_AS_OF_2025_11_13);
         List<SuppressionRule> suppressionRules = instance.parseSuppressionRules(file);
 
         // CVE-2013-1339 in test xml has attribute {code (until="2027-01-01Z")} set and is present in  suppressionGroup.
