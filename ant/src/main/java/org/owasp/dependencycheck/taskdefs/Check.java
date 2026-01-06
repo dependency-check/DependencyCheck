@@ -202,7 +202,7 @@ public class Check extends Update {
      * Specifies the destination directory for the generated Dependency-Check
      * report.
      */
-    private String reportOutputDirectory = ".";
+    private String reportOutputDirectory;
     /**
      * If using the JUNIT report format the junitFailOnCVSS sets the CVSS score
      * threshold that is considered a failure. The default is 0.
@@ -528,7 +528,7 @@ public class Check extends Update {
      * @param suppressionFile the suppression file to add.
      */
     public void addConfiguredSuppressionFile(final SuppressionFile suppressionFile) {
-        suppressionFiles.add(suppressionFile.getPath());
+        suppressionFiles.add(resolveRelative(suppressionFile.getPath()));
     }
 
     /**
@@ -573,13 +573,26 @@ public class Check extends Update {
         this.projectName = projectName;
     }
 
+    private String resolveRelative(String path) {
+        if (path == null) {
+            return null;
+        }
+
+        File file = new File(path);
+        if (file.isAbsolute()) {
+            return path;
+        }
+
+        return new File(getProject().getBaseDir(), path).getPath();
+    }
+
     /**
      * Set the value of reportOutputDirectory.
      *
      * @param reportOutputDirectory new value of reportOutputDirectory
      */
     public void setReportOutputDirectory(String reportOutputDirectory) {
-        this.reportOutputDirectory = reportOutputDirectory;
+        this.reportOutputDirectory = resolveRelative(reportOutputDirectory);
     }
 
     /**
@@ -646,7 +659,7 @@ public class Check extends Update {
      * @param suppressionFile new value of suppressionFile
      */
     public void setSuppressionFile(String suppressionFile) {
-        suppressionFiles.add(suppressionFile);
+        suppressionFiles.add(resolveRelative(suppressionFile));
     }
 
     /**

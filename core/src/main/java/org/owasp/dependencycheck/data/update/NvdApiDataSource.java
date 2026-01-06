@@ -27,27 +27,35 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.StringReader;
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.nio.charset.StandardCharsets;
 import java.text.MessageFormat;
 import java.time.Duration;
+import java.time.LocalDate;
 import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.function.Function;
 import java.util.zip.GZIPOutputStream;
+
+import org.jetbrains.annotations.NotNull;
 import org.owasp.dependencycheck.Engine;
 import org.owasp.dependencycheck.data.nvdcve.CveDB;
 import org.owasp.dependencycheck.data.nvdcve.DatabaseException;
@@ -59,11 +67,14 @@ import org.owasp.dependencycheck.utils.DateUtil;
 import org.owasp.dependencycheck.utils.DownloadFailedException;
 import org.owasp.dependencycheck.utils.Downloader;
 import org.owasp.dependencycheck.utils.InvalidSettingException;
+import org.owasp.dependencycheck.utils.Pair;
 import org.owasp.dependencycheck.utils.ResourceNotFoundException;
 import org.owasp.dependencycheck.utils.Settings;
 import org.owasp.dependencycheck.utils.TooManyRequestsException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import static java.nio.charset.StandardCharsets.UTF_8;
 
 /**
  *
@@ -117,44 +128,22 @@ public class NvdApiDataSource implements CachedWebDataSource {
         return processApi();
     }
 
-    protected UrlData extractUrlData(String nvdDataFeedUrl) {
-        String url;
-        String pattern = null;
-        if (nvdDataFeedUrl.endsWith(".json.gz")) {
-            final int lio = nvdDataFeedUrl.lastIndexOf("/");
-            pattern = nvdDataFeedUrl.substring(lio + 1);
-            url = nvdDataFeedUrl.substring(0, lio);
-        } else {
-            url = nvdDataFeedUrl;
-        }
-        if (!url.endsWith("/")) {
-            url += "/";
-        }
-        return new UrlData(url, pattern);
-    }
-
     private boolean processDatafeed(String nvdDataFeedUrl) throws UpdateException {
         boolean updatesMade = false;
         try {
             dbProperties = cveDb.getDatabaseProperties();
             if (checkUpdate()) {
-                final UrlData data = extractUrlData(nvdDataFeedUrl);
-                final String url = data.getUrl();
-                String pattern = data.getPattern();
-                final Properties cacheProperties = getRemoteCacheProperties(url, pattern);
-                if (pattern == null) {
-                    final String prefix = cacheProperties.getProperty("prefix", "nvdcve-");
-                    pattern = prefix + "{0}.json.gz";
-                }
+                FeedUrl urlData = FeedUrl.extractFromUrlOptionalPattern(nvdDataFeedUrl);
+                final Properties cacheProperties = getRemoteDataFeedCacheProperties(urlData);
+                urlData = urlData.withPattern(p -> p.orElse(cacheProperties.getProperty("prefix", FeedUrl.DEFAULT_FILE_PATTERN_PREFIX) + FeedUrl.DEFAULT_FILE_PATTERN_SUFFIX));
 
-                final ZonedDateTime now = ZonedDateTime.now(ZoneId.of("UTC"));
-                final Map<String, String> updateable = getUpdatesNeeded(url, pattern, cacheProperties, now);
+                final ZonedDateTime now = ZonedDateTime.now(ZoneOffset.UTC);
+                final Map<String, String> updateable = getUpdatesNeeded(urlData, cacheProperties, now);
                 if (!updateable.isEmpty()) {
                     final int max = settings.getInt(Settings.KEYS.MAX_DOWNLOAD_THREAD_POOL_SIZE, 1);
                     final int downloadPoolSize = Math.min(Runtime.getRuntime().availableProcessors(), max);
                     // going over 2 threads does not appear to improve performance
-                    final int maxExec = PROCESSING_THREAD_POOL_SIZE;
-                    final int execPoolSize = Math.min(maxExec, 2);
+                    final int execPoolSize = Math.min(PROCESSING_THREAD_POOL_SIZE, 2);
 
                     ExecutorService processingExecutorService = null;
                     ExecutorService downloadExecutorService = null;
@@ -530,29 +519,24 @@ public class NvdApiDataSource implements CachedWebDataSource {
      * be refreshed this method will return the NvdCveUrl for the files that
      * need to be updated.
      *
-     * @param url the URL of the NVD API cache
-     * @param filePattern the string format pattern for the cached files (e.g.
-     * "nvdcve-{0}.json.gz")
-     * @param cacheProperties the properties from the remote NVD API cache
+     * @param feedUrl a parsed NVD cache / data feed URL
+     * @param cacheProperties the properties from the remote NVD API cache or data feed
      * @param now the start time of the update process
      * @return the map of key to URLs - where the key is the year or `modified`
      * @throws UpdateException Is thrown if there is an issue with the last
      * updated properties file
      */
-    protected final Map<String, String> getUpdatesNeeded(String url, String filePattern,
-            Properties cacheProperties, ZonedDateTime now) throws UpdateException {
+    protected final Map<String, String> getUpdatesNeeded(FeedUrl feedUrl, Properties cacheProperties, ZonedDateTime now) throws UpdateException {
         LOGGER.debug("starting getUpdatesNeeded() ...");
         final Map<String, String> updates = new HashMap<>();
         if (dbProperties != null && !dbProperties.isEmpty()) {
-            final int startYear = settings.getInt(Settings.KEYS.NVD_API_DATAFEED_START_YEAR, 2002);
-            // for establishing the current year use the timezone where the new year starts first
-            // as from that moment on CNAs might start assigning CVEs with the new year depending
-            // on the CNA's timezone
-            final int endYear = now.withZoneSameInstant(ZoneId.of("UTC+14:00")).getYear();
+            Pair<Integer, Integer> yearRange = FeedUrl.toYearRange(settings, now);
+            int startYear = yearRange.getLeft();
+            int endYear = yearRange.getRight();
             boolean needsFullUpdate = false;
             for (int y = startYear; y <= endYear; y++) {
                 final ZonedDateTime val = dbProperties.getTimestamp(DatabaseProperties.NVD_CACHE_LAST_MODIFIED + "." + y);
-                if (val == null) {
+                if (val == null && FeedUrl.isMandatoryFeedYear(now, y)) {
                     needsFullUpdate = true;
                     break;
                 }
@@ -563,11 +547,11 @@ public class NvdApiDataSource implements CachedWebDataSource {
             if (!needsFullUpdate && lastUpdated.equals(DatabaseProperties.getTimestamp(cacheProperties, NVD_API_CACHE_MODIFIED_DATE))) {
                 return updates;
             } else {
-                updates.put("modified", url + MessageFormat.format(filePattern, "modified"));
+                updates.put("modified", feedUrl.toFormattedUrlString("modified"));
                 if (needsFullUpdate) {
                     for (int i = startYear; i <= endYear; i++) {
                         if (cacheProperties.containsKey(NVD_API_CACHE_MODIFIED_DATE + "." + i)) {
-                            updates.put(String.valueOf(i), url + MessageFormat.format(filePattern, String.valueOf(i)));
+                            updates.put(String.valueOf(i), feedUrl.toFormattedUrlString(i));
                         }
                     }
                 } else if (!DateUtil.withinDateRange(lastUpdated, now, days)) {
@@ -576,8 +560,8 @@ public class NvdApiDataSource implements CachedWebDataSource {
                             final ZonedDateTime lastModifiedCache = DatabaseProperties.getTimestamp(cacheProperties,
                                     NVD_API_CACHE_MODIFIED_DATE + "." + i);
                             final ZonedDateTime lastModifiedDB = dbProperties.getTimestamp(DatabaseProperties.NVD_CACHE_LAST_MODIFIED + "." + i);
-                            if (lastModifiedDB == null || lastModifiedCache.compareTo(lastModifiedDB) > 0) {
-                                updates.put(String.valueOf(i), url + MessageFormat.format(filePattern, String.valueOf(i)));
+                            if (lastModifiedDB == null || (lastModifiedCache != null && lastModifiedCache.compareTo(lastModifiedDB) > 0)) {
+                                updates.put(String.valueOf(i), feedUrl.toFormattedUrlString(i));
                             }
                         }
                     }
@@ -585,70 +569,86 @@ public class NvdApiDataSource implements CachedWebDataSource {
             }
         }
         if (updates.size() > 3) {
-            LOGGER.info("NVD API Cache requires several updates; this could take a couple of minutes.");
+            LOGGER.info("NVD API Cache / Data Feed requires several updates; this could take a couple of minutes.");
         }
         return updates;
     }
 
     /**
-     * Downloads the metadata properties of the NVD API cache.
+     * Downloads the metadata properties of the NVD API cache / data feed.
      *
-     * @param url the base URL to the NVD API cache
-     * @param pattern the pattern of the datafile name for the NVD API cache
+     * @param dataFeedUrl a parsed NVD cache / data feed URL
      * @return the cache properties
-     * @throws UpdateException thrown if the properties file could not be
-     * downloaded
+     * @throws UpdateException thrown if the properties file could not be downloaded
      */
-    protected final Properties getRemoteCacheProperties(String url, String pattern) throws UpdateException {
-        final Properties properties = new Properties();
+    protected final Properties getRemoteDataFeedCacheProperties(FeedUrl dataFeedUrl) throws UpdateException {
         try {
-            final URL u = new URI(url + "cache.properties").toURL();
-            final String content = Downloader.getInstance().fetchContent(u, StandardCharsets.UTF_8);
+            final Properties properties = new Properties();
+            final String content = Downloader.getInstance().fetchContent(dataFeedUrl.toSuffixedUrl("cache.properties"), UTF_8);
             properties.load(new StringReader(content));
+            return properties;
 
-        } catch (URISyntaxException ex) {
-            throw new UpdateException("Invalid NVD Cache URL", ex);
         } catch (DownloadFailedException | ResourceNotFoundException ex) {
-            final String metaPattern;
-            if (pattern == null) {
-                metaPattern = "nvdcve-{0}.meta";
-            } else {
-                metaPattern = pattern.replace(".json.gz", ".meta");
-            }
-            try {
-                URL metaUrl = new URI(url + MessageFormat.format(metaPattern, "modified")).toURL();
-                String content = Downloader.getInstance().fetchContent(metaUrl, StandardCharsets.UTF_8);
-                final Properties props = new Properties();
-                props.load(new StringReader(content));
-                ZonedDateTime lmd = DatabaseProperties.getIsoTimestamp(props, "lastModifiedDate");
-                DatabaseProperties.setTimestamp(properties, "lastModifiedDate.modified", lmd);
-                DatabaseProperties.setTimestamp(properties, "lastModifiedDate", lmd);
-                final int startYear = settings.getInt(Settings.KEYS.NVD_API_DATAFEED_START_YEAR, 2002);
-                final ZonedDateTime now = ZonedDateTime.now(ZoneId.of("UTC"));
-                final int endYear = now.withZoneSameInstant(ZoneId.of("UTC+14:00")).getYear();
-                for (int y = startYear; y <= endYear; y++) {
-                    metaUrl = new URI(url + MessageFormat.format(metaPattern, String.valueOf(y))).toURL();
-                    content = Downloader.getInstance().fetchContent(metaUrl, StandardCharsets.UTF_8);
-                    props.clear();
-                    props.load(new StringReader(content));
-                    lmd = DatabaseProperties.getIsoTimestamp(props, "lastModifiedDate");
-                    DatabaseProperties.setTimestamp(properties, "lastModifiedDate." + String.valueOf(y), lmd);
-                }
-            } catch (URISyntaxException | TooManyRequestsException | ResourceNotFoundException | IOException ex1) {
-                throw new UpdateException("Unable to download the data feed META files", ex);
-            }
+            LOGGER.debug("Unable to download the NVD API cache.properties due to [{}]; attempting to build from data feed metadata files instead...", ex.toString());
+            return generateRemoteDataFeedCachePropertiesFromMetadata(dataFeedUrl);
+        } catch (URISyntaxException | MalformedURLException ex) {
+            throw new UpdateException("Invalid NVD Cache / Data Feed URL", ex);
         } catch (TooManyRequestsException ex) {
             throw new UpdateException("Unable to download the NVD API cache.properties", ex);
         } catch (IOException ex) {
-            throw new UpdateException("Invalid NVD Cache Properties file contents", ex);
+            throw new UpdateException("Invalid NVD Cache properties file contents", ex);
         }
+    }
+
+    /**
+     * Builds the metadata properties from individual metadata fields within the data feed
+     *
+     * @param dataFeedUrl a parsed NVD cache / data feed URL
+     * @return the cache properties
+     * @throws UpdateException thrown if the metadata files could not be downloaded to build cache properties
+     */
+    private Properties generateRemoteDataFeedCachePropertiesFromMetadata(FeedUrl dataFeedUrl) throws UpdateException {
+        FeedUrl metaFeedUrl = dataFeedUrl.withPattern(p -> p
+                .orElse(FeedUrl.DEFAULT_FILE_PATTERN)
+                .replace(".json.gz", ".meta")
+        );
+
+        final Properties properties = new Properties();
+        ZonedDateTime lmd = metaFeedUrl.getLastModifiedFor("modified");
+        DatabaseProperties.setTimestamp(properties, NVD_API_CACHE_MODIFIED_DATE + ".modified", lmd);
+        DatabaseProperties.setTimestamp(properties, NVD_API_CACHE_MODIFIED_DATE, lmd);
+
+        metaFeedUrl.getLastModifiedDatePropertiesByYear(this.settings, ZonedDateTime.now(ZoneOffset.UTC))
+                .forEach((k, v) -> DatabaseProperties.setTimestamp(properties, k, v));
         return properties;
     }
 
-    protected static class UrlData {
+    protected static class FeedUrl {
 
         /**
-         * The URL to download resources from.
+         * Default file pattern prefix for NVD caches; generally those generated by vulnz / Open Vulnerability Clients
+         */
+        static final String DEFAULT_FILE_PATTERN_PREFIX = "nvdcve-";
+        /**
+         * Default file pattern suffix for NVD caches; generally those generated by vulnz / Open Vulnerability Clients
+         */
+        static final String DEFAULT_FILE_PATTERN_SUFFIX = "{0}.json.gz";
+        /**
+         * Default file pattern for NVD caches; generally those generated by vulnz / Open Vulnerability Clients
+         */
+        static final String DEFAULT_FILE_PATTERN = DEFAULT_FILE_PATTERN_PREFIX + DEFAULT_FILE_PATTERN_SUFFIX;
+
+        /**
+         * The timezone where the new year starts first.
+         */
+        static final ZoneId ZONE_GLOBAL_EARLIEST = ZoneId.of("UTC+14:00");
+        /**
+         * The timezone where the new year starts last.
+         */
+        static final ZoneId ZONE_GLOBAL_LATEST = ZoneId.of("UTC-12:00");
+
+        /**
+         * The base URL to download resources from.
          */
         private final String url;
 
@@ -657,28 +657,109 @@ public class NvdApiDataSource implements CachedWebDataSource {
          */
         private final String pattern;
 
-        public UrlData(String url, String pattern) {
+        public FeedUrl(String url, String pattern) {
             this.url = url;
             this.pattern = pattern;
         }
 
-        /**
-         * Get the value of pattern
-         *
-         * @return the value of pattern
-         */
-        public String getPattern() {
-            return pattern;
+        public FeedUrl withPattern(Function<Optional<String>, String> patternTransformer) {
+            return new FeedUrl(url, patternTransformer.apply(Optional.ofNullable(pattern)));
+        }
+
+        @NotNull String toFormattedUrlString(String formatArg) {
+            return url + MessageFormat.format(Optional.ofNullable(pattern).orElseThrow(), formatArg);
+        }
+
+        @NotNull String toFormattedUrlString(int formatArg) {
+            return toFormattedUrlString(String.valueOf(formatArg));
+        }
+
+        @NotNull URL toFormattedUrl(@NotNull String formatArg) throws MalformedURLException, URISyntaxException {
+            return new URI(toFormattedUrlString(formatArg)).toURL();
+        }
+
+        @SuppressWarnings("SameParameterValue")
+        @NotNull URL toSuffixedUrl(String suffix) throws MalformedURLException, URISyntaxException {
+            return new URI(url + suffix).toURL();
         }
 
         /**
-         * Get the value of url
-         *
-         * @return the value of url
+         * @param url A NVD data feed URL which may be just a base URL such as https://my-nvd-cache/nvd_cache or
+         *            may include a formatted URL ending with .json.gz such as https://nvd.nist.gov/feeds/json/cve/2.0/nvdcve-2.0-{0}.json.gz
+         * @return A constructed FeedUrl object
          */
-        public String getUrl() {
-            return url;
+        @SuppressWarnings("JavadocLinkAsPlainText")
+        protected static FeedUrl extractFromUrlOptionalPattern(String url) {
+            String baseUrl;
+            String pattern = null;
+            if (url.endsWith(".json.gz")) {
+                final int lio = url.lastIndexOf("/");
+                pattern = url.substring(lio + 1);
+                baseUrl = url.substring(0, lio);
+            } else {
+                baseUrl = url;
+            }
+            if (!baseUrl.endsWith("/")) {
+                baseUrl += "/";
+            }
+            return new FeedUrl(baseUrl, pattern);
         }
 
+        private static @NotNull Pair<Integer, Integer> toYearRange(Settings settings, ZonedDateTime now) {
+            // for establishing the current year use the timezone where the new year starts first
+            // as from that moment on CNAs might start assigning CVEs with the new year depending
+            // on the CNA's timezone
+            final int startYear = settings.getInt(Settings.KEYS.NVD_API_DATAFEED_START_YEAR, 2002);
+            final int endYear = now.withZoneSameInstant(ZONE_GLOBAL_EARLIEST).getYear();
+            return new Pair<>(startYear, endYear);
+        }
+
+        private @NotNull ZonedDateTime getLastModifiedFor(int year) throws UpdateException {
+            return getLastModifiedFor(String.valueOf(year));
+        }
+
+        private @NotNull ZonedDateTime getLastModifiedFor(String fileVersion) throws UpdateException {
+            try {
+                String content = Downloader.getInstance().fetchContent(toFormattedUrl(fileVersion), UTF_8);
+                Properties props = new Properties();
+                props.load(new StringReader(content));
+                return Objects.requireNonNull(DatabaseProperties.getIsoTimestamp(props, NVD_API_CACHE_MODIFIED_DATE));
+            } catch (Exception ex) {
+                throw new UpdateException("Unable to download & parse the data feed .meta file for " + fileVersion, ex);
+            }
+        }
+
+        Map<String, ZonedDateTime> getLastModifiedDatePropertiesByYear(Settings settings, ZonedDateTime now) throws UpdateException {
+            Pair<Integer, Integer> yearRange = toYearRange(settings, now);
+            Map<String, ZonedDateTime> lastModifiedDateProperties = new LinkedHashMap<>();
+            for (int y = yearRange.getLeft(); y <= yearRange.getRight(); y++) {
+                try {
+                    lastModifiedDateProperties.put(NVD_API_CACHE_MODIFIED_DATE + "." + y, getLastModifiedFor(y));
+                } catch (UpdateException e) {
+                    if (isMandatoryFeedYear(now, y)) {
+                        throw e;
+                    }
+                    LOGGER.debug("Ignoring data feed metadata retrieval failure for {}, it is still January 1st in some TZ; so feed files may not yet be generated. Error was {}", y, e.toString());
+                }
+            }
+            return lastModifiedDateProperties;
+        }
+
+        /**
+         * @param now        The current time in any timezone
+         * @param targetYear Target year's feed data to retrieve
+         * @return Whether or not the targetYear is considered a mandatory feed file to retrieve given the target year and current time.
+         */
+        static boolean isMandatoryFeedYear(ZonedDateTime now, int targetYear) {
+            return isNotTargetYearInAnyTZ(now, targetYear) || isAfterJanuary1InEveryTZ(now, targetYear);
+        }
+
+        private static boolean isNotTargetYearInAnyTZ(ZonedDateTime now, int targetYear) {
+            return targetYear != now.withZoneSameInstant(ZONE_GLOBAL_EARLIEST).getYear();
+        }
+
+        private static boolean isAfterJanuary1InEveryTZ(ZonedDateTime now, int targetYear) {
+            return now.isAfter(LocalDate.of(targetYear, 1, 2).atStartOfDay().atZone(ZONE_GLOBAL_LATEST));
+        }
     }
 }

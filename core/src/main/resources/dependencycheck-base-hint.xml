@@ -456,4 +456,14 @@
             <evidence type="product" source="hint analyzer" name="vendor" value="net" confidence="MEDIUM"/>
         </add>
     </hint>
+    <hint>
+       <!-- false negative per issue #8008 -->
+        <given>
+            <evidence type="vendor" source="pom" name="groupid" value="co.elastic.apm" confidence="HIGHEST"/>
+            <evidence type="product" source="pom" name="artifactid" value="elastic-apm-agent" confidence="HIGHEST"/>
+        </given>
+        <add>
+            <evidence type="product" source="hint analyzer" name="product" value="apm_java_agent" confidence="HIGHEST"/>
+        </add>
+    </hint>
 </hints>
