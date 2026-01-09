@@ -72,642 +72,801 @@
 <a class="jxr_linenumber" name="L64" href="#L64">64</a>  <em class="jxr_javadoccomment">     */</em>
 <a class="jxr_linenumber" name="L65" href="#L65">65</a>      <strong class="jxr_keyword">private</strong> List&lt;Double&gt; cvssBelow = <strong class="jxr_keyword">new</strong> ArrayList&lt;&gt;();
 <a class="jxr_linenumber" name="L66" href="#L66">66</a>      <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L67" href="#L67">67</a>  <em class="jxr_javadoccomment">     * The list of CWE entries to suppress.</em>
+<a class="jxr_linenumber" name="L67" href="#L67">67</a>  <em class="jxr_javadoccomment">     * The list of cvssV2Below scores.</em>
 <a class="jxr_linenumber" name="L68" href="#L68">68</a>  <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L69" href="#L69">69</a>      <strong class="jxr_keyword">private</strong> List&lt;String&gt; cwe = <strong class="jxr_keyword">new</strong> ArrayList&lt;&gt;();
+<a class="jxr_linenumber" name="L69" href="#L69">69</a>      <strong class="jxr_keyword">private</strong> List&lt;Double&gt; cvssV2Below = <strong class="jxr_keyword">new</strong> ArrayList&lt;&gt;();
 <a class="jxr_linenumber" name="L70" href="#L70">70</a>      <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L71" href="#L71">71</a>  <em class="jxr_javadoccomment">     * The list of CVE entries to suppress.</em>
+<a class="jxr_linenumber" name="L71" href="#L71">71</a>  <em class="jxr_javadoccomment">     * The list of cvssV3Below scores.</em>
 <a class="jxr_linenumber" name="L72" href="#L72">72</a>  <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L73" href="#L73">73</a>      <strong class="jxr_keyword">private</strong> List&lt;String&gt; cve = <strong class="jxr_keyword">new</strong> ArrayList&lt;&gt;();
+<a class="jxr_linenumber" name="L73" href="#L73">73</a>      <strong class="jxr_keyword">private</strong> List&lt;Double&gt; cvssV3Below = <strong class="jxr_keyword">new</strong> ArrayList&lt;&gt;();
 <a class="jxr_linenumber" name="L74" href="#L74">74</a>      <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L75" href="#L75">75</a>  <em class="jxr_javadoccomment">     * The list of vulnerability name entries to suppress.</em>
+<a class="jxr_linenumber" name="L75" href="#L75">75</a>  <em class="jxr_javadoccomment">     * The list of cvssV4Below scores.</em>
 <a class="jxr_linenumber" name="L76" href="#L76">76</a>  <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L77" href="#L77">77</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> List&lt;PropertyType&gt; vulnerabilityNames = <strong class="jxr_keyword">new</strong> ArrayList&lt;&gt;();
+<a class="jxr_linenumber" name="L77" href="#L77">77</a>      <strong class="jxr_keyword">private</strong> List&lt;Double&gt; cvssV4Below = <strong class="jxr_keyword">new</strong> ArrayList&lt;&gt;();
 <a class="jxr_linenumber" name="L78" href="#L78">78</a>      <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L79" href="#L79">79</a>  <em class="jxr_javadoccomment">     * A Maven GAV to suppression.</em>
+<a class="jxr_linenumber" name="L79" href="#L79">79</a>  <em class="jxr_javadoccomment">     * The list of CWE entries to suppress.</em>
 <a class="jxr_linenumber" name="L80" href="#L80">80</a>  <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L81" href="#L81">81</a>      <strong class="jxr_keyword">private</strong> <a href="../../../../../org/owasp/dependencycheck/xml/suppression/PropertyType.html">PropertyType</a> gav = <strong class="jxr_keyword">null</strong>;
+<a class="jxr_linenumber" name="L81" href="#L81">81</a>      <strong class="jxr_keyword">private</strong> List&lt;String&gt; cwe = <strong class="jxr_keyword">new</strong> ArrayList&lt;&gt;();
 <a class="jxr_linenumber" name="L82" href="#L82">82</a>      <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L83" href="#L83">83</a>  <em class="jxr_javadoccomment">     * The list of vulnerability name entries to suppress.</em>
+<a class="jxr_linenumber" name="L83" href="#L83">83</a>  <em class="jxr_javadoccomment">     * The list of CVE entries to suppress.</em>
 <a class="jxr_linenumber" name="L84" href="#L84">84</a>  <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L85" href="#L85">85</a>      <strong class="jxr_keyword">private</strong> <a href="../../../../../org/owasp/dependencycheck/xml/suppression/PropertyType.html">PropertyType</a> packageUrl = <strong class="jxr_keyword">null</strong>;
+<a class="jxr_linenumber" name="L85" href="#L85">85</a>      <strong class="jxr_keyword">private</strong> List&lt;String&gt; cve = <strong class="jxr_keyword">new</strong> ArrayList&lt;&gt;();
 <a class="jxr_linenumber" name="L86" href="#L86">86</a>      <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L87" href="#L87">87</a>  <em class="jxr_javadoccomment">     * The notes added in suppression file</em>
+<a class="jxr_linenumber" name="L87" href="#L87">87</a>  <em class="jxr_javadoccomment">     * The list of vulnerability name entries to suppress.</em>
 <a class="jxr_linenumber" name="L88" href="#L88">88</a>  <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L89" href="#L89">89</a>  
-<a class="jxr_linenumber" name="L90" href="#L90">90</a>      <strong class="jxr_keyword">private</strong> String notes;
-<a class="jxr_linenumber" name="L91" href="#L91">91</a>  
-<a class="jxr_linenumber" name="L92" href="#L92">92</a>      <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L93" href="#L93">93</a>  <em class="jxr_javadoccomment">     * A flag indicating whether or not the suppression rule is a core/base rule</em>
-<a class="jxr_linenumber" name="L94" href="#L94">94</a>  <em class="jxr_javadoccomment">     * that should not be included in the resulting report in the "suppressed"</em>
-<a class="jxr_linenumber" name="L95" href="#L95">95</a>  <em class="jxr_javadoccomment">     * section.</em>
+<a class="jxr_linenumber" name="L89" href="#L89">89</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> List&lt;PropertyType&gt; vulnerabilityNames = <strong class="jxr_keyword">new</strong> ArrayList&lt;&gt;();
+<a class="jxr_linenumber" name="L90" href="#L90">90</a>      <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L91" href="#L91">91</a>  <em class="jxr_javadoccomment">     * A Maven GAV to suppression.</em>
+<a class="jxr_linenumber" name="L92" href="#L92">92</a>  <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L93" href="#L93">93</a>      <strong class="jxr_keyword">private</strong> <a href="../../../../../org/owasp/dependencycheck/xml/suppression/PropertyType.html">PropertyType</a> gav = <strong class="jxr_keyword">null</strong>;
+<a class="jxr_linenumber" name="L94" href="#L94">94</a>      <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L95" href="#L95">95</a>  <em class="jxr_javadoccomment">     * The list of vulnerability name entries to suppress.</em>
 <a class="jxr_linenumber" name="L96" href="#L96">96</a>  <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L97" href="#L97">97</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">boolean</strong> base;
-<a class="jxr_linenumber" name="L98" href="#L98">98</a>  
-<a class="jxr_linenumber" name="L99" href="#L99">99</a>      <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L100" href="#L100">100</a> <em class="jxr_javadoccomment">     * A date until which the suppression is to be retained. This can be used to</em>
-<a class="jxr_linenumber" name="L101" href="#L101">101</a> <em class="jxr_javadoccomment">     * make a temporary suppression that auto-expires to suppress a CVE while</em>
-<a class="jxr_linenumber" name="L102" href="#L102">102</a> <em class="jxr_javadoccomment">     * waiting for the vulnerability fix of the dependency to be released.</em>
-<a class="jxr_linenumber" name="L103" href="#L103">103</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L104" href="#L104">104</a>     <strong class="jxr_keyword">private</strong> Calendar until;
-<a class="jxr_linenumber" name="L105" href="#L105">105</a> 
-<a class="jxr_linenumber" name="L106" href="#L106">106</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L107" href="#L107">107</a> <em class="jxr_javadoccomment">     * A flag whether or not the rule matched a dependency &amp; CPE.</em>
+<a class="jxr_linenumber" name="L97" href="#L97">97</a>      <strong class="jxr_keyword">private</strong> <a href="../../../../../org/owasp/dependencycheck/xml/suppression/PropertyType.html">PropertyType</a> packageUrl = <strong class="jxr_keyword">null</strong>;
+<a class="jxr_linenumber" name="L98" href="#L98">98</a>      <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L99" href="#L99">99</a>  <em class="jxr_javadoccomment">     * The notes added in suppression file</em>
+<a class="jxr_linenumber" name="L100" href="#L100">100</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L101" href="#L101">101</a> 
+<a class="jxr_linenumber" name="L102" href="#L102">102</a>     <strong class="jxr_keyword">private</strong> String notes;
+<a class="jxr_linenumber" name="L103" href="#L103">103</a> 
+<a class="jxr_linenumber" name="L104" href="#L104">104</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L105" href="#L105">105</a> <em class="jxr_javadoccomment">     * A flag indicating whether or not the suppression rule is a core/base rule</em>
+<a class="jxr_linenumber" name="L106" href="#L106">106</a> <em class="jxr_javadoccomment">     * that should not be included in the resulting report in the "suppressed"</em>
+<a class="jxr_linenumber" name="L107" href="#L107">107</a> <em class="jxr_javadoccomment">     * section.</em>
 <a class="jxr_linenumber" name="L108" href="#L108">108</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L109" href="#L109">109</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">boolean</strong> matched = false;
+<a class="jxr_linenumber" name="L109" href="#L109">109</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">boolean</strong> base;
 <a class="jxr_linenumber" name="L110" href="#L110">110</a> 
 <a class="jxr_linenumber" name="L111" href="#L111">111</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L112" href="#L112">112</a> <em class="jxr_javadoccomment">     * Get the value of matched.</em>
-<a class="jxr_linenumber" name="L113" href="#L113">113</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L114" href="#L114">114</a> <em class="jxr_javadoccomment">     * @return the value of matched</em>
+<a class="jxr_linenumber" name="L112" href="#L112">112</a> <em class="jxr_javadoccomment">     * A date until which the suppression is to be retained. This can be used to</em>
+<a class="jxr_linenumber" name="L113" href="#L113">113</a> <em class="jxr_javadoccomment">     * make a temporary suppression that auto-expires to suppress a CVE while</em>
+<a class="jxr_linenumber" name="L114" href="#L114">114</a> <em class="jxr_javadoccomment">     * waiting for the vulnerability fix of the dependency to be released.</em>
 <a class="jxr_linenumber" name="L115" href="#L115">115</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L116" href="#L116">116</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">boolean</strong> isMatched() {
-<a class="jxr_linenumber" name="L117" href="#L117">117</a>         <strong class="jxr_keyword">return</strong> matched;
-<a class="jxr_linenumber" name="L118" href="#L118">118</a>     }
-<a class="jxr_linenumber" name="L119" href="#L119">119</a> 
-<a class="jxr_linenumber" name="L120" href="#L120">120</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L121" href="#L121">121</a> <em class="jxr_javadoccomment">     * Set the value of matched.</em>
-<a class="jxr_linenumber" name="L122" href="#L122">122</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L123" href="#L123">123</a> <em class="jxr_javadoccomment">     * @param matched new value of matched</em>
-<a class="jxr_linenumber" name="L124" href="#L124">124</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L125" href="#L125">125</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> setMatched(<strong class="jxr_keyword">boolean</strong> matched) {
-<a class="jxr_linenumber" name="L126" href="#L126">126</a>         <strong class="jxr_keyword">this</strong>.matched = matched;
-<a class="jxr_linenumber" name="L127" href="#L127">127</a>     }
-<a class="jxr_linenumber" name="L128" href="#L128">128</a> 
-<a class="jxr_linenumber" name="L129" href="#L129">129</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L130" href="#L130">130</a> <em class="jxr_javadoccomment">     * Get the (@code{nullable}) value of until.</em>
-<a class="jxr_linenumber" name="L131" href="#L131">131</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L132" href="#L132">132</a> <em class="jxr_javadoccomment">     * @return the value of until</em>
-<a class="jxr_linenumber" name="L133" href="#L133">133</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L134" href="#L134">134</a>     <strong class="jxr_keyword">public</strong> Calendar getUntil() {
-<a class="jxr_linenumber" name="L135" href="#L135">135</a>         <strong class="jxr_keyword">return</strong> until;
-<a class="jxr_linenumber" name="L136" href="#L136">136</a>     }
-<a class="jxr_linenumber" name="L137" href="#L137">137</a> 
-<a class="jxr_linenumber" name="L138" href="#L138">138</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L139" href="#L139">139</a> <em class="jxr_javadoccomment">     * Set the value of until.</em>
-<a class="jxr_linenumber" name="L140" href="#L140">140</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L141" href="#L141">141</a> <em class="jxr_javadoccomment">     * @param until new value of until</em>
-<a class="jxr_linenumber" name="L142" href="#L142">142</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L143" href="#L143">143</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> setUntil(Calendar until) {
-<a class="jxr_linenumber" name="L144" href="#L144">144</a>         <strong class="jxr_keyword">this</strong>.until = until;
-<a class="jxr_linenumber" name="L145" href="#L145">145</a>     }
-<a class="jxr_linenumber" name="L146" href="#L146">146</a> 
-<a class="jxr_linenumber" name="L147" href="#L147">147</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L148" href="#L148">148</a> <em class="jxr_javadoccomment">     * Get the value of filePath.</em>
-<a class="jxr_linenumber" name="L149" href="#L149">149</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L150" href="#L150">150</a> <em class="jxr_javadoccomment">     * @return the value of filePath</em>
-<a class="jxr_linenumber" name="L151" href="#L151">151</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L152" href="#L152">152</a>     <strong class="jxr_keyword">public</strong> <a href="../../../../../org/owasp/dependencycheck/xml/suppression/PropertyType.html">PropertyType</a> getFilePath() {
-<a class="jxr_linenumber" name="L153" href="#L153">153</a>         <strong class="jxr_keyword">return</strong> filePath;
-<a class="jxr_linenumber" name="L154" href="#L154">154</a>     }
-<a class="jxr_linenumber" name="L155" href="#L155">155</a> 
-<a class="jxr_linenumber" name="L156" href="#L156">156</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L157" href="#L157">157</a> <em class="jxr_javadoccomment">     * Set the value of filePath.</em>
-<a class="jxr_linenumber" name="L158" href="#L158">158</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L159" href="#L159">159</a> <em class="jxr_javadoccomment">     * @param filePath new value of filePath</em>
-<a class="jxr_linenumber" name="L160" href="#L160">160</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L161" href="#L161">161</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> setFilePath(<a href="../../../../../org/owasp/dependencycheck/xml/suppression/PropertyType.html">PropertyType</a> filePath) {
-<a class="jxr_linenumber" name="L162" href="#L162">162</a>         <strong class="jxr_keyword">this</strong>.filePath = filePath;
-<a class="jxr_linenumber" name="L163" href="#L163">163</a>     }
-<a class="jxr_linenumber" name="L164" href="#L164">164</a> 
-<a class="jxr_linenumber" name="L165" href="#L165">165</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L166" href="#L166">166</a> <em class="jxr_javadoccomment">     * Get the value of sha1.</em>
-<a class="jxr_linenumber" name="L167" href="#L167">167</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L168" href="#L168">168</a> <em class="jxr_javadoccomment">     * @return the value of sha1</em>
-<a class="jxr_linenumber" name="L169" href="#L169">169</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L170" href="#L170">170</a>     <strong class="jxr_keyword">public</strong> String getSha1() {
-<a class="jxr_linenumber" name="L171" href="#L171">171</a>         <strong class="jxr_keyword">return</strong> sha1;
-<a class="jxr_linenumber" name="L172" href="#L172">172</a>     }
-<a class="jxr_linenumber" name="L173" href="#L173">173</a> 
-<a class="jxr_linenumber" name="L174" href="#L174">174</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L175" href="#L175">175</a> <em class="jxr_javadoccomment">     * Set the value of SHA1.</em>
-<a class="jxr_linenumber" name="L176" href="#L176">176</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L177" href="#L177">177</a> <em class="jxr_javadoccomment">     * @param sha1 new value of SHA1</em>
-<a class="jxr_linenumber" name="L178" href="#L178">178</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L179" href="#L179">179</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> setSha1(String sha1) {
-<a class="jxr_linenumber" name="L180" href="#L180">180</a>         <strong class="jxr_keyword">this</strong>.sha1 = sha1;
-<a class="jxr_linenumber" name="L181" href="#L181">181</a>     }
-<a class="jxr_linenumber" name="L182" href="#L182">182</a> 
-<a class="jxr_linenumber" name="L183" href="#L183">183</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L184" href="#L184">184</a> <em class="jxr_javadoccomment">     * Get the value of CPE.</em>
-<a class="jxr_linenumber" name="L185" href="#L185">185</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L186" href="#L186">186</a> <em class="jxr_javadoccomment">     * @return the value of CPE</em>
-<a class="jxr_linenumber" name="L187" href="#L187">187</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L188" href="#L188">188</a>     <strong class="jxr_keyword">public</strong> List&lt;PropertyType&gt; getCpe() {
-<a class="jxr_linenumber" name="L189" href="#L189">189</a>         <strong class="jxr_keyword">return</strong> cpe;
-<a class="jxr_linenumber" name="L190" href="#L190">190</a>     }
-<a class="jxr_linenumber" name="L191" href="#L191">191</a> 
-<a class="jxr_linenumber" name="L192" href="#L192">192</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L193" href="#L193">193</a> <em class="jxr_javadoccomment">     * Set the value of CPE.</em>
-<a class="jxr_linenumber" name="L194" href="#L194">194</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L195" href="#L195">195</a> <em class="jxr_javadoccomment">     * @param cpe new value of CPE</em>
-<a class="jxr_linenumber" name="L196" href="#L196">196</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L197" href="#L197">197</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> setCpe(List&lt;PropertyType&gt; cpe) {
-<a class="jxr_linenumber" name="L198" href="#L198">198</a>         <strong class="jxr_keyword">this</strong>.cpe = cpe;
-<a class="jxr_linenumber" name="L199" href="#L199">199</a>     }
-<a class="jxr_linenumber" name="L200" href="#L200">200</a> 
-<a class="jxr_linenumber" name="L201" href="#L201">201</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L202" href="#L202">202</a> <em class="jxr_javadoccomment">     * Adds the CPE to the CPE list.</em>
-<a class="jxr_linenumber" name="L203" href="#L203">203</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L204" href="#L204">204</a> <em class="jxr_javadoccomment">     * @param cpe the CPE to add</em>
-<a class="jxr_linenumber" name="L205" href="#L205">205</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L206" href="#L206">206</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> addCpe(<a href="../../../../../org/owasp/dependencycheck/xml/suppression/PropertyType.html">PropertyType</a> cpe) {
-<a class="jxr_linenumber" name="L207" href="#L207">207</a>         <strong class="jxr_keyword">this</strong>.cpe.add(cpe);
-<a class="jxr_linenumber" name="L208" href="#L208">208</a>     }
-<a class="jxr_linenumber" name="L209" href="#L209">209</a> 
-<a class="jxr_linenumber" name="L210" href="#L210">210</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L211" href="#L211">211</a> <em class="jxr_javadoccomment">     * Adds the CPE to the CPE list.</em>
-<a class="jxr_linenumber" name="L212" href="#L212">212</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L213" href="#L213">213</a> <em class="jxr_javadoccomment">     * @param name the vulnerability name to add</em>
-<a class="jxr_linenumber" name="L214" href="#L214">214</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L215" href="#L215">215</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> addVulnerabilityName(<a href="../../../../../org/owasp/dependencycheck/xml/suppression/PropertyType.html">PropertyType</a> name) {
-<a class="jxr_linenumber" name="L216" href="#L216">216</a>         <strong class="jxr_keyword">this</strong>.vulnerabilityNames.add(name);
-<a class="jxr_linenumber" name="L217" href="#L217">217</a>     }
-<a class="jxr_linenumber" name="L218" href="#L218">218</a> 
-<a class="jxr_linenumber" name="L219" href="#L219">219</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L220" href="#L220">220</a> <em class="jxr_javadoccomment">     * Returns whether or not this suppression rule as CPE entries.</em>
-<a class="jxr_linenumber" name="L221" href="#L221">221</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L222" href="#L222">222</a> <em class="jxr_javadoccomment">     * @return whether or not this suppression rule as CPE entries</em>
-<a class="jxr_linenumber" name="L223" href="#L223">223</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L224" href="#L224">224</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">boolean</strong> hasCpe() {
-<a class="jxr_linenumber" name="L225" href="#L225">225</a>         <strong class="jxr_keyword">return</strong> !cpe.isEmpty();
-<a class="jxr_linenumber" name="L226" href="#L226">226</a>     }
-<a class="jxr_linenumber" name="L227" href="#L227">227</a> 
-<a class="jxr_linenumber" name="L228" href="#L228">228</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L229" href="#L229">229</a> <em class="jxr_javadoccomment">     * Get the value of cvssBelow.</em>
-<a class="jxr_linenumber" name="L230" href="#L230">230</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L231" href="#L231">231</a> <em class="jxr_javadoccomment">     * @return the value of cvssBelow</em>
-<a class="jxr_linenumber" name="L232" href="#L232">232</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L233" href="#L233">233</a>     <strong class="jxr_keyword">public</strong> List&lt;Double&gt; getCvssBelow() {
-<a class="jxr_linenumber" name="L234" href="#L234">234</a>         <strong class="jxr_keyword">return</strong> cvssBelow;
-<a class="jxr_linenumber" name="L235" href="#L235">235</a>     }
-<a class="jxr_linenumber" name="L236" href="#L236">236</a> 
-<a class="jxr_linenumber" name="L237" href="#L237">237</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L238" href="#L238">238</a> <em class="jxr_javadoccomment">     * Set the value of cvssBelow.</em>
-<a class="jxr_linenumber" name="L239" href="#L239">239</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L240" href="#L240">240</a> <em class="jxr_javadoccomment">     * @param cvssBelow new value of cvssBelow</em>
-<a class="jxr_linenumber" name="L241" href="#L241">241</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L242" href="#L242">242</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> setCvssBelow(List&lt;Double&gt; cvssBelow) {
-<a class="jxr_linenumber" name="L243" href="#L243">243</a>         <strong class="jxr_keyword">this</strong>.cvssBelow = cvssBelow;
-<a class="jxr_linenumber" name="L244" href="#L244">244</a>     }
-<a class="jxr_linenumber" name="L245" href="#L245">245</a> 
-<a class="jxr_linenumber" name="L246" href="#L246">246</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L247" href="#L247">247</a> <em class="jxr_javadoccomment">     * Adds the CVSS to the cvssBelow list.</em>
-<a class="jxr_linenumber" name="L248" href="#L248">248</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L249" href="#L249">249</a> <em class="jxr_javadoccomment">     * @param cvss the CVSS to add</em>
-<a class="jxr_linenumber" name="L250" href="#L250">250</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L251" href="#L251">251</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> addCvssBelow(Double cvss) {
-<a class="jxr_linenumber" name="L252" href="#L252">252</a>         <strong class="jxr_keyword">this</strong>.cvssBelow.add(cvss);
-<a class="jxr_linenumber" name="L253" href="#L253">253</a>     }
-<a class="jxr_linenumber" name="L254" href="#L254">254</a> 
-<a class="jxr_linenumber" name="L255" href="#L255">255</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L256" href="#L256">256</a> <em class="jxr_javadoccomment">     * Returns whether or not this suppression rule has CVSS suppression criteria.</em>
-<a class="jxr_linenumber" name="L257" href="#L257">257</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L258" href="#L258">258</a> <em class="jxr_javadoccomment">     * @return whether or not this suppression rule has CVSS suppression criteria.</em>
-<a class="jxr_linenumber" name="L259" href="#L259">259</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L260" href="#L260">260</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">boolean</strong> hasCvssBelow() {
-<a class="jxr_linenumber" name="L261" href="#L261">261</a>         <strong class="jxr_keyword">return</strong> !cvssBelow.isEmpty();
-<a class="jxr_linenumber" name="L262" href="#L262">262</a>     }
-<a class="jxr_linenumber" name="L263" href="#L263">263</a> 
-<a class="jxr_linenumber" name="L264" href="#L264">264</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L265" href="#L265">265</a> <em class="jxr_javadoccomment">     * Get the value of notes.</em>
-<a class="jxr_linenumber" name="L266" href="#L266">266</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L267" href="#L267">267</a> <em class="jxr_javadoccomment">     * @return the value of notes</em>
-<a class="jxr_linenumber" name="L268" href="#L268">268</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L269" href="#L269">269</a>     <strong class="jxr_keyword">public</strong> String getNotes() {
-<a class="jxr_linenumber" name="L270" href="#L270">270</a>         <strong class="jxr_keyword">return</strong> notes;
-<a class="jxr_linenumber" name="L271" href="#L271">271</a>     }
-<a class="jxr_linenumber" name="L272" href="#L272">272</a> 
-<a class="jxr_linenumber" name="L273" href="#L273">273</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L274" href="#L274">274</a> <em class="jxr_javadoccomment">     * Set the value of notes.</em>
-<a class="jxr_linenumber" name="L275" href="#L275">275</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L276" href="#L276">276</a> <em class="jxr_javadoccomment">     * @param notes new value of notes</em>
-<a class="jxr_linenumber" name="L277" href="#L277">277</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L278" href="#L278">278</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> setNotes(String notes) {
-<a class="jxr_linenumber" name="L279" href="#L279">279</a>         <strong class="jxr_keyword">this</strong>.notes = notes;
-<a class="jxr_linenumber" name="L280" href="#L280">280</a>     }
-<a class="jxr_linenumber" name="L281" href="#L281">281</a> 
-<a class="jxr_linenumber" name="L282" href="#L282">282</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L283" href="#L283">283</a> <em class="jxr_javadoccomment">     * Returns whether this suppression rule has notes entries.</em>
-<a class="jxr_linenumber" name="L284" href="#L284">284</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L285" href="#L285">285</a> <em class="jxr_javadoccomment">     * @return whether this suppression rule has notes entries</em>
-<a class="jxr_linenumber" name="L286" href="#L286">286</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L287" href="#L287">287</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">boolean</strong> hasNotes() {
-<a class="jxr_linenumber" name="L288" href="#L288">288</a>         <strong class="jxr_keyword">return</strong> !notes.isEmpty();
-<a class="jxr_linenumber" name="L289" href="#L289">289</a>     }
-<a class="jxr_linenumber" name="L290" href="#L290">290</a> 
-<a class="jxr_linenumber" name="L291" href="#L291">291</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L292" href="#L292">292</a> <em class="jxr_javadoccomment">     * Get the value of CWE.</em>
-<a class="jxr_linenumber" name="L293" href="#L293">293</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L294" href="#L294">294</a> <em class="jxr_javadoccomment">     * @return the value of CWE</em>
-<a class="jxr_linenumber" name="L295" href="#L295">295</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L296" href="#L296">296</a>     <strong class="jxr_keyword">public</strong> List&lt;String&gt; getCwe() {
-<a class="jxr_linenumber" name="L297" href="#L297">297</a>         <strong class="jxr_keyword">return</strong> cwe;
-<a class="jxr_linenumber" name="L298" href="#L298">298</a>     }
-<a class="jxr_linenumber" name="L299" href="#L299">299</a> 
-<a class="jxr_linenumber" name="L300" href="#L300">300</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L301" href="#L301">301</a> <em class="jxr_javadoccomment">     * Set the value of CWE.</em>
-<a class="jxr_linenumber" name="L302" href="#L302">302</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L303" href="#L303">303</a> <em class="jxr_javadoccomment">     * @param cwe new value of CWE</em>
-<a class="jxr_linenumber" name="L304" href="#L304">304</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L305" href="#L305">305</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> setCwe(List&lt;String&gt; cwe) {
-<a class="jxr_linenumber" name="L306" href="#L306">306</a>         <strong class="jxr_keyword">this</strong>.cwe = cwe;
-<a class="jxr_linenumber" name="L307" href="#L307">307</a>     }
-<a class="jxr_linenumber" name="L308" href="#L308">308</a> 
-<a class="jxr_linenumber" name="L309" href="#L309">309</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L310" href="#L310">310</a> <em class="jxr_javadoccomment">     * Adds the CWE to the CWE list.</em>
-<a class="jxr_linenumber" name="L311" href="#L311">311</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L312" href="#L312">312</a> <em class="jxr_javadoccomment">     * @param cwe the CWE to add</em>
-<a class="jxr_linenumber" name="L313" href="#L313">313</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L314" href="#L314">314</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> addCwe(String cwe) {
-<a class="jxr_linenumber" name="L315" href="#L315">315</a>         <strong class="jxr_keyword">this</strong>.cwe.add(cwe);
-<a class="jxr_linenumber" name="L316" href="#L316">316</a>     }
-<a class="jxr_linenumber" name="L317" href="#L317">317</a> 
-<a class="jxr_linenumber" name="L318" href="#L318">318</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L319" href="#L319">319</a> <em class="jxr_javadoccomment">     * Returns whether this suppression rule has CWE entries.</em>
-<a class="jxr_linenumber" name="L320" href="#L320">320</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L321" href="#L321">321</a> <em class="jxr_javadoccomment">     * @return whether this suppression rule has CWE entries</em>
-<a class="jxr_linenumber" name="L322" href="#L322">322</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L323" href="#L323">323</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">boolean</strong> hasCwe() {
-<a class="jxr_linenumber" name="L324" href="#L324">324</a>         <strong class="jxr_keyword">return</strong> !cwe.isEmpty();
-<a class="jxr_linenumber" name="L325" href="#L325">325</a>     }
-<a class="jxr_linenumber" name="L326" href="#L326">326</a> 
-<a class="jxr_linenumber" name="L327" href="#L327">327</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L328" href="#L328">328</a> <em class="jxr_javadoccomment">     * Get the value of CVE.</em>
-<a class="jxr_linenumber" name="L329" href="#L329">329</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L330" href="#L330">330</a> <em class="jxr_javadoccomment">     * @return the value of CVE</em>
-<a class="jxr_linenumber" name="L331" href="#L331">331</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L332" href="#L332">332</a>     <strong class="jxr_keyword">public</strong> List&lt;String&gt; getCve() {
-<a class="jxr_linenumber" name="L333" href="#L333">333</a>         <strong class="jxr_keyword">return</strong> cve;
-<a class="jxr_linenumber" name="L334" href="#L334">334</a>     }
-<a class="jxr_linenumber" name="L335" href="#L335">335</a> 
-<a class="jxr_linenumber" name="L336" href="#L336">336</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L337" href="#L337">337</a> <em class="jxr_javadoccomment">     * Set the value of CVE.</em>
-<a class="jxr_linenumber" name="L338" href="#L338">338</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L339" href="#L339">339</a> <em class="jxr_javadoccomment">     * @param cve new value of CVE</em>
-<a class="jxr_linenumber" name="L340" href="#L340">340</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L341" href="#L341">341</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> setCve(List&lt;String&gt; cve) {
-<a class="jxr_linenumber" name="L342" href="#L342">342</a>         <strong class="jxr_keyword">this</strong>.cve = cve;
-<a class="jxr_linenumber" name="L343" href="#L343">343</a>     }
-<a class="jxr_linenumber" name="L344" href="#L344">344</a> 
-<a class="jxr_linenumber" name="L345" href="#L345">345</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L346" href="#L346">346</a> <em class="jxr_javadoccomment">     * Adds the CVE to the CVE list.</em>
-<a class="jxr_linenumber" name="L347" href="#L347">347</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L348" href="#L348">348</a> <em class="jxr_javadoccomment">     * @param cve the CVE to add</em>
-<a class="jxr_linenumber" name="L349" href="#L349">349</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L350" href="#L350">350</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> addCve(String cve) {
-<a class="jxr_linenumber" name="L351" href="#L351">351</a>         <strong class="jxr_keyword">this</strong>.cve.add(cve);
-<a class="jxr_linenumber" name="L352" href="#L352">352</a>     }
-<a class="jxr_linenumber" name="L353" href="#L353">353</a> 
-<a class="jxr_linenumber" name="L354" href="#L354">354</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L355" href="#L355">355</a> <em class="jxr_javadoccomment">     * Returns whether this suppression rule has CVE entries.</em>
-<a class="jxr_linenumber" name="L356" href="#L356">356</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L357" href="#L357">357</a> <em class="jxr_javadoccomment">     * @return whether this suppression rule has CVE entries</em>
-<a class="jxr_linenumber" name="L358" href="#L358">358</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L359" href="#L359">359</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">boolean</strong> hasCve() {
-<a class="jxr_linenumber" name="L360" href="#L360">360</a>         <strong class="jxr_keyword">return</strong> !cve.isEmpty();
-<a class="jxr_linenumber" name="L361" href="#L361">361</a>     }
-<a class="jxr_linenumber" name="L362" href="#L362">362</a> 
-<a class="jxr_linenumber" name="L363" href="#L363">363</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L364" href="#L364">364</a> <em class="jxr_javadoccomment">     * Returns whether this suppression rule has vulnerabilityName entries.</em>
-<a class="jxr_linenumber" name="L365" href="#L365">365</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L366" href="#L366">366</a> <em class="jxr_javadoccomment">     * @return whether this suppression rule has vulnerabilityName entries</em>
-<a class="jxr_linenumber" name="L367" href="#L367">367</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L368" href="#L368">368</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">boolean</strong> hasVulnerabilityName() {
-<a class="jxr_linenumber" name="L369" href="#L369">369</a>         <strong class="jxr_keyword">return</strong> !vulnerabilityNames.isEmpty();
-<a class="jxr_linenumber" name="L370" href="#L370">370</a>     }
-<a class="jxr_linenumber" name="L371" href="#L371">371</a> 
-<a class="jxr_linenumber" name="L372" href="#L372">372</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L373" href="#L373">373</a> <em class="jxr_javadoccomment">     * Get the value of Maven GAV.</em>
-<a class="jxr_linenumber" name="L374" href="#L374">374</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L375" href="#L375">375</a> <em class="jxr_javadoccomment">     * @return the value of GAV</em>
-<a class="jxr_linenumber" name="L376" href="#L376">376</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L377" href="#L377">377</a>     <strong class="jxr_keyword">public</strong> <a href="../../../../../org/owasp/dependencycheck/xml/suppression/PropertyType.html">PropertyType</a> getGav() {
-<a class="jxr_linenumber" name="L378" href="#L378">378</a>         <strong class="jxr_keyword">return</strong> gav;
-<a class="jxr_linenumber" name="L379" href="#L379">379</a>     }
-<a class="jxr_linenumber" name="L380" href="#L380">380</a> 
-<a class="jxr_linenumber" name="L381" href="#L381">381</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L382" href="#L382">382</a> <em class="jxr_javadoccomment">     * Set the value of Maven GAV.</em>
-<a class="jxr_linenumber" name="L383" href="#L383">383</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L384" href="#L384">384</a> <em class="jxr_javadoccomment">     * @param gav new value of Maven GAV</em>
-<a class="jxr_linenumber" name="L385" href="#L385">385</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L386" href="#L386">386</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> setGav(<a href="../../../../../org/owasp/dependencycheck/xml/suppression/PropertyType.html">PropertyType</a> gav) {
-<a class="jxr_linenumber" name="L387" href="#L387">387</a>         <strong class="jxr_keyword">this</strong>.gav = gav;
-<a class="jxr_linenumber" name="L388" href="#L388">388</a>     }
-<a class="jxr_linenumber" name="L389" href="#L389">389</a> 
-<a class="jxr_linenumber" name="L390" href="#L390">390</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L391" href="#L391">391</a> <em class="jxr_javadoccomment">     * Returns whether or not this suppression rule as GAV entries.</em>
-<a class="jxr_linenumber" name="L392" href="#L392">392</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L393" href="#L393">393</a> <em class="jxr_javadoccomment">     * @return whether or not this suppression rule as GAV entries</em>
-<a class="jxr_linenumber" name="L394" href="#L394">394</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L395" href="#L395">395</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">boolean</strong> hasGav() {
-<a class="jxr_linenumber" name="L396" href="#L396">396</a>         <strong class="jxr_keyword">return</strong> gav != <strong class="jxr_keyword">null</strong>;
-<a class="jxr_linenumber" name="L397" href="#L397">397</a>     }
-<a class="jxr_linenumber" name="L398" href="#L398">398</a> 
-<a class="jxr_linenumber" name="L399" href="#L399">399</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L400" href="#L400">400</a> <em class="jxr_javadoccomment">     * Set the value of Package URL.</em>
-<a class="jxr_linenumber" name="L401" href="#L401">401</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L402" href="#L402">402</a> <em class="jxr_javadoccomment">     * @param purl new value of package URL</em>
-<a class="jxr_linenumber" name="L403" href="#L403">403</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L404" href="#L404">404</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> setPackageUrl(<a href="../../../../../org/owasp/dependencycheck/xml/suppression/PropertyType.html">PropertyType</a> purl) {
-<a class="jxr_linenumber" name="L405" href="#L405">405</a>         <strong class="jxr_keyword">this</strong>.packageUrl = purl;
-<a class="jxr_linenumber" name="L406" href="#L406">406</a>     }
-<a class="jxr_linenumber" name="L407" href="#L407">407</a> 
-<a class="jxr_linenumber" name="L408" href="#L408">408</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L409" href="#L409">409</a> <em class="jxr_javadoccomment">     * Returns whether or not this suppression rule as packageUrl entries.</em>
-<a class="jxr_linenumber" name="L410" href="#L410">410</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L411" href="#L411">411</a> <em class="jxr_javadoccomment">     * @return whether or not this suppression rule as packageUrl entries</em>
-<a class="jxr_linenumber" name="L412" href="#L412">412</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L413" href="#L413">413</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">boolean</strong> hasPackageUrl() {
-<a class="jxr_linenumber" name="L414" href="#L414">414</a>         <strong class="jxr_keyword">return</strong> packageUrl != <strong class="jxr_keyword">null</strong>;
-<a class="jxr_linenumber" name="L415" href="#L415">415</a>     }
-<a class="jxr_linenumber" name="L416" href="#L416">416</a> 
-<a class="jxr_linenumber" name="L417" href="#L417">417</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L418" href="#L418">418</a> <em class="jxr_javadoccomment">     * Get the value of base.</em>
-<a class="jxr_linenumber" name="L419" href="#L419">419</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L420" href="#L420">420</a> <em class="jxr_javadoccomment">     * @return the value of base</em>
-<a class="jxr_linenumber" name="L421" href="#L421">421</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L422" href="#L422">422</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">boolean</strong> isBase() {
-<a class="jxr_linenumber" name="L423" href="#L423">423</a>         <strong class="jxr_keyword">return</strong> base;
-<a class="jxr_linenumber" name="L424" href="#L424">424</a>     }
-<a class="jxr_linenumber" name="L425" href="#L425">425</a> 
-<a class="jxr_linenumber" name="L426" href="#L426">426</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L427" href="#L427">427</a> <em class="jxr_javadoccomment">     * Set the value of base.</em>
-<a class="jxr_linenumber" name="L428" href="#L428">428</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L429" href="#L429">429</a> <em class="jxr_javadoccomment">     * @param base new value of base</em>
-<a class="jxr_linenumber" name="L430" href="#L430">430</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L431" href="#L431">431</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> setBase(<strong class="jxr_keyword">boolean</strong> base) {
-<a class="jxr_linenumber" name="L432" href="#L432">432</a>         <strong class="jxr_keyword">this</strong>.base = base;
-<a class="jxr_linenumber" name="L433" href="#L433">433</a>     }
-<a class="jxr_linenumber" name="L434" href="#L434">434</a> 
-<a class="jxr_linenumber" name="L435" href="#L435">435</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L436" href="#L436">436</a> <em class="jxr_javadoccomment">     * Processes a given dependency to determine if any CPE, CVE, CWE, or CVSS</em>
-<a class="jxr_linenumber" name="L437" href="#L437">437</a> <em class="jxr_javadoccomment">     * scores should be suppressed. If any should be, they are removed from the</em>
-<a class="jxr_linenumber" name="L438" href="#L438">438</a> <em class="jxr_javadoccomment">     * dependency.</em>
-<a class="jxr_linenumber" name="L439" href="#L439">439</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L440" href="#L440">440</a> <em class="jxr_javadoccomment">     * @param dependency a project dependency to analyze</em>
-<a class="jxr_linenumber" name="L441" href="#L441">441</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L442" href="#L442">442</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> process(<a href="../../../../../org/owasp/dependencycheck/dependency/Dependency.html">Dependency</a> dependency) {
-<a class="jxr_linenumber" name="L443" href="#L443">443</a>         <strong class="jxr_keyword">if</strong> (filePath != <strong class="jxr_keyword">null</strong> &amp;&amp; !filePath.matches(dependency.getFilePath())) {
-<a class="jxr_linenumber" name="L444" href="#L444">444</a>             <strong class="jxr_keyword">return</strong>;
-<a class="jxr_linenumber" name="L445" href="#L445">445</a>         }
-<a class="jxr_linenumber" name="L446" href="#L446">446</a>         <strong class="jxr_keyword">if</strong> (sha1 != <strong class="jxr_keyword">null</strong> &amp;&amp; !sha1.equalsIgnoreCase(dependency.getSha1sum())) {
-<a class="jxr_linenumber" name="L447" href="#L447">447</a>             <strong class="jxr_keyword">return</strong>;
-<a class="jxr_linenumber" name="L448" href="#L448">448</a>         }
-<a class="jxr_linenumber" name="L449" href="#L449">449</a>         <strong class="jxr_keyword">if</strong> (hasGav()) {
-<a class="jxr_linenumber" name="L450" href="#L450">450</a>             <strong class="jxr_keyword">final</strong> Iterator&lt;Identifier&gt; itr = dependency.getSoftwareIdentifiers().iterator();
-<a class="jxr_linenumber" name="L451" href="#L451">451</a>             <strong class="jxr_keyword">boolean</strong> found = false;
-<a class="jxr_linenumber" name="L452" href="#L452">452</a>             <strong class="jxr_keyword">while</strong> (itr.hasNext()) {
-<a class="jxr_linenumber" name="L453" href="#L453">453</a>                 <strong class="jxr_keyword">final</strong> <a href="../../../../../org/owasp/dependencycheck/dependency/naming/Identifier.html">Identifier</a> i = itr.next();
-<a class="jxr_linenumber" name="L454" href="#L454">454</a>                 <strong class="jxr_keyword">if</strong> (identifierMatches(<strong class="jxr_keyword">this</strong>.gav, i)) {
-<a class="jxr_linenumber" name="L455" href="#L455">455</a>                     found = <strong class="jxr_keyword">true</strong>;
-<a class="jxr_linenumber" name="L456" href="#L456">456</a>                     <strong class="jxr_keyword">break</strong>;
-<a class="jxr_linenumber" name="L457" href="#L457">457</a>                 }
-<a class="jxr_linenumber" name="L458" href="#L458">458</a>             }
-<a class="jxr_linenumber" name="L459" href="#L459">459</a>             <strong class="jxr_keyword">if</strong> (!found) {
-<a class="jxr_linenumber" name="L460" href="#L460">460</a>                 <strong class="jxr_keyword">return</strong>;
-<a class="jxr_linenumber" name="L461" href="#L461">461</a>             }
-<a class="jxr_linenumber" name="L462" href="#L462">462</a>         }
-<a class="jxr_linenumber" name="L463" href="#L463">463</a>         <strong class="jxr_keyword">if</strong> (hasPackageUrl()) {
-<a class="jxr_linenumber" name="L464" href="#L464">464</a>             <strong class="jxr_keyword">final</strong> Iterator&lt;Identifier&gt; itr = dependency.getSoftwareIdentifiers().iterator();
-<a class="jxr_linenumber" name="L465" href="#L465">465</a>             <strong class="jxr_keyword">boolean</strong> found = false;
-<a class="jxr_linenumber" name="L466" href="#L466">466</a>             <strong class="jxr_keyword">while</strong> (itr.hasNext()) {
-<a class="jxr_linenumber" name="L467" href="#L467">467</a>                 <strong class="jxr_keyword">final</strong> <a href="../../../../../org/owasp/dependencycheck/dependency/naming/Identifier.html">Identifier</a> i = itr.next();
-<a class="jxr_linenumber" name="L468" href="#L468">468</a>                 <strong class="jxr_keyword">if</strong> (purlMatches(<strong class="jxr_keyword">this</strong>.packageUrl, i)) {
-<a class="jxr_linenumber" name="L469" href="#L469">469</a>                     found = <strong class="jxr_keyword">true</strong>;
-<a class="jxr_linenumber" name="L470" href="#L470">470</a>                     <strong class="jxr_keyword">break</strong>;
-<a class="jxr_linenumber" name="L471" href="#L471">471</a>                 }
-<a class="jxr_linenumber" name="L472" href="#L472">472</a>             }
-<a class="jxr_linenumber" name="L473" href="#L473">473</a>             <strong class="jxr_keyword">if</strong> (!found) {
-<a class="jxr_linenumber" name="L474" href="#L474">474</a>                 <strong class="jxr_keyword">return</strong>;
-<a class="jxr_linenumber" name="L475" href="#L475">475</a>             }
-<a class="jxr_linenumber" name="L476" href="#L476">476</a>         }
-<a class="jxr_linenumber" name="L477" href="#L477">477</a> 
-<a class="jxr_linenumber" name="L478" href="#L478">478</a>         <strong class="jxr_keyword">if</strong> (<strong class="jxr_keyword">this</strong>.hasCpe()) {
-<a class="jxr_linenumber" name="L479" href="#L479">479</a>             <strong class="jxr_keyword">final</strong> Set&lt;Identifier&gt; removalList = <strong class="jxr_keyword">new</strong> HashSet&lt;&gt;();
-<a class="jxr_linenumber" name="L480" href="#L480">480</a>             <strong class="jxr_keyword">for</strong> (Identifier i : dependency.getVulnerableSoftwareIdentifiers()) {
-<a class="jxr_linenumber" name="L481" href="#L481">481</a>                 <strong class="jxr_keyword">for</strong> (PropertyType c : <strong class="jxr_keyword">this</strong>.cpe) {
-<a class="jxr_linenumber" name="L482" href="#L482">482</a>                     <strong class="jxr_keyword">if</strong> (identifierMatches(c, i)) {
-<a class="jxr_linenumber" name="L483" href="#L483">483</a>                         <strong class="jxr_keyword">if</strong> (!isBase()) {
-<a class="jxr_linenumber" name="L484" href="#L484">484</a>                             matched = <strong class="jxr_keyword">true</strong>;
-<a class="jxr_linenumber" name="L485" href="#L485">485</a>                             <strong class="jxr_keyword">if</strong> (<strong class="jxr_keyword">this</strong>.notes != <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="L486" href="#L486">486</a>                                 i.setNotes(<strong class="jxr_keyword">this</strong>.notes);
-<a class="jxr_linenumber" name="L487" href="#L487">487</a>                             }
-<a class="jxr_linenumber" name="L488" href="#L488">488</a>                             dependency.addSuppressedIdentifier(i);
-<a class="jxr_linenumber" name="L489" href="#L489">489</a>                         }
-<a class="jxr_linenumber" name="L490" href="#L490">490</a>                         removalList.add(i);
-<a class="jxr_linenumber" name="L491" href="#L491">491</a>                         <strong class="jxr_keyword">break</strong>;
-<a class="jxr_linenumber" name="L492" href="#L492">492</a>                     }
-<a class="jxr_linenumber" name="L493" href="#L493">493</a>                 }
-<a class="jxr_linenumber" name="L494" href="#L494">494</a>             }
-<a class="jxr_linenumber" name="L495" href="#L495">495</a>             removalList.forEach(dependency::removeVulnerableSoftwareIdentifier);
-<a class="jxr_linenumber" name="L496" href="#L496">496</a>         }
-<a class="jxr_linenumber" name="L497" href="#L497">497</a>         <strong class="jxr_keyword">if</strong> (hasCve() || hasVulnerabilityName() || hasCwe() || hasCvssBelow()) {
-<a class="jxr_linenumber" name="L498" href="#L498">498</a>             <strong class="jxr_keyword">final</strong> Set&lt;Vulnerability&gt; removeVulns = <strong class="jxr_keyword">new</strong> HashSet&lt;&gt;();
-<a class="jxr_linenumber" name="L499" href="#L499">499</a>             <strong class="jxr_keyword">for</strong> (Vulnerability v : dependency.getVulnerabilities()) {
-<a class="jxr_linenumber" name="L500" href="#L500">500</a>                 <strong class="jxr_keyword">boolean</strong> remove = false;
-<a class="jxr_linenumber" name="L501" href="#L501">501</a>                 <strong class="jxr_keyword">for</strong> (String entry : <strong class="jxr_keyword">this</strong>.cve) {
-<a class="jxr_linenumber" name="L502" href="#L502">502</a>                     <strong class="jxr_keyword">if</strong> (entry.equalsIgnoreCase(v.getName())) {
-<a class="jxr_linenumber" name="L503" href="#L503">503</a>                         removeVulns.add(v);
-<a class="jxr_linenumber" name="L504" href="#L504">504</a>                         remove = <strong class="jxr_keyword">true</strong>;
-<a class="jxr_linenumber" name="L505" href="#L505">505</a>                         <strong class="jxr_keyword">break</strong>;
-<a class="jxr_linenumber" name="L506" href="#L506">506</a>                     }
-<a class="jxr_linenumber" name="L507" href="#L507">507</a>                 }
-<a class="jxr_linenumber" name="L508" href="#L508">508</a>                 <strong class="jxr_keyword">if</strong> (!remove &amp;&amp; <strong class="jxr_keyword">this</strong>.cwe != <strong class="jxr_keyword">null</strong> &amp;&amp; !v.getCwes().isEmpty()) {
-<a class="jxr_linenumber" name="L509" href="#L509">509</a>                     <strong class="jxr_keyword">for</strong> (String entry : <strong class="jxr_keyword">this</strong>.cwe) {
-<a class="jxr_linenumber" name="L510" href="#L510">510</a>                         <strong class="jxr_keyword">final</strong> String toMatch = String.format(<span class="jxr_string">"CWE-%s"</span>, entry);
-<a class="jxr_linenumber" name="L511" href="#L511">511</a>                         <strong class="jxr_keyword">if</strong> (v.getCwes().stream().anyMatch(toTest -&gt; toMatch.regionMatches(0, toTest, 0, toMatch.length()))) {
-<a class="jxr_linenumber" name="L512" href="#L512">512</a>                             remove = <strong class="jxr_keyword">true</strong>;
-<a class="jxr_linenumber" name="L513" href="#L513">513</a>                             removeVulns.add(v);
-<a class="jxr_linenumber" name="L514" href="#L514">514</a>                             <strong class="jxr_keyword">break</strong>;
-<a class="jxr_linenumber" name="L515" href="#L515">515</a>                         }
-<a class="jxr_linenumber" name="L516" href="#L516">516</a>                     }
-<a class="jxr_linenumber" name="L517" href="#L517">517</a>                 }
-<a class="jxr_linenumber" name="L518" href="#L518">518</a>                 <strong class="jxr_keyword">if</strong> (!remove &amp;&amp; v.getName() != <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="L519" href="#L519">519</a>                     <strong class="jxr_keyword">for</strong> (PropertyType entry : <strong class="jxr_keyword">this</strong>.vulnerabilityNames) {
-<a class="jxr_linenumber" name="L520" href="#L520">520</a>                         <strong class="jxr_keyword">if</strong> (entry.matches(v.getName())) {
-<a class="jxr_linenumber" name="L521" href="#L521">521</a>                             remove = <strong class="jxr_keyword">true</strong>;
-<a class="jxr_linenumber" name="L522" href="#L522">522</a>                             removeVulns.add(v);
-<a class="jxr_linenumber" name="L523" href="#L523">523</a>                             <strong class="jxr_keyword">break</strong>;
-<a class="jxr_linenumber" name="L524" href="#L524">524</a>                         }
-<a class="jxr_linenumber" name="L525" href="#L525">525</a>                     }
-<a class="jxr_linenumber" name="L526" href="#L526">526</a>                 }
-<a class="jxr_linenumber" name="L527" href="#L527">527</a>                 <strong class="jxr_keyword">if</strong> (!remove) {
-<a class="jxr_linenumber" name="L528" href="#L528">528</a>                     <strong class="jxr_keyword">for</strong> (Double cvss : <strong class="jxr_keyword">this</strong>.cvssBelow) {
-<a class="jxr_linenumber" name="L529" href="#L529">529</a>                         <em class="jxr_comment">//TODO validate this comparison</em>
-<a class="jxr_linenumber" name="L530" href="#L530">530</a>                         <strong class="jxr_keyword">if</strong> (v.getCvssV2() != <strong class="jxr_keyword">null</strong> &amp;&amp; v.getCvssV2().getCvssData().getBaseScore().compareTo(cvss) &lt; 0) {
-<a class="jxr_linenumber" name="L531" href="#L531">531</a>                             remove = <strong class="jxr_keyword">true</strong>;
-<a class="jxr_linenumber" name="L532" href="#L532">532</a>                             removeVulns.add(v);
-<a class="jxr_linenumber" name="L533" href="#L533">533</a>                             <strong class="jxr_keyword">break</strong>;
-<a class="jxr_linenumber" name="L534" href="#L534">534</a>                         }
-<a class="jxr_linenumber" name="L535" href="#L535">535</a>                         <strong class="jxr_keyword">if</strong> (v.getCvssV3() != <strong class="jxr_keyword">null</strong> &amp;&amp; v.getCvssV3().getCvssData().getBaseScore().compareTo(cvss) &lt; 0) {
-<a class="jxr_linenumber" name="L536" href="#L536">536</a>                             remove = <strong class="jxr_keyword">true</strong>;
-<a class="jxr_linenumber" name="L537" href="#L537">537</a>                             removeVulns.add(v);
-<a class="jxr_linenumber" name="L538" href="#L538">538</a>                             <strong class="jxr_keyword">break</strong>;
-<a class="jxr_linenumber" name="L539" href="#L539">539</a>                         }
-<a class="jxr_linenumber" name="L540" href="#L540">540</a>                         <strong class="jxr_keyword">if</strong> (v.getCvssV4() != <strong class="jxr_keyword">null</strong> &amp;&amp; v.getCvssV4().getCvssData().getBaseScore().compareTo(cvss) &lt; 0) {
-<a class="jxr_linenumber" name="L541" href="#L541">541</a>                             remove = <strong class="jxr_keyword">true</strong>;
-<a class="jxr_linenumber" name="L542" href="#L542">542</a>                             removeVulns.add(v);
-<a class="jxr_linenumber" name="L543" href="#L543">543</a>                             <strong class="jxr_keyword">break</strong>;
-<a class="jxr_linenumber" name="L544" href="#L544">544</a>                         }
-<a class="jxr_linenumber" name="L545" href="#L545">545</a>                     }
-<a class="jxr_linenumber" name="L546" href="#L546">546</a>                 }
-<a class="jxr_linenumber" name="L547" href="#L547">547</a>                 <strong class="jxr_keyword">if</strong> (remove &amp;&amp; !isBase()) {
-<a class="jxr_linenumber" name="L548" href="#L548">548</a>                     matched = <strong class="jxr_keyword">true</strong>;
-<a class="jxr_linenumber" name="L549" href="#L549">549</a>                     <strong class="jxr_keyword">if</strong> (<strong class="jxr_keyword">this</strong>.notes != <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="L550" href="#L550">550</a>                         v.setNotes(<strong class="jxr_keyword">this</strong>.notes);
-<a class="jxr_linenumber" name="L551" href="#L551">551</a>                     }
-<a class="jxr_linenumber" name="L552" href="#L552">552</a>                     dependency.addSuppressedVulnerability(v);
-<a class="jxr_linenumber" name="L553" href="#L553">553</a>                 }
-<a class="jxr_linenumber" name="L554" href="#L554">554</a>             }
-<a class="jxr_linenumber" name="L555" href="#L555">555</a>             removeVulns.forEach(dependency::removeVulnerability);
-<a class="jxr_linenumber" name="L556" href="#L556">556</a>         }
-<a class="jxr_linenumber" name="L557" href="#L557">557</a>     }
-<a class="jxr_linenumber" name="L558" href="#L558">558</a> 
-<a class="jxr_linenumber" name="L559" href="#L559">559</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L560" href="#L560">560</a> <em class="jxr_javadoccomment">     * Identifies if the cpe specified by the cpe suppression rule does not</em>
-<a class="jxr_linenumber" name="L561" href="#L561">561</a> <em class="jxr_javadoccomment">     * specify a version.</em>
-<a class="jxr_linenumber" name="L562" href="#L562">562</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L563" href="#L563">563</a> <em class="jxr_javadoccomment">     * @param c a suppression rule identifier</em>
-<a class="jxr_linenumber" name="L564" href="#L564">564</a> <em class="jxr_javadoccomment">     * @return true if the property type does not specify a version; otherwise</em>
-<a class="jxr_linenumber" name="L565" href="#L565">565</a> <em class="jxr_javadoccomment">     * false</em>
-<a class="jxr_linenumber" name="L566" href="#L566">566</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L567" href="#L567">567</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">boolean</strong> cpeHasNoVersion(<a href="../../../../../org/owasp/dependencycheck/xml/suppression/PropertyType.html">PropertyType</a> c) {
-<a class="jxr_linenumber" name="L568" href="#L568">568</a>         <strong class="jxr_keyword">return</strong> !c.isRegex() &amp;&amp; countCharacter(c.getValue(), ':') &lt;= 3;
-<a class="jxr_linenumber" name="L569" href="#L569">569</a>     }
-<a class="jxr_linenumber" name="L570" href="#L570">570</a> 
-<a class="jxr_linenumber" name="L571" href="#L571">571</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L572" href="#L572">572</a> <em class="jxr_javadoccomment">     * Counts the number of occurrences of the character found within the</em>
-<a class="jxr_linenumber" name="L573" href="#L573">573</a> <em class="jxr_javadoccomment">     * string.</em>
-<a class="jxr_linenumber" name="L574" href="#L574">574</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L575" href="#L575">575</a> <em class="jxr_javadoccomment">     * @param str the string to check</em>
-<a class="jxr_linenumber" name="L576" href="#L576">576</a> <em class="jxr_javadoccomment">     * @param c the character to count</em>
-<a class="jxr_linenumber" name="L577" href="#L577">577</a> <em class="jxr_javadoccomment">     * @return the number of times the character is found in the string</em>
-<a class="jxr_linenumber" name="L578" href="#L578">578</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L579" href="#L579">579</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">int</strong> countCharacter(String str, <strong class="jxr_keyword">char</strong> c) {
-<a class="jxr_linenumber" name="L580" href="#L580">580</a>         <strong class="jxr_keyword">int</strong> count = 0;
-<a class="jxr_linenumber" name="L581" href="#L581">581</a>         <strong class="jxr_keyword">int</strong> pos = str.indexOf(c) + 1;
-<a class="jxr_linenumber" name="L582" href="#L582">582</a>         <strong class="jxr_keyword">while</strong> (pos &gt; 0) {
-<a class="jxr_linenumber" name="L583" href="#L583">583</a>             count += 1;
-<a class="jxr_linenumber" name="L584" href="#L584">584</a>             pos = str.indexOf(c, pos) + 1;
-<a class="jxr_linenumber" name="L585" href="#L585">585</a>         }
-<a class="jxr_linenumber" name="L586" href="#L586">586</a>         <strong class="jxr_keyword">return</strong> count;
-<a class="jxr_linenumber" name="L587" href="#L587">587</a>     }
-<a class="jxr_linenumber" name="L588" href="#L588">588</a> 
-<a class="jxr_linenumber" name="L589" href="#L589">589</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L590" href="#L590">590</a> <em class="jxr_javadoccomment">     * Determines if the cpeEntry specified as a PropertyType matches the given</em>
-<a class="jxr_linenumber" name="L591" href="#L591">591</a> <em class="jxr_javadoccomment">     * Identifier.</em>
-<a class="jxr_linenumber" name="L592" href="#L592">592</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L593" href="#L593">593</a> <em class="jxr_javadoccomment">     * @param suppressionEntry a suppression rule entry</em>
-<a class="jxr_linenumber" name="L594" href="#L594">594</a> <em class="jxr_javadoccomment">     * @param identifier a CPE identifier to check</em>
-<a class="jxr_linenumber" name="L595" href="#L595">595</a> <em class="jxr_javadoccomment">     * @return true if the entry matches; otherwise false</em>
-<a class="jxr_linenumber" name="L596" href="#L596">596</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L597" href="#L597">597</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">boolean</strong> purlMatches(<a href="../../../../../org/owasp/dependencycheck/xml/suppression/PropertyType.html">PropertyType</a> suppressionEntry, <a href="../../../../../org/owasp/dependencycheck/dependency/naming/Identifier.html">Identifier</a> identifier) {
-<a class="jxr_linenumber" name="L598" href="#L598">598</a>         <strong class="jxr_keyword">if</strong> (identifier instanceof PurlIdentifier) {
-<a class="jxr_linenumber" name="L599" href="#L599">599</a>             <strong class="jxr_keyword">final</strong> <a href="../../../../../org/owasp/dependencycheck/dependency/naming/PurlIdentifier.html">PurlIdentifier</a> purl = (PurlIdentifier) identifier;
-<a class="jxr_linenumber" name="L600" href="#L600">600</a>             <strong class="jxr_keyword">return</strong> suppressionEntry.matches(purl.toString());
-<a class="jxr_linenumber" name="L601" href="#L601">601</a>         }
-<a class="jxr_linenumber" name="L602" href="#L602">602</a>         <strong class="jxr_keyword">return</strong> false;
-<a class="jxr_linenumber" name="L603" href="#L603">603</a>     }
-<a class="jxr_linenumber" name="L604" href="#L604">604</a> 
-<a class="jxr_linenumber" name="L605" href="#L605">605</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L606" href="#L606">606</a> <em class="jxr_javadoccomment">     * Determines if the cpeEntry specified as a PropertyType matches the given</em>
-<a class="jxr_linenumber" name="L607" href="#L607">607</a> <em class="jxr_javadoccomment">     * Identifier.</em>
-<a class="jxr_linenumber" name="L608" href="#L608">608</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L609" href="#L609">609</a> <em class="jxr_javadoccomment">     * @param suppressionEntry a suppression rule entry</em>
-<a class="jxr_linenumber" name="L610" href="#L610">610</a> <em class="jxr_javadoccomment">     * @param identifier a CPE identifier to check</em>
-<a class="jxr_linenumber" name="L611" href="#L611">611</a> <em class="jxr_javadoccomment">     * @return true if the entry matches; otherwise false</em>
-<a class="jxr_linenumber" name="L612" href="#L612">612</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L613" href="#L613">613</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">boolean</strong> identifierMatches(<a href="../../../../../org/owasp/dependencycheck/xml/suppression/PropertyType.html">PropertyType</a> suppressionEntry, <a href="../../../../../org/owasp/dependencycheck/dependency/naming/Identifier.html">Identifier</a> identifier) {
-<a class="jxr_linenumber" name="L614" href="#L614">614</a>         <strong class="jxr_keyword">if</strong> (identifier instanceof PurlIdentifier) {
-<a class="jxr_linenumber" name="L615" href="#L615">615</a>             <strong class="jxr_keyword">final</strong> <a href="../../../../../org/owasp/dependencycheck/dependency/naming/PurlIdentifier.html">PurlIdentifier</a> purl = (PurlIdentifier) identifier;
-<a class="jxr_linenumber" name="L616" href="#L616">616</a>             <strong class="jxr_keyword">return</strong> suppressionEntry.matches(purl.toGav());
-<a class="jxr_linenumber" name="L617" href="#L617">617</a>         } <strong class="jxr_keyword">else</strong> <strong class="jxr_keyword">if</strong> (identifier instanceof CpeIdentifier) {
-<a class="jxr_linenumber" name="L618" href="#L618">618</a>             <em class="jxr_comment">//TODO check for regex - not just type</em>
-<a class="jxr_linenumber" name="L619" href="#L619">619</a>             <strong class="jxr_keyword">final</strong> Cpe cpeId = ((CpeIdentifier) identifier).getCpe();
-<a class="jxr_linenumber" name="L620" href="#L620">620</a>             <strong class="jxr_keyword">if</strong> (suppressionEntry.isRegex()) {
-<a class="jxr_linenumber" name="L621" href="#L621">621</a>                 <strong class="jxr_keyword">try</strong> {
-<a class="jxr_linenumber" name="L622" href="#L622">622</a>                     <strong class="jxr_keyword">return</strong> suppressionEntry.matches(cpeId.toCpe22Uri());
-<a class="jxr_linenumber" name="L623" href="#L623">623</a>                 } <strong class="jxr_keyword">catch</strong> (CpeEncodingException ex) {
-<a class="jxr_linenumber" name="L624" href="#L624">624</a>                     LOGGER.debug(<span class="jxr_string">"Unable to convert CPE to 22 URI?"</span> + cpeId);
-<a class="jxr_linenumber" name="L625" href="#L625">625</a>                 }
-<a class="jxr_linenumber" name="L626" href="#L626">626</a>             } <strong class="jxr_keyword">else</strong> <strong class="jxr_keyword">if</strong> (suppressionEntry.isCaseSensitive()) {
-<a class="jxr_linenumber" name="L627" href="#L627">627</a>                 <strong class="jxr_keyword">try</strong> {
-<a class="jxr_linenumber" name="L628" href="#L628">628</a>                     <strong class="jxr_keyword">return</strong> cpeId.toCpe22Uri().startsWith(suppressionEntry.getValue());
-<a class="jxr_linenumber" name="L629" href="#L629">629</a>                 } <strong class="jxr_keyword">catch</strong> (CpeEncodingException ex) {
-<a class="jxr_linenumber" name="L630" href="#L630">630</a>                     LOGGER.debug(<span class="jxr_string">"Unable to convert CPE to 22 URI?"</span> + cpeId);
-<a class="jxr_linenumber" name="L631" href="#L631">631</a>                 }
-<a class="jxr_linenumber" name="L632" href="#L632">632</a>             } <strong class="jxr_keyword">else</strong> {
-<a class="jxr_linenumber" name="L633" href="#L633">633</a>                 <strong class="jxr_keyword">final</strong> String id;
-<a class="jxr_linenumber" name="L634" href="#L634">634</a>                 <strong class="jxr_keyword">try</strong> {
-<a class="jxr_linenumber" name="L635" href="#L635">635</a>                     id = cpeId.toCpe22Uri().toLowerCase();
-<a class="jxr_linenumber" name="L636" href="#L636">636</a>                 } <strong class="jxr_keyword">catch</strong> (CpeEncodingException ex) {
-<a class="jxr_linenumber" name="L637" href="#L637">637</a>                     LOGGER.debug(<span class="jxr_string">"Unable to convert CPE to 22 URI?"</span> + cpeId);
-<a class="jxr_linenumber" name="L638" href="#L638">638</a>                     <strong class="jxr_keyword">return</strong> false;
-<a class="jxr_linenumber" name="L639" href="#L639">639</a>                 }
-<a class="jxr_linenumber" name="L640" href="#L640">640</a>                 <strong class="jxr_keyword">final</strong> String check = suppressionEntry.getValue().toLowerCase();
-<a class="jxr_linenumber" name="L641" href="#L641">641</a>                 <strong class="jxr_keyword">return</strong> id.startsWith(check);
-<a class="jxr_linenumber" name="L642" href="#L642">642</a>             }
-<a class="jxr_linenumber" name="L643" href="#L643">643</a>         }
-<a class="jxr_linenumber" name="L644" href="#L644">644</a>         <strong class="jxr_keyword">return</strong> suppressionEntry.matches(identifier.getValue());
-<a class="jxr_linenumber" name="L645" href="#L645">645</a>     }
-<a class="jxr_linenumber" name="L646" href="#L646">646</a> 
-<a class="jxr_linenumber" name="L647" href="#L647">647</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L648" href="#L648">648</a> <em class="jxr_javadoccomment">     * Standard toString implementation.</em>
-<a class="jxr_linenumber" name="L649" href="#L649">649</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L650" href="#L650">650</a> <em class="jxr_javadoccomment">     * @return a string representation of this object</em>
-<a class="jxr_linenumber" name="L651" href="#L651">651</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L652" href="#L652">652</a>     @Override
-<a class="jxr_linenumber" name="L653" href="#L653">653</a>     <strong class="jxr_keyword">public</strong> String toString() {
-<a class="jxr_linenumber" name="L654" href="#L654">654</a>         <strong class="jxr_keyword">final</strong> StringBuilder sb = <strong class="jxr_keyword">new</strong> StringBuilder(64);
-<a class="jxr_linenumber" name="L655" href="#L655">655</a>         sb.append(<span class="jxr_string">"SuppressionRule{"</span>);
-<a class="jxr_linenumber" name="L656" href="#L656">656</a>         <strong class="jxr_keyword">if</strong> (until != <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="L657" href="#L657">657</a>             <strong class="jxr_keyword">final</strong> String dt = DateFormatUtils.ISO_8601_EXTENDED_DATETIME_TIME_ZONE_FORMAT.format(until);
-<a class="jxr_linenumber" name="L658" href="#L658">658</a>             sb.append(<span class="jxr_string">"until="</span>).append(dt).append(',');
-<a class="jxr_linenumber" name="L659" href="#L659">659</a>         }
-<a class="jxr_linenumber" name="L660" href="#L660">660</a>         <strong class="jxr_keyword">if</strong> (filePath != <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="L661" href="#L661">661</a>             sb.append(<span class="jxr_string">"filePath="</span>).append(filePath).append(',');
+<a class="jxr_linenumber" name="L116" href="#L116">116</a>     <strong class="jxr_keyword">private</strong> Calendar until;
+<a class="jxr_linenumber" name="L117" href="#L117">117</a> 
+<a class="jxr_linenumber" name="L118" href="#L118">118</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L119" href="#L119">119</a> <em class="jxr_javadoccomment">     * A flag whether or not the rule matched a dependency &amp; CPE.</em>
+<a class="jxr_linenumber" name="L120" href="#L120">120</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L121" href="#L121">121</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">boolean</strong> matched = false;
+<a class="jxr_linenumber" name="L122" href="#L122">122</a> 
+<a class="jxr_linenumber" name="L123" href="#L123">123</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L124" href="#L124">124</a> <em class="jxr_javadoccomment">     * Get the value of matched.</em>
+<a class="jxr_linenumber" name="L125" href="#L125">125</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L126" href="#L126">126</a> <em class="jxr_javadoccomment">     * @return the value of matched</em>
+<a class="jxr_linenumber" name="L127" href="#L127">127</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L128" href="#L128">128</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">boolean</strong> isMatched() {
+<a class="jxr_linenumber" name="L129" href="#L129">129</a>         <strong class="jxr_keyword">return</strong> matched;
+<a class="jxr_linenumber" name="L130" href="#L130">130</a>     }
+<a class="jxr_linenumber" name="L131" href="#L131">131</a> 
+<a class="jxr_linenumber" name="L132" href="#L132">132</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L133" href="#L133">133</a> <em class="jxr_javadoccomment">     * Set the value of matched.</em>
+<a class="jxr_linenumber" name="L134" href="#L134">134</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L135" href="#L135">135</a> <em class="jxr_javadoccomment">     * @param matched new value of matched</em>
+<a class="jxr_linenumber" name="L136" href="#L136">136</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L137" href="#L137">137</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> setMatched(<strong class="jxr_keyword">boolean</strong> matched) {
+<a class="jxr_linenumber" name="L138" href="#L138">138</a>         <strong class="jxr_keyword">this</strong>.matched = matched;
+<a class="jxr_linenumber" name="L139" href="#L139">139</a>     }
+<a class="jxr_linenumber" name="L140" href="#L140">140</a> 
+<a class="jxr_linenumber" name="L141" href="#L141">141</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L142" href="#L142">142</a> <em class="jxr_javadoccomment">     * Get the (@code{nullable}) value of until.</em>
+<a class="jxr_linenumber" name="L143" href="#L143">143</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L144" href="#L144">144</a> <em class="jxr_javadoccomment">     * @return the value of until</em>
+<a class="jxr_linenumber" name="L145" href="#L145">145</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L146" href="#L146">146</a>     <strong class="jxr_keyword">public</strong> Calendar getUntil() {
+<a class="jxr_linenumber" name="L147" href="#L147">147</a>         <strong class="jxr_keyword">return</strong> until;
+<a class="jxr_linenumber" name="L148" href="#L148">148</a>     }
+<a class="jxr_linenumber" name="L149" href="#L149">149</a> 
+<a class="jxr_linenumber" name="L150" href="#L150">150</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L151" href="#L151">151</a> <em class="jxr_javadoccomment">     * Set the value of until.</em>
+<a class="jxr_linenumber" name="L152" href="#L152">152</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L153" href="#L153">153</a> <em class="jxr_javadoccomment">     * @param until new value of until</em>
+<a class="jxr_linenumber" name="L154" href="#L154">154</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L155" href="#L155">155</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> setUntil(Calendar until) {
+<a class="jxr_linenumber" name="L156" href="#L156">156</a>         <strong class="jxr_keyword">this</strong>.until = until;
+<a class="jxr_linenumber" name="L157" href="#L157">157</a>     }
+<a class="jxr_linenumber" name="L158" href="#L158">158</a> 
+<a class="jxr_linenumber" name="L159" href="#L159">159</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L160" href="#L160">160</a> <em class="jxr_javadoccomment">     * Get the value of filePath.</em>
+<a class="jxr_linenumber" name="L161" href="#L161">161</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L162" href="#L162">162</a> <em class="jxr_javadoccomment">     * @return the value of filePath</em>
+<a class="jxr_linenumber" name="L163" href="#L163">163</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L164" href="#L164">164</a>     <strong class="jxr_keyword">public</strong> <a href="../../../../../org/owasp/dependencycheck/xml/suppression/PropertyType.html">PropertyType</a> getFilePath() {
+<a class="jxr_linenumber" name="L165" href="#L165">165</a>         <strong class="jxr_keyword">return</strong> filePath;
+<a class="jxr_linenumber" name="L166" href="#L166">166</a>     }
+<a class="jxr_linenumber" name="L167" href="#L167">167</a> 
+<a class="jxr_linenumber" name="L168" href="#L168">168</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L169" href="#L169">169</a> <em class="jxr_javadoccomment">     * Set the value of filePath.</em>
+<a class="jxr_linenumber" name="L170" href="#L170">170</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L171" href="#L171">171</a> <em class="jxr_javadoccomment">     * @param filePath new value of filePath</em>
+<a class="jxr_linenumber" name="L172" href="#L172">172</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L173" href="#L173">173</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> setFilePath(<a href="../../../../../org/owasp/dependencycheck/xml/suppression/PropertyType.html">PropertyType</a> filePath) {
+<a class="jxr_linenumber" name="L174" href="#L174">174</a>         <strong class="jxr_keyword">this</strong>.filePath = filePath;
+<a class="jxr_linenumber" name="L175" href="#L175">175</a>     }
+<a class="jxr_linenumber" name="L176" href="#L176">176</a> 
+<a class="jxr_linenumber" name="L177" href="#L177">177</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L178" href="#L178">178</a> <em class="jxr_javadoccomment">     * Get the value of sha1.</em>
+<a class="jxr_linenumber" name="L179" href="#L179">179</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L180" href="#L180">180</a> <em class="jxr_javadoccomment">     * @return the value of sha1</em>
+<a class="jxr_linenumber" name="L181" href="#L181">181</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L182" href="#L182">182</a>     <strong class="jxr_keyword">public</strong> String getSha1() {
+<a class="jxr_linenumber" name="L183" href="#L183">183</a>         <strong class="jxr_keyword">return</strong> sha1;
+<a class="jxr_linenumber" name="L184" href="#L184">184</a>     }
+<a class="jxr_linenumber" name="L185" href="#L185">185</a> 
+<a class="jxr_linenumber" name="L186" href="#L186">186</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L187" href="#L187">187</a> <em class="jxr_javadoccomment">     * Set the value of SHA1.</em>
+<a class="jxr_linenumber" name="L188" href="#L188">188</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L189" href="#L189">189</a> <em class="jxr_javadoccomment">     * @param sha1 new value of SHA1</em>
+<a class="jxr_linenumber" name="L190" href="#L190">190</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L191" href="#L191">191</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> setSha1(String sha1) {
+<a class="jxr_linenumber" name="L192" href="#L192">192</a>         <strong class="jxr_keyword">this</strong>.sha1 = sha1;
+<a class="jxr_linenumber" name="L193" href="#L193">193</a>     }
+<a class="jxr_linenumber" name="L194" href="#L194">194</a> 
+<a class="jxr_linenumber" name="L195" href="#L195">195</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L196" href="#L196">196</a> <em class="jxr_javadoccomment">     * Get the value of CPE.</em>
+<a class="jxr_linenumber" name="L197" href="#L197">197</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L198" href="#L198">198</a> <em class="jxr_javadoccomment">     * @return the value of CPE</em>
+<a class="jxr_linenumber" name="L199" href="#L199">199</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L200" href="#L200">200</a>     <strong class="jxr_keyword">public</strong> List&lt;PropertyType&gt; getCpe() {
+<a class="jxr_linenumber" name="L201" href="#L201">201</a>         <strong class="jxr_keyword">return</strong> cpe;
+<a class="jxr_linenumber" name="L202" href="#L202">202</a>     }
+<a class="jxr_linenumber" name="L203" href="#L203">203</a> 
+<a class="jxr_linenumber" name="L204" href="#L204">204</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L205" href="#L205">205</a> <em class="jxr_javadoccomment">     * Set the value of CPE.</em>
+<a class="jxr_linenumber" name="L206" href="#L206">206</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L207" href="#L207">207</a> <em class="jxr_javadoccomment">     * @param cpe new value of CPE</em>
+<a class="jxr_linenumber" name="L208" href="#L208">208</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L209" href="#L209">209</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> setCpe(List&lt;PropertyType&gt; cpe) {
+<a class="jxr_linenumber" name="L210" href="#L210">210</a>         <strong class="jxr_keyword">this</strong>.cpe = cpe;
+<a class="jxr_linenumber" name="L211" href="#L211">211</a>     }
+<a class="jxr_linenumber" name="L212" href="#L212">212</a> 
+<a class="jxr_linenumber" name="L213" href="#L213">213</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L214" href="#L214">214</a> <em class="jxr_javadoccomment">     * Adds the CPE to the CPE list.</em>
+<a class="jxr_linenumber" name="L215" href="#L215">215</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L216" href="#L216">216</a> <em class="jxr_javadoccomment">     * @param cpe the CPE to add</em>
+<a class="jxr_linenumber" name="L217" href="#L217">217</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L218" href="#L218">218</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> addCpe(<a href="../../../../../org/owasp/dependencycheck/xml/suppression/PropertyType.html">PropertyType</a> cpe) {
+<a class="jxr_linenumber" name="L219" href="#L219">219</a>         <strong class="jxr_keyword">this</strong>.cpe.add(cpe);
+<a class="jxr_linenumber" name="L220" href="#L220">220</a>     }
+<a class="jxr_linenumber" name="L221" href="#L221">221</a> 
+<a class="jxr_linenumber" name="L222" href="#L222">222</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L223" href="#L223">223</a> <em class="jxr_javadoccomment">     * Adds the CPE to the CPE list.</em>
+<a class="jxr_linenumber" name="L224" href="#L224">224</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L225" href="#L225">225</a> <em class="jxr_javadoccomment">     * @param name the vulnerability name to add</em>
+<a class="jxr_linenumber" name="L226" href="#L226">226</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L227" href="#L227">227</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> addVulnerabilityName(<a href="../../../../../org/owasp/dependencycheck/xml/suppression/PropertyType.html">PropertyType</a> name) {
+<a class="jxr_linenumber" name="L228" href="#L228">228</a>         <strong class="jxr_keyword">this</strong>.vulnerabilityNames.add(name);
+<a class="jxr_linenumber" name="L229" href="#L229">229</a>     }
+<a class="jxr_linenumber" name="L230" href="#L230">230</a> 
+<a class="jxr_linenumber" name="L231" href="#L231">231</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L232" href="#L232">232</a> <em class="jxr_javadoccomment">     * Returns whether or not this suppression rule as CPE entries.</em>
+<a class="jxr_linenumber" name="L233" href="#L233">233</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L234" href="#L234">234</a> <em class="jxr_javadoccomment">     * @return whether or not this suppression rule as CPE entries</em>
+<a class="jxr_linenumber" name="L235" href="#L235">235</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L236" href="#L236">236</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">boolean</strong> hasCpe() {
+<a class="jxr_linenumber" name="L237" href="#L237">237</a>         <strong class="jxr_keyword">return</strong> !cpe.isEmpty();
+<a class="jxr_linenumber" name="L238" href="#L238">238</a>     }
+<a class="jxr_linenumber" name="L239" href="#L239">239</a> 
+<a class="jxr_linenumber" name="L240" href="#L240">240</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L241" href="#L241">241</a> <em class="jxr_javadoccomment">     * Get the value of cvssBelow.</em>
+<a class="jxr_linenumber" name="L242" href="#L242">242</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L243" href="#L243">243</a> <em class="jxr_javadoccomment">     * @return the value of cvssBelow</em>
+<a class="jxr_linenumber" name="L244" href="#L244">244</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L245" href="#L245">245</a>     <strong class="jxr_keyword">public</strong> List&lt;Double&gt; getCvssBelow() {
+<a class="jxr_linenumber" name="L246" href="#L246">246</a>         <strong class="jxr_keyword">return</strong> cvssBelow;
+<a class="jxr_linenumber" name="L247" href="#L247">247</a>     }
+<a class="jxr_linenumber" name="L248" href="#L248">248</a> 
+<a class="jxr_linenumber" name="L249" href="#L249">249</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L250" href="#L250">250</a> <em class="jxr_javadoccomment">     * Set the value of cvssBelow.</em>
+<a class="jxr_linenumber" name="L251" href="#L251">251</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L252" href="#L252">252</a> <em class="jxr_javadoccomment">     * @param cvssBelow new value of cvssBelow</em>
+<a class="jxr_linenumber" name="L253" href="#L253">253</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L254" href="#L254">254</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> setCvssBelow(List&lt;Double&gt; cvssBelow) {
+<a class="jxr_linenumber" name="L255" href="#L255">255</a>         <strong class="jxr_keyword">this</strong>.cvssBelow = cvssBelow;
+<a class="jxr_linenumber" name="L256" href="#L256">256</a>     }
+<a class="jxr_linenumber" name="L257" href="#L257">257</a> 
+<a class="jxr_linenumber" name="L258" href="#L258">258</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L259" href="#L259">259</a> <em class="jxr_javadoccomment">     * Adds the CVSS to the cvssBelow list.</em>
+<a class="jxr_linenumber" name="L260" href="#L260">260</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L261" href="#L261">261</a> <em class="jxr_javadoccomment">     * @param cvss the CVSS to add</em>
+<a class="jxr_linenumber" name="L262" href="#L262">262</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L263" href="#L263">263</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> addCvssBelow(Double cvss) {
+<a class="jxr_linenumber" name="L264" href="#L264">264</a>         <strong class="jxr_keyword">this</strong>.cvssBelow.add(cvss);
+<a class="jxr_linenumber" name="L265" href="#L265">265</a>     }
+<a class="jxr_linenumber" name="L266" href="#L266">266</a> 
+<a class="jxr_linenumber" name="L267" href="#L267">267</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L268" href="#L268">268</a> <em class="jxr_javadoccomment">     * Returns whether or not this suppression rule has CVSS suppression criteria.</em>
+<a class="jxr_linenumber" name="L269" href="#L269">269</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L270" href="#L270">270</a> <em class="jxr_javadoccomment">     * @return whether or not this suppression rule has CVSS suppression criteria.</em>
+<a class="jxr_linenumber" name="L271" href="#L271">271</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L272" href="#L272">272</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">boolean</strong> hasCvssBelow() {
+<a class="jxr_linenumber" name="L273" href="#L273">273</a>         <strong class="jxr_keyword">return</strong> !cvssBelow.isEmpty();
+<a class="jxr_linenumber" name="L274" href="#L274">274</a>     }
+<a class="jxr_linenumber" name="L275" href="#L275">275</a> 
+<a class="jxr_linenumber" name="L276" href="#L276">276</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L277" href="#L277">277</a> <em class="jxr_javadoccomment">     * Get the value of cvssV2Below.</em>
+<a class="jxr_linenumber" name="L278" href="#L278">278</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L279" href="#L279">279</a> <em class="jxr_javadoccomment">     * @return the value of cvssV2Below</em>
+<a class="jxr_linenumber" name="L280" href="#L280">280</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L281" href="#L281">281</a>     <strong class="jxr_keyword">public</strong> List&lt;Double&gt; getCvssV2Below() {
+<a class="jxr_linenumber" name="L282" href="#L282">282</a>         <strong class="jxr_keyword">return</strong> cvssV2Below;
+<a class="jxr_linenumber" name="L283" href="#L283">283</a>     }
+<a class="jxr_linenumber" name="L284" href="#L284">284</a> 
+<a class="jxr_linenumber" name="L285" href="#L285">285</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L286" href="#L286">286</a> <em class="jxr_javadoccomment">     * Set the value of cvssV2Below.</em>
+<a class="jxr_linenumber" name="L287" href="#L287">287</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L288" href="#L288">288</a> <em class="jxr_javadoccomment">     * @param cvssV2Below new value of cvssV2Below</em>
+<a class="jxr_linenumber" name="L289" href="#L289">289</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L290" href="#L290">290</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> setCvssV2Below(List&lt;Double&gt; cvssV2Below) {
+<a class="jxr_linenumber" name="L291" href="#L291">291</a>         <strong class="jxr_keyword">this</strong>.cvssV2Below = cvssV2Below;
+<a class="jxr_linenumber" name="L292" href="#L292">292</a>     }
+<a class="jxr_linenumber" name="L293" href="#L293">293</a> 
+<a class="jxr_linenumber" name="L294" href="#L294">294</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L295" href="#L295">295</a> <em class="jxr_javadoccomment">     * Adds the CVSS to the cvssV2Below list.</em>
+<a class="jxr_linenumber" name="L296" href="#L296">296</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L297" href="#L297">297</a> <em class="jxr_javadoccomment">     * @param cvss the CVSS to add</em>
+<a class="jxr_linenumber" name="L298" href="#L298">298</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L299" href="#L299">299</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> addCvssV2Below(Double cvss) {
+<a class="jxr_linenumber" name="L300" href="#L300">300</a>         <strong class="jxr_keyword">this</strong>.cvssV2Below.add(cvss);
+<a class="jxr_linenumber" name="L301" href="#L301">301</a>     }
+<a class="jxr_linenumber" name="L302" href="#L302">302</a> 
+<a class="jxr_linenumber" name="L303" href="#L303">303</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L304" href="#L304">304</a> <em class="jxr_javadoccomment">     * Returns whether or not this suppression rule has CVSS v2 suppression criteria.</em>
+<a class="jxr_linenumber" name="L305" href="#L305">305</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L306" href="#L306">306</a> <em class="jxr_javadoccomment">     * @return whether or not this suppression rule has CVSS v2 suppression criteria.</em>
+<a class="jxr_linenumber" name="L307" href="#L307">307</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L308" href="#L308">308</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">boolean</strong> hasCvssV2Below() {
+<a class="jxr_linenumber" name="L309" href="#L309">309</a>         <strong class="jxr_keyword">return</strong> !cvssV2Below.isEmpty();
+<a class="jxr_linenumber" name="L310" href="#L310">310</a>     }
+<a class="jxr_linenumber" name="L311" href="#L311">311</a> 
+<a class="jxr_linenumber" name="L312" href="#L312">312</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L313" href="#L313">313</a> <em class="jxr_javadoccomment">     * Get the value of cvssV3Below.</em>
+<a class="jxr_linenumber" name="L314" href="#L314">314</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L315" href="#L315">315</a> <em class="jxr_javadoccomment">     * @return the value of cvssV3Below</em>
+<a class="jxr_linenumber" name="L316" href="#L316">316</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L317" href="#L317">317</a>     <strong class="jxr_keyword">public</strong> List&lt;Double&gt; getCvssV3Below() {
+<a class="jxr_linenumber" name="L318" href="#L318">318</a>         <strong class="jxr_keyword">return</strong> cvssV3Below;
+<a class="jxr_linenumber" name="L319" href="#L319">319</a>     }
+<a class="jxr_linenumber" name="L320" href="#L320">320</a> 
+<a class="jxr_linenumber" name="L321" href="#L321">321</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L322" href="#L322">322</a> <em class="jxr_javadoccomment">     * Set the value of cvssV3Below.</em>
+<a class="jxr_linenumber" name="L323" href="#L323">323</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L324" href="#L324">324</a> <em class="jxr_javadoccomment">     * @param cvssV3Below new value of cvssV3Below</em>
+<a class="jxr_linenumber" name="L325" href="#L325">325</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L326" href="#L326">326</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> setCvssV3Below(List&lt;Double&gt; cvssV3Below) {
+<a class="jxr_linenumber" name="L327" href="#L327">327</a>         <strong class="jxr_keyword">this</strong>.cvssV3Below = cvssV3Below;
+<a class="jxr_linenumber" name="L328" href="#L328">328</a>     }
+<a class="jxr_linenumber" name="L329" href="#L329">329</a> 
+<a class="jxr_linenumber" name="L330" href="#L330">330</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L331" href="#L331">331</a> <em class="jxr_javadoccomment">     * Adds the CVSS to the cvssV3Below list.</em>
+<a class="jxr_linenumber" name="L332" href="#L332">332</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L333" href="#L333">333</a> <em class="jxr_javadoccomment">     * @param cvss the CVSS to add</em>
+<a class="jxr_linenumber" name="L334" href="#L334">334</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L335" href="#L335">335</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> addCvssV3Below(Double cvss) {
+<a class="jxr_linenumber" name="L336" href="#L336">336</a>         <strong class="jxr_keyword">this</strong>.cvssV3Below.add(cvss);
+<a class="jxr_linenumber" name="L337" href="#L337">337</a>     }
+<a class="jxr_linenumber" name="L338" href="#L338">338</a> 
+<a class="jxr_linenumber" name="L339" href="#L339">339</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L340" href="#L340">340</a> <em class="jxr_javadoccomment">     * Returns whether or not this suppression rule has CVSS v3 suppression criteria.</em>
+<a class="jxr_linenumber" name="L341" href="#L341">341</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L342" href="#L342">342</a> <em class="jxr_javadoccomment">     * @return whether or not this suppression rule has CVSS v3 suppression criteria.</em>
+<a class="jxr_linenumber" name="L343" href="#L343">343</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L344" href="#L344">344</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">boolean</strong> hasCvssV3Below() {
+<a class="jxr_linenumber" name="L345" href="#L345">345</a>         <strong class="jxr_keyword">return</strong> !cvssV3Below.isEmpty();
+<a class="jxr_linenumber" name="L346" href="#L346">346</a>     }
+<a class="jxr_linenumber" name="L347" href="#L347">347</a> 
+<a class="jxr_linenumber" name="L348" href="#L348">348</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L349" href="#L349">349</a> <em class="jxr_javadoccomment">     * Get the value of cvssV4Below.</em>
+<a class="jxr_linenumber" name="L350" href="#L350">350</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L351" href="#L351">351</a> <em class="jxr_javadoccomment">     * @return the value of cvssV4Below</em>
+<a class="jxr_linenumber" name="L352" href="#L352">352</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L353" href="#L353">353</a>     <strong class="jxr_keyword">public</strong> List&lt;Double&gt; getCvssV4Below() {
+<a class="jxr_linenumber" name="L354" href="#L354">354</a>         <strong class="jxr_keyword">return</strong> cvssV4Below;
+<a class="jxr_linenumber" name="L355" href="#L355">355</a>     }
+<a class="jxr_linenumber" name="L356" href="#L356">356</a> 
+<a class="jxr_linenumber" name="L357" href="#L357">357</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L358" href="#L358">358</a> <em class="jxr_javadoccomment">     * Set the value of cvssV4Below.</em>
+<a class="jxr_linenumber" name="L359" href="#L359">359</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L360" href="#L360">360</a> <em class="jxr_javadoccomment">     * @param cvssV4Below new value of cvssV4Below</em>
+<a class="jxr_linenumber" name="L361" href="#L361">361</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L362" href="#L362">362</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> setCvssV4Below(List&lt;Double&gt; cvssV4Below) {
+<a class="jxr_linenumber" name="L363" href="#L363">363</a>         <strong class="jxr_keyword">this</strong>.cvssV4Below = cvssV4Below;
+<a class="jxr_linenumber" name="L364" href="#L364">364</a>     }
+<a class="jxr_linenumber" name="L365" href="#L365">365</a> 
+<a class="jxr_linenumber" name="L366" href="#L366">366</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L367" href="#L367">367</a> <em class="jxr_javadoccomment">     * Adds the CVSS to the cvssV4Below list.</em>
+<a class="jxr_linenumber" name="L368" href="#L368">368</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L369" href="#L369">369</a> <em class="jxr_javadoccomment">     * @param cvss the CVSS to add</em>
+<a class="jxr_linenumber" name="L370" href="#L370">370</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L371" href="#L371">371</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> addCvssV4Below(Double cvss) {
+<a class="jxr_linenumber" name="L372" href="#L372">372</a>         <strong class="jxr_keyword">this</strong>.cvssV4Below.add(cvss);
+<a class="jxr_linenumber" name="L373" href="#L373">373</a>     }
+<a class="jxr_linenumber" name="L374" href="#L374">374</a> 
+<a class="jxr_linenumber" name="L375" href="#L375">375</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L376" href="#L376">376</a> <em class="jxr_javadoccomment">     * Returns whether or not this suppression rule has CVSS v4 suppression criteria.</em>
+<a class="jxr_linenumber" name="L377" href="#L377">377</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L378" href="#L378">378</a> <em class="jxr_javadoccomment">     * @return whether or not this suppression rule has CVSS v4 suppression criteria.</em>
+<a class="jxr_linenumber" name="L379" href="#L379">379</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L380" href="#L380">380</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">boolean</strong> hasCvssV4Below() {
+<a class="jxr_linenumber" name="L381" href="#L381">381</a>         <strong class="jxr_keyword">return</strong> !cvssV4Below.isEmpty();
+<a class="jxr_linenumber" name="L382" href="#L382">382</a>     }
+<a class="jxr_linenumber" name="L383" href="#L383">383</a> 
+<a class="jxr_linenumber" name="L384" href="#L384">384</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L385" href="#L385">385</a> <em class="jxr_javadoccomment">     * Get the value of notes.</em>
+<a class="jxr_linenumber" name="L386" href="#L386">386</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L387" href="#L387">387</a> <em class="jxr_javadoccomment">     * @return the value of notes</em>
+<a class="jxr_linenumber" name="L388" href="#L388">388</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L389" href="#L389">389</a>     <strong class="jxr_keyword">public</strong> String getNotes() {
+<a class="jxr_linenumber" name="L390" href="#L390">390</a>         <strong class="jxr_keyword">return</strong> notes;
+<a class="jxr_linenumber" name="L391" href="#L391">391</a>     }
+<a class="jxr_linenumber" name="L392" href="#L392">392</a> 
+<a class="jxr_linenumber" name="L393" href="#L393">393</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L394" href="#L394">394</a> <em class="jxr_javadoccomment">     * Set the value of notes.</em>
+<a class="jxr_linenumber" name="L395" href="#L395">395</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L396" href="#L396">396</a> <em class="jxr_javadoccomment">     * @param notes new value of notes</em>
+<a class="jxr_linenumber" name="L397" href="#L397">397</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L398" href="#L398">398</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> setNotes(String notes) {
+<a class="jxr_linenumber" name="L399" href="#L399">399</a>         <strong class="jxr_keyword">this</strong>.notes = notes;
+<a class="jxr_linenumber" name="L400" href="#L400">400</a>     }
+<a class="jxr_linenumber" name="L401" href="#L401">401</a> 
+<a class="jxr_linenumber" name="L402" href="#L402">402</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L403" href="#L403">403</a> <em class="jxr_javadoccomment">     * Returns whether this suppression rule has notes entries.</em>
+<a class="jxr_linenumber" name="L404" href="#L404">404</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L405" href="#L405">405</a> <em class="jxr_javadoccomment">     * @return whether this suppression rule has notes entries</em>
+<a class="jxr_linenumber" name="L406" href="#L406">406</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L407" href="#L407">407</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">boolean</strong> hasNotes() {
+<a class="jxr_linenumber" name="L408" href="#L408">408</a>         <strong class="jxr_keyword">return</strong> !notes.isEmpty();
+<a class="jxr_linenumber" name="L409" href="#L409">409</a>     }
+<a class="jxr_linenumber" name="L410" href="#L410">410</a> 
+<a class="jxr_linenumber" name="L411" href="#L411">411</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L412" href="#L412">412</a> <em class="jxr_javadoccomment">     * Get the value of CWE.</em>
+<a class="jxr_linenumber" name="L413" href="#L413">413</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L414" href="#L414">414</a> <em class="jxr_javadoccomment">     * @return the value of CWE</em>
+<a class="jxr_linenumber" name="L415" href="#L415">415</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L416" href="#L416">416</a>     <strong class="jxr_keyword">public</strong> List&lt;String&gt; getCwe() {
+<a class="jxr_linenumber" name="L417" href="#L417">417</a>         <strong class="jxr_keyword">return</strong> cwe;
+<a class="jxr_linenumber" name="L418" href="#L418">418</a>     }
+<a class="jxr_linenumber" name="L419" href="#L419">419</a> 
+<a class="jxr_linenumber" name="L420" href="#L420">420</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L421" href="#L421">421</a> <em class="jxr_javadoccomment">     * Set the value of CWE.</em>
+<a class="jxr_linenumber" name="L422" href="#L422">422</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L423" href="#L423">423</a> <em class="jxr_javadoccomment">     * @param cwe new value of CWE</em>
+<a class="jxr_linenumber" name="L424" href="#L424">424</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L425" href="#L425">425</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> setCwe(List&lt;String&gt; cwe) {
+<a class="jxr_linenumber" name="L426" href="#L426">426</a>         <strong class="jxr_keyword">this</strong>.cwe = cwe;
+<a class="jxr_linenumber" name="L427" href="#L427">427</a>     }
+<a class="jxr_linenumber" name="L428" href="#L428">428</a> 
+<a class="jxr_linenumber" name="L429" href="#L429">429</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L430" href="#L430">430</a> <em class="jxr_javadoccomment">     * Adds the CWE to the CWE list.</em>
+<a class="jxr_linenumber" name="L431" href="#L431">431</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L432" href="#L432">432</a> <em class="jxr_javadoccomment">     * @param cwe the CWE to add</em>
+<a class="jxr_linenumber" name="L433" href="#L433">433</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L434" href="#L434">434</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> addCwe(String cwe) {
+<a class="jxr_linenumber" name="L435" href="#L435">435</a>         <strong class="jxr_keyword">this</strong>.cwe.add(cwe);
+<a class="jxr_linenumber" name="L436" href="#L436">436</a>     }
+<a class="jxr_linenumber" name="L437" href="#L437">437</a> 
+<a class="jxr_linenumber" name="L438" href="#L438">438</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L439" href="#L439">439</a> <em class="jxr_javadoccomment">     * Returns whether this suppression rule has CWE entries.</em>
+<a class="jxr_linenumber" name="L440" href="#L440">440</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L441" href="#L441">441</a> <em class="jxr_javadoccomment">     * @return whether this suppression rule has CWE entries</em>
+<a class="jxr_linenumber" name="L442" href="#L442">442</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L443" href="#L443">443</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">boolean</strong> hasCwe() {
+<a class="jxr_linenumber" name="L444" href="#L444">444</a>         <strong class="jxr_keyword">return</strong> !cwe.isEmpty();
+<a class="jxr_linenumber" name="L445" href="#L445">445</a>     }
+<a class="jxr_linenumber" name="L446" href="#L446">446</a> 
+<a class="jxr_linenumber" name="L447" href="#L447">447</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L448" href="#L448">448</a> <em class="jxr_javadoccomment">     * Get the value of CVE.</em>
+<a class="jxr_linenumber" name="L449" href="#L449">449</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L450" href="#L450">450</a> <em class="jxr_javadoccomment">     * @return the value of CVE</em>
+<a class="jxr_linenumber" name="L451" href="#L451">451</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L452" href="#L452">452</a>     <strong class="jxr_keyword">public</strong> List&lt;String&gt; getCve() {
+<a class="jxr_linenumber" name="L453" href="#L453">453</a>         <strong class="jxr_keyword">return</strong> cve;
+<a class="jxr_linenumber" name="L454" href="#L454">454</a>     }
+<a class="jxr_linenumber" name="L455" href="#L455">455</a> 
+<a class="jxr_linenumber" name="L456" href="#L456">456</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L457" href="#L457">457</a> <em class="jxr_javadoccomment">     * Set the value of CVE.</em>
+<a class="jxr_linenumber" name="L458" href="#L458">458</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L459" href="#L459">459</a> <em class="jxr_javadoccomment">     * @param cve new value of CVE</em>
+<a class="jxr_linenumber" name="L460" href="#L460">460</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L461" href="#L461">461</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> setCve(List&lt;String&gt; cve) {
+<a class="jxr_linenumber" name="L462" href="#L462">462</a>         <strong class="jxr_keyword">this</strong>.cve = cve;
+<a class="jxr_linenumber" name="L463" href="#L463">463</a>     }
+<a class="jxr_linenumber" name="L464" href="#L464">464</a> 
+<a class="jxr_linenumber" name="L465" href="#L465">465</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L466" href="#L466">466</a> <em class="jxr_javadoccomment">     * Adds the CVE to the CVE list.</em>
+<a class="jxr_linenumber" name="L467" href="#L467">467</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L468" href="#L468">468</a> <em class="jxr_javadoccomment">     * @param cve the CVE to add</em>
+<a class="jxr_linenumber" name="L469" href="#L469">469</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L470" href="#L470">470</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> addCve(String cve) {
+<a class="jxr_linenumber" name="L471" href="#L471">471</a>         <strong class="jxr_keyword">this</strong>.cve.add(cve);
+<a class="jxr_linenumber" name="L472" href="#L472">472</a>     }
+<a class="jxr_linenumber" name="L473" href="#L473">473</a> 
+<a class="jxr_linenumber" name="L474" href="#L474">474</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L475" href="#L475">475</a> <em class="jxr_javadoccomment">     * Returns whether this suppression rule has CVE entries.</em>
+<a class="jxr_linenumber" name="L476" href="#L476">476</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L477" href="#L477">477</a> <em class="jxr_javadoccomment">     * @return whether this suppression rule has CVE entries</em>
+<a class="jxr_linenumber" name="L478" href="#L478">478</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L479" href="#L479">479</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">boolean</strong> hasCve() {
+<a class="jxr_linenumber" name="L480" href="#L480">480</a>         <strong class="jxr_keyword">return</strong> !cve.isEmpty();
+<a class="jxr_linenumber" name="L481" href="#L481">481</a>     }
+<a class="jxr_linenumber" name="L482" href="#L482">482</a> 
+<a class="jxr_linenumber" name="L483" href="#L483">483</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L484" href="#L484">484</a> <em class="jxr_javadoccomment">     * Returns whether this suppression rule has vulnerabilityName entries.</em>
+<a class="jxr_linenumber" name="L485" href="#L485">485</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L486" href="#L486">486</a> <em class="jxr_javadoccomment">     * @return whether this suppression rule has vulnerabilityName entries</em>
+<a class="jxr_linenumber" name="L487" href="#L487">487</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L488" href="#L488">488</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">boolean</strong> hasVulnerabilityName() {
+<a class="jxr_linenumber" name="L489" href="#L489">489</a>         <strong class="jxr_keyword">return</strong> !vulnerabilityNames.isEmpty();
+<a class="jxr_linenumber" name="L490" href="#L490">490</a>     }
+<a class="jxr_linenumber" name="L491" href="#L491">491</a> 
+<a class="jxr_linenumber" name="L492" href="#L492">492</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L493" href="#L493">493</a> <em class="jxr_javadoccomment">     * Get the value of Maven GAV.</em>
+<a class="jxr_linenumber" name="L494" href="#L494">494</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L495" href="#L495">495</a> <em class="jxr_javadoccomment">     * @return the value of GAV</em>
+<a class="jxr_linenumber" name="L496" href="#L496">496</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L497" href="#L497">497</a>     <strong class="jxr_keyword">public</strong> <a href="../../../../../org/owasp/dependencycheck/xml/suppression/PropertyType.html">PropertyType</a> getGav() {
+<a class="jxr_linenumber" name="L498" href="#L498">498</a>         <strong class="jxr_keyword">return</strong> gav;
+<a class="jxr_linenumber" name="L499" href="#L499">499</a>     }
+<a class="jxr_linenumber" name="L500" href="#L500">500</a> 
+<a class="jxr_linenumber" name="L501" href="#L501">501</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L502" href="#L502">502</a> <em class="jxr_javadoccomment">     * Set the value of Maven GAV.</em>
+<a class="jxr_linenumber" name="L503" href="#L503">503</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L504" href="#L504">504</a> <em class="jxr_javadoccomment">     * @param gav new value of Maven GAV</em>
+<a class="jxr_linenumber" name="L505" href="#L505">505</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L506" href="#L506">506</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> setGav(<a href="../../../../../org/owasp/dependencycheck/xml/suppression/PropertyType.html">PropertyType</a> gav) {
+<a class="jxr_linenumber" name="L507" href="#L507">507</a>         <strong class="jxr_keyword">this</strong>.gav = gav;
+<a class="jxr_linenumber" name="L508" href="#L508">508</a>     }
+<a class="jxr_linenumber" name="L509" href="#L509">509</a> 
+<a class="jxr_linenumber" name="L510" href="#L510">510</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L511" href="#L511">511</a> <em class="jxr_javadoccomment">     * Returns whether or not this suppression rule as GAV entries.</em>
+<a class="jxr_linenumber" name="L512" href="#L512">512</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L513" href="#L513">513</a> <em class="jxr_javadoccomment">     * @return whether or not this suppression rule as GAV entries</em>
+<a class="jxr_linenumber" name="L514" href="#L514">514</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L515" href="#L515">515</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">boolean</strong> hasGav() {
+<a class="jxr_linenumber" name="L516" href="#L516">516</a>         <strong class="jxr_keyword">return</strong> gav != <strong class="jxr_keyword">null</strong>;
+<a class="jxr_linenumber" name="L517" href="#L517">517</a>     }
+<a class="jxr_linenumber" name="L518" href="#L518">518</a> 
+<a class="jxr_linenumber" name="L519" href="#L519">519</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L520" href="#L520">520</a> <em class="jxr_javadoccomment">     * Set the value of Package URL.</em>
+<a class="jxr_linenumber" name="L521" href="#L521">521</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L522" href="#L522">522</a> <em class="jxr_javadoccomment">     * @param purl new value of package URL</em>
+<a class="jxr_linenumber" name="L523" href="#L523">523</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L524" href="#L524">524</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> setPackageUrl(<a href="../../../../../org/owasp/dependencycheck/xml/suppression/PropertyType.html">PropertyType</a> purl) {
+<a class="jxr_linenumber" name="L525" href="#L525">525</a>         <strong class="jxr_keyword">this</strong>.packageUrl = purl;
+<a class="jxr_linenumber" name="L526" href="#L526">526</a>     }
+<a class="jxr_linenumber" name="L527" href="#L527">527</a> 
+<a class="jxr_linenumber" name="L528" href="#L528">528</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L529" href="#L529">529</a> <em class="jxr_javadoccomment">     * Returns whether or not this suppression rule as packageUrl entries.</em>
+<a class="jxr_linenumber" name="L530" href="#L530">530</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L531" href="#L531">531</a> <em class="jxr_javadoccomment">     * @return whether or not this suppression rule as packageUrl entries</em>
+<a class="jxr_linenumber" name="L532" href="#L532">532</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L533" href="#L533">533</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">boolean</strong> hasPackageUrl() {
+<a class="jxr_linenumber" name="L534" href="#L534">534</a>         <strong class="jxr_keyword">return</strong> packageUrl != <strong class="jxr_keyword">null</strong>;
+<a class="jxr_linenumber" name="L535" href="#L535">535</a>     }
+<a class="jxr_linenumber" name="L536" href="#L536">536</a> 
+<a class="jxr_linenumber" name="L537" href="#L537">537</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L538" href="#L538">538</a> <em class="jxr_javadoccomment">     * Get the value of base.</em>
+<a class="jxr_linenumber" name="L539" href="#L539">539</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L540" href="#L540">540</a> <em class="jxr_javadoccomment">     * @return the value of base</em>
+<a class="jxr_linenumber" name="L541" href="#L541">541</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L542" href="#L542">542</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">boolean</strong> isBase() {
+<a class="jxr_linenumber" name="L543" href="#L543">543</a>         <strong class="jxr_keyword">return</strong> base;
+<a class="jxr_linenumber" name="L544" href="#L544">544</a>     }
+<a class="jxr_linenumber" name="L545" href="#L545">545</a> 
+<a class="jxr_linenumber" name="L546" href="#L546">546</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L547" href="#L547">547</a> <em class="jxr_javadoccomment">     * Set the value of base.</em>
+<a class="jxr_linenumber" name="L548" href="#L548">548</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L549" href="#L549">549</a> <em class="jxr_javadoccomment">     * @param base new value of base</em>
+<a class="jxr_linenumber" name="L550" href="#L550">550</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L551" href="#L551">551</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> setBase(<strong class="jxr_keyword">boolean</strong> base) {
+<a class="jxr_linenumber" name="L552" href="#L552">552</a>         <strong class="jxr_keyword">this</strong>.base = base;
+<a class="jxr_linenumber" name="L553" href="#L553">553</a>     }
+<a class="jxr_linenumber" name="L554" href="#L554">554</a> 
+<a class="jxr_linenumber" name="L555" href="#L555">555</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L556" href="#L556">556</a> <em class="jxr_javadoccomment">     * Processes a given dependency to determine if any CPE, CVE, CWE, or CVSS</em>
+<a class="jxr_linenumber" name="L557" href="#L557">557</a> <em class="jxr_javadoccomment">     * scores should be suppressed. If any should be, they are removed from the</em>
+<a class="jxr_linenumber" name="L558" href="#L558">558</a> <em class="jxr_javadoccomment">     * dependency.</em>
+<a class="jxr_linenumber" name="L559" href="#L559">559</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L560" href="#L560">560</a> <em class="jxr_javadoccomment">     * @param dependency a project dependency to analyze</em>
+<a class="jxr_linenumber" name="L561" href="#L561">561</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L562" href="#L562">562</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> process(<a href="../../../../../org/owasp/dependencycheck/dependency/Dependency.html">Dependency</a> dependency) {
+<a class="jxr_linenumber" name="L563" href="#L563">563</a>         <strong class="jxr_keyword">if</strong> (filePath != <strong class="jxr_keyword">null</strong> &amp;&amp; !filePath.matches(dependency.getFilePath())) {
+<a class="jxr_linenumber" name="L564" href="#L564">564</a>             <strong class="jxr_keyword">return</strong>;
+<a class="jxr_linenumber" name="L565" href="#L565">565</a>         }
+<a class="jxr_linenumber" name="L566" href="#L566">566</a>         <strong class="jxr_keyword">if</strong> (sha1 != <strong class="jxr_keyword">null</strong> &amp;&amp; !sha1.equalsIgnoreCase(dependency.getSha1sum())) {
+<a class="jxr_linenumber" name="L567" href="#L567">567</a>             <strong class="jxr_keyword">return</strong>;
+<a class="jxr_linenumber" name="L568" href="#L568">568</a>         }
+<a class="jxr_linenumber" name="L569" href="#L569">569</a>         <strong class="jxr_keyword">if</strong> (hasGav()) {
+<a class="jxr_linenumber" name="L570" href="#L570">570</a>             <strong class="jxr_keyword">final</strong> Iterator&lt;Identifier&gt; itr = dependency.getSoftwareIdentifiers().iterator();
+<a class="jxr_linenumber" name="L571" href="#L571">571</a>             <strong class="jxr_keyword">boolean</strong> found = false;
+<a class="jxr_linenumber" name="L572" href="#L572">572</a>             <strong class="jxr_keyword">while</strong> (itr.hasNext()) {
+<a class="jxr_linenumber" name="L573" href="#L573">573</a>                 <strong class="jxr_keyword">final</strong> <a href="../../../../../org/owasp/dependencycheck/dependency/naming/Identifier.html">Identifier</a> i = itr.next();
+<a class="jxr_linenumber" name="L574" href="#L574">574</a>                 <strong class="jxr_keyword">if</strong> (identifierMatches(<strong class="jxr_keyword">this</strong>.gav, i)) {
+<a class="jxr_linenumber" name="L575" href="#L575">575</a>                     found = <strong class="jxr_keyword">true</strong>;
+<a class="jxr_linenumber" name="L576" href="#L576">576</a>                     <strong class="jxr_keyword">break</strong>;
+<a class="jxr_linenumber" name="L577" href="#L577">577</a>                 }
+<a class="jxr_linenumber" name="L578" href="#L578">578</a>             }
+<a class="jxr_linenumber" name="L579" href="#L579">579</a>             <strong class="jxr_keyword">if</strong> (!found) {
+<a class="jxr_linenumber" name="L580" href="#L580">580</a>                 <strong class="jxr_keyword">return</strong>;
+<a class="jxr_linenumber" name="L581" href="#L581">581</a>             }
+<a class="jxr_linenumber" name="L582" href="#L582">582</a>         }
+<a class="jxr_linenumber" name="L583" href="#L583">583</a>         <strong class="jxr_keyword">if</strong> (hasPackageUrl()) {
+<a class="jxr_linenumber" name="L584" href="#L584">584</a>             <strong class="jxr_keyword">final</strong> Iterator&lt;Identifier&gt; itr = dependency.getSoftwareIdentifiers().iterator();
+<a class="jxr_linenumber" name="L585" href="#L585">585</a>             <strong class="jxr_keyword">boolean</strong> found = false;
+<a class="jxr_linenumber" name="L586" href="#L586">586</a>             <strong class="jxr_keyword">while</strong> (itr.hasNext()) {
+<a class="jxr_linenumber" name="L587" href="#L587">587</a>                 <strong class="jxr_keyword">final</strong> <a href="../../../../../org/owasp/dependencycheck/dependency/naming/Identifier.html">Identifier</a> i = itr.next();
+<a class="jxr_linenumber" name="L588" href="#L588">588</a>                 <strong class="jxr_keyword">if</strong> (purlMatches(<strong class="jxr_keyword">this</strong>.packageUrl, i)) {
+<a class="jxr_linenumber" name="L589" href="#L589">589</a>                     found = <strong class="jxr_keyword">true</strong>;
+<a class="jxr_linenumber" name="L590" href="#L590">590</a>                     <strong class="jxr_keyword">break</strong>;
+<a class="jxr_linenumber" name="L591" href="#L591">591</a>                 }
+<a class="jxr_linenumber" name="L592" href="#L592">592</a>             }
+<a class="jxr_linenumber" name="L593" href="#L593">593</a>             <strong class="jxr_keyword">if</strong> (!found) {
+<a class="jxr_linenumber" name="L594" href="#L594">594</a>                 <strong class="jxr_keyword">return</strong>;
+<a class="jxr_linenumber" name="L595" href="#L595">595</a>             }
+<a class="jxr_linenumber" name="L596" href="#L596">596</a>         }
+<a class="jxr_linenumber" name="L597" href="#L597">597</a> 
+<a class="jxr_linenumber" name="L598" href="#L598">598</a>         <strong class="jxr_keyword">if</strong> (<strong class="jxr_keyword">this</strong>.hasCpe()) {
+<a class="jxr_linenumber" name="L599" href="#L599">599</a>             <strong class="jxr_keyword">final</strong> Set&lt;Identifier&gt; removalList = <strong class="jxr_keyword">new</strong> HashSet&lt;&gt;();
+<a class="jxr_linenumber" name="L600" href="#L600">600</a>             <strong class="jxr_keyword">for</strong> (Identifier i : dependency.getVulnerableSoftwareIdentifiers()) {
+<a class="jxr_linenumber" name="L601" href="#L601">601</a>                 <strong class="jxr_keyword">for</strong> (PropertyType c : <strong class="jxr_keyword">this</strong>.cpe) {
+<a class="jxr_linenumber" name="L602" href="#L602">602</a>                     <strong class="jxr_keyword">if</strong> (identifierMatches(c, i)) {
+<a class="jxr_linenumber" name="L603" href="#L603">603</a>                         <strong class="jxr_keyword">if</strong> (!isBase()) {
+<a class="jxr_linenumber" name="L604" href="#L604">604</a>                             matched = <strong class="jxr_keyword">true</strong>;
+<a class="jxr_linenumber" name="L605" href="#L605">605</a>                             <strong class="jxr_keyword">if</strong> (<strong class="jxr_keyword">this</strong>.notes != <strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="L606" href="#L606">606</a>                                 i.setNotes(<strong class="jxr_keyword">this</strong>.notes);
+<a class="jxr_linenumber" name="L607" href="#L607">607</a>                             }
+<a class="jxr_linenumber" name="L608" href="#L608">608</a>                             dependency.addSuppressedIdentifier(i);
+<a class="jxr_linenumber" name="L609" href="#L609">609</a>                         }
+<a class="jxr_linenumber" name="L610" href="#L610">610</a>                         removalList.add(i);
+<a class="jxr_linenumber" name="L611" href="#L611">611</a>                         <strong class="jxr_keyword">break</strong>;
+<a class="jxr_linenumber" name="L612" href="#L612">612</a>                     }
+<a class="jxr_linenumber" name="L613" href="#L613">613</a>                 }
+<a class="jxr_linenumber" name="L614" href="#L614">614</a>             }
+<a class="jxr_linenumber" name="L615" href="#L615">615</a>             removalList.forEach(dependency::removeVulnerableSoftwareIdentifier);
+<a class="jxr_linenumber" name="L616" href="#L616">616</a>         }
+<a class="jxr_linenumber" name="L617" href="#L617">617</a>         <strong class="jxr_keyword">if</strong> (hasCve() || hasVulnerabilityName() || hasCwe() || hasCvssBelow() || hasCvssV2Below() || hasCvssV3Below() || hasCvssV4Below()) {
+<a class="jxr_linenumber" name="L618" href="#L618">618</a>             <strong class="jxr_keyword">final</strong> Set&lt;Vulnerability&gt; removeVulns = <strong class="jxr_keyword">new</strong> HashSet&lt;&gt;();
+<a class="jxr_linenumber" name="L619" href="#L619">619</a>             <strong class="jxr_keyword">for</strong> (Vulnerability v : dependency.getVulnerabilities()) {
+<a class="jxr_linenumber" name="L620" href="#L620">620</a>                 <strong class="jxr_keyword">boolean</strong> remove = false;
+<a class="jxr_linenumber" name="L621" href="#L621">621</a>                 <strong class="jxr_keyword">for</strong> (String entry : <strong class="jxr_keyword">this</strong>.cve) {
+<a class="jxr_linenumber" name="L622" href="#L622">622</a>                     <strong class="jxr_keyword">if</strong> (entry.equalsIgnoreCase(v.getName())) {
+<a class="jxr_linenumber" name="L623" href="#L623">623</a>                         removeVulns.add(v);
+<a class="jxr_linenumber" name="L624" href="#L624">624</a>                         remove = <strong class="jxr_keyword">true</strong>;
+<a class="jxr_linenumber" name="L625" href="#L625">625</a>                         <strong class="jxr_keyword">break</strong>;
+<a class="jxr_linenumber" name="L626" href="#L626">626</a>                     }
+<a class="jxr_linenumber" name="L627" href="#L627">627</a>                 }
+<a class="jxr_linenumber" name="L628" href="#L628">628</a>                 <strong class="jxr_keyword">if</strong> (!remove &amp;&amp; <strong class="jxr_keyword">this</strong>.cwe != <strong class="jxr_keyword">null</strong> &amp;&amp; !v.getCwes().isEmpty()) {
+<a class="jxr_linenumber" name="L629" href="#L629">629</a>                     <strong class="jxr_keyword">for</strong> (String entry : <strong class="jxr_keyword">this</strong>.cwe) {
+<a class="jxr_linenumber" name="L630" href="#L630">630</a>                         <strong class="jxr_keyword">final</strong> String toMatch = String.format(<span class="jxr_string">"CWE-%s"</span>, entry);
+<a class="jxr_linenumber" name="L631" href="#L631">631</a>                         <strong class="jxr_keyword">if</strong> (v.getCwes().stream().anyMatch(toTest -&gt; toMatch.regionMatches(0, toTest, 0, toMatch.length()))) {
+<a class="jxr_linenumber" name="L632" href="#L632">632</a>                             remove = <strong class="jxr_keyword">true</strong>;
+<a class="jxr_linenumber" name="L633" href="#L633">633</a>                             removeVulns.add(v);
+<a class="jxr_linenumber" name="L634" href="#L634">634</a>                             <strong class="jxr_keyword">break</strong>;
+<a class="jxr_linenumber" name="L635" href="#L635">635</a>                         }
+<a class="jxr_linenumber" name="L636" href="#L636">636</a>                     }
+<a class="jxr_linenumber" name="L637" href="#L637">637</a>                 }
+<a class="jxr_linenumber" name="L638" href="#L638">638</a>                 <strong class="jxr_keyword">if</strong> (!remove &amp;&amp; v.getName() != <strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="L639" href="#L639">639</a>                     <strong class="jxr_keyword">for</strong> (PropertyType entry : <strong class="jxr_keyword">this</strong>.vulnerabilityNames) {
+<a class="jxr_linenumber" name="L640" href="#L640">640</a>                         <strong class="jxr_keyword">if</strong> (entry.matches(v.getName())) {
+<a class="jxr_linenumber" name="L641" href="#L641">641</a>                             remove = <strong class="jxr_keyword">true</strong>;
+<a class="jxr_linenumber" name="L642" href="#L642">642</a>                             removeVulns.add(v);
+<a class="jxr_linenumber" name="L643" href="#L643">643</a>                             <strong class="jxr_keyword">break</strong>;
+<a class="jxr_linenumber" name="L644" href="#L644">644</a>                         }
+<a class="jxr_linenumber" name="L645" href="#L645">645</a>                     }
+<a class="jxr_linenumber" name="L646" href="#L646">646</a>                 }
+<a class="jxr_linenumber" name="L647" href="#L647">647</a>                 <strong class="jxr_keyword">if</strong> (!remove) {
+<a class="jxr_linenumber" name="L648" href="#L648">648</a>                     <strong class="jxr_keyword">if</strong> (suppressedBasedOnScore(v)) {
+<a class="jxr_linenumber" name="L649" href="#L649">649</a>                         remove = <strong class="jxr_keyword">true</strong>;
+<a class="jxr_linenumber" name="L650" href="#L650">650</a>                         removeVulns.add(v);
+<a class="jxr_linenumber" name="L651" href="#L651">651</a>                     }
+<a class="jxr_linenumber" name="L652" href="#L652">652</a>                 }
+<a class="jxr_linenumber" name="L653" href="#L653">653</a>                 <strong class="jxr_keyword">if</strong> (remove &amp;&amp; !isBase()) {
+<a class="jxr_linenumber" name="L654" href="#L654">654</a>                     matched = <strong class="jxr_keyword">true</strong>;
+<a class="jxr_linenumber" name="L655" href="#L655">655</a>                     <strong class="jxr_keyword">if</strong> (<strong class="jxr_keyword">this</strong>.notes != <strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="L656" href="#L656">656</a>                         v.setNotes(<strong class="jxr_keyword">this</strong>.notes);
+<a class="jxr_linenumber" name="L657" href="#L657">657</a>                     }
+<a class="jxr_linenumber" name="L658" href="#L658">658</a>                     dependency.addSuppressedVulnerability(v);
+<a class="jxr_linenumber" name="L659" href="#L659">659</a>                 }
+<a class="jxr_linenumber" name="L660" href="#L660">660</a>             }
+<a class="jxr_linenumber" name="L661" href="#L661">661</a>             removeVulns.forEach(dependency::removeVulnerability);
 <a class="jxr_linenumber" name="L662" href="#L662">662</a>         }
-<a class="jxr_linenumber" name="L663" href="#L663">663</a>         <strong class="jxr_keyword">if</strong> (sha1 != <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="L664" href="#L664">664</a>             sb.append(<span class="jxr_string">"sha1="</span>).append(sha1).append(',');
-<a class="jxr_linenumber" name="L665" href="#L665">665</a>         }
-<a class="jxr_linenumber" name="L666" href="#L666">666</a>         <strong class="jxr_keyword">if</strong> (packageUrl != <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="L667" href="#L667">667</a>             sb.append(<span class="jxr_string">"packageUrl="</span>).append(packageUrl).append(',');
-<a class="jxr_linenumber" name="L668" href="#L668">668</a>         }
-<a class="jxr_linenumber" name="L669" href="#L669">669</a>         <strong class="jxr_keyword">if</strong> (gav != <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="L670" href="#L670">670</a>             sb.append(<span class="jxr_string">"gav="</span>).append(gav).append(',');
-<a class="jxr_linenumber" name="L671" href="#L671">671</a>         }
-<a class="jxr_linenumber" name="L672" href="#L672">672</a>         <strong class="jxr_keyword">if</strong> (cpe != <strong class="jxr_keyword">null</strong> &amp;&amp; !cpe.isEmpty()) {
-<a class="jxr_linenumber" name="L673" href="#L673">673</a>             sb.append(<span class="jxr_string">"cpe={"</span>);
-<a class="jxr_linenumber" name="L674" href="#L674">674</a>             cpe.forEach((pt) -&gt; sb.append(pt).append(','));
-<a class="jxr_linenumber" name="L675" href="#L675">675</a>             sb.append('}');
-<a class="jxr_linenumber" name="L676" href="#L676">676</a>         }
-<a class="jxr_linenumber" name="L677" href="#L677">677</a>         <strong class="jxr_keyword">if</strong> (cwe != <strong class="jxr_keyword">null</strong> &amp;&amp; !cwe.isEmpty()) {
-<a class="jxr_linenumber" name="L678" href="#L678">678</a>             sb.append(<span class="jxr_string">"cwe={"</span>);
-<a class="jxr_linenumber" name="L679" href="#L679">679</a>             cwe.forEach((s) -&gt; sb.append(s).append(','));
-<a class="jxr_linenumber" name="L680" href="#L680">680</a>             sb.append('}');
-<a class="jxr_linenumber" name="L681" href="#L681">681</a>         }
-<a class="jxr_linenumber" name="L682" href="#L682">682</a>         <strong class="jxr_keyword">if</strong> (cve != <strong class="jxr_keyword">null</strong> &amp;&amp; !cve.isEmpty()) {
-<a class="jxr_linenumber" name="L683" href="#L683">683</a>             sb.append(<span class="jxr_string">"cve={"</span>);
-<a class="jxr_linenumber" name="L684" href="#L684">684</a>             cve.forEach((s) -&gt; sb.append(s).append(','));
-<a class="jxr_linenumber" name="L685" href="#L685">685</a>             sb.append('}');
-<a class="jxr_linenumber" name="L686" href="#L686">686</a>         }
-<a class="jxr_linenumber" name="L687" href="#L687">687</a>         <strong class="jxr_keyword">if</strong> (vulnerabilityNames != <strong class="jxr_keyword">null</strong> &amp;&amp; !vulnerabilityNames.isEmpty()) {
-<a class="jxr_linenumber" name="L688" href="#L688">688</a>             sb.append(<span class="jxr_string">"vulnerabilityName={"</span>);
-<a class="jxr_linenumber" name="L689" href="#L689">689</a>             vulnerabilityNames.forEach((pt) -&gt; sb.append(pt).append(','));
-<a class="jxr_linenumber" name="L690" href="#L690">690</a>             sb.append('}');
-<a class="jxr_linenumber" name="L691" href="#L691">691</a>         }
-<a class="jxr_linenumber" name="L692" href="#L692">692</a>         <strong class="jxr_keyword">if</strong> (cvssBelow != <strong class="jxr_keyword">null</strong> &amp;&amp; !cvssBelow.isEmpty()) {
-<a class="jxr_linenumber" name="L693" href="#L693">693</a>             sb.append(<span class="jxr_string">"cvssBelow={"</span>);
-<a class="jxr_linenumber" name="L694" href="#L694">694</a>             cvssBelow.forEach((s) -&gt; sb.append(s).append(','));
-<a class="jxr_linenumber" name="L695" href="#L695">695</a>             sb.append('}');
-<a class="jxr_linenumber" name="L696" href="#L696">696</a>         }
-<a class="jxr_linenumber" name="L697" href="#L697">697</a>         sb.append('}');
-<a class="jxr_linenumber" name="L698" href="#L698">698</a>         <strong class="jxr_keyword">return</strong> sb.toString();
-<a class="jxr_linenumber" name="L699" href="#L699">699</a>     }
-<a class="jxr_linenumber" name="L700" href="#L700">700</a> }
+<a class="jxr_linenumber" name="L663" href="#L663">663</a>     }
+<a class="jxr_linenumber" name="L664" href="#L664">664</a> 
+<a class="jxr_linenumber" name="L665" href="#L665">665</a>     <strong class="jxr_keyword">boolean</strong> suppressedBasedOnScore(<a href="../../../../../org/owasp/dependencycheck/dependency/Vulnerability.html">Vulnerability</a> v) {
+<a class="jxr_linenumber" name="L666" href="#L666">666</a>         <strong class="jxr_keyword">if</strong> (!cvssBelow.isEmpty()) {
+<a class="jxr_linenumber" name="L667" href="#L667">667</a>             <strong class="jxr_keyword">for</strong> (Double cvss : <strong class="jxr_keyword">this</strong>.cvssBelow) {
+<a class="jxr_linenumber" name="L668" href="#L668">668</a>                 <em class="jxr_comment">//TODO validate this comparison</em>
+<a class="jxr_linenumber" name="L669" href="#L669">669</a>                 <strong class="jxr_keyword">if</strong> (v.getCvssV2() != <strong class="jxr_keyword">null</strong> &amp;&amp; v.getCvssV2().getCvssData().getBaseScore().compareTo(cvss) &lt; 0) {
+<a class="jxr_linenumber" name="L670" href="#L670">670</a>                     <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">true</strong>;
+<a class="jxr_linenumber" name="L671" href="#L671">671</a>                 }
+<a class="jxr_linenumber" name="L672" href="#L672">672</a>                 <strong class="jxr_keyword">if</strong> (v.getCvssV3() != <strong class="jxr_keyword">null</strong> &amp;&amp; v.getCvssV3().getCvssData().getBaseScore().compareTo(cvss) &lt; 0) {
+<a class="jxr_linenumber" name="L673" href="#L673">673</a>                     <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">true</strong>;
+<a class="jxr_linenumber" name="L674" href="#L674">674</a>                 }
+<a class="jxr_linenumber" name="L675" href="#L675">675</a>                 <strong class="jxr_keyword">if</strong> (v.getCvssV4() != <strong class="jxr_keyword">null</strong> &amp;&amp; v.getCvssV4().getCvssData().getBaseScore().compareTo(cvss) &lt; 0) {
+<a class="jxr_linenumber" name="L676" href="#L676">676</a>                     <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">true</strong>;
+<a class="jxr_linenumber" name="L677" href="#L677">677</a>                 }
+<a class="jxr_linenumber" name="L678" href="#L678">678</a>             }
+<a class="jxr_linenumber" name="L679" href="#L679">679</a>             <strong class="jxr_keyword">return</strong> false;
+<a class="jxr_linenumber" name="L680" href="#L680">680</a>         }
+<a class="jxr_linenumber" name="L681" href="#L681">681</a> 
+<a class="jxr_linenumber" name="L682" href="#L682">682</a>         <strong class="jxr_keyword">if</strong> (hasCvssV2Below() || hasCvssV3Below() || hasCvssV4Below()) {
+<a class="jxr_linenumber" name="L683" href="#L683">683</a>             Double v2SuppressionThreshold = <strong class="jxr_keyword">this</strong>.cvssV2Below.stream().max(Double::compare).orElse(11.0);
+<a class="jxr_linenumber" name="L684" href="#L684">684</a>             Double v3SuppressionThreshold = <strong class="jxr_keyword">this</strong>.cvssV3Below.stream().max(Double::compare).orElse(11.0);
+<a class="jxr_linenumber" name="L685" href="#L685">685</a>             Double v4SuppressionThreshold = <strong class="jxr_keyword">this</strong>.cvssV4Below.stream().max(Double::compare).orElse(11.0);
+<a class="jxr_linenumber" name="L686" href="#L686">686</a> 
+<a class="jxr_linenumber" name="L687" href="#L687">687</a>             Double v2Score = v.getCvssV2() != <strong class="jxr_keyword">null</strong> ? v.getCvssV2().getCvssData().getBaseScore() : <strong class="jxr_keyword">null</strong>;
+<a class="jxr_linenumber" name="L688" href="#L688">688</a>             Double v3Score = v.getCvssV3() != <strong class="jxr_keyword">null</strong> ? v.getCvssV3().getCvssData().getBaseScore() : <strong class="jxr_keyword">null</strong>;
+<a class="jxr_linenumber" name="L689" href="#L689">689</a>             Double v4Score = v.getCvssV4() != <strong class="jxr_keyword">null</strong> ? v.getCvssV4().getCvssData().getBaseScore() : <strong class="jxr_keyword">null</strong>;
+<a class="jxr_linenumber" name="L690" href="#L690">690</a> 
+<a class="jxr_linenumber" name="L691" href="#L691">691</a>             <em class="jxr_comment">// only if all version indicate suppression will the vulnerability be suppressed</em>
+<a class="jxr_linenumber" name="L692" href="#L692">692</a>             <em class="jxr_comment">// so if we are missing data (score or threshold) for a specific version we assume suppression</em>
+<a class="jxr_linenumber" name="L693" href="#L693">693</a>             <strong class="jxr_keyword">boolean</strong> cvssV2CheckSuppressing = v2Score == <strong class="jxr_keyword">null</strong> || v2Score &lt; v2SuppressionThreshold;
+<a class="jxr_linenumber" name="L694" href="#L694">694</a>             <strong class="jxr_keyword">boolean</strong> cvssV3CheckSuppressing = v3Score == <strong class="jxr_keyword">null</strong> || v3Score &lt; v3SuppressionThreshold;
+<a class="jxr_linenumber" name="L695" href="#L695">695</a>             <strong class="jxr_keyword">boolean</strong> cvssV4CheckSuppressing = v4Score == <strong class="jxr_keyword">null</strong> || v4Score &lt; v4SuppressionThreshold;
+<a class="jxr_linenumber" name="L696" href="#L696">696</a> 
+<a class="jxr_linenumber" name="L697" href="#L697">697</a>             <strong class="jxr_keyword">return</strong> cvssV2CheckSuppressing &amp;&amp; cvssV3CheckSuppressing &amp;&amp; cvssV4CheckSuppressing;
+<a class="jxr_linenumber" name="L698" href="#L698">698</a>         }
+<a class="jxr_linenumber" name="L699" href="#L699">699</a> 
+<a class="jxr_linenumber" name="L700" href="#L700">700</a>         <strong class="jxr_keyword">return</strong> false;
+<a class="jxr_linenumber" name="L701" href="#L701">701</a>     }
+<a class="jxr_linenumber" name="L702" href="#L702">702</a> 
+<a class="jxr_linenumber" name="L703" href="#L703">703</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L704" href="#L704">704</a> <em class="jxr_javadoccomment">     * Identifies if the cpe specified by the cpe suppression rule does not</em>
+<a class="jxr_linenumber" name="L705" href="#L705">705</a> <em class="jxr_javadoccomment">     * specify a version.</em>
+<a class="jxr_linenumber" name="L706" href="#L706">706</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L707" href="#L707">707</a> <em class="jxr_javadoccomment">     * @param c a suppression rule identifier</em>
+<a class="jxr_linenumber" name="L708" href="#L708">708</a> <em class="jxr_javadoccomment">     * @return true if the property type does not specify a version; otherwise</em>
+<a class="jxr_linenumber" name="L709" href="#L709">709</a> <em class="jxr_javadoccomment">     * false</em>
+<a class="jxr_linenumber" name="L710" href="#L710">710</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L711" href="#L711">711</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">boolean</strong> cpeHasNoVersion(<a href="../../../../../org/owasp/dependencycheck/xml/suppression/PropertyType.html">PropertyType</a> c) {
+<a class="jxr_linenumber" name="L712" href="#L712">712</a>         <strong class="jxr_keyword">return</strong> !c.isRegex() &amp;&amp; countCharacter(c.getValue(), ':') &lt;= 3;
+<a class="jxr_linenumber" name="L713" href="#L713">713</a>     }
+<a class="jxr_linenumber" name="L714" href="#L714">714</a> 
+<a class="jxr_linenumber" name="L715" href="#L715">715</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L716" href="#L716">716</a> <em class="jxr_javadoccomment">     * Counts the number of occurrences of the character found within the</em>
+<a class="jxr_linenumber" name="L717" href="#L717">717</a> <em class="jxr_javadoccomment">     * string.</em>
+<a class="jxr_linenumber" name="L718" href="#L718">718</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L719" href="#L719">719</a> <em class="jxr_javadoccomment">     * @param str the string to check</em>
+<a class="jxr_linenumber" name="L720" href="#L720">720</a> <em class="jxr_javadoccomment">     * @param c the character to count</em>
+<a class="jxr_linenumber" name="L721" href="#L721">721</a> <em class="jxr_javadoccomment">     * @return the number of times the character is found in the string</em>
+<a class="jxr_linenumber" name="L722" href="#L722">722</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L723" href="#L723">723</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">int</strong> countCharacter(String str, <strong class="jxr_keyword">char</strong> c) {
+<a class="jxr_linenumber" name="L724" href="#L724">724</a>         <strong class="jxr_keyword">int</strong> count = 0;
+<a class="jxr_linenumber" name="L725" href="#L725">725</a>         <strong class="jxr_keyword">int</strong> pos = str.indexOf(c) + 1;
+<a class="jxr_linenumber" name="L726" href="#L726">726</a>         <strong class="jxr_keyword">while</strong> (pos &gt; 0) {
+<a class="jxr_linenumber" name="L727" href="#L727">727</a>             count += 1;
+<a class="jxr_linenumber" name="L728" href="#L728">728</a>             pos = str.indexOf(c, pos) + 1;
+<a class="jxr_linenumber" name="L729" href="#L729">729</a>         }
+<a class="jxr_linenumber" name="L730" href="#L730">730</a>         <strong class="jxr_keyword">return</strong> count;
+<a class="jxr_linenumber" name="L731" href="#L731">731</a>     }
+<a class="jxr_linenumber" name="L732" href="#L732">732</a> 
+<a class="jxr_linenumber" name="L733" href="#L733">733</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L734" href="#L734">734</a> <em class="jxr_javadoccomment">     * Determines if the cpeEntry specified as a PropertyType matches the given</em>
+<a class="jxr_linenumber" name="L735" href="#L735">735</a> <em class="jxr_javadoccomment">     * Identifier.</em>
+<a class="jxr_linenumber" name="L736" href="#L736">736</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L737" href="#L737">737</a> <em class="jxr_javadoccomment">     * @param suppressionEntry a suppression rule entry</em>
+<a class="jxr_linenumber" name="L738" href="#L738">738</a> <em class="jxr_javadoccomment">     * @param identifier a CPE identifier to check</em>
+<a class="jxr_linenumber" name="L739" href="#L739">739</a> <em class="jxr_javadoccomment">     * @return true if the entry matches; otherwise false</em>
+<a class="jxr_linenumber" name="L740" href="#L740">740</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L741" href="#L741">741</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">boolean</strong> purlMatches(<a href="../../../../../org/owasp/dependencycheck/xml/suppression/PropertyType.html">PropertyType</a> suppressionEntry, <a href="../../../../../org/owasp/dependencycheck/dependency/naming/Identifier.html">Identifier</a> identifier) {
+<a class="jxr_linenumber" name="L742" href="#L742">742</a>         <strong class="jxr_keyword">if</strong> (identifier instanceof PurlIdentifier) {
+<a class="jxr_linenumber" name="L743" href="#L743">743</a>             <strong class="jxr_keyword">final</strong> <a href="../../../../../org/owasp/dependencycheck/dependency/naming/PurlIdentifier.html">PurlIdentifier</a> purl = (PurlIdentifier) identifier;
+<a class="jxr_linenumber" name="L744" href="#L744">744</a>             <strong class="jxr_keyword">return</strong> suppressionEntry.matches(purl.toString());
+<a class="jxr_linenumber" name="L745" href="#L745">745</a>         }
+<a class="jxr_linenumber" name="L746" href="#L746">746</a>         <strong class="jxr_keyword">return</strong> false;
+<a class="jxr_linenumber" name="L747" href="#L747">747</a>     }
+<a class="jxr_linenumber" name="L748" href="#L748">748</a> 
+<a class="jxr_linenumber" name="L749" href="#L749">749</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L750" href="#L750">750</a> <em class="jxr_javadoccomment">     * Determines if the cpeEntry specified as a PropertyType matches the given</em>
+<a class="jxr_linenumber" name="L751" href="#L751">751</a> <em class="jxr_javadoccomment">     * Identifier.</em>
+<a class="jxr_linenumber" name="L752" href="#L752">752</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L753" href="#L753">753</a> <em class="jxr_javadoccomment">     * @param suppressionEntry a suppression rule entry</em>
+<a class="jxr_linenumber" name="L754" href="#L754">754</a> <em class="jxr_javadoccomment">     * @param identifier a CPE identifier to check</em>
+<a class="jxr_linenumber" name="L755" href="#L755">755</a> <em class="jxr_javadoccomment">     * @return true if the entry matches; otherwise false</em>
+<a class="jxr_linenumber" name="L756" href="#L756">756</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L757" href="#L757">757</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">boolean</strong> identifierMatches(<a href="../../../../../org/owasp/dependencycheck/xml/suppression/PropertyType.html">PropertyType</a> suppressionEntry, <a href="../../../../../org/owasp/dependencycheck/dependency/naming/Identifier.html">Identifier</a> identifier) {
+<a class="jxr_linenumber" name="L758" href="#L758">758</a>         <strong class="jxr_keyword">if</strong> (identifier instanceof PurlIdentifier) {
+<a class="jxr_linenumber" name="L759" href="#L759">759</a>             <strong class="jxr_keyword">final</strong> <a href="../../../../../org/owasp/dependencycheck/dependency/naming/PurlIdentifier.html">PurlIdentifier</a> purl = (PurlIdentifier) identifier;
+<a class="jxr_linenumber" name="L760" href="#L760">760</a>             <strong class="jxr_keyword">return</strong> suppressionEntry.matches(purl.toGav());
+<a class="jxr_linenumber" name="L761" href="#L761">761</a>         } <strong class="jxr_keyword">else</strong> <strong class="jxr_keyword">if</strong> (identifier instanceof CpeIdentifier) {
+<a class="jxr_linenumber" name="L762" href="#L762">762</a>             <em class="jxr_comment">//TODO check for regex - not just type</em>
+<a class="jxr_linenumber" name="L763" href="#L763">763</a>             <strong class="jxr_keyword">final</strong> Cpe cpeId = ((CpeIdentifier) identifier).getCpe();
+<a class="jxr_linenumber" name="L764" href="#L764">764</a>             <strong class="jxr_keyword">if</strong> (suppressionEntry.isRegex()) {
+<a class="jxr_linenumber" name="L765" href="#L765">765</a>                 <strong class="jxr_keyword">try</strong> {
+<a class="jxr_linenumber" name="L766" href="#L766">766</a>                     <strong class="jxr_keyword">return</strong> suppressionEntry.matches(cpeId.toCpe22Uri());
+<a class="jxr_linenumber" name="L767" href="#L767">767</a>                 } <strong class="jxr_keyword">catch</strong> (CpeEncodingException ex) {
+<a class="jxr_linenumber" name="L768" href="#L768">768</a>                     LOGGER.debug(<span class="jxr_string">"Unable to convert CPE to 22 URI?"</span> + cpeId);
+<a class="jxr_linenumber" name="L769" href="#L769">769</a>                 }
+<a class="jxr_linenumber" name="L770" href="#L770">770</a>             } <strong class="jxr_keyword">else</strong> <strong class="jxr_keyword">if</strong> (suppressionEntry.isCaseSensitive()) {
+<a class="jxr_linenumber" name="L771" href="#L771">771</a>                 <strong class="jxr_keyword">try</strong> {
+<a class="jxr_linenumber" name="L772" href="#L772">772</a>                     <strong class="jxr_keyword">return</strong> cpeId.toCpe22Uri().startsWith(suppressionEntry.getValue());
+<a class="jxr_linenumber" name="L773" href="#L773">773</a>                 } <strong class="jxr_keyword">catch</strong> (CpeEncodingException ex) {
+<a class="jxr_linenumber" name="L774" href="#L774">774</a>                     LOGGER.debug(<span class="jxr_string">"Unable to convert CPE to 22 URI?"</span> + cpeId);
+<a class="jxr_linenumber" name="L775" href="#L775">775</a>                 }
+<a class="jxr_linenumber" name="L776" href="#L776">776</a>             } <strong class="jxr_keyword">else</strong> {
+<a class="jxr_linenumber" name="L777" href="#L777">777</a>                 <strong class="jxr_keyword">final</strong> String id;
+<a class="jxr_linenumber" name="L778" href="#L778">778</a>                 <strong class="jxr_keyword">try</strong> {
+<a class="jxr_linenumber" name="L779" href="#L779">779</a>                     id = cpeId.toCpe22Uri().toLowerCase();
+<a class="jxr_linenumber" name="L780" href="#L780">780</a>                 } <strong class="jxr_keyword">catch</strong> (CpeEncodingException ex) {
+<a class="jxr_linenumber" name="L781" href="#L781">781</a>                     LOGGER.debug(<span class="jxr_string">"Unable to convert CPE to 22 URI?"</span> + cpeId);
+<a class="jxr_linenumber" name="L782" href="#L782">782</a>                     <strong class="jxr_keyword">return</strong> false;
+<a class="jxr_linenumber" name="L783" href="#L783">783</a>                 }
+<a class="jxr_linenumber" name="L784" href="#L784">784</a>                 <strong class="jxr_keyword">final</strong> String check = suppressionEntry.getValue().toLowerCase();
+<a class="jxr_linenumber" name="L785" href="#L785">785</a>                 <strong class="jxr_keyword">return</strong> id.startsWith(check);
+<a class="jxr_linenumber" name="L786" href="#L786">786</a>             }
+<a class="jxr_linenumber" name="L787" href="#L787">787</a>         }
+<a class="jxr_linenumber" name="L788" href="#L788">788</a>         <strong class="jxr_keyword">return</strong> suppressionEntry.matches(identifier.getValue());
+<a class="jxr_linenumber" name="L789" href="#L789">789</a>     }
+<a class="jxr_linenumber" name="L790" href="#L790">790</a> 
+<a class="jxr_linenumber" name="L791" href="#L791">791</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L792" href="#L792">792</a> <em class="jxr_javadoccomment">     * Standard toString implementation.</em>
+<a class="jxr_linenumber" name="L793" href="#L793">793</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L794" href="#L794">794</a> <em class="jxr_javadoccomment">     * @return a string representation of this object</em>
+<a class="jxr_linenumber" name="L795" href="#L795">795</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L796" href="#L796">796</a>     @Override
+<a class="jxr_linenumber" name="L797" href="#L797">797</a>     <strong class="jxr_keyword">public</strong> String toString() {
+<a class="jxr_linenumber" name="L798" href="#L798">798</a>         <strong class="jxr_keyword">final</strong> StringBuilder sb = <strong class="jxr_keyword">new</strong> StringBuilder(64);
+<a class="jxr_linenumber" name="L799" href="#L799">799</a>         sb.append(<span class="jxr_string">"SuppressionRule{"</span>);
+<a class="jxr_linenumber" name="L800" href="#L800">800</a>         <strong class="jxr_keyword">if</strong> (until != <strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="L801" href="#L801">801</a>             <strong class="jxr_keyword">final</strong> String dt = DateFormatUtils.ISO_8601_EXTENDED_DATETIME_TIME_ZONE_FORMAT.format(until);
+<a class="jxr_linenumber" name="L802" href="#L802">802</a>             sb.append(<span class="jxr_string">"until="</span>).append(dt).append(',');
+<a class="jxr_linenumber" name="L803" href="#L803">803</a>         }
+<a class="jxr_linenumber" name="L804" href="#L804">804</a>         <strong class="jxr_keyword">if</strong> (filePath != <strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="L805" href="#L805">805</a>             sb.append(<span class="jxr_string">"filePath="</span>).append(filePath).append(',');
+<a class="jxr_linenumber" name="L806" href="#L806">806</a>         }
+<a class="jxr_linenumber" name="L807" href="#L807">807</a>         <strong class="jxr_keyword">if</strong> (sha1 != <strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="L808" href="#L808">808</a>             sb.append(<span class="jxr_string">"sha1="</span>).append(sha1).append(',');
+<a class="jxr_linenumber" name="L809" href="#L809">809</a>         }
+<a class="jxr_linenumber" name="L810" href="#L810">810</a>         <strong class="jxr_keyword">if</strong> (packageUrl != <strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="L811" href="#L811">811</a>             sb.append(<span class="jxr_string">"packageUrl="</span>).append(packageUrl).append(',');
+<a class="jxr_linenumber" name="L812" href="#L812">812</a>         }
+<a class="jxr_linenumber" name="L813" href="#L813">813</a>         <strong class="jxr_keyword">if</strong> (gav != <strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="L814" href="#L814">814</a>             sb.append(<span class="jxr_string">"gav="</span>).append(gav).append(',');
+<a class="jxr_linenumber" name="L815" href="#L815">815</a>         }
+<a class="jxr_linenumber" name="L816" href="#L816">816</a>         <strong class="jxr_keyword">if</strong> (cpe != <strong class="jxr_keyword">null</strong> &amp;&amp; !cpe.isEmpty()) {
+<a class="jxr_linenumber" name="L817" href="#L817">817</a>             sb.append(<span class="jxr_string">"cpe={"</span>);
+<a class="jxr_linenumber" name="L818" href="#L818">818</a>             cpe.forEach((pt) -&gt; sb.append(pt).append(','));
+<a class="jxr_linenumber" name="L819" href="#L819">819</a>             sb.append('}');
+<a class="jxr_linenumber" name="L820" href="#L820">820</a>         }
+<a class="jxr_linenumber" name="L821" href="#L821">821</a>         <strong class="jxr_keyword">if</strong> (cwe != <strong class="jxr_keyword">null</strong> &amp;&amp; !cwe.isEmpty()) {
+<a class="jxr_linenumber" name="L822" href="#L822">822</a>             sb.append(<span class="jxr_string">"cwe={"</span>);
+<a class="jxr_linenumber" name="L823" href="#L823">823</a>             cwe.forEach((s) -&gt; sb.append(s).append(','));
+<a class="jxr_linenumber" name="L824" href="#L824">824</a>             sb.append('}');
+<a class="jxr_linenumber" name="L825" href="#L825">825</a>         }
+<a class="jxr_linenumber" name="L826" href="#L826">826</a>         <strong class="jxr_keyword">if</strong> (cve != <strong class="jxr_keyword">null</strong> &amp;&amp; !cve.isEmpty()) {
+<a class="jxr_linenumber" name="L827" href="#L827">827</a>             sb.append(<span class="jxr_string">"cve={"</span>);
+<a class="jxr_linenumber" name="L828" href="#L828">828</a>             cve.forEach((s) -&gt; sb.append(s).append(','));
+<a class="jxr_linenumber" name="L829" href="#L829">829</a>             sb.append('}');
+<a class="jxr_linenumber" name="L830" href="#L830">830</a>         }
+<a class="jxr_linenumber" name="L831" href="#L831">831</a>         <strong class="jxr_keyword">if</strong> (vulnerabilityNames != <strong class="jxr_keyword">null</strong> &amp;&amp; !vulnerabilityNames.isEmpty()) {
+<a class="jxr_linenumber" name="L832" href="#L832">832</a>             sb.append(<span class="jxr_string">"vulnerabilityName={"</span>);
+<a class="jxr_linenumber" name="L833" href="#L833">833</a>             vulnerabilityNames.forEach((pt) -&gt; sb.append(pt).append(','));
+<a class="jxr_linenumber" name="L834" href="#L834">834</a>             sb.append('}');
+<a class="jxr_linenumber" name="L835" href="#L835">835</a>         }
+<a class="jxr_linenumber" name="L836" href="#L836">836</a>         <strong class="jxr_keyword">if</strong> (cvssBelow != <strong class="jxr_keyword">null</strong> &amp;&amp; !cvssBelow.isEmpty()) {
+<a class="jxr_linenumber" name="L837" href="#L837">837</a>             sb.append(<span class="jxr_string">"cvssBelow={"</span>);
+<a class="jxr_linenumber" name="L838" href="#L838">838</a>             cvssBelow.forEach((s) -&gt; sb.append(s).append(','));
+<a class="jxr_linenumber" name="L839" href="#L839">839</a>             sb.append('}');
+<a class="jxr_linenumber" name="L840" href="#L840">840</a>         }
+<a class="jxr_linenumber" name="L841" href="#L841">841</a>         <strong class="jxr_keyword">if</strong> (cvssV2Below != <strong class="jxr_keyword">null</strong> &amp;&amp; !cvssV2Below.isEmpty()) {
+<a class="jxr_linenumber" name="L842" href="#L842">842</a>             sb.append(<span class="jxr_string">"cvssV2Below={"</span>);
+<a class="jxr_linenumber" name="L843" href="#L843">843</a>             cvssV2Below.forEach((s) -&gt; sb.append(s).append(','));
+<a class="jxr_linenumber" name="L844" href="#L844">844</a>             sb.append('}');
+<a class="jxr_linenumber" name="L845" href="#L845">845</a>         }
+<a class="jxr_linenumber" name="L846" href="#L846">846</a>         <strong class="jxr_keyword">if</strong> (cvssV3Below != <strong class="jxr_keyword">null</strong> &amp;&amp; !cvssV3Below.isEmpty()) {
+<a class="jxr_linenumber" name="L847" href="#L847">847</a>             sb.append(<span class="jxr_string">"cvssV3Below={"</span>);
+<a class="jxr_linenumber" name="L848" href="#L848">848</a>             cvssV3Below.forEach((s) -&gt; sb.append(s).append(','));
+<a class="jxr_linenumber" name="L849" href="#L849">849</a>             sb.append('}');
+<a class="jxr_linenumber" name="L850" href="#L850">850</a>         }
+<a class="jxr_linenumber" name="L851" href="#L851">851</a>         <strong class="jxr_keyword">if</strong> (cvssV4Below != <strong class="jxr_keyword">null</strong> &amp;&amp; !cvssV4Below.isEmpty()) {
+<a class="jxr_linenumber" name="L852" href="#L852">852</a>             sb.append(<span class="jxr_string">"cvssV4Below={"</span>);
+<a class="jxr_linenumber" name="L853" href="#L853">853</a>             cvssV4Below.forEach((s) -&gt; sb.append(s).append(','));
+<a class="jxr_linenumber" name="L854" href="#L854">854</a>             sb.append('}');
+<a class="jxr_linenumber" name="L855" href="#L855">855</a>         }
+<a class="jxr_linenumber" name="L856" href="#L856">856</a>         sb.append('}');
+<a class="jxr_linenumber" name="L857" href="#L857">857</a>         <strong class="jxr_keyword">return</strong> sb.toString();
+<a class="jxr_linenumber" name="L858" href="#L858">858</a>     }
+<a class="jxr_linenumber" name="L859" href="#L859">859</a> }
 </pre>
 <hr/>
-<div id="footer">Copyright &#169; 2012&#x2013;2025 <a href="https://www.owasp.org">OWASP</a>. All rights reserved.</div>
+<div id="footer">Copyright &#169; 2012&#x2013;2026 <a href="https://www.owasp.org">OWASP</a>. All rights reserved.</div>
 </body>
 </html>

@@ -528,8 +528,13 @@ public class VulnerableSoftware extends Cpe implements Serializable {
 <span class="fc" id="L528">        return sb.toString();</span>
     }
 
+    /**
+     * Returns the NVD search URL for this vulnerable software.
+     *
+     * @return the NVD search URL
+     */
     public String toNvdSearchUrl() {
-<span class="fc" id="L532">        return CpeIdentifier.nvdSearchUrlFor(this);</span>
+<span class="fc" id="L537">        return CpeIdentifier.nvdSearchUrlFor(this);</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.14.202510111229</span></div></body></html>

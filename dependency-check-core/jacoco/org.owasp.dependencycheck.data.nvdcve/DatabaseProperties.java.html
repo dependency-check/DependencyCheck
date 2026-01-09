@@ -233,11 +233,11 @@ public class DatabaseProperties {
      */
     public static ZonedDateTime getIsoTimestamp(Properties properties, String key) {
         //final DateTimeFormatter dtf = DateTimeFormatter.ofPattern(&quot;uuuu-MM-dd'T'HH:mm:ssX&quot;);
-<span class="nc" id="L236">        final DateTimeFormatter dtf = DateTimeFormatter.ISO_DATE_TIME;</span>
-<span class="nc" id="L237">        final String val = properties.getProperty(key);</span>
-<span class="nc bnc" id="L238" title="All 2 branches missed.">        if (val != null) {</span>
-<span class="nc" id="L239">            final String value = properties.getProperty(key);</span>
-<span class="nc" id="L240">            return ZonedDateTime.parse(value, dtf);</span>
+<span class="fc" id="L236">        final DateTimeFormatter dtf = DateTimeFormatter.ISO_DATE_TIME;</span>
+<span class="fc" id="L237">        final String val = properties.getProperty(key);</span>
+<span class="pc bpc" id="L238" title="1 of 2 branches missed.">        if (val != null) {</span>
+<span class="fc" id="L239">            final String value = properties.getProperty(key);</span>
+<span class="fc" id="L240">            return ZonedDateTime.parse(value, dtf);</span>
         }
 <span class="nc" id="L242">        return null;</span>
     }

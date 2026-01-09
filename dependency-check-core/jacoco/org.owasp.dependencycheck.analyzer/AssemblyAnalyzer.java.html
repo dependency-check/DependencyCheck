@@ -373,7 +373,7 @@ import org.owasp.dependencycheck.xml.assembly.GrokParseException;
 <span class="pc bpc" id="L373" title="2 of 4 branches missed.">                if (p.exitValue() != 1 || !StringUtils.isBlank(error)) {</span>
 <span class="nc" id="L374">                    LOGGER.warn(&quot;An error occurred with the .NET AssemblyAnalyzer, please see the log for more details.\n&quot;</span>
                     + &quot;dependency-check requires dotnet 8.0 core runtime or sdk to be installed to analyze assemblies.&quot;);
-<span class="nc" id="L376">                    LOGGER.debug(&quot;GrokAssembly.dll is not working properly&quot;);</span>
+<span class="nc" id="L376">                    LOGGER.debug(&quot;GrokAssembly.dll is not working properly: {}&quot;, error);</span>
 <span class="nc" id="L377">                    grokAssembly = null;</span>
 <span class="nc" id="L378">                    setEnabled(false);</span>
 <span class="nc" id="L379">                    throw new InitializationException(&quot;Could not execute .NET AssemblyAnalyzer, is the dotnet 8.0 runtime or sdk installed?&quot;);</span>

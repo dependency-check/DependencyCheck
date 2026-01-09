@@ -574,7 +574,7 @@ public final class Downloader {
      * @throws ResourceNotFoundException thrown when a 404 is received
      */
     public String fetchContent(URL url, Charset charset) throws DownloadFailedException, TooManyRequestsException, ResourceNotFoundException {
-<span class="nc" id="L577">        return fetchContent(url, true, charset);</span>
+<span class="fc" id="L577">        return fetchContent(url, true, charset);</span>
     }
 
     /**
@@ -594,19 +594,19 @@ public final class Downloader {
             throws DownloadFailedException, TooManyRequestsException, ResourceNotFoundException {
         try {
             final String result;
-<span class="nc bnc" id="L597" title="All 2 branches missed.">            if (&quot;file&quot;.equals(url.getProtocol())) {</span>
+<span class="pc bpc" id="L597" title="1 of 2 branches missed.">            if (&quot;file&quot;.equals(url.getProtocol())) {</span>
 <span class="nc" id="L598">                final Path p = Paths.get(url.toURI());</span>
 <span class="nc" id="L599">                result = Files.readString(p, charset);</span>
 <span class="nc" id="L600">            } else {</span>
                 final BasicClassicHttpRequest req;
-<span class="nc" id="L602">                req = new BasicClassicHttpRequest(Method.GET, url.toURI());</span>
-<span class="nc bnc" id="L603" title="All 2 branches missed.">                try (CloseableHttpClient hc = useProxy ? httpClientBuilder.build() : httpClientBuilderExplicitNoproxy.build()) {</span>
-<span class="nc" id="L604">                    req.addHeader(HttpHeaders.ACCEPT_CHARSET, charset.name());</span>
-<span class="nc" id="L605">                    final ExplicitCharsetToStringResponseHandler responseHandler = new ExplicitCharsetToStringResponseHandler(charset);</span>
-<span class="nc" id="L606">                    result = hc.execute(req, getPreEmptiveAuthContext(), responseHandler);</span>
+<span class="fc" id="L602">                req = new BasicClassicHttpRequest(Method.GET, url.toURI());</span>
+<span class="pc bpc" id="L603" title="1 of 2 branches missed.">                try (CloseableHttpClient hc = useProxy ? httpClientBuilder.build() : httpClientBuilderExplicitNoproxy.build()) {</span>
+<span class="fc" id="L604">                    req.addHeader(HttpHeaders.ACCEPT_CHARSET, charset.name());</span>
+<span class="fc" id="L605">                    final ExplicitCharsetToStringResponseHandler responseHandler = new ExplicitCharsetToStringResponseHandler(charset);</span>
+<span class="fc" id="L606">                    result = hc.execute(req, getPreEmptiveAuthContext(), responseHandler);</span>
                 }
             }
-<span class="nc" id="L609">            return result;</span>
+<span class="fc" id="L609">            return result;</span>
 <span class="nc" id="L610">        } catch (HttpResponseException hre) {</span>
 <span class="nc" id="L611">            wrapAndThrowHttpResponseException(url.toString(), hre);</span>
 <span class="nc" id="L612">            throw new InternalError(&quot;wrapAndThrowHttpResponseException will always throw an exception but Java compiler fails to spot it&quot;);</span>

@@ -72,11 +72,11 @@ import java.nio.file.Files;
 <span class="fc" id="L72">            final URL url = new URL(configuredUrl);</span>
 <span class="fc" id="L73">            final File filepath = new File(url.getPath());</span>
 <span class="fc" id="L74">            final File repoFile = new File(settings.getDataDirectory(), filepath.getName());</span>
-<span class="pc bpc" id="L75" title="4 of 8 branches missed.">            final boolean proceed = enabled &amp;&amp; (forceupdate || (autoupdate &amp;&amp; shouldUpdate(repoFile)));</span>
-<span class="fc bfc" id="L76" title="All 2 branches covered.">            if (proceed) {</span>
-<span class="fc" id="L77">                LOGGER.debug(&quot;Begin Hosted Suppressions file update&quot;);</span>
-<span class="fc" id="L78">                fetchHostedSuppressions(settings, url, repoFile);</span>
-<span class="fc" id="L79">                saveLastUpdated(repoFile, System.currentTimeMillis() / 1000);</span>
+<span class="pc bpc" id="L75" title="5 of 8 branches missed.">            final boolean proceed = enabled &amp;&amp; (forceupdate || (autoupdate &amp;&amp; shouldUpdate(repoFile)));</span>
+<span class="pc bpc" id="L76" title="1 of 2 branches missed.">            if (proceed) {</span>
+<span class="nc" id="L77">                LOGGER.debug(&quot;Begin Hosted Suppressions file update&quot;);</span>
+<span class="nc" id="L78">                fetchHostedSuppressions(settings, url, repoFile);</span>
+<span class="nc" id="L79">                saveLastUpdated(repoFile, System.currentTimeMillis() / 1000);</span>
             }
 <span class="nc" id="L81">        } catch (UpdateException ex) {</span>
             // only emit a warning, DependencyCheck will continue without taking the latest hosted suppressions into account.
@@ -128,15 +128,15 @@ import java.nio.file.Files;
      */
     @SuppressWarnings(&quot;try&quot;)
     private void fetchHostedSuppressions(Settings settings, URL repoUrl, File repoFile) throws UpdateException {
-<span class="fc" id="L131">        try (WriteLock ignored = new WriteLock(settings, true, repoFile.getName() + &quot;.lock&quot;)) {</span>
-<span class="pc bpc" id="L132" title="1 of 2 branches missed.">            if (LOGGER.isDebugEnabled()) {</span>
+<span class="nc" id="L131">        try (WriteLock ignored = new WriteLock(settings, true, repoFile.getName() + &quot;.lock&quot;)) {</span>
+<span class="nc bnc" id="L132" title="All 2 branches missed.">            if (LOGGER.isDebugEnabled()) {</span>
 <span class="nc" id="L133">                LOGGER.debug(&quot;Hosted Suppressions URL: {}&quot;, repoUrl.toExternalForm());</span>
             }
-<span class="fc" id="L135">            Downloader.getInstance().fetchFile(repoUrl, repoFile);</span>
+<span class="nc" id="L135">            Downloader.getInstance().fetchFile(repoUrl, repoFile);</span>
 <span class="nc" id="L136">        } catch (IOException | TooManyRequestsException | ResourceNotFoundException | WriteLockException ex) {</span>
 <span class="nc" id="L137">            throw new UpdateException(&quot;Failed to update the hosted suppressions file&quot;, ex);</span>
-<span class="fc" id="L138">        }</span>
-<span class="fc" id="L139">    }</span>
+<span class="nc" id="L138">        }</span>
+<span class="nc" id="L139">    }</span>
 
     @Override
     @SuppressWarnings(&quot;try&quot;)

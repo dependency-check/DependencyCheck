@@ -42,22 +42,22 @@ public class ExplicitCharsetToStringResponseHandler extends AbstractHttpClientRe
      *
      * @param charset The Charset to be used to transform a downloaded file into a String.
      */
-<span class="nc" id="L45">    public ExplicitCharsetToStringResponseHandler(Charset charset) {</span>
-<span class="nc" id="L46">        this.charset = charset;</span>
-<span class="nc" id="L47">    }</span>
+<span class="fc" id="L45">    public ExplicitCharsetToStringResponseHandler(Charset charset) {</span>
+<span class="fc" id="L46">        this.charset = charset;</span>
+<span class="fc" id="L47">    }</span>
 
     @Override
     public String handleEntity(HttpEntity entity) throws IOException {
         final ContentType contentType;
-<span class="nc" id="L52">        contentType = ContentType.parseLenient(entity.getContentType());</span>
-<span class="nc bnc" id="L53" title="All 2 branches missed.">        if (contentType != null) {</span>
+<span class="fc" id="L52">        contentType = ContentType.parseLenient(entity.getContentType());</span>
+<span class="pc bpc" id="L53" title="1 of 2 branches missed.">        if (contentType != null) {</span>
 <span class="nc" id="L54">            final Charset entityCharset = contentType.getCharset();</span>
 <span class="nc bnc" id="L55" title="All 4 branches missed.">            if (entityCharset != null &amp;&amp; !entityCharset.equals(charset)) {</span>
 <span class="nc" id="L56">                throw new DownloadFailedException(</span>
 <span class="nc" id="L57">                        String.format(&quot;Requested decoding charset %s incompatible with the explicit response charset %s.&quot;, charset, entityCharset));</span>
             }
         }
-<span class="nc" id="L60">        return new String(EntityUtils.toByteArray(entity), charset);</span>
+<span class="fc" id="L60">        return new String(EntityUtils.toByteArray(entity), charset);</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.14.202510111229</span></div></body></html>

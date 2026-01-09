@@ -17,15 +17,12 @@
  */
 package org.owasp.dependencycheck.reporting;
 
-import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.Set;
 import javax.annotation.concurrent.ThreadSafe;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import org.apache.commons.text.StringEscapeUtils;
 import org.owasp.dependencycheck.dependency.naming.Identifier;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * An extremely simple wrapper around various escape utils to perform URL and
@@ -35,13 +32,7 @@ import org.slf4j.LoggerFactory;
  * @author Jeremy Long
  */
 @ThreadSafe
-<span class="fc" id="L38">public class EscapeTool {</span>
-
-    /**
-     * The logger.
-     */
-<span class="fc" id="L43">    private static final Logger LOGGER = LoggerFactory.getLogger(EscapeTool.class);</span>
-
+<span class="fc" id="L35">public class EscapeTool {</span>
     /**
      * URL Encodes the provided text.
      *
@@ -49,16 +40,10 @@ import org.slf4j.LoggerFactory;
      * @return the URL encoded text
      */
     public String url(String text) {
-<span class="fc bfc" id="L52" title="All 4 branches covered.">        if (text == null || text.isEmpty()) {</span>
-<span class="fc" id="L53">            return text;</span>
+<span class="fc bfc" id="L43" title="All 4 branches covered.">        if (text == null || text.isEmpty()) {</span>
+<span class="fc" id="L44">            return text;</span>
         }
-        try {
-<span class="fc" id="L56">            return URLEncoder.encode(text, UTF_8.name());</span>
-<span class="nc" id="L57">        } catch (UnsupportedEncodingException ex) {</span>
-<span class="nc" id="L58">            LOGGER.warn(&quot;UTF-8 is not supported?&quot;);</span>
-<span class="nc" id="L59">            LOGGER.info(&quot;&quot;, ex);</span>
-        }
-<span class="nc" id="L61">        return &quot;&quot;;</span>
+<span class="fc" id="L46">        return URLEncoder.encode(text, UTF_8);</span>
     }
 
     /**
@@ -68,10 +53,14 @@ import org.slf4j.LoggerFactory;
      * @return the HTML encoded text
      */
     public String html(String text) {
-<span class="fc bfc" id="L71" title="All 4 branches covered.">        if (text == null || text.isEmpty()) {</span>
-<span class="fc" id="L72">            return text;</span>
+<span class="fc bfc" id="L56" title="All 4 branches covered.">        if (text == null || text.isEmpty()) {</span>
+<span class="fc" id="L57">            return text;</span>
         }
-<span class="fc" id="L74">        return StringEscapeUtils.escapeHtml4(text);</span>
+<span class="fc" id="L59">        return StringEscapeUtils.escapeHtml4(text);</span>
+    }
+
+    public String html(Object o) {
+<span class="fc bfc" id="L63" title="All 2 branches covered.">        return xml(o == null ? null : o.toString());</span>
     }
 
     /**
@@ -81,10 +70,14 @@ import org.slf4j.LoggerFactory;
      * @return the XML encoded text
      */
     public String xml(String text) {
-<span class="fc bfc" id="L84" title="All 4 branches covered.">        if (text == null || text.isEmpty()) {</span>
-<span class="fc" id="L85">            return text;</span>
+<span class="fc bfc" id="L73" title="All 4 branches covered.">        if (text == null || text.isEmpty()) {</span>
+<span class="fc" id="L74">            return text;</span>
         }
-<span class="fc" id="L87">        return StringEscapeUtils.escapeXml11(text);</span>
+<span class="fc" id="L76">        return StringEscapeUtils.escapeXml11(text);</span>
+    }
+
+    public String xml(Object o) {
+<span class="fc bfc" id="L80" title="All 2 branches covered.">        return xml(o == null ? null : o.toString());</span>
     }
 
     /**
@@ -94,10 +87,14 @@ import org.slf4j.LoggerFactory;
      * @return the JSON encoded text
      */
     public String json(String text) {
-<span class="fc bfc" id="L97" title="All 4 branches covered.">        if (text == null || text.isEmpty()) {</span>
-<span class="fc" id="L98">            return text;</span>
+<span class="fc bfc" id="L90" title="All 4 branches covered.">        if (text == null || text.isEmpty()) {</span>
+<span class="fc" id="L91">            return text;</span>
         }
-<span class="fc" id="L100">        return StringEscapeUtils.escapeJson(text);</span>
+<span class="fc" id="L93">        return StringEscapeUtils.escapeJson(text);</span>
+    }
+
+    public String json(Object o) {
+<span class="fc bfc" id="L97" title="All 2 branches covered.">        return xml(o == null ? null : o.toString());</span>
     }
 
     /**
@@ -107,10 +104,10 @@ import org.slf4j.LoggerFactory;
      * @return the JavaScript encoded text
      */
     public String javascript(String text) {
-<span class="nc bnc" id="L110" title="All 4 branches missed.">        if (text == null || text.isEmpty()) {</span>
-<span class="nc" id="L111">            return text;</span>
+<span class="nc bnc" id="L107" title="All 4 branches missed.">        if (text == null || text.isEmpty()) {</span>
+<span class="nc" id="L108">            return text;</span>
         }
-<span class="nc" id="L113">        return StringEscapeUtils.escapeEcmaScript(text);</span>
+<span class="nc" id="L110">        return StringEscapeUtils.escapeEcmaScript(text);</span>
     }
 
     /**
@@ -122,14 +119,14 @@ import org.slf4j.LoggerFactory;
      * @return the escaped and quoted text
      */
     public String csv(String text) {
-<span class="fc bfc" id="L125" title="All 4 branches covered.">        if (text == null || text.isEmpty()) {</span>
-<span class="fc" id="L126">            return &quot;\&quot;\&quot;&quot;;</span>
+<span class="fc bfc" id="L122" title="All 4 branches covered.">        if (text == null || text.isEmpty()) {</span>
+<span class="fc" id="L123">            return &quot;\&quot;\&quot;&quot;;</span>
         }
-<span class="fc" id="L128">        final String str = text.trim().replace(&quot;\n&quot;, &quot; &quot;);</span>
-<span class="pc bpc" id="L129" title="1 of 2 branches missed.">        if (str.trim().length() == 0) {</span>
-<span class="nc" id="L130">            return &quot;\&quot;\&quot;&quot;;</span>
+<span class="fc" id="L125">        final String str = text.trim().replace(&quot;\n&quot;, &quot; &quot;);</span>
+<span class="pc bpc" id="L126" title="1 of 2 branches missed.">        if (str.isBlank()) {</span>
+<span class="nc" id="L127">            return &quot;\&quot;\&quot;&quot;;</span>
         }
-<span class="fc" id="L132">        return StringEscapeUtils.escapeCsv(str);</span>
+<span class="fc" id="L129">        return StringEscapeUtils.escapeCsv(str);</span>
     }
 
     /**
@@ -140,23 +137,23 @@ import org.slf4j.LoggerFactory;
      * @return the formatted list of none CPE identifiers
      */
     public String csvIdentifiers(Set&lt;Identifier&gt; ids) {
-<span class="fc bfc" id="L143" title="All 4 branches covered.">        if (ids == null || ids.isEmpty()) {</span>
-<span class="fc" id="L144">            return &quot;\&quot;\&quot;&quot;;</span>
+<span class="fc bfc" id="L140" title="All 4 branches covered.">        if (ids == null || ids.isEmpty()) {</span>
+<span class="fc" id="L141">            return &quot;\&quot;\&quot;&quot;;</span>
         }
-<span class="fc" id="L146">        boolean addComma = false;</span>
-<span class="fc" id="L147">        final StringBuilder sb = new StringBuilder();</span>
-<span class="fc bfc" id="L148" title="All 2 branches covered.">        for (Identifier id : ids) {</span>
-<span class="fc bfc" id="L149" title="All 2 branches covered.">            if (addComma) {</span>
-<span class="fc" id="L150">                sb.append(&quot;, &quot;);</span>
+<span class="fc" id="L143">        boolean addComma = false;</span>
+<span class="fc" id="L144">        final StringBuilder sb = new StringBuilder();</span>
+<span class="fc bfc" id="L145" title="All 2 branches covered.">        for (Identifier id : ids) {</span>
+<span class="fc bfc" id="L146" title="All 2 branches covered.">            if (addComma) {</span>
+<span class="fc" id="L147">                sb.append(&quot;, &quot;);</span>
             } else {
-<span class="fc" id="L152">                addComma = true;</span>
+<span class="fc" id="L149">                addComma = true;</span>
             }
-<span class="fc" id="L154">            sb.append(id.getValue());</span>
-<span class="fc" id="L155">        }</span>
-<span class="pc bpc" id="L156" title="1 of 2 branches missed.">        if (sb.length() == 0) {</span>
-<span class="nc" id="L157">            return &quot;\&quot;\&quot;&quot;;</span>
+<span class="fc" id="L151">            sb.append(id.getValue());</span>
+<span class="fc" id="L152">        }</span>
+<span class="pc bpc" id="L153" title="1 of 2 branches missed.">        if (sb.length() == 0) {</span>
+<span class="nc" id="L154">            return &quot;\&quot;\&quot;&quot;;</span>
         }
-<span class="fc" id="L159">        return StringEscapeUtils.escapeCsv(sb.toString());</span>
+<span class="fc" id="L156">        return StringEscapeUtils.escapeCsv(sb.toString());</span>
     }
 
     /**
@@ -167,23 +164,23 @@ import org.slf4j.LoggerFactory;
      * @return the formatted list of confidence
      */
     public String csvCpeConfidence(Set&lt;Identifier&gt; ids) {
-<span class="fc bfc" id="L170" title="All 4 branches covered.">        if (ids == null || ids.isEmpty()) {</span>
-<span class="fc" id="L171">            return &quot;\&quot;\&quot;&quot;;</span>
+<span class="fc bfc" id="L167" title="All 4 branches covered.">        if (ids == null || ids.isEmpty()) {</span>
+<span class="fc" id="L168">            return &quot;\&quot;\&quot;&quot;;</span>
         }
-<span class="fc" id="L173">        boolean addComma = false;</span>
-<span class="fc" id="L174">        final StringBuilder sb = new StringBuilder();</span>
-<span class="fc bfc" id="L175" title="All 2 branches covered.">        for (Identifier id : ids) {</span>
-<span class="fc bfc" id="L176" title="All 2 branches covered.">            if (addComma) {</span>
-<span class="fc" id="L177">                sb.append(&quot;, &quot;);</span>
+<span class="fc" id="L170">        boolean addComma = false;</span>
+<span class="fc" id="L171">        final StringBuilder sb = new StringBuilder();</span>
+<span class="fc bfc" id="L172" title="All 2 branches covered.">        for (Identifier id : ids) {</span>
+<span class="fc bfc" id="L173" title="All 2 branches covered.">            if (addComma) {</span>
+<span class="fc" id="L174">                sb.append(&quot;, &quot;);</span>
             } else {
-<span class="fc" id="L179">                addComma = true;</span>
+<span class="fc" id="L176">                addComma = true;</span>
             }
-<span class="fc" id="L181">            sb.append(id.getConfidence());</span>
-<span class="fc" id="L182">        }</span>
-<span class="pc bpc" id="L183" title="1 of 2 branches missed.">        if (sb.length() == 0) {</span>
-<span class="nc" id="L184">            return &quot;\&quot;\&quot;&quot;;</span>
+<span class="fc" id="L178">            sb.append(id.getConfidence());</span>
+<span class="fc" id="L179">        }</span>
+<span class="pc bpc" id="L180" title="1 of 2 branches missed.">        if (sb.length() == 0) {</span>
+<span class="nc" id="L181">            return &quot;\&quot;\&quot;&quot;;</span>
         }
-<span class="fc" id="L186">        return StringEscapeUtils.escapeCsv(sb.toString());</span>
+<span class="fc" id="L183">        return StringEscapeUtils.escapeCsv(sb.toString());</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.14.202510111229</span></div></body></html>

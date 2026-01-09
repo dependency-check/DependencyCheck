@@ -63,7 +63,7 @@ public class AntLoggerAdapter extends MarkerIgnoringBase {
     public boolean isTraceEnabled() {
         // Might be a more efficient way to do this, but Ant doesn't enable or disable
         // various levels globally - it just fires things at registered Listeners.
-<span class="nc" id="L66">        return true;</span>
+<span class="fc" id="L66">        return true;</span>
     }
 
     @Override
@@ -134,9 +134,9 @@ public class AntLoggerAdapter extends MarkerIgnoringBase {
 
     @Override
     public void debug(String format, Object... arguments) {
-<span class="pc bpc" id="L137" title="1 of 2 branches missed.">        if (task != null) {</span>
-<span class="nc" id="L138">            final FormattingTuple tp = MessageFormatter.format(format, arguments);</span>
-<span class="nc" id="L139">            task.log(tp.getMessage(), Project.MSG_DEBUG);</span>
+<span class="fc bfc" id="L137" title="All 2 branches covered.">        if (task != null) {</span>
+<span class="fc" id="L138">            final FormattingTuple tp = MessageFormatter.format(format, arguments);</span>
+<span class="fc" id="L139">            task.log(tp.getMessage(), Project.MSG_DEBUG);</span>
         }
 <span class="fc" id="L141">    }</span>
 
@@ -197,10 +197,10 @@ public class AntLoggerAdapter extends MarkerIgnoringBase {
 
     @Override
     public void warn(String msg) {
-<span class="pc bpc" id="L200" title="1 of 2 branches missed.">        if (task != null) {</span>
-<span class="fc" id="L201">            task.log(msg, Project.MSG_WARN);</span>
+<span class="nc bnc" id="L200" title="All 2 branches missed.">        if (task != null) {</span>
+<span class="nc" id="L201">            task.log(msg, Project.MSG_WARN);</span>
         }
-<span class="fc" id="L203">    }</span>
+<span class="nc" id="L203">    }</span>
 
     @Override
     public void warn(String format, Object arg) {

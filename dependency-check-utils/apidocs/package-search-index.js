@@ -1,1 +1,1 @@
-packageSearchIndex = [{"l":"All Packages","url":"allpackages-index.html"},{"l":"org.owasp.dependencycheck.utils"},{"l":"org.owasp.dependencycheck.utils.processing"},{"l":"org.owasp.dependencycheck.utils.search"}]
+packageSearchIndex = [{"l":"All Packages","url":"allpackages-index.html"},{"l":"org.owasp.dependencycheck.utils"},{"l":"org.owasp.dependencycheck.utils.processing"},{"l":"org.owasp.dependencycheck.utils.scarf"},{"l":"org.owasp.dependencycheck.utils.search"}]

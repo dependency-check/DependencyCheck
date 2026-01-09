@@ -196,7 +196,7 @@ import java.util.Objects;
                     try {
 <span class="fc" id="L197">                        ((AbstractNpmAnalyzer) a).prepareFileTypeAnalyzer(engine);</span>
 <span class="nc" id="L198">                    } catch (InitializationException ex) {</span>
-<span class="nc" id="L199">                        String message = &quot;Error initializing the &quot; + a.getName();</span>
+<span class="nc" id="L199">                        final String message = &quot;Error initializing the &quot; + a.getName();</span>
 <span class="nc" id="L200">                        LOGGER.debug(message, ex);</span>
 <span class="fc" id="L201">                    }</span>
                 }

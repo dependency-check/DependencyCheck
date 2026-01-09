@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang=""><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>TelemetryCollector.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Dependency-Check Utils</a> &gt; <a href="index.source.html" class="el_package">org.owasp.dependencycheck.utils.scarf</a> &gt; <span class="el_source">TelemetryCollector.java</span></div><h1>TelemetryCollector.java</h1><pre class="source lang-java linenums">/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * &quot;License&quot;); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * &quot;AS IS&quot; BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+package org.owasp.dependencycheck.utils.scarf;
+
+import org.owasp.dependencycheck.utils.Downloader;
+import org.owasp.dependencycheck.utils.Settings;
+
+import java.net.URL;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.concurrent.atomic.AtomicBoolean;
+
+
+/**
+ * A utility class to collect and send telemetry data to scarf.
+ * &lt;p&gt;
+ * Originally from https://github.com/apache/sedona/blob/4e4791d08ddafcf0b46c3d2c092f750eb5dcf2ef/common/src/main/java/org/apache/sedona/common/utils/TelemetryCollector.java#L26
+ */
+<span class="nc" id="L35">public class TelemetryCollector {</span>
+
+    private static final String BASE_URL = &quot;https://dependency-check.gateway.scarf.sh/scan/&quot;;
+<span class="fc" id="L38">    private static final AtomicBoolean telemetrySubmitted = new AtomicBoolean(false);</span>
+
+    public static void send(Settings settings) {
+        try {
+<span class="nc" id="L42">            String tool = settings.getString(Settings.KEYS.APPLICATION_NAME, &quot;dependency-check&quot;);</span>
+<span class="nc" id="L43">            String version = settings.getString(Settings.KEYS.APPLICATION_VERSION, &quot;Unknown&quot;);</span>
+<span class="nc" id="L44">            send(settings, tool, version);</span>
+<span class="nc" id="L45">        } catch (Exception e) {</span>
+            // Silent catch block
+<span class="nc" id="L47">        }</span>
+<span class="nc" id="L48">    }</span>
+    public static void send(Settings settings, String tool, String version) {
+<span class="pc bpc" id="L50" title="1 of 2 branches missed.">        if (!telemetrySubmitted.compareAndSet(false, true)) {</span>
+<span class="nc" id="L51">            return;</span>
+        }
+        // Check for user opt-out
+<span class="pc bpc" id="L54" title="1 of 2 branches missed.">        if (System.getenv(&quot;SCARF_NO_ANALYTICS&quot;) != null</span>
+<span class="pc bnc" id="L55" title="All 2 branches missed.">                &amp;&amp; System.getenv(&quot;SCARF_NO_ANALYTICS&quot;).equalsIgnoreCase(&quot;true&quot;)</span>
+<span class="pc bpc" id="L56" title="1 of 2 branches missed.">                || System.getenv(&quot;DO_NOT_TRACK&quot;) != null</span>
+<span class="pc bnc" id="L57" title="All 2 branches missed.">                &amp;&amp; System.getenv(&quot;DO_NOT_TRACK&quot;).equalsIgnoreCase(&quot;true&quot;)</span>
+<span class="pc bpc" id="L58" title="1 of 2 branches missed.">                || System.getProperty(&quot;SCARF_NO_ANALYTICS&quot;) != null</span>
+<span class="pc bnc" id="L59" title="All 2 branches missed.">                &amp;&amp; System.getProperty(&quot;SCARF_NO_ANALYTICS&quot;).equalsIgnoreCase(&quot;true&quot;)</span>
+<span class="pc bpc" id="L60" title="1 of 2 branches missed.">                || System.getProperty(&quot;DO_NOT_TRACK&quot;) != null</span>
+<span class="nc bnc" id="L61" title="All 2 branches missed.">                &amp;&amp; System.getProperty(&quot;DO_NOT_TRACK&quot;).equalsIgnoreCase(&quot;true&quot;)) {</span>
+<span class="nc" id="L62">            return;</span>
+        }
+        try {
+<span class="fc" id="L65">            URL telemetryUrl = new URL(BASE_URL</span>
+<span class="fc" id="L66">                    + URLEncoder.encode(tool, StandardCharsets.UTF_8)</span>
+                    + &quot;/&quot;
+<span class="fc" id="L68">                    + URLEncoder.encode(version, StandardCharsets.UTF_8));</span>
+<span class="fc" id="L69">            Thread telemetryThread = createThread(settings, telemetryUrl);</span>
+<span class="fc" id="L70">            telemetryThread.start();</span>
+<span class="nc" id="L71">        } catch (Exception e) {</span>
+            // Silent catch block
+<span class="fc" id="L73">        }</span>
+<span class="fc" id="L74">    }</span>
+
+    private static Thread createThread(Settings settings, URL url) {
+<span class="fc" id="L77">        Thread telemetryThread =</span>
+<span class="fc" id="L78">                new Thread(&quot;telemetry-thread&quot;) {</span>
+                    @Override
+                    public void run() {
+                        try {
+<span class="fc" id="L82">                            Downloader downloader = Downloader.getInstance();</span>
+<span class="fc" id="L83">                            downloader.configure(settings);</span>
+<span class="fc" id="L84">                            downloader.fetchContent(url, StandardCharsets.UTF_8);</span>
+<span class="nc" id="L85">                        } catch (Exception e) {</span>
+                            // Silent catch block
+<span class="fc" id="L87">                        }</span>
+<span class="fc" id="L88">                    }</span>
+                };
+<span class="fc" id="L90">        telemetryThread.setDaemon(true);</span>
+<span class="fc" id="L91">        return telemetryThread;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.14.202510111229</span></div></body></html>

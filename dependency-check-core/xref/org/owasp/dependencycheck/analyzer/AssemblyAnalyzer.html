@@ -381,7 +381,7 @@
 <a class="jxr_linenumber" name="L373" href="#L373">373</a>                 <strong class="jxr_keyword">if</strong> (p.exitValue() != 1 || !StringUtils.isBlank(error)) {
 <a class="jxr_linenumber" name="L374" href="#L374">374</a>                     LOGGER.warn(<span class="jxr_string">"An error occurred with the .NET AssemblyAnalyzer, please see the log for more details.\n"</span>
 <a class="jxr_linenumber" name="L375" href="#L375">375</a>                     + <span class="jxr_string">"dependency-check requires dotnet 8.0 core runtime or sdk to be installed to analyze assemblies."</span>);
-<a class="jxr_linenumber" name="L376" href="#L376">376</a>                     LOGGER.debug(<span class="jxr_string">"GrokAssembly.dll is not working properly"</span>);
+<a class="jxr_linenumber" name="L376" href="#L376">376</a>                     LOGGER.debug(<span class="jxr_string">"GrokAssembly.dll is not working properly: {}"</span>, error);
 <a class="jxr_linenumber" name="L377" href="#L377">377</a>                     grokAssembly = <strong class="jxr_keyword">null</strong>;
 <a class="jxr_linenumber" name="L378" href="#L378">378</a>                     setEnabled(false);
 <a class="jxr_linenumber" name="L379" href="#L379">379</a>                     <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a href="../../../../org/owasp/dependencycheck/exception/InitializationException.html">InitializationException</a>(<span class="jxr_string">"Could not execute .NET AssemblyAnalyzer, is the dotnet 8.0 runtime or sdk installed?"</span>);
@@ -549,6 +549,6 @@
 <a class="jxr_linenumber" name="L541" href="#L541">541</a> }
 </pre>
 <hr/>
-<div id="footer">Copyright &#169; 2012&#x2013;2025 <a href="https://www.owasp.org">OWASP</a>. All rights reserved.</div>
+<div id="footer">Copyright &#169; 2012&#x2013;2026 <a href="https://www.owasp.org">OWASP</a>. All rights reserved.</div>
 </body>
 </html>
