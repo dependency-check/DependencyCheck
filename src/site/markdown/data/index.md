@@ -9,23 +9,27 @@ Dependency-Check may contact the following external hosts depending on the enabl
 
 | Purpose | Hostname |
 |--------|----------|
-| NVD API (CVE data) | nvd.nist.gov |
-| NVD Data Feeds | services.nvd.nist.gov |
+| NVD API (CVE data) | services.nvd.nist.gov |
 | CISA KEV catalog | www.cisa.gov |
 | Hosted suppressions file | dependency-check.github.io |
 | Maven Central metadata | repo.maven.apache.org |
+| Maven Central search | search.maven.org |
 | Sonatype OSS Index API | ossindex.sonatype.org |
 | RetireJS definitions | raw.githubusercontent.com |
-| RetireJS repository | github.com |
 | Package metadata (NPM) | registry.npmjs.org |
-| Ruby advisories | rubysec.com |
-| Python advisories | pypi.org |
-| NuGet metadata | api.nuget.org |
-| Go vulnerability DB | vuln.go.dev |
+| NPM audit advisories   | registry.npmjs.org |
 | Scarf telemetry (optional) | api.scarf.sh |
 
-Note: Not all hosts are contacted in every run. Access depends on configuration, enabled analyzers, and plugin type.
-Organizations with restricted network access should allowlist the required hosts or configure local mirrors where supported.
+### Methodology
+
+The hostnames listed above were identified by reviewing the Dependency-Check source code (default endpoints and analyzers),
+configuration properties, and existing official documentation.
+
+Some entries (such as NPM audit data) are accessed indirectly via ecosystem-specific analyzers or external CLI tools rather
+than by the Dependency-Check core itself.
+
+To avoid documenting incorrect or misleading network dependencies, only hosts that could be reasonably verified through
+code inspection, configuration defaults, or authoritative project documentation are included.
 
 ## The NVD Database
 
