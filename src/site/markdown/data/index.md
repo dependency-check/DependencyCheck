@@ -3,6 +3,30 @@
 Dependency-check, by default, requires access to several externally
 hosted resources.
 
+## External Data Sources and Hostnames
+
+Dependency-Check may contact the following external hosts depending on the enabled analyzers and configuration:
+
+| Purpose | Hostname |
+|--------|----------|
+| NVD API (CVE data) | nvd.nist.gov |
+| NVD Data Feeds | services.nvd.nist.gov |
+| CISA KEV catalog | www.cisa.gov |
+| Hosted suppressions file | dependency-check.github.io |
+| Maven Central metadata | repo.maven.apache.org |
+| Sonatype OSS Index API | ossindex.sonatype.org |
+| RetireJS definitions | raw.githubusercontent.com |
+| RetireJS repository | github.com |
+| Package metadata (NPM) | registry.npmjs.org |
+| Ruby advisories | rubysec.com |
+| Python advisories | pypi.org |
+| NuGet metadata | api.nuget.org |
+| Go vulnerability DB | vuln.go.dev |
+| Scarf telemetry (optional) | api.scarf.sh |
+
+Note: Not all hosts are contacted in every run. Access depends on configuration, enabled analyzers, and plugin type.
+Organizations with restricted network access should allowlist the required hosts or configure local mirrors where supported.
+
 ## The NVD Database
 
 OWASP dependency-check maintains a local copy of the NVD API's CVE data hosted by NIST. By default,
