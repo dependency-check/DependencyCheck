@@ -131,7 +131,7 @@ class SuppressionParserTest extends BaseTest {
         assertEquals(1, filteredSuppressions.size());
         SuppressionRule rule = filteredSuppressions.get(0);
 
-        Instant expectedTime = LocalDate.of(2026, 1, 1)
+        Instant expectedTime = LocalDate.of(2046, 1, 1)
                 .atStartOfDay(ZoneOffset.UTC)
                 .toInstant();
         assertEquals(expectedTime, rule.getUntil().toInstant());

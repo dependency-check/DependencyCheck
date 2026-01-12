@@ -10,8 +10,9 @@ import java.util.jar.JarFile;
  * before the main application starts. This allows additional plugins to be available at runtime
  * by appending their JAR files to the system class loader search path; while allowing use of an
  * executable jar with deterministic classpath ordering.
- * <p/>
+ * <p>
  * To use, specify this class as a Java agent and provide the plugins directory as the -javaagent argument
+ * </p>
  */
 public class PluginLoader {
     /**
