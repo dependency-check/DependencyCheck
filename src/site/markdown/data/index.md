@@ -7,23 +7,23 @@ hosted resources.
 
 Dependency-Check may contact the following external hosts depending on the enabled analyzers and configuration:
 
-| Purpose | Hostname |
-|--------|----------|
-| NVD API (CVE data) | services.nvd.nist.gov |
-| CISA KEV catalog | www.cisa.gov |
-| Hosted suppressions file | dependency-check.github.io |
-| Maven Central metadata | repo.maven.apache.org |
-| Maven Central search | search.maven.org |
-| Sonatype OSS Index API | ossindex.sonatype.org |
-| RetireJS definitions | raw.githubusercontent.com |
-| Package metadata (NPM) | registry.npmjs.org |
-| NPM audit advisories   | registry.npmjs.org |
-| Scarf telemetry (optional) | api.scarf.sh |
+| Purpose                              | Hostname                               | Relevant Analyzers                 | Primary Ecosystem | Configurable / Proxyable? | Mirrorable? |
+|--------------------------------------|----------------------------------------|------------------------------------|-------------------|---------------------------|-------------|
+| NVD API (CVE & CPE data)             | `services.nvd.nist.gov`                | All                                | All               | ✅                         | ✅           |
+| CISA Known Exploited Vulnerabilities | `www.cisa.gov`                         | Known Exploited Vulnerabilities    | All               | ✅                         | ✅           |
+| ODC Hosted suppressions file         | `dependency-check.github.io`           | Hosted Suppressions                | All               | ✅                         | ✅           |
+| Sonatype OSS Index API               | `ossindex.sonatype.org`                | OSS Index                          | All               | ✅                         | ❌           |
+| RetireJS definitions                 | `raw.githubusercontent.com`            | RetireJS                           | Javascript        | ✅                         | ✅           |
+| NPM audit advisories                 | `registry.npmjs.org`                   | Node Audit, Yarn Audit, PNPM Audit | Javascript        | ✅                         | ❌           |
+| Maven Central search                 | `search.maven.org` / `repo1.maven.org` | Central                            | Java / JVM        | ✅                         | ❌           |
+| Ruby Security advisories             | `github.com`                           | Ruby Bundle Audit                  | Ruby              | *️⃣                       | *️⃣         |
+| Elixir Security advisories           | `github.com`                           | Elixir Mix Audit                   | Elixir            | *️⃣                       | *️⃣         |
+| Scarf telemetry (optional)           | `api.scarf.sh`                         | N/A                                | All               | ❌                         | ❌           |
 
-### Methodology
+#### Methodology
 
-The hostnames listed above were identified by reviewing the Dependency-Check source code (default endpoints and analyzers),
-configuration properties, and existing official documentation.
+**Configurable / Proxyable** - can be configured directly within ODC to use an alternate URL, e.g some kind of caching/forwarding proxy (*️⃣ - may be possible via third-party tool configuration)
+**Mirrorable** - data source can be mirrored somewhere locally to completely avoid direct access (*️⃣ - requires alternate data source/analyzer)
 
 Some entries (such as NPM audit data) are accessed indirectly via ecosystem-specific analyzers or external CLI tools rather
 than by the Dependency-Check core itself.
