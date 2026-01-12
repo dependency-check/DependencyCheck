@@ -469,7 +469,14 @@
                       confidence="HIGHEST"/>
         </add>
     </hint>
-  
+    <hint>
+        <given>
+            <evidence type="product" source="pypi" name="name" value="zabbix-utils" confidence="HIGHEST" />
+        </given>
+        <remove>
+            <evidence type="product" source="pypi" name="name" value="zabbix" confidence="HIGHEST" />
+        </remove>
+    </hint>
 
 </hints>
 
