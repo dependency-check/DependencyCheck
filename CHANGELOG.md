@@ -1,5 +1,28 @@
 # Change Log
 
+## [Version 12.2.0](https://github.com/dependency-check/DependencyCheck/releases/tag/v12.2.0) (2026-01-09)
+
+- feat: package and utilize generated suppression file ([#8116](https://github.com/dependency-check/DependencyCheck/pull/8116))
+- feat: override pnpm audit registry parameter ([#8158](https://github.com/dependency-check/DependencyCheck/pull/8158))
+- feat: support multiple cvssBelow thresholds per version ([#2563](https://github.com/dependency-check/DependencyCheck/pull/2563)) ([#8024](https://github.com/dependency-check/DependencyCheck/pull/8024))
+- feat: usage telemetry via scarf ([#8066](https://github.com/dependency-check/DependencyCheck/pull/8066))
+- feat: add new suppression xsd allowing grouping of suppressions ([#7957](https://github.com/dependency-check/DependencyCheck/pull/7957))
+- fix(ant): resolve relative paths against basedir ([#8202](https://github.com/dependency-check/DependencyCheck/pull/8202))
+- fix: add hint for Elastic APM Java agent CPE mapping ([#8200](https://github.com/dependency-check/DependencyCheck/pull/8200))
+- fix: Allow NVD data feed metadata downloads to fail on 1st Jan while logging correct errors ([#8205](https://github.com/dependency-check/DependencyCheck/pull/8205))
+- fix(ant): resolve paths relative to basedir for suppression and output
+- fix: correct XML/JSON report CVSS field & HTML report URL mappings ([#8156](https://github.com/dependency-check/DependencyCheck/pull/8156))
+- fix: log GrokAssembly output when dotnet invocation fails ([#8141](https://github.com/dependency-check/DependencyCheck/pull/8141))
+- fix: correct reliability of Central etc (JCS cache) analyzers on Java 25/Docker by making CLI classpath deterministic  ([#8117](https://github.com/dependency-check/DependencyCheck/pull/8117))
+- docs: Update & correct README ([#8166](https://github.com/dependency-check/DependencyCheck/pull/8166))
+- docs: update suppression schema version ([#8136](https://github.com/dependency-check/DependencyCheck/pull/8136))
+- docs: fix typos in some files ([#8135](https://github.com/dependency-check/DependencyCheck/pull/8135))
+- chore: remove duplicate suppression rules from base that are in the generated branch ([#8138](https://github.com/dependency-check/DependencyCheck/pull/8138))
+- chore: remove suppression rules that were deleted from the generatedSuppression branch ([#8119](https://github.com/dependency-check/DependencyCheck/pull/8119))
+- build: transition dependency to `org.eclipse.parsson` groupId ([#8128](https://github.com/dependency-check/DependencyCheck/pull/8128))
+
+- See the full listing of [changes](https://github.com/dependency-check/DependencyCheck/milestone/103?closed=1)
+
 ## [Version 12.1.9](https://github.com/dependency-check/DependencyCheck/releases/tag/v12.1.9) (2025-11-11)
 
 - fix: correct bundle audit gem in Dockerfile ([#8121](https://github.com/dependency-check/DependencyCheck/pull/8121))
