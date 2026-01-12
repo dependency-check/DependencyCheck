@@ -2490,4 +2490,11 @@ only pkg:maven/org.clojure:clojure@.* is the CPE cpe:/a:clojure:clojure
    <packageUrl regex="true">^pkg:maven/org\.springframework\.boot/spring-boot-data-mongodb@.*$</packageUrl>
    <cpe>cpe:/a:mongodb:mongodb</cpe>
 </suppress>
+<suppress base="true">
+   <notes><![CDATA[
+   FP per issue #8223
+   ]]></notes>
+   <packageUrl regex="true">^pkg:maven/org\.apache\.hadoop\.thirdparty/hadoop-shaded-protobuf_3_25@.*$</packageUrl>
+   <cpe>cpe:/a:apache:hadoop</cpe>
+</suppress>
 </suppressions>
