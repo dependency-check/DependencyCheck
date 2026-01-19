@@ -129,9 +129,31 @@ private final Set<String> usedVulnerabilityNames = new HashSet<>();
      *
      * @return the value of matched
      */
-    public boolean isMatched() {
-        return matched;
+   public boolean isMatched() {
+    return matched;
+}
+public void markCveUsed(String cve) {
+    usedCves.add(cve);
+}
+public void markVulnerabilityNameUsed(String name) {
+    usedVulnerabilityNames.add(name);
+}
+public boolean hasUnusedSubEntries() {
+    for (String c : this.cve) {
+        if (!usedCves.contains(c)) {
+            return true;
+        }
     }
+
+    for (PropertyType pt : this.vulnerabilityNames) {
+        String name = pt.getValue();
+        if (!usedVulnerabilityNames.contains(name)) {
+            return true;
+        }
+    }
+
+    return false;
+}
 
     /**
      * Set the value of matched.
@@ -623,12 +645,13 @@ private final Set<String> usedVulnerabilityNames = new HashSet<>();
             for (Vulnerability v : dependency.getVulnerabilities()) {
                 boolean remove = false;
                 for (String entry : this.cve) {
-                    if (entry.equalsIgnoreCase(v.getName())) {
-                        removeVulns.add(v);
-                        remove = true;
-                        break;
-                    }
-                }
+    if (entry.equalsIgnoreCase(v.getName())) {
+        markCveUsed(entry);   // <-- ADD THIS LINE
+        removeVulns.add(v);
+        remove = true;
+        break;
+    }
+}
                 if (!remove && this.cwe != null && !v.getCwes().isEmpty()) {
                     for (String entry : this.cwe) {
                         final String toMatch = String.format("CWE-%s", entry);
