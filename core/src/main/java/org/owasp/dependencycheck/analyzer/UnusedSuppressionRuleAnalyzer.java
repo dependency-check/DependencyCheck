@@ -88,8 +88,9 @@ public class UnusedSuppressionRuleAnalyzer extends AbstractAnalyzer {
             @SuppressWarnings("unchecked")
             final List<SuppressionRule> rules = (List<SuppressionRule>) engine.getObject(SUPPRESSION_OBJECT_KEY);
             rules.forEach((rule) -> {
-                if (!rule.isMatched() && !rule.isBase()) {
-                    final String message = String.format("Suppression Rule had zero matches: %s", rule);
+                if ((!rule.isMatched() || rule.hasUnusedSubEntries()) && !rule.isBase()) {
+                    final String message = String.format(
+        "Suppression Rule had unused entries (or zero matches): %s", rule);
                     if (failsForUnusedSuppressionRule()) {
                         LOGGER.error(message);
                     } else {
