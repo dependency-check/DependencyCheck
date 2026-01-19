@@ -116,9 +116,13 @@ public class SuppressionRule {
     private Calendar until;
 
     /**
-     * A flag whether or not the rule matched a dependency & CPE.
-     */
-    private boolean matched = false;
+ * A flag whether or not the rule matched a dependency & CPE.
+ */
+private boolean matched = false;
+
+// Track used sub-entries
+private final Set<String> usedCves = new HashSet<>();
+private final Set<String> usedVulnerabilityNames = new HashSet<>();
 
     /**
      * Get the value of matched.
