@@ -55,34 +55,34 @@ class UnusedSuppressionRuleAnalyzerTest extends BaseTest {
 	}
 
     @Test
-    void testCheckUnusedRules() throws Exception {
-		// flag unset
-		boolean shouldFail = false;
-		Dependency dependency10 = getDependency("1.0");
-		Dependency dependency11 = getDependency("1.1");
+void testCheckUnusedRules() throws Exception {
+    // flag unset
+    boolean shouldFail = false;
+    Dependency dependency10 = getDependency("1.0");
+    Dependency dependency11 = getDependency("1.1");
 
-		// a run without any suppression rule ➫ no unused suppression
-		checkUnusedRules(shouldFail, 0, false, false, dependency10);
+    // a run without any suppression rule → no unused suppression
+    checkUnusedRules(shouldFail, 0, false, false, dependency10);
 
-		// a run without no matching rule ➫ one unused suppression
-		checkUnusedRules(shouldFail, 1, true, false, dependency10, dependency11);
+    // a run without matching rule → one unused suppression
+    checkUnusedRules(shouldFail, 1, true, false, dependency10, dependency11);
 
-		// a run with the vulnerable package ➫ no unused suppression
-		checkUnusedRules(shouldFail, 0, true, true, dependency10, dependency11);
+    // a run with the vulnerable package → one unused suppression (sub-entry)
+    checkUnusedRules(shouldFail, 1, true, true, dependency10, dependency11);
 
+    // set flag
+    shouldFail = true;
 
-		// set flag
-		shouldFail = true;
+    // a run without any suppression rule → no unused suppression
+    checkUnusedRules(shouldFail, 0, false, false, dependency10);
 
-		// a run without any suppression rule ➫ no unused suppression
-		checkUnusedRules(shouldFail, 0, false, false, dependency10);
+    // a run without matching rule → one unused suppression
+    checkUnusedRules(shouldFail, 1, true, false, dependency10, dependency11);
 
-		// a run without no matching rule ➫ one unused suppression
-		checkUnusedRules(shouldFail, 1, true, false, dependency10, dependency11);
+    // a run with the vulnerable package → one unused suppression (sub-entry)
+    checkUnusedRules(shouldFail, 1, true, true, dependency10, dependency11);
+}
 
-		// a run with the vulnerable package ➫ no unused suppression
-		checkUnusedRules(shouldFail, 0, true, true, dependency10, dependency11);
-    }
 
 	private void checkUnusedRules(boolean shouldFail, int expectedCount,
 		boolean withSuppressionRules, boolean matching,
