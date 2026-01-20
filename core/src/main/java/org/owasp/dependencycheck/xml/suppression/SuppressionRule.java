@@ -665,6 +665,7 @@ public boolean hasUnusedSubEntries() {
                 if (!remove && v.getName() != null) {
                     for (PropertyType entry : this.vulnerabilityNames) {
                         if (entry.matches(v.getName())) {
+                             markVulnerabilityNameUsed(entry.getValue());
                             remove = true;
                             removeVulns.add(v);
                             break;
