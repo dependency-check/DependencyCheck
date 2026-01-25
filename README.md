@@ -14,7 +14,7 @@ This product uses the NVD API but is not endorsed or certified by the NVD.
 
 ## Mandatory Upgrade to 12.1.0+
 
-Due to NVD API compatiiblity changes, an upgrade is mandatory. See [#7463](https://github.com/dependency-check/DependencyCheck/issues/7463) for more information.
+Due to NVD API compatibility changes, an upgrade is mandatory. See [#7463](https://github.com/dependency-check/DependencyCheck/issues/7463) for more information.
 
 ## Breaking Changes in 11.0.0
 
