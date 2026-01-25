@@ -115,45 +115,71 @@ public class SuppressionRule {
      */
     private Calendar until;
 
-    /**
- * A flag whether or not the rule matched a dependency & CPE.
- */
-private boolean matched = false;
-
-// Track used sub-entries
-private final Set<String> usedCves = new HashSet<>();
-private final Set<String> usedVulnerabilityNames = new HashSet<>();
-
-    /**
-     * Get the value of matched.
-     *
-     * @return the value of matched
+        /**
+     * A flag whether or not the rule matched a dependency & CPE.
      */
-   public boolean isMatched() {
-    return matched;
-}
-public void markCveUsed(String cve) {
-    usedCves.add(cve);
-}
-public void markVulnerabilityNameUsed(String name) {
-    usedVulnerabilityNames.add(name);
-}
-public boolean hasUnusedSubEntries() {
-    for (String c : this.cve) {
-        if (!usedCves.contains(c)) {
-            return true;
-        }
+    private boolean matched = false;
+
+    /**
+     * Track used CVE sub-entries.
+     */
+    private final Set<String> usedCves = new HashSet<>();
+
+    /**
+     * Track used vulnerability-name sub-entries.
+     */
+    private final Set<String> usedVulnerabilityNames = new HashSet<>();
+        /**
+     * Returns whether this suppression rule matched any dependency.
+     *
+     * @return true if the rule matched at least one dependency
+     */
+    public boolean isMatched() {
+        return matched;
+    }
+     /*
+     * Marks the given CVE identifier as used by this suppression rule.
+     *
+     * @param cve the CVE identifier that has been matched
+     */
+    public void markCveUsed(String cve) {
+        usedCves.add(cve);
     }
 
-    for (PropertyType pt : this.vulnerabilityNames) {
-        String name = pt.getValue();
-        if (!usedVulnerabilityNames.contains(name)) {
-            return true;
-        }
+    /**
+     * Marks the given vulnerability name as used by this suppression rule.
+     *
+     * @param name the vulnerability name that has been matched
+     */
+    public void markVulnerabilityNameUsed(String name) {
+        usedVulnerabilityNames.add(name);
     }
 
-    return false;
-}
+    /**
+     * Determines whether this rule contains unused CVE or vulnerability-name entries.
+     *
+     * @return true if at least one entry is unused
+     */
+    public boolean hasUnusedSubEntries() {
+        if (!matched) {
+            return false;
+        }
+
+        for (String c : this.cve) {
+            if (!usedCves.contains(c)) {
+                return true;
+            }
+        }
+
+        for (PropertyType pt : this.vulnerabilityNames) {
+            String name = pt.getValue();
+            if (!usedVulnerabilityNames.contains(name)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
 
     /**
      * Set the value of matched.
@@ -644,14 +670,14 @@ public boolean hasUnusedSubEntries() {
             final Set<Vulnerability> removeVulns = new HashSet<>();
             for (Vulnerability v : dependency.getVulnerabilities()) {
                 boolean remove = false;
-                for (String entry : this.cve) {
-    if (entry.equalsIgnoreCase(v.getName())) {
-        markCveUsed(entry);   // <-- ADD THIS LINE
-        removeVulns.add(v);
-        remove = true;
-        break;
-    }
-}
+                 for (String entry : this.cve) {
+                    if (entry.equalsIgnoreCase(v.getName())) {
+                        markCveUsed(entry);
+                        removeVulns.add(v);
+                        remove = true;
+                        break;
+                    }
+                }
                 if (!remove && this.cwe != null && !v.getCwes().isEmpty()) {
                     for (String entry : this.cwe) {
                         final String toMatch = String.format("CWE-%s", entry);
