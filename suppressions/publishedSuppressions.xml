@@ -2518,4 +2518,11 @@ only pkg:maven/org.clojure:clojure@.* is the CPE cpe:/a:clojure:clojure
    <packageUrl regex="true">^pkg:maven/com\.networknt/json-schema-validator@.*$</packageUrl>
    <cpe>cpe:/a:validator:validator</cpe>
 </suppress>
+<suppress base="true">
+   <notes><![CDATA[
+   FP per issue #8249
+   ]]></notes>
+   <packageUrl regex="true">^pkg:maven/org\.hibernate\.validator/hibernate-validator@.*$</packageUrl>
+   <cpe>cpe:/a:validator:validator</cpe>
+</suppress>
 </suppressions>
