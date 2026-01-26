@@ -50,7 +50,6 @@ import ch.qos.logback.classic.filter.ThresholdFilter;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.LoggerContext;
-import io.github.jeremylong.jcs3.slf4j.Slf4jAdapter;
 
 import java.util.TreeSet;
 

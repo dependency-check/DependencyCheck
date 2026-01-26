@@ -20,6 +20,7 @@ package org.owasp.dependencycheck.taskdefs;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
@@ -124,12 +125,15 @@ public class Purge extends Task {
     }
 
     /**
-     * Hacky method of muting the noisy logging from JCS.
+     * Hacky method of muting the noisy logging from certain libraries.
      */
     private void muteNoisyLoggers() {
-        final String[] noisyLoggers = {
+        // Mirrors the configuration within cli/src/main/resources/logback.xml
+        final List<String> noisyLoggers = List.of(
+            "org.apache.lucene",
+            "org.apache.commons.jcs3",
             "org.apache.hc"
-        };
+        );
         for (String loggerName : noisyLoggers) {
             System.setProperty("org.slf4j.simpleLogger.log." + loggerName, "error");
         }
