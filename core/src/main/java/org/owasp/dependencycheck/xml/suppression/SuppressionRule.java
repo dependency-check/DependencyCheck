@@ -49,24 +49,18 @@ public class SuppressionRule {
     private List<Double> cvssV2Below = new ArrayList<>();
     private List<Double> cvssV3Below = new ArrayList<>();
     private List<Double> cvssV4Below = new ArrayList<>();
-    private List<String> cwe = new ArrayList<>();
-    private List<String> cve = new ArrayList<>();
+    private List<PropertyType> cwe = new ArrayList<>();
     private final List<PropertyType> vulnerabilityNames = new ArrayList<>();
     private PropertyType gav;
     private PropertyType packageUrl;
     private String notes;
     private boolean base;
     private Calendar until;
-    private boolean matched = false;
-
     // Suppression entry tracking
     private final Set<SuppressionEntry> allEntries = ConcurrentHashMap.newKeySet();
 
     // ----------------- getters/setters -----------------
-
-    public boolean isMatched() { return matched; }
-    public void setMatched(boolean matched) { this.matched = matched; }
-
+    
     public Calendar getUntil() { return until; }
     public void setUntil(Calendar until) { this.until = until; }
 
@@ -100,10 +94,11 @@ public class SuppressionRule {
         track(SuppressionEntry.Type.VULNERABILITY_NAME, name);
     }
 
-    public void addCwe(String cwe) {
-        this.cwe.add(cwe);
-        track(SuppressionEntry.Type.CWE, new PropertyType(cwe));
-    }
+public void addCwe(String cwe) {
+    PropertyType pt = new PropertyType(cwe);
+    this.cwe.add(pt);
+    track(SuppressionEntry.Type.CWE, pt);
+}
 
     public void addCve(String cve) {
         this.cve.add(cve);
@@ -146,20 +141,24 @@ public class SuppressionRule {
         if (hasGav() && !matchIdentifier(dependency, gav)) return;
         if (hasPackageUrl() && !matchPurl(dependency, packageUrl)) return;
 
-        // ---- CPE suppression ----
-        if (hasCpe()) {
-            Set<Identifier> removalList = new HashSet<>();
-            for (Identifier i : dependency.getVulnerableSoftwareIdentifiers()) {
-                for (PropertyType c : cpe) {
-                    if (identifierMatches(c, i)) {
-                        suppressIdentifier(dependency, i);
-                        removalList.add(i);
-                        break;
-                    }
-                }
+// ---- CPE suppression ----
+if (hasCpe()) {
+    List<Identifier> identifiersToRemove = new ArrayList<>();
+
+    for (Identifier i : new ArrayList<>(dependency.getVulnerableSoftwareIdentifiers())) {
+        for (PropertyType c : cpe) {
+            if (identifierMatches(c, i)) {
+                suppressByCpeMatch(dependency, i);
+                identifiersToRemove.add(i);
+                break;
             }
-            removalList.forEach(dependency::removeVulnerableSoftwareIdentifier);
         }
+    }
+
+    for (Identifier i : identifiersToRemove) {
+        dependency.removeVulnerableSoftwareIdentifier(i);
+    }
+}
 
         // ---- Vulnerability suppression ----
         Set<Vulnerability> removeVulns = new HashSet<>();
@@ -178,40 +177,43 @@ public class SuppressionRule {
 
         removeVulns.forEach(dependency::removeVulnerability);
     }
-
-    private void suppressIdentifier(Dependency dep, Identifier id) {
-        if (!isBase()) {
-            matched = true;
-            if (notes != null) id.setNotes(notes);
-            dep.addSuppressedIdentifier(id);
-        }
+private void suppressIdentifier(Dependency dep, Identifier id) {
+    if (!isBase()) {
+        if (notes != null) id.setNotes(notes);
+        dep.addSuppressedIdentifier(id);
     }
-
+    
+}
     private void suppressVulnerability(Dependency dep, Vulnerability v) {
-        if (!isBase()) {
-            matched = true;
-            if (notes != null) v.setNotes(notes);
-            dep.addSuppressedVulnerability(v);
-        }
+    if (!isBase()) {
+        if (notes != null) v.setNotes(notes);
+        dep.addSuppressedVulnerability(v);
     }
+}
 
     // ----------------- match helpers -----------------
 
-    private boolean matchesCve(Vulnerability v) {
-        for (String entry : cve) {
-            if (entry.equalsIgnoreCase(v.getName())) return true;
+private boolean matchesCve(Vulnerability v) {
+    for (String entry : cve) {
+        if (entry.equalsIgnoreCase(v.getName())) {
+            return true;
         }
-        return false;
     }
+    return false;
+}
 
-    private boolean matchesCwe(Vulnerability v) {
-        if (v.getCwes() == null) return false;
-        for (String entry : cwe) {
-            String target = "CWE-" + entry;
-            if (v.getCwes().stream().anyMatch(c -> c.startsWith(target))) return true;
+private boolean matchesCwe(Vulnerability v) {
+    if (v.getCwes() == null) return false;
+
+    for (PropertyType rule : cwe) {
+        for (String vulnCwe : v.getCwes()) {
+            if (rule.matches(vulnCwe)) {
+                return true;
+            }
         }
-        return false;
     }
+    return false;
+}
 
     private boolean matchesVulnerabilityName(Vulnerability v) {
         if (v.getName() == null) return false;
@@ -310,7 +312,6 @@ public class SuppressionRule {
                 ", gav=" + gav +
                 ", packageUrl=" + packageUrl +
                 ", base=" + base +
-                ", matched=" + matched +
                 '}';
     }
 }
