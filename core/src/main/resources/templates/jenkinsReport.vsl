@@ -29,54 +29,6 @@ Copyright (c) 2012 Jeremy Long. All Rights Reserved.
         <link rel="shortcut icon" href="data:;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAVLSURBVFhHvZdvbFRFEMB3913v9Vr+FKUNRdtrewg1lQgRE0gMYkJSowYMwcSPkGDwg8ZigMR+UYzGaIuAEj+R+IfE+EUlRL+QYAwhGBMqkFQDpO1xd/YPBaSU9u767r0dZ5a513vtXVsq8Zcsb3bu9c3szuzsIMU8iEaj5fhYJlzRYCkZ7Utd+wbnQL+Nd0TeoyeAPLFgf/oiyTNxXw6g4WUhTz4JEtaiNXLCEE8l3seHJjlzsOJHfLxMsgHE4cje9B6eTUPxc0ZoxbFHG1qVFq9rCRsKjc+KFG3oFGQ6Kw6xJsCsDqDxNZYWbWSYVUFAJFkyaA2XWAxiHIlcGPukYg1rDCVDQKsOadmqBaxllY8CuKHBuqOlHlNKufFk/GdUmxxoeqTpMbBg1dGXRlZtqHc2R8rgedIXgk4eqNyXMblS1AE2vhWNP84qAxl2hewno6wyFHOAZOLAc6PRbU+kd2OyrmbVPTg3pjlQzDgazGmh40rKMY3LZrVBCi/Tl0z+gqJxYGV9fWNOWC0kF3Jm1/C2pZWwk6cG2olpOcDb7hsHgLQGcUWAGs0bV1K7EuSQFbbOLKmuPkOvkZ64mkzG8bXz5BirDBuP1fzQP6I+5yl9eAS9vxjYAVz9esx0P2a0ck+73VKGPFaR8Vtpx7k0ODiYZlVJmpcvfzirwi1SyUWsMiF5ZXX6A1zJzsq9mRO+A7T1lO2BIyZVN/6bJZFWnQO4Wl1dnerq6sqRbq401TWtw9qxjGT6zhfbs3+0Hrw+THPfgVhdA8Xdz3j84RpIdZOngrY1kUgMOR3lG1kVREkHhBp3smJ4wdLmf+TuoJOxuroW3NI6zN6L9B1W33MAV1+FW99mNIgUclBaYtCPObjx3lTqT5KxqJyk52y4nv5u4f7stzzNY+Hww0ncS0JXBIoDWryRN07JVlVTc9Xo74OQpV7F6ndk5CO7iVVEwDihVqxYYVtKrOc5bckIgHJIpnhl3MxfpWIuJZyWAMdo0Io1AOXMJFI0hm3VzrOiYG2BmsLEAz0Zd9DWzZmyHd/tLt+bOUmDthuzun3C8dryjqCDdzF5tqcPRr40f1AElcvl6lgmJkC5d1kWYS8bZ3HOVL0z0TcKiz70tBjAML4opVgsoeB2nIJyXfeKJfRxGo52j4ds+xwWmN9t1/7t8sDALX7vvqjdd31cChgi40YhZdXUSyiPGkAjPalUL43+/v6/e3p6btC4PHB5XsZ9sMqxZJAWbGIxwJz6gfkAWl5jcUYUbU1+3D60uIp0PPwiNR/wZAW3HERRh5Sy4C3LEhdoiAn368b6xhdoxKLRVn5nXmDpfZZFg7J00f5QgRYJlkV5GWyJVnk2yRpUKBaLFZ6QOYMFaAdW0x08xcXDr5E9E8V3wAmFD7NseO3pMf8uh1xuJYuzQuGjMJreT4rJc4/XrvZk6aZ0yZ47WPkm47M55mxnET23IrW1tRU8DUBFBlf2faYzcptGuefETRix9+NXDNhLHJmpPTenAON1xMyQRbZevaV5ooanwrbsdSz6kPF8kaEz7o9CqOEAvPO59yuFccBR4a/MjGnfNDp5M2IzgQnpd8QB41NBoxRvarWyVrgRe77Ad4vhHzX6H41S8l2eitO9ZR+/+dNDZ3lqbsW+VN/52x12YxlY04xbZd5IqUSbCd8BSiLby13AlTWwSnx6tvKNY10LzCmhm7E3kTiFYqAp/a/4lZCSUYIX6Frffmb86K6nxqJknDoZVD1Q48S0ajc1FBTXU8mFzVs/G77OmgdK0XLLZ7nNnGHuXvmn/w9yYrwzUvIefzAI8S83C2sS1J4rmAAAAABJRU5ErkJggg==" />
         <!--suppress CssUnknownProperty, CssUnusedSymbol, HtmlDeprecatedAttribute, CssRedundantUnit, CssReplaceWithShorthandSafely -->
         <style type="text/css">
-            #modal-background {
-                display: none;
-                position: fixed;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
-                background-color: white;
-                opacity: .50;
-                -webkit-opacity: .5;
-                -moz-opacity: .5;
-                filter: alpha(opacity=50);
-                z-index: 1000;
-            }
-
-            #modal-content {
-                background-color: white;
-                border-radius: 10px;
-                -webkit-border-radius: 10px;
-                -moz-border-radius: 10px;
-                box-shadow: 0 0 20px 0 #222;
-                -webkit-box-shadow: 0 0 20px 0 #222;
-                -moz-box-shadow: 0 0 20px 0 #222;
-                display: none;
-                height: 240px;
-                left: 50%;
-                margin: -120px 0 0 -160px;
-                padding: 10px;
-                position: fixed;
-                top: 50%;
-                z-index: 1000;
-            }
-            #modal-add-header {
-                display: none;
-            }
-            #modal-add-header.active {
-                display: block;
-            }
-            #modal-background.active, #modal-content.active {
-                display: block;
-            }
-            #modal-text {
-                border: 0;
-                overflow: hidden
-            }
-            #modal-text:focus {
-                outline: none;
-            }
             .suppresstype {
                 display: none;
             }
@@ -113,58 +65,6 @@ Copyright (c) 2012 Jeremy Long. All Rights Reserved.
                 background-color: #dddddd;
                 border: 1px solid #444444;
                 color:#444444;
-                text-decoration:none;
-                -moz-border-radius: 3px;
-                -webkit-border-radius: 3px;
-                -khtml-border-radius: 3px;
-                -o-border-radius: 3px;
-                border-radius: 3px;
-            }
-            .modal-button {
-                padding:1px;
-                float:left;
-                background-color: #eeeeee;
-                border: 1px solid #555555;
-                color:#555555;
-                text-decoration:none;
-                -moz-border-radius: 3px;
-                -webkit-border-radius: 3px;
-                -khtml-border-radius: 3px;
-                -o-border-radius: 3px;
-                border-radius: 3px;
-            }
-            .modal-button:hover {
-                padding:1px;
-                float:left;
-                background-color: #dddddd;
-                border: 1px solid #333333;
-                color:#333333;
-                text-decoration:none;
-                -moz-border-radius: 3px;
-                -webkit-border-radius: 3px;
-                -khtml-border-radius: 3px;
-                -o-border-radius: 3px;
-                border-radius: 3px;
-            }
-            .modal-button-right {
-                padding:1px;
-                float:right;
-                background-color: #eeeeee;
-                border: 1px solid #555555;
-                color:#555555;
-                text-decoration:none;
-                -moz-border-radius: 3px;
-                -webkit-border-radius: 3px;
-                -khtml-border-radius: 3px;
-                -o-border-radius: 3px;
-                border-radius: 3px;
-            }
-            .modal-button-right:hover {
-                padding:1px;
-                float:right;
-                background-color: #dddddd;
-                border: 1px solid #333333;
-                color:#333333;
                 text-decoration:none;
                 -moz-border-radius: 3px;
                 -webkit-border-radius: 3px;
