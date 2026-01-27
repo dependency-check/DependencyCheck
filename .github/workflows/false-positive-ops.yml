@@ -182,14 +182,14 @@ jobs:
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: 'Maven Coordinates\n\n```xml\n<dependency>\n   <groupId>' + process.env.GROUPID + '</groupId>\n   <artifactId>' + process.env.ARTIFACTID + '</artifactId>\n   <version>' + process.env.VERSION + '</version>\n</dependency>\n```\n\n' +
+              body: 'Maven Coordinates\n\n```xml\n<dependency>\n  <groupId>' + process.env.GROUPID + '</groupId>\n  <artifactId>' + process.env.ARTIFACTID + '</artifactId>\n  <version>' + process.env.VERSION + '</version>\n</dependency>\n```\n\n' +
                     'Suppression rule:\n```xml\n' +
                     '<suppress base="true">\n' +
-                    '   <notes><![CDATA[\n' +
-                    '   FP per issue #' + context.issue.number + '\n' +
-                    '   ]]></notes>\n' +
-                    '   <packageUrl regex="true">' + purl + '</packageUrl>\n' +
-                    '   <cpe>' + matchcpe + '</cpe>\n' +
+                    '    <notes><![CDATA[\n' +
+                    '    FP per issue #' + context.issue.number + '\n' +
+                    '    ]]></notes>\n' +
+                    '    <packageUrl regex="true">' + purl + '</packageUrl>\n' +
+                    '    <cpe>' + matchcpe + '</cpe>\n' +
                     '</suppress>\n```\n\n' +
                     'Link to test results: ' + context.serverUrl + '/' + context.repo.owner + '/' + context.repo.repo + '/actions/runs/' + context.runId
             })
@@ -232,11 +232,11 @@ jobs:
               body: 'Npm Coordinates\n\n```shell\nnpm -i ' + process.env.NAME + '@' + process.env.VERSION + '\n```\n\n' +
                     'Suppression rule:\n```xml\n' +
                     '<suppress base="true">\n' +
-                    '   <notes><![CDATA[\n' +
-                    '   FP per issue #' + context.issue.number + '\n' +
-                    '   ]]></notes>\n' +
-                    '   <packageUrl regex="true">' + purl + '</packageUrl>\n' +
-                    '   <cpe>' + matchcpe + '</cpe>\n' +
+                    '    <notes><![CDATA[\n' +
+                    '    FP per issue #' + context.issue.number + '\n' +
+                    '    ]]></notes>\n' +
+                    '    <packageUrl regex="true">' + purl + '</packageUrl>\n' +
+                    '    <cpe>' + matchcpe + '</cpe>\n' +
                     '</suppress>\n```\n\n' +
                     'Link to test results: ' + context.serverUrl + '/' + context.repo.owner + '/' + context.repo.repo + '/actions/runs/' + context.runId
             })
@@ -278,11 +278,11 @@ jobs:
               body: 'Nuget Coordinates\n\n```shell\ndotnet add package ' + process.env.NAME + ' --version ' + process.env.VERSION + '\n```\n\n' +
                     'Suppression rule:\n```xml\n' +
                     '<suppress base="true">\n' +
-                    '   <notes><![CDATA[\n' +
-                    '   FP per issue #' + context.issue.number + '\n' +
-                    '   ]]></notes>\n' +
-                    '   <packageUrl regex="true">' + purl + '</packageUrl>\n' +
-                    '   <cpe>' + matchcpe + '</cpe>\n' +
+                    '    <notes><![CDATA[\n' +
+                    '    FP per issue #' + context.issue.number + '\n' +
+                    '    ]]></notes>\n' +
+                    '    <packageUrl regex="true">' + purl + '</packageUrl>\n' +
+                    '    <cpe>' + matchcpe + '</cpe>\n' +
                     '</suppress>\n```\n\n' +
                     'Link to test results: ' + context.serverUrl + '/' + context.repo.owner + '/' + context.repo.repo + '/actions/runs/' + context.runId
             })

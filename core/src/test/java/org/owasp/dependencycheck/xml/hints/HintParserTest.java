@@ -24,6 +24,8 @@ import java.io.File;
 import java.io.InputStream;
 import java.util.List;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -83,8 +85,7 @@ class HintParserTest extends BaseTest {
         File file = BaseTest.getResourceAsFile(this, "hints_invalid.xml");
         HintParser instance = new HintParser();
         Exception exception = assertThrows(org.owasp.dependencycheck.xml.hints.HintParseException.class, () -> instance.parseHints(file));
-        assertTrue(exception.getMessage().contains("Line=7, Column=133: cvc-enumeration-valid: Value 'version' is not facet-valid with respect to enumeration '[vendor, product]'. It must be a value from the enumeration."));
-
+        assertThat(exception.getMessage(), containsString("Line=10, Column=133: cvc-enumeration-valid: Value 'version' is not facet-valid with respect to enumeration '[vendor, product]'. It must be a value from the enumeration."));
     }
 
     /**

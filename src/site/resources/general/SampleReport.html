@@ -60,11 +60,15 @@
                     setTimeout('$("#modal-content,#modal-background").toggleClass("active");',100);
                 });
                 $('#modal-add-header').click(function () {
-                    xml = '<?xml version="1.0" encoding="UTF-8"?>\n<suppressions xmlns="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.1.xsd">\n   ';
-                    xml += $("#modal-text").text().replace(/\n/g,'\n   ');
-                    xml += '\n</suppressions>';
-                    $('#modal-text').text(xml).focus().select();
+                    const xml = `<?xml version="1.0" encoding="UTF-8"?>
+<suppressions xmlns="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.4.xsd
+              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:schemaLocation="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.4.xsd
+                                  https://dependency-check.github.io/DependencyCheck/dependency-suppression.1.4.xsd">
+    ${$("#modal-text").text().replace(/\n/g,'\n    ')}
+</suppressions>`;
                     $('#modal-add-header').toggleClass('active');
+                    $('#modal-text').text(xml).focus().select();
                 });
             });
             function suppressSwitchTo(switchTo) {
@@ -101,27 +105,27 @@
                 }
             }
             function setCopyText(name, matchType, matchValue, suppressType, suppressVal) {
-                xml =  '<suppress>\n';
-                xml += '   <notes><!'+'[CDATA[\n   file name: ' + name + '\n   ]]'+'></notes>\n';
+                var xml =  '<suppress>\n';
+                xml += '    <notes><![CDATA[\n    file name: ' + name + '\n    ]]></notes>\n';
                 if (matchType=='gav') {
                     v = matchValue.match(/^[^:]+:[^:]+:/);
                     if (v && v[0]) {
-                        xml += '   <'+matchType+' regex="true">^' + v[0].replace(/\./g,'\\.') + '.*$</'+matchType+'>\n';
+                        xml += '    <'+matchType+' regex="true">^' + v[0].replace(/\./g,'\\.') + '.*$</'+matchType+'>\n';
                     } else {
-                        xml += '   <'+matchType+'>' + matchValue + '</'+matchType+'>\n';
+                        xml += '    <'+matchType+'>' + matchValue + '</'+matchType+'>\n';
                     }
                 } else {
-                    xml += '   <'+matchType+'>' + matchValue + '</'+matchType+'>\n';
+                    xml += '    <'+matchType+'>' + matchValue + '</'+matchType+'>\n';
                 }
                 if (suppressType=='cpe') {
                     v = suppressVal.match(/^cpe:\/a:[^:]+:[^:]+/);
                     if (v && v[0]) {
-                        xml += '   <'+suppressType+'>' + v[0] + '</'+suppressType+'>\n';
+                        xml += '    <'+suppressType+'>' + v[0] + '</'+suppressType+'>\n';
                     } else {
-                        xml += '   <'+suppressType+'>' + suppressVal + '</'+suppressType+'>\n';
+                        xml += '    <'+suppressType+'>' + suppressVal + '</'+suppressType+'>\n';
                     }
                 } else {
-                    xml += '   <'+suppressType+'>' + suppressVal + '</'+suppressType+'>\n';
+                    xml += '    <'+suppressType+'>' + suppressVal + '</'+suppressType+'>\n';
                 }
                 xml += '</suppress>';
                 $('#modal-text').text(xml);
@@ -178,7 +182,8 @@
             }
             #modal-text {
                 border: 0;
-                overflow: hidden
+                overflow: auto;
+                white-space: pre;
             }
             #modal-text:focus {
                 outline: none;
@@ -559,10 +564,9 @@ the reporting provided constitutes acceptance for use in an AS IS condition, and
 implied or otherwise, with regard to the analysis or its use. Any use of the tool and the reporting provided
 is at the user’s risk. In no event shall the copyright holder or OWASP be held liable for any damages whatsoever
 arising out of or in connection with the use of this tool, the analysis performed, or the resulting report.</p>
-<h3><a href="https://dependency-check.github.io/DependencyCheck/general/thereport.html" target="_bank">How&nbsp;to&nbsp;read&nbsp;the&nbsp;report</a> |
-<a href="https://dependency-check.github.io/DependencyCheck/general/suppression.html" target="_bank">Suppressing false positives</a> |
-Getting Help: <a href="https://groups.google.com/forum/#!forum/dependency-check" target="_blank">google group</a> | 
-<a href="https://github.com/dependency-check/DependencyCheck/issues" target="_blank">github issues</a></h3>
+<h3><a href="https://dependency-check.github.io/DependencyCheck/general/thereport.html" target="_blank">How&nbsp;to&nbsp;read&nbsp;the&nbsp;report</a> |
+<a href="https://dependency-check.github.io/DependencyCheck/general/suppression.html" target="_blank">Suppressing false positives</a> |
+Getting Help: <a href="https://github.com/dependency-check/DependencyCheck/issues" target="_blank">github issues</a></h3>
 
             <h2 class="">Project:&nbsp;DependencyCheck</h2>
             <div class="">

@@ -118,7 +118,16 @@ jobs:
               if (!fs.existsSync('./suppressions')){
                   fs.mkdirSync('./suppressions');
               }
-              fs.appendFileSync('suppressions/publishedSuppressions.xml', '<?xml version="1.0" encoding="UTF-8"?>\n<suppressions xmlns="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.3.xsd">' + generatedSuppressions + '\n' + suppression.trim() + '\n</suppressions>', function (err) {
+              fs.appendFileSync('suppressions/publishedSuppressions.xml',
+              `<?xml version="1.0" encoding="UTF-8"?>
+              <suppressions xmlns="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.3.xsd
+                            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                            xsi:schemaLocation="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.3.xsd
+                                                https://dependency-check.github.io/DependencyCheck/dependency-suppression.1.3.xsd">
+              ${generatedSuppressions}
+              ${suppression.trim()}
+              </suppressions>`,
+              function (err) {
                 if (err) throw err;
                 console.log('publishedSuppressions.xml created');
               });

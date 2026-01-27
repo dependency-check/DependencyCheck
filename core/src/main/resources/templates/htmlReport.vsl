@@ -110,9 +110,13 @@ Copyright (c) 2012 Jeremy Long. All Rights Reserved.
                     }
                 });
                 $('#modal-add-header').click(function () {
-                    xml = '<?xml version="1.0" encoding="UTF-8"?>\n<suppressions xmlns="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.3.xsd">\n   ';
-                    xml += $("#modal-text").text().replace(/\n/g,'\n   ');
-                    xml += '\n</suppressions>';
+                    const xml = `<?xml version="1.0" encoding="UTF-8"?>
+<suppressions xmlns="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.4.xsd
+              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:schemaLocation="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.4.xsd
+                                  https://dependency-check.github.io/DependencyCheck/dependency-suppression.1.4.xsd">
+    ${$("#modal-text").text().replace(/\n/g,'\n    ')}
+</suppressions>`;
                     $('#modal-add-header').toggleClass('active');
                     $('#modal-text').text(xml).focus().select();
                 });
@@ -158,26 +162,26 @@ Copyright (c) 2012 Jeremy Long. All Rights Reserved.
             }
             function setCopyText(name, matchType, matchValue, suppressType, suppressVal) {
                 var xml =  '<suppress>\n';
-                xml += '   <notes><!'+'[CDATA[\n   file name: ' + name + '\n   ]]'+'></notes>\n';
+                xml += '    <notes><![CDATA[\n    file name: ' + name + '\n    ]]></notes>\n';
                 if (matchType=='packageUrl') {
                     var v = matchValue.match(/^[^@]+/);
                     if (v && v[0]) {
-                        xml += '   <'+matchType+' regex="true">^' + escapeRegExp(v[0]) + '@.*$</'+matchType+'>\n';
+                        xml += '    <'+matchType+' regex="true">^' + escapeRegExp(v[0]) + '@.*$</'+matchType+'>\n';
                     } else {
-                        xml += '   <'+matchType+'>' + matchValue + '</'+matchType+'>\n';
+                        xml += '    <'+matchType+'>' + matchValue + '</'+matchType+'>\n';
                     }
                 } else {
-                    xml += '   <'+matchType+'>' + matchValue + '</'+matchType+'>\n';
+                    xml += '    <'+matchType+'>' + matchValue + '</'+matchType+'>\n';
                 }
                 if (suppressType=='cpe') {
                     v = suppressVal.match(/^cpe:\/a:[^:]+:[^:]+/);
                     if (v && v[0]) {
-                        xml += '   <'+suppressType+'>' + v[0] + '</'+suppressType+'>\n';
+                        xml += '    <'+suppressType+'>' + v[0] + '</'+suppressType+'>\n';
                     } else {
-                        xml += '   <'+suppressType+'>' + suppressVal + '</'+suppressType+'>\n';
+                        xml += '    <'+suppressType+'>' + suppressVal + '</'+suppressType+'>\n';
                     }
                 } else {
-                    xml += '   <'+suppressType+'>' + suppressVal + '</'+suppressType+'>\n';
+                    xml += '    <'+suppressType+'>' + suppressVal + '</'+suppressType+'>\n';
                 }
                 xml += '</suppress>';
                 $('#modal-text').text(xml);
@@ -284,7 +288,8 @@ Copyright (c) 2012 Jeremy Long. All Rights Reserved.
             }
             #modal-text {
                 border: 0;
-                overflow: hidden
+                overflow: auto;
+                white-space: pre;
             }
             #modal-text:focus {
                 outline: none;
@@ -671,8 +676,8 @@ Copyright (c) 2012 Jeremy Long. All Rights Reserved.
         <div id="modal-background"></div>
         <div id="modal-content">
             <div>Press CTR-C to copy XML&nbsp;<a href="https://dependency-check.github.io/DependencyCheck/general/suppression.html" class="infolink" target="_blank" title="Help with suppressing false positives">[help]</a></div>
-                <button id="modal-suppress-change-to-packageUrl" class="modal-button suppresstype" title="Supress by Maven Group Artifact Version">Suppress By GAV</button>
-                <button id="modal-suppress-change-to-sha1" class="modal-button suppresstype" title="Supress by SHA1 hash">Suppress By SHA1</button><br/>
+                <button id="modal-suppress-change-to-packageUrl" class="modal-button suppresstype" title="Supress by Maven Group Artifact Version">Suppress by Package URL</button>
+                <button id="modal-suppress-change-to-sha1" class="modal-button suppresstype" title="Supress by SHA1 hash">Suppress by SHA1</button><br/>
                 <input type="hidden" id="suppress-name"/>
                 <input type="hidden" id="suppress-type"/><input type="hidden" id="suppress-val"/>
                 <input type="hidden" id="suppress-sha1"/><input type="hidden" id="suppress-packageUrl"/>

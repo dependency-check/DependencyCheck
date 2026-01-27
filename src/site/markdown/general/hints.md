@@ -10,7 +10,10 @@ A sample hints file that add a product name and possible vendors for Spring fram
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
-<hints xmlns="https://jeremylong.github.io/DependencyCheck/dependency-hint.1.1.xsd">
+<hints xmlns="https://jeremylong.github.io/DependencyCheck/dependency-hint.1.4.xsd"
+              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:schemaLocation="https://jeremylong.github.io/DependencyCheck/dependency-hint.1.4.xsd
+                                  https://dependency-check.github.io/DependencyCheck/dependency-hint.1.4.xsd">
     <hint>
         <given>
             <evidence type="product" source="Manifest" name="Implementation-Title" value="Spring Framework" confidence="HIGH"/>
@@ -33,7 +36,10 @@ The following shows some other ways to add evidence
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
-<hints xmlns="https://jeremylong.github.io/DependencyCheck/dependency-hint.1.1.xsd">
+<hints xmlns="https://jeremylong.github.io/DependencyCheck/dependency-hint.1.4.xsd"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="https://jeremylong.github.io/DependencyCheck/dependency-hint.1.4.xsd
+                           https://dependency-check.github.io/DependencyCheck/dependency-hint.1.4.xsd">
    <hint>
         <given>
             <evidence type="product" source="jar" name="package name" value="springframework" confidence="LOW"/>

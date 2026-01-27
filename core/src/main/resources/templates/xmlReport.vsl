@@ -19,7 +19,10 @@ Copyright (c) 2018 Jeremy Long. All Rights Reserved.
 @version 2.0
 
 *#<?xml version="1.0"?>
-<analysis xmlns="https://jeremylong.github.io/DependencyCheck/dependency-check.4.1.xsd">
+<analysis xmlns="https://jeremylong.github.io/DependencyCheck/dependency-check.4.1.xsd"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="https://jeremylong.github.io/DependencyCheck/dependency-check.4.1.xsd
+                              https://dependency-check.github.io/DependencyCheck/dependency-check.4.1.xsd">
     <scanInfo>
         <engineVersion>$version</engineVersion>
 #foreach($prop in $properties.getMetaData().entrySet())
