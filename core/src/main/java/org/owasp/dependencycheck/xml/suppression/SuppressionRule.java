@@ -205,14 +205,47 @@ public class SuppressionRule {
         }
     }
 
-    boolean suppressedBasedOnScore(Vulnerability v) {
-        for (Double cvss : cvssBelow) {
-            if (v.getCvssV2() != null && v.getCvssV2().getCvssData().getBaseScore() < cvss) return true;
-            if (v.getCvssV3() != null && v.getCvssV3().getCvssData().getBaseScore() < cvss) return true;
-            if (v.getCvssV4() != null && v.getCvssV4().getCvssData().getBaseScore() < cvss) return true;
-        }
-        return false;
-    }
+    208 protected boolean suppressedBasedOnScore(Vulnerability v) {
+209 
+210     double scoreV2 = Double.NaN;
+211     double scoreV3 = Double.NaN;
+212 
+213     if (v.getCvssV2() != null && v.getCvssV2().getCvssData() != null) {
+214         scoreV2 = v.getCvssV2().getCvssData().getBaseScore();
+215     }
+216 
+217     if (v.getCvssV3() != null && v.getCvssV3().getCvssData() != null) {
+218         scoreV3 = v.getCvssV3().getCvssData().getBaseScore();
+219     }
+220 
+221     // Generic cvssBelow (use highest threshold)
+222     if (!cvssBelow.isEmpty()) {
+223         double max = cvssBelow.stream().max(Double::compareTo).orElse(Double.NaN);
+224 
+225         if ((!Double.isNaN(scoreV2) && scoreV2 < max) ||
+226             (!Double.isNaN(scoreV3) && scoreV3 < max)) {
+227             return true;
+228         }
+229     }
+230 
+231     // CVSS v2 specific
+232     if (!cvssV2Below.isEmpty() && !Double.isNaN(scoreV2)) {
+233         double max = cvssV2Below.stream().max(Double::compareTo).orElse(Double.NaN);
+234         if (scoreV2 < max) {
+235             return true;
+236         }
+237     }
+238 
+239     // CVSS v3 specific
+240     if (!cvssV3Below.isEmpty() && !Double.isNaN(scoreV3)) {
+241         double max = cvssV3Below.stream().max(Double::compareTo).orElse(Double.NaN);
+242         if (scoreV3 < max) {
+243             return true;
+244         }
+245     }
+246 
+247     return false;
+248 }
 
     // ---- REQUIRED BY TESTS ----
     public boolean cpeHasNoVersion(PropertyType cpe) {
@@ -234,7 +267,9 @@ public class SuppressionRule {
                 String cpeVal = ((CpeIdentifier) identifier).getCpe().toCpe22Uri();
                 return suppressionEntry.isRegex()
                         ? suppressionEntry.matches(cpeVal)
-                        : cpeVal.toLowerCase().startsWith(suppressionEntry.getValue().toLowerCase());
+                        : cpeVal.toLowerCase().startsWith(
+            suppressionEntry.getValue().toLowerCase().replaceAll(":$", "")
+  );
             } catch (CpeEncodingException ex) {
                 LOGGER.debug("Unable to convert CPE", ex);
             }
