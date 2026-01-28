@@ -41,6 +41,17 @@ public class SuppressionRule {
 
     // ---------------- getters / setters ----------------
 
+    public void addCpe(PropertyType cpe) {
+    this.cpe.add(cpe);
+}
+
+    public List<PropertyType> getCpe() {
+    return cpe;
+}
+
+public void setCpe(List<PropertyType> cpe) {
+    this.cpe = cpe;
+}
     public boolean isMatched() { return matched; }
     public void setMatched(boolean matched) { this.matched = matched; }
 
