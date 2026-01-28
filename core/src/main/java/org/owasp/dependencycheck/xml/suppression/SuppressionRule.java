@@ -205,55 +205,56 @@ public class SuppressionRule {
         }
     }
 
-     protected boolean suppressedBasedOnScore(Vulnerability v) {
- 
-     double scoreV2 = Double.NaN;
-     double scoreV3 = Double.NaN;
- 
-     if (v.getCvssV2() != null && v.getCvssV2().getCvssData() != null) {
-         scoreV2 = v.getCvssV2().getCvssData().getBaseScore();
-     }
- 
-     if (v.getCvssV3() != null && v.getCvssV3().getCvssData() != null) {
-         scoreV3 = v.getCvssV3().getCvssData().getBaseScore();
-     }
- 
-     // Generic cvssBelow (use highest threshold)
-     if (!cvssBelow.isEmpty()) {
-         double max = cvssBelow.stream().max(Double::compareTo).orElse(Double.NaN);
- 
-         if ((!Double.isNaN(scoreV2) && scoreV2 < max) ||
-             (!Double.isNaN(scoreV3) && scoreV3 < max)) {
-             return true;
-         }
-     }
- 
-     // CVSS v2 specific
-     if (!cvssV2Below.isEmpty() && !Double.isNaN(scoreV2)) {
-         double max = cvssV2Below.stream().max(Double::compareTo).orElse(Double.NaN);
-         if (scoreV2 < max) {
-             return true;
-         }
-     }
- 
-     // CVSS v3 specific
-     if (!cvssV3Below.isEmpty() && !Double.isNaN(scoreV3)) {
-         double max = cvssV3Below.stream().max(Double::compareTo).orElse(Double.NaN);
-         if (scoreV3 < max) {
-             return true;
-         }
-     }
- 
-     return false;
- }
+    protected boolean suppressedBasedOnScore(Vulnerability v) {
+
+        double scoreV2 = Double.NaN;
+        double scoreV3 = Double.NaN;
+
+        if (v.getCvssV2() != null && v.getCvssV2().getCvssData() != null) {
+            scoreV2 = v.getCvssV2().getCvssData().getBaseScore();
+        }
+
+        if (v.getCvssV3() != null && v.getCvssV3().getCvssData() != null) {
+            scoreV3 = v.getCvssV3().getCvssData().getBaseScore();
+        }
+
+        // Generic cvssBelow (use highest threshold)
+        if (!cvssBelow.isEmpty()) {
+            double max = cvssBelow.stream().max(Double::compareTo).orElse(Double.NaN);
+
+            if ((!Double.isNaN(scoreV2) && scoreV2 < max) ||
+                (!Double.isNaN(scoreV3) && scoreV3 < max)) {
+                return true;
+            }
+        }
+
+        // CVSS v2 specific
+        if (!cvssV2Below.isEmpty() && !Double.isNaN(scoreV2)) {
+            double max = cvssV2Below.stream().max(Double::compareTo).orElse(Double.NaN);
+            if (scoreV2 < max) {
+                return true;
+            }
+        }
+
+        // CVSS v3 specific
+        if (!cvssV3Below.isEmpty() && !Double.isNaN(scoreV3)) {
+            double max = cvssV3Below.stream().max(Double::compareTo).orElse(Double.NaN);
+            if (scoreV3 < max) {
+                return true;
+            }
+        }
+
+        return false;
+    }
 
     // ---- REQUIRED BY TESTS ----
     public boolean cpeHasNoVersion(PropertyType cpe) {
-            if (cpe == null || cpe.getValue() == null) return true;
-            String v = cpe.getValue();
-             if (v.endsWith(":")) return false;
-         return !v.contains(":*") && !v.matches(".*:[0-9].*");
+        if (cpe == null || cpe.getValue() == null) return true;
+        String v = cpe.getValue();
+        if (v.endsWith(":")) return false;
+        return !v.contains(":*") && !v.matches(".*:[0-9].*");
     }
+
     protected boolean purlMatches(PropertyType suppressionEntry, Identifier identifier) {
         return identifier instanceof PurlIdentifier
                 && suppressionEntry.matches(((PurlIdentifier) identifier).toString());
@@ -262,27 +263,23 @@ public class SuppressionRule {
     protected boolean identifierMatches(PropertyType suppressionEntry, Identifier identifier) {
         if (identifier instanceof PurlIdentifier) {
             return suppressionEntry.matches(((PurlIdentifier) identifier).toGav());
-        }  {
-    try {
-        String cpeVal = ((CpeIdentifier) identifier).getCpe().toCpe22Uri();
+        } else if (identifier instanceof CpeIdentifier) {
+            try {
+                String cpeVal = ((CpeIdentifier) identifier).getCpe().toCpe22Uri();
 
-        if (suppressionEntry.isRegex()) {
-            return suppressionEntry.matches(cpeVal);
-        }
+                if (suppressionEntry.isRegex()) {
+                    return suppressionEntry.matches(cpeVal);
+                }
 
-        String ruleVal = suppressionEntry.getValue();
-        String rulePrefix = ruleVal.replaceAll(":$", "");
+                String ruleVal = suppressionEntry.getValue();
+                String rulePrefix = ruleVal.replaceAll(":$", "");
 
-        if (suppressionEntry.isCaseSensitive()) {
-            return cpeVal.startsWith(rulePrefix);
-        } else {
-            return cpeVal.toLowerCase().startsWith(rulePrefix.toLowerCase());
-        }
+                if (suppressionEntry.isCaseSensitive()) {
+                    return cpeVal.startsWith(rulePrefix);
+                } else {
+                    return cpeVal.toLowerCase().startsWith(rulePrefix.toLowerCase());
+                }
 
-    } catch (CpeEncodingException ex) {
-        LOGGER.debug("Unable to convert CPE", ex);
-    }
-}
             } catch (CpeEncodingException ex) {
                 LOGGER.debug("Unable to convert CPE", ex);
             }
