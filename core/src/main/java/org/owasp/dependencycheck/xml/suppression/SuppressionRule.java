@@ -216,11 +216,11 @@ public class SuppressionRule {
 
     // ---- REQUIRED BY TESTS ----
     public boolean cpeHasNoVersion(PropertyType cpe) {
-        if (cpe == null || cpe.getValue() == null) return true;
-        String v = cpe.getValue();
-        return !v.contains(":*") && !v.matches(".*:[0-9].*");
+            if (cpe == null || cpe.getValue() == null) return true;
+            String v = cpe.getValue();
+             if (v.endsWith(":")) return false;
+         return !v.contains(":*") && !v.matches(".*:[0-9].*");
     }
-
     protected boolean purlMatches(PropertyType suppressionEntry, Identifier identifier) {
         return identifier instanceof PurlIdentifier
                 && suppressionEntry.matches(((PurlIdentifier) identifier).toString());
