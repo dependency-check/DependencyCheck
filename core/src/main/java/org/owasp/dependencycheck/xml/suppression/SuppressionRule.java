@@ -56,20 +56,9 @@ public class SuppressionRule {
     public void addCwe(String cwe) { this.cwe.add(cwe); }
     public boolean hasCwe() { return !cwe.isEmpty(); }
 
-    // ---- CVSS legacy + new API ----
+    // -------- CVSS API (tests expect List<Double>) --------
 
-    // Old API (tests expect this)
-    public Double getCvssBelow() {
-        return cvssBelow.isEmpty() ? null : cvssBelow.get(0);
-    }
-
-    public void setCvssBelow(Double cvss) {
-        cvssBelow.clear();
-        if (cvss != null) cvssBelow.add(cvss);
-    }
-
-    // New API (tests expect this too)
-    public List<Double> getCvssBelowList() {
+    public List<Double> getCvssBelow() {
         return cvssBelow;
     }
 
