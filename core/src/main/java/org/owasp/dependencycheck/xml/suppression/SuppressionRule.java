@@ -41,193 +41,86 @@ public class SuppressionRule {
 
     // ---------------- getters / setters ----------------
 
-    public void addCpe(PropertyType cpe) {
-        this.cpe.add(cpe);
-    }
+    public void addCpe(PropertyType cpe) { this.cpe.add(cpe); }
+    public List<PropertyType> getCpe() { return cpe; }
+    public void setCpe(List<PropertyType> cpe) { this.cpe = cpe; }
+    public boolean hasCpe() { return !cpe.isEmpty(); }
 
-    public List<PropertyType> getCpe() {
-        return cpe;
-    }
+    public List<String> getCve() { return cve; }
+    public void setCve(List<String> cve) { this.cve = cve; }
+    public void addCve(String cve) { this.cve.add(cve); }
+    public boolean hasCve() { return !cve.isEmpty(); }
 
-    public void setCpe(List<PropertyType> cpe) {
-        this.cpe = cpe;
-    }
+    public List<String> getCwe() { return cwe; }
+    public void setCwe(List<String> cwe) { this.cwe = cwe; }
+    public void addCwe(String cwe) { this.cwe.add(cwe); }
+    public boolean hasCwe() { return !cwe.isEmpty(); }
 
-    public boolean hasCpe() {
-        return !cpe.isEmpty();
-    }
+    // ---- CVSS legacy + new API ----
 
-    public List<String> getCve() {
-        return cve;
-    }
-
-    public void setCve(List<String> cve) {
-        this.cve = cve;
-    }
-
-    public void addCve(String cve) {
-        this.cve.add(cve);
-    }
-
-    public boolean hasCve() {
-        return !cve.isEmpty();
-    }
-
-    public List<String> getCwe() {
-        return cwe;
-    }
-
-    public void setCwe(List<String> cwe) {
-        this.cwe = cwe;
-    }
-
-    public void addCwe(String cwe) {
-        this.cwe.add(cwe);
-    }
-
-    public boolean hasCwe() {
-        return !cwe.isEmpty();
-    }
-
-    // Legacy API used by tests
+    // Old API (tests expect this)
     public Double getCvssBelow() {
         return cvssBelow.isEmpty() ? null : cvssBelow.get(0);
     }
 
     public void setCvssBelow(Double cvss) {
         cvssBelow.clear();
-        if (cvss != null) {
-            cvssBelow.add(cvss);
-        }
+        if (cvss != null) cvssBelow.add(cvss);
     }
 
-    public boolean hasCvssBelow() {
-        return !cvssBelow.isEmpty();
+    // New API (tests expect this too)
+    public List<Double> getCvssBelowList() {
+        return cvssBelow;
     }
 
-    public void addCvssBelow(Double cvss) {
-        this.cvssBelow.add(cvss);
+    public void setCvssBelow(List<Double> values) {
+        this.cvssBelow = values == null ? new ArrayList<>() : values;
     }
 
-    public List<Double> getCvssV2Below() {
-        return cvssV2Below;
-    }
+    public boolean hasCvssBelow() { return !cvssBelow.isEmpty(); }
+    public void addCvssBelow(Double cvss) { cvssBelow.add(cvss); }
 
-    public void addCvssV2Below(Double cvss) {
-        this.cvssV2Below.add(cvss);
-    }
+    public List<Double> getCvssV2Below() { return cvssV2Below; }
+    public void addCvssV2Below(Double cvss) { cvssV2Below.add(cvss); }
+    public boolean hasCvssV2Below() { return !cvssV2Below.isEmpty(); }
 
-    public boolean hasCvssV2Below() {
-        return !cvssV2Below.isEmpty();
-    }
+    public List<Double> getCvssV3Below() { return cvssV3Below; }
+    public void addCvssV3Below(Double cvss) { cvssV3Below.add(cvss); }
+    public boolean hasCvssV3Below() { return !cvssV3Below.isEmpty(); }
 
-    public List<Double> getCvssV3Below() {
-        return cvssV3Below;
-    }
+    public List<Double> getCvssV4Below() { return cvssV4Below; }
+    public void addCvssV4Below(Double cvss) { cvssV4Below.add(cvss); }
+    public boolean hasCvssV4Below() { return !cvssV4Below.isEmpty(); }
 
-    public void addCvssV3Below(Double cvss) {
-        this.cvssV3Below.add(cvss);
-    }
+    public boolean isMatched() { return matched; }
+    public void setMatched(boolean matched) { this.matched = matched; }
 
-    public boolean hasCvssV3Below() {
-        return !cvssV3Below.isEmpty();
-    }
+    public Calendar getUntil() { return until; }
+    public void setUntil(Calendar until) { this.until = until; }
 
-    public List<Double> getCvssV4Below() {
-        return cvssV4Below;
-    }
+    public PropertyType getFilePath() { return filePath; }
+    public void setFilePath(PropertyType filePath) { this.filePath = filePath; }
 
-    public void addCvssV4Below(Double cvss) {
-        this.cvssV4Below.add(cvss);
-    }
+    public String getSha1() { return sha1; }
+    public void setSha1(String sha1) { this.sha1 = sha1; }
 
-    public boolean hasCvssV4Below() {
-        return !cvssV4Below.isEmpty();
-    }
+    public String getNotes() { return notes; }
+    public void setNotes(String notes) { this.notes = notes; }
+    public boolean hasNotes() { return notes != null && !notes.isEmpty(); }
 
-    public boolean isMatched() {
-        return matched;
-    }
+    public PropertyType getGav() { return gav; }
+    public void setGav(PropertyType gav) { this.gav = gav; }
+    public boolean hasGav() { return gav != null; }
 
-    public void setMatched(boolean matched) {
-        this.matched = matched;
-    }
+    public void setPackageUrl(PropertyType purl) { this.packageUrl = purl; }
+    public boolean hasPackageUrl() { return packageUrl != null; }
 
-    public Calendar getUntil() {
-        return until;
-    }
+    public boolean isBase() { return base; }
+    public void setBase(boolean base) { this.base = base; }
 
-    public void setUntil(Calendar until) {
-        this.until = until;
-    }
-
-    public PropertyType getFilePath() {
-        return filePath;
-    }
-
-    public void setFilePath(PropertyType filePath) {
-        this.filePath = filePath;
-    }
-
-    public String getSha1() {
-        return sha1;
-    }
-
-    public void setSha1(String sha1) {
-        this.sha1 = sha1;
-    }
-
-    public String getNotes() {
-        return notes;
-    }
-
-    public void setNotes(String notes) {
-        this.notes = notes;
-    }
-
-    public boolean hasNotes() {
-        return notes != null && !notes.isEmpty();
-    }
-
-    public PropertyType getGav() {
-        return gav;
-    }
-
-    public void setGav(PropertyType gav) {
-        this.gav = gav;
-    }
-
-    public boolean hasGav() {
-        return gav != null;
-    }
-
-    public void setPackageUrl(PropertyType purl) {
-        this.packageUrl = purl;
-    }
-
-    public boolean hasPackageUrl() {
-        return packageUrl != null;
-    }
-
-    public boolean isBase() {
-        return base;
-    }
-
-    public void setBase(boolean base) {
-        this.base = base;
-    }
-
-    public boolean hasVulnerabilityName() {
-        return !vulnerabilityNames.isEmpty();
-    }
-
-    public List<PropertyType> getVulnerabilityNames() {
-        return vulnerabilityNames;
-    }
-
-    public void addVulnerabilityName(PropertyType name) {
-        this.vulnerabilityNames.add(name);
-    }
+    public boolean hasVulnerabilityName() { return !vulnerabilityNames.isEmpty(); }
+    public List<PropertyType> getVulnerabilityNames() { return vulnerabilityNames; }
+    public void addVulnerabilityName(PropertyType name) { vulnerabilityNames.add(name); }
 
     // ---------------- main logic ----------------
 
@@ -239,10 +132,7 @@ public class SuppressionRule {
         if (hasGav()) {
             boolean found = false;
             for (Identifier i : dependency.getSoftwareIdentifiers()) {
-                if (identifierMatches(this.gav, i)) {
-                    found = true;
-                    break;
-                }
+                if (identifierMatches(gav, i)) { found = true; break; }
             }
             if (!found) return;
         }
@@ -250,10 +140,7 @@ public class SuppressionRule {
         if (hasPackageUrl()) {
             boolean found = false;
             for (Identifier i : dependency.getSoftwareIdentifiers()) {
-                if (purlMatches(this.packageUrl, i)) {
-                    found = true;
-                    break;
-                }
+                if (purlMatches(packageUrl, i)) { found = true; break; }
             }
             if (!found) return;
         }
@@ -295,34 +182,25 @@ public class SuppressionRule {
                 boolean remove = false;
 
                 for (String entry : cve) {
-                    if (entry.equalsIgnoreCase(v.getName())) {
-                        remove = true;
-                        break;
-                    }
+                    if (entry.equalsIgnoreCase(v.getName())) { remove = true; break; }
                 }
 
                 if (!remove && !cwe.isEmpty() && v.getCwes() != null) {
                     for (String entry : cwe) {
                         String toMatch = "CWE-" + entry;
                         if (v.getCwes().stream().anyMatch(c -> c.startsWith(toMatch))) {
-                            remove = true;
-                            break;
+                            remove = true; break;
                         }
                     }
                 }
 
                 if (!remove && v.getName() != null) {
                     for (PropertyType entry : vulnerabilityNames) {
-                        if (entry.matches(v.getName())) {
-                            remove = true;
-                            break;
-                        }
+                        if (entry.matches(v.getName())) { remove = true; break; }
                     }
                 }
 
-                if (!remove && suppressedBasedOnScore(v)) {
-                    remove = true;
-                }
+                if (!remove && suppressedBasedOnScore(v)) remove = true;
 
                 if (remove) {
                     removeVulns.add(v);
@@ -339,23 +217,24 @@ public class SuppressionRule {
     }
 
     boolean suppressedBasedOnScore(Vulnerability v) {
-        if (!cvssBelow.isEmpty()) {
-            for (Double cvss : cvssBelow) {
-                if (v.getCvssV2() != null && v.getCvssV2().getCvssData().getBaseScore() < cvss) return true;
-                if (v.getCvssV3() != null && v.getCvssV3().getCvssData().getBaseScore() < cvss) return true;
-                if (v.getCvssV4() != null && v.getCvssV4().getCvssData().getBaseScore() < cvss) return true;
-            }
-            return false;
+        for (Double cvss : cvssBelow) {
+            if (v.getCvssV2() != null && v.getCvssV2().getCvssData().getBaseScore() < cvss) return true;
+            if (v.getCvssV3() != null && v.getCvssV3().getCvssData().getBaseScore() < cvss) return true;
+            if (v.getCvssV4() != null && v.getCvssV4().getCvssData().getBaseScore() < cvss) return true;
         }
-
         return false;
     }
 
+    // ---- REQUIRED BY TESTS ----
+    public boolean cpeHasNoVersion(PropertyType cpe) {
+        if (cpe == null || cpe.getValue() == null) return true;
+        String v = cpe.getValue();
+        return !v.contains(":*") && !v.matches(".*:[0-9].*");
+    }
+
     protected boolean purlMatches(PropertyType suppressionEntry, Identifier identifier) {
-        if (identifier instanceof PurlIdentifier) {
-            return suppressionEntry.matches(((PurlIdentifier) identifier).toString());
-        }
-        return false;
+        return identifier instanceof PurlIdentifier
+                && suppressionEntry.matches(((PurlIdentifier) identifier).toString());
     }
 
     protected boolean identifierMatches(PropertyType suppressionEntry, Identifier identifier) {
