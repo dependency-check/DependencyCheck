@@ -262,14 +262,27 @@ public class SuppressionRule {
     protected boolean identifierMatches(PropertyType suppressionEntry, Identifier identifier) {
         if (identifier instanceof PurlIdentifier) {
             return suppressionEntry.matches(((PurlIdentifier) identifier).toGav());
-        } else if (identifier instanceof CpeIdentifier) {
-            try {
-                String cpeVal = ((CpeIdentifier) identifier).getCpe().toCpe22Uri();
-                return suppressionEntry.isRegex()
-                        ? suppressionEntry.matches(cpeVal)
-                        : cpeVal.toLowerCase().startsWith(
-            suppressionEntry.getValue().toLowerCase().replaceAll(":$", "")
-  );
+        }  {
+    try {
+        String cpeVal = ((CpeIdentifier) identifier).getCpe().toCpe22Uri();
+
+        if (suppressionEntry.isRegex()) {
+            return suppressionEntry.matches(cpeVal);
+        }
+
+        String ruleVal = suppressionEntry.getValue();
+        String rulePrefix = ruleVal.replaceAll(":$", "");
+
+        if (suppressionEntry.isCaseSensitive()) {
+            return cpeVal.startsWith(rulePrefix);
+        } else {
+            return cpeVal.toLowerCase().startsWith(rulePrefix.toLowerCase());
+        }
+
+    } catch (CpeEncodingException ex) {
+        LOGGER.debug("Unable to convert CPE", ex);
+    }
+}
             } catch (CpeEncodingException ex) {
                 LOGGER.debug("Unable to convert CPE", ex);
             }
