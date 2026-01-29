@@ -207,46 +207,31 @@ public class SuppressionRule {
 
     protected boolean suppressedBasedOnScore(Vulnerability v) {
 
-        double scoreV2 = Double.NaN;
-        double scoreV3 = Double.NaN;
+    Double scoreV2 = (v.getCvssV2() != null && v.getCvssV2().getCvssData() != null)
+            ? v.getCvssV2().getCvssData().getBaseScore() : null;
+    Double scoreV3 = (v.getCvssV3() != null && v.getCvssV3().getCvssData() != null)
+            ? v.getCvssV3().getCvssData().getBaseScore() : null;
+    Double scoreV4 = (v.getCvssV4() != null && v.getCvssV4().getCvssData() != null)
+            ? v.getCvssV4().getCvssData().getBaseScore() : null;
 
-        if (v.getCvssV2() != null && v.getCvssV2().getCvssData() != null) {
-            scoreV2 = v.getCvssV2().getCvssData().getBaseScore();
+    // 1) Generic cvssBelow (OR logic)
+    if (!cvssBelow.isEmpty()) {
+        double max = cvssBelow.stream().max(Double::compareTo).orElse(Double.NaN);
+        if ((scoreV2 != null && scoreV2 < max)
+                || (scoreV3 != null && scoreV3 < max)
+                || (scoreV4 != null && scoreV4 < max)) {
+            return true;
         }
-
-        if (v.getCvssV3() != null && v.getCvssV3().getCvssData() != null) {
-            scoreV3 = v.getCvssV3().getCvssData().getBaseScore();
-        }
-
-        // Generic cvssBelow (use highest threshold)
-        if (!cvssBelow.isEmpty()) {
-            double max = cvssBelow.stream().max(Double::compareTo).orElse(Double.NaN);
-
-            if ((!Double.isNaN(scoreV2) && scoreV2 < max) ||
-                (!Double.isNaN(scoreV3) && scoreV3 < max)) {
-                return true;
-            }
-        }
-
-        // CVSS v2 specific
-        if (!cvssV2Below.isEmpty() && !Double.isNaN(scoreV2)) {
-            double max = cvssV2Below.stream().max(Double::compareTo).orElse(Double.NaN);
-            if (scoreV2 < max) {
-                return true;
-            }
-        }
-
-        // CVSS v3 specific
-        if (!cvssV3Below.isEmpty() && !Double.isNaN(scoreV3)) {
-            double max = cvssV3Below.stream().max(Double::compareTo).orElse(Double.NaN);
-            if (scoreV3 < max) {
-                return true;
-            }
-        }
-
         return false;
     }
 
+    // 2) Version-specific thresholds (AND logic)
+    if (hasCvssV2Below() || hasCvssV3Below() || hasCvssV4Below()) {
+        return evaluateVersionedCvssSuppression(scoreV2, scoreV3, scoreV4);
+    }
+
+    return false;
+}
     // ---- REQUIRED BY TESTS ----
     public boolean cpeHasNoVersion(PropertyType cpe) {
         if (cpe == null || cpe.getValue() == null) return true;
@@ -286,6 +271,37 @@ public class SuppressionRule {
         }
         return suppressionEntry.matches(identifier.getValue());
     }
+
+   private boolean evaluateVersionedCvssSuppression(Double scoreV2, Double scoreV3, Double scoreV4) {
+    boolean anyVersionThreshold = false;
+    boolean allSatisfied = true;
+
+    if (hasCvssV2Below()) {
+        anyVersionThreshold = true;
+        double threshold = cvssV2Below.stream().max(Double::compareTo).orElse(Double.NaN);
+        if (scoreV2 == null || !(scoreV2 < threshold)) {
+            allSatisfied = false;
+        }
+    }
+
+    if (hasCvssV3Below()) {
+        anyVersionThreshold = true;
+        double threshold = cvssV3Below.stream().max(Double::compareTo).orElse(Double.NaN);
+        if (scoreV3 == null || !(scoreV3 < threshold)) {
+            allSatisfied = false;
+        }
+    }
+
+    if (hasCvssV4Below()) {
+        anyVersionThreshold = true;
+        double threshold = cvssV4Below.stream().max(Double::compareTo).orElse(Double.NaN);
+        if (scoreV4 == null || !(scoreV4 < threshold)) {
+            allSatisfied = false;
+        }
+    }
+
+    return anyVersionThreshold && allSatisfied;
+}
 
     @Override
     public String toString() {
