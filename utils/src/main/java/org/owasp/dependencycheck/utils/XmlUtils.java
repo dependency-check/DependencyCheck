@@ -17,17 +17,25 @@
  */
 package org.owasp.dependencycheck.utils;
 
-import java.io.InputStream;
+import java.nio.file.Path;
+import java.util.List;
+import java.util.Optional;
 import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
+
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.VisibleForTesting;
+import org.xml.sax.EntityResolver;
+import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXNotRecognizedException;
 import org.xml.sax.SAXNotSupportedException;
 import org.xml.sax.SAXParseException;
+import org.xml.sax.XMLReader;
 
 /**
  * Collection of XML related code.
@@ -39,17 +47,17 @@ public final class XmlUtils {
 
     /**
      * JAXP Schema Language. Source:
-     * http://docs.oracle.com/javase/tutorial/jaxp/sax/validation.html
+     * <a href="https://docs.oracle.com/javase/tutorial/jaxp/sax/validation.html">...</a>
      */
     public static final String JAXP_SCHEMA_LANGUAGE = "http://java.sun.com/xml/jaxp/properties/schemaLanguage";
     /**
      * W3C XML Schema. Source:
-     * http://docs.oracle.com/javase/tutorial/jaxp/sax/validation.html
+     * <a href="https://docs.oracle.com/javase/tutorial/jaxp/sax/validation.html">...</a>
      */
     public static final String W3C_XML_SCHEMA = "http://www.w3.org/2001/XMLSchema";
     /**
      * JAXP Schema Source. Source:
-     * http://docs.oracle.com/javase/tutorial/jaxp/sax/validation.html
+     * <a href="https://docs.oracle.com/javase/tutorial/jaxp/sax/validation.html">...</a>
      */
     public static final String JAXP_SCHEMA_SOURCE = "http://java.sun.com/xml/jaxp/properties/schemaSource";
 
@@ -60,50 +68,49 @@ public final class XmlUtils {
     }
 
     /**
-     * Constructs a validating secure SAX Parser.
+     * Constructs a validating secure SAX XMLReader that can validate against schemas maintained locally.
      *
-     * @param schemaStream One or more inputStreams with the schema(s) that the
-     * parser should be able to validate the XML against, one InputStream per
+     * @param schemas One or more schemas with the schema(s) that the
+     * parser should be able to validate the XML against, one InputSource per
      * schema
-     * @return a SAX Parser
+     * @return a validating SAX-based XML reader; pre-configured to validate against the locally passed schemas
      * @throws javax.xml.parsers.ParserConfigurationException is thrown if there
      * is a parser configuration exception
-     * @throws org.xml.sax.SAXNotRecognizedException thrown if there is an
-     * unrecognized feature
-     * @throws org.xml.sax.SAXNotSupportedException thrown if there is a
-     * non-supported feature
-     * @throws org.xml.sax.SAXException is thrown if there is a
-     * org.xml.sax.SAXException
+     * @throws org.xml.sax.SAXException is thrown if there is an issue setting SAX features
+     * on the parser; or creating the parser
      */
-    public static SAXParser buildSecureSaxParser(InputStream... schemaStream) throws ParserConfigurationException,
-            SAXNotRecognizedException, SAXNotSupportedException, SAXException {
-        final SAXParserFactory factory = SAXParserFactory.newInstance();
+    public static XMLReader buildSecureValidatingXmlReader(AutoCloseableInputSource... schemas) throws ParserConfigurationException,
+            SAXException {
+        final SAXParserFactory factory = buildSecureSaxParserFactory();
+
         factory.setNamespaceAware(true);
         factory.setValidating(true);
-        factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
-        factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
-        factory.setFeature("http://xml.org/sax/features/external-general-entities", false);
-        factory.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
-        factory.setFeature("http://apache.org/xml/features/nonvalidating/load-dtd-grammar", false);
-        factory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
-
-        String accessExternalSchema = System.getProperty("javax.xml.accessExternalSchema");
-        if (accessExternalSchema == null) {
-            accessExternalSchema = "file, https";
-        } else if (!"ALL".equalsIgnoreCase(accessExternalSchema)) {
-            if (!accessExternalSchema.contains("file")) {
-                accessExternalSchema += ", file";
-            }
-            if (!accessExternalSchema.contains("https")) {
-                accessExternalSchema += ", https";
-            }
-        }
-        System.setProperty("javax.xml.accessExternalSchema", accessExternalSchema);
 
         final SAXParser saxParser = factory.newSAXParser();
+
+        // Support validating from a set of schemas where we dont have schema locations set
         saxParser.setProperty(JAXP_SCHEMA_LANGUAGE, W3C_XML_SCHEMA);
-        saxParser.setProperty(JAXP_SCHEMA_SOURCE, schemaStream);
-        return saxParser;
+        saxParser.setProperty(JAXP_SCHEMA_SOURCE, schemas);
+
+        // Support validating where documents have schema location hints which we will intercept and load locally
+        XMLReader xmlReader = saxParser.getXMLReader();
+        xmlReader.setEntityResolver(new ExternalInterceptingEntityResolver(schemas));
+
+        return xmlReader;
+    }
+
+    /**
+     * Constructs a non-validating secure SAX XMLReader.
+     *
+     * @return a non-validating SAX-based XML reader
+     * @throws javax.xml.parsers.ParserConfigurationException is thrown if there
+     * is a parser configuration exception
+     * @throws org.xml.sax.SAXException is thrown if there is an issue setting SAX features
+     * on the parser; or creating the parser
+     */
+    public static XMLReader buildSecureXmlReader() throws ParserConfigurationException,
+            SAXException {
+        return buildSecureSaxParser().getXMLReader();
     }
 
     /**
@@ -133,25 +140,35 @@ public final class XmlUtils {
     }
 
     /**
-     * Constructs a secure SAX Parser.
+     * Constructs a secure non-validating SAX Parser.
      *
      * @return a SAX Parser
-     * @throws javax.xml.parsers.ParserConfigurationException thrown if there is
-     * a parser configuration exception
-     * @throws org.xml.sax.SAXNotRecognizedException thrown if there is an
-     * unrecognized feature
-     * @throws org.xml.sax.SAXNotSupportedException thrown if there is a
-     * non-supported feature
-     * @throws org.xml.sax.SAXException is thrown if there is a
-     * org.xml.sax.SAXException
+     * @throws javax.xml.parsers.ParserConfigurationException is thrown if there
+     * is a parser configuration exception
+     * @throws org.xml.sax.SAXException is thrown if there is an issue setting SAX features
+     * on the parser; or creating the parser
      */
     public static SAXParser buildSecureSaxParser() throws ParserConfigurationException,
-            SAXNotRecognizedException, SAXNotSupportedException, SAXException {
+            SAXException {
+        return buildSecureSaxParserFactory().newSAXParser();
+    }
+
+    private static @NotNull SAXParserFactory buildSecureSaxParserFactory() throws ParserConfigurationException, SAXNotRecognizedException, SAXNotSupportedException {
         final SAXParserFactory factory = SAXParserFactory.newInstance();
-        factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
-        factory.setFeature("http://xml.org/sax/features/external-general-entities", false);
+
+        // See https://xerces.apache.org/xerces2-j/features.html and
+        // https://cheatsheetseries.owasp.org/cheatsheets/XML_External_Entity_Prevention_Cheat_Sheet.html#jaxp-documentbuilderfactory-saxparserfactory-and-dom4j
         factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
-        return factory.newSAXParser();
+
+        // No doctypes, no DTDs (XSD only)
+        factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+        factory.setFeature("http://apache.org/xml/features/nonvalidating/load-dtd-grammar", false);
+        factory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+
+        // No XML Entity Expansion
+        factory.setFeature("http://xml.org/sax/features/external-general-entities", false);
+        factory.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
+        return factory;
     }
 
     /**
@@ -195,4 +212,49 @@ public final class XmlUtils {
 
         return sb.toString();
     }
+
+    /**
+     * Load HTTPS and file schema resources locally from the JAR files resources.
+     */
+    @VisibleForTesting
+    static class ExternalInterceptingEntityResolver implements EntityResolver {
+        private static final List<String> SCHEMA_LOCATION_PREFIXES_TO_INTERCEPT = List.of(
+                // Canonical remote location for schemas published by Dependency-Check
+                "https://dependency-check.github.io/DependencyCheck/",
+
+                // Legacy remote location for schemas published by Dependency-Check
+                "https://jeremylong.github.io/DependencyCheck/",
+
+                // improper URIs, e.g "schema.xsd" will be assumed as file URIs relative to current working directory
+                Path.of("").toUri().toString()
+        );
+
+        private final List<InputSource> inputSources;
+
+        @VisibleForTesting
+        ExternalInterceptingEntityResolver(InputSource[] inputSources) {
+            this.inputSources = List.of(inputSources);
+        }
+
+        @Override
+        public InputSource resolveEntity(String publicId, String systemId) {
+           return Optional.ofNullable(systemId)
+                   .map(this::toNormalizedResourceSystemId)
+                   .flatMap(this::toKnownResourcePath)
+                   .orElse(null);
+        }
+
+        private String toNormalizedResourceSystemId(String systemId) {
+            return matchedPrefixFor(systemId).map(prefix -> systemId.substring(prefix.length())).orElse(systemId);
+        }
+
+        private Optional<String> matchedPrefixFor(String systemId) {
+            return SCHEMA_LOCATION_PREFIXES_TO_INTERCEPT.stream().filter(systemId::startsWith).findFirst();
+        }
+
+        private Optional<InputSource> toKnownResourcePath(String resourceFilename) {
+            return inputSources.stream().filter( s -> resourceFilename.equals(s.getSystemId())).findFirst();
+        }
+    }
+
 }

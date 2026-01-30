@@ -264,7 +264,7 @@ public abstract class AbstractSuppressionAnalyzer extends AbstractAnalyzer {
             final URL url = new URL(configuredUrl);
             final String fileName = new File(url.getPath()).getName();
             if (fileName.isBlank()) {
-                throw new IllegalArgumentException("Hosted Suppression URL must imply a filename");
+                throw new IOException("Hosted Suppression URL must imply a filename");
             }
             final File repoFile = new File(getSettings().getDataDirectory(), fileName);
             boolean repoEmpty = !repoFile.isFile() || repoFile.length() <= 1L;

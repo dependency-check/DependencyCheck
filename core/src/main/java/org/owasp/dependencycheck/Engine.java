@@ -141,14 +141,6 @@ public class Engine implements FileFilter, AutoCloseable {
      */
     private CveDB database = null;
     /**
-     * Used to store the value of
-     * System.getProperty("javax.xml.accessExternalSchema") - ODC may change the
-     * value of this system property at runtime. We store the value to reset the
-     * property to its original value.
-     */
-    private final String accessExternalSchema;
-
-    /**
      * Creates a new {@link Mode#STANDALONE} Engine.
      *
      * @param settings reference to the configured settings
@@ -188,8 +180,6 @@ public class Engine implements FileFilter, AutoCloseable {
         this.settings = settings;
         this.serviceClassLoader = serviceClassLoader;
         this.mode = mode;
-        this.accessExternalSchema = System.getProperty("javax.xml.accessExternalSchema");
-
         initializeEngine();
     }
 
@@ -214,11 +204,6 @@ public class Engine implements FileFilter, AutoCloseable {
                 database.close();
                 database = null;
             }
-        }
-        if (accessExternalSchema != null) {
-            System.setProperty("javax.xml.accessExternalSchema", accessExternalSchema);
-        } else {
-            System.clearProperty("javax.xml.accessExternalSchema");
         }
         JCS.shutdown();
     }

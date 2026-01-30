@@ -178,6 +178,16 @@ class AbstractSuppressionAnalyzerTest extends BaseTest {
             assertAllHostedSnapshotSuppressionsAreMarkedAsBase(baseRules);
         }
 
+        private @NonNull List<SuppressionRule> assertAllBaseSuppressionRulesAreMarkedCorrectly() throws InvalidSettingException, InitializationException {
+            getSettings().setBoolean(KEYS.HOSTED_SUPPRESSIONS_ENABLED, false);
+            Engine engine = prepareSuppressions();
+
+            @SuppressWarnings("unchecked") List<SuppressionRule> baseRules = (List<SuppressionRule>) engine.getObject(SUPPRESSION_OBJECT_KEY);
+            assertThat(baseRules, not(empty()));
+            assertThat("Expected all suppressions in base file to be marked as base", allRulesNotMarkedAsBase(baseRules), empty());
+            return baseRules;
+        }
+
         private void assertAllHostedSnapshotSuppressionsAreMarkedAsBase(List<SuppressionRule> baseRules) throws InvalidSettingException, InitializationException {
             getSettings().setBoolean(KEYS.HOSTED_SUPPRESSIONS_ENABLED, true);
             getSettings().setString(KEYS.HOSTED_SUPPRESSIONS_URL, "https://intentionally-bad-url/hosted-suppressions.xml");
@@ -188,16 +198,6 @@ class AbstractSuppressionAnalyzerTest extends BaseTest {
             List<SuppressionRule> hostedSnapshotRules = allRules.stream().filter(r -> !baseRules.contains(r)).collect(Collectors.toList());
             assertThat(hostedSnapshotRules, not(empty()));
             assertThat("Expected all suppressions in hosted suppressions snapshot file to be marked as base", allRulesNotMarkedAsBase(hostedSnapshotRules), empty());
-        }
-
-        private @NonNull List<SuppressionRule> assertAllBaseSuppressionRulesAreMarkedCorrectly() throws InvalidSettingException, InitializationException {
-            getSettings().setBoolean(KEYS.HOSTED_SUPPRESSIONS_ENABLED, false);
-            Engine engine = prepareSuppressions();
-
-            @SuppressWarnings("unchecked") List<SuppressionRule> baseRules = (List<SuppressionRule>) engine.getObject(SUPPRESSION_OBJECT_KEY);
-            assertThat(baseRules, not(empty()));
-            assertThat("Expected all suppressions in base file to be marked as base", allRulesNotMarkedAsBase(baseRules), empty());
-            return baseRules;
         }
 
         private @NonNull List<SuppressionRule> allRulesNotMarkedAsBase(List<SuppressionRule> baseRules) {

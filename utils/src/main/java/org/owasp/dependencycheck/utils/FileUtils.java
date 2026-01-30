@@ -160,7 +160,6 @@ public final class FileUtils {
      * @return the input stream for the given resource
      * @throws FileNotFoundException if the file could not be found
      */
-    @Nullable
     public static InputStream getResourceAsStream(@NotNull String resource) throws FileNotFoundException {
         final ClassLoader classLoader = FileUtils.class.getClassLoader();
         final InputStream inputStream = classLoader != null

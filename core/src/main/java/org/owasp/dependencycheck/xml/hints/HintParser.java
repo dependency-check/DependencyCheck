@@ -28,11 +28,11 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 import javax.annotation.concurrent.NotThreadSafe;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.parsers.SAXParser;
+
 import org.apache.commons.io.ByteOrderMark;
 import org.apache.commons.io.input.BOMInputStream;
 
-import org.owasp.dependencycheck.utils.FileUtils;
+import org.owasp.dependencycheck.utils.AutoCloseableInputSource;
 import org.owasp.dependencycheck.utils.XmlUtils;
 
 import org.slf4j.Logger;
@@ -40,6 +40,8 @@ import org.slf4j.LoggerFactory;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
+
+import static org.owasp.dependencycheck.utils.AutoCloseableInputSource.fromResource;
 
 /**
  * A simple validating parser for XML Hint Rules.
@@ -53,21 +55,6 @@ public class HintParser {
      * The logger.
      */
     private static final Logger LOGGER = LoggerFactory.getLogger(HintParser.class);
-    /**
-     * JAXP Schema Language. Source:
-     * http://docs.oracle.com/javase/tutorial/jaxp/sax/validation.html
-     */
-    public static final String JAXP_SCHEMA_LANGUAGE = "http://java.sun.com/xml/jaxp/properties/schemaLanguage";
-    /**
-     * W3C XML Schema. Source:
-     * http://docs.oracle.com/javase/tutorial/jaxp/sax/validation.html
-     */
-    public static final String W3C_XML_SCHEMA = "http://www.w3.org/2001/XMLSchema";
-    /**
-     * JAXP Schema Source. Source:
-     * http://docs.oracle.com/javase/tutorial/jaxp/sax/validation.html
-     */
-    public static final String JAXP_SCHEMA_SOURCE = "http://java.sun.com/xml/jaxp/properties/schemaSource";
 
     /**
      * The schema for the hint XML files.
@@ -142,11 +129,10 @@ public class HintParser {
      * @throws SAXException thrown if the XML cannot be parsed
      */
     public void parseHints(InputStream inputStream) throws HintParseException, SAXException {
-        try (
-                InputStream schemaStream14 = FileUtils.getResourceAsStream(HINT_SCHEMA_1_4);
-                InputStream schemaStream13 = FileUtils.getResourceAsStream(HINT_SCHEMA_1_3);
-                InputStream schemaStream12 = FileUtils.getResourceAsStream(HINT_SCHEMA_1_2);
-                InputStream schemaStream11 = FileUtils.getResourceAsStream(HINT_SCHEMA_1_1)) {
+        try (AutoCloseableInputSource schemaStream14 = fromResource(HINT_SCHEMA_1_4);
+             AutoCloseableInputSource schemaStream13 = fromResource(HINT_SCHEMA_1_3);
+             AutoCloseableInputSource schemaStream12 = fromResource(HINT_SCHEMA_1_2);
+             AutoCloseableInputSource schemaStream11 = fromResource(HINT_SCHEMA_1_1)) {
 
             final BOMInputStream bomStream = BOMInputStream.builder().setInputStream(inputStream).get();
             final ByteOrderMark bom = bomStream.getBOM();
@@ -154,8 +140,7 @@ public class HintParser {
             final String charsetName = bom == null ? defaultEncoding : bom.getCharsetName();
 
             final HintHandler handler = new HintHandler();
-            final SAXParser saxParser = XmlUtils.buildSecureSaxParser(schemaStream14, schemaStream13, schemaStream12, schemaStream11);
-            final XMLReader xmlReader = saxParser.getXMLReader();
+            final XMLReader xmlReader = XmlUtils.buildSecureValidatingXmlReader(schemaStream14, schemaStream13, schemaStream12, schemaStream11);
             xmlReader.setErrorHandler(new HintErrorHandler());
             xmlReader.setContentHandler(handler);
             try (Reader reader = new InputStreamReader(bomStream, charsetName)) {

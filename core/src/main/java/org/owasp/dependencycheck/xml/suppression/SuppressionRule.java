@@ -858,9 +858,17 @@ public class SuppressionRule {
         return sb.toString();
     }
 
+    /**
+     * Suppression rules are considered equal if all properties except the "notes" and mutual "matched"
+     * status are equal.
+     *
+     * @param o   the reference object with which to compare.
+     * @return whether the object is equals to this one
+     */
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) return true;
         SuppressionRule that = (SuppressionRule) o;
         return base == that.base
                 && Objects.equals(filePath, that.filePath)
@@ -875,12 +883,11 @@ public class SuppressionRule {
                 && Objects.equals(vulnerabilityNames, that.vulnerabilityNames)
                 && Objects.equals(gav, that.gav)
                 && Objects.equals(packageUrl, that.packageUrl)
-                && Objects.equals(notes, that.notes)
                 && Objects.equals(until, that.until);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(filePath, sha1, cpe, cvssBelow, cvssV2Below, cvssV3Below, cvssV4Below, cwe, cve, vulnerabilityNames, gav, packageUrl, notes, base, until);
+        return Objects.hash(base, filePath, sha1, cpe, cvssBelow, cvssV2Below, cvssV3Below, cvssV4Below, cwe, cve, vulnerabilityNames, gav, packageUrl, until);
     }
 }
