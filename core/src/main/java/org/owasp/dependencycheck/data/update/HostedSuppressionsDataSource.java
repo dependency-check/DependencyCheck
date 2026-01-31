@@ -133,6 +133,10 @@ public class HostedSuppressionsDataSource extends LocalDataSource {
                 LOGGER.debug("Hosted Suppressions URL: {}", repoUrl.toExternalForm());
             }
             Downloader.getInstance().fetchFile(repoUrl, repoFile);
+            if(repoFile.exists() && repoFile.length() == 0) {
+                Files.delete(repoFile.toPath());
+                throw new UpdateException("Hosted suppressions file is empty or missing - attempting to force the update");
+            }
         } catch (IOException | TooManyRequestsException | ResourceNotFoundException | WriteLockException ex) {
             throw new UpdateException("Failed to update the hosted suppressions file", ex);
         }
