@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<suppressions xmlns="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.3.xsd">
+<suppressions xmlns="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.4.xsd"
+              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:schemaLocation="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.4.xsd
+                                  https://dependency-check.github.io/DependencyCheck/dependency-suppression.1.4.xsd">
     <suppress base="true">
         <notes><![CDATA[
         obvious fp - currently not returning any CVEs
@@ -5621,5 +5624,12 @@
         <packageUrl regex="true">^pkg:maven/com\.google\.protobuf/protobuf-.*@.*$</packageUrl>
         <cpe>cpe:/a:protobuf:protobuf:</cpe>
         <cpe>cpe:/a:google:protobuf:</cpe>
+    </suppress>
+    <suppress base="true">
+        <notes><![CDATA[
+   file name: zabbix-utils:2.0.3
+   ]]></notes>
+        <packageUrl regex="true">^pkg:pypi/zabbix-utils@.*$</packageUrl>
+        <cpe>cpe:/a:zabbix:zabbix</cpe>
     </suppress>
 </suppressions>

@@ -1,64 +1,61 @@
-/** *****************************************************************************
+/*******************************************************************************
  * This program and the accompanying materials
  * are made available under the terms of the Common Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/cpl-v10.html
  *
  * Contributors:
- *	 Peter Smith
- ****************************************************************************** */
-/** ****************************************************************************
- * This is a copy of https://github.com/kichik/pecoff4j/blob/2137804a7c1f1aa5f4272a9623bad452f7aab0ad/java/src/org/boris/pecoff4j/io/PEParser.java#L1
- * Added a logger and more forgiving error handling while reading files per https://github.com/dependency-check/DependencyCheck/issues/2601
- ***************************************************************************** */
+ *     Peter Smith
+ *******************************************************************************/
 package org.owasp.dependencycheck.utils;
 
-import org.boris.pecoff4j.*;
-import org.boris.pecoff4j.constant.ImageDataDirectoryType;
-import org.boris.pecoff4j.util.IntMap;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import org.boris.pecoff4j.io.ByteArrayDataReader;
-import org.boris.pecoff4j.io.DataEntry;
-import org.boris.pecoff4j.io.DataReader;
-import org.boris.pecoff4j.io.IDataReader;
-
+import com.kichik.pecoff4j.COFFHeader;
+import com.kichik.pecoff4j.DOSHeader;
+import com.kichik.pecoff4j.DOSStub;
+import com.kichik.pecoff4j.DebugDirectory;
+import com.kichik.pecoff4j.ImageData;
+import com.kichik.pecoff4j.OptionalHeader;
+import com.kichik.pecoff4j.PE;
+import com.kichik.pecoff4j.PESignature;
+import com.kichik.pecoff4j.SectionData;
+import com.kichik.pecoff4j.SectionTable;
+import com.kichik.pecoff4j.io.DataEntry;
+import com.kichik.pecoff4j.io.DataReader;
+import com.kichik.pecoff4j.io.IDataReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class PEParser {
+import java.io.EOFException;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 
-    /**
-     * Logger
-     */
+/**
+ * This includes a copy of {@link PE#read(IDataReader)} and a couple of private methods
+ * with some added error handling to swallow EOFExceptions when reading certain sections of the file
+ * to be a bit more lenient on some "corrupt" (or not fully handled) dlls, per
+ * <a href="https://github.com/dependency-check/DependencyCheck/issues/2601">...</a>
+ *
+ * @see com.kichik.pecoff4j.io.PEParser#parse(File) 
+ * @see PE#read(IDataReader)
+ */
+public class PEParser {
     private static final Logger LOGGER = LoggerFactory.getLogger(PEParser.class);
 
-    public static PE parse(InputStream is) throws IOException {
-        return read(new DataReader(is));
-    }
-
-    public static PE parse(String filename) throws IOException {
-        return parse(new File(filename));
-    }
-
     public static PE parse(File file) throws IOException {
-        return read(new DataReader(new FileInputStream(file)), file);
+        try (FileInputStream is = new FileInputStream(file); DataReader dr = new DataReader(is)) {
+            return read(dr, file.getPath());
+        }
     }
 
-    public static PE read(IDataReader dr) throws IOException {
-        return read(dr, null);
-    }
-
-    public static PE read(IDataReader dr, File file) throws IOException {
+    /**
+     * Duplicates {@link PE#read(IDataReader)} with added error handling to swallow EOFExceptions to be more lenient
+     * for certain file sections.
+     * @see PE#read(IDataReader)
+     */
+    private static PE read(IDataReader dr, String context) throws IOException {
         PE pe = new PE();
-        pe.setDosHeader(readDos(dr));
+        pe.setDosHeader(DOSHeader.read(dr));
 
         // Check if we have an old file type
         if (pe.getDosHeader().getAddressOfNewExeHeader() == 0
@@ -66,400 +63,52 @@ public class PEParser {
             return pe;
         }
 
-        pe.setStub(readStub(pe.getDosHeader(), dr));
-        pe.setSignature(readSignature(dr));
+        pe.setStub(DOSStub.read(pe.getDosHeader(), dr));
+        pe.setSignature(PESignature.read(dr));
 
         // Check signature to ensure we have a pe/coff file
         if (!pe.getSignature().isValid()) {
             return pe;
         }
 
-        pe.setCoffHeader(readCOFF(dr));
-        pe.setOptionalHeader(readOptional(dr));
-        pe.setSectionTable(readSectionHeaders(pe, dr));
+        pe.setCoffHeader(COFFHeader.read(dr));
+        pe.setOptionalHeader(OptionalHeader.read(dr));
+        pe.setSectionTable(SectionTable.read(pe, dr));
 
         pe.set64(pe.getOptionalHeader().isPE32plus());
 
         // Now read the rest of the file
-        DataEntry entry = null;
-        while ((entry = findNextEntry(pe, dr.getPosition())) != null) {
-            if (entry.isSection) {
-                readSection(pe, entry, dr);
+        DataEntry entry;
+        while ((entry = pe.findNextEntry(dr.getPosition())) != null) {
+            DataEntry finalEntry = entry;
+            if (finalEntry.isSection) {
+                SectionData.read(pe, finalEntry, dr);
             } else if (entry.isDebugRawData) {
-                try {
-                    readDebugRawData(pe, entry, dr);
-                } catch (java.io.EOFException eofEx) {
-                    if (file != null) {
-                        LOGGER.debug("Error reading debug raw data: " + file.getPath(), eofEx);
-                    }
-                }
-
+                withEofSwallowing(() -> readDebugRawData(pe, finalEntry, dr), "debug raw data: " + context);
             } else {
-                try {
-                    readImageData(pe, entry, dr);
-                } catch (java.io.EOFException eofEx) {
-                    if (file != null) {
-                        LOGGER.debug("Error reading image data: " + file.getPath(), eofEx);
-                    }
-                }
-
+                withEofSwallowing(() -> pe.getImageData().read(pe, finalEntry, dr), "image data: " + context);
             }
         }
 
         // Read any trailing data
-        try {
+        withEofSwallowing(() -> {
             byte[] tb = dr.readAll();
             if (tb.length > 0) {
                 pe.getImageData().setTrailingData(tb);
             }
-        } catch (java.io.EOFException eofEx) {
-            if (file != null) {
-                LOGGER.debug("Error reading trailing data: " + file.getPath(), eofEx);
-            }
-        }
+        }, "trailing data: " + context);
 
         return pe;
     }
 
-    public static DOSHeader readDos(IDataReader dr) throws IOException {
-        DOSHeader dh = new DOSHeader();
-        dh.setMagic(dr.readWord());
-        dh.setUsedBytesInLastPage(dr.readWord());
-        dh.setFileSizeInPages(dr.readWord());
-        dh.setNumRelocationItems(dr.readWord());
-        dh.setHeaderSizeInParagraphs(dr.readWord());
-        dh.setMinExtraParagraphs(dr.readWord());
-        dh.setMaxExtraParagraphs(dr.readWord());
-        dh.setInitialSS(dr.readWord());
-        dh.setInitialSP(dr.readWord());
-        dh.setChecksum(dr.readWord());
-        dh.setInitialIP(dr.readWord());
-        dh.setInitialRelativeCS(dr.readWord());
-        dh.setAddressOfRelocationTable(dr.readWord());
-        dh.setOverlayNumber(dr.readWord());
-        int[] reserved = new int[4];
-        for (int i = 0; i < reserved.length; i++) {
-            reserved[i] = dr.readWord();
-        }
-        dh.setReserved(reserved);
-        dh.setOemId(dr.readWord());
-        dh.setOemInfo(dr.readWord());
-        int[] reserved2 = new int[10];
-        for (int i = 0; i < reserved2.length; i++) {
-            reserved2[i] = dr.readWord();
-        }
-        dh.setReserved2(reserved2);
-        dh.setAddressOfNewExeHeader(dr.readDoubleWord());
-
-        // calc stub size
-        int stubSize = dh.getFileSizeInPages() * 512
-                - (512 - dh.getUsedBytesInLastPage());
-        if (stubSize > dh.getAddressOfNewExeHeader()) {
-            stubSize = dh.getAddressOfNewExeHeader();
-        }
-        stubSize -= dh.getHeaderSizeInParagraphs() * 16;
-        dh.setStubSize(stubSize);
-
-        return dh;
-    }
-
-    public static DOSStub readStub(DOSHeader header, IDataReader dr)
-            throws IOException {
-        DOSStub ds = new DOSStub();
-        int pos = dr.getPosition();
-        int add = header.getAddressOfNewExeHeader();
-        byte[] stub = new byte[add - pos];
-        dr.read(stub);
-        ds.setStub(stub);
-        return ds;
-    }
-
-    public static PESignature readSignature(IDataReader dr) throws IOException {
-        PESignature ps = new PESignature();
-        byte[] signature = new byte[4];
-        dr.read(signature);
-        ps.setSignature(signature);
-        return ps;
-    }
-
-    public static COFFHeader readCOFF(IDataReader dr) throws IOException {
-        COFFHeader h = new COFFHeader();
-        h.setMachine(dr.readWord());
-        h.setNumberOfSections(dr.readWord());
-        h.setTimeDateStamp(dr.readDoubleWord());
-        h.setPointerToSymbolTable(dr.readDoubleWord());
-        h.setNumberOfSymbols(dr.readDoubleWord());
-        h.setSizeOfOptionalHeader(dr.readWord());
-        h.setCharacteristics(dr.readWord());
-        return h;
-    }
-
-    public static OptionalHeader readOptional(IDataReader dr)
-            throws IOException {
-        OptionalHeader oh = new OptionalHeader();
-        oh.setMagic(dr.readWord());
-        boolean is64 = oh.isPE32plus();
-        oh.setMajorLinkerVersion(dr.readByte());
-        oh.setMinorLinkerVersion(dr.readByte());
-        oh.setSizeOfCode(dr.readDoubleWord());
-        oh.setSizeOfInitializedData(dr.readDoubleWord());
-        oh.setSizeOfUninitializedData(dr.readDoubleWord());
-        oh.setAddressOfEntryPoint(dr.readDoubleWord());
-        oh.setBaseOfCode(dr.readDoubleWord());
-
-        if (!is64) {
-            oh.setBaseOfData(dr.readDoubleWord());
-        }
-
-        // NT additional fields.
-        oh.setImageBase(is64 ? dr.readLong() : dr.readDoubleWord());
-        oh.setSectionAlignment(dr.readDoubleWord());
-        oh.setFileAlignment(dr.readDoubleWord());
-        oh.setMajorOperatingSystemVersion(dr.readWord());
-        oh.setMinorOperatingSystemVersion(dr.readWord());
-        oh.setMajorImageVersion(dr.readWord());
-        oh.setMinorImageVersion(dr.readWord());
-        oh.setMajorSubsystemVersion(dr.readWord());
-        oh.setMinorSubsystemVersion(dr.readWord());
-        oh.setWin32VersionValue(dr.readDoubleWord());
-        oh.setSizeOfImage(dr.readDoubleWord());
-        oh.setSizeOfHeaders(dr.readDoubleWord());
-        oh.setCheckSum(dr.readDoubleWord());
-        oh.setSubsystem(dr.readWord());
-        oh.setDllCharacteristics(dr.readWord());
-        oh.setSizeOfStackReserve(is64 ? dr.readLong() : dr.readDoubleWord());
-        oh.setSizeOfStackCommit(is64 ? dr.readLong() : dr.readDoubleWord());
-        oh.setSizeOfHeapReserve(is64 ? dr.readLong() : dr.readDoubleWord());
-        oh.setSizeOfHeapCommit(is64 ? dr.readLong() : dr.readDoubleWord());
-        oh.setLoaderFlags(dr.readDoubleWord());
-        oh.setNumberOfRvaAndSizes(dr.readDoubleWord());
-
-        // Data directories
-        ImageDataDirectory[] dds = new ImageDataDirectory[16];
-        for (int i = 0; i < dds.length; i++) {
-            dds[i] = readImageDD(dr);
-        }
-        oh.setDataDirectories(dds);
-
-        return oh;
-    }
-
-    public static ImageDataDirectory readImageDD(IDataReader dr)
-            throws IOException {
-        ImageDataDirectory idd = new ImageDataDirectory();
-        idd.setVirtualAddress(dr.readDoubleWord());
-        idd.setSize(dr.readDoubleWord());
-        return idd;
-    }
-
-    public static SectionTable readSectionHeaders(PE pe, IDataReader dr)
-            throws IOException {
-        SectionTable st = new SectionTable();
-        int ns = pe.getCoffHeader().getNumberOfSections();
-        for (int i = 0; i < ns; i++) {
-            st.add(readSectionHeader(dr));
-        }
-
-        SectionHeader[] sorted = st.getHeadersPointerSorted();
-        int[] virtualAddress = new int[sorted.length];
-        int[] pointerToRawData = new int[sorted.length];
-        for (int i = 0; i < sorted.length; i++) {
-            virtualAddress[i] = sorted[i].getVirtualAddress();
-            pointerToRawData[i] = sorted[i].getPointerToRawData();
-        }
-
-        st.setRvaConverter(new RVAConverter(virtualAddress, pointerToRawData));
-        return st;
-    }
-
-    public static SectionHeader readSectionHeader(IDataReader dr)
-            throws IOException {
-        SectionHeader sh = new SectionHeader();
-        sh.setName(dr.readUtf(8));
-        sh.setVirtualSize(dr.readDoubleWord());
-        sh.setVirtualAddress(dr.readDoubleWord());
-        sh.setSizeOfRawData(dr.readDoubleWord());
-        sh.setPointerToRawData(dr.readDoubleWord());
-        sh.setPointerToRelocations(dr.readDoubleWord());
-        sh.setPointerToLineNumbers(dr.readDoubleWord());
-        sh.setNumberOfRelocations(dr.readWord());
-        sh.setNumberOfLineNumbers(dr.readWord());
-        sh.setCharacteristics(dr.readDoubleWord());
-        return sh;
-    }
-
-    public static DataEntry findNextEntry(PE pe, int pos) {
-        DataEntry de = new DataEntry();
-
-        // Check sections first
-        int ns = pe.getCoffHeader().getNumberOfSections();
-        for (int i = 0; i < ns; i++) {
-            SectionHeader sh = pe.getSectionTable().getHeader(i);
-            if (sh.getSizeOfRawData() > 0
-                    && sh.getPointerToRawData() >= pos
-                    && (de.pointer == 0 || sh.getPointerToRawData() < de.pointer)) {
-                de.pointer = sh.getPointerToRawData();
-                de.index = i;
-                de.isSection = true;
-            }
-        }
-
-        // Now check image data directories
-        RVAConverter rvc = pe.getSectionTable().getRVAConverter();
-        int dc = pe.getOptionalHeader().getDataDirectoryCount();
-        for (int i = 0; i < dc; i++) {
-            ImageDataDirectory idd = pe.getOptionalHeader().getDataDirectory(i);
-            if (idd.getSize() > 0) {
-                int prd = idd.getVirtualAddress();
-                // Assume certificate live outside section ?
-                if (i != ImageDataDirectoryType.CERTIFICATE_TABLE
-                        && isInsideSection(pe, idd)) {
-                    prd = rvc.convertVirtualAddressToRawDataPointer(idd
-                            .getVirtualAddress());
-                }
-                if (prd >= pos && (de.pointer == 0 || prd < de.pointer)) {
-                    de.pointer = prd;
-                    de.index = i;
-                    de.isSection = false;
-                }
-            }
-        }
-
-        // Check debug
-        ImageData id = pe.getImageData();
-        DebugDirectory dd = null;
-        if (id != null) {
-            dd = id.getDebug();
-        }
-        if (dd != null) {
-            int prd = dd.getPointerToRawData();
-            if (prd >= pos && (de.pointer == 0 || prd < de.pointer)) {
-                de.pointer = prd;
-                de.index = -1;
-                de.isDebugRawData = true;
-                de.isSection = false;
-                de.baseAddress = prd;
-            }
-        }
-
-        if (de.pointer == 0) {
-            return null;
-        }
-
-        return de;
-    }
-
-    private static boolean isInsideSection(PE pe, ImageDataDirectory idd) {
-        int prd = idd.getVirtualAddress();
-        int pex = prd + idd.getSize();
-        SectionTable st = pe.getSectionTable();
-        int ns = st.getNumberOfSections();
-        for (int i = 0; i < ns; i++) {
-            SectionHeader sh = st.getHeader(i);
-            int vad = sh.getVirtualAddress();
-            int vex = vad + sh.getVirtualSize();
-            if (prd >= vad && prd < vex && pex <= vex) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private static void readImageData(PE pe, DataEntry entry, IDataReader dr)
-            throws IOException {
-
+    /**
+     * Duplicates {@link PE#readDebugRawData(PE, DataEntry, IDataReader)} since it is private.
+     * @see PE#readDebugRawData(PE, DataEntry, IDataReader)
+     */
+    private static void readDebugRawData(PE pe, DataEntry entry, IDataReader dr) throws IOException {
         // Read any preamble data
         ImageData id = pe.getImageData();
-        byte[] pa = readPreambleData(entry.pointer, dr);
-        if (pa != null) {
-            id.put(entry.index, pa);
-        }
-
-        // Read the image data
-        ImageDataDirectory idd = pe.getOptionalHeader().getDataDirectory(
-                entry.index);
-        byte[] b = new byte[idd.getSize()];
-        dr.read(b);
-
-        switch (entry.index) {
-            case ImageDataDirectoryType.EXPORT_TABLE:
-                id.setExportTable(readExportDirectory(b));
-                break;
-            case ImageDataDirectoryType.IMPORT_TABLE:
-                id.setImportTable(readImportDirectory(b, entry.baseAddress));
-                break;
-            case ImageDataDirectoryType.RESOURCE_TABLE:
-                id.setResourceTable(readResourceDirectory(b, entry.baseAddress));
-                break;
-            case ImageDataDirectoryType.EXCEPTION_TABLE:
-                id.setExceptionTable(b);
-                break;
-            case ImageDataDirectoryType.CERTIFICATE_TABLE:
-                id.setCertificateTable(readAttributeCertificateTable(b));
-                break;
-            case ImageDataDirectoryType.BASE_RELOCATION_TABLE:
-                id.setBaseRelocationTable(b);
-                break;
-            case ImageDataDirectoryType.DEBUG:
-                id.setDebug(readDebugDirectory(b));
-                break;
-            case ImageDataDirectoryType.ARCHITECTURE:
-                id.setArchitecture(b);
-                break;
-            case ImageDataDirectoryType.GLOBAL_PTR:
-                id.setGlobalPtr(b);
-                break;
-            case ImageDataDirectoryType.TLS_TABLE:
-                id.setTlsTable(b);
-                break;
-            case ImageDataDirectoryType.LOAD_CONFIG_TABLE:
-                id.setLoadConfigTable(readLoadConfigDirectory(pe, b));
-                break;
-            case ImageDataDirectoryType.BOUND_IMPORT:
-                id.setBoundImports(readBoundImportDirectoryTable(b));
-                break;
-            case ImageDataDirectoryType.IAT:
-                id.setIat(b);
-                break;
-            case ImageDataDirectoryType.DELAY_IMPORT_DESCRIPTOR:
-                id.setDelayImportDescriptor(b);
-                break;
-            case ImageDataDirectoryType.CLR_RUNTIME_HEADER:
-                id.setClrRuntimeHeader(b);
-                break;
-            case ImageDataDirectoryType.RESERVED:
-                id.setReserved(b);
-                break;
-            default:
-                break;
-        }
-    }
-
-    private static byte[] readPreambleData(int pointer, IDataReader dr)
-            throws IOException {
-        if (pointer > dr.getPosition()) {
-            byte[] pa = new byte[pointer - dr.getPosition()];
-            dr.read(pa);
-            boolean zeroes = true;
-            for (byte b : pa) {
-                if (b != 0) {
-                    zeroes = false;
-                    break;
-                }
-            }
-            if (!zeroes) {
-                return pa;
-            }
-        }
-
-        return null;
-    }
-
-    private static void readDebugRawData(PE pe, DataEntry entry, IDataReader dr)
-            throws IOException {
-        // Read any preamble data
-        ImageData id = pe.getImageData();
-        byte[] pa = readPreambleData(entry.pointer, dr);
+        byte[] pa = dr.readNonZeroOrNull(entry.pointer);
         if (pa != null) {
             id.setDebugRawDataPreamble(pa);
         }
@@ -469,319 +118,15 @@ public class PEParser {
         id.setDebugRawData(b);
     }
 
-    private static void readSection(PE pe, DataEntry entry, IDataReader dr)
-            throws IOException {
-        SectionTable st = pe.getSectionTable();
-        SectionHeader sh = st.getHeader(entry.index);
-        SectionData sd = new SectionData();
-
-        // Read any preamble - store if non-zero
-        byte[] pa = readPreambleData(sh.getPointerToRawData(), dr);
-        if (pa != null) {
-            sd.setPreamble(pa);
-        }
-
-        // Read in the raw data block
-        dr.jumpTo(sh.getPointerToRawData());
-        byte[] b = new byte[sh.getSizeOfRawData()];
-        dr.read(b);
-        sd.setData(b);
-        st.put(entry.index, sd);
-
-        // Check for an image directory within this section
-        int ddc = pe.getOptionalHeader().getDataDirectoryCount();
-        for (int i = 0; i < ddc; i++) {
-            if (i == ImageDataDirectoryType.CERTIFICATE_TABLE) {
-                continue;
-            }
-            ImageDataDirectory idd = pe.getOptionalHeader().getDataDirectory(i);
-            if (idd.getSize() > 0) {
-                int vad = sh.getVirtualAddress();
-                int vex = vad + sh.getVirtualSize();
-                int dad = idd.getVirtualAddress();
-                if (dad >= vad && dad < vex) {
-                    int off = dad - vad;
-                    IDataReader idr = new ByteArrayDataReader(b, off,
-                            idd.getSize());
-                    DataEntry de = new DataEntry(i, 0);
-                    de.baseAddress = sh.getVirtualAddress();
-                    readImageData(pe, de, idr);
-                }
-            }
+    private static void withEofSwallowing(IOExceptionThrower throwingRunnable, String errorContext) throws IOException {
+        try {
+            throwingRunnable.read();
+        } catch (EOFException e) {
+            LOGGER.debug("Error reading {}. Trying to continue...", errorContext, e);
         }
     }
 
-    private static BoundImportDirectoryTable readBoundImportDirectoryTable(
-            byte[] b) throws IOException {
-        DataReader dr = new DataReader(b);
-        BoundImportDirectoryTable bidt = new BoundImportDirectoryTable();
-        List<BoundImport> imports = new ArrayList<>();
-        BoundImport bi = null;
-        while ((bi = readBoundImport(dr)) != null) {
-            bidt.add(bi);
-            imports.add(bi);
-        }
-        imports.sort((o1, o2) -> o1.getOffsetToModuleName() - o2.getOffsetToModuleName());
-        IntMap names = new IntMap();
-        for (BoundImport anImport : imports) {
-            bi = anImport;
-            int offset = bi.getOffsetToModuleName();
-            String n = (String) names.get(offset);
-            if (n == null) {
-                dr.jumpTo(offset);
-                n = dr.readUtf();
-                names.put(offset, n);
-            }
-            bi.setModuleName(n);
-        }
-        return bidt;
+    private interface IOExceptionThrower {
+        void read() throws IOException;
     }
-
-    private static BoundImport readBoundImport(IDataReader dr)
-            throws IOException {
-        BoundImport bi = new BoundImport();
-        bi.setTimestamp(dr.readDoubleWord());
-        bi.setOffsetToModuleName(dr.readWord());
-        bi.setNumberOfModuleForwarderRefs(dr.readWord());
-
-        if (bi.getTimestamp() == 0 && bi.getOffsetToModuleName() == 0
-                && bi.getNumberOfModuleForwarderRefs() == 0) {
-            return null;
-        }
-
-        return bi;
-    }
-
-    public static ImportDirectory readImportDirectory(byte[] b, int baseAddress)
-            throws IOException {
-        DataReader dr = new DataReader(b);
-        ImportDirectory id = new ImportDirectory();
-        ImportDirectoryEntry ide = null;
-        while ((ide = readImportDirectoryEntry(dr)) != null) {
-            id.add(ide);
-        }
-
-        /*
-		 * FIXME - name table refer to data outside image directory for (int i =
-		 * 0; i < id.size(); i++) { ImportDirectoryEntry e = id.getEntry(i);
-		 * dr.jumpTo(e.getNameRVA() - baseAddress); String name = dr.readUtf();
-		 * dr.jumpTo(e.getImportLookupTableRVA() - baseAddress);
-		 * ImportDirectoryTable nt = readImportDirectoryTable(dr, baseAddress);
-		 * dr.jumpTo(e.getImportAddressTableRVA() - baseAddress);
-		 * ImportDirectoryTable at = null; // readImportDirectoryTable(dr, //
-		 * baseAddress); id.add(name, nt, at); }
-         */
-        return id;
-    }
-
-    public static ImportDirectoryEntry readImportDirectoryEntry(IDataReader dr)
-            throws IOException {
-        ImportDirectoryEntry id = new ImportDirectoryEntry();
-        id.setImportLookupTableRVA(dr.readDoubleWord());
-        id.setTimeDateStamp(dr.readDoubleWord());
-        id.setForwarderChain(dr.readDoubleWord());
-        id.setNameRVA(dr.readDoubleWord());
-        id.setImportAddressTableRVA(dr.readDoubleWord());
-
-        // The last entry is null
-        if (id.getImportLookupTableRVA() == 0) {
-            return null;
-        }
-
-        return id;
-    }
-
-    public static ImportDirectoryTable readImportDirectoryTable(IDataReader dr,
-            int baseAddress) throws IOException {
-        ImportDirectoryTable idt = new ImportDirectoryTable();
-        ImportEntry ie = null;
-        while ((ie = readImportEntry(dr)) != null) {
-            idt.add(ie);
-        }
-
-        for (int i = 0; i < idt.size(); i++) {
-            ImportEntry iee = idt.getEntry(i);
-            if ((iee.getVal() & 0x80000000) != 0) {
-                iee.setOrdinal(iee.getVal() & 0x7fffffff);
-            } else {
-                dr.jumpTo(iee.getVal() - baseAddress);
-                dr.readWord(); // FIXME this is an index into the export table
-                iee.setName(dr.readUtf());
-            }
-        }
-        return idt;
-    }
-
-    public static ImportEntry readImportEntry(IDataReader dr)
-            throws IOException {
-        ImportEntry ie = new ImportEntry();
-        ie.setVal(dr.readDoubleWord());
-        if (ie.getVal() == 0) {
-            return null;
-        }
-
-        return ie;
-    }
-
-    public static ExportDirectory readExportDirectory(byte[] b)
-            throws IOException {
-        DataReader dr = new DataReader(b);
-        ExportDirectory edt = new ExportDirectory();
-        edt.set(b);
-        edt.setExportFlags(dr.readDoubleWord());
-        edt.setTimeDateStamp(dr.readDoubleWord());
-        edt.setMajorVersion(dr.readWord());
-        edt.setMinorVersion(dr.readWord());
-        edt.setNameRVA(dr.readDoubleWord());
-        edt.setOrdinalBase(dr.readDoubleWord());
-        edt.setAddressTableEntries(dr.readDoubleWord());
-        edt.setNumberOfNamePointers(dr.readDoubleWord());
-        edt.setExportAddressTableRVA(dr.readDoubleWord());
-        edt.setNamePointerRVA(dr.readDoubleWord());
-        edt.setOrdinalTableRVA(dr.readDoubleWord());
-        return edt;
-    }
-
-    public static LoadConfigDirectory readLoadConfigDirectory(PE pe, byte[] b)
-            throws IOException {
-        DataReader dr = new DataReader(b);
-        LoadConfigDirectory lcd = new LoadConfigDirectory();
-        lcd.set(b);
-        lcd.setSize(dr.readDoubleWord());
-        lcd.setTimeDateStamp(dr.readDoubleWord());
-        lcd.setMajorVersion(dr.readWord());
-        lcd.setMinorVersion(dr.readWord());
-        lcd.setGlobalFlagsClear(dr.readDoubleWord());
-        lcd.setGlobalFlagsSet(dr.readDoubleWord());
-        lcd.setCriticalSectionDefaultTimeout(dr.readDoubleWord());
-        lcd.setDeCommitFreeBlockThreshold(pe.is64() ? dr.readLong() : dr.readDoubleWord());
-        lcd.setDeCommitTotalFreeThreshold(pe.is64() ? dr.readLong() : dr.readDoubleWord());
-        lcd.setLockPrefixTable(pe.is64() ? dr.readLong() : dr.readDoubleWord());
-        lcd.setMaximumAllocationSize(pe.is64() ? dr.readLong() : dr.readDoubleWord());
-        lcd.setVirtualMemoryThreshold(pe.is64() ? dr.readLong() : dr.readDoubleWord());
-        lcd.setProcessAffinityMask(pe.is64() ? dr.readLong() : dr.readDoubleWord());
-        lcd.setProcessHeapFlags(dr.readDoubleWord());
-        lcd.setCsdVersion(dr.readWord());
-        lcd.setReserved(dr.readWord());
-        lcd.setEditList(pe.is64() ? dr.readLong() : dr.readDoubleWord());
-        if (dr.hasMore()) // optional
-        {
-            lcd.setSecurityCookie(pe.is64() ? dr.readLong() : dr.readDoubleWord());
-        }
-        if (dr.hasMore()) // optional
-        {
-            lcd.setSeHandlerTable(pe.is64() ? dr.readLong() : dr.readDoubleWord());
-        }
-        if (dr.hasMore()) // optional
-        {
-            lcd.setSeHandlerCount(pe.is64() ? dr.readLong() : dr.readDoubleWord());
-        }
-
-        return lcd;
-    }
-
-    public static DebugDirectory readDebugDirectory(byte[] b)
-            throws IOException {
-        return readDebugDirectory(b, new DataReader(b));
-    }
-
-    public static DebugDirectory readDebugDirectory(byte[] b, IDataReader dr)
-            throws IOException {
-        DebugDirectory dd = new DebugDirectory();
-        dd.set(b);
-        dd.setCharacteristics(dr.readDoubleWord());
-        dd.setTimeDateStamp(dr.readDoubleWord());
-        dd.setMajorVersion(dr.readWord());
-        dd.setMajorVersion(dr.readWord());
-        dd.setType(dr.readDoubleWord());
-        dd.setSizeOfData(dr.readDoubleWord());
-        dd.setAddressOfRawData(dr.readDoubleWord());
-        dd.setPointerToRawData(dr.readDoubleWord());
-        return dd;
-    }
-
-    private static ResourceDirectory readResourceDirectory(byte[] b,
-            int baseAddress) throws IOException {
-        IDataReader dr = new ByteArrayDataReader(b);
-        return readResourceDirectory(dr, baseAddress);
-    }
-
-    private static ResourceDirectory readResourceDirectory(IDataReader dr,
-            int baseAddress) throws IOException {
-        ResourceDirectory d = new ResourceDirectory();
-        d.setTable(readResourceDirectoryTable(dr));
-        int ne = d.getTable().getNumNameEntries()
-                + d.getTable().getNumIdEntries();
-        for (int i = 0; i < ne; i++) {
-            d.add(readResourceEntry(dr, baseAddress));
-        }
-
-        return d;
-    }
-
-    private static ResourceEntry readResourceEntry(IDataReader dr,
-            int baseAddress) throws IOException {
-        ResourceEntry re = new ResourceEntry();
-        int id = dr.readDoubleWord();
-        int offset = dr.readDoubleWord();
-        re.setOffset(offset);
-        int pos = dr.getPosition();
-        if ((id & 0x80000000) != 0) {
-            dr.jumpTo(id & 0x7fffffff);
-            re.setName(dr.readUnicode(dr.readWord()));
-        } else {
-            re.setId(id);
-        }
-        if ((offset & 0x80000000) != 0) {
-            dr.jumpTo(offset & 0x7fffffff);
-            re.setDirectory(readResourceDirectory(dr, baseAddress));
-        } else {
-            dr.jumpTo(offset);
-            int rva = dr.readDoubleWord();
-            int size = dr.readDoubleWord();
-            int cp = dr.readDoubleWord();
-            int res = dr.readDoubleWord();
-            re.setDataRVA(rva);
-            re.setCodePage(cp);
-            re.setReserved(res);
-            dr.jumpTo(rva - baseAddress);
-            byte[] b = new byte[size];
-            dr.read(b);
-            re.setData(b);
-        }
-        dr.jumpTo(pos);
-        return re;
-    }
-
-    private static ResourceDirectoryTable readResourceDirectoryTable(
-            IDataReader dr) throws IOException {
-        ResourceDirectoryTable t = new ResourceDirectoryTable();
-        t.setCharacteristics(dr.readDoubleWord());
-        t.setTimeDateStamp(dr.readDoubleWord());
-        t.setMajorVersion(dr.readWord());
-        t.setMinVersion(dr.readWord());
-        t.setNumNameEntries(dr.readWord());
-        t.setNumIdEntries(dr.readWord());
-
-        return t;
-    }
-
-    public static AttributeCertificateTable readAttributeCertificateTable(byte[] b)
-            throws IOException {
-        return readAttributeCertificateTable(b, new DataReader(b));
-    }
-
-    public static AttributeCertificateTable readAttributeCertificateTable(byte[] b, IDataReader dr)
-            throws IOException {
-        AttributeCertificateTable dd = new AttributeCertificateTable();
-        dd.set(b);
-        dd.setLength(dr.readDoubleWord());
-        dd.setRevision(dr.readWord());
-        dd.setCertificateType(dr.readWord());
-        byte[] certificate = new byte[dd.getLength() - 8];
-        dr.read(certificate);
-        dd.setCertificate(certificate);
-        return dd;
-    }
-
 }

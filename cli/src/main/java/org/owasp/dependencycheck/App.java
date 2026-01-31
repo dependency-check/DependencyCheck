@@ -50,7 +50,6 @@ import ch.qos.logback.classic.filter.ThresholdFilter;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.LoggerContext;
-import io.github.jeremylong.jcs3.slf4j.Slf4jAdapter;
 
 import java.util.TreeSet;
 
@@ -570,6 +569,8 @@ public class App {
                 !cli.isDisabled(CliParser.ARGUMENT.DISABLE_AUTOCONF, Settings.KEYS.ANALYZER_AUTOCONF_ENABLED));
         settings.setBoolean(Settings.KEYS.ANALYZER_MAVEN_INSTALL_ENABLED,
                 !cli.isDisabled(CliParser.ARGUMENT.DISABLE_MAVEN_INSTALL, Settings.KEYS.ANALYZER_MAVEN_INSTALL_ENABLED));
+        settings.setBoolean(Settings.KEYS.ANALYZER_PE_ENABLED,
+                !cli.isDisabled(CliParser.ARGUMENT.DISABLE_PE, Settings.KEYS.ANALYZER_PE_ENABLED));
         settings.setBoolean(Settings.KEYS.ANALYZER_PIP_ENABLED,
                 !cli.isDisabled(CliParser.ARGUMENT.DISABLE_PIP, Settings.KEYS.ANALYZER_PIP_ENABLED));
         settings.setBoolean(Settings.KEYS.ANALYZER_PIPFILE_ENABLED,

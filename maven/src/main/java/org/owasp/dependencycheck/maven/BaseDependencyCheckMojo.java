@@ -1168,7 +1168,7 @@ public abstract class BaseDependencyCheckMojo extends AbstractMojo implements Ma
     private Retirejs retirejs;
 
     /**
-     * The list of patterns to exclude from the check. This is matched against the project dependencies (and will implicitly also remove transitive dependencies from matching dependencies). 
+     * The list of patterns to exclude from the check. This is matched against the project dependencies (and will implicitly also remove transitive dependencies from matching dependencies).
      * Each pattern has the format {@code [groupId]:[artifactId]:[type]:[version]}. You can leave out unspecified parts (which is equal to using {@code *}).
      * Examples: {@code org.apache.*} would match all artifacts whose group id starts with {@code org.apache.}, and {@code :::*-SNAPSHOT} would match all snapshot artifacts.
      */
@@ -2727,12 +2727,15 @@ public abstract class BaseDependencyCheckMojo extends AbstractMojo implements Ma
     }
 
     /**
-     * Hacky method of muting the noisy logging from JCS
+     * Hacky method of muting the noisy logging from certain libraries.
      */
-    protected void muteNoisyLoggers() {
-        final String[] noisyLoggers = {
+    void muteNoisyLoggers() {
+        // Mirrors the configuration within cli/src/main/resources/logback.xml
+        final List<String> noisyLoggers = List.of(
+            "org.apache.lucene",
+            "org.apache.commons.jcs3",
             "org.apache.hc"
-        };
+        );
         for (String loggerName : noisyLoggers) {
             System.setProperty("org.slf4j.simpleLogger.log." + loggerName, "error");
         }
