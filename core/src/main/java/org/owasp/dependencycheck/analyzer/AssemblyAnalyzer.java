@@ -407,9 +407,6 @@ public class AssemblyAnalyzer extends AbstractFileTypeAnalyzer {
     private File extractGrokAssembly() throws InitializationException {
         final File location;
         try (InputStream in = FileUtils.getResourceAsStream("GrokAssembly.zip")) {
-            if (in == null) {
-                throw new InitializationException("Unable to extract GrokAssembly.dll - file not found");
-            }
             location = FileUtils.createTempDirectory(getSettings().getTempDirectory());
             ExtractionUtil.extractFiles(in, location);
         } catch (ExtractionException ex) {

@@ -41,7 +41,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
-import org.xml.sax.XMLReader;
 
 import javax.annotation.concurrent.NotThreadSafe;
 import javax.xml.XMLConstants;
@@ -445,27 +444,16 @@ public class ReportGenerator {
      * @throws ReportException is thrown when an exception occurs
      */
     protected void processTemplate(String templateName, OutputStream outputStream) throws ReportException {
-        InputStream input = null;
-        String logTag;
-        final File f = new File(templateName);
         try {
+            String logTag;
+            InputStream input;
+            final File f = new File(templateName);
             if (f.isFile()) {
-                try {
-                    logTag = templateName;
-                    input = new FileInputStream(f);
-                } catch (FileNotFoundException ex) {
-                    throw new ReportException("Unable to locate template file: " + templateName, ex);
-                }
+                logTag = templateName;
+                input = new FileInputStream(f);
             } else {
                 logTag = "templates/" + templateName + ".vsl";
                 input = FileUtils.getResourceAsStream(logTag);
-            }
-            if (input == null) {
-                logTag = templateName;
-                input = FileUtils.getResourceAsStream(templateName);
-            }
-            if (input == null) {
-                throw new ReportException("Template file doesn't exist: " + logTag);
             }
 
             try (InputStreamReader reader = new InputStreamReader(input, StandardCharsets.UTF_8);
@@ -474,19 +462,13 @@ public class ReportGenerator {
                     throw new ReportException("Failed to convert the template into html.");
                 }
                 writer.flush();
-            } catch (UnsupportedEncodingException ex) {
-                throw new ReportException("Unable to generate the report using UTF-8", ex);
             }
+        } catch (UnsupportedEncodingException ex) {
+            throw new ReportException("Unable to generate the report using UTF-8", ex);
+        } catch (FileNotFoundException ex) {
+            throw new ReportException("Unable to locate template file: " + templateName, ex);
         } catch (IOException ex) {
             throw new ReportException("Unable to write the report", ex);
-        } finally {
-            if (input != null) {
-                try {
-                    input.close();
-                } catch (IOException ex) {
-                    LOGGER.trace("Error closing input", ex);
-                }
-            }
         }
     }
 
@@ -513,9 +495,8 @@ public class ReportGenerator {
      * Reformats the given XML file.
      *
      * @param path the path to the XML file to be reformatted
-     * @throws ReportException thrown if the given JSON file is malformed
      */
-    private void pretifyXml(String path) throws ReportException {
+    private void pretifyXml(String path) {
         final String outputPath = path + ".pretty";
         final File in = new File(path);
         final File out = new File(outputPath);
@@ -527,10 +508,7 @@ public class ReportGenerator {
             transformer.setOutputProperty(OutputKeys.INDENT, "yes");
             transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
 
-            final SAXSource saxs = new SAXSource(new InputSource(path));
-            final XMLReader saxReader = XmlUtils.buildSecureSaxParser().getXMLReader();
-
-            saxs.setXMLReader(saxReader);
+            final SAXSource saxs = new SAXSource(XmlUtils.buildSecureXmlReader(), new InputSource(path));
             transformer.transform(saxs, new StreamResult(new OutputStreamWriter(os, StandardCharsets.UTF_8)));
         } catch (ParserConfigurationException | TransformerConfigurationException ex) {
             LOGGER.debug("Configuration exception when pretty printing", ex);
@@ -539,17 +517,7 @@ public class ReportGenerator {
             LOGGER.debug("Malformed XML?", ex);
             LOGGER.error("Unable to generate pretty report, caused by: {}", ex.getMessage());
         }
-        if (out.isFile() && in.isFile() && in.delete()) {
-            try {
-                Thread.sleep(1000);
-                Files.move(out.toPath(), in.toPath());
-            } catch (IOException ex) {
-                LOGGER.error("Unable to generate pretty report, caused by: {}", ex.getMessage());
-            } catch (InterruptedException ex) {
-                Thread.currentThread().interrupt();
-                LOGGER.error("Unable to generate pretty report, caused by: {}", ex.getMessage());
-            }
-        }
+        replaceWithPrettified(out, in);
     }
 
     /**
@@ -581,10 +549,14 @@ public class ReportGenerator {
             LOGGER.debug("Malformed JSON?", ex);
             throw new ReportException("Unable to generate json report", ex);
         }
-        if (out.isFile() && in.isFile() && in.delete()) {
+        replaceWithPrettified(out, in);
+    }
+
+    private void replaceWithPrettified(File prettified, File original) {
+        if (prettified.isFile() && original.isFile() && original.delete()) {
             try {
                 Thread.sleep(1000);
-                Files.move(out.toPath(), in.toPath());
+                Files.move(prettified.toPath(), original.toPath());
             } catch (IOException ex) {
                 LOGGER.error("Unable to generate pretty report, caused by: {}", ex.getMessage());
             } catch (InterruptedException ex) {
