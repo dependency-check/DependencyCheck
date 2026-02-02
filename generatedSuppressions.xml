@@ -1,12 +1,5 @@
 <suppress base="true">
     <notes><![CDATA[
-    FP per issue #4803
-    ]]></notes>
-    <packageUrl regex="true">^pkg:maven/net\.sourceforge\.htmlunit/htmlunit-cssparser@.*$</packageUrl>
-    <cpe>cpe:/a:htmlunit_project:htmlunit</cpe>
-</suppress>
-<suppress base="true">
-    <notes><![CDATA[
     FP per issue #4806
     ]]></notes>
     <packageUrl regex="true">^pkg:maven/org\.vaadin\.addon/easyuploads@.*$</packageUrl>
@@ -112,13 +105,6 @@
 </suppress>
 <suppress base="true">
     <notes><![CDATA[
-    FP per issue #4907
-    ]]></notes>
-    <packageUrl regex="true">^pkg:maven/net\.minidev/accessors-smart@.*$</packageUrl>
-    <cpe>cpe:/a:json-smart_project:json-smart-v1</cpe>
-</suppress>
-<suppress base="true">
-    <notes><![CDATA[
     FP per issue #4721
     ]]></notes>
     <packageUrl regex="true">^pkg:maven/org\.apache\.camel/camel-activemq@.*$</packageUrl>
@@ -145,21 +131,6 @@
     <packageUrl regex="true">^pkg:maven/org\.apache\.datasketches/datasketches-java@.*$</packageUrl>
     <cpe>cpe:/a:sketch:sketch</cpe>
 </suppress>
-<suppress base="true">
-    <notes><![CDATA[
-    FP per issue #4962
-    ]]></notes>
-    <packageUrl regex="true">^pkg:maven/com\.github\.pagehelper/pagehelper-spring-boot-starter@.*$</packageUrl>
-    <cpe>cpe:/a:pagehelper_project:pagehelper</cpe>
-</suppress>
-<!-- suppressions above this entry were included in the 7.3.1 release -->
-<suppress base="true">
-       <notes><![CDATA[
-           FP per issue https://github.com/jeremylong/DependencyCheck/issues/5060
-       ]]></notes>
-       <packageUrl regex="true">^pkg:maven/org\.msgpack/.*@.*$</packageUrl>
-       <cpe>cpe:/a:messagepack_project:messagepack</cpe>
-    </suppress>
 <suppress base="true">
     <notes><![CDATA[
     FP per issue #5038
@@ -274,40 +245,10 @@
 </suppress>
 <suppress base="true">
     <notes><![CDATA[
-    FP per issue #4693
-    ]]></notes>
-    <packageUrl regex="true">^pkg:maven/io\.zipkin\.reporter2/zipkin-reporter@.*$</packageUrl>
-    <cpe>cpe:/a:pki-core_project:pki-core</cpe>
-</suppress>
-<suppress base="true">
-    <notes><![CDATA[
-    FP per issue #4692
-    ]]></notes>
-    <packageUrl regex="true">^pkg:maven/io\.zipkin\.zipkin2/zipkin@.*$</packageUrl>
-    <cpe>cpe:/a:pki-core_project:pki-core</cpe>
-</suppress>
-<suppress base="true">
-    <notes><![CDATA[
-    FP per issue #4669
-    ]]></notes>
-    <packageUrl regex="true">^pkg:maven/org\.junit\.jupiter/junit-jupiter-engine@.*$</packageUrl>
-    <cpe>cpe:/a:fan_platform_project:fan_platform</cpe>
-</suppress>
-<suppress base="true">
-    <notes><![CDATA[
     FP per issue #4681
     ]]></notes>
     <packageUrl regex="true">^pkg:maven/com\.amazonaws/aws-java-sdk-prometheus@.*$</packageUrl>
     <cpe>cpe:/a:prometheus:prometheus</cpe>
-</suppress>
-<!-- suppressions above this entry will be included in the 7.4.0 release as the result of #5070 -->
-
-<suppress base="true">
-    <notes><![CDATA[
-    FP per issue #5083
-    ]]></notes>
-    <packageUrl regex="true">^pkg:maven/com\.github\.pagehelper/pagehelper-spring-boot-autoconfigure@.*$</packageUrl>
-    <cpe>cpe:/a:pagehelper_project:pagehelper</cpe>
 </suppress>
 <suppress base="true">
     <notes><![CDATA[
@@ -359,16 +300,6 @@
     <packageUrl regex="true">^pkg:maven/org\.wildfly\.wildfly-http-client/wildfly-http-ejb-client@.*$</packageUrl>
     <cpe>cpe:/a:redhat:jboss-ejb-client</cpe>
 </suppress>
-<!-- suppressions above this entry will be included in the 7.4.1 release -->
-
-
-<suppress base="true">
-    <notes><![CDATA[
-    FP per issue #5131
-    ]]></notes>
-    <packageUrl regex="true">^pkg:maven/io\.zipkin\.zipkin2/zipkin-collector@.*$</packageUrl>
-    <cpe>cpe:/a:pki-core_project:pki-core</cpe>
-</suppress>
 <suppress base="true">
     <notes><![CDATA[
     FP per issue #5162
@@ -404,42 +335,19 @@
     <packageUrl regex="true">^pkg:maven/org\.apache\.james/apache-jsieve-core@.*$</packageUrl>
     <cpe>cpe:/a:apache:james</cpe>
 </suppress>
-<!-- suppressions above this entry will be included in the 7.4.3 release (see #5191) -->
 <suppress base="true">
-  <notes><![CDATA[
-  FP per issue #5213, CVEs for scripting pet projects
-  ]]></notes>
-  <packageUrl regex="true">^.*$</packageUrl>
-  <cve>CVE-2021-4277</cve>
+    <notes><![CDATA[
+    FP per issue #5213, CVEs for scripting pet projects
+    ]]></notes>
+    <packageUrl regex="true">^.*$</packageUrl>
+    <cve>CVE-2021-4277</cve>
 </suppress>
-<suppress base="true">
-  <notes><![CDATA[
-      cpe:/a:yaml_project:yaml is a YAML implementation in Go #5233 and #5234
-  ]]></notes>
-  <filePath regex="true">.*(\.(dll|jar|ear|war|pom|nupkg|nuspec|aar)|pom\.xml|package.json|packages.config)$</filePath>
-  <cpe>cpe:/a:yaml_project:yaml</cpe>
-</suppress>
-<!-- suppressions above this entry will be included in the next release (see #5237 and #5240) -->
 <suppress base="true">
     <notes><![CDATA[
     FP per issue #5169
     ]]></notes>
     <packageUrl regex="true">^pkg:maven/com\.google\.crypto\.tink/apps-webpush@.*$</packageUrl>
     <cpe>cpe:/a:google:google_apps</cpe>
-</suppress>
-<suppress base="true">
-    <notes><![CDATA[
-    FP per issue #5212
-    ]]></notes>
-    <packageUrl regex="true">^pkg:maven/com\.github\.java-json-tools/json-patch@.*$</packageUrl>
-    <cpe>cpe:/a:json-patch_project:json-patch</cpe>
-</suppress>
-<suppress base="true">
-    <notes><![CDATA[
-    FP per issue #5217
-    ]]></notes>
-    <packageUrl regex="true">^pkg:maven/net\.pwall\.json/json-pointer@.*$</packageUrl>
-    <cpe>cpe:/a:json-pointer_project:json-pointer</cpe>
 </suppress>
 <suppress base="true">
     <notes><![CDATA[
@@ -457,29 +365,6 @@
 </suppress>
 <suppress base="true">
     <notes><![CDATA[
-    FP per issue #5280
-    ]]></notes>
-    <packageUrl regex="true">^pkg:maven/org\.apache\.camel/camel-ftp@.*$</packageUrl>
-    <cpe>cpe:/a:ftp_project:ftp</cpe>
-</suppress>
-<suppress base="true">
-    <notes><![CDATA[
-    FP per issue #5253
-    ]]></notes>
-    <packageUrl regex="true">^pkg:npm/jsonpointer@.*$</packageUrl>
-    <cpe>cpe:/a:json-pointer_project:json-pointer</cpe>
-</suppress>
-<suppress base="true">
-    <notes><![CDATA[
-    FP per issue #5252
-    ]]></notes>
-    <packageUrl regex="true">^pkg:maven/com\.google\.flatbuffers/flatbuffers-java@.*$</packageUrl>
-    <cpe>cpe:/a:flat_project:flat</cpe>
-</suppress>
-<!-- suppressions above this entry will be included in the 8.0.0 release (see #5304) -->
-
-<suppress base="true">
-    <notes><![CDATA[
     FP per issue #5336
     ]]></notes>
     <packageUrl regex="true">^pkg:maven/org\.openrewrite\.recipe/rewrite-jhipster@.*$</packageUrl>
@@ -494,27 +379,6 @@
 </suppress>
 <suppress base="true">
     <notes><![CDATA[
-    FP per issue #5373
-    ]]></notes>
-    <packageUrl regex="true">^pkg:maven/org\.locationtech\.spatial4j/spatial4j@.*$</packageUrl>
-    <cpe>cpe:/a:voyager_project:voyager</cpe>
-</suppress>
-<suppress base="true">
-    <notes><![CDATA[
-    FP per issue #5372
-    ]]></notes>
-    <packageUrl regex="true">^pkg:maven/org\.locationtech\.spatial4j/spatial4j@.*$</packageUrl>
-    <cpe>cpe:/a:smiley_project:smiley</cpe>
-</suppress>
-<suppress base="true">
-    <notes><![CDATA[
-    FP per issue #5380
-    ]]></notes>
-    <packageUrl regex="true">^pkg:maven/dev\.ludovic\.netlib/lapack@.*$</packageUrl>
-    <cpe>cpe:/a:lapack_project:lapack</cpe>
-</suppress>
-<suppress base="true">
-    <notes><![CDATA[
     FP per issue #5375
     ]]></notes>
     <packageUrl regex="true">^pkg:maven/org\.eclipse\.microprofile\.jwt/microprofile-jwt-auth-api@.*$</packageUrl>
@@ -526,13 +390,6 @@
     ]]></notes>
     <packageUrl regex="true">^pkg:maven/org\.apache\.hadoop\.thirdparty/hadoop-shaded-protobuf_3_7@.*$</packageUrl>
     <cpe>cpe:/a:apache:hadoop</cpe>
-</suppress>
-<suppress base="true">
-    <notes><![CDATA[
-    FP per issue #5325
-    ]]></notes>
-    <packageUrl regex="true">^pkg:maven/com\.enterprisedt/edtFTPj@.*$</packageUrl>
-    <cpe>cpe:/a:ftp_project:ftp</cpe>
 </suppress>
 <suppress base="true">
     <notes><![CDATA[
@@ -554,13 +411,6 @@
     ]]></notes>
     <packageUrl regex="true">^pkg:maven/com\.oracle\.database\.nls/orai18n@.*$</packageUrl>
     <cpe>cpe:/a:oracle:oracle_database</cpe>
-</suppress>
-<suppress base="true">
-    <notes><![CDATA[
-    FP per issue #5501
-    ]]></notes>
-    <packageUrl regex="true">^pkg:maven/org\.jsonschema2pojo/jsonschema2pojo-jdk-annotation@.*$</packageUrl>
-    <cpe>cpe:/a:json-schema_project:json-schema</cpe>
 </suppress>
 <suppress base="true">
     <notes><![CDATA[
@@ -599,31 +449,10 @@
 </suppress>
 <suppress base="true">
     <notes><![CDATA[
-    FP per issue #5491
-    ]]></notes>
-    <packageUrl regex="true">^pkg:maven/com\.microsoft\.azure/azure-cosmosdb@.*$</packageUrl>
-    <cpe>cpe:/a:www-sql_project:www-sql</cpe>
-</suppress>
-<suppress base="true">
-    <notes><![CDATA[
-    FP per issue #5490
-    ]]></notes>
-    <packageUrl regex="true">^pkg:maven/com\.microsoft\.azure/azure-cosmosdb@.*$</packageUrl>
-    <cpe>cpe:/a:async_project:async</cpe>
-</suppress>
-<suppress base="true">
-    <notes><![CDATA[
     FP per issue #5471
     ]]></notes>
     <packageUrl regex="true">^pkg:maven/org\.apache\.spark/spark-token-provider-kafka-0-10_2\.12@.*$</packageUrl>
     <cpe>cpe:/a:apache:kafka</cpe>
-</suppress>
-<suppress base="true">
-    <notes><![CDATA[
-    FP per issue #5462
-    ]]></notes>
-    <packageUrl regex="true">^pkg:maven/org\.apache\.ws\.commons\.axiom/axiom-impl@.*$</packageUrl>
-    <cpe>cpe:/a:web_project:web</cpe>
 </suppress>
 <suppress base="true">
     <notes><![CDATA[
@@ -639,8 +468,6 @@
     <packageUrl regex="true">^pkg:maven/io\.kamon/kamon-prometheus_2\.13@.*$</packageUrl>
     <cpe>cpe:/a:prometheus:prometheus</cpe>
 </suppress>
-<!-- suppressions above this line will be included in 8.1.1 by PR #5504 -->
-
 <suppress base="true">
     <notes><![CDATA[
     FP per issue #5529
@@ -654,13 +481,6 @@
     ]]></notes>
     <packageUrl regex="true">^pkg:maven/org\.apache\.kerby/zookeeper-backend@.*$</packageUrl>
     <cpe>cpe:/a:apache:zookeeper</cpe>
-</suppress>
-<suppress base="true">
-    <notes><![CDATA[
-    FP per issue #5593
-    ]]></notes>
-    <packageUrl regex="true">^pkg:maven/org\.apache\.camel\.springboot/camel-ftp-starter@.*$</packageUrl>
-    <cpe>cpe:/a:ftp_project:ftp</cpe>
 </suppress>
 <suppress base="true">
     <notes><![CDATA[
@@ -685,24 +505,10 @@
 </suppress>
 <suppress base="true">
     <notes><![CDATA[
-    FP per issue #5622
-    ]]></notes>
-    <packageUrl regex="true">^pkg:maven/net\.minidev/accessors-smart@.*$</packageUrl>
-    <cpe>cpe:/a:json-smart_project:json-smart</cpe>
-</suppress>
-<suppress base="true">
-    <notes><![CDATA[
     FP per issue #5629
     ]]></notes>
     <packageUrl regex="true">^pkg:maven/org\.springframework\.integration/spring-integration-ftp@.*$</packageUrl>
     <cpe>cpe:/a:vmware:spring_integration</cpe>
-</suppress>
-<suppress base="true">
-    <notes><![CDATA[
-    FP per issue #5685
-    ]]></notes>
-    <packageUrl regex="true">^pkg:maven/org\.bouncycastle/bcpg-jdk15on@.*$</packageUrl>
-    <cpe>cpe:/a:open_cas_project:open_cas</cpe>
 </suppress>
 <suppress base="true">
     <notes><![CDATA[
@@ -734,13 +540,6 @@
 </suppress>
 <suppress base="true">
     <notes><![CDATA[
-    FP per issue #5737
-    ]]></notes>
-    <packageUrl regex="true">^pkg:nuget/MagicFileEncoding@.*$</packageUrl>
-    <cpe>cpe:/a:file_project:file</cpe>
-</suppress>
-<suppress base="true">
-    <notes><![CDATA[
     FP per issue #5736
     ]]></notes>
     <packageUrl regex="true">^pkg:nuget/FluentFTP@.*$</packageUrl>
@@ -769,45 +568,10 @@
 </suppress>
 <suppress base="true">
     <notes><![CDATA[
-    FP per issue #5754
-    ]]></notes>
-    <packageUrl regex="true">^pkg:maven/io\.swagger\.parser\.v3/swagger-parser-safe-url-resolver@.*$</packageUrl>
-    <cpe>cpe:/a:parse-url_project:2.1.14</cpe>
-</suppress>
-<suppress base="true">
-    <notes><![CDATA[
     FP per issue #5762
     ]]></notes>
     <packageUrl regex="true">^pkg:maven/org\.jruby/jzlib@.*$</packageUrl>
     <cpe>cpe:/a:jruby:jruby</cpe>
-</suppress>
-<suppress base="true">
-    <notes><![CDATA[
-    FP per issue #5753
-    ]]></notes>
-    <packageUrl regex="true">^pkg:maven/com\.bazaarvoice\.jolt/json-utils@.*$</packageUrl>
-    <cpe>cpe:/a:utils_project:utils</cpe>
-</suppress>
-<suppress base="true">
-    <notes><![CDATA[
-    FP per issue #5765
-    ]]></notes>
-    <packageUrl regex="true">^pkg:maven/org\.springframework\.integration/spring-integration-ftp@.*$</packageUrl>
-    <cpe>cpe:/a:ftp_project:ftp</cpe>
-</suppress>
-<suppress base="true">
-    <notes><![CDATA[
-    FP per issue #5766
-    ]]></notes>
-    <packageUrl regex="true">^pkg:maven/org\.mockftpserver/MockFtpServer@.*$</packageUrl>
-    <cpe>cpe:/a:ftp_project:ftp</cpe>
-</suppress>
-<suppress base="true">
-    <notes><![CDATA[
-    FP per issue #5770
-    ]]></notes>
-    <packageUrl regex="true">^pkg:maven/com\.sun\.xml\.bind\.jaxb/isorelax@.*$</packageUrl>
-    <cpe>cpe:/a:xml_library_project:xml_library</cpe>
 </suppress>
 <suppress base="true">
     <notes><![CDATA[
@@ -818,7 +582,6 @@
     <packageUrl regex="true">^pkg:maven/org\.jboss\.resteasy\.microprofile/.*$</packageUrl>
     <cpe>cpe:/a:redhat:resteasy</cpe>
 </suppress>
-
 <suppress base="true">
     <notes><![CDATA[
     FP per issue #5772
@@ -832,13 +595,6 @@
     ]]></notes>
     <packageUrl regex="true">^pkg:maven/org\.apache\.sling/org\.apache\.sling\.commons\.osgi@.*$</packageUrl>
     <cpe>cpe:/a:apache:sling</cpe>
-</suppress>
-<suppress base="true">
-    <notes><![CDATA[
-    FP per issue #5785
-    ]]></notes>
-    <packageUrl regex="true">^pkg:maven/cloud\.localstack/localstack-utils@.*$</packageUrl>
-    <cpe>cpe:/a:utils_project:utils</cpe>
 </suppress>
 <suppress base="true">
     <notes><![CDATA[
@@ -856,48 +612,10 @@
 </suppress>
 <suppress base="true">
     <notes><![CDATA[
-    FP per issue #5777
-    ]]></notes>
-    <packageUrl regex="true">^pkg:nuget/RazorEngine\.NetCore@.*$</packageUrl>
-    <cpe>cpe:/a:razorengine_project:razorengine</cpe>
-</suppress>
-<suppress base="true">
-    <notes><![CDATA[
     FP per issue #5543
     ]]></notes>
     <packageUrl regex="true">^pkg:maven/org\.apache\.cxf/cxf-rt-bindings-soap@.*$</packageUrl>
     <cpe>cpe:/a:apache:soap</cpe>
-</suppress>
-<suppress base="true">
-    <notes><![CDATA[
-    FP per issue #5796
-    ]]></notes>
-    <packageUrl regex="true">^pkg:nuget/Microsoft\.Win32\.SystemEvents@.*$</packageUrl>
-    <cpe>cpe:/a:events_project:events</cpe>
-</suppress>
-<suppress base="true">
-    <notes><![CDATA[
-    hand-curated better suppression for FP per issue #5797
-    ]]></notes>
-    <packageUrl regex="true">^(?!pkg:maven/net\.pwall\.json/jsonutil).*$</packageUrl>
-    <cpe>cpe:/a:jsonutil_project:jsonutil</cpe>
-</suppress>
-<suppress base="true">
-    <notes><![CDATA[
-    hand-curated better FP suppression rule for issue #5794
-    to be replacing the autmatic FP-OPS flow suppression that will follow behind it when taking it over to the
-    bundled suppression-file
-    ]]></notes>
-    <packageUrl regex="true">^pkg:maven/com\.apollographql\.apollo3/.*$</packageUrl>
-    <cpe>cpe:/a:apollo_project:apollo</cpe>
-</suppress>
-
-<suppress base="true">
-    <notes><![CDATA[
-    FP per issue #5794
-    ]]></notes>
-    <packageUrl regex="true">^pkg:maven/com\.apollographql\.apollo3/apollo-annotations-jvm@.*$</packageUrl>
-    <cpe>cpe:/a:apollo_project:apollo</cpe>
 </suppress>
 <suppress base="true">
     <notes><![CDATA[
@@ -915,72 +633,44 @@
 </suppress>
 <suppress base="true">
     <notes><![CDATA[
-    FP per issue #5821
-    ]]></notes>
-    <packageUrl regex="true">^pkg:npm/wordwrap@.*$</packageUrl>
-    <cpe>cpe:/a:word-wrap_project:word-wrap</cpe>
-</suppress>
-<suppress base="true">
-    <notes><![CDATA[
-    FP per issue #5829
-    ]]></notes>
-    <packageUrl regex="true">^pkg:maven/com\.exactpro\.th2/netty-bytebuf-utils@.*$</packageUrl>
-    <cpe>cpe:/a:utils_project:utils</cpe>
-</suppress>
-<suppress base="true">
-    <notes><![CDATA[
     FP per issue #5830
     ]]></notes>
     <packageUrl regex="true">^pkg:maven/io\.github\.detekt\.sarif4k/sarif4k-jvm@.*$</packageUrl>
     <cpe>cpe:/a:detekt:detekt</cpe>
 </suppress>
 <suppress base="true">
-    <notes><![CDATA[
-    FP per issue #5843
-    ]]></notes>
-    <packageUrl regex="true">^pkg:maven/org\.apache\.avro/avro@.*$</packageUrl>
-    <cpe>cpe:/a:avro_project:avro</cpe>
-</suppress>
-<suppress base="true">
-    <notes><![CDATA[
-    FP per issue #5846
-    ]]></notes>
-    <packageUrl regex="true">^pkg:maven/commons-logging/commons-logging@.*$</packageUrl>
-    <cpe>cpe:/a:morgan_project:morgan</cpe>
-</suppress>
-<suppress base="true">
 <notes><![CDATA[
     FP per issue #5854
     akka-grpc libraries are not part of the akka actor system
     ]]></notes>
-<packageUrl regex="true">^pkg:maven/com\.lightbend\.akka\.grpc/.*$</packageUrl>
-<cpe>cpe:/a:akka:akka</cpe>
-<cpe>cpe:/a:lightbend:akka</cpe>
+    <packageUrl regex="true">^pkg:maven/com\.lightbend\.akka\.grpc/.*$</packageUrl>
+    <cpe>cpe:/a:akka:akka</cpe>
+    <cpe>cpe:/a:lightbend:akka</cpe>
 </suppress>
 <suppress base="true">
-<notes><![CDATA[
+    <notes><![CDATA[
     FP per issue #5855;  akka-persistence-r2dbc is not part of the akka actor system projects
     ]]></notes>
-<packageUrl regex="true">^pkg:maven/com\.lightbend\.akka/akka-persistence-r2dbc.*$</packageUrl>
-<cpe>cpe:/a:akka:akka</cpe>
-<cpe>cpe:/a:lightbend:akka</cpe>
+    <packageUrl regex="true">^pkg:maven/com\.lightbend\.akka/akka-persistence-r2dbc.*$</packageUrl>
+    <cpe>cpe:/a:akka:akka</cpe>
+    <cpe>cpe:/a:lightbend:akka</cpe>
 </suppress>
 <suppress base="true">
-<notes><![CDATA[
+    <notes><![CDATA[
     FP per issues #5857, #5856; akka-projection projects are not part of the akka actor system projects
     ]]></notes>
-<packageUrl regex="true">^pkg:maven/com\.lightbend\.akka/akka-projection-.*$</packageUrl>
-<cpe>cpe:/a:akka:akka</cpe>
-<cpe>cpe:/a:lightbend:akka</cpe>
+    <packageUrl regex="true">^pkg:maven/com\.lightbend\.akka/akka-projection-.*$</packageUrl>
+    <cpe>cpe:/a:akka:akka</cpe>
+    <cpe>cpe:/a:lightbend:akka</cpe>
 </suppress>
 <suppress base="true">
-<notes><![CDATA[
+    <notes><![CDATA[
     Optimized suppression for FP per issue #5859
     The suppression following this for the same FP issue from FP-report automation bot
     can be discarded when bringing the suppressions into the package suppressions file.
     ]]></notes>
-<packageUrl regex="true">^pkg:maven/org\.apache\.jackrabbit/oak-.*$</packageUrl>
-<cpe>cpe:/a:apache:jackrabbit</cpe>
+    <packageUrl regex="true">^pkg:maven/org\.apache\.jackrabbit/oak-.*$</packageUrl>
+    <cpe>cpe:/a:apache:jackrabbit</cpe>
 </suppress>
 <suppress base="true">
     <notes><![CDATA[
@@ -1005,13 +695,6 @@
 </suppress>
 <suppress base="true">
     <notes><![CDATA[
-    FP per issue #5879
-    ]]></notes>
-    <packageUrl regex="true">^pkg:maven/io\.netty\.incubator/netty-incubator-codec-classes-quic@.*$</packageUrl>
-    <cpe>cpe:/a:quic_project:quic</cpe>
-</suppress>
-<suppress base="true">
-    <notes><![CDATA[
     FP per issue #5883
     ]]></notes>
     <packageUrl regex="true">^pkg:maven/org\.apache\.geronimo\.specs/geronimo-saaj_1\.3_spec@.*$</packageUrl>
@@ -1031,8 +714,6 @@
     <packageUrl regex="true">^pkg:maven/software\.amazon\.awssdk\.crt/aws-crt@.*$</packageUrl>
     <cpe>cpe:/a:amazon:aws-sdk-java</cpe>
 </suppress>
-<!-- suppressions above this line will be included in 8.4.0  -->
-
 <suppress base="true">
     <notes><![CDATA[
     FP per issue #5904
@@ -1070,20 +751,6 @@
 </suppress>
 <suppress base="true">
     <notes><![CDATA[
-    FP per issue #5910
-    ]]></notes>
-    <packageUrl regex="true">^pkg:maven/com\.adobe\.cq/core\.wcm\.components\.core@.*$</packageUrl>
-    <cpe>cpe:/a:oembed_project:oembed</cpe>
-</suppress>
-<suppress base="true">
-    <notes><![CDATA[
-    FP per issue #5911
-    ]]></notes>
-    <packageUrl regex="true">^pkg:maven/com\.adobe\.cq/core\.wcm\.components\.core@.*$</packageUrl>
-    <cpe>cpe:/a:xml_library_project:xml_library</cpe>
-</suppress>
-<suppress base="true">
-    <notes><![CDATA[
     FP per issue #5916
     ]]></notes>
     <packageUrl regex="true">^pkg:maven/org\.springframework\.plugin/spring-plugin-core@.*$</packageUrl>
@@ -1112,13 +779,6 @@
 </suppress>
 <suppress base="true">
     <notes><![CDATA[
-    FP per issue #5913
-    ]]></notes>
-    <packageUrl regex="true">^pkg:maven/io\.projectreactor\.netty\.incubator/reactor-netty-incubator-quic@.*$</packageUrl>
-    <cpe>cpe:/a:quic_project:quic</cpe>
-</suppress>
-<suppress base="true">
-    <notes><![CDATA[
     FP per issue #5958
     ]]></notes>
     <packageUrl regex="true">^pkg:maven/net\.rossillo\.mvc\.cache/spring-mvc-cache-control@.*$</packageUrl>
@@ -1133,13 +793,6 @@
 </suppress>
 <suppress base="true">
     <notes><![CDATA[
-    FP per issue #5956
-    ]]></notes>
-    <packageUrl regex="true">^pkg:maven/io\.netty\.incubator/netty-incubator-codec-native-quic@.*$</packageUrl>
-    <cpe>cpe:/a:quic_project:quic</cpe>
-</suppress>
-<suppress base="true">
-    <notes><![CDATA[
     FP per issue #5966
     ]]></notes>
     <packageUrl regex="true">^pkg:maven/ch\.qos\.logback\.contrib/logback-json-classic@.*$</packageUrl>
@@ -1151,13 +804,6 @@
     ]]></notes>
     <packageUrl regex="true">^pkg:maven/io\.asyncer/r2dbc-mysql@.*$</packageUrl>
     <cpe>cpe:/a:mysql:mysql</cpe>
-</suppress>
-<suppress base="true">
-    <notes><![CDATA[
-    FP per issue #5968
-    ]]></notes>
-    <packageUrl regex="true">^pkg:maven/io\.netty\.incubator/netty-incubator-codec-native-quic@.*$</packageUrl>
-    <cpe>cpe:/a:chromium_project:chromium</cpe>
 </suppress>
 <suppress base="true">
     <notes><![CDATA[
@@ -1179,13 +825,6 @@
     ]]></notes>
     <packageUrl regex="true">^pkg:nuget/CommandLineParser@.*$</packageUrl>
     <cpe>cpe:/a:line:line</cpe>
-</suppress>
-<suppress base="true">
-    <notes><![CDATA[
-    FP per issue #6056
-    ]]></notes>
-    <packageUrl regex="true">^pkg:nuget/Serilog\.Sinks\.Async@.*$</packageUrl>
-    <cpe>cpe:/a:async_project:async</cpe>
 </suppress>
 <suppress base="true">
     <notes><![CDATA[
@@ -1217,13 +856,6 @@
 </suppress>
 <suppress base="true">
     <notes><![CDATA[
-    FP per issue #6169
-    ]]></notes>
-    <packageUrl regex="true">^pkg:maven/commons-net/commons-net@.*$</packageUrl>
-    <cpe>cpe:/a:ftp_project:ftp</cpe>
-</suppress>
-<suppress base="true">
-    <notes><![CDATA[
     FP per issue #6313
     ]]></notes>
     <packageUrl regex="true">^pkg:maven/org\.apache\.camel/camel-reactive-executor-tomcat@.*$</packageUrl>
@@ -1235,13 +867,6 @@
     ]]></notes>
     <packageUrl regex="true">^pkg:maven/info\.picocli/picocli@.*$</packageUrl>
     <cpe>cpe:/a:line:line</cpe>
-</suppress>
-<suppress base="true">
-    <notes><![CDATA[
-    FP per issue #6242
-    ]]></notes>
-    <packageUrl regex="true">^pkg:maven/org\.jruby\.rack/jruby-rack@.*$</packageUrl>
-    <cpe>cpe:/a:rack_project:rack</cpe>
 </suppress>
 <suppress base="true">
     <notes><![CDATA[
@@ -1259,24 +884,10 @@
 </suppress>
 <suppress base="true">
     <notes><![CDATA[
-    FP per issue #6340
-    ]]></notes>
-    <packageUrl regex="true">^pkg:maven/com\.idealista/format-preserving-encryption@.*$</packageUrl>
-    <cpe>cpe:/a:vega_project:vega</cpe>
-</suppress>
-<suppress base="true">
-    <notes><![CDATA[
     FP per issue #6367
     ]]></notes>
     <packageUrl regex="true">^pkg:maven/org\.keycloak/keycloak-model-infinispan@.*$</packageUrl>
     <cpe>cpe:/a:infinispan:infinispan</cpe>
-</suppress>
-<suppress base="true">
-    <notes><![CDATA[
-    FP per issue #6369
-    ]]></notes>
-    <packageUrl regex="true">^pkg:maven/org\.wildfly\.security\.elytron-web/undertow-server@.*$</packageUrl>
-    <cpe>cpe:/a:web_project:web</cpe>
 </suppress>
 <suppress base="true">
     <notes><![CDATA[
@@ -1301,13 +912,6 @@
 </suppress>
 <suppress base="true">
     <notes><![CDATA[
-    FP per issue #6421
-    ]]></notes>
-    <packageUrl regex="true">^pkg:maven/io\.swagger/swagger-parser-safe-url-resolver@.*$</packageUrl>
-    <cpe>cpe:/a:parse-url_project:parse-url</cpe>
-</suppress>
-<suppress base="true">
-    <notes><![CDATA[
     FP per issue #6408
     ]]></notes>
     <packageUrl regex="true">^pkg:maven/org\.jboss\.activemq\.artemis\.integration/artemis-wildfly-integration@.*$</packageUrl>
@@ -1322,19 +926,11 @@
 </suppress>
 <suppress base="true">
     <notes><![CDATA[
-    FP per issue #6463
-    ]]></notes>
-    <packageUrl regex="true">^pkg:maven/io\.ktor/ktor-server-metrics-micrometer-jvm@.*$</packageUrl>
-    <cpe>cpe:/a:csm_server_project:csm_server</cpe>
-</suppress>
-<suppress base="true">
-    <notes><![CDATA[
     FP per issue #6538
     ]]></notes>
     <packageUrl regex="true">^pkg:maven/org\.apache\.camel\.quarkus/camel-quarkus-core@.*$</packageUrl>
     <cpe>cpe:/a:apache:camel</cpe>
 </suppress>
-<!-- suppressions above this line will be included in 9.1.1 -->
 <suppress base="true">
     <notes><![CDATA[
     FP per issue #6388
@@ -1447,41 +1043,6 @@ only pkg:maven/org.clojure:clojure@.* is the CPE cpe:/a:clojure:clojure
     <cpe>cpe:/a:eclipse:jetty</cpe>
 </suppress>
 <suppress base="true">
-    <notes><![CDATA[
-    FP per issue #6696
-    ]]></notes>
-    <packageUrl regex="true">^pkg:maven/org\.lz4/lz4-java@.*$</packageUrl>
-    <cpe>cpe:/a:lz4_project:lz4</cpe>
-</suppress>
-<suppress base="true">
-    <notes><![CDATA[
-    FP per issue #6695
-    ]]></notes>
-    <packageUrl regex="true">^pkg:maven/org\.apache\.logging\.log4j/log4j-slf4j2-impl@.*$</packageUrl>
-    <cpe>cpe:/a:log4js_project:log4js</cpe>
-</suppress>
-<suppress base="true">
-    <notes><![CDATA[
-    FP per issue #6694
-    ]]></notes>
-    <packageUrl regex="true">^pkg:maven/io\.ktor/ktor-server-call-logging-jvm@.*$</packageUrl>
-    <cpe>cpe:/a:call_project:call</cpe>
-</suppress>
-<suppress base="true">
-    <notes><![CDATA[
-    FP per issue #6693
-    ]]></notes>
-    <packageUrl regex="true">^pkg:maven/io\.ktor/ktor-client-content-negotiation-jvm@.*$</packageUrl>
-    <cpe>cpe:/a:content_project:content</cpe>
-</suppress>
-<suppress base="true">
-    <notes><![CDATA[
-    FP per issue #6692
-    ]]></notes>
-    <packageUrl regex="true">^pkg:maven/org\.hibernate\.validator/hibernate-validator@.*$</packageUrl>
-    <cpe>cpe:/a:validator_project:validator</cpe>
-</suppress>
-<suppress base="true">
 <notes><![CDATA[
        FP per issue #6257
        ]]></notes>
@@ -1494,13 +1055,6 @@ only pkg:maven/org.clojure:clojure@.* is the CPE cpe:/a:clojure:clojure
     ]]></notes>
     <packageUrl regex="true">^pkg:maven/com\.google\.http-client/google-http-client-protobuf@.*$</packageUrl>
     <cpe>cpe:/a:google:protobuf-java</cpe>
-</suppress>
-<suppress base="true">
-    <notes><![CDATA[
-    FP per issue #6707
-    ]]></notes>
-    <packageUrl regex="true">^pkg:maven/io\.prometheus/prometheus-metrics-model@.*$</packageUrl>
-    <cpe>cpe:/a:model_project:model</cpe>
 </suppress>
 <suppress base="true">
     <notes><![CDATA[
@@ -1563,31 +1117,10 @@ only pkg:maven/org.clojure:clojure@.* is the CPE cpe:/a:clojure:clojure
 </suppress>
 <suppress base="true">
     <notes><![CDATA[
-    FP per issue #6856
-    ]]></notes>
-    <packageUrl regex="true">^pkg:maven/org\.springframework\.security/spring-security-oauth2-authorization-server@.*$</packageUrl>
-    <cpe>cpe:/a:oauth2-server_project:oauth2-server</cpe>
-</suppress>
-<suppress base="true">
-    <notes><![CDATA[
-    FP per issue #6855
-    ]]></notes>
-    <packageUrl regex="true">^pkg:maven/commons-validator/commons-validator@.*$</packageUrl>
-    <cpe>cpe:/a:validator_project:validator</cpe>
-</suppress>
-<suppress base="true">
-    <notes><![CDATA[
     FP per issue #6886
     ]]></notes>
     <packageUrl regex="true">^pkg:maven/io\.pivotal\.cfenv/java-cfenv-boot@.*$</packageUrl>
     <cpe>cpe:/a:vmware:spring_boot</cpe>
-</suppress>
-<suppress base="true">
-    <notes><![CDATA[
-    FP per issue #6906
-    ]]></notes>
-    <packageUrl regex="true">^pkg:maven/org\.jeecgframework/autopoi-web@.*$</packageUrl>
-    <cpe>cpe:/a:web_project:web</cpe>
 </suppress>
 <suppress base="true">
     <notes><![CDATA[
@@ -1596,21 +1129,6 @@ only pkg:maven/org.clojure:clojure@.* is the CPE cpe:/a:clojure:clojure
     <packageUrl regex="true">^pkg:maven/com\.yahoo\.datasketches/sketches-core@.*$</packageUrl>
     <cpe>cpe:/a:sketch:sketch</cpe>
 </suppress>
-<suppress base="true">
-    <notes><![CDATA[
-    FP per issue #6874
-    ]]></notes>
-    <packageUrl regex="true">^pkg:maven/org\.springframework\.boot/spring-boot-starter-cache@.*$</packageUrl>
-    <cpe>cpe:/a:cache_project:cache</cpe>
-</suppress>
-<suppress base="true">
-    <notes><![CDATA[
-    FP per issue #6873
-    ]]></notes>
-    <packageUrl regex="true">^pkg:maven/javax\.cache/cache-api@.*$</packageUrl>
-    <cpe>cpe:/a:cache_project:cache</cpe>
-</suppress>
-
 <suppress base="true">
     <notes><![CDATA[
     FP per issue #6838
@@ -1652,20 +1170,6 @@ only pkg:maven/org.clojure:clojure@.* is the CPE cpe:/a:clojure:clojure
     ]]></notes>
     <packageUrl regex="true">^pkg:maven/commons-discovery/commons-discovery@.*$</packageUrl>
     <cpe>cpe:/a:spirit-project:spirit</cpe>
-</suppress>
-<suppress base="true">
-    <notes><![CDATA[
-    cpe:/a:services_project:services is Drupal services module in PHP #6448
-    ]]></notes>
-    <filePath regex="true">.*(\.(dll|jar|ear|war|pom|nupkg|nuspec|aar)|pom\.xml|package.json|packages.config)$</filePath>
-    <cpe>cpe:/a:services_project:services</cpe>
-</suppress>
-<suppress base="true">
-    <notes><![CDATA[
-    FP per issue #6851
-    ]]></notes>
-    <packageUrl regex="true">^pkg:maven/io\.github\.reactivecircus\.cache4k/cache4k-jvm@.*$</packageUrl>
-    <cpe>cpe:/a:cache_project:cache</cpe>
 </suppress>
 <suppress base="true">
     <notes><![CDATA[
@@ -1757,7 +1261,6 @@ only pkg:maven/org.clojure:clojure@.* is the CPE cpe:/a:clojure:clojure
     <packageUrl regex="true">^pkg:nuget/IronPython@.*$</packageUrl>
     <cpe>cpe:/a:python:python</cpe>
 </suppress>
-<!-- suppressions above this entry were included in the 11.0.0 release -->
 <suppress base="true">
     <notes><![CDATA[
     FP per issue #4852, #4803, #4853, #4851, #4859, #4860, #4862, #4863, #4854, #5275, #5333, #5636, #5639, #5638,
@@ -2072,13 +1575,6 @@ only pkg:maven/org.clojure:clojure@.* is the CPE cpe:/a:clojure:clojure
 </suppress>
 <suppress base="true">
     <notes><![CDATA[
-    FP per issue #7487
-    ]]></notes>
-    <packageUrl regex="true">^pkg:maven/org\.seleniumhq\.selenium/selenium-chromium-driver@.*$</packageUrl>
-    <cpe>cpe:/a:chromium_project:chromium</cpe>
-</suppress>
-<suppress base="true">
-    <notes><![CDATA[
     FP per issue #7555
     ]]></notes>
     <packageUrl regex="true">^pkg:maven/com\.github\.jpmsilva\.jsystemd/jsystemd-core@.*$</packageUrl>
@@ -2310,7 +1806,6 @@ only pkg:maven/org.clojure:clojure@.* is the CPE cpe:/a:clojure:clojure
     <packageUrl regex="true">^pkg:maven/org\.jooq.*/jooq-meta-extensions-liquibase@.*$</packageUrl>
     <cpe>cpe:/a:liquibase:liquibase</cpe>
 </suppress>
-
 <suppress base="true">
     <notes><![CDATA[
     FP per issue #7906
@@ -2354,7 +1849,6 @@ only pkg:maven/org.clojure:clojure@.* is the CPE cpe:/a:clojure:clojure
     <cpe>cpe:/a:elastic:elastic_agent</cpe>
     <cve>CVE-2019-7617</cve>
 </suppress>
-
 <suppress base="true">
     <notes><![CDATA[
     FP per issue #7661
@@ -2428,17 +1922,11 @@ only pkg:maven/org.clojure:clojure@.* is the CPE cpe:/a:clojure:clojure
 </suppress>
 <suppress base="true">
     <notes><![CDATA[
-    FP per issue #8168
+    FP per issue #8168, #8169
     ]]></notes>
     <packageUrl regex="true">^pkg:maven/io\.micronaut\.jsonschema/micronaut-json-schema-utils@.*$</packageUrl>
-    <cpe>cpe:/a:utils_project:utils</cpe>
-</suppress>
-<suppress base="true">
-    <notes><![CDATA[
-    FP per issue #8169
-    ]]></notes>
-    <packageUrl regex="true">^pkg:maven/io\.micronaut\.jsonschema/micronaut-json-schema-utils@.*$</packageUrl>
-    <cpe>cpe:/a:cron-utils_project:cron-utils</cpe>
+    <cpe regex="true">cpe:/a:utils(_project)?:utils.*</cpe>
+    <cpe regex="true">cpe:/a:cron-utils(_project)?:cron-utils.*</cpe>
 </suppress>
 <suppress base="true">
     <notes><![CDATA[
