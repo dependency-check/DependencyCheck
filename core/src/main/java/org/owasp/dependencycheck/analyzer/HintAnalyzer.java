@@ -17,6 +17,7 @@
  */
 package org.owasp.dependencycheck.analyzer;
 
+import org.jetbrains.annotations.VisibleForTesting;
 import org.owasp.dependencycheck.Engine;
 import org.owasp.dependencycheck.analyzer.exception.AnalysisException;
 import org.owasp.dependencycheck.dependency.Dependency;
@@ -326,5 +327,15 @@ public class HintAnalyzer extends AbstractAnalyzer {
         vendorHints = localVendorHints.toArray(new VendorDuplicatingHintRule[0]);
         LOGGER.debug("{} hint rules were loaded.", hints.length);
         LOGGER.debug("{} duplicating hint rules were loaded.", vendorHints.length);
+    }
+
+    @VisibleForTesting
+    HintRule[] getHintRules() {
+        return hints;
+    }
+
+    @VisibleForTesting
+    VendorDuplicatingHintRule[] getVendorDuplicatingHintRules() {
+        return vendorHints;
     }
 }

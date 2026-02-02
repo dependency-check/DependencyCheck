@@ -22,6 +22,7 @@ import java.util.Calendar;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import javax.annotation.concurrent.NotThreadSafe;
 import org.apache.commons.lang3.time.DateFormatUtils;
@@ -855,5 +856,31 @@ public class SuppressionRule {
         }
         sb.append('}');
         return sb.toString();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        SuppressionRule that = (SuppressionRule) o;
+        return base == that.base
+                && Objects.equals(filePath, that.filePath)
+                && Objects.equals(sha1, that.sha1)
+                && Objects.equals(cpe, that.cpe)
+                && Objects.equals(cvssBelow, that.cvssBelow)
+                && Objects.equals(cvssV2Below, that.cvssV2Below)
+                && Objects.equals(cvssV3Below, that.cvssV3Below)
+                && Objects.equals(cvssV4Below, that.cvssV4Below)
+                && Objects.equals(cwe, that.cwe)
+                && Objects.equals(cve, that.cve)
+                && Objects.equals(vulnerabilityNames, that.vulnerabilityNames)
+                && Objects.equals(gav, that.gav)
+                && Objects.equals(packageUrl, that.packageUrl)
+                && Objects.equals(notes, that.notes)
+                && Objects.equals(until, that.until);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(filePath, sha1, cpe, cvssBelow, cvssV2Below, cvssV3Below, cvssV4Below, cwe, cve, vulnerabilityNames, gav, packageUrl, notes, base, until);
     }
 }
