@@ -11,15 +11,7 @@ jobs:
     runs-on: ubuntu-latest 
     steps:
       - uses: actions/checkout@v6
-      - name: Check Maven Cache
-        id: maven-cache
-        uses: actions/cache@v5
-        with:
-          path: ~/.m2/repository
-          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
-          restore-keys: |
-            ${{ runner.os }}-maven-
-      - name: Check Local Maven Cache
+      - name: Maven Integration Test Cache
         id: maven-it-cache
         uses: actions/cache@v5
         with:
@@ -31,6 +23,14 @@ jobs:
         with:
           path: core/target/data
           key: odc-data
+      - name: Set up JDK
+        uses: actions/setup-java@v5
+        with:
+          java-version: '25'
+          distribution: 'zulu'
+          check-latest: true
+          cache: 'maven'
+          cache-dependency-path: '**/pom.xml'
       - name: Delete Data Directories
         run: |
           rm -rf ~/.m2/repository/org/owasp/dependency-check-data

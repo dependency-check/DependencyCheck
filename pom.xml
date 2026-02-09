@@ -177,6 +177,15 @@ Copyright (c) 2012 - Jeremy Long
         <!--necessary for some IDEs to be able to execute test cases (Netbeans)-->
         <surefireArgLine />
         <mock-server.version>5.15.0</mock-server.version>
+
+        <!--
+           Extra JVM arguments needed at runtime to avoid errors on modern JDKs from certain libraries.
+           enable-native-access=ALL-UNNAMED
+                Java 21+: Needed by Lucene indexes unless we do -Dorg.apache.lucene.store.MMapDirectory.enableMemorySegments=false
+                          to go back to regular ByteBuffer (non-native) usage.
+           -XX:+IgnoreUnrecognizedVMOptions
+                Java <21: Allow use of enable-native-access on Java 11 JVMs without errors and without JVM-specific arg detection -->
+        <runtime.extra.jvm.args>--enable-native-access=ALL-UNNAMED -XX:+IgnoreUnrecognizedVMOptions</runtime.extra.jvm.args>
     </properties>
     <distributionManagement>
         <site>
@@ -440,6 +449,7 @@ Copyright (c) 2012 - Jeremy Long
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
+                    <release>${maven.compiler.release}</release>
                     <showDeprecation>true</showDeprecation>
                     <compilerArgs>
                         <arg>-Xlint</arg>
@@ -629,9 +639,20 @@ Copyright (c) 2012 - Jeremy Long
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>properties</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
-                    <argLine>@{surefireArgLine} -Dfile.encoding=UTF-8</argLine>
+                    <argLine>@{surefireArgLine} -javaagent:${org.mockito:mockito-core:jar} ${runtime.extra.jvm.args} -Dfile.encoding=UTF-8</argLine>
                     <failIfNoTests>false</failIfNoTests>
                     <systemPropertyVariables>
                         <data.directory>${project.build.directory}/data</data.directory>
@@ -644,7 +665,7 @@ Copyright (c) 2012 - Jeremy Long
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-failsafe-plugin</artifactId>
                 <configuration>
-                    <argLine>@{failsafeArgLine}</argLine>
+                    <argLine>@{failsafeArgLine} -javaagent:${org.mockito:mockito-core:jar} ${runtime.extra.jvm.args}</argLine>
                     <systemPropertyVariables>
                         <data.directory>${project.build.directory}/data</data.directory>
                         <temp.directory>${project.build.directory}/temp</temp.directory>
@@ -1345,12 +1366,22 @@ Copyright (c) 2012 - Jeremy Long
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-engine</artifactId>
+            <artifactId>junit-jupiter-params</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-params</artifactId>
+            <artifactId>junit-jupiter-engine</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-junit-jupiter</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -1375,6 +1406,36 @@ Copyright (c) 2012 - Jeremy Long
         <!-- endregion -->
     </dependencies>
     <profiles>
+        <profile>
+            <id>test-with-specific-toolchain</id>
+            <activation>
+                <property>
+                    <name>toolchain.jdk.test.version</name>
+                </property>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <configuration>
+                            <jdkToolchain>
+                                <version>${toolchain.jdk.test.version}</version>
+                            </jdkToolchain>
+                        </configuration>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-failsafe-plugin</artifactId>
+                        <configuration>
+                            <jdkToolchain>
+                                <version>${toolchain.jdk.test.version}</version>
+                            </jdkToolchain>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
         <profile>
             <id>release</id>
             <activation>
