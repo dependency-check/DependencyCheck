@@ -130,10 +130,9 @@ Copyright (c) 2012 - Jeremy Long
         <reporting.checkstyle.tool.version>9.3</reporting.checkstyle.tool.version>
         <doxia-base.version>2.0.0</doxia-base.version>
         <maven-antrun-plugin.version>3.2.0</maven-antrun-plugin.version>
-        <maven-dependency-plugin.version>3.9.0</maven-dependency-plugin.version>
+        <maven-dependency-plugin.version>3.10.0</maven-dependency-plugin.version>
         <maven-javadoc-plugin.version>3.12.0</maven-javadoc-plugin.version>
-        <!-- upgrading beyond 2.5 breaks maven site-->
-        <maven-jxr-plugin.version>2.5</maven-jxr-plugin.version>
+        <maven-jxr-plugin.version>3.6.0</maven-jxr-plugin.version>
         <maven-project-info-reports-plugin.version>3.9.0</maven-project-info-reports-plugin.version>
         <maven-surefire-report-plugin.version>3.5.4</maven-surefire-report-plugin.version>
         <jacoco-maven-plugin.version>0.8.14</jacoco-maven-plugin.version>
@@ -149,9 +148,6 @@ Copyright (c) 2012 - Jeremy Long
         <commons-text.version>1.15.0</commons-text.version>
         <httpcomponents.client.version>5.5.1</httpcomponents.client.version>
         <httpcomponents.core.version>5.3.6</httpcomponents.core.version>
-        <!-- note that logging will be noisy and broken until we upgrade to 3.2
-            See https://issues.apache.org/jira/browse/JCS-232 and
-            https://github.com/apache/commons-jcs/pull/120 -->
         <commons-jcs-core.version>3.2.1</commons-jcs-core.version>
         <aho-corasick-double-array-trie.version>1.2.3</aho-corasick-double-array-trie.version>
         <junit.version>5.14.2</junit.version>
@@ -370,6 +366,14 @@ Copyright (c) 2012 - Jeremy Long
                 </plugin>
                 <plugin>
                     <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>versions-maven-plugin</artifactId>
+                    <version>${versions-maven-plugin.version}</version>
+                    <configuration>
+                        <ignoredVersions>.*-(alpha|beta|M|rc)[-0-9]+</ignoredVersions>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
                     <artifactId>exec-maven-plugin</artifactId>
                     <version>3.6.3</version>
                 </plugin>
@@ -566,14 +570,14 @@ Copyright (c) 2012 - Jeremy Long
                         </configuration>
                     </execution>
                     <execution>
-                        <id>enforce-maven-3</id>
+                        <id>enforce-maven</id>
                         <goals>
                             <goal>enforce</goal>
                         </goals>
                         <configuration>
                             <rules>
                                 <requireMavenVersion>
-                                    <version>[3.1,]</version>
+                                    <version>3.9.0</version>
                                 </requireMavenVersion>
                             </rules>
                             <fail>true</fail>
@@ -930,7 +934,6 @@ Copyright (c) 2012 - Jeremy Long
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>versions-maven-plugin</artifactId>
-                <version>${versions-maven-plugin.version}</version>
                 <reportSets>
                     <reportSet>
                         <reports>
