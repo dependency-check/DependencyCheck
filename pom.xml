@@ -175,6 +175,15 @@ Copyright (c) 2012 - Jeremy Long
         <!--necessary for some IDEs to be able to execute test cases (Netbeans)-->
         <surefireArgLine />
         <mock-server.version>5.15.0</mock-server.version>
+
+        <!--
+           Extra JVM arguments needed at runtime to avoid errors on modern JDKs from certain libraries.
+           enable-native-access=ALL-UNNAMED
+                Java 21+: Needed by Lucene indexes unless we do -Dorg.apache.lucene.store.MMapDirectory.enableMemorySegments=false
+                          to go back to regular ByteBuffer (non-native) usage.
+           -XX:+IgnoreUnrecognizedVMOptions
+                Java <21: Allow use of enable-native-access on Java 11 JVMs without errors -->
+        <runtime.extra.jvm.args>--enable-native-access=ALL-UNNAMED -XX:+IgnoreUnrecognizedVMOptions</runtime.extra.jvm.args>
     </properties>
     <distributionManagement>
         <site>
@@ -438,6 +447,7 @@ Copyright (c) 2012 - Jeremy Long
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
+                    <release>${maven.compiler.release}</release>
                     <showDeprecation>true</showDeprecation>
                     <compilerArgs>
                         <arg>-Xlint</arg>
@@ -629,7 +639,7 @@ Copyright (c) 2012 - Jeremy Long
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
-                    <argLine>@{surefireArgLine} -Dfile.encoding=UTF-8</argLine>
+                    <argLine>@{surefireArgLine} ${runtime.extra.jvm.args} -Dfile.encoding=UTF-8</argLine>
                     <failIfNoTests>false</failIfNoTests>
                     <systemPropertyVariables>
                         <data.directory>${project.build.directory}/data</data.directory>
@@ -642,7 +652,7 @@ Copyright (c) 2012 - Jeremy Long
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-failsafe-plugin</artifactId>
                 <configuration>
-                    <argLine>@{failsafeArgLine}</argLine>
+                    <argLine>@{failsafeArgLine} ${runtime.extra.jvm.args}</argLine>
                     <systemPropertyVariables>
                         <data.directory>${project.build.directory}/data</data.directory>
                         <temp.directory>${project.build.directory}/temp</temp.directory>
@@ -1373,6 +1383,36 @@ Copyright (c) 2012 - Jeremy Long
         <!-- endregion -->
     </dependencies>
     <profiles>
+        <profile>
+            <id>test-with-specific-toolchain</id>
+            <activation>
+                <property>
+                    <name>maven.test.jdk.version</name>
+                </property>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <configuration>
+                            <jdkToolchain>
+                                <version>${maven.test.jdk.version}</version>
+                            </jdkToolchain>
+                        </configuration>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-failsafe-plugin</artifactId>
+                        <configuration>
+                            <jdkToolchain>
+                                <version>${maven.test.jdk.version}</version>
+                            </jdkToolchain>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
         <profile>
             <id>release</id>
             <activation>

@@ -9,13 +9,21 @@ on:
       - '**/*.txt'
 
 permissions: {}
+
+env:
+  MAVEN_TOOLCHAIN_DEFAULT_VERSION: '21'
+
 jobs:
   build:
+    strategy:
+      matrix:
+        jdk_test_version: [ '11', '17', '21', '25' ]
+      fail-fast: false
+
+    name: Build and Test (JDK ${{ matrix.jdk_test_version }})
     permissions:
       contents: read # to fetch code (actions/checkout)
-
-    name: Build dependency-check
-    runs-on: ubuntu-latest 
+    runs-on: ubuntu-latest
     steps:
       - name: Install gpg secret key
         if: github.repository_owner == 'dependency-check'
@@ -47,11 +55,12 @@ jobs:
       - uses: actions/setup-dotnet@v5.1.0
         with:
           dotnet-version: '8.0.x'
-      - name: Set up JDK 11
-        id: jdk-11
+      - name: Set up JDKs
         uses: actions/setup-java@v5
         with:
-          java-version: 11
+          java-version: |
+            ${{ matrix.jdk_test_version }}
+            ${{ env.MAVEN_TOOLCHAIN_DEFAULT_VERSION }}
           distribution: 'zulu'
           server-id: central
           server-username: ${{ secrets.CENTRAL_USER }}
@@ -59,14 +68,14 @@ jobs:
       - uses: pnpm/action-setup@41ff72655975bd51cab0327fa583b6e92b6d3061 # v4.2.0
         with:
           version: 6.0.2
-      - name: Build Snapshot with Maven
+      - name: Build/Test Snapshot with Maven
         id: build-snapshot
         env:
           MAVEN_USERNAME: ${{ secrets.CENTRAL_USER }}
           MAVEN_PASSWORD: ${{ secrets.CENTRAL_PASSWORD }}
           MAVEN_GPG_PASSPHRASE: ${{ secrets.GPG_PRIVATE_KEY_PASSWORD }}
           NVD_API_KEY: ${{ secrets.NVD_API_KEY }}
-        run: mvn -V -s settings.xml clean package verify source:jar javadoc:jar ${{ steps.install-gpg-key.outcome == 'success' && '-Prelease gpg:sign deploy' || '' }} -DreleaseTesting --no-transfer-progress --batch-mode
+        run: mvn -V -s settings.xml clean package verify source:jar javadoc:jar ${{ steps.install-gpg-key.outcome == 'success' && '-Prelease gpg:sign deploy' || '' }} -DreleaseTesting -Dtoolchain.jdk.test.version=${{ matrix.jdk_test_version }} --no-transfer-progress --batch-mode
       - name: SARIF Multitool
         uses: microsoft/sarif-actions@v0.2
         with:
@@ -77,10 +86,11 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v6
         with:
-          name: it-test-logs
+          name: it-test-logs-${{ matrix.jdk_test_version }}
           retention-days: 7
           path: maven/target/it/**/build.log
       - name: Archive code coverage results
+        if: matrix.jdk_test_version == env.MAVEN_TOOLCHAIN_DEFAULT_VERSION
         id: archive-coverage
         uses: actions/upload-artifact@v6
         with:
@@ -90,6 +100,7 @@ jobs:
             **/target/jacoco-results/jacoco.xml
             **/target/jacoco-results/**/*.html
       - name: Archive Snapshot
+        if: matrix.jdk_test_version == env.MAVEN_TOOLCHAIN_DEFAULT_VERSION
         id: archive-snapshot
         uses: actions/upload-artifact@v6
         with:

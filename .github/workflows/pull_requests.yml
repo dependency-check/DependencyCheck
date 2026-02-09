@@ -6,9 +6,17 @@ on:
       - '**/*.md'
       - '**/*.txt'
 
+env:
+  MAVEN_TOOLCHAIN_DEFAULT_VERSION: '21'
+
 jobs:
   test:
-    name: Build and Test
+    strategy:
+      matrix:
+        jdk_test_version: [ '11', '17', '21', '25' ]
+      fail-fast: false
+
+    name: Build and Test (JDK ${{ matrix.jdk_test_version }})
     permissions: 
       security-events: write
       contents: read
@@ -26,19 +34,19 @@ jobs:
       - uses: actions/setup-dotnet@v5.1.0
         with:
           dotnet-version: '8.0.x'
-      - name: Set up JDK 11
-        id: jdk-11
+      - name: Set up JDKs
         uses: actions/setup-java@v5
         with:
-          java-version: 11
+          java-version: |
+            ${{ matrix.jdk_test_version }}
+            ${{ env.MAVEN_TOOLCHAIN_DEFAULT_VERSION }}
           distribution: 'zulu'
       - uses: pnpm/action-setup@41ff72655975bd51cab0327fa583b6e92b6d3061 # v4.2.0
         with:
           version: 6.0.2
-      - name: Test with Maven
+      - name: Build/Test with Maven
         id: build
-        run: |
-            mvn -V -s settings.xml -pl utils,core,cli,ant,archetype -am compile verify --no-transfer-progress --batch-mode
+        run: mvn -V -s settings.xml -pl '!maven' -am compile verify -Dtoolchain.jdk.test.version=${{ matrix.jdk_test_version }} --no-transfer-progress --batch-mode
       - name: SARIF Multitool
         uses: microsoft/sarif-actions@v0.2
         with:
@@ -65,6 +73,7 @@ jobs:
           sarif_file: core/target/spotbugsSarif.json
           category: spotbugs-core
       - name: Archive Snapshot
+        if: matrix.jdk_test_version == env.MAVEN_TOOLCHAIN_DEFAULT_VERSION
         id: archive-snapshot
         uses: actions/upload-artifact@v6
         with:
@@ -78,7 +87,12 @@ jobs:
             cli/target/*.zip
 
   maven:
-    name: Regression Test Maven Plugin
+    strategy:
+      matrix:
+        jdk_test_version: [ '11', '17', '21', '25' ]
+      fail-fast: false
+
+    name: Regression Test Maven Plugin (JDK ${{ matrix.jdk_test_version }})
     permissions: 
       security-events: write
       contents: read
@@ -96,11 +110,12 @@ jobs:
       - uses: actions/setup-dotnet@v5.1.0
         with:
           dotnet-version: '8.0.x'
-      - name: Set up JDK 11
-        id: jdk-11
+      - name: Set up JDKs
         uses: actions/setup-java@v5
         with:
-          java-version: 11
+          java-version: |
+            ${{ matrix.jdk_test_version }}
+            ${{ env.MAVEN_TOOLCHAIN_DEFAULT_VERSION }}
           distribution: 'zulu'
       - uses: pnpm/action-setup@41ff72655975bd51cab0327fa583b6e92b6d3061 # v4.2.0
         with:
@@ -110,13 +125,13 @@ jobs:
         env:
           NVD_API_KEY: ${{ secrets.NVD_API_KEY }}
         run: |
-            mvn -V -s settings.xml -pl maven -am compile verify -DtestMavenPlugin -DreleaseTesting --no-transfer-progress --batch-mode
+            mvn -V -s settings.xml -pl maven -am compile verify -DtestMavenPlugin -DreleaseTesting -Dtoolchain.jdk.test.version=${{ matrix.jdk_test_version }} --no-transfer-progress --batch-mode
       - name: Archive IT test logs
         id: archive-logs
         if: always()
         uses: actions/upload-artifact@v6
         with:
-          name: it-test-logs
+          name: it-test-logs-${{ matrix.jdk_test_version }}
           retention-days: 7
           path: maven/target/it/**/build.log
       - name: Upload SARIF file
@@ -141,11 +156,10 @@ jobs:
           key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
           restore-keys: |
             ${{ runner.os }}-maven-
-      - name: Set up JDK 11
-        id: jdk-11
+      - name: Set up JDK
         uses: actions/setup-java@v5
         with:
-          java-version: 11
+          java-version: ${{ env.MAVEN_TOOLCHAIN_DEFAULT_VERSION }}
           distribution: 'zulu'
       - name: Checkstyle
         id: checkstyle

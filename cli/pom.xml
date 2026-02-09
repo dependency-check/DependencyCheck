@@ -99,13 +99,7 @@ Copyright (c) 2012 - Jeremy Long. All Rights Reserved.
                     <repositoryName>lib</repositoryName>
                     <unixScriptTemplate>${project.basedir}/src/main/conf/unixBinTemplate.sh</unixScriptTemplate>
                     <windowsScriptTemplate>${project.basedir}/src/main/conf/windowsBinTemplate.bat</windowsScriptTemplate>
-                    <!--
-                       enable-native-access=ALL-UNNAMED
-                            Java 21+: Needed by Lucene indexes unless we do -Dorg.apache.lucene.store.MMapDirectory.enableMemorySegments=false
-                                      to go back to regular ByteBuffer (non-native) usage.
-                       -XX:+IgnoreUnrecognizedVMOptions
-                            Java <21: Allow use of enable-native-access on Java 11 JVMs without errors -->
-                    <extraJvmArguments>--enable-native-access=ALL-UNNAMED -XX:+IgnoreUnrecognizedVMOptions</extraJvmArguments>
+                    <extraJvmArguments>${runtime.extra.jvm.args}</extraJvmArguments>
                 </configuration>
                 <executions>
                     <execution>
