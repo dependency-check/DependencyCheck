@@ -642,9 +642,20 @@ Copyright (c) 2012 - Jeremy Long
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>properties</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
-                    <argLine>@{surefireArgLine} ${runtime.extra.jvm.args} -Dfile.encoding=UTF-8</argLine>
+                    <argLine>@{surefireArgLine} -javaagent:${org.mockito:mockito-core:jar} ${runtime.extra.jvm.args} -Dfile.encoding=UTF-8</argLine>
                     <failIfNoTests>false</failIfNoTests>
                     <systemPropertyVariables>
                         <data.directory>${project.build.directory}/data</data.directory>
@@ -657,7 +668,7 @@ Copyright (c) 2012 - Jeremy Long
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-failsafe-plugin</artifactId>
                 <configuration>
-                    <argLine>@{failsafeArgLine} ${runtime.extra.jvm.args}</argLine>
+                    <argLine>@{failsafeArgLine} -javaagent:${org.mockito:mockito-core:jar} ${runtime.extra.jvm.args}</argLine>
                     <systemPropertyVariables>
                         <data.directory>${project.build.directory}/data</data.directory>
                         <temp.directory>${project.build.directory}/temp</temp.directory>
@@ -1364,6 +1375,16 @@ Copyright (c) 2012 - Jeremy Long
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-params</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-junit-jupiter</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>

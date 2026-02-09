@@ -125,7 +125,7 @@ jobs:
         env:
           NVD_API_KEY: ${{ secrets.NVD_API_KEY }}
         run: |
-            mvn -V -s settings.xml -pl maven -am compile verify -DtestMavenPlugin -DreleaseTesting -Dtoolchain.jdk.test.version=${{ matrix.jdk_test_version }} --no-transfer-progress --batch-mode
+            mvn -V -s settings.xml -pl maven -am compile verify -DskipTests -DskipTests.maven=false -DreleaseTesting -Dtoolchain.jdk.test.version=${{ matrix.jdk_test_version }} --no-transfer-progress --batch-mode
       - name: Archive IT test logs
         id: archive-logs
         if: always()
