@@ -238,6 +238,13 @@ Copyright (c) 2013 - Jeremy Long. All Rights Reserved.
             <groupId>org.apache.ant</groupId>
             <artifactId>ant-testutil</artifactId>
             <scope>test</scope>
+            <exclusions>
+                <!-- consolidated into org.hamcrest:hamcrest -->
+                <exclusion>
+                    <groupId>org.hamcrest</groupId>
+                    <artifactId>hamcrest-core</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
     </dependencies>
 </project>
