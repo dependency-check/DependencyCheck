@@ -5,7 +5,7 @@ VERSION=$(mvn -q \
     -Dexec.executable="echo" \
     -Dexec.args='${project.version}' \
     --non-recursive \
-    org.codehaus.mojo:exec-maven-plugin:3.5.1:exec)
+   exec:exec)
 
 FILE=./cli/target/dependency-check-$VERSION-release.zip
 if [ ! -f "$FILE" ]; then
