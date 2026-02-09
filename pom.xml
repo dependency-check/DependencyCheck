@@ -168,7 +168,6 @@ Copyright (c) 2012 - Jeremy Long
         <org.eclipse.parsson.jakarta.json.version>1.1.7</org.eclipse.parsson.jakarta.json.version>
         <maven-artifact-transfer.version>0.13.1</maven-artifact-transfer.version>
         <maven-common-artifact-filters.version>3.4.0</maven-common-artifact-filters.version>
-        <groovy-all.version>2.4.21</groovy-all.version>
         <gmavenplus-plugin.version>4.3.0</gmavenplus-plugin.version>
         <com.h3xstream.retirejs.core.version>3.0.4</com.h3xstream.retirejs.core.version>
         <jackson.version>2.21.0</jackson.version>
@@ -349,13 +348,6 @@ Copyright (c) 2012 - Jeremy Long
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-invoker-plugin</artifactId>
                     <version>3.9.1</version>
-                    <dependencies>
-                        <dependency>
-                            <groupId>org.codehaus.groovy</groupId>
-                            <artifactId>groovy-all</artifactId>
-                            <version>${groovy-all.version}</version>
-                        </dependency>
-                    </dependencies>
                 </plugin>
                 <plugin>
                     <groupId>org.codehaus.gmavenplus</groupId>
@@ -363,9 +355,9 @@ Copyright (c) 2012 - Jeremy Long
                     <version>${gmavenplus-plugin.version}</version>
                     <dependencies>
                         <dependency>
-                            <groupId>org.codehaus.groovy</groupId>
-                            <artifactId>groovy-all</artifactId>
-                            <version>${groovy-all.version}</version>
+                            <groupId>org.apache.groovy</groupId>
+                            <artifactId>groovy-ant</artifactId>
+                            <version>5.0.4</version>
                             <scope>runtime</scope>
                         </dependency>
                     </dependencies>
@@ -376,14 +368,6 @@ Copyright (c) 2012 - Jeremy Long
             <plugin>
                 <groupId>org.codehaus.gmavenplus</groupId>
                 <artifactId>gmavenplus-plugin</artifactId>
-                <dependencies>
-                    <dependency>
-                        <groupId>org.codehaus.groovy</groupId>
-                        <artifactId>groovy-all</artifactId>
-                        <version>${groovy-all.version}</version>
-                        <scope>runtime</scope>
-                    </dependency>
-                </dependencies>
                 <executions>
                     <execution>
                         <id>add-dynamic-properties-clean</id>
