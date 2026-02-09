@@ -16,7 +16,7 @@
  * Copyright (c) 2014 Jeremy Long. All Rights Reserved.
  */
 
-import groovy.util.XmlSlurper
+import groovy.xml.XmlSlurper
 
 String report = new File(basedir, "target/dependency-check-report.xml").text;
 
