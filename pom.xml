@@ -170,7 +170,6 @@ Copyright (c) 2012 - Jeremy Long
         <driver.mysql.version>9.6.0</driver.mysql.version>
         <!--necessary for some IDEs to be able to execute test cases (Netbeans)-->
         <surefireArgLine />
-        <mock-server.version>5.15.0</mock-server.version>
 
         <!--
            Extra JVM arguments needed at runtime to avoid errors on modern JDKs from certain libraries.
@@ -948,24 +947,6 @@ Copyright (c) 2012 - Jeremy Long
                 <groupId>org.anarres.jdiagnostics</groupId>
                 <artifactId>jdiagnostics</artifactId>
                 <version>1.0.7</version>
-            </dependency>
-            <dependency>
-                <groupId>org.mock-server</groupId>
-                <artifactId>mockserver-core</artifactId>
-                <version>${mock-server.version}</version>
-                <scope>test</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.mock-server</groupId>
-                <artifactId>mockserver-client-java</artifactId>
-                <scope>test</scope>
-                <version>${mock-server.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.mock-server</groupId>
-                <artifactId>mockserver-junit-jupiter</artifactId>
-                <version>${mock-server.version}</version>
-                <scope>test</scope>
             </dependency>
             <dependency>
                 <groupId>org.apache.commons</groupId>
