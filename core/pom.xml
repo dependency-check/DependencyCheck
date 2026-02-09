@@ -163,16 +163,9 @@ Copyright (c) 2012 Jeremy Long. All Rights Reserved.
                 <artifactId>maven-jar-plugin</artifactId>
                 <executions>
                     <execution>
-                        <id>test-jar</id>
-                        <phase>package</phase>
                         <goals>
                             <goal>test-jar</goal>
                         </goals>
-                        <configuration>
-                            <includes>
-                                <include>**/*.class</include>
-                            </includes>
-                        </configuration>
                     </execution>
                 </executions>
             </plugin>
@@ -278,6 +271,11 @@ Copyright (c) 2012 Jeremy Long. All Rights Reserved.
             <groupId>org.slf4j</groupId>
             <artifactId>jul-to-slf4j</artifactId>
         </dependency>
+        <!-- Allow redirection of Commons Logging to slf4j -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>jcl-over-slf4j</artifactId>
+        </dependency>
         <dependency>
             <groupId>org.apache.velocity</groupId>
             <artifactId>velocity-engine-core</artifactId>
@@ -377,9 +375,8 @@ Copyright (c) 2012 Jeremy Long. All Rights Reserved.
             <version>1.3.1</version>
         </dependency>
         <dependency>
-            <groupId>com.vaadin.external.google</groupId>
-            <artifactId>android-json</artifactId>
-            <version>0.0.20131108.vaadin1</version>
+            <groupId>org.json</groupId>
+            <artifactId>json</artifactId>
         </dependency>
     </dependencies>
     <profiles>

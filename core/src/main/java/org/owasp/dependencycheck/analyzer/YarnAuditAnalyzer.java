@@ -443,7 +443,7 @@ public class YarnAuditAnalyzer extends AbstractNpmAnalyzer {
             final var advisory = new Advisory();
             final var object = advisoryJson.getJSONObject("children");
             final var moduleName = advisoryJson.optString("value", null);
-            final var id = object.getString("ID");
+            final var id = object.get("ID");
             final var url = object.optString("URL", null);
             final var ghsaId = extractGhsaId(url);
             final var issue = object.optString("Issue", null);

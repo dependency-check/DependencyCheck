@@ -140,7 +140,6 @@ Copyright (c) 2012 - Jeremy Long
         <taglist-maven-plugin.version>3.2.2</taglist-maven-plugin.version>
         <versions-maven-plugin.version>2.21.0</versions-maven-plugin.version>
         <jetbrains.annotations.version>26.0.2-1</jetbrains.annotations.version>
-        <findbugs.spotbugs.version>4.9.8</findbugs.spotbugs.version>
         <com.h2database.version>2.4.240</com.h2database.version>
         <commons-cli.version>1.11.0</commons-cli.version>
         <commons-io.version>2.21.0</commons-io.version>
@@ -443,6 +442,7 @@ Copyright (c) 2012 - Jeremy Long
                     <release>${maven.compiler.release}</release>
                     <showDeprecation>true</showDeprecation>
                     <compilerArgs>
+                        <arg>-proc:none</arg>
                         <arg>-Xlint</arg>
                     </compilerArgs>
                 </configuration>
@@ -968,18 +968,6 @@ Copyright (c) 2012 - Jeremy Long
                 <scope>test</scope>
             </dependency>
             <dependency>
-                <groupId>org.mockito</groupId>
-                <artifactId>mockito-core</artifactId>
-                <version>${mockito.version}</version>
-                <scope>test</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.mockito</groupId>
-                <artifactId>mockito-junit-jupiter</artifactId>
-                <version>${mockito.version}</version>
-                <scope>test</scope>
-            </dependency>
-            <dependency>
                 <groupId>org.apache.commons</groupId>
                 <artifactId>commons-jcs3-core</artifactId>
                 <version>${commons-jcs-core.version}</version>
@@ -987,6 +975,11 @@ Copyright (c) 2012 - Jeremy Long
             <dependency>
                 <groupId>org.apache.httpcomponents.client5</groupId>
                 <artifactId>httpclient5</artifactId>
+                <version>${httpcomponents.client.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.httpcomponents.client5</groupId>
+                <artifactId>httpclient5-cache</artifactId>
                 <version>${httpcomponents.client.version}</version>
             </dependency>
             <dependency>
@@ -1004,9 +997,23 @@ Copyright (c) 2012 - Jeremy Long
                 <artifactId>commons-validator</artifactId>
                 <version>1.10.1</version>
                 <exclusions>
+                    <!-- Unnecessary capabilities -->
                     <exclusion>
                         <groupId>commons-beanutils</groupId>
                         <artifactId>commons-beanutils</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>commons-collections</groupId>
+                        <artifactId>commons-collections</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>commons-digester</groupId>
+                        <artifactId>commons-digester</artifactId>
+                    </exclusion>
+                    <!-- Replaced by org.slf4j:jcl-over-slf4j -->
+                    <exclusion>
+                        <groupId>commons-logging</groupId>
+                        <artifactId>commons-logging</artifactId>
                     </exclusion>
                 </exclusions>
             </dependency>
@@ -1014,6 +1021,13 @@ Copyright (c) 2012 - Jeremy Long
                 <groupId>org.apache.commons</groupId>
                 <artifactId>commons-dbcp2</artifactId>
                 <version>2.14.0</version>
+                <exclusions>
+                    <!-- Replaced by org.slf4j:jcl-over-slf4j -->
+                    <exclusion>
+                        <groupId>commons-logging</groupId>
+                        <artifactId>commons-logging</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
             <dependency>
                 <groupId>com.github.package-url</groupId>
@@ -1036,9 +1050,10 @@ Copyright (c) 2012 - Jeremy Long
                 <version>5.8.0</version>
             </dependency>
             <dependency>
-                <groupId>org.jetbrains</groupId>
-                <artifactId>annotations</artifactId>
-                <version>${jetbrains.annotations.version}</version>
+                <groupId>org.jspecify</groupId>
+                <artifactId>jspecify</artifactId>
+                <version>1.0.0</version>
+                <optional>true</optional>
             </dependency>
             <dependency>
                 <groupId>com.h2database</groupId>
@@ -1072,11 +1087,6 @@ Copyright (c) 2012 - Jeremy Long
                 <scope>import</scope>
             </dependency>
             <dependency>
-                <groupId>com.fasterxml.jackson.datatype</groupId>
-                <artifactId>jackson-datatype-jsr310</artifactId>
-                <version>${jackson.version}</version>
-            </dependency>
-            <dependency>
                 <groupId>commons-io</groupId>
                 <artifactId>commons-io</artifactId>
                 <version>${commons-io.version}</version>
@@ -1102,22 +1112,18 @@ Copyright (c) 2012 - Jeremy Long
                 <version>${logback.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.junit.jupiter</groupId>
-                <artifactId>junit-jupiter-api</artifactId>
-                <version>${junit.version}</version>
-                <scope>test</scope>
+                <groupId>org.mockito</groupId>
+                <artifactId>mockito-bom</artifactId>
+                <version>${mockito.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
             </dependency>
             <dependency>
-                <groupId>org.junit.jupiter</groupId>
-                <artifactId>junit-jupiter-engine</artifactId>
+                <groupId>org.junit</groupId>
+                <artifactId>junit-bom</artifactId>
                 <version>${junit.version}</version>
-                <scope>test</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.junit.jupiter</groupId>
-                <artifactId>junit-jupiter-params</artifactId>
-                <version>${junit.version}</version>
-                <scope>test</scope>
+                <type>pom</type>
+                <scope>import</scope>
             </dependency>
             <dependency>
                 <groupId>org.apache.commons</groupId>
@@ -1128,21 +1134,16 @@ Copyright (c) 2012 - Jeremy Long
                 <groupId>org.apache.ant</groupId>
                 <artifactId>ant</artifactId>
                 <version>${apache.ant.version}</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>com.sun</groupId>
-                        <artifactId>tools</artifactId>
-                    </exclusion>
-                </exclusions>
             </dependency>
             <dependency>
                 <groupId>org.apache.ant</groupId>
                 <artifactId>ant-testutil</artifactId>
                 <version>${apache.ant.version}</version>
                 <exclusions>
+                    <!-- consolidated into org.hamcrest:hamcrest -->
                     <exclusion>
-                        <groupId>com.sun</groupId>
-                        <artifactId>tools</artifactId>
+                        <groupId>org.hamcrest</groupId>
+                        <artifactId>hamcrest-core</artifactId>
                     </exclusion>
                 </exclusions>
             </dependency>
@@ -1175,6 +1176,18 @@ Copyright (c) 2012 - Jeremy Long
                 <groupId>com.h3xstream.retirejs</groupId>
                 <artifactId>retirejs-core</artifactId>
                 <version>${com.h3xstream.retirejs.core.version}</version>
+                <exclusions>
+                    <!-- Replace with canonical org.json:json -->
+                    <exclusion>
+                        <groupId>com.vaadin.external.google</groupId>
+                        <artifactId>android-json</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>org.json</groupId>
+                <artifactId>json</artifactId>
+                <version>20251224</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.maven</groupId>
@@ -1223,6 +1236,7 @@ Copyright (c) 2012 - Jeremy Long
                 <groupId>org.apache.maven.plugin-testing</groupId>
                 <artifactId>maven-plugin-testing-harness</artifactId>
                 <version>${maven-plugin-testing-harness.version}</version>
+                <scope>test</scope>
             </dependency>
             <dependency>
                 <groupId>org.apache.maven.plugin-tools</groupId>
@@ -1278,6 +1292,11 @@ Copyright (c) 2012 - Jeremy Long
                 <version>${slf4j.version}</version>
             </dependency>
             <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>jcl-over-slf4j</artifactId>
+                <version>${slf4j.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>org.apache.maven.shared</groupId>
                 <artifactId>maven-artifact-transfer</artifactId>
                 <version>${maven-artifact-transfer.version}</version>
@@ -1293,15 +1312,11 @@ Copyright (c) 2012 - Jeremy Long
                 <version>${doxia-base.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.github.spotbugs</groupId>
-                <artifactId>spotbugs-annotations</artifactId>
-                <version>${findbugs.spotbugs.version}</version>
-            </dependency>
-            <dependency>
                 <groupId>org.sonatype.ossindex</groupId>
                 <artifactId>ossindex-service-client</artifactId>
                 <version>1.8.2</version>
                 <exclusions>
+                    <!-- We use our own httpclient5 transport client -->
                     <exclusion>
                         <groupId>org.apache.httpcomponents</groupId>
                         <artifactId>httpclient</artifactId>
@@ -1310,20 +1325,27 @@ Copyright (c) 2012 - Jeremy Long
                         <groupId>org.apache.httpcomponents</groupId>
                         <artifactId>httpcore</artifactId>
                     </exclusion>
-                    <exclusion>
-                        <groupId>com.google.guava</groupId>
-                        <artifactId>guava</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>org.slf4j</groupId>
-                        <artifactId>jcl-over-slf4j</artifactId>
-                    </exclusion>
                 </exclusions>
             </dependency>
             <dependency>
                 <groupId>com.google.guava</groupId>
                 <artifactId>guava</artifactId>
                 <version>33.5.0-jre</version>
+                <exclusions>
+                    <!-- Not needed at runtime for ODC cases -->
+                    <exclusion>
+                        <groupId>com.google.guava</groupId>
+                        <artifactId>listenablefuture</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>com.google.errorprone</groupId>
+                        <artifactId>error_prone_annotations</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>com.google.j2objc</groupId>
+                        <artifactId>j2objc-annotations</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
             <dependency>
                 <groupId>com.hankcs</groupId>
@@ -1337,11 +1359,7 @@ Copyright (c) 2012 - Jeremy Long
                 <exclusions>
                     <exclusion>
                         <groupId>org.bouncycastle</groupId>
-                        <artifactId>bcprov-jdk15on</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>org.bouncycastle</groupId>
-                        <artifactId>bcpg-jdk15on</artifactId>
+                        <artifactId>*</artifactId>
                     </exclusion>
                 </exclusions>
             </dependency>
@@ -1390,6 +1408,7 @@ Copyright (c) 2012 - Jeremy Long
         <dependency>
             <groupId>com.github.spotbugs</groupId>
             <artifactId>spotbugs-annotations</artifactId>
+            <version>4.9.8</version>
             <scope>compile</scope>
             <optional>true</optional>
         </dependency>
