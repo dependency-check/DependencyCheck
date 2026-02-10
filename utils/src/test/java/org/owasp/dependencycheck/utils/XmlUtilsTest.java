@@ -1,7 +1,7 @@
 package org.owasp.dependencycheck.utils;
 
 import org.apache.commons.lang3.tuple.Pair;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -104,7 +104,7 @@ class XmlUtilsTest {
         }
     }
 
-    private static @NotNull XMLReader withDefaultReader(AutoCloseableInputSource... schemas)
+    private static @NonNull XMLReader withDefaultReader(AutoCloseableInputSource... schemas)
             throws ParserConfigurationException, SAXException {
         XMLReader xmlReader = XmlUtils.buildSecureValidatingXmlReader(schemas);
         xmlReader.setErrorHandler(new ErrorHandler() {

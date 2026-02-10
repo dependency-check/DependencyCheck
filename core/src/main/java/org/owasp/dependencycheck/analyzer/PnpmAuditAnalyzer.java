@@ -20,9 +20,9 @@ package org.owasp.dependencycheck.analyzer;
 import org.apache.commons.collections4.MultiValuedMap;
 import org.apache.commons.collections4.multimap.HashSetValuedHashMap;
 import org.apache.commons.lang3.StringUtils;
-import org.jetbrains.annotations.NotNull;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.jspecify.annotations.NonNull;
 import org.owasp.dependencycheck.Engine;
 import org.owasp.dependencycheck.analyzer.exception.AnalysisException;
 import org.owasp.dependencycheck.analyzer.exception.SearchException;
@@ -281,7 +281,7 @@ public class PnpmAuditAnalyzer extends AbstractNpmAnalyzer {
         }
     }
 
-    @NotNull
+    @NonNull
     private NpmAuditParser getAuditParser() {
         return new NpmAuditParser();
     }

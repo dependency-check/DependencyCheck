@@ -21,7 +21,7 @@ import org.apache.commons.lang3.builder.CompareToBuilder;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.hc.core5.net.PercentCodec;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 import org.owasp.dependencycheck.dependency.Confidence;
 import us.springett.parsers.cpe.Cpe;
 import us.springett.parsers.cpe.CpeBuilder;
@@ -190,7 +190,7 @@ public class CpeIdentifier implements Identifier {
     }
 
     @Override
-    public int compareTo(@NotNull Identifier o) {
+    public int compareTo(@NonNull Identifier o) {
         if (o instanceof CpeIdentifier) {
             final CpeIdentifier other = (CpeIdentifier) o;
             return new CompareToBuilder()
