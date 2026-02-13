@@ -320,9 +320,9 @@ public class RetireJsAnalyzer extends AbstractFileTypeAnalyzer {
                         dependency.addSoftwareIdentifier(id);
                     }
 
-                    dependency.addEvidence(EvidenceType.VERSION, "file", "version", libraryResult.getDetectedVersion(), Confidence.HIGH);
-                    dependency.addEvidence(EvidenceType.PRODUCT, "file", "name", libraryResult.getLibrary().getName(), Confidence.HIGH);
-                    dependency.addEvidence(EvidenceType.VENDOR, "file", "name", libraryResult.getLibrary().getName(), Confidence.HIGH);
+                    dependency.addEvidence(EvidenceType.VERSION, "RetireJS", "version", libraryResult.getDetectedVersion(), Confidence.HIGH);
+                    dependency.addEvidence(EvidenceType.PRODUCT, "RetireJS", "name", libraryResult.getLibrary().getName(), Confidence.HIGH);
+                    dependency.addEvidence(EvidenceType.VENDOR, "RetireJS", "name", libraryResult.getLibrary().getName(), Confidence.HIGH);
 
                     final List<Vulnerability> vulns = new ArrayList<>();
                     final JsVulnerability jsVuln = libraryResult.getVuln();
