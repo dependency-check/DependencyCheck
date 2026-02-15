@@ -17,29 +17,34 @@
  */
 package org.owasp.dependencycheck.ant.logging;
 
-import org.slf4j.ILoggerFactory;
-import org.slf4j.Logger;
+import org.apache.tools.ant.Task;
 
 /**
- * An implementation of {@link org.slf4j.ILoggerFactory} which always returns {@link AntLoggerAdapter} instances.
- *
- * @author colezlaw
+ * Holds a reference to the current Ant Task for logging. Replaces the old
+ * StaticLoggerBinder singleton pattern used with SLF4J 1.x.
  */
-public class AntLoggerFactory implements ILoggerFactory {
+public final class AntTaskHolder {
+
+    private static volatile Task task;
+
+    private AntTaskHolder() {
+    }
 
     /**
-     * A reference to the Ant logger Adapter.
-     */
-    private final AntLoggerAdapter antLoggerAdapter = new AntLoggerAdapter();
-
-    /**
-     * Returns the Ant logger adapter.
+     * Sets the current Ant task to use for logging.
      *
-     * @param name ignored in this implementation
-     * @return the Ant logger adapter
+     * @param t the Ant task
      */
-    @Override
-    public Logger getLogger(String name) {
-        return antLoggerAdapter;
+    public static void setTask(Task t) {
+        task = t;
+    }
+
+    /**
+     * Returns the current Ant task.
+     *
+     * @return the Ant task, or null if not set
+     */
+    public static Task getTask() {
+        return task;
     }
 }

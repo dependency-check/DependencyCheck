@@ -46,7 +46,7 @@ import org.owasp.dependencycheck.utils.InvalidSettingException;
 import org.owasp.dependencycheck.utils.Settings;
 import org.owasp.dependencycheck.utils.SeverityUtil;
 import org.owasp.dependencycheck.utils.scarf.TelemetryCollector;
-import org.slf4j.impl.StaticLoggerBinder;
+import org.owasp.dependencycheck.ant.logging.AntTaskHolder;
 
 //CSOFF: MethodCount
 /**
@@ -517,7 +517,7 @@ public class Check extends Update {
         super();
         // Call this before Dependency Check Core starts logging anything - this way, all SLF4J messages from
         // core end up coming through this tasks logger
-        StaticLoggerBinder.getSingleton().setTask(this);
+        AntTaskHolder.setTask(this);
     }
 
     /**

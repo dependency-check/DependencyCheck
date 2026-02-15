@@ -25,7 +25,7 @@ import org.owasp.dependencycheck.data.update.exception.UpdateException;
 import org.owasp.dependencycheck.utils.Downloader;
 import org.owasp.dependencycheck.utils.InvalidSettingException;
 import org.owasp.dependencycheck.utils.Settings;
-import org.slf4j.impl.StaticLoggerBinder;
+import org.owasp.dependencycheck.ant.logging.AntTaskHolder;
 
 /**
  * An Ant task definition to execute dependency-check update. This will download
@@ -222,7 +222,7 @@ public class Update extends Purge {
         super();
         // Call this before Dependency Check Core starts logging anything - this way, all SLF4J messages from
         // core end up coming through this tasks logger
-        StaticLoggerBinder.getSingleton().setTask(this);
+        AntTaskHolder.setTask(this);
     }
 
     /**

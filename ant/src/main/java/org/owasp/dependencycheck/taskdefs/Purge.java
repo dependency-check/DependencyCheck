@@ -29,7 +29,7 @@ import org.owasp.dependencycheck.Engine;
 import org.owasp.dependencycheck.utils.Downloader;
 import org.owasp.dependencycheck.utils.InvalidSettingException;
 import org.owasp.dependencycheck.utils.Settings;
-import org.slf4j.impl.StaticLoggerBinder;
+import org.owasp.dependencycheck.ant.logging.AntTaskHolder;
 
 /**
  * An Ant task definition to execute dependency-check during an Ant build.
@@ -65,7 +65,7 @@ public class Purge extends Task {
 
         // Call this before Dependency Check Core starts logging anything - this way, all SLF4J messages from
         // core end up coming through this tasks logger
-        StaticLoggerBinder.getSingleton().setTask(this);
+        AntTaskHolder.setTask(this);
     }
 
     public Settings getSettings() {
