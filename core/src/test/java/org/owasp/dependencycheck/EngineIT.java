@@ -94,6 +94,7 @@ class EngineIT extends BaseDBTestCase {
         getSettings().setBoolean(Settings.KEYS.ANALYZER_CENTRAL_ENABLED, false);
         getSettings().setBoolean(Settings.KEYS.ANALYZER_NODE_PACKAGE_ENABLED, false);
         getSettings().setBoolean(Settings.KEYS.ANALYZER_NODE_AUDIT_ENABLED, false);
+        getSettings().setBoolean(Settings.KEYS.ANALYZER_PNPM_AUDIT_ENABLED, false);
         getSettings().setBoolean(Settings.KEYS.ANALYZER_EXPERIMENTAL_ENABLED, true);
         getSettings().setBoolean(Settings.KEYS.ANALYZER_BUNDLE_AUDIT_ENABLED, false);
         getSettings().setBoolean(Settings.KEYS.ANALYZER_MIX_AUDIT_ENABLED, false);
