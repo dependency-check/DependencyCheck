@@ -38,18 +38,10 @@
         </fileSet>
         <fileSet>
             <outputDirectory>dependency-check</outputDirectory>
+            <directory>${license.outputDirectory}</directory>
             <includes>
-                <include>LICENSE*</include>
-                <include>NOTICE*</include>
+                <include>THIRD-PARTY.txt</include>
             </includes>
-        </fileSet>
-        <fileSet>
-            <outputDirectory>dependency-check/licenses</outputDirectory>
-            <directory>${basedir}/src/main/resources/META-INF/licenses</directory>
-        </fileSet>
-        <fileSet>
-            <outputDirectory>dependency-check/licenses</outputDirectory>
-            <directory>${basedir}/../dependency-check-core/src/main/resources/META-INF/licenses</directory>
         </fileSet>
         <fileSet>
             <outputDirectory>dependency-check</outputDirectory>
@@ -57,6 +49,7 @@
             <includes>
                 <include>README.md</include>
                 <include>LICENSE.txt</include>
+                <include>NOTICE.txt</include>
             </includes>
         </fileSet>
     </fileSets>

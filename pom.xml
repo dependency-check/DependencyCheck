@@ -106,8 +106,9 @@ Copyright (c) 2012 - Jeremy Long
     </ciManagement>
     <licenses>
         <license>
-            <name>The Apache Software License, Version 2.0</name>
-            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <name>Apache-2.0</name>
+            <comments>The Apache Software License, Version 2.0</comments>
+            <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
         </license>
     </licenses>
     <properties>
@@ -152,6 +153,7 @@ Copyright (c) 2012 - Jeremy Long
            -XX:+IgnoreUnrecognizedVMOptions
                 Java <21: Allow use of enable-native-access on Java 11 JVMs without errors and without JVM-specific arg detection -->
         <runtime.extra.jvm.args>--enable-native-access=ALL-UNNAMED -XX:+IgnoreUnrecognizedVMOptions</runtime.extra.jvm.args>
+        <license.outputDirectory>${project.build.directory}/generated-sources/license</license.outputDirectory>
     </properties>
     <distributionManagement>
         <site>
@@ -428,6 +430,7 @@ Copyright (c) 2012 - Jeremy Long
                             <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
                         </manifest>
                     </archive>
+
                     <excludes>
                         <exclude>**/checkstyle*</exclude>
                     </excludes>
@@ -666,6 +669,42 @@ Copyright (c) 2012 - Jeremy Long
                                 </resource>
                             </resources>
                             <encoding>UTF-8</encoding>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>license-maven-plugin</artifactId>
+                <version>2.7.1</version>
+                <configuration>
+                    <includedScopes>compile,runtime</includedScopes>
+                    <includeOptional>false</includeOptional>
+                    <failOnMissing>true</failOnMissing>
+                    <failOnBlacklist>true</failOnBlacklist>
+                    <licenseMerges>
+                        <licenseMerge>Apache-2.0|Apache 2.0|Apache License 2.0|Apache 2|The Apache Software License, Version 2.0|Apache License, Version 2.0|The Apache License, Version 2.0|Apache License Version 2.0|ASL2</licenseMerge>
+                        <licenseMerge>BSD-3-Clause|The (New) BSD License|3-Clause BSD License</licenseMerge>
+                        <licenseMerge>CDDL-1.1|CDDL 1.1</licenseMerge>
+                        <licenseMerge>CDDL-1.1 WITH Classpath-exception-2.0|CDDL/GPLv2+CE</licenseMerge>
+                        <licenseMerge>CPL-1.0|Common Public 1.0|Common Public License - v 1.0</licenseMerge>
+                        <licenseMerge>EPL-1.0|Eclipse Public License - v 1.0|EPL 1.0</licenseMerge>
+                        <licenseMerge>EPL-2.0|Eclipse Public License - Version 2.0|Eclipse Public License 2.0|EPL 2.0</licenseMerge>
+                        <licenseMerge>GPL-2.0-only WITH Classpath-exception-2.0|GPL2 w/ CPE|GNU General Public License, version 2 with the GNU Classpath Exception</licenseMerge>
+                        <licenseMerge>LGPL-2.1-only|GNU Lesser General Public License</licenseMerge>
+                        <licenseMerge>MIT|The MIT License|MIT License</licenseMerge>
+                        <licenseMerge>MPL-2.0|MPL 2.0</licenseMerge>
+                    </licenseMerges>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>add-third-party</id>
+                        <goals>
+                            <goal>add-third-party</goal>
+                        </goals>
+                        <configuration>
+                            <force>true</force>
+                            <addOutputDirectoryAsResourceDir>false</addOutputDirectoryAsResourceDir>
                         </configuration>
                     </execution>
                 </executions>
