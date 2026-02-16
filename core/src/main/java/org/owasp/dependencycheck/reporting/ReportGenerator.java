@@ -22,6 +22,7 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.WordUtils;
 import org.apache.velocity.VelocityContext;
@@ -67,6 +68,7 @@ import java.nio.file.Files;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Properties;
 
 /**
  * The ReportGenerator is used to, as the name implies, generate reports.
@@ -292,6 +294,8 @@ public class ReportGenerator {
                 LOGGER.warn("Writing non-standard VSL output to a directory using template name as file name.");
             }
             LOGGER.info("Writing custom report to: {}", out.getAbsolutePath());
+            // a custom template may be derived from the HTML report and reference its inlined scripts
+            addWebJarAssets();
             processTemplate(format, out);
         }
 
@@ -317,6 +321,9 @@ public class ReportGenerator {
             final File out = getReportFile(outputLocation, format);
             final String templateName = format.toString().toLowerCase() + "Report";
             LOGGER.info("Writing {} report to: {}", format, out.getAbsolutePath());
+            if (format == Format.HTML) {
+                addWebJarAssets();
+            }
             processTemplate(templateName, out);
             if (settings.getBoolean(Settings.KEYS.PRETTY_PRINT, false)) {
                 if (format == Format.JSON || format == Format.SARIF) {
@@ -426,6 +433,46 @@ public class ReportGenerator {
             throw new ReportException("Unable to locate template file: " + templateName, ex);
         } catch (IOException ex) {
             throw new ReportException("Unable to write the report", ex);
+        }
+    }
+
+    /**
+     * Adds the JavaScript inlined into the HTML report to the velocity context.
+     * The scripts are read from the webjars on the classpath rather than
+     * being pasted into the template, so that the versions shipped, the SBOM
+     * entries and the license notices all follow the Maven dependency.
+     *
+     * @throws ReportException thrown if a webjar resource cannot be read
+     */
+    private void addWebJarAssets() throws ReportException {
+        if (context.containsKey("jqueryJs")) {
+            return;
+        }
+        context.put("jqueryJs", readWebJarResource("jquery", "dist/jquery.min.js"));
+        context.put("stupidTableJs", readWebJarResource("stupid-table-plugin", "stupidtable.min.js"));
+    }
+
+    /**
+     * Reads a resource from an npm webjar on the classpath. The webjar version
+     * is taken from its Maven descriptor so that the dependency can be
+     * upgraded without changing the templates.
+     *
+     * @param artifactId the webjar artifact id (the npm package name)
+     * @param path the path of the resource within the package
+     * @return the content of the resource
+     * @throws ReportException thrown if the resource cannot be read
+     */
+    private static String readWebJarResource(String artifactId, String path) throws ReportException {
+        final String descriptor = String.format("META-INF/maven/org.webjars.npm/%s/pom.properties", artifactId);
+        try (InputStream in = FileUtils.getResourceAsStream(descriptor)) {
+            final Properties properties = new Properties();
+            properties.load(in);
+            final String resource = String.format("META-INF/resources/webjars/%s/%s/%s", artifactId, properties.getProperty("version"), path);
+            try (InputStream content = FileUtils.getResourceAsStream(resource)) {
+                return IOUtils.toString(content, StandardCharsets.UTF_8);
+            }
+        } catch (IOException ex) {
+            throw new ReportException("Unable to read " + path + " from the " + artifactId + " webjar", ex);
         }
     }
 
