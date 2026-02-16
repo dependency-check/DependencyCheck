@@ -90,8 +90,12 @@ public abstract class AbstractTokenizingFilter extends TokenFilter {
         if (termAdded) {
             final String term = tokens.pop();
             clearAttributes();
-            termAtt.append(term);
+            appendTerm(term);
         }
         return termAdded;
+    }
+
+    protected void appendTerm(String term) {
+        termAtt.append(term);
     }
 }

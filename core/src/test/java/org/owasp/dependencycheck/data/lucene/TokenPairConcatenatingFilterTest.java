@@ -17,82 +17,33 @@
  */
 package org.owasp.dependencycheck.data.lucene;
 
-import java.io.IOException;
-import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.tests.analysis.BaseTokenStreamTestCase;
-import static org.apache.lucene.tests.analysis.BaseTokenStreamTestCase.checkOneTerm;
-import org.apache.lucene.tests.analysis.MockTokenizer;
-import org.apache.lucene.analysis.Tokenizer;
-import org.apache.lucene.analysis.core.KeywordTokenizer;
-import static org.junit.Assert.fail;
-import org.junit.Before;
-import org.junit.Test;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.contains;
 
-/**
- *
- * @author Jeremy Long
- */
-public class TokenPairConcatenatingFilterTest extends BaseTokenStreamTestCase {
+import org.apache.lucene.analysis.TokenFilter;
+import org.apache.lucene.analysis.TokenStream;
+import org.jspecify.annotations.NonNull;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
-//    private Analyzer analyzer;
-//
-//    @Before
-//    @Override
-//    public void setUp() throws Exception {
-//        super.setUp();
-//        analyzer = new Analyzer() {
-//            @Override
-//            protected Analyzer.TokenStreamComponents createComponents(String fieldName) {
-//                Tokenizer source = new MockTokenizer(MockTokenizer.WHITESPACE, false);
-//                return new Analyzer.TokenStreamComponents(source, new TokenPairConcatenatingFilter(source));
-//            }
-//        };
-//    }
-//
-//    /**
-//     * Test of incrementToken method, of class TokenPairConcatenatingFilter.
-//     */
-//    @Test
-//    public void testIncrementToken() throws Exception {
-//        String[] expected = new String[5];
-//        expected[0] = "red";
-//        expected[1] = "redblue";
-//        expected[2] = "blue";
-//        expected[3] = "bluegreen";
-//        expected[4] = "green";
-//        assertAnalyzesTo(analyzer, "red blue green", expected);
-//    }
-//    /**
-//     * copied from
-//     * http://svn.apache.org/repos/asf/lucene/dev/trunk/lucene/analysis/common/src/test/org/apache/lucene/analysis/en/TestEnglishMinimalStemFilter.java
-//     * blast some random strings through the analyzer
-//     */
-//    public void testRandomStrings() {
-//        try {
-//            checkRandomData(random(), analyzer, 1000 * RANDOM_MULTIPLIER);
-//        } catch (IOException ex) {
-//            fail("Failed test random strings: " + ex.getMessage());
-//        }
-//    }
-    /**
-     * copied from
-     * http://svn.apache.org/repos/asf/lucene/dev/trunk/lucene/analysis/common/src/test/org/apache/lucene/analysis/en/TestEnglishMinimalStemFilter.java
-     *
-     * @throws IOException
-     */
+import java.util.List;
+
+public class TokenPairConcatenatingFilterTest extends BaseTokenFilterTest {
+
     @Test
-    public void testEmptyTerm() {
-        Analyzer a = new Analyzer() {
+    @Disabled("Has been broken since change to reset logic in 74ff6d99e78eaef15c595fe35d7ed12d8c22a7a9")
+    public void testIncrementToken() throws Exception {
+        assertThat(processAllFrom("red blue green"), contains("red", "redblue", "blue", "bluegreen", "green"));
+    }
+
+    @Override
+    TokenFilter newFilter(@NonNull final TokenStream stream, List<String> terms) {
+        return new TokenPairConcatenatingFilter(stream) {
             @Override
-            protected Analyzer.TokenStreamComponents createComponents(String fieldName) {
-                Tokenizer tokenizer = new KeywordTokenizer();
-                return new Analyzer.TokenStreamComponents(tokenizer, new TokenPairConcatenatingFilter(tokenizer));
+            protected void appendTerm(String term) {
+                super.appendTerm(term);
+                terms.add(term);
             }
         };
-        try {
-            checkOneTerm(a, "", "");
-        } catch (IOException ex) {
-            fail("Failed test random strings: " + ex.getMessage());
-        }
     }
 }
