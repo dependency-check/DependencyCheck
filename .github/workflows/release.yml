@@ -78,7 +78,7 @@ jobs:
           clean verify -PFullIntegrationTesting
           source:jar javadoc:jar site
           -Prelease gpg:sign deploy site:stage 
-          --no-transfer-progress --batch-mode
+          --no-transfer-progress --batch-mode -Dstyle.color=always
       - name: Archive code coverage results
         id: archive-coverage
         uses: actions/upload-artifact@v6
@@ -147,7 +147,7 @@ jobs:
         run: >
           mvn -V -s settings.xml -pl cli -am 
           package -DskipTests=true
-          --no-transfer-progress --batch-mode
+          --no-transfer-progress --batch-mode -Dstyle.color=always
       - name: Test Docker Image
         run: ./docker-test.sh
       - name: Deploy Docker Image

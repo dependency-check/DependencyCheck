@@ -58,7 +58,7 @@ jobs:
     #    uses a compiled language
 
     - run: |
-       mvn -s settings.xml clean package -DskipTests=true --no-transfer-progress --batch-mode
+       mvn -s settings.xml clean package -DskipTests=true --no-transfer-progress --batch-mode -Dstyle.color=always
 
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v4

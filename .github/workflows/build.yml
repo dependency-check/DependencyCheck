@@ -74,7 +74,7 @@ jobs:
           -Dtoolchain.jdk.test.version=${{ matrix.jdk_test_version }} -Dtoolchain.jdk.test.home="$JAVA_HOME_${{ matrix.jdk_test_version }}_X64"
           ${{ matrix.jdk_test_version == matrix.jdk_default_version && 'source:jar javadoc:jar site' || '' }}
           ${{ steps.install-gpg-key.outcome == 'success' && '-Prelease gpg:sign deploy' || '' }} 
-          --no-transfer-progress --batch-mode
+          --no-transfer-progress --batch-mode -Dstyle.color=always
       - name: SARIF Multitool
         uses: microsoft/sarif-actions@v0.2
         with:
@@ -144,6 +144,6 @@ jobs:
         run: >
           mvn -V -s settings.xml -pl cli -am 
           package -DskipTests=true
-          --no-transfer-progress --batch-mode
+          --no-transfer-progress --batch-mode -Dstyle.color=always
       - name: Test Docker Image
         run: ./docker-test.sh
