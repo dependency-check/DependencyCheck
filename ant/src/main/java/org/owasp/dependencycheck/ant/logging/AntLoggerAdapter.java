@@ -32,10 +32,6 @@ import org.slf4j.helpers.MessageFormatter;
  */
 public class AntLoggerAdapter implements Logger {
 
-    /**
-     * The serial version UID for serialization.
-     */
-    private static final long serialVersionUID = -8546294566287970709L;
 
     /**
      * The logger name.
