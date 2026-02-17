@@ -49,8 +49,9 @@ jobs:
         id: build
         run: >
           mvn -V -s settings.xml -pl '!maven' -am 
-          compile verify 
+          clean verify
           -Dtoolchain.jdk.test.version=${{ matrix.jdk_test_version }} -Dtoolchain.jdk.test.home="$JAVA_HOME_${{ matrix.jdk_test_version }}_X64" 
+          ${{ matrix.jdk_test_version == matrix.jdk_default_version && 'source:jar javadoc:jar site' || '' }}
           --no-transfer-progress --batch-mode
       - name: SARIF Multitool
         uses: microsoft/sarif-actions@v0.2
@@ -139,9 +140,8 @@ jobs:
           NVD_API_KEY: ${{ secrets.NVD_API_KEY }}
         run: >
           mvn -V -s settings.xml -pl maven -am 
-          compile verify 
-          -DskipTests=true -PFullIntegrationTesting
-          -Dtoolchain.jdk.test.version=${{ matrix.jdk_test_version }} -Dtoolchain.jdk.test.home="$JAVA_HOME_${{ matrix.jdk_test_version }}_X64" 
+          clean verify -DskipTests=true -PFullIntegrationTesting
+          -Dtoolchain.jdk.test.version=${{ matrix.jdk_test_version }} -Dtoolchain.jdk.test.home="$JAVA_HOME_${{ matrix.jdk_test_version }}_X64"
           --no-transfer-progress --batch-mode
       - name: Archive IT test logs
         id: archive-logs

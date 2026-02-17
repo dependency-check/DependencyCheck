@@ -132,7 +132,8 @@ Copyright (c) 2012 - Jeremy Long
         <maven-antrun-plugin.version>3.2.0</maven-antrun-plugin.version>
         <maven-dependency-plugin.version>3.10.0</maven-dependency-plugin.version>
         <maven-javadoc-plugin.version>3.12.0</maven-javadoc-plugin.version>
-        <maven-jxr-plugin.version>3.6.0</maven-jxr-plugin.version>
+        <!-- upgrading beyond 2.5 breaks maven site when aggregating for parent due to the ant module test dependency on core -->
+        <maven-jxr-plugin.version>2.5</maven-jxr-plugin.version>
         <maven-project-info-reports-plugin.version>3.9.0</maven-project-info-reports-plugin.version>
         <maven-surefire-report-plugin.version>3.5.4</maven-surefire-report-plugin.version>
         <jacoco-maven-plugin.version>0.8.14</jacoco-maven-plugin.version>
@@ -849,7 +850,7 @@ Copyright (c) 2012 - Jeremy Long
                     <reportSet>
                         <reports>
                             <report>summary</report>
-                            <report>issue-management </report>
+                            <report>issue-management</report>
                             <report>modules</report>
                             <report>team</report>
                             <report>scm</report>
