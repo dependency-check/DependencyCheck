@@ -31,11 +31,10 @@ import java.util.Set;
 import java.util.regex.Pattern;
 import javax.annotation.concurrent.ThreadSafe;
 
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 import org.owasp.dependencycheck.Engine;
 import org.owasp.dependencycheck.analyzer.exception.AnalysisException;
 import org.owasp.dependencycheck.data.update.HostedSuppressionsDataSource;
-import org.owasp.dependencycheck.data.update.exception.UpdateException;
 import org.owasp.dependencycheck.dependency.Dependency;
 import org.owasp.dependencycheck.exception.InitializationException;
 import org.owasp.dependencycheck.exception.WriteLockException;
@@ -219,7 +218,7 @@ public abstract class AbstractSuppressionAnalyzer extends AbstractAnalyzer {
         }
     }
 
-    private static @NotNull URL getPackagedFile(String packagedFileName) throws SuppressionParseException {
+    private static @NonNull URL getPackagedFile(String packagedFileName) throws SuppressionParseException {
         final URL jarLocation = AbstractSuppressionAnalyzer.class.getProtectionDomain().getCodeSource().getLocation();
         String suppressionFileLocation = jarLocation.getFile();
         if (suppressionFileLocation.endsWith(".jar")) {

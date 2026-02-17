@@ -17,100 +17,40 @@
  */
 package org.owasp.dependencycheck.data.lucene;
 
-import java.io.IOException;
-import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.tests.analysis.BaseTokenStreamTestCase;
-import static org.apache.lucene.tests.analysis.BaseTokenStreamTestCase.checkOneTerm;
-import static org.apache.lucene.tests.analysis.BaseTokenStreamTestCase.checkRandomData;
-import org.apache.lucene.tests.analysis.MockTokenizer;
-import org.apache.lucene.analysis.Tokenizer;
-import org.apache.lucene.analysis.core.KeywordTokenizer;
-import static org.apache.lucene.tests.util.LuceneTestCase.RANDOM_MULTIPLIER;
-import static org.apache.lucene.tests.util.LuceneTestCase.random;
-import org.junit.Test;
-import static org.junit.Assert.*;
-import org.junit.Before;
+import org.apache.lucene.analysis.TokenFilter;
+import org.apache.lucene.analysis.TokenStream;
+import org.hamcrest.Matchers;
+import org.jspecify.annotations.NonNull;
+import org.junit.jupiter.api.Test;
+
+import java.util.List;
+
+import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
  *
  * @author Jeremy Long
  */
-public class AlphaNumericFilterTest extends BaseTokenStreamTestCase {
+public class AlphaNumericFilterTest extends BaseTokenFilterTest {
 
-    private Analyzer analyzer;
-
-    @Before
-    @Override
-    public void setUp() throws Exception {
-        super.setUp();
-        analyzer = new Analyzer() {
-            @Override
-            protected Analyzer.TokenStreamComponents createComponents(String fieldName) {
-                Tokenizer source = new MockTokenizer(MockTokenizer.WHITESPACE, false);
-                return new Analyzer.TokenStreamComponents(source, new AlphaNumericFilter(source));
-            }
-        };
-    }
-
-    /**
-     * Test of incrementToken method, of class AlphaNumericFilter.
-     *
-     * @throws Exception thrown if there is a problem
-     */
     @Test
     public void testIncrementToken() throws Exception {
-        String[] expected = new String[6];
-        expected[0] = "http";
-        expected[1] = "www";
-        expected[2] = "domain";
-        expected[3] = "com";
-        expected[4] = "test";
-        expected[5] = "php";
-        assertAnalyzesTo(analyzer, "http://www.domain.com/test.php", expected);
+        assertThat(processAllFrom("http://www.domain.com/test.php"), Matchers.contains("http", "www", "domain", "com", "test", "php"));
     }
 
-    /**
-     * Test of incrementToken method, of class AlphaNumericFilter.
-     *
-     * @throws Exception thrown if there is a problem
-     */
     @Test
     public void testGarbage() throws Exception {
-        String[] expected = new String[2];
-        expected[0] = "test";
-        expected[1] = "two";
-        assertAnalyzesTo(analyzer, "!@#$% !@#$ &*(@#$ test-two @#$%", expected);
+        assertThat(processAllFrom("!@#$% !@#$ &*(@#$ test-two @#$%"), Matchers.contains("test", "two"));
     }
 
-    /**
-     * copied from
-     * http://svn.apache.org/repos/asf/lucene/dev/trunk/lucene/analysis/common/src/test/org/apache/lucene/analysis/en/TestEnglishMinimalStemFilter.java
-     * blast some random strings through the analyzer
-     */
-    @Test
-    public void testRandomStrings() {
-        try {
-            checkRandomData(random(), analyzer, 1000 * RANDOM_MULTIPLIER);
-        } catch (IOException ex) {
-            fail("Failed test random strings: " + ex.getMessage());
-        }
-    }
-
-    /**
-     * copied from
-     * http://svn.apache.org/repos/asf/lucene/dev/trunk/lucene/analysis/common/src/test/org/apache/lucene/analysis/en/TestEnglishMinimalStemFilter.java
-     *
-     * @throws IOException
-     */
-    @Test
-    public void testEmptyTerm() throws IOException {
-        Analyzer a = new Analyzer() {
+    @Override
+    TokenFilter newFilter(@NonNull final TokenStream stream, List<String> terms) {
+        return new AlphaNumericFilter(stream) {
             @Override
-            protected Analyzer.TokenStreamComponents createComponents(String fieldName) {
-                Tokenizer tokenizer = new KeywordTokenizer();
-                return new Analyzer.TokenStreamComponents(tokenizer, new AlphaNumericFilter(tokenizer));
+            protected void appendTerm(String term) {
+                super.appendTerm(term);
+                terms.add(term);
             }
         };
-        checkOneTerm(a, "", "");
     }
 }

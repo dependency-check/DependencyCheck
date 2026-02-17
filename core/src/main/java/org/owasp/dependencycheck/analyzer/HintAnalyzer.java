@@ -17,7 +17,7 @@
  */
 package org.owasp.dependencycheck.analyzer;
 
-import org.jetbrains.annotations.VisibleForTesting;
+import com.google.common.annotations.VisibleForTesting;
 import org.owasp.dependencycheck.Engine;
 import org.owasp.dependencycheck.analyzer.exception.AnalysisException;
 import org.owasp.dependencycheck.dependency.Dependency;

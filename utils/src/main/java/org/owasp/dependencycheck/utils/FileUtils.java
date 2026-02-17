@@ -33,8 +33,8 @@ import java.util.stream.Stream;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.SystemUtils;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -72,8 +72,7 @@ public final class FileUtils {
      * @return the file extension.
      */
     @Nullable
-    public static String getFileExtension(@NotNull String fileName) {
-        @Nullable
+    public static String getFileExtension(@NonNull String fileName) {
         final String fileExt = FilenameUtils.getExtension(fileName);
         return StringUtils.isNoneEmpty(fileExt) ? StringUtils.lowerCase(fileExt) : null;
     }
@@ -113,7 +112,7 @@ public final class FileUtils {
      * @throws java.io.IOException thrown when a directory cannot be created
      * within the base directory
      */
-    @NotNull
+    @NonNull
     public static File createTempDirectory(@Nullable final File base) throws IOException {
         final File tempDir = new File(base, "dctemp" + UUID.randomUUID());
         if (tempDir.exists()) {
@@ -132,7 +131,7 @@ public final class FileUtils {
      *
      * @return a String containing the bit bucket
      */
-    @NotNull
+    @NonNull
     public static String getBitBucket() {
         return SystemUtils.IS_OS_WINDOWS ? BIT_BUCKET_WIN : BIT_BUCKET_UNIX;
     }
@@ -160,7 +159,7 @@ public final class FileUtils {
      * @return the input stream for the given resource
      * @throws FileNotFoundException if the file could not be found
      */
-    public static InputStream getResourceAsStream(@NotNull String resource) throws FileNotFoundException {
+    public static InputStream getResourceAsStream(@NonNull String resource) throws FileNotFoundException {
         final ClassLoader classLoader = FileUtils.class.getClassLoader();
         final InputStream inputStream = classLoader != null
                 ? classLoader.getResourceAsStream(resource)

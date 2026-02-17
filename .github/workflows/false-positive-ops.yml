@@ -97,7 +97,7 @@ jobs:
           cd ./fp-project
           ## not ideal as verify would be better then using the docker image...
           ##mvn verify
-          mvn dependency:copy-dependencies --no-transfer-progress --batch-mode 
+          mvn dependency:copy-dependencies --no-transfer-progress --batch-mode -Dstyle.color=always
           cd ..
       - name: Setup npm fp-project
         if: ${{ fromJSON(steps.purl-parser.outputs.result).type == 'npm' }}

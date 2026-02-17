@@ -9,30 +9,28 @@ on:
       - '**/*.txt'
 
 permissions: {}
+
 jobs:
   build:
+    strategy:
+      matrix:
+        jdk_default_version: [ '25' ]                # Single JDK version to run Maven with and use for compilation etc
+        jdk_test_version: [ '11', '17', '21', '25' ] # JDK version to run surefire/failsafe tests using
+      fail-fast: false
+
+    name: Build and Test (JDK ${{ matrix.jdk_test_version }}${{ matrix.jdk_test_version == matrix.jdk_default_version && ' - Default' || '' }})
     permissions:
       contents: read # to fetch code (actions/checkout)
-
-    name: Build dependency-check
-    runs-on: ubuntu-latest 
+    runs-on: ubuntu-latest
     steps:
       - name: Install gpg secret key
-        if: github.repository_owner == 'dependency-check'
+        if: matrix.jdk_test_version == matrix.jdk_default_version && github.repository_owner == 'dependency-check'
         id: install-gpg-key
         run: |
           cat <(echo -e "${{ secrets.GPG_PRIVATE_KEY }}") | gpg --batch --import
           gpg --list-secret-keys --keyid-format LONG
       - uses: actions/checkout@v6
-      - name: Check Maven Cache
-        id: maven-cache
-        uses: actions/cache@v5
-        with:
-          path: ~/.m2/repository
-          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
-          restore-keys: |
-            ${{ runner.os }}-maven-
-      - name: Check Local Maven Cache
+      - name: Maven Integration Test Cache
         id: maven-it-cache
         uses: actions/cache@v5
         with:
@@ -47,26 +45,36 @@ jobs:
       - uses: actions/setup-dotnet@v5.1.0
         with:
           dotnet-version: '8.0.x'
-      - name: Set up JDK 11
-        id: jdk-11
+      - name: Set up JDKs
         uses: actions/setup-java@v5
         with:
-          java-version: 11
+          java-version: | # last version takes precedence as default
+            ${{ matrix.jdk_test_version }}
+            ${{ matrix.jdk_default_version }}
           distribution: 'zulu'
+          check-latest: true
+          cache: 'maven'
+          cache-dependency-path: '**/pom.xml'
           server-id: central
           server-username: ${{ secrets.CENTRAL_USER }}
           server-password: ${{ secrets.CENTRAL_PASSWORD }}
       - uses: pnpm/action-setup@41ff72655975bd51cab0327fa583b6e92b6d3061 # v4.2.0
         with:
           version: 6.0.2
-      - name: Build Snapshot with Maven
+      - name: Build/Test Snapshot with Maven${{ steps.install-gpg-key.outcome == 'success' && ' (then Deploy)' || '' }}
         id: build-snapshot
         env:
           MAVEN_USERNAME: ${{ secrets.CENTRAL_USER }}
           MAVEN_PASSWORD: ${{ secrets.CENTRAL_PASSWORD }}
           MAVEN_GPG_PASSPHRASE: ${{ secrets.GPG_PRIVATE_KEY_PASSWORD }}
           NVD_API_KEY: ${{ secrets.NVD_API_KEY }}
-        run: mvn -V -s settings.xml clean package verify source:jar javadoc:jar ${{ steps.install-gpg-key.outcome == 'success' && '-Prelease gpg:sign deploy' || '' }} -DreleaseTesting --no-transfer-progress --batch-mode
+        run: >
+          mvn -V -s settings.xml 
+          clean verify -PFullIntegrationTesting
+          -Dtoolchain.jdk.test.version=${{ matrix.jdk_test_version }} -Dtoolchain.jdk.test.home="$JAVA_HOME_${{ matrix.jdk_test_version }}_X64"
+          ${{ matrix.jdk_test_version == matrix.jdk_default_version && 'source:jar javadoc:jar site' || '' }}
+          ${{ steps.install-gpg-key.outcome == 'success' && '-Prelease gpg:sign deploy' || '' }} 
+          --no-transfer-progress --batch-mode -Dstyle.color=always
       - name: SARIF Multitool
         uses: microsoft/sarif-actions@v0.2
         with:
@@ -77,10 +85,11 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v6
         with:
-          name: it-test-logs
+          name: it-test-logs-jdk-${{ matrix.jdk_test_version }}
           retention-days: 7
           path: maven/target/it/**/build.log
       - name: Archive code coverage results
+        if: matrix.jdk_test_version == matrix.jdk_default_version
         id: archive-coverage
         uses: actions/upload-artifact@v6
         with:
@@ -90,6 +99,7 @@ jobs:
             **/target/jacoco-results/jacoco.xml
             **/target/jacoco-results/**/*.html
       - name: Archive Snapshot
+        if: matrix.jdk_test_version == matrix.jdk_default_version
         id: archive-snapshot
         uses: actions/upload-artifact@v6
         with:
@@ -112,14 +122,14 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
-      - name: Check Maven Cache
-        id: maven-cache
-        uses: actions/cache@v5
+      - name: Set up JDK
+        uses: actions/setup-java@v5
         with:
-          path: ~/.m2/repository
-          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
-          restore-keys: |
-            ${{ runner.os }}-maven-
+          java-version: '25'
+          distribution: 'zulu'
+          check-latest: true
+          cache: 'maven'
+          cache-dependency-path: '**/pom.xml'
       - name: Download release build
         uses: actions/download-artifact@v7
         with:
@@ -134,6 +144,6 @@ jobs:
         run: >
           mvn -V -s settings.xml -pl cli -am 
           package -DskipTests=true
-          --no-transfer-progress --batch-mode
+          --no-transfer-progress --batch-mode -Dstyle.color=always
       - name: Test Docker Image
         run: ./docker-test.sh

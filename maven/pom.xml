@@ -29,6 +29,7 @@ Copyright (c) 2013 Jeremy Long. All Rights Reserved.
     <inceptionYear>2013</inceptionYear>
     <properties>
         <version.maven-plugin-plugin>3.15.2</version.maven-plugin-plugin>
+        <toolchain.jdk.test.home>${java.home}</toolchain.jdk.test.home>
     </properties>
     <scm>
         <connection>scm:git:https://github.com/dependency-check/DependencyCheck.git</connection>
@@ -92,17 +93,6 @@ Copyright (c) 2013 Jeremy Long. All Rights Reserved.
             </plugin>
         </plugins>
     </reporting>
-    <dependencyManagement>
-        <dependencies>
-            <dependency>
-                <groupId>org.apache.maven</groupId>
-                <artifactId>maven-resolver-provider</artifactId>
-                <version>${maven.api.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
     <dependencies>
         <dependency>
             <groupId>org.owasp</groupId>
@@ -113,16 +103,6 @@ Copyright (c) 2013 Jeremy Long. All Rights Reserved.
             <groupId>org.owasp</groupId>
             <artifactId>dependency-check-utils</artifactId>
             <version>${project.parent.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.mockito</groupId>
-            <artifactId>mockito-core</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.mockito</groupId>
-            <artifactId>mockito-junit-jupiter</artifactId>
-            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.maven</groupId>
@@ -192,11 +172,6 @@ Copyright (c) 2013 Jeremy Long. All Rights Reserved.
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>org.apache.maven.resolver</groupId>
-            <artifactId>maven-resolver-api</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
             <groupId>org.apache.maven.shared</groupId>
             <artifactId>maven-common-artifact-filters</artifactId>
         </dependency>
@@ -216,25 +191,31 @@ Copyright (c) 2013 Jeremy Long. All Rights Reserved.
     <profiles>
         <profile>
             <id>FullIntegrationTesting</id>
-            <activation>
-                <property>
-                    <name>releaseTesting</name>
-                </property>
-            </activation>
             <build>
                 <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <configuration>
+                            <!-- Override any setting from the command line for other projects when running the integration tests to
+                            ensure we also run unit tests for maven project only -->
+                            <skipTests>false</skipTests>
+                        </configuration>
+                    </plugin>
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-invoker-plugin</artifactId>
                         <configuration>
                             <!--streamLogs>true</streamLogs-->
                             <parallelThreads>4</parallelThreads>
-                            <mavenOpts>${failsafeArgLine}</mavenOpts>
                             <cloneProjectsTo>${project.build.directory}/it</cloneProjectsTo>
                             <localRepositoryPath>target/local-repo</localRepositoryPath>
                             <properties>
                                 <odc.version>${project.version}</odc.version>
                             </properties>
+                            <!-- Doesn't seem a way to make this plugin toolchain aware, so have to use a property
+                                 or env var to get the JAVA_HOME from to match what surefire/failsafe are using -->
+                            <javaHome>${toolchain.jdk.test.home}</javaHome>
                         </configuration>
                         <executions>
                             <execution>
@@ -245,13 +226,6 @@ Copyright (c) 2013 Jeremy Long. All Rights Reserved.
                                 </goals>
                             </execution>
                         </executions>
-                        <dependencies>
-                            <dependency>
-                                <groupId>org.apache.commons</groupId>
-                                <artifactId>commons-lang3</artifactId>
-                                <version>${commons-lang3.version}</version>
-                            </dependency>
-                        </dependencies>
                     </plugin>
                 </plugins>
             </build>

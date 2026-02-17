@@ -27,8 +27,8 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.VisibleForTesting;
+import com.google.common.annotations.VisibleForTesting;
+import org.jspecify.annotations.NonNull;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -153,7 +153,7 @@ public final class XmlUtils {
         return buildSecureSaxParserFactory().newSAXParser();
     }
 
-    private static @NotNull SAXParserFactory buildSecureSaxParserFactory() throws ParserConfigurationException, SAXNotRecognizedException, SAXNotSupportedException {
+    private static @NonNull SAXParserFactory buildSecureSaxParserFactory() throws ParserConfigurationException, SAXNotRecognizedException, SAXNotSupportedException {
         final SAXParserFactory factory = SAXParserFactory.newInstance();
 
         // See https://xerces.apache.org/xerces2-j/features.html and

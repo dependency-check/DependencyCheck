@@ -26,7 +26,7 @@ import javax.annotation.concurrent.ThreadSafe;
 import org.apache.commons.lang3.builder.CompareToBuilder;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 import org.owasp.dependencycheck.analyzer.exception.UnexpectedAnalysisException;
 import org.owasp.dependencycheck.dependency.naming.CpeIdentifier;
 import org.owasp.dependencycheck.utils.DependencyVersion;
@@ -134,7 +134,7 @@ public class VulnerableSoftware extends Cpe implements Serializable {
     }
 
     @Override
-    public int compareTo(@NotNull ICpe o) {
+    public int compareTo(@NonNull ICpe o) {
         if (o instanceof VulnerableSoftware) {
             final VulnerableSoftware other = (VulnerableSoftware) o;
             return new CompareToBuilder()

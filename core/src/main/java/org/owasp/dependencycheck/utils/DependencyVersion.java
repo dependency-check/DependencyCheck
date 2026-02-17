@@ -25,7 +25,7 @@ import java.util.regex.Pattern;
 import javax.annotation.concurrent.NotThreadSafe;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 /**
  * <p>
@@ -113,7 +113,7 @@ public class DependencyVersion implements Iterable<String>, Comparable<Dependenc
      *
      * @return an iterator for the version parts
      */
-    @NotNull
+    @NonNull
     @Override
     public Iterator<String> iterator() {
         return versionParts.iterator();
@@ -232,10 +232,7 @@ public class DependencyVersion implements Iterable<String>, Comparable<Dependenc
     }
 
     @Override
-    public int compareTo(@NotNull DependencyVersion version) {
-        if (version == null) {
-            return 1;
-        }
+    public int compareTo(@NonNull DependencyVersion version) {
         final List<String> left = this.getVersionParts();
         final List<String> right = version.getVersionParts();
         final int max = Math.min(left.size(), right.size());

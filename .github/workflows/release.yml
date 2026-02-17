@@ -19,7 +19,7 @@ on:
 jobs:
   build:
     if: github.repository_owner == 'dependency-check'
-    name: Build dependency-check
+    name: Build for release
     runs-on: ubuntu-latest 
     steps:
       - name: Install gpg secret key
@@ -28,13 +28,7 @@ jobs:
           cat <(echo -e "${{ secrets.GPG_PRIVATE_KEY }}") | gpg --batch --import
           gpg --list-secret-keys --keyid-format LONG
       - uses: actions/checkout@v6
-      - name: Check Maven Cache
-        id: maven-cache
-        uses: actions/cache@v5
-        with:
-          path: ~/.m2/repository/
-          key: mvn-repo
-      - name: Check Local Maven Cache
+      - name: Maven Integration Test Cache
         id: maven-it-cache
         uses: actions/cache@v5
         with:
@@ -49,12 +43,14 @@ jobs:
       - uses: actions/setup-dotnet@v5.1.0
         with:
           dotnet-version: '8.0.x'
-      - name: Set up JDK 11
-        id: jdk-11
+      - name: Set up JDK
         uses: actions/setup-java@v5
         with:
-          java-version: 11
+          java-version: '25'
           distribution: 'zulu'
+          check-latest: true
+          cache: 'maven'
+          cache-dependency-path: '**/pom.xml'
           server-id: central
           server-username: ${{ secrets.CENTRAL_USER }}
           server-password: ${{ secrets.CENTRAL_PASSWORD }}
@@ -77,8 +73,12 @@ jobs:
           MAVEN_PASSWORD: ${{ secrets.CENTRAL_PASSWORD }}
           MAVEN_GPG_PASSPHRASE: ${{ secrets.GPG_PRIVATE_KEY_PASSWORD }}
           NVD_API_KEY: ${{ secrets.NVD_API_KEY }}
-        run: |
-          mvn -V -s settings.xml -Prelease clean package source:jar javadoc:jar gpg:sign deploy site site:stage -DreleaseTesting --no-transfer-progress --batch-mode
+        run: >
+          mvn -V -s settings.xml
+          clean verify -PFullIntegrationTesting
+          source:jar javadoc:jar site
+          -Prelease gpg:sign deploy site:stage 
+          --no-transfer-progress --batch-mode -Dstyle.color=always
       - name: Archive code coverage results
         id: archive-coverage
         uses: actions/upload-artifact@v6
@@ -109,21 +109,6 @@ jobs:
           retention-days: 7
           path: target/staging/
 
-#  publish_coverage:
-#    name: publish code coverage reports
-#    runs-on: ubuntu-latest
-#    needs: build
-#    steps:
-#      - name: Download coverage reports
-#        uses: actions/download-artifact@v7
-#        with:
-#          name: code-coverage-report
-#      - name: Run codacy-coverage-reporter
-#        uses: codacy/codacy-coverage-reporter-action@master
-#        with:
-#          project-token: ${{ secrets.CODACY_PROJECT_TOKEN }}
-#          coverage-reports: utils/target/jacoco-results/jacoco.xml,core/target/jacoco-results/jacoco.xml,maven/target/jacoco-results/jacoco.xml,ant/target/jacoco-results/jacoco.xml,cli/target/jacoco-results/jacoco.xml
-
   docker:
     name: Publish Docker
     runs-on: ubuntu-latest
@@ -132,12 +117,6 @@ jobs:
       DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
       DOCKER_TOKEN: ${{ secrets.DOCKER_TOKEN }}
     steps:
-      - name: Check Maven Cache
-        id: maven-cache
-        uses: actions/cache@v5
-        with:
-          path: ~/.m2/repository/
-          key: mvn-repo
       - name: Check Docker ODC Cache
         id: docker-odc-cache
         uses: actions/cache@v5
@@ -146,6 +125,14 @@ jobs:
           key: docker-repo
       - name: Checkout code
         uses: actions/checkout@v6
+      - name: Set up JDK
+        uses: actions/setup-java@v5
+        with:
+          java-version: '25'
+          distribution: 'zulu'
+          check-latest: true
+          cache: 'maven'
+          cache-dependency-path: '**/pom.xml'
       - name: Download release build
         uses: actions/download-artifact@v7
         with:
@@ -160,7 +147,7 @@ jobs:
         run: >
           mvn -V -s settings.xml -pl cli -am 
           package -DskipTests=true
-          --no-transfer-progress --batch-mode
+          --no-transfer-progress --batch-mode -Dstyle.color=always
       - name: Test Docker Image
         run: ./docker-test.sh
       - name: Deploy Docker Image

@@ -18,14 +18,13 @@
 package org.owasp.dependencycheck.utils;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -958,7 +957,7 @@ public final class Settings {
      *
      * @param propertiesFilePath the path to the base properties file to load
      */
-    public Settings(@NotNull final String propertiesFilePath) {
+    public Settings(@NonNull final String propertiesFilePath) {
         initialize(propertiesFilePath);
     }
 
@@ -967,7 +966,7 @@ public final class Settings {
      *
      * @param propertiesFilePath the path to the settings property file
      */
-    private void initialize(@NotNull final String propertiesFilePath) {
+    private void initialize(@NonNull final String propertiesFilePath) {
         props = new Properties();
         try (InputStream in = FileUtils.getResourceAsStream(propertiesFilePath)) {
             props.load(in);
@@ -1009,7 +1008,7 @@ public final class Settings {
      * @return <code>true</code> if the key is for a sensitive property value;
      * otherwise <code>false</code>
      */
-    private boolean isKeyMasked(@NotNull String key) {
+    private boolean isKeyMasked(@NonNull String key) {
         if (maskedKeys == null || maskedKeys.isEmpty()) {
             initMaskedKeys();
         }
@@ -1024,7 +1023,7 @@ public final class Settings {
      * @param value the property value
      * @return the printable value
      */
-    String getPrintableValue(@NotNull String key, String value) {
+    String getPrintableValue(@NonNull String key, String value) {
         String printableValue = null;
         if (value != null) {
             printableValue = isKeyMasked(key) ? "********" : value;
@@ -1056,7 +1055,7 @@ public final class Settings {
      * @param header the header to print with the log message
      * @param properties the properties to log
      */
-    private void logProperties(@NotNull final String header, @NotNull final Properties properties) {
+    private void logProperties(@NonNull final String header, @NonNull final Properties properties) {
         if (LOGGER.isDebugEnabled()) {
             initMaskedKeys();
             final StringWriter sw = new StringWriter();
@@ -1082,7 +1081,7 @@ public final class Settings {
      * @param key the key for the property
      * @param value the value for the property
      */
-    public void setString(@NotNull final String key, @NotNull final String value) {
+    public void setString(@NonNull final String key, @NonNull final String value) {
         props.setProperty(key, value);
         LOGGER.debug("Setting: {}='{}'", key, getPrintableValue(key, value));
     }
@@ -1093,7 +1092,7 @@ public final class Settings {
      * @param key the key for the property
      * @param value the value for the property
      */
-    public void setStringIfNotNull(@NotNull final String key, @Nullable final String value) {
+    public void setStringIfNotNull(@NonNull final String key, @Nullable final String value) {
         if (null != value) {
             setString(key, value);
         }
@@ -1105,7 +1104,7 @@ public final class Settings {
      * @param key the key for the property
      * @param value the value for the property
      */
-    public void setStringIfNotEmpty(@NotNull final String key, @Nullable final String value) {
+    public void setStringIfNotEmpty(@NonNull final String key, @Nullable final String value) {
         if (null != value && !value.isEmpty()) {
             setString(key, value);
         }
@@ -1117,7 +1116,7 @@ public final class Settings {
      * @param key the key for the property
      * @param value the value for the property
      */
-    public void setArrayIfNotEmpty(@NotNull final String key, @Nullable final String[] value) {
+    public void setArrayIfNotEmpty(@NonNull final String key, @Nullable final String[] value) {
         if (null != value && value.length > 0) {
             try {
                 setString(key, objectMapper.writeValueAsString(value));
@@ -1133,7 +1132,7 @@ public final class Settings {
      * @param key the key for the property
      * @param value the value for the property
      */
-    public void setArrayIfNotEmpty(@NotNull final String key, @Nullable final List<String> value) {
+    public void setArrayIfNotEmpty(@NonNull final String key, @Nullable final List<String> value) {
         if (null != value && !value.isEmpty()) {
             try {
                 setString(key, objectMapper.writeValueAsString(value));
@@ -1149,7 +1148,7 @@ public final class Settings {
      * @param key the key for the property
      * @param value the value for the property
      */
-    public void setBoolean(@NotNull final String key, boolean value) {
+    public void setBoolean(@NonNull final String key, boolean value) {
         setString(key, Boolean.toString(value));
     }
 
@@ -1159,7 +1158,7 @@ public final class Settings {
      * @param key the key for the property
      * @param value the value for the property
      */
-    public void setBooleanIfNotNull(@NotNull final String key, @Nullable final Boolean value) {
+    public void setBooleanIfNotNull(@NonNull final String key, @Nullable final Boolean value) {
         if (null != value) {
             setBoolean(key, value);
         }
@@ -1171,7 +1170,7 @@ public final class Settings {
      * @param key the key for the property
      * @param value the value for the property
      */
-    public void setFloat(@NotNull final String key, final float value) {
+    public void setFloat(@NonNull final String key, final float value) {
         setString(key, Float.toString(value));
     }
 
@@ -1181,7 +1180,7 @@ public final class Settings {
      * @param key the key for the property
      * @param value the value for the property
      */
-    public void setInt(@NotNull final String key, final int value) {
+    public void setInt(@NonNull final String key, final int value) {
         props.setProperty(key, String.valueOf(value));
         LOGGER.debug("Setting: {}='{}'", key, value);
     }
@@ -1192,7 +1191,7 @@ public final class Settings {
      * @param key the key for the property
      * @param value the value for the property
      */
-    public void setIntIfNotNull(@NotNull final String key, @Nullable final Integer value) {
+    public void setIntIfNotNull(@NonNull final String key, @Nullable final Integer value) {
         if (null != value) {
             setInt(key, value);
         }
@@ -1211,7 +1210,7 @@ public final class Settings {
      * loading/merging the properties
      */
     @SuppressFBWarnings(justification = "try with resource will clenaup the resources", value = {"OBL_UNSATISFIED_OBLIGATION"})
-    public void mergeProperties(@NotNull final File filePath) throws FileNotFoundException, IOException {
+    public void mergeProperties(@NonNull final File filePath) throws FileNotFoundException, IOException {
         try (FileInputStream fis = new FileInputStream(filePath)) {
             mergeProperties(fis);
         }
@@ -1230,7 +1229,7 @@ public final class Settings {
      * loading/merging the properties
      */
     @SuppressFBWarnings(justification = "try with resource will clenaup the resources", value = {"OBL_UNSATISFIED_OBLIGATION"})
-    public void mergeProperties(@NotNull final String filePath) throws FileNotFoundException, IOException {
+    public void mergeProperties(@NonNull final String filePath) throws FileNotFoundException, IOException {
         try (FileInputStream fis = new FileInputStream(filePath)) {
             mergeProperties(fis);
         }
@@ -1246,7 +1245,7 @@ public final class Settings {
      * @throws java.io.IOException is thrown when there is an exception
      * loading/merging the properties
      */
-    public void mergeProperties(@NotNull final InputStream stream) throws IOException {
+    public void mergeProperties(@NonNull final InputStream stream) throws IOException {
         props.load(stream);
         logProperties("Properties updated via merge", props);
     }
@@ -1261,7 +1260,7 @@ public final class Settings {
      * @return the property from the properties file converted to a File object
      */
     @Nullable
-    public File getFile(@NotNull final String key) {
+    public File getFile(@NonNull final String key) {
         final String file = getString(key);
         if (file == null) {
             return null;
@@ -1283,7 +1282,7 @@ public final class Settings {
      * @param key the key to lookup within the properties file
      * @return the property from the properties file converted to a File object
      */
-    File getDataFile(@NotNull final String key) {
+    File getDataFile(@NonNull final String key) {
         final String file = getString(key);
         LOGGER.debug("Settings.getDataFile() - file: '{}'", file);
         if (file == null) {
@@ -1337,7 +1336,7 @@ public final class Settings {
      * @param defaultValue the default value for the requested property
      * @return the property from the properties file
      */
-    public String getString(@NotNull final String key, @Nullable final String defaultValue) {
+    public String getString(@NonNull final String key, @Nullable final String defaultValue) {
         return System.getProperty(key, props.getProperty(key, defaultValue));
     }
 
@@ -1364,7 +1363,7 @@ public final class Settings {
      * @param key the key to lookup within the properties file
      * @return the property from the properties file
      */
-    public String getString(@NotNull final String key) {
+    public String getString(@NonNull final String key) {
         return System.getProperty(key, props.getProperty(key));
     }
 
@@ -1377,7 +1376,7 @@ public final class Settings {
      * {@link org.owasp.dependencycheck.utils.Settings}.
      * @return the list or {@code null} if the key wasn't present.
      */
-    public String[] getArray(@NotNull final String key) {
+    public String[] getArray(@NonNull final String key) {
         final String string = getString(key);
         if (string != null) {
             if (string.charAt(0) == '{' || string.charAt(0) == '[') {
@@ -1399,7 +1398,7 @@ public final class Settings {
      *
      * @param key the property key to remove
      */
-    public void removeProperty(@NotNull final String key) {
+    public void removeProperty(@NonNull final String key) {
         props.remove(key);
     }
 
@@ -1414,7 +1413,7 @@ public final class Settings {
      * @throws org.owasp.dependencycheck.utils.InvalidSettingException is thrown
      * if there is an error retrieving the setting
      */
-    public int getInt(@NotNull final String key) throws InvalidSettingException {
+    public int getInt(@NonNull final String key) throws InvalidSettingException {
         try {
             return Integer.parseInt(getString(key));
         } catch (NumberFormatException ex) {
@@ -1433,7 +1432,7 @@ public final class Settings {
      * @return the property from the properties file or the defaultValue if the
      * property does not exist or cannot be converted to an integer
      */
-    public int getInt(@NotNull final String key, int defaultValue) {
+    public int getInt(@NonNull final String key, int defaultValue) {
         int value;
         try {
             value = Integer.parseInt(getString(key));
@@ -1458,7 +1457,7 @@ public final class Settings {
      * @throws org.owasp.dependencycheck.utils.InvalidSettingException is thrown
      * if there is an error retrieving the setting
      */
-    public long getLong(@NotNull final String key) throws InvalidSettingException {
+    public long getLong(@NonNull final String key) throws InvalidSettingException {
         try {
             return Long.parseLong(getString(key));
         } catch (NumberFormatException ex) {
@@ -1477,7 +1476,7 @@ public final class Settings {
      * @return the property from the properties file or the defaultValue if the
      * property does not exist or cannot be converted to an integer
      */
-    public long getLong(@NotNull final String key, long defaultValue) {
+    public long getLong(@NonNull final String key, long defaultValue) {
         long value;
         try {
             value = Long.parseLong(getString(key));
@@ -1503,7 +1502,7 @@ public final class Settings {
      * @throws org.owasp.dependencycheck.utils.InvalidSettingException is thrown
      * if there is an error retrieving the setting
      */
-    public boolean getBoolean(@NotNull final String key) throws InvalidSettingException {
+    public boolean getBoolean(@NonNull final String key) throws InvalidSettingException {
         return Boolean.parseBoolean(getString(key));
     }
 
@@ -1519,7 +1518,7 @@ public final class Settings {
      * exist
      * @return the property from the properties file
      */
-    public boolean getBoolean(@NotNull final String key, boolean defaultValue) {
+    public boolean getBoolean(@NonNull final String key, boolean defaultValue) {
         return Boolean.parseBoolean(getString(key, Boolean.toString(defaultValue)));
     }
 
@@ -1535,7 +1534,7 @@ public final class Settings {
      * exist
      * @return the property from the properties file
      */
-    public float getFloat(@NotNull final String key, float defaultValue) {
+    public float getFloat(@NonNull final String key, float defaultValue) {
         float retValue = defaultValue;
         try {
             retValue = Float.parseFloat(getString(key));
@@ -1637,7 +1636,7 @@ public final class Settings {
      * @return a temporary File
      * @throws java.io.IOException if any.
      */
-    public File getTempFile(@NotNull final String prefix, @NotNull final String extension) throws IOException {
+    public File getTempFile(@NonNull final String prefix, @NonNull final String extension) throws IOException {
         final File dir = getTempDirectory();
         final String tempFileName = String.format("%s%s.%s", prefix, UUID.randomUUID(), extension);
         final File tempFile = new File(dir, tempFileName);
