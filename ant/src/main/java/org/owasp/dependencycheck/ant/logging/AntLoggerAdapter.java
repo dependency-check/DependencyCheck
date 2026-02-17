@@ -17,6 +17,7 @@
  */
 package org.owasp.dependencycheck.ant.logging;
 
+import java.util.Objects;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.Task;
 import org.slf4j.Logger;
@@ -48,7 +49,7 @@ public class AntLoggerAdapter implements Logger {
      * @param name the logger name
      */
     public AntLoggerAdapter(String name) {
-        this.name = name;
+        this.name = Objects.requireNonNull(name, "Logger name cannot be null");
     }
 
     @Override
