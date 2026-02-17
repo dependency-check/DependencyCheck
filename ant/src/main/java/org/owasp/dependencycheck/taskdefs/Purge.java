@@ -121,6 +121,7 @@ public class Purge extends Task {
             executeWithContextClassloader();
         } finally {
             Thread.currentThread().setContextClassLoader(current);
+            AntTaskHolder.remove();
         }
     }
 

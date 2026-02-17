@@ -50,4 +50,13 @@ public final class AntTaskHolder {
     public static Task getTask() {
         return task.get();
     }
+
+    /**
+     * Removes the current Ant task from the thread-local storage.
+     * This should be called when the task completes to prevent memory leaks
+     * in environments with thread pooling.
+     */
+    public static void remove() {
+        task.remove();
+    }
 }
