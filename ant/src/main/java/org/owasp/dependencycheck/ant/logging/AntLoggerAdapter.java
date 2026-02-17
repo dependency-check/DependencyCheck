@@ -40,11 +40,20 @@ public class AntLoggerAdapter implements Logger {
     /**
      * The logger name.
      */
-    private static final String NAME = "dependency-check-ant";
+    private final String name;
+
+    /**
+     * Constructor.
+     *
+     * @param name the logger name
+     */
+    public AntLoggerAdapter(String name) {
+        this.name = name;
+    }
 
     @Override
     public String getName() {
-        return NAME;
+        return name;
     }
 
     private Task task() {

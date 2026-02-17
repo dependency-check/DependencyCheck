@@ -28,18 +28,13 @@ import org.slf4j.Logger;
 public class AntLoggerFactory implements ILoggerFactory {
 
     /**
-     * A reference to the Ant logger Adapter.
-     */
-    private final AntLoggerAdapter antLoggerAdapter = new AntLoggerAdapter();
-
-    /**
      * Returns the Ant logger adapter.
      *
-     * @param name ignored in this implementation
+     * @param name the logger name
      * @return the Ant logger adapter
      */
     @Override
     public Logger getLogger(String name) {
-        return antLoggerAdapter;
+        return new AntLoggerAdapter(name);
     }
 }
