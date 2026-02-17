@@ -22,10 +22,13 @@ import org.apache.tools.ant.Task;
 /**
  * Holds a reference to the current Ant Task for logging. Replaces the old
  * StaticLoggerBinder singleton pattern used with SLF4J 1.x.
+ * <p>
+ * Uses ThreadLocal to ensure thread-safety when Ant runs tasks in parallel.
+ * </p>
  */
 public final class AntTaskHolder {
 
-    private static volatile Task task;
+    private static final ThreadLocal<Task> task = new ThreadLocal<>();
 
     private AntTaskHolder() {
     }
@@ -36,7 +39,7 @@ public final class AntTaskHolder {
      * @param t the Ant task
      */
     public static void setTask(Task t) {
-        task = t;
+        task.set(t);
     }
 
     /**
@@ -45,6 +48,6 @@ public final class AntTaskHolder {
      * @return the Ant task, or null if not set
      */
     public static Task getTask() {
-        return task;
+        return task.get();
     }
 }
