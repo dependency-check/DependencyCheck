@@ -17,6 +17,7 @@
  */
 package org.owasp.dependencycheck.ant.logging;
 
+import java.util.Objects;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.Task;
 import org.slf4j.Logger;
@@ -36,11 +37,20 @@ public class AntLoggerAdapter implements Logger {
     /**
      * The logger name.
      */
-    private static final String NAME = "dependency-check-ant";
+    private final String name;
+
+    /**
+     * Constructor.
+     *
+     * @param name the logger name
+     */
+    public AntLoggerAdapter(String name) {
+        this.name = Objects.requireNonNull(name, "Logger name cannot be null");
+    }
 
     @Override
     public String getName() {
-        return NAME;
+        return name;
     }
 
     private Task task() {
