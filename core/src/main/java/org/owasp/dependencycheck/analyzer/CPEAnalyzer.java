@@ -20,8 +20,6 @@ package org.owasp.dependencycheck.analyzer;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -48,8 +46,8 @@ import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.TopDocs;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import org.owasp.dependencycheck.Engine;
 import org.owasp.dependencycheck.analyzer.exception.AnalysisException;
 import org.owasp.dependencycheck.data.cpe.CpeMemoryIndex;
@@ -111,24 +109,7 @@ public class CPEAnalyzer extends AbstractAnalyzer {
      * alpha characters.
      */
     private static final String CLEANSE_NONALPHA_RX = "[^A-Za-z]*";
-    /**
-     * UTF-8 character set name.
-     */
-    private static final String UTF8 = StandardCharsets.UTF_8.name();
-    /**
-     * The URL to search the NVD CVE data at NIST. This is used by calling:
-     * <pre>String.format(NVD_SEARCH_URL, vendor, product, version);</pre>
-     */
-    public static final String NVD_SEARCH_URL = "https://nvd.nist.gov/vuln/search/results?form_type=Advanced&"
-            + "results_type=overview&search_type=all&cpe_vendor=cpe%%3A%%2F%%3A%1$s&cpe_product=cpe%%3A%%2F%%3A%1$s%%3A%2$s&"
-            + "cpe_version=cpe%%3A%%2F%%3A%1$s%%3A%2$s%%3A%3$s";
 
-    /**
-     * The URL to search the NVD CVE data at NIST. This is used by calling:
-     * <pre>String.format(NVD_SEARCH_URL, vendor, product);</pre>
-     */
-    public static final String NVD_SEARCH_BROAD_URL = "https://nvd.nist.gov/vuln/search/results?form_type=Advanced&"
-            + "results_type=overview&search_type=all&cpe_vendor=cpe%%3A%%2F%%3A%1$s&cpe_product=cpe%%3A%%2F%%3A%1$s%%3A%2$s";
     /**
      * The CPE in memory index.
      */
@@ -597,7 +578,7 @@ public class CPEAnalyzer extends AbstractAnalyzer {
 
     /**
      * Searches the collection of boost terms for the given term. The elements
-     * are case insensitive matched using only the alpha-numeric contents of the
+     * are case insensitive matched using only the alphanumeric contents of the
      * terms; all other characters are removed.
      *
      * @param term the term to search for
@@ -682,7 +663,7 @@ public class CPEAnalyzer extends AbstractAnalyzer {
      * Only returns alpha numeric characters contained in a given package name.
      *
      * @param name the package name to cleanse
-     * @return the cleansed packaage name
+     * @return the cleansed package name
      */
     private String cleanPackageName(String name) {
         if (name == null) {
@@ -806,12 +787,11 @@ public class CPEAnalyzer extends AbstractAnalyzer {
      * analysis
      * @return <code>true</code> if an identifier was added to the dependency;
      * otherwise <code>false</code>
-     * @throws UnsupportedEncodingException is thrown if UTF-8 is not supported
      * @throws AnalysisException thrown if the suppression rules failed
      */
     @SuppressWarnings("StringSplitter")
     protected boolean determineIdentifiers(Dependency dependency, String vendor, String product,
-            Confidence currentConfidence) throws UnsupportedEncodingException, AnalysisException {
+            Confidence currentConfidence) throws AnalysisException {
 
         final CpeBuilder cpeBuilder = new CpeBuilder();
 
@@ -864,8 +844,7 @@ public class CPEAnalyzer extends AbstractAnalyzer {
                         dbVerUpdate = DependencyVersionUtil.parseVersion(vs.getVersion() + '.' + vs.getUpdate(), true);
                     }
                     if (dbVer == null) { //special case, no version specified - everything is vulnerable
-                        final String url = String.format(NVD_SEARCH_BROAD_URL, URLEncoder.encode(vs.getVendor(), UTF8),
-                                URLEncoder.encode(vs.getProduct(), UTF8));
+                        final String url = CpeIdentifier.nvdProductSearchUrlFor(vs);
                         final IdentifierMatch match = new IdentifierMatch(vs, url, IdentifierConfidence.BROAD_MATCH, conf);
                         collected.add(match);
                     } else if (evVer.equals(dbVer)) {
@@ -875,8 +854,7 @@ public class CPEAnalyzer extends AbstractAnalyzer {
                         bestGuessConf = conf;
                         bestGuess = dbVer;
                         bestGuessUpdate = evBaseVerUpdate;
-                        bestGuessURL = String.format(NVD_SEARCH_URL, URLEncoder.encode(vs.getVendor(), UTF8),
-                                URLEncoder.encode(vs.getProduct(), UTF8), URLEncoder.encode(vs.getVersion(), UTF8));
+                        bestGuessURL = CpeIdentifier.nvdSearchUrlFor(vs);
                     } else if (dbVerUpdate != null && evVer.getVersionParts().size() <= dbVerUpdate.getVersionParts().size()
                             && evVer.matchesAtLeastThreeLevels(dbVerUpdate)) {
                         if (bestGuessConf == null || bestGuessConf.compareTo(conf) > 0) {
@@ -983,14 +961,12 @@ public class CPEAnalyzer extends AbstractAnalyzer {
      * @param updateVersion the update version
      * @param conf the current confidence
      * @param collected a reference to the collected identifiers
-     * @throws UnsupportedEncodingException thrown if UTF-8 is not supported
      */
     private void addExactMatch(Cpe vs, String updateVersion, Confidence conf,
-            final Set<IdentifierMatch> collected) throws UnsupportedEncodingException {
+            final Set<IdentifierMatch> collected) {
 
         final CpeBuilder cpeBuilder = new CpeBuilder();
-        final String url = String.format(NVD_SEARCH_URL, URLEncoder.encode(vs.getVendor(), UTF8),
-                URLEncoder.encode(vs.getProduct(), UTF8), URLEncoder.encode(vs.getVersion(), UTF8));
+        final String url = CpeIdentifier.nvdSearchUrlFor(vs);
         Cpe useCpe;
         if (updateVersion != null && "*".equals(vs.getUpdate())) {
             try {
@@ -1022,13 +998,11 @@ public class CPEAnalyzer extends AbstractAnalyzer {
      * @param collected a reference to the identifiers matched
      * @throws AnalysisException thrown if aliens attacked and valid input could
      * not be used to construct a CPE
-     * @throws UnsupportedEncodingException thrown if run on a system that
-     * doesn't support UTF-8
      */
     private void considerDependencyVersion(Dependency dependency,
             String vendor, String product, Confidence confidence,
             final Set<IdentifierMatch> collected)
-            throws AnalysisException, UnsupportedEncodingException {
+            throws AnalysisException {
 
         if (dependency.getVersion() != null && !dependency.getVersion().isEmpty()) {
             final CpeBuilder cpeBuilder = new CpeBuilder();
@@ -1051,8 +1025,7 @@ public class CPEAnalyzer extends AbstractAnalyzer {
                     addVersionAndUpdate(depVersion, cpeBuilder);
                     try {
                         final Cpe depCpe = cpeBuilder.build();
-                        final String url = String.format(NVD_SEARCH_URL, URLEncoder.encode(vendor, UTF8),
-                                URLEncoder.encode(product, UTF8), URLEncoder.encode(depCpe.getVersion(), UTF8));
+                        final String url = CpeIdentifier.nvdSearchUrlFor(vendor, product, depCpe.getVersion());
                         final IdentifierMatch match = new IdentifierMatch(depCpe, url, IdentifierConfidence.EXACT_MATCH, confidence);
                         collected.add(match);
                     } catch (CpeValidationException ex) {
@@ -1304,7 +1277,7 @@ public class CPEAnalyzer extends AbstractAnalyzer {
          * @return the natural ordering of IdentifierMatch
          */
         @Override
-        public int compareTo(@NotNull IdentifierMatch o) {
+        public int compareTo(@NonNull IdentifierMatch o) {
             return new CompareToBuilder()
                     .append(identifierConfidence, o.identifierConfidence)
                     .append(identifier, o.identifier)

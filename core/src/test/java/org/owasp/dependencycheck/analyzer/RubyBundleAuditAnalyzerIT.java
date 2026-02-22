@@ -17,39 +17,40 @@
  */
 package org.owasp.dependencycheck.analyzer;
 
-import java.io.File;
-
-import org.junit.After;
-import org.junit.Assume;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.owasp.dependencycheck.BaseDBTestCase;
 import org.owasp.dependencycheck.BaseTest;
 import org.owasp.dependencycheck.Engine;
 import org.owasp.dependencycheck.analyzer.exception.AnalysisException;
 import org.owasp.dependencycheck.data.nvdcve.DatabaseException;
+import org.owasp.dependencycheck.data.update.exception.UpdateException;
 import org.owasp.dependencycheck.dependency.Dependency;
+import org.owasp.dependencycheck.dependency.EvidenceType;
 import org.owasp.dependencycheck.dependency.Vulnerability;
 import org.owasp.dependencycheck.exception.ExceptionCollection;
+import org.owasp.dependencycheck.exception.InitializationException;
 import org.owasp.dependencycheck.utils.Settings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.owasp.dependencycheck.data.update.exception.UpdateException;
-import org.owasp.dependencycheck.exception.InitializationException;
+
+import java.io.File;
+
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-import org.owasp.dependencycheck.dependency.EvidenceType;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 /**
  * Unit tests for {@link RubyBundleAuditAnalyzer}.
  *
  * @author Dale Visser
  */
-public class RubyBundleAuditAnalyzerIT extends BaseDBTestCase {
+class RubyBundleAuditAnalyzerIT extends BaseDBTestCase {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(RubyBundleAuditAnalyzerIT.class);
 
@@ -63,7 +64,7 @@ public class RubyBundleAuditAnalyzerIT extends BaseDBTestCase {
      *
      * @throws Exception thrown if there is a problem
      */
-    @Before
+    @BeforeEach
     @Override
     public void setUp() throws Exception {
         super.setUp();
@@ -80,7 +81,7 @@ public class RubyBundleAuditAnalyzerIT extends BaseDBTestCase {
      *
      * @throws Exception thrown if there is a problem
      */
-    @After
+    @AfterEach
     @Override
     public void tearDown() throws Exception {
         if (analyzer != null) {
@@ -94,7 +95,7 @@ public class RubyBundleAuditAnalyzerIT extends BaseDBTestCase {
      * Test Ruby Gemspec name.
      */
     @Test
-    public void testGetName() {
+    void testGetName() {
         assertThat(analyzer.getName(), is("Ruby Bundle Audit Analyzer"));
     }
 
@@ -102,17 +103,16 @@ public class RubyBundleAuditAnalyzerIT extends BaseDBTestCase {
      * Test Ruby Bundler Audit file support.
      */
     @Test
-    public void testSupportsFiles() {
+    void testSupportsFiles() {
         assertThat(analyzer.accept(new File("Gemfile.lock")), is(true));
     }
 
     /**
      * Test Ruby BundlerAudit analysis.
      *
-     * @throws AnalysisException is thrown when an exception occurs.
      */
     @Test
-    public void testAnalysis() throws AnalysisException, DatabaseException {
+    void testAnalysis() throws DatabaseException {
         try (Engine engine = new Engine(getSettings())) {
             engine.openDatabase();
             analyzer.prepare(engine);
@@ -132,11 +132,11 @@ public class RubyBundleAuditAnalyzerIT extends BaseDBTestCase {
                     break;
                 }
             }
-            assertTrue("redcarpet was not identified", found);
+            assertTrue(found, "redcarpet was not identified");
 
         } catch (InitializationException | DatabaseException | AnalysisException e) {
             LOGGER.warn("Exception setting up RubyBundleAuditAnalyzer. Make sure Ruby gem bundle-audit is installed. You may also need to set property \"analyzer.bundle.audit.path\".");
-            Assume.assumeNoException("Exception setting up RubyBundleAuditAnalyzer; bundle audit may not be installed, or property \"analyzer.bundle.audit.path\" may not be set.", e);
+            assumeTrue(false, "Exception setting up RubyBundleAuditAnalyzer; bundle audit may not be installed, or property \"analyzer.bundle.audit.path\" may not be set: " + e);
         }
     }
 
@@ -144,7 +144,7 @@ public class RubyBundleAuditAnalyzerIT extends BaseDBTestCase {
      * Test Ruby addCriticalityToVulnerability
      */
     @Test
-    public void testAddCriticalityToVulnerability() throws AnalysisException, DatabaseException {
+    void testAddCriticalityToVulnerability() throws DatabaseException {
         try (Engine engine = new Engine(getSettings())) {
             engine.doUpdates(true);
             analyzer.prepare(engine);
@@ -162,20 +162,19 @@ public class RubyBundleAuditAnalyzerIT extends BaseDBTestCase {
                     break;
                 }
             }
-            assertTrue("CVE-2015-3225 was not found among the vulnerabilities",found);
+            assertTrue(found,"CVE-2015-3225 was not found among the vulnerabilities");
         } catch (InitializationException | DatabaseException | AnalysisException | UpdateException e) {
             LOGGER.warn("Exception setting up RubyBundleAuditAnalyzer. Make sure Ruby gem bundle-audit is installed. You may also need to set property \"analyzer.bundle.audit.path\".");
-            Assume.assumeNoException("Exception setting up RubyBundleAuditAnalyzer; bundle audit may not be installed, or property \"analyzer.bundle.audit.path\" may not be set.", e);
+            assumeTrue(false, "Exception setting up RubyBundleAuditAnalyzer; bundle audit may not be installed, or property \"analyzer.bundle.audit.path\" may not be set: " + e);
         }
     }
 
     /**
      * Test when Ruby bundle-audit is not available on the system.
      *
-     * @throws AnalysisException is thrown when an exception occurs.
      */
     @Test
-    public void testInvalidBundleAudit() throws AnalysisException, DatabaseException {
+    void testInvalidBundleAudit() throws DatabaseException {
 
         String path = BaseTest.getResourceAsFile(this, "ruby/invalid-bundle-audit").getAbsolutePath();
         getSettings().setString(Settings.KEYS.ANALYZER_BUNDLE_AUDIT_PATH, path);
@@ -195,11 +194,10 @@ public class RubyBundleAuditAnalyzerIT extends BaseDBTestCase {
     /**
      * Test Ruby dependencies and their paths.
      *
-     * @throws AnalysisException is thrown when an exception occurs.
      * @throws DatabaseException thrown when an exception occurs
      */
     @Test
-    public void testDependenciesPath() throws AnalysisException, DatabaseException {
+    void testDependenciesPath() throws DatabaseException {
         try (Engine engine = new Engine(getSettings())) {
             try {
                 engine.scan(BaseTest.getResourceAsFile(this, "ruby/vulnerable/gems/rails-4.1.15/"));
@@ -208,7 +206,7 @@ public class RubyBundleAuditAnalyzerIT extends BaseDBTestCase {
                 LOGGER.error("NPE", ex);
                 fail(ex.getMessage());
             } catch (ExceptionCollection ex) {
-                Assume.assumeNoException("Exception setting up RubyBundleAuditAnalyzer; bundle audit may not be installed, or property \"analyzer.bundle.audit.path\" may not be set.", ex);
+                assumeTrue(false, "Exception setting up RubyBundleAuditAnalyzer; bundle audit may not be installed, or property \"analyzer.bundle.audit.path\" may not be set: " + ex);
                 return;
             }
             Dependency[] dependencies = engine.getDependencies();

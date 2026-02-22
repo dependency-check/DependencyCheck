@@ -17,9 +17,8 @@
  */
 package org.owasp.dependencycheck.maven;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.owasp.dependencycheck.utils.Filter;
 
 import java.util.Arrays;
@@ -38,18 +37,9 @@ import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.owasp.dependencycheck.maven.ArtifactScopeExcludedTest.ArtifactScopeExcludedTestBuilder.pluginDefaults;
 
-@RunWith(Parameterized.class)
-public class ArtifactScopeExcludedTest {
+class ArtifactScopeExcludedTest {
 
-	private final boolean skipTestScope;
-	private final boolean skipProvidedScope;
-	private final boolean skipSystemScope;
-	private final boolean skipRuntimeScope;
-	private final String testString;
-	private final boolean expectedResult;
-
-	@Parameterized.Parameters(name = "{0}")
-	public static Collection<Object[]> getParameters() {
+	static Collection<Object[]> getParameters() {
 		return Arrays.asList(new Object[][]{
 				{pluginDefaults().withTestString(SCOPE_COMPILE).withExpectedResult(false)},
 				{pluginDefaults().withTestString(SCOPE_COMPILE_PLUS_RUNTIME).withExpectedResult(false)},
@@ -66,19 +56,12 @@ public class ArtifactScopeExcludedTest {
 		});
 	}
 
-	public ArtifactScopeExcludedTest(final ArtifactScopeExcludedTestBuilder builder) {
-		this.skipTestScope = builder.skipTestScope;
-		this.skipProvidedScope = builder.skipProvidedScope;
-		this.skipSystemScope = builder.skipSystemScope;
-		this.skipRuntimeScope = builder.skipRuntimeScope;
-		this.testString = builder.testString;
-		this.expectedResult = builder.expectedResult;
-	}
-
-	@Test
-	public void shouldExcludeArtifact() {
-		final Filter<String> artifactScopeExcluded = new ArtifactScopeExcluded(skipTestScope, skipProvidedScope, skipSystemScope, skipRuntimeScope);
-		assertThat(expectedResult, is(equalTo(artifactScopeExcluded.passes(testString))));
+    @ParameterizedTest(name = "{0}")
+	@MethodSource("getParameters")
+    void shouldExcludeArtifact(final ArtifactScopeExcludedTestBuilder builder) {
+		final Filter<String> artifactScopeExcluded = new ArtifactScopeExcluded(
+				builder.skipTestScope, builder.skipProvidedScope, builder.skipSystemScope, builder.skipRuntimeScope);
+		assertThat(builder.expectedResult, is(equalTo(artifactScopeExcluded.passes(builder.testString))));
 	}
 
 	public static final class ArtifactScopeExcludedTestBuilder {

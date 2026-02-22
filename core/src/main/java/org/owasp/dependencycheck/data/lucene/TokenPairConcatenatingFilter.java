@@ -36,7 +36,7 @@ import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
  * @author Jeremy Long
  */
 @NotThreadSafe
-public final class TokenPairConcatenatingFilter extends TokenFilter {
+public class TokenPairConcatenatingFilter extends TokenFilter {
 
     /**
      * The char term attribute.
@@ -72,11 +72,11 @@ public final class TokenPairConcatenatingFilter extends TokenFilter {
      * @throws IOException is thrown when an IOException occurs
      */
     @Override
-    public boolean incrementToken() throws IOException {
+    public final boolean incrementToken() throws IOException {
         if (addSingleTerm && previousWord != null) {
             addSingleTerm = false;
             clearAttributes();
-            termAtt.append(previousWord);
+            appendTerm(previousWord);
             return true;
 
         } else if (input.incrementToken()) {
@@ -86,18 +86,23 @@ public final class TokenPairConcatenatingFilter extends TokenFilter {
             }
             if (addSingleTerm) {
                 clearAttributes();
-                termAtt.append(word);
+                appendTerm(word);
                 previousWord = word;
                 addSingleTerm = false;
             } else {
                 clearAttributes();
-                termAtt.append(previousWord).append(word);
+                appendTerm(previousWord);
+                appendTerm(word);
                 previousWord = word;
                 addSingleTerm = true;
             }
             return true;
         }
         return false;
+    }
+
+    protected void appendTerm(String term) {
+        termAtt.append(term);
     }
 
     /**

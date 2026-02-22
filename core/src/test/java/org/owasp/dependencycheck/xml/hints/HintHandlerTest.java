@@ -17,57 +17,50 @@
  */
 package org.owasp.dependencycheck.xml.hints;
 
+import org.junit.jupiter.api.Test;
+import org.owasp.dependencycheck.BaseTest;
+import org.owasp.dependencycheck.utils.AutoCloseableInputSource;
+import org.owasp.dependencycheck.utils.XmlUtils;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+import org.xml.sax.XMLReader;
+
+import javax.xml.parsers.ParserConfigurationException;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
-import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.parsers.SAXParser;
-import javax.xml.parsers.SAXParserFactory;
-import org.junit.Test;
-import static org.junit.Assert.*;
-import org.owasp.dependencycheck.BaseTest;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
-import org.xml.sax.SAXNotRecognizedException;
-import org.xml.sax.SAXNotSupportedException;
-import org.xml.sax.XMLReader;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.owasp.dependencycheck.utils.AutoCloseableInputSource.fromResource;
 
 /**
  *
  * @author Jeremy Long
  */
-public class HintHandlerTest extends BaseTest {
-    
+class HintHandlerTest extends BaseTest {
+
     @Test
-    public void testHandler() throws ParserConfigurationException, SAXException, IOException {
+    void testHandler() throws ParserConfigurationException, SAXException, IOException {
         File file = BaseTest.getResourceAsFile(this, "hints.xml");
-        File schema = BaseTest.getResourceAsFile(this, "schema/dependency-hint.1.1.xsd");
         HintHandler handler = new HintHandler();
 
-        SAXParserFactory factory = SAXParserFactory.newInstance();
-        factory.setNamespaceAware(true);
-        factory.setValidating(true);
-        SAXParser saxParser = factory.newSAXParser();
-        saxParser.setProperty(HintParser.JAXP_SCHEMA_LANGUAGE, HintParser.W3C_XML_SCHEMA);
-        saxParser.setProperty(HintParser.JAXP_SCHEMA_SOURCE, schema);
-        XMLReader xmlReader = saxParser.getXMLReader();
-        xmlReader.setErrorHandler(new HintErrorHandler());
-        xmlReader.setContentHandler(handler);
+        try (AutoCloseableInputSource schemaResource = fromResource("schema/dependency-hint.1.4.xsd")) {
+            XMLReader xmlReader = XmlUtils.buildSecureValidatingXmlReader(schemaResource);
+            xmlReader.setErrorHandler(new HintErrorHandler());
+            xmlReader.setContentHandler(handler);
 
-        InputStream inputStream = new FileInputStream(file);
-        Reader reader = new InputStreamReader(inputStream, StandardCharsets.UTF_8);
-        InputSource in = new InputSource(reader);
-        xmlReader.parse(in);
-
-        List<HintRule> result = handler.getHintRules();
-        assertEquals("two hint rules should have been loaded",2,result.size());
+            try (Reader reader = new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8)) {
+                InputSource in = new InputSource(reader);
+                xmlReader.parse(in);
+            }
+            List<HintRule> result = handler.getHintRules();
+            assertEquals(2, result.size(), "two hint rules should have been loaded");
+        }
     }
 
 }

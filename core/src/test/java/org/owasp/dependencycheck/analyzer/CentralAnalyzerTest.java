@@ -17,33 +17,28 @@
  */
 package org.owasp.dependencycheck.analyzer;
 
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.owasp.dependencycheck.analyzer.exception.AnalysisException;
+import org.junit.jupiter.api.Test;
+import org.owasp.dependencycheck.BaseTest;
 import org.owasp.dependencycheck.data.central.CentralSearch;
-import org.owasp.dependencycheck.utils.ForbiddenException;
-import org.owasp.dependencycheck.utils.TooManyRequestsException;
 import org.owasp.dependencycheck.data.nexus.MavenArtifact;
 import org.owasp.dependencycheck.dependency.Dependency;
+import org.owasp.dependencycheck.utils.Settings;
+import org.owasp.dependencycheck.utils.TooManyRequestsException;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
-import org.apache.commons.lang3.StringUtils;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import org.junit.Assume;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import org.owasp.dependencycheck.BaseTest;
-import org.owasp.dependencycheck.utils.Settings;
 
 /**
  * Tests for the CentralAnalyzer.
  */
-public class CentralAnalyzerTest extends BaseTest {
+class CentralAnalyzerTest extends BaseTest {
 
     private static final String SHA1_SUM = "my-sha1-sum";
     final CentralSearch centralSearch = mock(CentralSearch.class);
@@ -51,7 +46,7 @@ public class CentralAnalyzerTest extends BaseTest {
 
     @Test
     @SuppressWarnings("PMD.NonStaticInitializer")
-    public void testFetchMavenArtifactsWithoutException() throws IOException, TooManyRequestsException, ForbiddenException {
+    void testFetchMavenArtifactsWithoutException() throws IOException, TooManyRequestsException {
             CentralAnalyzer instance = new CentralAnalyzer();
             instance.setCentralSearch(centralSearch);
             when(dependency.getSha1sum()).thenReturn(SHA1_SUM);
@@ -62,30 +57,28 @@ public class CentralAnalyzerTest extends BaseTest {
             assertTrue(actualMavenArtifacts.isEmpty());
     }
 
-    @Test(expected = FileNotFoundException.class)
+    @Test
     @SuppressWarnings("PMD.NonStaticInitializer")
-    public void testFetchMavenArtifactsRethrowsFileNotFoundException()
-            throws IOException, TooManyRequestsException, ForbiddenException {
+    void testFetchMavenArtifactsRethrowsFileNotFoundException() throws Exception {
         CentralAnalyzer instance = new CentralAnalyzer();
         instance.setCentralSearch(centralSearch);
         when(dependency.getSha1sum()).thenReturn(SHA1_SUM);
         when(centralSearch.searchSha1(SHA1_SUM)).thenThrow(FileNotFoundException.class);
-        instance.fetchMavenArtifacts(dependency);
+        assertThrows(FileNotFoundException.class, () ->
+            instance.fetchMavenArtifacts(dependency));
     }
 
-    @Test(expected = IOException.class)
+    @Test
     @SuppressWarnings("PMD.NonStaticInitializer")
-    public void testFetchMavenArtifactsAlwaysThrowsIOException()
-            throws IOException, TooManyRequestsException, ForbiddenException {
+    void testFetchMavenArtifactsAlwaysThrowsIOException() throws Exception {
         getSettings().setInt(Settings.KEYS.ANALYZER_CENTRAL_RETRY_COUNT, 1);
         getSettings().setBoolean(Settings.KEYS.ANALYZER_CENTRAL_USE_CACHE, false);
         CentralAnalyzer instance = new CentralAnalyzer();
         instance.initialize(getSettings());
-        
         instance.setCentralSearch(centralSearch);
         when(dependency.getSha1sum()).thenReturn(SHA1_SUM);
         when(centralSearch.searchSha1(SHA1_SUM)).thenThrow(IOException.class);
-
-        instance.fetchMavenArtifacts(dependency);
+        assertThrows(IOException.class, () ->
+            instance.fetchMavenArtifacts(dependency));
     }
 }

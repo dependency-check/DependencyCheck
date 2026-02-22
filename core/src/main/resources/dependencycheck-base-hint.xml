@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<hints xmlns="https://jeremylong.github.io/DependencyCheck/dependency-hint.1.3.xsd">
+<hints xmlns="https://jeremylong.github.io/DependencyCheck/dependency-hint.1.4.xsd"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="https://jeremylong.github.io/DependencyCheck/dependency-hint.1.4.xsd
+                           https://dependency-check.github.io/DependencyCheck/dependency-hint.1.4.xsd">
     <hint>
         <given><!-- NOTE: these are OR conditions -->
             <evidence type="product" source="Manifest" name="Implementation-Title" value="Spring Framework" confidence="HIGH"/>
@@ -456,4 +459,25 @@
             <evidence type="product" source="hint analyzer" name="vendor" value="net" confidence="MEDIUM"/>
         </add>
     </hint>
+    <hint>
+       <!-- false negative per issue #8008 -->
+        <given>
+            <evidence type="vendor" source="pom" name="groupid" value="co.elastic.apm" confidence="HIGHEST"/>
+            <evidence type="product" source="pom" name="artifactid" value="elastic-apm-agent" confidence="HIGHEST"/>
+        </given>
+        <add>
+            <evidence type="product" source="hint analyzer" name="product" value="apm_java_agent" confidence="HIGHEST"/>
+        </add>
+    </hint>
+
+    <hint>
+        <given>
+            <evidence type="product" source="pypi" name="name" value="zabbix-utils" confidence="HIGHEST" />
+        </given>
+        <remove>
+            <evidence type="product" source="pypi" name="name" value="zabbix" confidence="HIGHEST" />
+        </remove>
+    </hint>
+
 </hints>
+

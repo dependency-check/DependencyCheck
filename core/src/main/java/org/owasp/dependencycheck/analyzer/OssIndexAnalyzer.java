@@ -19,6 +19,7 @@ package org.owasp.dependencycheck.analyzer;
 
 import io.github.jeremylong.openvulnerability.client.nvd.CvssV2;
 import io.github.jeremylong.openvulnerability.client.nvd.CvssV2Data;
+import io.github.jeremylong.openvulnerability.client.nvd.CvssV4;
 import org.sonatype.ossindex.service.api.componentreport.ComponentReport;
 import org.sonatype.ossindex.service.api.componentreport.ComponentReportVulnerability;
 import org.sonatype.ossindex.service.api.cvss.Cvss2Severity;
@@ -36,7 +37,9 @@ import org.owasp.dependencycheck.dependency.VulnerableSoftware;
 import org.owasp.dependencycheck.dependency.VulnerableSoftwareBuilder;
 import org.owasp.dependencycheck.dependency.naming.Identifier;
 import org.owasp.dependencycheck.dependency.naming.PurlIdentifier;
+import org.owasp.dependencycheck.exception.InitializationException;
 import org.owasp.dependencycheck.utils.Settings;
+import org.owasp.dependencycheck.utils.Settings.KEYS;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import us.springett.parsers.cpe.exceptions.CpeValidationException;
@@ -56,10 +59,10 @@ import java.util.regex.Pattern;
 import java.net.SocketTimeoutException;
 
 import javax.annotation.Nullable;
+
 import org.apache.commons.lang3.StringUtils;
 import org.owasp.dependencycheck.utils.CvssUtil;
 import org.sonatype.goodies.packageurl.InvalidException;
-import org.sonatype.ossindex.service.client.transport.Transport.TransportException;
 
 /**
  * Enrich dependency information from Sonatype OSS index.
@@ -127,6 +130,18 @@ public class OssIndexAnalyzer extends AbstractAnalyzer {
     }
 
     @Override
+    protected void prepareAnalyzer(Engine engine) throws InitializationException {
+        synchronized (FETCH_MUTIX) {
+            if (StringUtils.isEmpty(getSettings().getString(KEYS.ANALYZER_OSSINDEX_USER, StringUtils.EMPTY))
+                    || StringUtils.isEmpty(getSettings().getString(KEYS.ANALYZER_OSSINDEX_PASSWORD, StringUtils.EMPTY))) {
+                LOG.warn("Disabling OSS Index analyzer due to missing user/password credentials. Authentication is now " +
+                        "required: https://ossindex.sonatype.org/doc/auth-required");
+                setEnabled(false);
+            }
+        }
+    }
+
+    @Override
     protected void analyzeDependency(final Dependency dependency, final Engine engine) throws AnalysisException {
         // batch request component-reports for all dependencies
         synchronized (FETCH_MUTIX) {
@@ -134,28 +149,6 @@ public class OssIndexAnalyzer extends AbstractAnalyzer {
                 try {
                     requestDelay();
                     reports = requestReports(engine.getDependencies());
-                } catch (TransportException ex) {
-                    final String message = ex.getMessage();
-                    final boolean warnOnly = getSettings().getBoolean(Settings.KEYS.ANALYZER_OSSINDEX_WARN_ONLY_ON_REMOTE_ERRORS, false);
-                    this.setEnabled(false);
-                    if (StringUtils.endsWith(message, "401")) {
-                        LOG.error("Invalid credentials for the OSS Index, disabling the analyzer");
-                        throw new AnalysisException("Invalid credentials provided for OSS Index", ex);
-                    } else if (StringUtils.endsWith(message, "403")) {
-                        LOG.error("OSS Index access forbidden, disabling the analyzer");
-                        throw new AnalysisException("OSS Index access forbidden", ex);
-                    } else if (StringUtils.endsWith(message, "429")) {
-                        if (warnOnly) {
-                            LOG.warn("OSS Index rate limit exceeded, disabling the analyzer", ex);
-                        } else {
-                            throw new AnalysisException("OSS Index rate limit exceeded, disabling the analyzer", ex);
-                        }
-                    } else if (warnOnly) {
-                        LOG.warn("Error requesting component reports, disabling the analyzer", ex);
-                    } else {
-                        LOG.debug("Error requesting component reports, disabling the analyzer", ex);
-                        throw new AnalysisException("Failed to request component-reports", ex);
-                    }
                 } catch (SocketTimeoutException e) {
                     final boolean warnOnly = getSettings().getBoolean(Settings.KEYS.ANALYZER_OSSINDEX_WARN_ONLY_ON_REMOTE_ERRORS, false);
                     this.setEnabled(false);
@@ -165,9 +158,36 @@ public class OssIndexAnalyzer extends AbstractAnalyzer {
                         LOG.debug("OSS Index socket timeout", e);
                         throw new AnalysisException("Failed to establish socket to OSS Index", e);
                     }
-                } catch (Exception e) {
-                    LOG.debug("Error requesting component reports", e);
-                    throw new AnalysisException("Failed to request component-reports", e);
+                } catch (Exception ex) {
+                    final String message = ex.getMessage();
+                    final boolean warnOnly = getSettings().getBoolean(Settings.KEYS.ANALYZER_OSSINDEX_WARN_ONLY_ON_REMOTE_ERRORS, false);
+                    this.setEnabled(false);
+                    if (StringUtils.contains(message, "401")) {
+                        if (warnOnly) {
+                            LOG.warn("Invalid credentials for the OSS Index, disabling the analyzer");
+                        } else {
+                            LOG.error("Invalid credentials for the OSS Index, disabling the analyzer");
+                            throw new AnalysisException("Invalid credentials provided for OSS Index", ex);
+                        }
+                    } else if (StringUtils.contains(message, "403")) {
+                        if (warnOnly) {
+                            LOG.warn("OSS Index access forbidden, disabling the analyzer");
+                        } else {
+                            LOG.error("OSS Index access forbidden, disabling the analyzer");
+                            throw new AnalysisException("OSS Index access forbidden", ex);
+                        }
+                    } else if (StringUtils.contains(message, "429")) {
+                        if (warnOnly) {
+                            LOG.warn("OSS Index rate limit exceeded, disabling the analyzer", ex);
+                        } else {
+                            throw new AnalysisException("OSS Index rate limit exceeded, disabling the analyzer", ex);
+                        }
+                    } else if (warnOnly) {
+                        LOG.warn("Error requesting component reports, disabling the analyzer. " + ex.getMessage(), ex);
+                    } else {
+                        LOG.debug("Error requesting component reports, disabling the analyzer", ex);
+                        throw new AnalysisException("Failed to request component-reports. " + ex.getMessage(), ex);
+                    }
                 }
             }
 
@@ -321,7 +341,9 @@ public class OssIndexAnalyzer extends AbstractAnalyzer {
         final double cvssScore = source.getCvssScore() != null ? source.getCvssScore().doubleValue() : -1;
 
         if (source.getCvssVector() != null) {
-            if (source.getCvssVector().startsWith("CVSS:3")) {
+            if (source.getCvssVector().startsWith("CVSS:4")) {
+                result.setCvssV4(CvssUtil.vectorToCvssV4("ossindex", CvssV4.Type.PRIMARY, cvssScore, source.getCvssVector()));
+            } else if (source.getCvssVector().startsWith("CVSS:3")) {
                 result.setCvssV3(CvssUtil.vectorToCvssV3(source.getCvssVector(), cvssScore));
             } else {
                 // convert cvss details

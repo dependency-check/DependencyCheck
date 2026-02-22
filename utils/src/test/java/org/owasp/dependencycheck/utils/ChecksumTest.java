@@ -17,34 +17,32 @@
  */
 package org.owasp.dependencycheck.utils;
 
+import org.junit.jupiter.api.Test;
+
 import java.io.File;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
-import org.junit.Assert;
-import static org.junit.Assert.assertArrayEquals;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  *
  * @author Jeremy Long
  */
-public class ChecksumTest {
+class ChecksumTest {
 
     /**
      * Test of getChecksum method, of class Checksum. This checks that an
      * exception is thrown when an invalid path is specified.
      *
-     * @throws Exception is thrown when an exception occurs.
      */
     @Test
-    public void testGetChecksum_FileNotFound() throws Exception {
+    void testGetChecksum_FileNotFound() {
         String algorithm = "MD5";
         File file = new File("not a valid file");
-        Exception exception = Assert.assertThrows(IOException.class, () -> Checksum.getChecksum(algorithm, file));
+        Exception exception = assertThrows(IOException.class, () -> Checksum.getChecksum(algorithm, file));
         assertTrue(exception.getMessage().contains("not a valid file"));
     }
 
@@ -52,13 +50,12 @@ public class ChecksumTest {
      * Test of getChecksum method, of class Checksum. This checks that an
      * exception is thrown when an invalid algorithm is specified.
      *
-     * @throws Exception is thrown when an exception occurs.
      */
     @Test
-    public void testGetChecksum_NoSuchAlgorithm() throws Exception {
+    void testGetChecksum_NoSuchAlgorithm() {
         String algorithm = "some unknown algorithm";
         File file = new File(this.getClass().getClassLoader().getResource("checkSumTest.file").getPath());
-        Exception exception = Assert.assertThrows(NoSuchAlgorithmException.class, () -> Checksum.getChecksum(algorithm, file));
+        Exception exception = assertThrows(NoSuchAlgorithmException.class, () -> Checksum.getChecksum(algorithm, file));
         assertTrue(exception.getMessage().contains("some unknown algorithm"));
     }
 
@@ -68,7 +65,7 @@ public class ChecksumTest {
      * @throws Exception is thrown when an exception occurs.
      */
     @Test
-    public void testGetMD5Checksum() throws Exception {
+    void testGetMD5Checksum() throws Exception {
         File file = new File(this.getClass().getClassLoader().getResource("checkSumTest.file").toURI().getPath());
         //String expResult = "F0915C5F46B8CFA283E5AD67A09B3793";
         String expResult = "f0915c5f46b8cfa283e5ad67a09b3793";
@@ -82,7 +79,7 @@ public class ChecksumTest {
      * @throws Exception is thrown when an exception occurs.
      */
     @Test
-    public void testGetSHA1Checksum() throws Exception {
+    void testGetSHA1Checksum() throws Exception {
         File file = new File(this.getClass().getClassLoader().getResource("checkSumTest.file").toURI().getPath());
         //String expResult = "B8A9FF28B21BCB1D0B50E24A5243D8B51766851A";
         String expResult = "b8a9ff28b21bcb1d0b50e24a5243d8b51766851a";
@@ -94,7 +91,7 @@ public class ChecksumTest {
      * Test of getHex method, of class Checksum.
      */
     @Test
-    public void testGetHex() {
+    void testGetHex() {
         byte[] raw = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16};
         //String expResult = "000102030405060708090A0B0C0D0E0F10";
         String expResult = "000102030405060708090a0b0c0d0e0f10";
@@ -106,7 +103,7 @@ public class ChecksumTest {
      * Test of getChecksum method, of class Checksum.
      */
     @Test
-    public void testGetChecksum_String_File() throws Exception {
+    void testGetChecksum_String_File() throws Exception {
         String algorithm = "MD5";
         File file = new File(this.getClass().getClassLoader().getResource("checkSumTest.file").toURI().getPath());
         String expResult = "f0915c5f46b8cfa283e5ad67a09b3793";
@@ -121,7 +118,7 @@ public class ChecksumTest {
      * Test of getMD5Checksum method, of class Checksum.
      */
     @Test
-    public void testGetMD5Checksum_File() throws Exception {
+    void testGetMD5Checksum_File() throws Exception {
         File file = new File(this.getClass().getClassLoader().getResource("checkSumTest.file").toURI().getPath());
         String expResult = "f0915c5f46b8cfa283e5ad67a09b3793";
         String result = Checksum.getMD5Checksum(file);
@@ -132,7 +129,7 @@ public class ChecksumTest {
      * Test of getSHA1Checksum method, of class Checksum.
      */
     @Test
-    public void testGetSHA1Checksum_File() throws Exception {
+    void testGetSHA1Checksum_File() throws Exception {
         File file = new File(this.getClass().getClassLoader().getResource("checkSumTest.file").toURI().getPath());
         String expResult = "b8a9ff28b21bcb1d0b50e24a5243d8b51766851a";
         String result = Checksum.getSHA1Checksum(file);
@@ -143,7 +140,7 @@ public class ChecksumTest {
      * Test of getChecksum method, of class Checksum.
      */
     @Test
-    public void testGetChecksum_String_byteArr() {
+    void testGetChecksum_String_byteArr() {
         String algorithm = "SHA1";
         byte[] bytes = {-16, -111, 92, 95, 70, -72, -49, -94, -125, -27, -83, 103, -96, -101, 55, -109};
         String expResult = "89268a389a97f0bfba13d3ff2370d8ad436e36f6";
@@ -155,7 +152,7 @@ public class ChecksumTest {
      * Test of getMD5Checksum method, of class Checksum.
      */
     @Test
-    public void testGetMD5Checksum_String() {
+    void testGetMD5Checksum_String() {
         String text = "test string";
         String expResult = "6f8db599de986fab7a21625b7916589c";
         String result = Checksum.getMD5Checksum(text);
@@ -166,7 +163,7 @@ public class ChecksumTest {
      * Test of getSHA1Checksum method, of class Checksum.
      */
     @Test
-    public void testGetSHA1Checksum_String() {
+    void testGetSHA1Checksum_String() {
         String text = "test string";
         String expResult = "661295c9cbf9d6b2f6428414504a8deed3020641";
         String result = Checksum.getSHA1Checksum(text);

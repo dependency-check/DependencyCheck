@@ -10,27 +10,27 @@ jobs:
     name: Purge GitHub Cache
     runs-on: ubuntu-latest 
     steps:
-      - uses: actions/checkout@v4
-      - name: Check Maven Cache
-        id: maven-cache
-        uses: actions/cache@v4
-        with:
-          path: ~/.m2/repository
-          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
-          restore-keys: |
-            ${{ runner.os }}-maven-
-      - name: Check Local Maven Cache
+      - uses: actions/checkout@v6
+      - name: Maven Integration Test Cache
         id: maven-it-cache
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: maven/target/local-repo
           key: mvn-it-repo
       - name: Check ODC Data Cache
         id: odc-data-cache
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: core/target/data
           key: odc-data
+      - name: Set up JDK
+        uses: actions/setup-java@v5
+        with:
+          java-version: '25'
+          distribution: 'zulu'
+          check-latest: true
+          cache: 'maven'
+          cache-dependency-path: '**/pom.xml'
       - name: Delete Data Directories
         run: |
           rm -rf ~/.m2/repository/org/owasp/dependency-check-data

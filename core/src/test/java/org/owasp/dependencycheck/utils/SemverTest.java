@@ -13,34 +13,35 @@
  */
 package org.owasp.dependencycheck.utils;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.semver4j.Semver;
+
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  *
  * @author Jeremy Long
  */
-public class SemverTest {
+class SemverTest {
 
     /**
      * Test of semver4j. See https://github.com/dependency-check/DependencyCheck/issues/5128#issuecomment-1343080426
      */
     @Test
-    public void testSemver() {
+    void testSemver() {
         Semver semver = new Semver("3.1.4");
         assertTrue(semver.satisfies("^3.0.0-0"));
     }
+
     /**
      * Test of semver4j. See https://github.com/dependency-check/DependencyCheck/issues/5158
      */
     @Test
-    public void testSemverComplex() {
+    void testSemverComplex() {
         Semver semver = new Semver("18.11.5");
         assertFalse(semver.satisfies("^14.14.20 || ^16.0.0"));
-        
+
         semver = new Semver("14.15.0");
         assertTrue(semver.satisfies("^14.14.20 || ^16.0.0"));
     }

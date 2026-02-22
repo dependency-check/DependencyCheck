@@ -17,19 +17,22 @@
  */
 package org.owasp.dependencycheck.data.nuget;
 
+import org.junit.jupiter.api.Test;
+import org.owasp.dependencycheck.BaseTest;
+
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.PrintStream;
-import static org.junit.Assert.assertEquals;
-import org.junit.Test;
-import org.owasp.dependencycheck.BaseTest;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
  *
  * @author colezlaw
  *
  */
-public class XPathNuspecParserTest extends BaseTest {
+class XPathNuspecParserTest extends BaseTest {
 
     /**
      * Test all the valid components.
@@ -37,7 +40,7 @@ public class XPathNuspecParserTest extends BaseTest {
      * @throws Exception if anything goes sideways.
      */
     @Test
-    public void testGoodDocument() throws Exception {
+    void testGoodDocument() throws Exception {
         XPathNuspecParser parser = new XPathNuspecParser();
         //InputStream is = XPathNuspecParserTest.class.getClassLoader().getResourceAsStream("log4net.2.0.3.nuspec");
         InputStream is = BaseTest.getResourceAsStream(this, "log4net.2.0.3.nuspec");
@@ -55,17 +58,15 @@ public class XPathNuspecParserTest extends BaseTest {
      *
      * @throws Exception we expect this.
      */
-    @Test(expected = NuspecParseException.class)
-    public void testMissingDocument() throws Exception {
+    @Test
+    void testMissingDocument() {
         XPathNuspecParser parser = new XPathNuspecParser();
-        //InputStream is = XPathNuspecParserTest.class.getClassLoader().getResourceAsStream("dependencycheck.properties");
         InputStream is = BaseTest.getResourceAsStream(this, "dependencycheck.properties");
-
-        //hide the fatal message from the core parser
         final ByteArrayOutputStream myOut = new ByteArrayOutputStream();
         System.setErr(new PrintStream(myOut));
+        assertThrows(NuspecParseException.class, () ->
 
-        parser.parse(is);
+            parser.parse(is));
     }
 
     /**
@@ -73,11 +74,11 @@ public class XPathNuspecParserTest extends BaseTest {
      *
      * @throws Exception we expect this.
      */
-    @Test(expected = NuspecParseException.class)
-    public void testNotNuspec() throws Exception {
+    @Test
+    void testNotNuspec() {
         XPathNuspecParser parser = new XPathNuspecParser();
-        //InputStream is = XPathNuspecParserTest.class.getClassLoader().getResourceAsStream("suppressions.xml");
         InputStream is = BaseTest.getResourceAsStream(this, "suppressions.xml");
-        parser.parse(is);
+        assertThrows(NuspecParseException.class, () ->
+            parser.parse(is));
     }
 }

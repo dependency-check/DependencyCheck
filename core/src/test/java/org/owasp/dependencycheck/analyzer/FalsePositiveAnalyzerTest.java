@@ -15,9 +15,7 @@
  */
 package org.owasp.dependencycheck.analyzer;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.owasp.dependencycheck.BaseTest;
 import org.owasp.dependencycheck.Engine;
 import org.owasp.dependencycheck.dependency.Confidence;
@@ -29,11 +27,14 @@ import us.springett.parsers.cpe.Cpe;
 import us.springett.parsers.cpe.CpeBuilder;
 import us.springett.parsers.cpe.values.Part;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 /**
  *
  * @author Jeremy Long
  */
-public class FalsePositiveAnalyzerTest extends BaseTest {
+class FalsePositiveAnalyzerTest extends BaseTest {
 
     /**
      * A CPE builder object.
@@ -44,7 +45,7 @@ public class FalsePositiveAnalyzerTest extends BaseTest {
      * Test of getName method, of class FalsePositiveAnalyzer.
      */
     @Test
-    public void testGetName() {
+    void testGetName() {
         FalsePositiveAnalyzer instance = new FalsePositiveAnalyzer();
         String expResult = "False Positive Analyzer";
         String result = instance.getName();
@@ -55,7 +56,7 @@ public class FalsePositiveAnalyzerTest extends BaseTest {
      * Test of getAnalysisPhase method, of class FalsePositiveAnalyzer.
      */
     @Test
-    public void testGetAnalysisPhase() {
+    void testGetAnalysisPhase() {
         FalsePositiveAnalyzer instance = new FalsePositiveAnalyzer();
         AnalysisPhase expResult = AnalysisPhase.POST_IDENTIFIER_ANALYSIS;
         AnalysisPhase result = instance.getAnalysisPhase();
@@ -67,7 +68,7 @@ public class FalsePositiveAnalyzerTest extends BaseTest {
      * FalsePositiveAnalyzer.
      */
     @Test
-    public void testGetAnalyzerEnabledSettingKey() {
+    void testGetAnalyzerEnabledSettingKey() {
         FalsePositiveAnalyzer instance = new FalsePositiveAnalyzer();
         String expResult = Settings.KEYS.ANALYZER_FALSE_POSITIVE_ENABLED;
         String result = instance.getAnalyzerEnabledSettingKey();
@@ -78,7 +79,7 @@ public class FalsePositiveAnalyzerTest extends BaseTest {
      * Test of analyzeDependency method, of class FalsePositiveAnalyzer.
      */
     @Test
-    public void testAnalyzeDependency() throws Exception {
+    void testAnalyzeDependency() throws Exception {
         Dependency dependency = new Dependency();
         dependency.setFileName("pom.xml");
         dependency.setFilePath("pom.xml");
@@ -97,7 +98,7 @@ public class FalsePositiveAnalyzerTest extends BaseTest {
      * Test of removeBadMatches method, of class FalsePositiveAnalyzer.
      */
     @Test
-    public void testRemoveBadMatches() throws Exception {
+    void testRemoveBadMatches() throws Exception {
         Dependency dependency = new Dependency();
         dependency.setFileName("some.jar");
         dependency.setFilePath("some.jar");

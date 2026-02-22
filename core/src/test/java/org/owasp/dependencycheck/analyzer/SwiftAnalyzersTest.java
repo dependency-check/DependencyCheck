@@ -1,21 +1,21 @@
 package org.owasp.dependencycheck.analyzer;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.owasp.dependencycheck.BaseTest;
 import org.owasp.dependencycheck.Engine;
 import org.owasp.dependencycheck.analyzer.exception.AnalysisException;
 import org.owasp.dependencycheck.dependency.Dependency;
-
-import static org.hamcrest.CoreMatchers.containsString;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.junit.Assert.assertTrue;
+import org.owasp.dependencycheck.dependency.EvidenceType;
 
 import java.io.File;
-import org.owasp.dependencycheck.dependency.EvidenceType;
+
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Unit tests for CocoaPodsAnalyzer, CarthageAnalyzer and SwiftPackageManagerAnalyzer.
@@ -24,7 +24,7 @@ import org.owasp.dependencycheck.dependency.EvidenceType;
  * @author Jorge Mendes
  * @author Alin Radut
  */
-public class SwiftAnalyzersTest extends BaseTest {
+class SwiftAnalyzersTest extends BaseTest {
 
     /**
      * The analyzer to test.
@@ -39,7 +39,7 @@ public class SwiftAnalyzersTest extends BaseTest {
      *
      * @throws Exception thrown if there is a problem
      */
-    @Before
+    @BeforeEach
     @Override
     public void setUp() throws Exception {
         super.setUp();
@@ -69,7 +69,7 @@ public class SwiftAnalyzersTest extends BaseTest {
      *
      * @throws Exception thrown if there is a problem
      */
-    @After
+    @AfterEach
     @Override
     public void tearDown() throws Exception {
         podsAnalyzer.close();
@@ -85,7 +85,7 @@ public class SwiftAnalyzersTest extends BaseTest {
      * Test of getName method, of class CocoaPodsAnalyzer.
      */
     @Test
-    public void testPodsGetName() {
+    void testPodsGetName() {
         assertThat(podsAnalyzer.getName(), is("CocoaPods Package Analyzer"));
     }
 
@@ -93,7 +93,7 @@ public class SwiftAnalyzersTest extends BaseTest {
      * Test of getName method, of class CarthageAnalyzer.
      */
     @Test
-    public void testCarthageGetName() {
+    void testCarthageGetName() {
         assertThat(carthageAnalyzer.getName(), is("Carthage Package Analyzer"));
     }
 
@@ -101,7 +101,7 @@ public class SwiftAnalyzersTest extends BaseTest {
      * Test of getName method, of class SwiftPackageManagerAnalyzer.
      */
     @Test
-    public void testSPMGetName() {
+    void testSPMGetName() {
         assertThat(spmAnalyzer.getName(), is("SWIFT Package Manager Analyzer"));
     }
 
@@ -109,7 +109,7 @@ public class SwiftAnalyzersTest extends BaseTest {
      * Test of supportsFiles method, of class CocoaPodsAnalyzer.
      */
     @Test
-    public void testPodsSupportsFiles() {
+    void testPodsSupportsFiles() {
         assertThat(podsAnalyzer.accept(new File("test.podspec")), is(true));
         assertThat(podsAnalyzer.accept(new File("Podfile.lock")), is(true));
     }
@@ -118,7 +118,7 @@ public class SwiftAnalyzersTest extends BaseTest {
      * Test of supportsFiles method, of class CocoaPodsAnalyzer.
      */
     @Test
-    public void testCarthageSupportsFiles() {
+    void testCarthageSupportsFiles() {
         assertThat(carthageAnalyzer.accept(new File("Cartfile.resolved")), is(true));
     }
 
@@ -126,7 +126,7 @@ public class SwiftAnalyzersTest extends BaseTest {
      * Test of supportsFiles method, of class SwiftPackageManagerAnalyzer.
      */
     @Test
-    public void testSPMSupportsFiles() {
+    void testSPMSupportsFiles() {
         assertThat(spmAnalyzer.accept(new File("Package.swift")), is(true));
         assertThat(sprAnalyzer.accept(new File("Package.resolved")), is(true));
     }
@@ -137,7 +137,7 @@ public class SwiftAnalyzersTest extends BaseTest {
      * @throws AnalysisException is thrown when an exception occurs.
      */
     @Test
-    public void testCocoaPodsPodfileAnalyzer() throws AnalysisException {
+    void testCocoaPodsPodfileAnalyzer() throws AnalysisException {
         final Engine engine = new Engine(getSettings());
         final Dependency result = new Dependency(BaseTest.getResourceAsFile(this,
                 "swift/cocoapods/Podfile.lock"));
@@ -165,7 +165,7 @@ public class SwiftAnalyzersTest extends BaseTest {
     }
 
     @Test
-    public void testCocoaPodsPodspecAnalyzer() throws AnalysisException {
+    void testCocoaPodsPodspecAnalyzer() throws AnalysisException {
         final Dependency result = new Dependency(BaseTest.getResourceAsFile(this,
                 "swift/cocoapods/EasyPeasy.podspec"));
         podsAnalyzer.analyze(result, null);
@@ -188,7 +188,7 @@ public class SwiftAnalyzersTest extends BaseTest {
      * @throws AnalysisException is thrown when an exception occurs.
      */
     @Test
-    public void testCarthageCartfileResolvedAnalyzer() throws AnalysisException {
+    void testCarthageCartfileResolvedAnalyzer() throws AnalysisException {
         final Engine engine = new Engine(getSettings());
         final Dependency result = new Dependency(BaseTest.getResourceAsFile(this,
                 "swift/carthage/Cartfile.resolved"));
@@ -221,7 +221,7 @@ public class SwiftAnalyzersTest extends BaseTest {
      * @throws AnalysisException is thrown when an exception occurs.
      */
     @Test
-    public void testSPMAnalyzer() throws AnalysisException {
+    void testSPMAnalyzer() throws AnalysisException {
         final Dependency result = new Dependency(BaseTest.getResourceAsFile(this,
                 "swift/Gloss/Package.swift"));
         spmAnalyzer.analyze(result, null);
@@ -234,7 +234,7 @@ public class SwiftAnalyzersTest extends BaseTest {
     }
 
     @Test
-    public void testSPMResolvedAnalyzerV1() throws AnalysisException {
+    void testSPMResolvedAnalyzerV1() throws AnalysisException {
         final Engine engine = new Engine(getSettings());
         final Dependency result = new Dependency(BaseTest.getResourceAsFile(this,
                 "swift/spm/Package.resolved"));
@@ -250,7 +250,7 @@ public class SwiftAnalyzersTest extends BaseTest {
     }
 
     @Test
-    public void testSPMResolvedAnalyzerV2() throws AnalysisException {
+    void testSPMResolvedAnalyzerV2() throws AnalysisException {
         final Engine engine = new Engine(getSettings());
         final Dependency result = new Dependency(BaseTest.getResourceAsFile(this,
                 "swift/spmV2/Package.resolved"));
@@ -266,7 +266,7 @@ public class SwiftAnalyzersTest extends BaseTest {
     }
 
     @Test
-    public void testSPMResolvedAnalyzerV3() throws AnalysisException {
+    void testSPMResolvedAnalyzerV3() throws AnalysisException {
         final Engine engine = new Engine(getSettings());
         final Dependency result = new Dependency(BaseTest.getResourceAsFile(this,
                 "swift/spmV3/Package.resolved"));
@@ -282,7 +282,7 @@ public class SwiftAnalyzersTest extends BaseTest {
     }
 
     @Test
-    public void testIsEnabledIsTrueByDefault() {
+    void testIsEnabledIsTrueByDefault() {
         assertTrue(spmAnalyzer.isEnabled());
         assertTrue(sprAnalyzer.isEnabled());
     }

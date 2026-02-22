@@ -27,9 +27,8 @@ import java.io.Reader;
 import java.nio.charset.StandardCharsets;
 import javax.annotation.concurrent.ThreadSafe;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.parsers.SAXParser;
 
-import org.owasp.dependencycheck.utils.FileUtils;
+import org.owasp.dependencycheck.utils.AutoCloseableInputSource;
 import org.owasp.dependencycheck.utils.XmlUtils;
 
 import org.slf4j.Logger;
@@ -37,6 +36,8 @@ import org.slf4j.LoggerFactory;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
+
+import static org.owasp.dependencycheck.utils.AutoCloseableInputSource.fromResource;
 
 /**
  * A simple validating parser for XML Grok Assembly XML files.
@@ -80,10 +81,9 @@ public class GrokParser {
      * @throws GrokParseException thrown if the XML cannot be parsed
      */
     public AssemblyData parse(InputStream inputStream) throws GrokParseException {
-        try (InputStream schema = FileUtils.getResourceAsStream(GROK_SCHEMA)) {
+        try (AutoCloseableInputSource schema = fromResource(GROK_SCHEMA)) {
             final GrokHandler handler = new GrokHandler();
-            final SAXParser saxParser = XmlUtils.buildSecureSaxParser(schema);
-            final XMLReader xmlReader = saxParser.getXMLReader();
+            final XMLReader xmlReader = XmlUtils.buildSecureValidatingXmlReader(schema);
             xmlReader.setErrorHandler(new GrokErrorHandler());
             xmlReader.setContentHandler(handler);
             try (Reader reader = new InputStreamReader(inputStream, StandardCharsets.UTF_8)) {

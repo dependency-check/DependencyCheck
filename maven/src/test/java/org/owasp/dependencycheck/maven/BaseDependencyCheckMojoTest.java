@@ -17,36 +17,33 @@
  */
 package org.owasp.dependencycheck.maven;
 
+import org.apache.maven.project.MavenProject;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Spy;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.owasp.dependencycheck.Engine;
+import org.owasp.dependencycheck.exception.ExceptionCollection;
+
 import java.io.File;
 import java.util.Locale;
 
-import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.plugin.MojoFailureException;
-import org.apache.maven.project.MavenProject;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.doReturn;
-
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Spy;
-import org.mockito.junit.MockitoJUnitRunner;
-import org.owasp.dependencycheck.Engine;
-import org.owasp.dependencycheck.exception.ExceptionCollection;
 
 /**
  *
  * @author Jeremy Long
  */
-@RunWith(MockitoJUnitRunner.class)
-public class BaseDependencyCheckMojoTest extends BaseTest {
+@ExtendWith(MockitoExtension.class)
+class BaseDependencyCheckMojoTest extends BaseTest {
 
     @Spy
     MavenProject project;
 
     @Test
-    public void should_newDependency_get_pom_from_base_dir() {
+    void should_newDependency_get_pom_from_base_dir() {
         // Given
         BaseDependencyCheckMojo instance = new BaseDependencyCheckMojoImpl();
 
@@ -62,7 +59,7 @@ public class BaseDependencyCheckMojoTest extends BaseTest {
     }
 
     @Test
-    public void should_newDependency_get_default_virtual_dependency() {
+    void should_newDependency_get_default_virtual_dependency() {
         // Given
         BaseDependencyCheckMojo instance = new BaseDependencyCheckMojoImpl();
 
@@ -77,7 +74,7 @@ public class BaseDependencyCheckMojoTest extends BaseTest {
     }
 
     @Test
-    public void should_newDependency_get_pom_declared_as_module() {
+    void should_newDependency_get_pom_declared_as_module() {
         // Given
         BaseDependencyCheckMojo instance = new BaseDependencyCheckMojoImpl();
 
@@ -99,7 +96,7 @@ public class BaseDependencyCheckMojoTest extends BaseTest {
     public static class BaseDependencyCheckMojoImpl extends BaseDependencyCheckMojo {
 
         @Override
-        protected void runCheck() throws MojoExecutionException, MojoFailureException {
+        protected void runCheck() {
             throw new UnsupportedOperationException("Operation not supported");
         }
 
@@ -119,11 +116,11 @@ public class BaseDependencyCheckMojoTest extends BaseTest {
         }
 
         @Override
-        protected ExceptionCollection scanDependencies(Engine engine) throws MojoExecutionException {
+        protected ExceptionCollection scanDependencies(Engine engine) {
             throw new UnsupportedOperationException("Operation not supported");
         }
         @Override
-        protected ExceptionCollection scanPlugins(Engine engine, ExceptionCollection exCollection) throws MojoExecutionException {
+        protected ExceptionCollection scanPlugins(Engine engine, ExceptionCollection exCollection) {
             throw new UnsupportedOperationException("Operation not supported");
         }
     }

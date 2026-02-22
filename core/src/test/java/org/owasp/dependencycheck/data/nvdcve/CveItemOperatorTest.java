@@ -28,25 +28,26 @@ import io.github.jeremylong.openvulnerability.client.nvd.Node;
 import io.github.jeremylong.openvulnerability.client.nvd.Reference;
 import io.github.jeremylong.openvulnerability.client.nvd.VendorComment;
 import io.github.jeremylong.openvulnerability.client.nvd.Weakness;
+import org.junit.jupiter.api.Test;
+
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import org.junit.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  *
  * @author jeremy
  */
-public class CveItemOperatorTest {
+class CveItemOperatorTest {
 
     /**
      * Test of testCveCpeStartWithFilter method, of class CveItemOperator.
      */
     @Test
-    public void testTestCveCpeStartWithFilter() {
+    void testTestCveCpeStartWithFilter() {
 
         ZonedDateTime published = ZonedDateTime.now();
         ZonedDateTime lastModified = ZonedDateTime.now();
@@ -73,7 +74,7 @@ public class CveItemOperatorTest {
         nodes.add(first);
         nodes.add(second);
         nodes.add(third);
-        
+
         Config c = new Config(Config.Operator.AND, null, nodes);
         configurations.add(c);
         List<VendorComment> vendorComments = null;
@@ -91,7 +92,7 @@ public class CveItemOperatorTest {
     }
 
     @Test
-    public void testTestCveCpeStartWithFilterForConfigurationWithoutCpeMatches() {
+    void testTestCveCpeStartWithFilterForConfigurationWithoutCpeMatches() {
         ZonedDateTime published = ZonedDateTime.now();
         ZonedDateTime lastModified = ZonedDateTime.now();
         LocalDate cisaExploitAdd = null;

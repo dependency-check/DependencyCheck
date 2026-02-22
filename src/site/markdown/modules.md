@@ -8,7 +8,9 @@ build and reporting process:
 - [Gradle Plugin](dependency-check-gradle/index.html)
 - [Jenkins Plugin](dependency-check-jenkins/index.html)
 - [Maven Plugin](dependency-check-maven/index.html)
-- [SBT Plugin](https://github.com/albuch/sbt-dependency-check)
+
+Unofficial (Not endorsed by OWASP)
+- [SBT Plugin](https://github.com/nMoncho/sbt-dependency-check)
 
 In addition, dependency-check can be executed from the 
 [command line](dependency-check-cli/index.html).

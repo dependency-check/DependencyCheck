@@ -17,32 +17,35 @@
  */
 package org.owasp.dependencycheck.agent;
 
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.owasp.dependencycheck.BaseDBTestCase;
 import org.owasp.dependencycheck.dependency.Confidence;
 import org.owasp.dependencycheck.dependency.Dependency;
 import org.owasp.dependencycheck.dependency.EvidenceType;
 import org.owasp.dependencycheck.reporting.ReportGenerator;
 import org.owasp.dependencycheck.utils.FileUtils;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-import org.owasp.dependencycheck.BaseDBTestCase;
 
-public class DependencyCheckScanAgentIT extends BaseDBTestCase {
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+class DependencyCheckScanAgentIT extends BaseDBTestCase {
 
     private static final File REPORT_DIR = new File("target/test-scan-agent/report");
 
-    @BeforeClass
-    public static void beforeClass() {
+    @BeforeAll
+    static void beforeClass() {
         if (!REPORT_DIR.exists()) {
             REPORT_DIR.mkdirs();
         }
     }
 
     @Test
-    public void testComponentMetadata() throws Exception {
+    void testComponentMetadata() throws Exception {
         List<Dependency> dependencies = new ArrayList<>();
         dependencies.add(createDependency("apache", "tomcat", "5.0.5"));
         DependencyCheckScanAgent scanAgent = createScanAgent();
@@ -50,10 +53,10 @@ public class DependencyCheckScanAgentIT extends BaseDBTestCase {
         scanAgent.execute();
 
         Dependency tomcat = scanAgent.getDependencies().get(0);
-        Assert.assertTrue(tomcat.getVulnerableSoftwareIdentifiers().size() >= 1);
+        assertFalse(tomcat.getVulnerableSoftwareIdentifiers().isEmpty());
 
         // This will change over time
-        Assert.assertTrue(tomcat.getVulnerabilities().size() > 5);
+        assertTrue(tomcat.getVulnerabilities().size() > 5);
     }
 
     private DependencyCheckScanAgent createScanAgent() {

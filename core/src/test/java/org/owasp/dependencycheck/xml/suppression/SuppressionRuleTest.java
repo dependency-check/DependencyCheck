@@ -19,16 +19,12 @@ package org.owasp.dependencycheck.xml.suppression;
 
 import com.github.packageurl.MalformedPackageURLException;
 import io.github.jeremylong.openvulnerability.client.nvd.CvssV2;
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import org.junit.Test;
+import io.github.jeremylong.openvulnerability.client.nvd.CvssV3;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.owasp.dependencycheck.BaseTest;
 import org.owasp.dependencycheck.dependency.Confidence;
-
 import org.owasp.dependencycheck.dependency.Dependency;
 import org.owasp.dependencycheck.dependency.Vulnerability;
 import org.owasp.dependencycheck.dependency.naming.CpeIdentifier;
@@ -36,19 +32,27 @@ import org.owasp.dependencycheck.dependency.naming.PurlIdentifier;
 import org.owasp.dependencycheck.utils.CvssUtil;
 import us.springett.parsers.cpe.exceptions.CpeValidationException;
 
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 /**
  * Test of the suppression rule.
  *
  * @author Jeremy Long
  */
-public class SuppressionRuleTest extends BaseTest {
+class SuppressionRuleTest extends BaseTest {
 
     //<editor-fold defaultstate="collapsed" desc="Stupid tests of properties">
     /**
      * Test of FilePath property, of class SuppressionRule.
      */
     @Test
-    public void testFilePath() {
+    void testFilePath() {
         SuppressionRule instance = new SuppressionRule();
         PropertyType expResult = new PropertyType();
         expResult.setValue("test");
@@ -61,7 +65,7 @@ public class SuppressionRuleTest extends BaseTest {
      * Test of Sha1 property, of class SuppressionRule.
      */
     @Test
-    public void testSha1() {
+    void testSha1() {
         SuppressionRule instance = new SuppressionRule();
         String expResult = "384FAA82E193D4E4B0546059CA09572654BC3970";
         instance.setSha1(expResult);
@@ -73,7 +77,7 @@ public class SuppressionRuleTest extends BaseTest {
      * Test of Cpe property, of class SuppressionRule.
      */
     @Test
-    public void testCpe() {
+    void testCpe() {
         SuppressionRule instance = new SuppressionRule();
         List<PropertyType> cpe = new ArrayList<>();
         instance.setCpe(cpe);
@@ -91,7 +95,7 @@ public class SuppressionRuleTest extends BaseTest {
      * Test of CvssBelow property, of class SuppressionRule.
      */
     @Test
-    public void testGetCvssBelow() {
+    void testGetCvssBelow() {
         SuppressionRule instance = new SuppressionRule();
         List<Double> cvss = new ArrayList<>();
         instance.setCvssBelow(cvss);
@@ -106,7 +110,7 @@ public class SuppressionRuleTest extends BaseTest {
      * Test of Cwe property, of class SuppressionRule.
      */
     @Test
-    public void testCwe() {
+    void testCwe() {
         SuppressionRule instance = new SuppressionRule();
         List<String> cwe = new ArrayList<>();
         instance.setCwe(cwe);
@@ -121,7 +125,7 @@ public class SuppressionRuleTest extends BaseTest {
      * Test of Cve property, of class SuppressionRule.
      */
     @Test
-    public void testCve() {
+    void testCve() {
         SuppressionRule instance = new SuppressionRule();
         List<String> cve = new ArrayList<>();
         instance.setCve(cve);
@@ -136,12 +140,13 @@ public class SuppressionRuleTest extends BaseTest {
      * Test of base property, of class SuppressionRule.
      */
     @Test
-    public void testBase() {
+    void testBase() {
         SuppressionRule instance = new SuppressionRule();
         assertFalse(instance.isBase());
         instance.setBase(true);
         assertTrue(instance.isBase());
     }
+
     //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="Ignored duplicate tests, left in, as empty tests, so IDE doesn't re-generate them">
@@ -150,7 +155,7 @@ public class SuppressionRuleTest extends BaseTest {
      */
     @Test
     @SuppressWarnings("squid:S2699")
-    public void testGetFilePath() {
+    void testGetFilePath() {
         //already tested, this is just left so the IDE doesn't recreate it.
     }
 
@@ -159,7 +164,7 @@ public class SuppressionRuleTest extends BaseTest {
      */
     @Test
     @SuppressWarnings("squid:S2699")
-    public void testSetFilePath() {
+    void testSetFilePath() {
         //already tested, this is just left so the IDE doesn't recreate it.
     }
 
@@ -168,7 +173,7 @@ public class SuppressionRuleTest extends BaseTest {
      */
     @Test
     @SuppressWarnings("squid:S2699")
-    public void testGetSha1() {
+    void testGetSha1() {
         //already tested, this is just left so the IDE doesn't recreate it.
     }
 
@@ -177,7 +182,7 @@ public class SuppressionRuleTest extends BaseTest {
      */
     @Test
     @SuppressWarnings("squid:S2699")
-    public void testSetSha1() {
+    void testSetSha1() {
         //already tested, this is just left so the IDE doesn't recreate it.
     }
 
@@ -186,7 +191,7 @@ public class SuppressionRuleTest extends BaseTest {
      */
     @Test
     @SuppressWarnings("squid:S2699")
-    public void testGetCpe() {
+    void testGetCpe() {
         //already tested, this is just left so the IDE doesn't recreate it.
     }
 
@@ -195,7 +200,7 @@ public class SuppressionRuleTest extends BaseTest {
      */
     @Test
     @SuppressWarnings("squid:S2699")
-    public void testSetCpe() {
+    void testSetCpe() {
         //already tested, this is just left so the IDE doesn't recreate it.
     }
 
@@ -204,7 +209,7 @@ public class SuppressionRuleTest extends BaseTest {
      */
     @Test
     @SuppressWarnings("squid:S2699")
-    public void testAddCpe() {
+    void testAddCpe() {
         //already tested, this is just left so the IDE doesn't recreate it.
     }
 
@@ -213,7 +218,7 @@ public class SuppressionRuleTest extends BaseTest {
      */
     @Test
     @SuppressWarnings("squid:S2699")
-    public void testHasCpe() {
+    void testHasCpe() {
         //already tested, this is just left so the IDE doesn't recreate it.
     }
 
@@ -222,7 +227,7 @@ public class SuppressionRuleTest extends BaseTest {
      */
     @Test
     @SuppressWarnings("squid:S2699")
-    public void testSetCvssBelow() {
+    void testSetCvssBelow() {
         //already tested, this is just left so the IDE doesn't recreate it.
     }
 
@@ -231,7 +236,7 @@ public class SuppressionRuleTest extends BaseTest {
      */
     @Test
     @SuppressWarnings("squid:S2699")
-    public void testAddCvssBelow() {
+    void testAddCvssBelow() {
         //already tested, this is just left so the IDE doesn't recreate it.
     }
 
@@ -240,7 +245,7 @@ public class SuppressionRuleTest extends BaseTest {
      */
     @Test
     @SuppressWarnings("squid:S2699")
-    public void testHasCvssBelow() {
+    void testHasCvssBelow() {
         //already tested, this is just left so the IDE doesn't recreate it.
     }
 
@@ -249,7 +254,7 @@ public class SuppressionRuleTest extends BaseTest {
      */
     @Test
     @SuppressWarnings("squid:S2699")
-    public void testGetCwe() {
+    void testGetCwe() {
         //already tested, this is just left so the IDE doesn't recreate it.
     }
 
@@ -258,7 +263,7 @@ public class SuppressionRuleTest extends BaseTest {
      */
     @Test
     @SuppressWarnings("squid:S2699")
-    public void testSetCwe() {
+    void testSetCwe() {
         //already tested, this is just left so the IDE doesn't recreate it.
     }
 
@@ -267,7 +272,7 @@ public class SuppressionRuleTest extends BaseTest {
      */
     @Test
     @SuppressWarnings("squid:S2699")
-    public void testAddCwe() {
+    void testAddCwe() {
         //already tested, this is just left so the IDE doesn't recreate it.
     }
 
@@ -276,7 +281,7 @@ public class SuppressionRuleTest extends BaseTest {
      */
     @Test
     @SuppressWarnings("squid:S2699")
-    public void testHasCwe() {
+    void testHasCwe() {
         //already tested, this is just left so the IDE doesn't recreate it.
     }
 
@@ -285,7 +290,7 @@ public class SuppressionRuleTest extends BaseTest {
      */
     @Test
     @SuppressWarnings("squid:S2699")
-    public void testGetCve() {
+    void testGetCve() {
         //already tested, this is just left so the IDE doesn't recreate it.
     }
 
@@ -294,7 +299,7 @@ public class SuppressionRuleTest extends BaseTest {
      */
     @Test
     @SuppressWarnings("squid:S2699")
-    public void testSetCve() {
+    void testSetCve() {
         //already tested, this is just left so the IDE doesn't recreate it.
     }
 
@@ -303,7 +308,7 @@ public class SuppressionRuleTest extends BaseTest {
      */
     @Test
     @SuppressWarnings("squid:S2699")
-    public void testAddCve() {
+    void testAddCve() {
         //already tested, this is just left so the IDE doesn't recreate it.
     }
 
@@ -312,16 +317,17 @@ public class SuppressionRuleTest extends BaseTest {
      */
     @Test
     @SuppressWarnings("squid:S2699")
-    public void testHasCve() {
+    void testHasCve() {
         //already tested, this is just left so the IDE doesn't recreate it.
     }
+
     //</editor-fold>
 
     /**
      * Test of cpeHasNoVersion method, of class SuppressionRule.
      */
     @Test
-    public void testCpeHasNoVersion() {
+    void testCpeHasNoVersion() {
         PropertyType c = new PropertyType();
         c.setValue("cpe:/a:microsoft:.net_framework:4.5");
         SuppressionRule instance = new SuppressionRule();
@@ -336,7 +342,7 @@ public class SuppressionRuleTest extends BaseTest {
      * Test of identifierMatches method, of class SuppressionRule.
      */
     @Test
-    public void testCpeMatches() throws CpeValidationException, MalformedPackageURLException {
+    void testCpeMatches() throws CpeValidationException, MalformedPackageURLException {
         CpeIdentifier identifier = new CpeIdentifier("microsoft", ".net_framework", "4.5", Confidence.HIGHEST);
 
         PropertyType cpe = new PropertyType();
@@ -412,9 +418,8 @@ public class SuppressionRuleTest extends BaseTest {
      * Test of process method, of class SuppressionRule.
      */
     @Test
-    public void testProcess() throws CpeValidationException {
-        //File struts = new File(this.getClass().getClassLoader().getResource("struts2-core-2.1.2.jar").getPath());
-        File struts = BaseTest.getResourceAsFile(this, "struts2-core-2.1.2.jar");
+    void testProcess() throws CpeValidationException {
+        File struts = BaseTest.getResourceAsFile(this, "maven-lib/struts2-core-2.1.2.jar");
         Dependency dependency = new Dependency(struts);
         CpeIdentifier cpeId = new CpeIdentifier("microsoft", ".net_framework", "4.5", Confidence.HIGH);
         dependency.addVulnerableSoftwareIdentifier(cpeId);
@@ -462,7 +467,7 @@ public class SuppressionRuleTest extends BaseTest {
         pt.setValue("cpe:/a:microsoft:.net_framework:4.0");
         instance.addCpe(pt);
         instance.process(dependency);
-        assertTrue(dependency.getVulnerableSoftwareIdentifiers().size() == 1);
+        assertEquals(1, dependency.getVulnerableSoftwareIdentifiers().size());
         pt = new PropertyType();
         pt.setValue("cpe:/a:microsoft:.net_framework:4.5");
         instance.addCpe(pt);
@@ -494,9 +499,8 @@ public class SuppressionRuleTest extends BaseTest {
      * Test of process method, of class SuppressionRule.
      */
     @Test
-    public void testProcessGAV() throws CpeValidationException, MalformedPackageURLException {
-        //File spring = new File(this.getClass().getClassLoader().getResource("spring-security-web-3.0.0.RELEASE.jar").getPath());
-        File spring = BaseTest.getResourceAsFile(this, "spring-security-web-3.0.0.RELEASE.jar");
+    void testProcessGAV() throws CpeValidationException, MalformedPackageURLException {
+        File spring = BaseTest.getResourceAsFile(this, "maven-lib/spring-security-web-3.0.0.RELEASE.jar");
         Dependency dependency = new Dependency(spring);
         dependency.addVulnerableSoftwareIdentifier(new CpeIdentifier("vmware", "springsource_spring_framework", "3.0.0", Confidence.HIGH));
         dependency.addVulnerableSoftwareIdentifier(new CpeIdentifier("springsource", "spring_framework", "3.0.0", Confidence.HIGH));
@@ -529,8 +533,8 @@ public class SuppressionRuleTest extends BaseTest {
     }
 
     @Test
-    public void testProcessVulnerabilityNames() throws CpeValidationException, MalformedPackageURLException {
-        File spring = BaseTest.getResourceAsFile(this, "spring-security-web-3.0.0.RELEASE.jar");
+    void testProcessVulnerabilityNames() throws CpeValidationException, MalformedPackageURLException {
+        File spring = BaseTest.getResourceAsFile(this, "maven-lib/spring-security-web-3.0.0.RELEASE.jar");
         Dependency dependency = new Dependency(spring);
         dependency.addVulnerableSoftwareIdentifier(new CpeIdentifier("vmware", "springsource_spring_security", "3.0.0", Confidence.HIGH));
         dependency.addSoftwareIdentifier(new PurlIdentifier("maven", "org.springframework.security", "spring-security-web", "3.0.0.RELEASE", Confidence.HIGH));
@@ -552,21 +556,129 @@ public class SuppressionRuleTest extends BaseTest {
         assertEquals(1, dependency.getVulnerabilities().size());
         assertEquals(0, dependency.getSuppressedVulnerabilities().size());
 
-        
+
         pt = new PropertyType();
         pt.setValue("CVE-2013-1337");
         instance.addVulnerabilityName(pt);
-        
+
         instance.process(dependency);
         assertEquals(0, dependency.getVulnerabilities().size());
         assertEquals(1, dependency.getSuppressedVulnerabilities().size());
+    }
+
+    @ParameterizedTest
+    @CsvSource(
+            value = {
+                    // vuln has cvss cvssV2=6.0, cvssV3=8.0, cvssV4 is not set
+                    // cvssV2Below, cvssV3Below, isSuppressed
+                    "   5.0,  7.0,  false",
+                    "   7.0,  7.0,  false",
+                    "  null,  7.0,  false",
+                    "   5.0,  9.0,  false",
+                    "   7.0,  9.0,  true",
+                    "  null,  9.0,  true",
+                    "   5.0, null,  false",
+                    "   7.0, null,  true",
+                    "  null, null,  false",
+
+                    "   6.0,  8.0,  false", // cvssVnBelows are exclusive
+            },
+            nullValues = "null")
+    void testVersionSpecificThresholding(Double cvssV2Below, Double cvssV3Below, boolean isSuppressed) {
+        Dependency dependency = createDependencyWithDifferentScores();
+        SuppressionRule rule = new SuppressionRule();
+
+        if (cvssV2Below != null) {
+            rule.addCvssV2Below(cvssV2Below);
+        }
+        if (cvssV3Below != null) {
+            rule.addCvssV3Below(cvssV3Below);
+        }
+        rule.process(dependency);
+
+        assertEquals(isSuppressed ? 0 : 1, dependency.getVulnerabilities().size(),
+                String.format("cvssV2Below=%s, cvssV3Below=%s: expecting vulnerability to be %s",
+                        cvssV2Below == null ? "not set" : String.format("%.1f", cvssV2Below),
+                        cvssV3Below == null ? "not set" : String.format("%.1f", cvssV3Below),
+                        isSuppressed ? "suppressed" : "not suppressed")
+        );
+        assertEquals(isSuppressed ? 1 : 0, dependency.getSuppressedVulnerabilities().size());
+    }
+
+
+    @Test
+    void testMismatchOfThresholdAndAvailableCVEVersion() {
+        // vuln with only a cvss v2 score
+        File spring = BaseTest.getResourceAsFile(this, "maven-lib/spring-security-web-3.0.0.RELEASE.jar");
+        Dependency dependency = new Dependency(spring);
+        Vulnerability v = new Vulnerability();
+        CvssV2 cvss = CvssUtil.vectorToCvssV2("/AV:N/AC:L/Au:N/C:P/I:P/A:P", 6.0);
+        v.setCvssV2(cvss);
+        dependency.addVulnerability(v);
+
+        // rule with only a V3 threshold
+        SuppressionRule rule = new SuppressionRule();
+        rule.addCvssV3Below(7.0);
+
+        assertEquals(1, dependency.getVulnerabilities().size(),
+                "Since threshold and score versions are different versions the vuln should not be suppressed");
+    }
+
+    @Test
+    void testThresholdAreExclusive() {
+        Dependency dependency = createDependencyWithDifferentScores();
+        SuppressionRule rule = new SuppressionRule();
+        rule.addCvssBelow(6.0);
+        rule.process(dependency);
+
+        assertEquals(1, dependency.getVulnerabilities().size(),
+                "A cvssBelow of 6.0 will not suppress a vulnerability with a score of 6.0");
+        assertEquals(0, dependency.getSuppressedVulnerabilities().size());
+    }
+
+    @Test
+    void testThresholdHighestIsUseIfMultipleBelows() {
+        Dependency dependency = createDependencyWithDifferentScores();
+        SuppressionRule rule = new SuppressionRule();
+        rule.addCvssBelow(5.0);
+        rule.addCvssBelow(7.0);
+        rule.process(dependency);
+
+        assertEquals(0, dependency.getVulnerabilities().size(),
+                "A cvssBelow of 5.0 and 7.0 will suppress a vulnerability with a score of 6.0");
+        assertEquals(1, dependency.getSuppressedVulnerabilities().size());
+    }
+
+    @Test
+    void testThresholdHighestIsUseIfMultipleVersionedBelows() {
+        Dependency dependency = createDependencyWithDifferentScores();
+        SuppressionRule rule = new SuppressionRule();
+        rule.addCvssV2Below(5.0);
+        rule.addCvssV2Below(7.0);
+        rule.process(dependency);
+
+        assertEquals(0, dependency.getVulnerabilities().size(),
+                "A cvssBelow of 5.0 and 7.0 will suppress a vulnerability with a score of 6.0");
+        assertEquals(1, dependency.getSuppressedVulnerabilities().size());
+    }
+
+    private Dependency createDependencyWithDifferentScores() {
+        File spring = BaseTest.getResourceAsFile(this, "maven-lib/spring-security-web-3.0.0.RELEASE.jar");
+        Dependency dependency = new Dependency(spring);
+        Vulnerability v = new Vulnerability();
+        CvssV2 cvss = CvssUtil.vectorToCvssV2("/AV:N/AC:L/Au:N/C:P/I:P/A:P", 6.0);
+        v.setCvssV2(cvss);
+        CvssV3 cvss3 = CvssUtil.vectorToCvssV3("CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H", 8.0);
+        v.setCvssV3(cvss3);
+        dependency.addVulnerability(v);
+        return dependency;
     }
 
     private Vulnerability createVulnerability() {
         Vulnerability v = new Vulnerability();
         v.addCwe("CWE-287 Improper Authentication");
         v.setName("CVE-2013-1337");
-        
+
         CvssV2 cvss = CvssUtil.vectorToCvssV2("/AV:N/AC:L/Au:N/C:P/I:P/A:P", 7.5);
         v.setCvssV2(cvss);
         return v;

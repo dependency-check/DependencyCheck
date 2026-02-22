@@ -1,17 +1,22 @@
 Nexus Analyzer
 ==============
-**Requires Nexus Pro**
 
 The Nexus Analyzer will check for the Maven GAV (Group/Artifact/Version) information
 for artifacts in the scanned area. This is done by determining if an artifact exists
-in a Nexus Pro installation using the SHA-1 hash of the artifact scanned. If the
+in a Sonatype Nexus installation using the SHA-1 hash of the artifact scanned. If the
 artifact's hash is found in the configured Nexus repository, its GAV is recorded as
 an Identifier and the Group is collected as Vendor evidence, the Artifact is
 collected as Product evidence, and the Version is collected as Version evidence.
 
-The Nexus Analyzer has been superceded by the Central Analyzer. If both the
-Central Analyzer and Nexus Analyzer are enabled and the Nexus URL has not
-been configured to point to an instance of Nexus Pro the Nexus Analyzer will
+The Nexus Analyzer is an alternative to the Central or Artifactory Analyzers and can 
+be used to limit dependencies on an external resource such as Maven Central, as well 
+as providing POM information for artifacts not available in Maven Central. Use by ODC
+is thus similar to how users may choose to run their own Nexus instance to proxy 
+artifact retrieval from Maven Central to limit internet usage and/or dependence on 
+external infrastructure.
+
+If both the Central Analyzer and Nexus Analyzer are enabled and the Nexus URL has not
+been configured to point to a Sonatype Nexus instance the Nexus Analyzer will
 disable itself.
 
 Logging

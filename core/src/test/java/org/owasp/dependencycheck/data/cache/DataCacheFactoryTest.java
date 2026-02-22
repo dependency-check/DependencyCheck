@@ -17,26 +17,29 @@
  */
 package org.owasp.dependencycheck.data.cache;
 
+import org.junit.jupiter.api.Test;
+import org.owasp.dependencycheck.BaseTest;
+import org.owasp.dependencycheck.data.nexus.MavenArtifact;
+
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.List;
-import org.junit.Test;
-import static org.junit.Assert.*;
-import org.owasp.dependencycheck.BaseTest;
-import org.owasp.dependencycheck.data.nexus.MavenArtifact;
+
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  *
  * @author Jeremy Long
  */
-public class DataCacheFactoryTest extends BaseTest {
+class DataCacheFactoryTest extends BaseTest {
 
     /**
      * Test of getCache method, of class DataCacheFactory.
      */
     @Test
-    public void testGetCache() throws IOException {
+    void testGetCache() throws IOException {
         DataCacheFactory instance = new DataCacheFactory(getSettings());
         DataCache<List<MavenArtifact>> result = instance.getCentralCache();
         assertNotNull(result);

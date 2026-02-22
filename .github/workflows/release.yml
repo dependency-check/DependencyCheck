@@ -18,46 +18,43 @@ on:
 
 jobs:
   build:
-    name: Build dependency-check
+    if: github.repository_owner == 'dependency-check'
+    name: Build for release
     runs-on: ubuntu-latest 
     steps:
       - name: Install gpg secret key
         id: install-gpg-key
         run: |
-          cat <(echo -e "${{ secrets.OSSRH_GPG_SECRET_KEY }}") | gpg --batch --import
+          cat <(echo -e "${{ secrets.GPG_PRIVATE_KEY }}") | gpg --batch --import
           gpg --list-secret-keys --keyid-format LONG
-      - uses: actions/checkout@v4
-      - name: Check Maven Cache
-        id: maven-cache
-        uses: actions/cache@v4
-        with:
-          path: ~/.m2/repository/
-          key: mvn-repo
-      - name: Check Local Maven Cache
+      - uses: actions/checkout@v6
+      - name: Maven Integration Test Cache
         id: maven-it-cache
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: maven/target/local-repo
           key: mvn-it-repo
       - name: Check ODC Data Cache
         id: odc-data-cache
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: core/target/data
           key: odc-data
-      - uses: actions/setup-dotnet@v4.3.1
+      - uses: actions/setup-dotnet@v5.1.0
         with:
           dotnet-version: '8.0.x'
-      - name: Set up JDK 11
-        id: jdk-11
-        uses: actions/setup-java@v4
+      - name: Set up JDK
+        uses: actions/setup-java@v5
         with:
-          java-version: 11
+          java-version: '25'
           distribution: 'zulu'
-          server-id: ossrh
-          server-username: ${{ secrets.OSSRH_USERNAME }}
-          server-password: ${{ secrets.OSSRH_TOKEN }}
-      - uses: pnpm/action-setup@a7487c7e89a18df4991f7f222e4898a00d66ddda # v4.1.0
+          check-latest: true
+          cache: 'maven'
+          cache-dependency-path: '**/pom.xml'
+          server-id: central
+          server-username: ${{ secrets.CENTRAL_USER }}
+          server-password: ${{ secrets.CENTRAL_PASSWORD }}
+      - uses: pnpm/action-setup@41ff72655975bd51cab0327fa583b6e92b6d3061 # v4.2.0
         with:
           version: 6.0.2
       - name: Configure Git user
@@ -72,14 +69,19 @@ jobs:
         id: build-release
         timeout-minutes: 120
         env:
-          MAVEN_USERNAME: ${{ secrets.OSSRH_USERNAME }}
-          MAVEN_PASSWORD: ${{ secrets.OSSRH_TOKEN }}
+          MAVEN_USERNAME: ${{ secrets.CENTRAL_USER }}
+          MAVEN_PASSWORD: ${{ secrets.CENTRAL_PASSWORD }}
+          MAVEN_GPG_PASSPHRASE: ${{ secrets.GPG_PRIVATE_KEY_PASSWORD }}
           NVD_API_KEY: ${{ secrets.NVD_API_KEY }}
-        run: |
-          mvn -V -s settings.xml -Prelease "-DnexusUrl=https://oss.sonatype.org/" clean package source:jar javadoc:jar gpg:sign deploy site site:stage -DreleaseTesting --no-transfer-progress --batch-mode -Dgpg.passphrase=${{ secrets.OSSRH_GPG_SECRET_KEY_PASSWORD }}
+        run: >
+          mvn -V -s settings.xml
+          clean verify -PFullIntegrationTesting
+          source:jar javadoc:jar site
+          -Prelease gpg:sign deploy site:stage 
+          --no-transfer-progress --batch-mode -Dstyle.color=always
       - name: Archive code coverage results
         id: archive-coverage
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: code-coverage-report
           retention-days: 7
@@ -88,7 +90,7 @@ jobs:
             **/target/jacoco-results/**/*.html
       - name: Archive Release
         id: archive-release
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: archive-release
           retention-days: 7
@@ -101,26 +103,11 @@ jobs:
             target/*.buildinfo
       - name: Archive Site
         id: archive-site
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: archive-site
           retention-days: 7
           path: target/staging/
-
-  publish_coverage:
-    name: publish code coverage reports  
-    runs-on: ubuntu-latest 
-    needs: build
-    steps:
-      - name: Download coverage reports
-        uses: actions/download-artifact@v4
-        with:
-          name: code-coverage-report
-      - name: Run codacy-coverage-reporter
-        uses: codacy/codacy-coverage-reporter-action@master
-        with:
-          project-token: ${{ secrets.CODACY_PROJECT_TOKEN }}
-          coverage-reports: utils/target/jacoco-results/jacoco.xml,core/target/jacoco-results/jacoco.xml,maven/target/jacoco-results/jacoco.xml,ant/target/jacoco-results/jacoco.xml,cli/target/jacoco-results/jacoco.xml
 
   docker:
     name: Publish Docker
@@ -130,34 +117,43 @@ jobs:
       DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
       DOCKER_TOKEN: ${{ secrets.DOCKER_TOKEN }}
     steps:
-      - name: Check Maven Cache
-        id: maven-cache
-        uses: actions/cache@v4
-        with:
-          path: ~/.m2/repository/
-          key: mvn-repo
       - name: Check Docker ODC Cache
         id: docker-odc-cache
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: ~/OWASP-Dependency-Check
           key: docker-repo
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
+      - name: Set up JDK
+        uses: actions/setup-java@v5
+        with:
+          java-version: '25'
+          distribution: 'zulu'
+          check-latest: true
+          cache: 'maven'
+          cache-dependency-path: '**/pom.xml'
       - name: Download release build
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v7
         with:
           name: archive-release
+      - name: Set up Docker
+        uses: docker/setup-docker-action@v4
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
       - name: Build Docker Image
-        run: ./build-docker.sh
+        run: ./docker-build.sh
       - name: build scan target
-        run: mvn -s settings.xml package -DskipTests=true --no-transfer-progress --batch-mode
+        run: >
+          mvn -V -s settings.xml -pl cli -am 
+          package -DskipTests=true
+          --no-transfer-progress --batch-mode -Dstyle.color=always
       - name: Test Docker Image
-        run: ./test-docker.sh
+        run: ./docker-test.sh
       - name: Deploy Docker Image
         run: |
           echo $DOCKER_TOKEN | docker login -u $DOCKER_USERNAME --password-stdin 2>/dev/null
-          ./publish-docker.sh
+          ./docker-publish.sh
         
   release:
     name: Publish Release
@@ -165,14 +161,14 @@ jobs:
     needs: build
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
       - name: Get version
         id: get-version
         run: |
           VERSION=$( mvn help:evaluate -Dexpression=project.version -q -DforceStdout )
           echo "VERSION=$VERSION" >> $GITHUB_ENV
       - name: Download release build
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v7
         with:
           name: archive-release
       - name: Create Release
@@ -245,9 +241,9 @@ jobs:
     needs: build
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
       - name: Download Site
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v7
         with:
           name: archive-site
           path: target/staging
@@ -255,7 +251,7 @@ jobs:
         run: ls -R
         working-directory: target
       - name: Deploy gh-pages
-        uses: JamesIves/github-pages-deploy-action@v4.7.3
+        uses: JamesIves/github-pages-deploy-action@v4.8.0
         with:
           branch: gh-pages
           folder: target/staging

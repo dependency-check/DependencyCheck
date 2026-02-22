@@ -15,8 +15,8 @@
  */
 package org.owasp.dependencycheck;
 
-import org.junit.After;
-import org.junit.Before;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.owasp.dependencycheck.utils.Settings;
 
 /**
@@ -33,7 +33,7 @@ public abstract class BaseTest {
     /**
      * Initialize the {@link Settings}.
      */
-    @Before
+    @BeforeEach
     public void setUp() {
         settings = new Settings();
     }
@@ -41,7 +41,7 @@ public abstract class BaseTest {
     /**
      * Clean the {@link Settings}.
      */
-    @After
+    @AfterEach
     public void tearDown() {
         settings.cleanup(true);
     }

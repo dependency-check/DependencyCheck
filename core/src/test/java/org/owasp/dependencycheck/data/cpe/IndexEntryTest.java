@@ -17,15 +17,16 @@
  */
 package org.owasp.dependencycheck.data.cpe;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.owasp.dependencycheck.BaseTest;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  *
  * @author Jeremy Long
  */
-public class IndexEntryTest extends BaseTest  {
+class IndexEntryTest extends BaseTest {
 
     /**
      * Test of setName method, of class IndexEntry.
@@ -33,13 +34,13 @@ public class IndexEntryTest extends BaseTest  {
      * @throws Exception is thrown when an exception occurs.
      */
     @Test
-    public void testSetName() throws Exception {
+    void testSetName() throws Exception {
         String name = "cpe:/a:apache:struts:1.1:rc2";
 
         IndexEntry instance = new IndexEntry();
         instance.parseName(name);
 
-        Assert.assertEquals("apache", instance.getVendor());
-        Assert.assertEquals("struts", instance.getProduct());
+        assertEquals("apache", instance.getVendor());
+        assertEquals("struts", instance.getProduct());
     }
 }

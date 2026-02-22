@@ -17,29 +17,28 @@
  */
 package org.owasp.dependencycheck.utils;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-import org.junit.Test;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static java.nio.charset.StandardCharsets.UTF_8;
-import java.util.Arrays;
-import jakarta.json.JsonReader;
 import jakarta.json.Json;
 import jakarta.json.JsonArray;
+import jakarta.json.JsonReader;
 import org.apache.commons.io.IOUtils;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import static org.junit.Assert.assertFalse;
-import org.junit.Before;
-import org.junit.BeforeClass;
+import org.junit.jupiter.api.Test;
+
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.util.Arrays;
+
+import static java.nio.charset.StandardCharsets.UTF_8;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  *
  * @author Jeremy Long
  */
-public class JsonArrayFixingInputStreamTest {
+class JsonArrayFixingInputStreamTest {
 
     final String sample1 = "{}";
     final String sample2 = "{}{}";
@@ -106,29 +105,13 @@ public class JsonArrayFixingInputStreamTest {
             + "\"GoMod\": \"/Users/me/go/pkg/mod/cache/download/github.com/!microsoft/hcsshim/@v/v0.8.8-0.20200421182805-c3e488f0d815.mod\"\n"
             + "}\n";
 
-    @BeforeClass
-    public static void setUpClass() throws Exception {
-    }
-
-    @AfterClass
-    public static void tearDownClass() throws Exception {
-    }
-
-    @Before
-    public void setUp() throws Exception {
-    }
-
-    @After
-    public void tearDown() throws Exception {
-    }
-
     /**
      * Test of read method, of class JsonArrayFixingInputStream.
      *
      * @throws Exception because one might happen
      */
     @Test
-    public void testRead_0args() throws Exception {
+    void testRead_0args() throws Exception {
         try (InputStream sample = new ByteArrayInputStream(sample1.getBytes());
                 JsonArrayFixingInputStream instance = new JsonArrayFixingInputStream(sample)) {
             assertEquals('[', instance.read());
@@ -157,7 +140,7 @@ public class JsonArrayFixingInputStreamTest {
      * @throws Exception because one might happen
      */
     @Test
-    public void testRead_byteArr() throws Exception {
+    void testRead_byteArr() throws Exception {
         byte[] b = new byte[9];
         try (InputStream sample = new ByteArrayInputStream(sample2.getBytes());
                 JsonArrayFixingInputStream instance = new JsonArrayFixingInputStream(sample)) {
@@ -185,8 +168,8 @@ public class JsonArrayFixingInputStreamTest {
         }
     }
 
-    @Test()
-    public void testRead_IOUtils() throws Exception {
+    @Test
+    void testRead_IOUtils() throws Exception {
         try (InputStream sample = new ByteArrayInputStream(sample3.getBytes());
                 JsonArrayFixingInputStream instance = new JsonArrayFixingInputStream(sample)) {
             String results = IOUtils.toString(instance, UTF_8);
@@ -195,8 +178,8 @@ public class JsonArrayFixingInputStreamTest {
         }
     }
 
-    @Test()
-    public void testRead_RealSample() throws Exception {
+    @Test
+    void testRead_RealSample() throws Exception {
         try (InputStream sample = new ByteArrayInputStream(sample4.getBytes());
                 JsonArrayFixingInputStream instance = new JsonArrayFixingInputStream(sample)) {
             try (JsonReader reader = Json.createReader(instance)) {
@@ -211,8 +194,8 @@ public class JsonArrayFixingInputStreamTest {
      *
      * @throws Exception because one might happen
      */
-    @Test()
-    public void testRead_3args() throws Exception {
+    @Test
+    void testRead_3args() throws Exception {
         byte[] input = new byte[2048];
         Arrays.fill(input, (byte) ' ');
         input[0] = '{';
@@ -232,7 +215,7 @@ public class JsonArrayFixingInputStreamTest {
                 read = instance.read(results, pos, 2050 - pos);
                 pos += read;
             }
-            Assert.assertArrayEquals(expected, results);
+            assertArrayEquals(expected, results);
         }
     }
 
@@ -241,12 +224,14 @@ public class JsonArrayFixingInputStreamTest {
      *
      * @throws Exception because one might happen
      */
-    @Test(expected = UnsupportedOperationException.class)
-    public void testSkip() throws Exception {
-        try (InputStream sample = new ByteArrayInputStream(sample1.getBytes());
+    @Test
+    void testSkip() {
+        assertThrows(UnsupportedOperationException.class, () -> {
+            try (InputStream sample = new ByteArrayInputStream(sample1.getBytes());
                 JsonArrayFixingInputStream instance = new JsonArrayFixingInputStream(sample)) {
-            instance.skip(1);
-        }
+                instance.skip(1);
+            }
+        });
     }
 
     /**
@@ -255,7 +240,7 @@ public class JsonArrayFixingInputStreamTest {
      * @throws Exception because one might happen
      */
     @Test
-    public void testAvailable() throws Exception {
+    void testAvailable() throws Exception {
         try (InputStream sample = new ByteArrayInputStream(sample1.getBytes());
                 JsonArrayFixingInputStream instance = new JsonArrayFixingInputStream(sample)) {
             int results = instance.available();
@@ -275,7 +260,7 @@ public class JsonArrayFixingInputStreamTest {
      * @throws Exception because one might happen
      */
     @Test
-    public void testClose() throws Exception {
+    void testClose() throws Exception {
         try (InputStream sample = new ByteArrayInputStream(sample1.getBytes());
                 JsonArrayFixingInputStream instance = new JsonArrayFixingInputStream(sample)) {
             int i = instance.read();
@@ -288,7 +273,7 @@ public class JsonArrayFixingInputStreamTest {
      * @throws Exception because one might happen
      */
     @Test
-    public void testMarkSupported() throws Exception {
+    void testMarkSupported() throws Exception {
         try (InputStream sample = new ByteArrayInputStream(sample1.getBytes());
                 JsonArrayFixingInputStream instance = new JsonArrayFixingInputStream(sample)) {
             boolean result = instance.markSupported();
@@ -297,7 +282,7 @@ public class JsonArrayFixingInputStreamTest {
     }
 
     @Test
-    public void testIsWhiteSpace() throws Exception {
+    void testIsWhiteSpace() {
         JsonArrayFixingInputStream instance = new JsonArrayFixingInputStream(null);
         assertFalse(instance.isWhiteSpace((byte) 'a'));
         assertTrue(instance.isWhiteSpace((byte) '\n'));

@@ -36,6 +36,7 @@ import org.apache.maven.project.MavenProject;
 import org.codehaus.plexus.util.xml.Xpp3Dom;
 import org.owasp.dependencycheck.Engine;
 import org.owasp.dependencycheck.exception.ExceptionCollection;
+import org.owasp.dependencycheck.utils.scarf.TelemetryCollector;
 
 /**
  * Maven Plugin that checks project dependencies and the dependencies of all
@@ -69,6 +70,7 @@ public class AggregateMojo extends BaseDependencyCheckMojo {
      */
     @Override
     protected ExceptionCollection scanDependencies(final Engine engine) throws MojoExecutionException {
+        TelemetryCollector.send(getSettings());
         ExceptionCollection exCol = scanArtifacts(getProject(), engine, true);
         for (MavenProject childProject : getDescendants(this.getProject())) {
             //TODO consider the following as to whether a child should be skipped per #2152

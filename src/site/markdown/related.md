@@ -13,12 +13,11 @@ Related FOSS Projects
 
 Vulnerability Sources
 ------------------------
-The following are sources of vulnerability information. Dependency-check only uses information in the National Vulnerability
-Database (NVD). The other sources listed below contain vulnerability information that may not be included in the NVD.
+The following are sources of vulnerability information. Dependency-check only uses information in the [National Vulnerability
+Database (NVD)](https://nvd.nist.gov/). The other sources listed below contain vulnerability information that may not be included in the NVD.
 
 * [vFeed](http://www.toolswatch.org/vfeed)
 * [OSVDB](http://osvdb.org/)
-* [National Vulnerability Database](https://nvd.nist.gov/)
 * [Sonatype OSS Index](https://ossindex.sonatype.org/)
 
 Related Commercial Products

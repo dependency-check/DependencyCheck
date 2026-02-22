@@ -17,23 +17,25 @@
  */
 package org.owasp.dependencycheck.analyzer;
 
-import java.util.Set;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.owasp.dependencycheck.BaseTest;
+
+import java.util.Set;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  *
  * @author Jeremy Long
  */
-public class AbstractFileTypeAnalyzerTest extends BaseTest {
+class AbstractFileTypeAnalyzerTest extends BaseTest {
 
     /**
      * Test of newHashSet method, of class AbstractAnalyzer.
      */
     @Test
-    public void testNewHashSet() {
+    void testNewHashSet() {
         Set<String> result = AbstractFileTypeAnalyzer.newHashSet("one", "two");
         assertEquals(2, result.size());
         assertTrue(result.contains("one"));

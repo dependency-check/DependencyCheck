@@ -15,28 +15,29 @@
  */
 package org.owasp.dependencycheck.analyzer;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.hamcrest.MatcherAssert.assertThat;
-
-import java.io.File;
-
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.owasp.dependencycheck.BaseTest;
 import org.owasp.dependencycheck.Engine;
 import org.owasp.dependencycheck.analyzer.exception.AnalysisException;
 import org.owasp.dependencycheck.dependency.Dependency;
 
-public class PoetryAnalyzerTest extends BaseTest {
+import java.io.File;
+
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+class PoetryAnalyzerTest extends BaseTest {
 
     private PoetryAnalyzer analyzer;
     private Engine engine;
 
     @Override
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         super.setUp();
         analyzer = new PoetryAnalyzer();
@@ -44,18 +45,19 @@ public class PoetryAnalyzerTest extends BaseTest {
     }
 
     @Test
-    public void testName() {
-        assertEquals("Analyzer name wrong.", "Poetry Analyzer",
-                analyzer.getName());
+    void testName() {
+        assertEquals("Poetry Analyzer",
+                analyzer.getName(),
+                "Analyzer name wrong.");
     }
 
     @Test
-    public void testSupportsFiles() {
+    void testSupportsFiles() {
         assertThat(analyzer.accept(new File("poetry.lock")), is(true));
     }
 
     @Test
-    public void testPoetryLock() throws AnalysisException {
+    void testPoetryLock() throws AnalysisException {
         final Dependency result = new Dependency(BaseTest.getResourceAsFile(this, "poetry.lock"));
         analyzer.analyze(result, engine);
         assertEquals(88, engine.getDependencies().length);
@@ -68,27 +70,28 @@ public class PoetryAnalyzerTest extends BaseTest {
                 assertEquals(PythonDistributionAnalyzer.DEPENDENCY_ECOSYSTEM, d.getEcosystem());
             }
         }
-        assertTrue("Expeced to find PyYAML", found);
+        assertTrue(found, "Expeced to find PyYAML");
     }
 
     @Test
-    public void testPyprojectToml() throws AnalysisException {
+    void testPyprojectToml() throws AnalysisException {
         final Dependency result = new Dependency(BaseTest.getResourceAsFile(this, "python-myproject-toml/pyproject.toml"));
         //returns with no error.
         analyzer.analyze(result, engine);
     }
 
     @Test
-    public void testNodeGypToml() throws AnalysisException {
+    void testNodeGypToml() throws AnalysisException {
         final Dependency result = new Dependency(BaseTest.getResourceAsFile(this, "node-gyp-toml/pyproject.toml"));
         //returns with no error.
         analyzer.analyze(result, engine);
     }
 
-    @Test(expected = AnalysisException.class)
-    public void testPoetryToml() throws AnalysisException {
+    @Test
+    void testPoetryToml() {
         final Dependency result = new Dependency(BaseTest.getResourceAsFile(this, "python-poetry-toml/pyproject.toml"));
-        //causes an exception.
-        analyzer.analyze(result, engine);
+        assertThrows(AnalysisException.class, () ->
+            //causes an exception.
+            analyzer.analyze(result, engine));
     }
 }

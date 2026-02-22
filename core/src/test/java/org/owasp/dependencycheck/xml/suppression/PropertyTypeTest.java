@@ -17,24 +17,24 @@
  */
 package org.owasp.dependencycheck.xml.suppression;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.owasp.dependencycheck.BaseTest;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  *
  * @author Jeremy Long
  */
-public class PropertyTypeTest extends BaseTest {
+class PropertyTypeTest extends BaseTest {
 
     /**
      * Test of set and getValue method, of class PropertyType.
      */
     @Test
-    public void testSetGetValue() {
+    void testSetGetValue() {
 
         PropertyType instance = new PropertyType();
         String expResult = "test";
@@ -47,7 +47,7 @@ public class PropertyTypeTest extends BaseTest {
      * Test of isRegex method, of class PropertyType.
      */
     @Test
-    public void testIsRegex() {
+    void testIsRegex() {
         PropertyType instance = new PropertyType();
         assertFalse(instance.isRegex());
         instance.setRegex(true);
@@ -58,7 +58,7 @@ public class PropertyTypeTest extends BaseTest {
      * Test of isCaseSensitive method, of class PropertyType.
      */
     @Test
-    public void testIsCaseSensitive() {
+    void testIsCaseSensitive() {
         PropertyType instance = new PropertyType();
         assertFalse(instance.isCaseSensitive());
         instance.setCaseSensitive(true);
@@ -69,7 +69,7 @@ public class PropertyTypeTest extends BaseTest {
      * Test of matches method, of class PropertyType.
      */
     @Test
-    public void testMatches() {
+    void testMatches() {
         String text = "Simple";
 
         PropertyType instance = new PropertyType();

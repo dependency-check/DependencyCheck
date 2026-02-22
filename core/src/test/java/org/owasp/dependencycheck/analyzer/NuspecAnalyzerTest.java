@@ -17,24 +17,23 @@
  */
 package org.owasp.dependencycheck.analyzer;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.owasp.dependencycheck.BaseTest;
-import org.owasp.dependencycheck.analyzer.exception.AnalysisException;
 import org.owasp.dependencycheck.dependency.Dependency;
-import org.owasp.dependencycheck.dependency.Evidence;
-
-import java.io.File;
 import org.owasp.dependencycheck.dependency.EvidenceType;
 
-public class NuspecAnalyzerTest extends BaseTest {
+import java.io.File;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+class NuspecAnalyzerTest extends BaseTest {
 
     private NuspecAnalyzer instance;
 
-    @Before
+    @BeforeEach
     @Override
     public void setUp() throws Exception {
         super.setUp();
@@ -45,23 +44,23 @@ public class NuspecAnalyzerTest extends BaseTest {
     }
 
     @Test
-    public void testGetAnalyzerName() {
+    void testGetAnalyzerName() {
         assertEquals("Nuspec Analyzer", instance.getName());
     }
 
     @Test
-    public void testSupportsFileExtensions() {
+    void testSupportsFileExtensions() {
         assertTrue(instance.accept(new File("test.nuspec")));
         assertFalse(instance.accept(new File("test.nupkg")));
     }
 
     @Test
-    public void testGetAnalysisPhaze() {
+    void testGetAnalysisPhaze() {
         assertEquals(AnalysisPhase.INFORMATION_COLLECTION, instance.getAnalysisPhase());
     }
 
     @Test
-    public void testNuspecAnalysis() throws Exception {
+    void testNuspecAnalysis() throws Exception {
 
         File file = BaseTest.getResourceAsFile(this, "nuspec/test.nuspec");
         Dependency result = new Dependency(file);

@@ -1,23 +1,23 @@
 package org.owasp.dependencycheck.analyzer;
 
-import java.io.File;
-
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.owasp.dependencycheck.BaseTest;
+
+import java.io.File;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public class YarnAuditAnalyzerTest extends BaseTest {
+class YarnAuditAnalyzerTest extends BaseTest {
 
     @Test
-    public void testGetName() {
+    void testGetName() {
         YarnAuditAnalyzer analyzer = new YarnAuditAnalyzer();
         assertThat(analyzer.getName(), is("Yarn Audit Analyzer"));
     }
 
     @Test
-    public void testSupportsFiles() {
+    void testSupportsFiles() {
         YarnAuditAnalyzer analyzer = new YarnAuditAnalyzer();
         assertThat(analyzer.accept(new File("package-lock.json")), is(false));
         assertThat(analyzer.accept(new File("npm-shrinkwrap.json")), is(false));

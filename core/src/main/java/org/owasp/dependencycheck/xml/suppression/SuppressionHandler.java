@@ -20,6 +20,7 @@ package org.owasp.dependencycheck.xml.suppression;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Optional;
 import javax.annotation.concurrent.NotThreadSafe;
 import org.owasp.dependencycheck.exception.ParseException;
 import org.owasp.dependencycheck.utils.DateUtil;
@@ -30,7 +31,8 @@ import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
 /**
- * A handler to load suppression rules.
+ * A handler to load suppression rules. In the input xml a suppression rule can be part of a {@code suppressionGroup}. In that
+ * case the attributes set on group element will act as default values for child suppressions.
  *
  * @author Jeremy Long
  */
@@ -42,6 +44,10 @@ public class SuppressionHandler extends DefaultHandler {
      */
     private static final Logger LOGGER = LoggerFactory.getLogger(SuppressionHandler.class);
 
+    /**
+     * The suppressionGroup node, indicates the start of a new suppressionGroup.
+     */
+    public static final String SUPPRESSION_GROUP = "suppressionGroup";
     /**
      * The suppress node, indicates the start of a new rule.
      */
@@ -89,6 +95,18 @@ public class SuppressionHandler extends DefaultHandler {
      */
     public static final String CVSS_BELOW = "cvssBelow";
     /**
+     * The cvssV2Below element name.
+     */
+    public static final String CVSS_V2_BELOW = "cvssV2Below";
+    /**
+     * The cvssV3Below element name.
+     */
+    public static final String CVSS_V3_BELOW = "cvssV3Below";
+    /**
+     * The cvssV4Below element name.
+     */
+    public static final String CVSS_V4_BELOW = "cvssV4Below";
+    /**
      * A list of suppression rules.
      */
     private final List<SuppressionRule> suppressionRules = new ArrayList<>();
@@ -104,6 +122,10 @@ public class SuppressionHandler extends DefaultHandler {
      * The current node text being extracted from the element.
      */
     private StringBuilder currentText;
+
+    private Boolean groupBase = null;
+    private Calendar groupUntil = null;
+
 
     /**
      * Get the value of suppressionRules.
@@ -127,22 +149,40 @@ public class SuppressionHandler extends DefaultHandler {
     public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
         currentAttributes = attributes;
         currentText = new StringBuilder();
+
+        if (SUPPRESSION_GROUP.equals(qName)) {
+            groupBase = attributes.getValue("base") != null ? Boolean.parseBoolean(attributes.getValue("base")) : null;
+            groupUntil = parseUntilAttribute(attributes).orElse(null);
+        }
+
         if (SUPPRESS.equals(qName)) {
+            Boolean base = attributes.getValue("base") != null ? Boolean.parseBoolean(attributes.getValue("base")) : null;
+            Calendar until = parseUntilAttribute(attributes).orElse(null);
+
             rule = new SuppressionRule();
-            final String base = currentAttributes.getValue("base");
-            if (base != null) {
-                rule.setBase(Boolean.parseBoolean(base));
-            } else {
-                rule.setBase(false);
+            //If suppression doesn't have attribute set, use that of the group (if in group).
+            rule.setBase(base != null ? base : groupBase);
+            rule.setUntil(until != null ? until : groupUntil);
+        }
+    }
+
+    /**
+     * Read the provided {@code attributes} for attribute {@code until}. Return {@link Calendar} object if attribute is
+     * present and can be parsed.
+     *
+     * @return empty if attribute {@code until} is not present.
+     * @throws SAXException if attribute {@code until} is present but value can not be parsed as {@link Calendar}.
+     */
+    private static Optional<Calendar> parseUntilAttribute(Attributes attributes) throws SAXException {
+        String untilStr = attributes.getValue("until");
+        if (untilStr != null) {
+            try {
+                return Optional.of(DateUtil.parseXmlDate(untilStr));
+            } catch (ParseException ex) {
+                throw new SAXException("Unable to parse attribute 'until': " + untilStr, ex);
             }
-            final String until = currentAttributes.getValue("until");
-            if (until != null) {
-                try {
-                    rule.setUntil(DateUtil.parseXmlDate(until));
-                } catch (ParseException ex) {
-                    throw new SAXException("Unable to parse until date in suppression file: " + until, ex);
-                }
-            }
+        } else {
+            return Optional.empty();
         }
     }
 
@@ -165,6 +205,10 @@ public class SuppressionHandler extends DefaultHandler {
                         suppressionRules.add(rule);
                     }
                     rule = null;
+                    break;
+                case SUPPRESSION_GROUP:
+                    groupBase = null;
+                    groupUntil = null;
                     break;
                 case FILE_PATH:
                     rule.setFilePath(processPropertyType());
@@ -191,11 +235,26 @@ public class SuppressionHandler extends DefaultHandler {
                     rule.addVulnerabilityName(processPropertyType());
                     break;
                 case NOTES:
-                    rule.setNotes(currentText.toString().trim());
+                    // Check that the notes element is from a suppression and not a suppressionGroup.
+                    if(rule != null) {
+                        rule.setNotes(currentText.toString().trim());
+                    }
                     break;
                 case CVSS_BELOW:
                     final Double cvss = Double.valueOf(currentText.toString().trim());
                     rule.addCvssBelow(cvss);
+                    break;
+                case CVSS_V2_BELOW:
+                    final Double cvssV2 = Double.valueOf(currentText.toString().trim());
+                    rule.addCvssV2Below(cvssV2);
+                    break;
+                case CVSS_V3_BELOW:
+                    final Double cvssV3 = Double.valueOf(currentText.toString().trim());
+                    rule.addCvssV3Below(cvssV3);
+                    break;
+                case CVSS_V4_BELOW:
+                    final Double cvssV4 = Double.valueOf(currentText.toString().trim());
+                    rule.addCvssV4Below(cvssV4);
                     break;
                 default:
                     break;

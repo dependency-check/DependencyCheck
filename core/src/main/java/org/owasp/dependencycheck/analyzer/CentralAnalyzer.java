@@ -247,6 +247,7 @@ public class CentralAnalyzer extends AbstractFileTypeAnalyzer {
                         long sleepingTimeBetweenRetriesInMillis = BASE_RETRY_WAIT;
                         boolean success = false;
                         Model model = null;
+                        DownloadFailedException lastException = null;
                         if (cache != null) {
                             model = cache.get(ma.getPomUrl());
                         }
@@ -261,6 +262,7 @@ public class CentralAnalyzer extends AbstractFileTypeAnalyzer {
                                     Downloader.getInstance().fetchFile(new URL(ma.getPomUrl()), pomFile);
                                     success = true;
                                 } catch (DownloadFailedException ex) {
+                                    lastException = ex;
                                     try {
                                         Thread.sleep(sleepingTimeBetweenRetriesInMillis);
                                     } catch (InterruptedException ex1) {
@@ -287,6 +289,10 @@ public class CentralAnalyzer extends AbstractFileTypeAnalyzer {
                         } else {
                             LOGGER.warn("Unable to download pom.xml for {} from Central; "
                                     + "this could result in undetected CPE/CVEs.", dependency.getFileName());
+                            setEnabled(false);
+                            LOGGER.warn("Disabling the Central Analyzer due to repeated download failures; Central Search "
+                                    + "may be down see https://status.maven.org/\n Note that this could result in both false "
+                                    + "positives and false negatives", lastException);
                         }
 
                     } catch (AnalysisException ex) {
@@ -303,7 +309,8 @@ public class CentralAnalyzer extends AbstractFileTypeAnalyzer {
             }
         } catch (TooManyRequestsException tre) {
             this.setEnabled(false);
-            final String message = "Connections to Central search refused. Analysis failed.";
+            final String message = "Connections to Central search refused. Analysis failed. Disabling Central analyzer - this " +
+                    "could lead to both false positives and false negatives.";
             LOGGER.error(message, tre);
             throw new AnalysisException(message, tre);
         } catch (IllegalArgumentException iae) {
@@ -311,13 +318,16 @@ public class CentralAnalyzer extends AbstractFileTypeAnalyzer {
         } catch (FileNotFoundException fnfe) {
             LOGGER.debug("Artifact not found in repository: '{}", dependency.getFileName());
         } catch (ForbiddenException e) {
+            this.setEnabled(false);
             final String message = "Connection to Central search refused. This is most likely not a problem with " +
                     "Dependency-Check itself and is related to network connectivity. Please check " +
                     "https://central.sonatype.org/faq/403-error-central/.";
             LOGGER.error(message);
             throw new AnalysisException(message, e);
         } catch (IOException ioe) {
-            final String message = "Could not connect to Central search. Analysis failed.";
+            this.setEnabled(false);
+            final String message = "Could not connect to Central search. Analysis failed; disabling Central analyzer - this " +
+                    "could lead to both false positives and false negatives.";
             LOGGER.error(message, ioe);
             throw new AnalysisException(message, ioe);
         }

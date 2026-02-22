@@ -17,11 +17,13 @@
  */
 package org.owasp.dependencycheck.analyzer;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.owasp.dependencycheck.BaseDBTestCase;
 import org.owasp.dependencycheck.BaseTest;
 import org.owasp.dependencycheck.Engine;
+import org.owasp.dependencycheck.data.update.RetireJSDataSource;
 import org.owasp.dependencycheck.dependency.Dependency;
 import org.owasp.dependencycheck.dependency.Evidence;
 import org.owasp.dependencycheck.dependency.EvidenceType;
@@ -32,18 +34,15 @@ import java.io.File;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import org.owasp.dependencycheck.BaseDBTestCase;
-import org.owasp.dependencycheck.data.update.RetireJSDataSource;
-
-public class RetireJsAnalyzerIT extends BaseDBTestCase {
+class RetireJsAnalyzerIT extends BaseDBTestCase {
 
     private RetireJsAnalyzer analyzer;
     private Engine engine;
 
-    @Before
+    @BeforeEach
     @Override
     public void setUp() throws Exception {
         super.setUp();
@@ -57,7 +56,7 @@ public class RetireJsAnalyzerIT extends BaseDBTestCase {
         analyzer.prepare(engine);
     }
 
-    @After
+    @AfterEach
     @Override
     public void tearDown() throws Exception {
         analyzer.close();
@@ -66,7 +65,7 @@ public class RetireJsAnalyzerIT extends BaseDBTestCase {
     }
 
     @Test
-    public void testGetName() {
+    void testGetName() {
         assertThat(analyzer.getName(), is("RetireJS Analyzer"));
     }
 
@@ -74,11 +73,11 @@ public class RetireJsAnalyzerIT extends BaseDBTestCase {
      * Test of getSupportedExtensions method.
      */
     @Test
-    public void testAcceptSupportedExtensions() throws Exception {
+    void testAcceptSupportedExtensions() {
         analyzer.setEnabled(true);
         String[] files = {"test.js", "test.min.js"};
         for (String name : files) {
-            assertTrue(name, analyzer.accept(new File(name)));
+            assertTrue(analyzer.accept(new File(name)), name);
         }
     }
 
@@ -86,7 +85,7 @@ public class RetireJsAnalyzerIT extends BaseDBTestCase {
      * Test of getAnalysisPhase method.
      */
     @Test
-    public void testGetAnalysisPhase() {
+    void testGetAnalysisPhase() {
         AnalysisPhase expResult = AnalysisPhase.FINDING_ANALYSIS;
         AnalysisPhase result = analyzer.getAnalysisPhase();
         assertEquals(expResult, result);
@@ -96,7 +95,7 @@ public class RetireJsAnalyzerIT extends BaseDBTestCase {
      * Test of getAnalyzerEnabledSettingKey method.
      */
     @Test
-    public void testGetAnalyzerEnabledSettingKey() {
+    void testGetAnalyzerEnabledSettingKey() {
         String expResult = Settings.KEYS.ANALYZER_RETIREJS_ENABLED;
         String result = analyzer.getAnalyzerEnabledSettingKey();
         assertEquals(expResult, result);
@@ -108,7 +107,7 @@ public class RetireJsAnalyzerIT extends BaseDBTestCase {
      * @throws Exception is thrown when an exception occurs.
      */
     @Test
-    public void testJquery() throws Exception {
+    void testJquery() throws Exception {
         File file = BaseTest.getResourceAsFile(this, "javascript/jquery-1.6.2.js");
         Dependency dependency = new Dependency(file);
         analyzer.analyze(dependency, engine);
@@ -138,7 +137,7 @@ public class RetireJsAnalyzerIT extends BaseDBTestCase {
      * @throws Exception is thrown when an exception occurs.
      */
     @Test
-    public void testAngular() throws Exception {
+    void testAngular() throws Exception {
         File file = BaseTest.getResourceAsFile(this, "javascript/angular.safe.js");
         Dependency dependency = new Dependency(file);
         analyzer.analyze(dependency, engine);
@@ -156,8 +155,8 @@ public class RetireJsAnalyzerIT extends BaseDBTestCase {
         assertEquals("version", version.getName());
         assertEquals("1.2.27", version.getValue());
 
-        assertTrue("At leats 6 vulnerabilities should be detected",
-                dependency.getVulnerabilities().size() >= 6);
+        assertTrue(dependency.getVulnerabilities().size() >= 6,
+                "At leats 6 vulnerabilities should be detected");
         assertTrue(dependency.getVulnerabilities().contains(new Vulnerability("Universal CSP bypass via add-on in Firefox")));
         assertTrue(dependency.getVulnerabilities().contains(new Vulnerability("XSS in $sanitize in Safari/Firefox")));
         assertTrue(dependency.getVulnerabilities().contains(new Vulnerability("DOS in $sanitize")));
@@ -170,7 +169,7 @@ public class RetireJsAnalyzerIT extends BaseDBTestCase {
      * @throws Exception is thrown when an exception occurs.
      */
     @Test
-    public void testEmber() throws Exception {
+    void testEmber() throws Exception {
         File file = BaseTest.getResourceAsFile(this, "javascript/ember.js");
         Dependency dependency = new Dependency(file);
         analyzer.analyze(dependency, engine);

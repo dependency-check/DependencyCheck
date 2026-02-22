@@ -130,6 +130,15 @@ public class ReportTool {
      * @param sev the severity name
      * @return the standardized severity name (critical, high, medium, low, unknown)
      */
+    public String normalizeSeverity(Object sev) {
+        return normalizeSeverity(sev.toString());
+    }
+
+    /**
+     * Map severity names from various sources to a standard set of severity names.
+     * @param sev the severity name
+     * @return the standardized severity name (critical, high, medium, low, unknown)
+     */
     public String normalizeSeverity(String sev) {
         switch (sev.toLowerCase()) {
             case "critical":

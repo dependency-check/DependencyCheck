@@ -17,17 +17,19 @@
  */
 package org.owasp.dependencycheck.data.golang;
 
+import org.junit.jupiter.api.Test;
+
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.List;
-import org.junit.Test;
-import static org.junit.Assert.*;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  *
  * @author jeremy
  */
-public class GoModJsonParserTest {
+class GoModJsonParserTest {
 
     final String issue2891 = "{\n"
             + "	\"Path\": \"cloud.google.com/go\",\n"
@@ -783,7 +785,7 @@ public class GoModJsonParserTest {
      * Test of process method, of class GoModJsonParser.
      */
     @Test
-    public void testProcess() throws Exception {
+    void testProcess() throws Exception {
         InputStream inputStream = new ByteArrayInputStream(issue2891.getBytes());
         List<GoModDependency> expResult = null;
         List<GoModDependency> result = GoModJsonParser.process(inputStream);

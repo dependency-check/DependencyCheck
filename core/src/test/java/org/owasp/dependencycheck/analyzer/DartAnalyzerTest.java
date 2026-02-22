@@ -1,30 +1,29 @@
 package org.owasp.dependencycheck.analyzer;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.owasp.dependencycheck.BaseTest;
 import org.owasp.dependencycheck.Engine;
 import org.owasp.dependencycheck.analyzer.exception.AnalysisException;
 import org.owasp.dependencycheck.dependency.Dependency;
-import org.owasp.dependencycheck.dependency.EvidenceType;
 import org.owasp.dependencycheck.dependency.naming.GenericIdentifier;
 import org.owasp.dependencycheck.dependency.naming.Identifier;
 import org.owasp.dependencycheck.dependency.naming.PurlIdentifier;
 
 import java.io.File;
-import java.util.Set;
 
-import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Unit tests for DartAnalyzer
  *
  * @author Marc Rödder
  */
-public class DartAnalyzerTest extends BaseTest {
+class DartAnalyzerTest extends BaseTest {
 
     /**
      * The analyzer to test.
@@ -36,7 +35,7 @@ public class DartAnalyzerTest extends BaseTest {
      *
      * @throws Exception thrown if there is a problem
      */
-    @Before
+    @BeforeEach
     @Override
     public void setUp() throws Exception {
         super.setUp();
@@ -51,7 +50,7 @@ public class DartAnalyzerTest extends BaseTest {
      *
      * @throws Exception thrown if there is a problem
      */
-    @After
+    @AfterEach
     @Override
     public void tearDown() throws Exception {
         dartAnalyzer.close();
@@ -64,7 +63,7 @@ public class DartAnalyzerTest extends BaseTest {
      * Test of getName method, of class DartAnalyzer.
      */
     @Test
-    public void testDartAnalyzerGetName() {
+    void testDartAnalyzerGetName() {
         assertThat(dartAnalyzer.getName(), is("Dart Package Analyzer"));
     }
 
@@ -73,7 +72,7 @@ public class DartAnalyzerTest extends BaseTest {
      * Test of supportsFiles method, of class DartAnalyzer.
      */
     @Test
-    public void testAnalyzerSupportsFiles() {
+    void testAnalyzerSupportsFiles() {
         assertThat(dartAnalyzer.accept(new File("pubspec.yaml")), is(true));
         assertThat(dartAnalyzer.accept(new File("pubspec.lock")), is(true));
     }
@@ -84,7 +83,7 @@ public class DartAnalyzerTest extends BaseTest {
      * @throws AnalysisException is thrown when an exception occurs.
      */
     @Test
-    public void testDartPubspecLockAnalyzer() throws AnalysisException {
+    void testDartPubspecLockAnalyzer() throws AnalysisException {
         final Engine engine = new Engine(getSettings());
         final Dependency result = new Dependency(BaseTest.getResourceAsFile(this,
                 "dart/pubspec.lock"));
@@ -123,7 +122,7 @@ public class DartAnalyzerTest extends BaseTest {
     }
 
     @Test
-    public void testDartPubspecYamlAnalyzer() throws AnalysisException {
+    void testDartPubspecYamlAnalyzer() throws AnalysisException {
         final Engine engine = new Engine(getSettings());
         final Dependency result = new Dependency(BaseTest.getResourceAsFile(this,
                 "dart.yaml/pubspec.yaml"));
@@ -187,10 +186,10 @@ public class DartAnalyzerTest extends BaseTest {
 
     /**
      * Test case for issue #5008.
-     * @throws AnalysisException 
+     * @throws AnalysisException
      */
     @Test
-    public void testDartPubspecYamlAnalyzerAddressbook() throws AnalysisException {
+    void testDartPubspecYamlAnalyzerAddressbook() throws AnalysisException {
         final Engine engine = new Engine(getSettings());
         final Dependency result = new Dependency(BaseTest.getResourceAsFile(this,
                 "dart.addressbook/pubspec.yaml"));
@@ -199,13 +198,13 @@ public class DartAnalyzerTest extends BaseTest {
         assertThat(engine.getDependencies().length, equalTo(1));
 
         Dependency dependency1 = engine.getDependencies()[0];
-       
+
         assertThat(dependency1.getName(), equalTo("protobuf"));
         assertThat(dependency1.getVersion(), equalTo(""));
     }
-    
+
     @Test
-    public void testIsEnabledIsTrueByDefault() {
+    void testIsEnabledIsTrueByDefault() {
         assertTrue(dartAnalyzer.isEnabled());
     }
 }

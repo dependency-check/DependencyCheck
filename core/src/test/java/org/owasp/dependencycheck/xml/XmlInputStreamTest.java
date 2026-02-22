@@ -17,24 +17,28 @@
  */
 package org.owasp.dependencycheck.xml;
 
+import org.junit.jupiter.api.Test;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
-import org.junit.Test;
-import static org.junit.Assert.*;
+
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  *
  * @author Jeremy Long
  */
-public class XmlInputStreamTest {
+class XmlInputStreamTest {
 
     /**
      * Test of length method, of class XmlInputStream.
      */
     @Test
-    public void testLength() {
+    void testLength() {
         String data = "";
         InputStream stream = new ByteArrayInputStream(data.getBytes(StandardCharsets.UTF_8));
         XmlInputStream instance = new XmlInputStream(stream);
@@ -53,7 +57,7 @@ public class XmlInputStreamTest {
      * Test of read method, of class XmlInputStream.
      */
     @Test
-    public void testRead_0args() throws Exception {
+    void testRead_0args() throws Exception {
         String data = "";
         InputStream stream = new ByteArrayInputStream(data.getBytes(StandardCharsets.UTF_8));
         XmlInputStream instance = new XmlInputStream(stream);
@@ -73,7 +77,7 @@ public class XmlInputStreamTest {
      * Test of read method, of class XmlInputStream.
      */
     @Test
-    public void testRead_3args() throws Exception {
+    void testRead_3args() throws Exception {
         byte[] data = new byte[10];
         int offset = 0;
         int length = 10;
@@ -85,8 +89,8 @@ public class XmlInputStreamTest {
         int result = instance.read(data, offset, length);
         assertEquals(expResult, result);
         assertArrayEquals(expected, data);
-        
-        
+
+
         data = new byte[5];
         offset = 0;
         length = 5;
@@ -98,7 +102,7 @@ public class XmlInputStreamTest {
         result = instance.read(data, offset, length);
         assertEquals(expResult, result);
         assertArrayEquals(expected, data);
-        
+
         data = new byte[10];
         offset = 0;
         length = 10;
@@ -116,7 +120,7 @@ public class XmlInputStreamTest {
      * Test of toString method, of class XmlInputStream.
      */
     @Test
-    public void testToString() throws IOException {
+    void testToString() throws IOException {
         String data = "test";
         InputStream stream = new ByteArrayInputStream(data.getBytes(StandardCharsets.UTF_8));
         XmlInputStream instance = new XmlInputStream(stream);

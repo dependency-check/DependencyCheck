@@ -17,30 +17,38 @@
  */
 package org.owasp.dependencycheck.analyzer;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.hamcrest.MatcherAssert.assertThat;
-
-import java.util.Set;
-
-import org.junit.Before;
-import org.junit.Test;
+import org.jspecify.annotations.NonNull;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
 import org.owasp.dependencycheck.BaseTest;
 import org.owasp.dependencycheck.Engine;
 import org.owasp.dependencycheck.Engine.Mode;
-import org.owasp.dependencycheck.analyzer.exception.AnalysisException;
 import org.owasp.dependencycheck.dependency.Dependency;
 import org.owasp.dependencycheck.exception.InitializationException;
 import org.owasp.dependencycheck.utils.Downloader;
+import org.owasp.dependencycheck.utils.InvalidSettingException;
 import org.owasp.dependencycheck.utils.Settings;
 import org.owasp.dependencycheck.utils.Settings.KEYS;
 import org.owasp.dependencycheck.xml.suppression.SuppressionRule;
 
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.not;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.owasp.dependencycheck.analyzer.AbstractSuppressionAnalyzer.SUPPRESSION_OBJECT_KEY;
+
 /**
  * @author Jeremy Long
  */
-public class AbstractSuppressionAnalyzerTest extends BaseTest {
+class AbstractSuppressionAnalyzerTest extends BaseTest {
 
     /**
      * A second suppression file to test with.
@@ -54,8 +62,8 @@ public class AbstractSuppressionAnalyzerTest extends BaseTest {
 
     private AbstractSuppressionAnalyzer instance;
 
-    @Before
-    public void createObjectUnderTest() throws Exception {
+    @BeforeEach
+    void createObjectUnderTest() {
         instance = new AbstractSuppressionAnalyzerImpl();
     }
 
@@ -64,7 +72,7 @@ public class AbstractSuppressionAnalyzerTest extends BaseTest {
      * AbstractSuppressionAnalyzer.
      */
     @Test
-    public void testGetSupportedExtensions() {
+    void testGetSupportedExtensions() {
         Set<String> result = instance.getSupportedExtensions();
         assertNull(result);
     }
@@ -74,10 +82,10 @@ public class AbstractSuppressionAnalyzerTest extends BaseTest {
      * suppression file declared as URL.
      */
     @Test
-    public void testGetRulesFromSuppressionFileFromURL() throws Exception {
+    void testGetRulesFromSuppressionFileFromURL() throws Exception {
         final String fileUrl = getClass().getClassLoader().getResource(SUPPRESSIONS_FILE).toURI().toURL().toString();
         final int numberOfExtraLoadedRules = getNumberOfRulesLoadedFromPath(fileUrl) - getNumberOfRulesLoadedInCoreFile();
-        assertEquals("Expected 5 extra rules in the given path", 5, numberOfExtraLoadedRules);
+        assertEquals(5, numberOfExtraLoadedRules, "Expected 5 extra rules in the given path");
     }
 
     /**
@@ -85,9 +93,9 @@ public class AbstractSuppressionAnalyzerTest extends BaseTest {
      * suppression file on the class path.
      */
     @Test
-    public void testGetRulesFromSuppressionFileInClasspath() throws Exception {
+    void testGetRulesFromSuppressionFileInClasspath() throws Exception {
         final int numberOfExtraLoadedRules = getNumberOfRulesLoadedFromPath(SUPPRESSIONS_FILE) - getNumberOfRulesLoadedInCoreFile();
-        assertEquals("Expected 5 extra rules in the given file", 5, numberOfExtraLoadedRules);
+        assertEquals(5, numberOfExtraLoadedRules, "Expected 5 extra rules in the given file");
     }
 
     /**
@@ -95,7 +103,7 @@ public class AbstractSuppressionAnalyzerTest extends BaseTest {
      * defined in the {@link Settings}.
      */
     @Test
-    public void testGetRulesFromMultipleSuppressionFiles() throws Exception {
+    void testGetRulesFromMultipleSuppressionFiles() throws Exception {
         final int rulesInCoreFile = getNumberOfRulesLoadedInCoreFile();
 
         // GIVEN suppression rules from one file
@@ -116,12 +124,13 @@ public class AbstractSuppressionAnalyzerTest extends BaseTest {
         assertThat("Expected suppressions from both files", instance.getRuleCount(engine), is(expectedSize));
     }
 
-    @Test(expected = InitializationException.class)
-    public void testFailureToLocateSuppressionFileAnywhere() throws Exception {
+    @Test
+    void testFailureToLocateSuppressionFileAnywhere() {
         getSettings().setString(Settings.KEYS.SUPPRESSION_FILE, "doesnotexist.xml");
         instance.initialize(getSettings());
         Engine engine = new Engine(Mode.EVIDENCE_COLLECTION, getSettings());
-        instance.prepare(engine);
+        assertThrows(InitializationException.class, () ->
+            instance.prepare(engine));
     }
 
     /**
@@ -133,12 +142,8 @@ public class AbstractSuppressionAnalyzerTest extends BaseTest {
      */
     private int getNumberOfRulesLoadedInCoreFile() throws Exception {
         getSettings().removeProperty(KEYS.SUPPRESSION_FILE);
-        final AbstractSuppressionAnalyzerImpl coreFileAnalyzer = new AbstractSuppressionAnalyzerImpl();
-        coreFileAnalyzer.initialize(getSettings());
-        Engine engine = new Engine(Mode.EVIDENCE_COLLECTION, getSettings());
-        coreFileAnalyzer.prepare(engine);
-        int count = AbstractSuppressionAnalyzer.getRuleCount(engine);
-        return count;
+        Engine engine = prepareSuppressions();
+        return AbstractSuppressionAnalyzer.getRuleCount(engine);
     }
 
     /**
@@ -151,19 +156,59 @@ public class AbstractSuppressionAnalyzerTest extends BaseTest {
      */
     private int getNumberOfRulesLoadedFromPath(final String path) throws Exception {
         getSettings().setString(KEYS.SUPPRESSION_FILE, path);
+        Engine engine = prepareSuppressions();
+        return AbstractSuppressionAnalyzer.getRuleCount(engine);
+    }
+
+    private @NonNull Engine prepareSuppressions() throws InvalidSettingException, InitializationException {
         final AbstractSuppressionAnalyzerImpl fileAnalyzer = new AbstractSuppressionAnalyzerImpl();
         fileAnalyzer.initialize(getSettings());
         Downloader.getInstance().configure(getSettings());
         Engine engine = new Engine(Mode.EVIDENCE_COLLECTION, getSettings());
         fileAnalyzer.prepare(engine);
-        int count = AbstractSuppressionAnalyzer.getRuleCount(engine);
-        return count;
+        return engine;
+    }
+
+    @Nested
+    class CoreSuppressionsLoading {
+        @Test
+        void testLoadCorePackagedSuppressions() throws Exception {
+            List<SuppressionRule> baseRules = assertAllBaseSuppressionRulesAreMarkedCorrectly();
+
+            assertAllHostedSnapshotSuppressionsAreMarkedAsBase(baseRules);
+        }
+
+        private @NonNull List<SuppressionRule> assertAllBaseSuppressionRulesAreMarkedCorrectly() throws InvalidSettingException, InitializationException {
+            getSettings().setBoolean(KEYS.HOSTED_SUPPRESSIONS_ENABLED, false);
+            Engine engine = prepareSuppressions();
+
+            @SuppressWarnings("unchecked") List<SuppressionRule> baseRules = (List<SuppressionRule>) engine.getObject(SUPPRESSION_OBJECT_KEY);
+            assertThat(baseRules, not(empty()));
+            assertThat("Expected all suppressions in base file to be marked as base", allRulesNotMarkedAsBase(baseRules), empty());
+            return baseRules;
+        }
+
+        private void assertAllHostedSnapshotSuppressionsAreMarkedAsBase(List<SuppressionRule> baseRules) throws InvalidSettingException, InitializationException {
+            getSettings().setBoolean(KEYS.HOSTED_SUPPRESSIONS_ENABLED, true);
+            getSettings().setString(KEYS.HOSTED_SUPPRESSIONS_URL, "https://intentionally-bad-url/hosted-suppressions.xml");
+            Engine engine = prepareSuppressions();
+
+            @SuppressWarnings("unchecked") List<SuppressionRule> allRules = (List<SuppressionRule>) engine.getObject(SUPPRESSION_OBJECT_KEY);
+
+            List<SuppressionRule> hostedSnapshotRules = allRules.stream().filter(r -> !baseRules.contains(r)).collect(Collectors.toList());
+            assertThat(hostedSnapshotRules, not(empty()));
+            assertThat("Expected all suppressions in hosted suppressions snapshot file to be marked as base", allRulesNotMarkedAsBase(hostedSnapshotRules), empty());
+        }
+
+        private @NonNull List<SuppressionRule> allRulesNotMarkedAsBase(List<SuppressionRule> baseRules) {
+            return baseRules.stream().filter(r -> !r.isBase()).collect(Collectors.toList());
+        }
     }
 
     public static class AbstractSuppressionAnalyzerImpl extends AbstractSuppressionAnalyzer {
 
         @Override
-        public void analyzeDependency(Dependency dependency, Engine engine) throws AnalysisException {
+        public void analyzeDependency(Dependency dependency, Engine engine) {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
 

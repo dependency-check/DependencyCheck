@@ -17,18 +17,9 @@
  */
 package org.owasp.dependencycheck.analyzer;
 
-import java.io.File;
-import java.io.IOException;
-import org.junit.After;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-import org.junit.Assume;
-import static org.junit.Assume.assumeFalse;
-import static org.junit.Assume.assumeNotNull;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.owasp.dependencycheck.BaseTest;
 import org.owasp.dependencycheck.analyzer.exception.AnalysisException;
 import org.owasp.dependencycheck.analyzer.exception.UnexpectedAnalysisException;
@@ -41,13 +32,21 @@ import org.owasp.dependencycheck.utils.Settings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assumptions.assumeFalse;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
+
 /**
  * Tests for the AssemblyAnalyzer.
  *
  * @author colezlaw
  *
  */
-public class AssemblyAnalyzerTest extends BaseTest {
+class AssemblyAnalyzerTest extends BaseTest {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AssemblyAnalyzerTest.class);
 
@@ -60,7 +59,7 @@ public class AssemblyAnalyzerTest extends BaseTest {
      *
      * @throws Exception if anything goes sideways
      */
-    @Before
+    @BeforeEach
     @Override
     public void setUp() throws Exception {
         super.setUp();
@@ -76,28 +75,28 @@ public class AssemblyAnalyzerTest extends BaseTest {
             } else {
                 LOGGER.warn("Exception setting up AssemblyAnalyzer. Tests will be incomplete");
             }
-            Assume.assumeNoException("Is dotnet installed? TESTS WILL BE INCOMPLETE", e);
+            assumeTrue(false, "Is dotnet installed? TESTS WILL BE INCOMPLETE: " + e);
         }
     }
 
-    private void assertGrokAssembly() throws IOException {
+    private void assertGrokAssembly() {
         // There must be an .exe and a .config files created in the temp
         // directory and they must match the resources they were created from.
         File grokAssemblyExeFile = analyzer.getGrokAssemblyPath();
-        assertTrue("The GrokAssembly executable was not created.", grokAssemblyExeFile.isFile());
+        assertTrue(grokAssemblyExeFile.isFile(), "The GrokAssembly executable was not created.");
     }
 
     /**
      * Tests to make sure the name is correct.
      */
     @Test
-    public void testGetName() {
+    void testGetName() {
         assertEquals("Assembly Analyzer", analyzer.getName());
     }
 
     @Test
-    public void testAnalysis() throws Exception {
-        assumeNotNull(analyzer.buildArgumentList());
+    void testAnalysis() throws Exception {
+        assumeTrue(analyzer.buildArgumentList() != null);
         File f = analyzer.getGrokAssemblyPath();
         Dependency d = new Dependency(f);
         analyzer.analyze(d, null);
@@ -106,8 +105,8 @@ public class AssemblyAnalyzerTest extends BaseTest {
     }
 
     @Test
-    public void testLog4Net() throws Exception {
-        assumeNotNull(analyzer.buildArgumentList());
+    void testLog4Net() throws Exception {
+        assumeTrue(analyzer.buildArgumentList() != null);
         File f = BaseTest.getResourceAsFile(this, "log4net.dll");
 
         Dependency d = new Dependency(f);
@@ -120,8 +119,8 @@ public class AssemblyAnalyzerTest extends BaseTest {
     }
 
     @Test
-    public void testNonexistent() {
-        assumeNotNull(analyzer.buildArgumentList());
+    void testNonexistent() {
+        assumeTrue(analyzer.buildArgumentList() != null);
 
         // Tweak the log level so the warning doesn't show in the console
         String oldProp = System.getProperty(LOG_KEY, "info");
@@ -130,9 +129,8 @@ public class AssemblyAnalyzerTest extends BaseTest {
         Dependency d = new Dependency(test);
 
         try {
-            analyzer.analyze(d, null);
-            fail("Expected an AnalysisException");
-        } catch (AnalysisException ae) {
+            AnalysisException ae = assertThrows(AnalysisException.class, () -> analyzer.analyze(d, null),
+                "Expected an AnalysisException");
             assertTrue(ae.getMessage().contains("nonexistent.dll does not exist and cannot be analyzed by dependency-check"));
         } finally {
             System.setProperty(LOG_KEY, oldProp);
@@ -140,7 +138,7 @@ public class AssemblyAnalyzerTest extends BaseTest {
     }
 
     @Test
-    public void testWithSettingMono() throws Exception {
+    void testWithSettingMono() {
 
         //This test doesn't work on Windows.
         assumeFalse(System.getProperty("os.name").startsWith("Windows"));
@@ -160,9 +158,9 @@ public class AssemblyAnalyzerTest extends BaseTest {
             AssemblyAnalyzer aanalyzer = new AssemblyAnalyzer();
             aanalyzer.initialize(getSettings());
             aanalyzer.accept(new File("test.dll")); // trick into "thinking it is active"
-            aanalyzer.prepare(null);
-            fail("Expected an InitializationException");
-        } catch (InitializationException ae) {
+
+            InitializationException ae = assertThrows(InitializationException.class, () -> aanalyzer.prepare(null),
+                    "Expected an InitializationException");
             assertEquals("An error occurred with the .NET AssemblyAnalyzer, is the dotnet 8.0 runtime or sdk installed?", ae.getMessage());
         } finally {
             System.setProperty(LOG_KEY, oldProp);
@@ -177,7 +175,7 @@ public class AssemblyAnalyzerTest extends BaseTest {
         }
     }
 
-    @After
+    @AfterEach
     @Override
     public void tearDown() throws Exception {
         try {

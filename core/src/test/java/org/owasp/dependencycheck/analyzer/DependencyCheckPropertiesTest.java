@@ -1,10 +1,8 @@
 package org.owasp.dependencycheck.analyzer;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -22,10 +20,13 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class DependencyCheckPropertiesTest {
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+class DependencyCheckPropertiesTest {
 
     @Test
-    public void should_each_analyzer_have_default_enabled_property()
+    void should_each_analyzer_have_default_enabled_property()
             throws IOException, InstantiationException, IllegalAccessException {
         String packageName = "org.owasp.dependencycheck.analyzer";
         Set<Class<AbstractAnalyzer>> analyzerImplementations = findAllAnalyzerImplementations(packageName);
@@ -45,16 +46,16 @@ public class DependencyCheckPropertiesTest {
             properties.load(fis);
         }
 
-        Assert.assertFalse(analyzerEnabledSettingKeys.isEmpty());
+        assertFalse(analyzerEnabledSettingKeys.isEmpty());
 
         Set<String> absentKeys = analyzerEnabledSettingKeys.stream()
                 .filter(key -> !properties.containsKey(key))
                 .collect(Collectors.toSet());
 
-        Assert.assertTrue(absentKeys.isEmpty());
+        assertTrue(absentKeys.isEmpty());
     }
 
-    public Set<Class<AbstractAnalyzer>> findAllAnalyzerImplementations(String packageName)
+    private Set<Class<AbstractAnalyzer>> findAllAnalyzerImplementations(String packageName)
             throws IOException {
 
         Set<Class<?>> packageClasses = findAllClasses(packageName);
@@ -88,7 +89,7 @@ public class DependencyCheckPropertiesTest {
         return clazz == AbstractSuppressionAnalyzerTest.AbstractSuppressionAnalyzerImpl.class;
     }
 
-    public Set<Class<?>> findAllClasses(String packageName) throws IOException {
+    private Set<Class<?>> findAllClasses(String packageName) throws IOException {
         String parsedPackageName = packageName.replaceAll("[.]", "/");
 
         Set<Class<?>> classes = new HashSet<>();

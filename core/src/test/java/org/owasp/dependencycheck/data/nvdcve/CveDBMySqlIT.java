@@ -17,31 +17,30 @@
  */
 package org.owasp.dependencycheck.data.nvdcve;
 
-import java.sql.SQLException;
-import java.util.List;
-import java.util.Set;
-import org.junit.After;
-
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.owasp.dependencycheck.BaseTest;
-import org.owasp.dependencycheck.dependency.Vulnerability;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-import org.junit.Before;
 import org.owasp.dependencycheck.data.update.cpe.CpePlus;
+import org.owasp.dependencycheck.dependency.Vulnerability;
 import us.springett.parsers.cpe.Cpe;
 import us.springett.parsers.cpe.CpeBuilder;
 import us.springett.parsers.cpe.values.Part;
+
+import java.util.List;
+import java.util.Set;
+
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  *
  * @author Jeremy Long
  */
-public class CveDBMySqlIT extends BaseTest {
+class CveDBMySqlIT extends BaseTest {
 
     private CveDB instance = null;
 
-    @Before
+    @BeforeEach
     @Override
     public void setUp() throws Exception {
         super.setUp();
@@ -49,23 +48,23 @@ public class CveDBMySqlIT extends BaseTest {
         instance.open();
     }
 
-    @After
+    @AfterEach
     @Override
     public void tearDown() throws Exception {
         instance.close();
         super.tearDown();
-    }   
+    }
 
     /**
      * Test of getCPEs method, of class CveDB.
      */
     @Test
-    public void testGetCPEs() throws Exception {
+    void testGetCPEs() {
         try {
             String vendor = "apache";
             String product = "struts";
             Set<CpePlus> result = instance.getCPEs(vendor, product);
-            assertTrue("Has data been loaded into the MySQL DB? if not consider using the CLI to populate it", result.size() > 5);
+            assertTrue(result.size() > 5, "Has data been loaded into the MySQL DB? if not consider using the CLI to populate it");
         } catch (Exception ex) {
             System.out.println("Unable to access the My SQL database; verify that the db server is running and that the schema has been generated");
             throw ex;
@@ -76,7 +75,7 @@ public class CveDBMySqlIT extends BaseTest {
      * Test of getVulnerabilities method, of class CveDB.
      */
     @Test
-    public void testGetVulnerabilities() throws Exception {
+    void testGetVulnerabilities() throws Exception {
         CpeBuilder builder = new CpeBuilder();
         Cpe cpe = builder.part(Part.APPLICATION).vendor("apache").product("struts").version("2.1.2").build();
         try {

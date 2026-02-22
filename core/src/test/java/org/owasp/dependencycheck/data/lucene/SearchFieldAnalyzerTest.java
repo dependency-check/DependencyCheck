@@ -18,20 +18,21 @@
 package org.owasp.dependencycheck.data.lucene;
 
 import org.apache.lucene.analysis.CharArraySet;
-import org.junit.Test;
-import static org.junit.Assert.*;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  *
  * @author jeremy long
  */
-public class SearchFieldAnalyzerTest {
+class SearchFieldAnalyzerTest {
 
     /**
      * Test of getStopWords method, of class SearchFieldAnalyzer.
      */
     @Test
-    public void testGetStopWords() {
+    void testGetStopWords() {
         CharArraySet result = SearchFieldAnalyzer.getStopWords();
         assertTrue(result.size() > 20);
         assertTrue(result.contains("software"));

@@ -17,6 +17,14 @@
  */
 package org.owasp.dependencycheck;
 
+import org.apache.commons.io.IOUtils;
+import org.junit.jupiter.api.BeforeEach;
+import org.owasp.dependencycheck.data.nvdcve.DatabaseManager;
+import org.owasp.dependencycheck.utils.Settings;
+import org.owasp.dependencycheck.utils.WriteLock;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -24,13 +32,6 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
-import org.apache.commons.io.IOUtils;
-import org.junit.Before;
-import org.owasp.dependencycheck.data.nvdcve.DatabaseManager;
-import org.owasp.dependencycheck.utils.WriteLock;
-import org.owasp.dependencycheck.utils.Settings;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * An abstract database test case that is used to ensure the H2 DB exists prior
@@ -40,11 +41,11 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class BaseDBTestCase extends BaseTest {
 
-    protected final static int BUFFER_SIZE = 2048;
+    protected static final int BUFFER_SIZE = 2048;
 
-    private final static Logger LOGGER = LoggerFactory.getLogger(BaseDBTestCase.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(BaseDBTestCase.class);
 
-    @Before
+    @BeforeEach
     @Override
     public void setUp() throws Exception {
         super.setUp();

@@ -17,15 +17,12 @@
  */
 package org.owasp.dependencycheck.reporting;
 
-import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.Set;
 import javax.annotation.concurrent.ThreadSafe;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import org.apache.commons.text.StringEscapeUtils;
 import org.owasp.dependencycheck.dependency.naming.Identifier;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * An extremely simple wrapper around various escape utils to perform URL and
@@ -36,12 +33,6 @@ import org.slf4j.LoggerFactory;
  */
 @ThreadSafe
 public class EscapeTool {
-
-    /**
-     * The logger.
-     */
-    private static final Logger LOGGER = LoggerFactory.getLogger(EscapeTool.class);
-
     /**
      * URL Encodes the provided text.
      *
@@ -52,13 +43,7 @@ public class EscapeTool {
         if (text == null || text.isEmpty()) {
             return text;
         }
-        try {
-            return URLEncoder.encode(text, UTF_8.name());
-        } catch (UnsupportedEncodingException ex) {
-            LOGGER.warn("UTF-8 is not supported?");
-            LOGGER.info("", ex);
-        }
-        return "";
+        return URLEncoder.encode(text, UTF_8);
     }
 
     /**
@@ -74,6 +59,10 @@ public class EscapeTool {
         return StringEscapeUtils.escapeHtml4(text);
     }
 
+    public String html(Object o) {
+        return xml(o == null ? null : o.toString());
+    }
+
     /**
      * XML Encodes the provided text.
      *
@@ -87,6 +76,10 @@ public class EscapeTool {
         return StringEscapeUtils.escapeXml11(text);
     }
 
+    public String xml(Object o) {
+        return xml(o == null ? null : o.toString());
+    }
+
     /**
      * JSON Encodes the provided text.
      *
@@ -98,6 +91,10 @@ public class EscapeTool {
             return text;
         }
         return StringEscapeUtils.escapeJson(text);
+    }
+
+    public String json(Object o) {
+        return xml(o == null ? null : o.toString());
     }
 
     /**
@@ -126,7 +123,7 @@ public class EscapeTool {
             return "\"\"";
         }
         final String str = text.trim().replace("\n", " ");
-        if (str.trim().length() == 0) {
+        if (str.isBlank()) {
             return "\"\"";
         }
         return StringEscapeUtils.escapeCsv(str);

@@ -17,20 +17,21 @@
  */
 package org.owasp.dependencycheck.analyzer;
 
-import static org.junit.Assert.assertEquals;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.owasp.dependencycheck.BaseDBTestCase;
 import org.owasp.dependencycheck.Engine;
 import org.owasp.dependencycheck.dependency.Confidence;
 import org.owasp.dependencycheck.dependency.Dependency;
-import static org.junit.Assert.assertTrue;
 import org.owasp.dependencycheck.dependency.EvidenceType;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  *
  * @author Jeremy Long
  */
-public class NpmCPEAnalyzerIT extends BaseDBTestCase {
+class NpmCPEAnalyzerIT extends BaseDBTestCase {
 
     /**
      * Test of analyzeDependency method, of class CPEAnalyzer.
@@ -38,7 +39,7 @@ public class NpmCPEAnalyzerIT extends BaseDBTestCase {
      * @throws Exception is thrown when an exception occurs
      */
     @Test
-    public void testAnalyzeDependency() throws Exception {
+    void testAnalyzeDependency() throws Exception {
 
         NpmCPEAnalyzer instance = new NpmCPEAnalyzer();
         try (Engine engine = new Engine(getSettings())) {
@@ -82,11 +83,11 @@ public class NpmCPEAnalyzerIT extends BaseDBTestCase {
             System.out.println(id.getValue());
             return expectedCpe.equals(id.getValue());
         });
-        assertTrue(String.format("%s:%s:%s identifier not found", vendor, product, version), found);
+        assertTrue(found, String.format("%s:%s:%s identifier not found", vendor, product, version));
     }
 
     @Test
-    public void testAnalyzeDependencyNoMatch() throws Exception {
+    void testAnalyzeDependencyNoMatch() throws Exception {
 
         NpmCPEAnalyzer instance = new NpmCPEAnalyzer();
         try (Engine engine = new Engine(getSettings())) {

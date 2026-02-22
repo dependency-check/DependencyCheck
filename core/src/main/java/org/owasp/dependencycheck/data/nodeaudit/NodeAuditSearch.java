@@ -31,7 +31,6 @@ import org.apache.hc.core5.http.ContentType;
 import org.apache.hc.core5.http.Header;
 import org.apache.hc.core5.http.HttpHeaders;
 import org.apache.hc.core5.http.message.BasicHeader;
-import org.json.JSONException;
 import org.json.JSONObject;
 import org.owasp.dependencycheck.utils.DownloadFailedException;
 import org.owasp.dependencycheck.utils.Downloader;
@@ -171,7 +170,7 @@ public class NodeAuditSearch {
                 cache.put(key, advisories);
             }
             return advisories;
-        } catch (RuntimeException | URISyntaxException | JSONException | TooManyRequestsException | ResourceNotFoundException ex) {
+        } catch (RuntimeException | URISyntaxException | TooManyRequestsException | ResourceNotFoundException ex) {
             LOGGER.debug("Error connecting to Node Audit API. Error: {}",
                     ex.getMessage());
             throw new SearchException("Could not connect to Node Audit API: " + ex.getMessage(), ex);

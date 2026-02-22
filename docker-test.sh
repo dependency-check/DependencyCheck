@@ -1,16 +1,12 @@
-#!/bin/bash -e
-
-VERSION=$(mvn -q \
-    -Dexec.executable="echo" \
-    -Dexec.args='${project.version}' \
-    --non-recursive \
-    org.codehaus.mojo:exec-maven-plugin:1.3.1:exec)
+#!/usr/bin/env bash
+set -euo pipefail
+VERSION="$(mvn help:evaluate -q --non-recursive -DforceStdout -Dexpression=project.version)"
 
 SCAN_TARGET="./cli/target/release/lib"
 
 if [ ! -d "$SCAN_TARGET" ]; then 
-  echo "Scan target does not exist: $SCAN_TARGET"
-  exit 1
+    echo "Scan target does not exist: $SCAN_TARGET"
+    exit 1
 fi
 
 if [ -f "$HOME/OWASP-Dependency-Check/reports/dependency-check-report.json" ]; then
@@ -61,6 +57,8 @@ docker run --rm \
     --scan /src \
     --format "JSON" \
     --project "test scan" \
+    --disableCentral \
+    --disableOssIndex \
     --out /report \
     --log /report/odc.log \
     --nvdDatafeed https://dependency-check.github.io/DependencyCheck/hb_nvd/
@@ -71,8 +69,8 @@ cd -
 echo ""
 grep -oF "dependency-check-core-$VERSION.jar" $HOME/OWASP-Dependency-Check/reports/dependency-check-report.json  > /dev/null 2>&1
 if [[ "$?" -eq 0 ]] ; then
-  echo "SUCCESS - dependency-check docker test passed"
+    echo "SUCCESS - dependency-check docker test passed"
 else
-  echo "FAILED - dependency-check docker test failed"
-  exit 1
+    echo "FAILED - dependency-check docker test failed"
+    exit 1
 fi

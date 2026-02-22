@@ -1,4 +1,4 @@
-[![Maven Central](https://img.shields.io/maven-central/v/org.owasp/dependency-check-maven.svg)](https://mvnrepository.com/artifact/org.owasp/dependency-check-maven) [![Build and Deploy Snapshot](https://github.com/dependency-check/DependencyCheck/actions/workflows/build.yml/badge.svg)](https://github.com/dependency-check/DependencyCheck/actions/workflows/build.yml) [![Coverity Scan Build Status](https://img.shields.io/coverity/scan/1654.svg)](https://scan.coverity.com/projects/dependencycheck) [![Codacy Badge](https://api.codacy.com/project/badge/Grade/6b6021d481dc41a888c5da0d9ecf9494)](https://www.codacy.com/app/jeremylong/DependencyCheck?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=jeremylong/DependencyCheck&amp;utm_campaign=Badge_Grade) [![CII Best Practices](https://bestpractices.coreinfrastructure.org/projects/843/badge)](https://bestpractices.coreinfrastructure.org/projects/843) [![Apache 2.0 License](https://img.shields.io/badge/license-Apache%202-blue.svg)](https://www.apache.org/licenses/LICENSE-2.0.txt)
+[![Maven Central](https://img.shields.io/maven-central/v/org.owasp/dependency-check-maven.svg)](https://mvnrepository.com/artifact/org.owasp/dependency-check-maven) [![Build and Deploy Snapshot](https://github.com/dependency-check/DependencyCheck/actions/workflows/build.yml/badge.svg)](https://github.com/dependency-check/DependencyCheck/actions/workflows/build.yml) [![CII Best Practices](https://bestpractices.coreinfrastructure.org/projects/843/badge)](https://bestpractices.coreinfrastructure.org/projects/843) [![Apache 2.0 License](https://img.shields.io/badge/license-Apache%202-blue.svg)](https://www.apache.org/licenses/LICENSE-2.0.txt)
 
 [![Black Hat Arsenal](https://raw.githubusercontent.com/toolswatch/badges/master/arsenal/usa/2018.svg?sanitize=true)](https://www.blackhat.com/us-18/arsenal.html#jeremy-long) [![Black Hat Arsenal](https://raw.githubusercontent.com/toolswatch/badges/master/arsenal/usa/2015.svg?sanitize=true)](https://www.blackhat.com/us-15/arsenal.html#jeremy-long) [![Black Hat Arsenal](https://raw.githubusercontent.com/toolswatch/badges/master/arsenal/usa/2014.svg?sanitize=true)](https://www.blackhat.com/us-14/arsenal.html#Long) [![Black Hat Arsenal](https://raw.githubusercontent.com/toolswatch/badges/master/arsenal/usa/2013.svg?sanitize=true)](https://www.blackhat.com/us-13/arsenal.html#Long)
 
@@ -12,33 +12,29 @@ Documentation and links to production binary releases can be found on the [githu
 
 This product uses the NVD API but is not endorsed or certified by the NVD.
 
+## Mandatory Upgrade to 12.1.0+
+
+Due to NVD API compatibility changes, an upgrade is mandatory. See [#7463](https://github.com/dependency-check/DependencyCheck/issues/7463) for more information.
 
 ## Breaking Changes in 11.0.0
 
-- Java 11 is now required to run dependency-check 11.0.0 or higher
+- Java 11 is now required to run dependency-check `11.0.0` or higher
 - H2 database upgrade
 
-    11.0.0 contains breaking changes using the local H2 database. A full download
+    `11.0.0` contains breaking changes using the local H2 database. A full download
     of the NVD data will occur. Note that if you are using a shared data directory
     the h2 database file is not compatible with older versions of dependency-check.
     If you run into problems you may need to run a purge:
 
     - gradle: `./gradlew dependencyCheckPurge`
-    - maven: `mvn org.owasp:dependency-check-maven:9.0.0:purge`
+    - maven: `mvn org.owasp:dependency-check-maven:11.0.0:purge`
     - cli: `dependency-check.sh --purge`
 
-## Mandatory Upgrade Notice
-
-**Upgrading to 10.0.2 or later is mandatory**
-
-Older versions of dependency-check are causing numerous, duplicative requests that
-end in processing failures are causing unnecassary load on the NVD API. Dependency-check
-10.0.2 uses an updated `User-Agent` header that will allow the NVD to block calls
-from the older client.
+## Other notices
 
 ### NVD API Key Highly Recommended
 
-Dependency-check has moved from using the NVD data-feed to the NVD API.
+Dependency-check moved from using the NVD data-feed to the NVD API since `9.0.0+` (January 2024).
 Users of dependency-check are **highly** encouraged to obtain an NVD API Key; see https://nvd.nist.gov/developers/request-an-api-key
 Without an NVD API Key dependency-check's updates will be **extremely slow**.
 Please see the documentation for the cli, maven, gradle, or ant integrations on
@@ -50,9 +46,18 @@ The NVD API has enforced rate limits. If you are using a single API KEY and
 multiple builds occur you could hit the rate limit and receive 403 errors. In
 a CI environment one must use a caching strategy.
 
-#### Gradle build Environment
+### OSSIndex API Token Now Required for usage
 
-With 9.0.0 users may encounter issues with `NoSuchMethodError` exceptions due to
+In September 2025 Sonatype OSSIndex started enforcing use of API tokens. If you 
+wish to use Sonatype OSSIndex you must configure Dependency-Check
+to use a username and API token/password; see https://ossindex.sonatype.org/doc/api-token.
+Without OSSIndex credentials, Dependency Check will **automatically disable the OSSIndex analyzer**.
+Please see the documentation for the cli, maven, gradle, or ant integrations on
+how to set the OSSIndex credentials.
+
+### Gradle build Environment
+
+With `9.0.0+` users may encounter issues with `NoSuchMethodError` exceptions due to
 dependency resolution. If you encounter this issue you will need to pin some of
 the transitive dependencies of dependency-check to specific versions. For example:
 
@@ -175,7 +180,7 @@ For instructions on the use of the Ant Task, please see the [dependency-check-an
 
 For installation to pass, you must have the following components installed:
 * Java: `java -version` 11.0
-* Maven: `mvn -version` 3.5.0 and higher
+* Maven: `mvn -version` 3.6.3 and higher
 
 Tests cases require:
 * dotnet core version 8.0
@@ -351,7 +356,7 @@ To build dependency-check docker image run the command:
 
 ```
 mvn -s settings.xml install
-./build-docker.sh
+./docker-build.sh
 ```
 
 License
@@ -363,7 +368,9 @@ Dependency-Check makes use of several other open source libraries. Please see th
 
 This product uses the NVD API but is not endorsed or certified by the NVD.
 
-Copyright (c) 2012-2024 Jeremy Long. All Rights Reserved.
+Copyright (c) 2012-2025 Jeremy Long. All Rights Reserved.
 
   [wiki]: https://github.com/dependency-check/DependencyCheck/wiki
   [notices]: https://github.com/dependency-check/DependencyCheck/blob/main/NOTICE.txt
+
+<img referrerpolicy="no-referrer-when-downgrade" src="https://static.scarf.sh/a.png?x-pxid=c78174f3-f898-4a5d-b3ab-1202b7db8ef6" />

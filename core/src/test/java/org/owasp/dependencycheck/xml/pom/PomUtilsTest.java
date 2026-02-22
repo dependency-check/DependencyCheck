@@ -17,20 +17,21 @@
  */
 package org.owasp.dependencycheck.xml.pom;
 
+import org.junit.jupiter.api.Test;
+import org.owasp.dependencycheck.BaseTest;
+import org.owasp.dependencycheck.analyzer.exception.AnalysisException;
+
 import java.io.File;
 import java.util.jar.JarFile;
 
-import org.junit.Test;
-import static org.junit.Assert.*;
-import org.owasp.dependencycheck.BaseTest;
-import org.owasp.dependencycheck.analyzer.exception.AnalysisException;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Test the PomUtils object.
  *
  * @author Jeremy Long
  */
-public class PomUtilsTest extends BaseTest {
+class PomUtilsTest extends BaseTest {
 
     /**
      * Test of readPom method, of class PomUtils.
@@ -39,7 +40,7 @@ public class PomUtilsTest extends BaseTest {
      * exception
      */
     @Test
-    public void testReadPom_File() throws Exception {
+    void testReadPom_File() throws Exception {
         File file = BaseTest.getResourceAsFile(this, "dwr-pom.xml");
         String expResult = "Direct Web Remoting";
         Model result = PomUtils.readPom(file);
@@ -62,7 +63,7 @@ public class PomUtilsTest extends BaseTest {
     }
 
     @Test
-    public void testReadPom_String_File() throws Exception {
+    void testReadPom_String_File() throws Exception {
         File fileCommonValidator = BaseTest.getResourceAsFile(this, "commons-validator-1.4.0.jar");
         JarFile jar = new JarFile(fileCommonValidator, false);
         String expResult = "Commons Validator";
@@ -71,7 +72,7 @@ public class PomUtilsTest extends BaseTest {
     }
 
     @Test
-    public void testReadPom_should_trim_version() throws AnalysisException {
+    void testReadPom_should_trim_version() throws AnalysisException {
         File input = BaseTest.getResourceAsFile(this, "pom/pom-with-new-line.xml");
         String expectedOutputVersion = "2.2.0";
 

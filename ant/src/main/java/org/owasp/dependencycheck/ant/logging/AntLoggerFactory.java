@@ -17,7 +17,6 @@
  */
 package org.owasp.dependencycheck.ant.logging;
 
-import org.apache.tools.ant.Task;
 import org.slf4j.ILoggerFactory;
 import org.slf4j.Logger;
 
@@ -29,28 +28,13 @@ import org.slf4j.Logger;
 public class AntLoggerFactory implements ILoggerFactory {
 
     /**
-     * A reference to the Ant logger Adapter.
-     */
-    private final AntLoggerAdapter antLoggerAdapter;
-
-    /**
-     * Constructs a new Ant Logger Factory.
-     *
-     * @param task the Ant task to use for logging
-     */
-    public AntLoggerFactory(Task task) {
-        super();
-        this.antLoggerAdapter = new AntLoggerAdapter(task);
-    }
-
-    /**
      * Returns the Ant logger adapter.
      *
-     * @param name ignored in this implementation
+     * @param name the logger name
      * @return the Ant logger adapter
      */
     @Override
     public Logger getLogger(String name) {
-        return antLoggerAdapter;
+        return new AntLoggerAdapter(name);
     }
 }

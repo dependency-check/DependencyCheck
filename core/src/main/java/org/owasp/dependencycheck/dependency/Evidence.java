@@ -21,7 +21,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.CompareToBuilder;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 import java.io.Serializable;
 import javax.annotation.concurrent.ThreadSafe;
@@ -235,7 +235,7 @@ public class Evidence implements Serializable, Comparable<Evidence> {
      * @return an integer indicating the ordering of the two objects
      */
     @Override
-    public int compareTo(@NotNull Evidence o) {
+    public int compareTo(@NonNull Evidence o) {
         return new CompareToBuilder()
                 .append(this.source == null ? null : this.source.toLowerCase(), o.source == null ? null : o.source.toLowerCase())
                 .append(this.name == null ? null : this.name.toLowerCase(), o.name == null ? null : o.name.toLowerCase())

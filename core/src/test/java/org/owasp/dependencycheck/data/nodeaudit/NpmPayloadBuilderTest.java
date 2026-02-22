@@ -17,24 +17,25 @@
  */
 package org.owasp.dependencycheck.data.nodeaudit;
 
-import java.io.InputStream;
-
-import org.junit.Assert;
-import org.junit.Test;
-
 import jakarta.json.Json;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonObjectBuilder;
 import jakarta.json.JsonReader;
 import org.apache.commons.collections4.MultiValuedMap;
 import org.apache.commons.collections4.multimap.HashSetValuedHashMap;
-
+import org.junit.jupiter.api.Test;
 import org.owasp.dependencycheck.BaseTest;
 
-public class NpmPayloadBuilderTest {
+import java.io.InputStream;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+class NpmPayloadBuilderTest {
 
     @Test
-    public void testSanitizer() {
+    void testSanitizer() {
         JsonObjectBuilder builder = Json.createObjectBuilder()
                 .add("name", "my app")
                 .add("version", "1.0.0")
@@ -61,26 +62,26 @@ public class NpmPayloadBuilderTest {
         final MultiValuedMap<String, String> dependencyMap = new HashSetValuedHashMap<>();
         JsonObject sanitized = NpmPayloadBuilder.build(packageJson, dependencyMap, false);
 
-        Assert.assertTrue(sanitized.containsKey("name"));
-        Assert.assertTrue(sanitized.containsKey("version"));
-        Assert.assertTrue(sanitized.containsKey("dependencies"));
-        Assert.assertTrue(sanitized.containsKey("requires"));
+        assertTrue(sanitized.containsKey("name"));
+        assertTrue(sanitized.containsKey("version"));
+        assertTrue(sanitized.containsKey("dependencies"));
+        assertTrue(sanitized.containsKey("requires"));
 
         JsonObject dependencies = sanitized.getJsonObject("dependencies");
-        Assert.assertTrue(dependencies.containsKey("node_modules/jest-resolve"));
+        assertTrue(dependencies.containsKey("node_modules/jest-resolve"));
 
         JsonObject requires = sanitized.getJsonObject("requires");
-        Assert.assertTrue(requires.containsKey("abbrev"));
-        Assert.assertEquals("^1.1.1", requires.getString("abbrev"));
-        Assert.assertEquals("*", requires.getString("node_modules/jest-resolve"));
+        assertTrue(requires.containsKey("abbrev"));
+        assertEquals("^1.1.1", requires.getString("abbrev"));
+        assertEquals("*", requires.getString("node_modules/jest-resolve"));
 
-        Assert.assertFalse(sanitized.containsKey("lockfileVersion"));
-        Assert.assertFalse(sanitized.containsKey("random"));
+        assertFalse(sanitized.containsKey("lockfileVersion"));
+        assertFalse(sanitized.containsKey("random"));
     }
 
 
     @Test
-    public void testSkippedDependencies() {
+    void testSkippedDependencies() {
         JsonObjectBuilder builder = Json.createObjectBuilder()
                 .add("name", "my app")
                 .add("version", "1.0.0")
@@ -110,47 +111,47 @@ public class NpmPayloadBuilderTest {
         final MultiValuedMap<String, String> dependencyMap = new HashSetValuedHashMap<>();
         JsonObject sanitized = NpmPayloadBuilder.build(packageJson, dependencyMap, false);
 
-        Assert.assertTrue(sanitized.containsKey("name"));
-        Assert.assertTrue(sanitized.containsKey("version"));
-        Assert.assertTrue(sanitized.containsKey("dependencies"));
-        Assert.assertTrue(sanitized.containsKey("requires"));
+        assertTrue(sanitized.containsKey("name"));
+        assertTrue(sanitized.containsKey("version"));
+        assertTrue(sanitized.containsKey("dependencies"));
+        assertTrue(sanitized.containsKey("requires"));
 
         JsonObject requires = sanitized.getJsonObject("requires");
-        Assert.assertTrue(requires.containsKey("abbrev"));
-        Assert.assertEquals("^1.1.1", requires.getString("abbrev"));
+        assertTrue(requires.containsKey("abbrev"));
+        assertEquals("^1.1.1", requires.getString("abbrev"));
 
         //local and alias need to be skipped
-        Assert.assertFalse(requires.containsKey("react-dom"));
-        Assert.assertFalse(requires.containsKey("fake_submodule"));
+        assertFalse(requires.containsKey("react-dom"));
+        assertFalse(requires.containsKey("fake_submodule"));
 
-        Assert.assertFalse(sanitized.containsKey("lockfileVersion"));
-        Assert.assertFalse(sanitized.containsKey("random"));
+        assertFalse(sanitized.containsKey("lockfileVersion"));
+        assertFalse(sanitized.containsKey("random"));
     }
 
     @Test
-    public void testSanitizePackage() {
+    void testSanitizePackage() {
         InputStream in = BaseTest.getResourceAsStream(this, "nodeaudit/package-lock.json");
         final MultiValuedMap<String, String> dependencyMap = new HashSetValuedHashMap<>();
         try (JsonReader jsonReader = Json.createReader(in)) {
             JsonObject packageJson = jsonReader.readObject();
             JsonObject sanitized = NpmPayloadBuilder.build(packageJson, dependencyMap, false);
 
-            Assert.assertTrue(sanitized.containsKey("name"));
-            Assert.assertTrue(sanitized.containsKey("version"));
-            Assert.assertTrue(sanitized.containsKey("dependencies"));
-            Assert.assertTrue(sanitized.containsKey("requires"));
+            assertTrue(sanitized.containsKey("name"));
+            assertTrue(sanitized.containsKey("version"));
+            assertTrue(sanitized.containsKey("dependencies"));
+            assertTrue(sanitized.containsKey("requires"));
 
             JsonObject requires = sanitized.getJsonObject("requires");
-            Assert.assertTrue(requires.containsKey("bcrypt-nodejs"));
-            Assert.assertEquals("^0.0.3", requires.getString("bcrypt-nodejs"));
+            assertTrue(requires.containsKey("bcrypt-nodejs"));
+            assertEquals("^0.0.3", requires.getString("bcrypt-nodejs"));
 
-            Assert.assertFalse(sanitized.containsKey("lockfileVersion"));
-            Assert.assertFalse(sanitized.containsKey("random"));
+            assertFalse(sanitized.containsKey("lockfileVersion"));
+            assertFalse(sanitized.containsKey("random"));
         }
     }
 
     @Test
-    public void testPayloadWithLockAndPackage() {
+    void testPayloadWithLockAndPackage() {
         InputStream lock = BaseTest.getResourceAsStream(this, "nodeaudit/package-lock.json");
         InputStream json = BaseTest.getResourceAsStream(this, "nodeaudit/package.json");
         final MultiValuedMap<String, String> dependencyMap = new HashSetValuedHashMap<>();
@@ -159,26 +160,26 @@ public class NpmPayloadBuilderTest {
             JsonObject lockJson =    lockReader.readObject();
             JsonObject sanitized = NpmPayloadBuilder.build(lockJson, packageJson, dependencyMap, false);
 
-            Assert.assertTrue(sanitized.containsKey("name"));
-            Assert.assertTrue(sanitized.containsKey("version"));
-            Assert.assertTrue(sanitized.containsKey("dependencies"));
-            Assert.assertTrue(sanitized.containsKey("requires"));
+            assertTrue(sanitized.containsKey("name"));
+            assertTrue(sanitized.containsKey("version"));
+            assertTrue(sanitized.containsKey("dependencies"));
+            assertTrue(sanitized.containsKey("requires"));
 
             JsonObject requires = sanitized.getJsonObject("requires");
-            Assert.assertTrue(requires.containsKey("bcrypt-nodejs"));
-            Assert.assertEquals("0.0.3", requires.getString("bcrypt-nodejs"));
+            assertTrue(requires.containsKey("bcrypt-nodejs"));
+            assertEquals("0.0.3", requires.getString("bcrypt-nodejs"));
 
-            Assert.assertFalse(sanitized.containsKey("lockfileVersion"));
-            Assert.assertFalse(sanitized.containsKey("random"));
+            assertFalse(sanitized.containsKey("lockfileVersion"));
+            assertFalse(sanitized.containsKey("random"));
 
-            Assert.assertTrue(sanitized.containsKey("name"));
-            Assert.assertTrue(sanitized.containsKey("version"));
-            Assert.assertTrue(sanitized.containsKey("dependencies"));
-            Assert.assertTrue(sanitized.containsKey("requires"));
+            assertTrue(sanitized.containsKey("name"));
+            assertTrue(sanitized.containsKey("version"));
+            assertTrue(sanitized.containsKey("dependencies"));
+            assertTrue(sanitized.containsKey("requires"));
 
             //local and alias need to be skipped
-            Assert.assertFalse(requires.containsKey("react-dom"));
-            Assert.assertFalse(requires.containsKey("fake_submodule"));
+            assertFalse(requires.containsKey("react-dom"));
+            assertFalse(requires.containsKey("fake_submodule"));
         }
     }
 }

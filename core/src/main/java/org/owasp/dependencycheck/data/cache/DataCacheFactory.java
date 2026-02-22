@@ -22,6 +22,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 import java.util.Properties;
+
+import io.github.jeremylong.jcs3.slf4j.Slf4jAdapter;
 import org.apache.commons.jcs3.JCS;
 import org.apache.commons.jcs3.access.CacheAccess;
 import org.apache.commons.jcs3.access.exception.CacheException;
@@ -77,6 +79,13 @@ public class DataCacheFactory {
         POM
     }
 
+    static {
+        System.setProperty("jcs.logSystem", "slf4j");
+        if (!LOGGER.isTraceEnabled()) {
+            Slf4jAdapter.muteLogging(true);
+        }
+    }
+
     /**
      * Creates the data cache factory.
      *
@@ -95,10 +104,6 @@ public class DataCacheFactory {
                     throw new CacheException("Unable to create disk cache: " + cacheDirectory);
                 }
                 try (InputStream in = FileUtils.getResourceAsStream(CACHE_PROPERTIES)) {
-                    if (in == null) {
-                        throw new RuntimeException("Cache properties `" + CACHE_PROPERTIES + "` could not be found");
-                    }
-
                     final Properties properties = new Properties();
                     properties.load(in);
                     properties.put("jcs.auxiliary.ODC.attributes.DiskPath", cacheDirectory.getCanonicalPath());

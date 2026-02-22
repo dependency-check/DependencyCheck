@@ -16,26 +16,25 @@
 package org.owasp.dependencycheck.data.update.nvd.api;
 
 import com.fasterxml.jackson.core.JsonParseException;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.owasp.dependencycheck.BaseTest;
 import org.owasp.dependencycheck.data.nvdcve.CveDB;
-import org.owasp.dependencycheck.utils.Settings;
 
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.NoSuchFileException;
 
-import static org.junit.Assert.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
  *
  * @author Jeremy Long
  */
-public class NvdApiProcessorTest extends BaseTest {
+class NvdApiProcessorTest extends BaseTest {
 
     @Test
-    public void doesNotExistFile() throws Exception {
+    void doesNotExistFile() {
         try (CveDB cve = new CveDB(getSettings())) {
             File file = new File("does_not_exist");
             NvdApiProcessor processor = new NvdApiProcessor(null, file);
@@ -44,7 +43,7 @@ public class NvdApiProcessorTest extends BaseTest {
     }
 
     @Test
-    public void unspecifiedFileName() throws Exception {
+    void unspecifiedFileName() throws Exception {
         try (CveDB cve = new CveDB(getSettings())) {
             File file = File.createTempFile("test", "test");
             writeFileString(file, "");
@@ -54,7 +53,7 @@ public class NvdApiProcessorTest extends BaseTest {
     }
 
     @Test
-    public void invalidFileContent() throws Exception {
+    void invalidFileContent() throws Exception {
         try (CveDB cve = new CveDB(getSettings())) {
             File file = File.createTempFile("test", "test.json");
             // invalid content (broken array)
@@ -65,7 +64,7 @@ public class NvdApiProcessorTest extends BaseTest {
     }
 
     @Test
-    public void processValidStructure() throws Exception {
+    void processValidStructure() throws Exception {
         try (CveDB cve = new CveDB(getSettings())) {
             File file = File.createTempFile("test", "test.json");
             writeFileString(file, "[]");

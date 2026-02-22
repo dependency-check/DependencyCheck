@@ -20,23 +20,26 @@ package org.owasp.dependencycheck.data.cpe;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.TopDocs;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.Test;
-import static org.junit.Assert.*;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.owasp.dependencycheck.BaseDBTestCase;
 import org.owasp.dependencycheck.Engine;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  *
  * @author jeremy long
  */
-public class CpeMemoryIndexTest extends BaseDBTestCase {
+class CpeMemoryIndexTest extends BaseDBTestCase {
 
     private static final CpeMemoryIndex instance = CpeMemoryIndex.getInstance();
     private static Engine engine = null;
 
-    @AfterClass
+    @AfterAll
     public static void tearDownClass() {
         if (instance.isOpen()) {
             instance.close();
@@ -46,7 +49,7 @@ public class CpeMemoryIndexTest extends BaseDBTestCase {
         }
     }
 
-    @Before
+    @BeforeEach
     @Override
     public void setUp() throws Exception {
         super.setUp();
@@ -61,7 +64,7 @@ public class CpeMemoryIndexTest extends BaseDBTestCase {
      * Test of getInstance method, of class CpeMemoryIndex.
      */
     @Test
-    public void testGetInstance() {
+    void testGetInstance() {
         CpeMemoryIndex result = CpeMemoryIndex.getInstance();
         assertNotNull(result);
     }
@@ -70,7 +73,7 @@ public class CpeMemoryIndexTest extends BaseDBTestCase {
      * Test of isOpen method, of class CpeMemoryIndex.
      */
     @Test
-    public void testIsOpen() {
+    void testIsOpen() {
         boolean expResult = true;
         boolean result = instance.isOpen();
         assertEquals(expResult, result);
@@ -80,7 +83,7 @@ public class CpeMemoryIndexTest extends BaseDBTestCase {
      * Test of search method, of class CpeMemoryIndex.
      */
     @Test
-    public void testSearch_String_int() throws Exception {
+    void testSearch_String_int() throws Exception {
         String searchString = "product:(commons) AND vendor:(apache)";
         int maxQueryResults = 3;
         TopDocs result = instance.search(searchString, maxQueryResults);
@@ -92,7 +95,7 @@ public class CpeMemoryIndexTest extends BaseDBTestCase {
      * Test of parseQuery method, of class CpeMemoryIndex.
      */
     @Test
-    public void testParseQuery() throws Exception {
+    void testParseQuery() throws Exception {
         String searchString = "product:(resteasy) AND vendor:(red hat)";
 
         String expResult = "+product:resteasy +(vendor:red vendor:redhat vendor:hat)";
@@ -111,7 +114,7 @@ public class CpeMemoryIndexTest extends BaseDBTestCase {
      * Test of search method, of class CpeMemoryIndex.
      */
     @Test
-    public void testSearch_Query_int() throws Exception {
+    void testSearch_Query_int() throws Exception {
         String searchString = "product:(commons) AND vendor:(apache)";
         Query query = instance.parseQuery(searchString);
         int maxQueryResults = 3;
@@ -123,7 +126,7 @@ public class CpeMemoryIndexTest extends BaseDBTestCase {
      * Test of getDocument method, of class CpeMemoryIndex.
      */
     @Test
-    public void testGetDocument() throws Exception {
+    void testGetDocument() throws Exception {
         String searchString = "product:(commons) AND vendor:(apache)";
         int maxQueryResults = 1;
         TopDocs docs = instance.search(searchString, maxQueryResults);
@@ -136,7 +139,7 @@ public class CpeMemoryIndexTest extends BaseDBTestCase {
      * Test of numDocs method, of class CpeMemoryIndex.
      */
     @Test
-    public void testNumDocs() {
+    void testNumDocs() {
         int result = instance.numDocs();
         assertTrue(result > 100);
     }

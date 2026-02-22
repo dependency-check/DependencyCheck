@@ -15,27 +15,23 @@
  */
 package org.owasp.dependencycheck.analyzer;
 
-import java.io.File;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import org.junit.Before;
-import org.junit.Test;
-import static org.junit.Assert.*;
-import static org.junit.Assume.assumeFalse;
-
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.owasp.dependencycheck.BaseTest;
 import org.owasp.dependencycheck.utils.Settings;
+
+import java.io.File;
+
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  *
  * @author jeremy long
  */
-public class ArchiveAnalyzerTest extends BaseTest {
+class ArchiveAnalyzerTest extends BaseTest {
 
-    @Before
+    @BeforeEach
     @Override
     public void setUp() throws Exception {
         super.setUp();
@@ -46,7 +42,7 @@ public class ArchiveAnalyzerTest extends BaseTest {
      * Test of analyzeDependency method, of class ArchiveAnalyzer.
      */
     @Test
-    public void testZippableExtensions() throws Exception {
+    void testZippableExtensions() {
         ArchiveAnalyzer instance = new ArchiveAnalyzer();
         instance.initialize(getSettings());
         assertTrue(instance.getFileFilter().accept(new File("c:/test.zip")));
@@ -59,7 +55,7 @@ public class ArchiveAnalyzerTest extends BaseTest {
      * Test of analyzeDependency method, of class ArchiveAnalyzer.
      */
     @Test
-    public void testRpmExtension() throws Exception {
+    void testRpmExtension() {
         ArchiveAnalyzer instance = new ArchiveAnalyzer();
         instance.initialize(getSettings());
         assertTrue(instance.getFileFilter().accept(new File("/srv/struts-1.2.9-162.35.1.uyuni.noarch.rpm")));

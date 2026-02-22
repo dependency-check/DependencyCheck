@@ -17,92 +17,127 @@
  */
 package org.owasp.dependencycheck.ant.logging;
 
+import java.util.Objects;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.Task;
+import org.slf4j.Logger;
+import org.slf4j.Marker;
 import org.slf4j.helpers.FormattingTuple;
-import org.slf4j.helpers.MarkerIgnoringBase;
 import org.slf4j.helpers.MessageFormatter;
 
 /**
  * An instance of {@link org.slf4j.Logger} which simply calls the log method on
- * the delegate Ant task.
+ * the current Ant task obtained from {@link AntTaskHolder}.
  *
  * @author colezlaw
  */
-public class AntLoggerAdapter extends MarkerIgnoringBase {
+public class AntLoggerAdapter implements Logger {
+
 
     /**
-     * The serial version UID for serialization.
+     * The logger name.
      */
-    private static final long serialVersionUID = -8546294566287970709L;
-    /**
-     * A reference to the Ant task used for logging.
-     */
-    private transient Task task;
+    private final String name;
 
     /**
-     * Constructs an Ant Logger Adapter.
+     * Constructor.
      *
-     * @param task the Ant Task to use for logging
+     * @param name the logger name
      */
-    public AntLoggerAdapter(Task task) {
-        super();
-        this.task = task;
-    }
-
-    /**
-     * Sets the current Ant task to use for logging.
-     *
-     * @param task the Ant task to use for logging
-     */
-    public void setTask(Task task) {
-        this.task = task;
+    public AntLoggerAdapter(String name) {
+        this.name = Objects.requireNonNull(name, "Logger name cannot be null");
     }
 
     @Override
+    public String getName() {
+        return name;
+    }
+
+    private Task task() {
+        return AntTaskHolder.getTask();
+    }
+
+    // --- TRACE ---
+
+    @Override
     public boolean isTraceEnabled() {
-        // Might be a more efficient way to do this, but Ant doesn't enable or disable
-        // various levels globally - it just fires things at registered Listeners.
         return true;
     }
 
     @Override
     public void trace(String msg) {
-        if (task != null) {
-            task.log(msg, Project.MSG_VERBOSE);
+        final Task t = task();
+        if (t != null) {
+            t.log(msg, Project.MSG_VERBOSE);
         }
     }
 
     @Override
     public void trace(String format, Object arg) {
-        if (task != null) {
+        final Task t = task();
+        if (t != null) {
             final FormattingTuple tp = MessageFormatter.format(format, arg);
-            task.log(tp.getMessage(), Project.MSG_VERBOSE);
+            t.log(tp.getMessage(), Project.MSG_VERBOSE);
         }
     }
 
     @Override
     public void trace(String format, Object arg1, Object arg2) {
-        if (task != null) {
+        final Task t = task();
+        if (t != null) {
             final FormattingTuple tp = MessageFormatter.format(format, arg1, arg2);
-            task.log(tp.getMessage(), Project.MSG_VERBOSE);
+            t.log(tp.getMessage(), Project.MSG_VERBOSE);
         }
     }
 
     @Override
     public void trace(String format, Object... arguments) {
-        if (task != null) {
-            final FormattingTuple tp = MessageFormatter.format(format, arguments);
-            task.log(tp.getMessage(), Project.MSG_VERBOSE);
+        final Task t = task();
+        if (t != null) {
+            final FormattingTuple tp = MessageFormatter.arrayFormat(format, arguments);
+            t.log(tp.getMessage(), Project.MSG_VERBOSE);
         }
     }
 
     @Override
-    public void trace(String msg, Throwable t) {
-        if (task != null) {
-            task.log(msg, t, Project.MSG_VERBOSE);
+    public void trace(String msg, Throwable throwable) {
+        final Task t = task();
+        if (t != null) {
+            t.log(msg, throwable, Project.MSG_VERBOSE);
         }
     }
+
+    @Override
+    public boolean isTraceEnabled(Marker marker) {
+        return isTraceEnabled();
+    }
+
+    @Override
+    public void trace(Marker marker, String msg) {
+        trace(msg);
+    }
+
+    @Override
+    public void trace(Marker marker, String format, Object arg) {
+        trace(format, arg);
+    }
+
+    @Override
+    public void trace(Marker marker, String format, Object arg1, Object arg2) {
+        trace(format, arg1, arg2);
+    }
+
+    @Override
+    public void trace(Marker marker, String format, Object... argArray) {
+        trace(format, argArray);
+    }
+
+    @Override
+    public void trace(Marker marker, String msg, Throwable throwable) {
+        trace(msg, throwable);
+    }
+
+    // --- DEBUG ---
 
     @Override
     public boolean isDebugEnabled() {
@@ -111,41 +146,78 @@ public class AntLoggerAdapter extends MarkerIgnoringBase {
 
     @Override
     public void debug(String msg) {
-        if (task != null) {
-            task.log(msg, Project.MSG_DEBUG);
+        final Task t = task();
+        if (t != null) {
+            t.log(msg, Project.MSG_DEBUG);
         }
     }
 
     @Override
     public void debug(String format, Object arg) {
-        if (task != null) {
+        final Task t = task();
+        if (t != null) {
             final FormattingTuple tp = MessageFormatter.format(format, arg);
-            task.log(tp.getMessage(), Project.MSG_DEBUG);
+            t.log(tp.getMessage(), Project.MSG_DEBUG);
         }
     }
 
     @Override
     public void debug(String format, Object arg1, Object arg2) {
-        if (task != null) {
+        final Task t = task();
+        if (t != null) {
             final FormattingTuple tp = MessageFormatter.format(format, arg1, arg2);
-            task.log(tp.getMessage(), Project.MSG_DEBUG);
+            t.log(tp.getMessage(), Project.MSG_DEBUG);
         }
     }
 
     @Override
     public void debug(String format, Object... arguments) {
-        if (task != null) {
-            final FormattingTuple tp = MessageFormatter.format(format, arguments);
-            task.log(tp.getMessage(), Project.MSG_DEBUG);
+        final Task t = task();
+        if (t != null) {
+            final FormattingTuple tp = MessageFormatter.arrayFormat(format, arguments);
+            t.log(tp.getMessage(), Project.MSG_DEBUG);
         }
     }
 
     @Override
-    public void debug(String msg, Throwable t) {
-        if (task != null) {
-            task.log(msg, t, Project.MSG_DEBUG);
+    public void debug(String msg, Throwable throwable) {
+        final Task t = task();
+        if (t != null) {
+            t.log(msg, throwable, Project.MSG_DEBUG);
         }
     }
+
+    @Override
+    public boolean isDebugEnabled(Marker marker) {
+        return isDebugEnabled();
+    }
+
+    @Override
+    public void debug(Marker marker, String msg) {
+        debug(msg);
+    }
+
+    @Override
+    public void debug(Marker marker, String format, Object arg) {
+        debug(format, arg);
+    }
+
+    @Override
+    public void debug(Marker marker, String format, Object arg1, Object arg2) {
+        debug(format, arg1, arg2);
+    }
+
+    @Override
+    public void debug(Marker marker, String format, Object... arguments) {
+        debug(format, arguments);
+    }
+
+    @Override
+    public void debug(Marker marker, String msg, Throwable throwable) {
+        debug(msg, throwable);
+    }
+
+    // --- INFO ---
 
     @Override
     public boolean isInfoEnabled() {
@@ -154,41 +226,78 @@ public class AntLoggerAdapter extends MarkerIgnoringBase {
 
     @Override
     public void info(String msg) {
-        if (task != null) {
-            task.log(msg, Project.MSG_INFO);
+        final Task t = task();
+        if (t != null) {
+            t.log(msg, Project.MSG_INFO);
         }
     }
 
     @Override
     public void info(String format, Object arg) {
-        if (task != null) {
+        final Task t = task();
+        if (t != null) {
             final FormattingTuple tp = MessageFormatter.format(format, arg);
-            task.log(tp.getMessage(), Project.MSG_INFO);
+            t.log(tp.getMessage(), Project.MSG_INFO);
         }
     }
 
     @Override
     public void info(String format, Object arg1, Object arg2) {
-        if (task != null) {
+        final Task t = task();
+        if (t != null) {
             final FormattingTuple tp = MessageFormatter.format(format, arg1, arg2);
-            task.log(tp.getMessage(), Project.MSG_INFO);
+            t.log(tp.getMessage(), Project.MSG_INFO);
         }
     }
 
     @Override
     public void info(String format, Object... arguments) {
-        if (task != null) {
-            final FormattingTuple tp = MessageFormatter.format(format, arguments);
-            task.log(tp.getMessage(), Project.MSG_INFO);
+        final Task t = task();
+        if (t != null) {
+            final FormattingTuple tp = MessageFormatter.arrayFormat(format, arguments);
+            t.log(tp.getMessage(), Project.MSG_INFO);
         }
     }
 
     @Override
-    public void info(String msg, Throwable t) {
-        if (task != null) {
-            task.log(msg, t, Project.MSG_INFO);
+    public void info(String msg, Throwable throwable) {
+        final Task t = task();
+        if (t != null) {
+            t.log(msg, throwable, Project.MSG_INFO);
         }
     }
+
+    @Override
+    public boolean isInfoEnabled(Marker marker) {
+        return isInfoEnabled();
+    }
+
+    @Override
+    public void info(Marker marker, String msg) {
+        info(msg);
+    }
+
+    @Override
+    public void info(Marker marker, String format, Object arg) {
+        info(format, arg);
+    }
+
+    @Override
+    public void info(Marker marker, String format, Object arg1, Object arg2) {
+        info(format, arg1, arg2);
+    }
+
+    @Override
+    public void info(Marker marker, String format, Object... arguments) {
+        info(format, arguments);
+    }
+
+    @Override
+    public void info(Marker marker, String msg, Throwable throwable) {
+        info(msg, throwable);
+    }
+
+    // --- WARN ---
 
     @Override
     public boolean isWarnEnabled() {
@@ -197,41 +306,78 @@ public class AntLoggerAdapter extends MarkerIgnoringBase {
 
     @Override
     public void warn(String msg) {
-        if (task != null) {
-            task.log(msg, Project.MSG_WARN);
+        final Task t = task();
+        if (t != null) {
+            t.log(msg, Project.MSG_WARN);
         }
     }
 
     @Override
     public void warn(String format, Object arg) {
-        if (task != null) {
+        final Task t = task();
+        if (t != null) {
             final FormattingTuple tp = MessageFormatter.format(format, arg);
-            task.log(tp.getMessage(), Project.MSG_WARN);
+            t.log(tp.getMessage(), Project.MSG_WARN);
         }
     }
 
     @Override
     public void warn(String format, Object... arguments) {
-        if (task != null) {
-            final FormattingTuple tp = MessageFormatter.format(format, arguments);
-            task.log(tp.getMessage(), Project.MSG_WARN);
+        final Task t = task();
+        if (t != null) {
+            final FormattingTuple tp = MessageFormatter.arrayFormat(format, arguments);
+            t.log(tp.getMessage(), Project.MSG_WARN);
         }
     }
 
     @Override
     public void warn(String format, Object arg1, Object arg2) {
-        if (task != null) {
+        final Task t = task();
+        if (t != null) {
             final FormattingTuple tp = MessageFormatter.format(format, arg1, arg2);
-            task.log(tp.getMessage(), Project.MSG_WARN);
+            t.log(tp.getMessage(), Project.MSG_WARN);
         }
     }
 
     @Override
-    public void warn(String msg, Throwable t) {
-        if (task != null) {
-            task.log(msg, t, Project.MSG_WARN);
+    public void warn(String msg, Throwable throwable) {
+        final Task t = task();
+        if (t != null) {
+            t.log(msg, throwable, Project.MSG_WARN);
         }
     }
+
+    @Override
+    public boolean isWarnEnabled(Marker marker) {
+        return isWarnEnabled();
+    }
+
+    @Override
+    public void warn(Marker marker, String msg) {
+        warn(msg);
+    }
+
+    @Override
+    public void warn(Marker marker, String format, Object arg) {
+        warn(format, arg);
+    }
+
+    @Override
+    public void warn(Marker marker, String format, Object arg1, Object arg2) {
+        warn(format, arg1, arg2);
+    }
+
+    @Override
+    public void warn(Marker marker, String format, Object... arguments) {
+        warn(format, arguments);
+    }
+
+    @Override
+    public void warn(Marker marker, String msg, Throwable throwable) {
+        warn(msg, throwable);
+    }
+
+    // --- ERROR ---
 
     @Override
     public boolean isErrorEnabled() {
@@ -240,39 +386,74 @@ public class AntLoggerAdapter extends MarkerIgnoringBase {
 
     @Override
     public void error(String msg) {
-        if (task != null) {
-            task.log(msg, Project.MSG_ERR);
+        final Task t = task();
+        if (t != null) {
+            t.log(msg, Project.MSG_ERR);
         }
     }
 
     @Override
     public void error(String format, Object arg) {
-        if (task != null) {
+        final Task t = task();
+        if (t != null) {
             final FormattingTuple tp = MessageFormatter.format(format, arg);
-            task.log(tp.getMessage(), Project.MSG_ERR);
+            t.log(tp.getMessage(), Project.MSG_ERR);
         }
     }
 
     @Override
     public void error(String format, Object arg1, Object arg2) {
-        if (task != null) {
+        final Task t = task();
+        if (t != null) {
             final FormattingTuple tp = MessageFormatter.format(format, arg1, arg2);
-            task.log(tp.getMessage(), Project.MSG_ERR);
+            t.log(tp.getMessage(), Project.MSG_ERR);
         }
     }
 
     @Override
     public void error(String format, Object... arguments) {
-        if (task != null) {
-            final FormattingTuple tp = MessageFormatter.format(format, arguments);
-            task.log(tp.getMessage(), Project.MSG_ERR);
+        final Task t = task();
+        if (t != null) {
+            final FormattingTuple tp = MessageFormatter.arrayFormat(format, arguments);
+            t.log(tp.getMessage(), Project.MSG_ERR);
         }
     }
 
     @Override
-    public void error(String msg, Throwable t) {
-        if (task != null) {
-            task.log(msg, t, Project.MSG_ERR);
+    public void error(String msg, Throwable throwable) {
+        final Task t = task();
+        if (t != null) {
+            t.log(msg, throwable, Project.MSG_ERR);
         }
+    }
+
+    @Override
+    public boolean isErrorEnabled(Marker marker) {
+        return isErrorEnabled();
+    }
+
+    @Override
+    public void error(Marker marker, String msg) {
+        error(msg);
+    }
+
+    @Override
+    public void error(Marker marker, String format, Object arg) {
+        error(format, arg);
+    }
+
+    @Override
+    public void error(Marker marker, String format, Object arg1, Object arg2) {
+        error(format, arg1, arg2);
+    }
+
+    @Override
+    public void error(Marker marker, String format, Object... arguments) {
+        error(format, arguments);
+    }
+
+    @Override
+    public void error(Marker marker, String msg, Throwable throwable) {
+        error(msg, throwable);
     }
 }

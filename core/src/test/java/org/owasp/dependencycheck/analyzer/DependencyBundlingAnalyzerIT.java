@@ -17,20 +17,20 @@
  */
 package org.owasp.dependencycheck.analyzer;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.owasp.dependencycheck.BaseDBTestCase;
 
 /**
  *
  * @author Jeremy Long
  */
-public class DependencyBundlingAnalyzerIT extends BaseDBTestCase {
+class DependencyBundlingAnalyzerIT extends BaseDBTestCase {
 
     /**
      * Test of analyze method, of class DependencyBundlingAnalyzer.
      */
     @Test
-    public void testAnalyze() throws Exception {
+    void testAnalyze() {
 //        Engine engine = null;
 //        JarAnalyzer ja = null;
 //        FileNameAnalyzer fna = null;

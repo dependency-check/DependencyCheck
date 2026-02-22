@@ -1,20 +1,22 @@
-FROM golang:1.24.2-alpine AS go
+FROM golang:1.26.0-alpine AS go
 
-FROM azul/zulu-openjdk-alpine:21 AS jlink
+FROM azul/zulu-openjdk-alpine:25 AS jlink
 
-RUN "$JAVA_HOME/bin/jlink" --compress=2 --module-path /opt/java/openjdk/jmods --add-modules java.base,java.compiler,java.datatransfer,jdk.crypto.ec,java.desktop,java.instrument,java.logging,java.management,java.naming,java.rmi,java.scripting,java.security.sasl,java.sql,java.transaction.xa,java.xml,jdk.unsupported --output /jlinked
+RUN "$JAVA_HOME/bin/jlink" --compress=zip-6 --module-path /opt/java/openjdk/jmods --add-modules java.base,java.compiler,java.datatransfer,jdk.crypto.ec,java.desktop,java.instrument,java.logging,java.management,java.naming,java.rmi,java.scripting,java.security.sasl,java.sql,java.transaction.xa,java.xml,jdk.unsupported --output /jlinked
 
-FROM mcr.microsoft.com/dotnet/runtime:8.0-alpine3.18
+FROM mcr.microsoft.com/dotnet/runtime:8.0-alpine
 
 ARG VERSION
-ARG POSTGRES_DRIVER_VERSION=42.7.5
-ARG MYSQL_DRIVER_VERSION=9.2.0
+ARG POSTGRES_DRIVER_VERSION
+ARG MYSQL_DRIVER_VERSION
+ARG MAVEN_REPOSITORY_URL="https://repo1.maven.org/maven2"
 ARG UID=1000
 ARG GID=1000
 
 ENV user=dependencycheck
 ENV JAVA_HOME=/opt/jdk
 ENV JAVA_OPTS="-Danalyzer.assembly.dotnet.path=/usr/bin/dotnet -Danalyzer.bundle.audit.path=/usr/bin/bundle-audit -Danalyzer.golang.path=/usr/local/go/bin/go"
+ENV ODC_NAME=dependency-check-docker
 
 COPY --from=jlink /jlinked /opt/jdk/
 COPY --from=go /usr/local/go/ /usr/local/go/
@@ -24,7 +26,7 @@ ADD cli/target/dependency-check-${VERSION}-release.zip /
 RUN apk update                                                                                       && \
     apk add --no-cache --virtual .build-deps curl tar                                                && \
     apk add --no-cache git ruby ruby-rdoc npm                                                        && \
-    gem install bundle-audit                                                                         && \
+    gem install bundler-audit                                                                        && \
     bundle audit update                                                                              && \
     mkdir /opt/yarn                                                                                  && \
     curl -Ls https://yarnpkg.com/latest.tar.gz | tar -xz --strip-components=1 --directory /opt/yarn  && \
@@ -33,10 +35,8 @@ RUN apk update                                                                  
     unzip dependency-check-${VERSION}-release.zip -d /usr/share/                                     && \
     rm dependency-check-${VERSION}-release.zip                                                       && \
     cd /usr/share/dependency-check/plugins                                                           && \
-    curl -Os "https://jdbc.postgresql.org/download/postgresql-${POSTGRES_DRIVER_VERSION}.jar"        && \
-    curl -Ls "https://dev.mysql.com/get/Downloads/Connector-J/mysql-connector-j-${MYSQL_DRIVER_VERSION}.tar.gz" \
-        | tar -xz --directory "/usr/share/dependency-check/plugins" --strip-components=1 --no-same-owner \
-            "mysql-connector-j-${MYSQL_DRIVER_VERSION}/mysql-connector-j-${MYSQL_DRIVER_VERSION}.jar" && \
+    curl -fSLO "${MAVEN_REPOSITORY_URL}/org/postgresql/postgresql/${POSTGRES_DRIVER_VERSION}/postgresql-${POSTGRES_DRIVER_VERSION}.jar"    && \
+    curl -fSLO "${MAVEN_REPOSITORY_URL}/com/mysql/mysql-connector-j/${MYSQL_DRIVER_VERSION}/mysql-connector-j-${MYSQL_DRIVER_VERSION}.jar" && \
     addgroup -S -g ${GID} ${user} && adduser -S -D -u ${UID} -G ${user} ${user}                      && \
     mkdir /usr/share/dependency-check/data                                                           && \
     chown -R ${user}:0 /usr/share/dependency-check                                                   && \
@@ -47,7 +47,7 @@ RUN apk update                                                                  
     apk del .build-deps
 
 ### remove any suid sgid - we don't need them
-RUN find / -perm +6000 -type f -exec chmod a-s {} \;
+RUN find / -path /proc -prune -perm +6000 -type f -exec chmod a-s {} \;
 USER ${UID}
 
 VOLUME ["/src", "/report"]

@@ -1,0 +1,37 @@
+#* @implicitly included *#
+
+## See org.owasp.dependencycheck.reporting.ReportGenerator#createContext
+
+## Scan output
+#* @vtlvariable name="dependencies" type="java.util.List<org.owasp.dependencycheck.dependency.Dependency>" *#
+#* @vtlvariable name="exceptions" type="java.util.List<java.lang.Throwable>" *#
+
+## Scan metadata
+#* @vtlvariable name="version" type="java.lang.String" *#
+#* @vtlvariable name="properties" type="org.owasp.dependencycheck.data.nvdcve.DatabaseProperties" *#
+#* @vtlvariable name="settings" type="org.owasp.dependencycheck.utils.Settings" *#
+#* @vtlvariable name="analyzers" type="java.util.List<org.owasp.dependencycheck.analyzer.Analyzer>" *#
+
+## Pre-formatted convenience timestamps
+#* @vtlvariable name="scanDate" type="java.lang.String" *#
+#* @vtlvariable name="scanDateXML" type="java.lang.String" *#
+#* @vtlvariable name="scanDateJunit" type="java.lang.String" *#
+#* @vtlvariable name="scanDateGitLab" type="java.lang.String" *#
+
+## Velocity Tools
+#* @vtlvariable name="enc" type="org.owasp.dependencycheck.reporting.EscapeTool" *#
+#* @vtlvariable name="rpt" type="org.owasp.dependencycheck.reporting.ReportTool" *#
+#* @vtlvariable name="checksum" type="org.owasp.dependencycheck.utils.Checksum" *#
+#* @vtlvariable name="WordUtils" type="org.apache.commons.text.WordUtils" *#
+#* @vtlvariable name="StringUtils" type="org.apache.commons.lang3.StringUtils" *#
+
+## Convenience lookup types
+#* @vtlvariable name="VENDOR" type="org.owasp.dependencycheck.dependency.EvidenceType" *#
+#* @vtlvariable name="PRODUCT" type="org.owasp.dependencycheck.dependency.EvidenceType" *#
+#* @vtlvariable name="VERSION" type="org.owasp.dependencycheck.dependency.EvidenceType" *#
+
+## Optional user application-specific info
+#* @vtlvariable name="groupID" type="java.lang.String" *#
+#* @vtlvariable name="artifactID" type="java.lang.String" *#
+#* @vtlvariable name="applicationName" type="java.lang.String" *#
+#* @vtlvariable name="applicationVersion" type="java.lang.String" *#

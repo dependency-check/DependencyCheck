@@ -17,20 +17,19 @@
  */
 package org.owasp.dependencycheck;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.owasp.dependencycheck.analyzer.JarAnalyzer;
 import org.owasp.dependencycheck.data.nvdcve.DatabaseException;
 import org.owasp.dependencycheck.dependency.Dependency;
 
 import java.io.File;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * @author Jeremy Long
  */
-public class EngineTest extends BaseDBTestCase {
-
+class EngineTest extends BaseDBTestCase {
 
 
     /**
@@ -40,7 +39,7 @@ public class EngineTest extends BaseDBTestCase {
      * there is an exception
      */
     @Test
-    public void testScanFile() throws DatabaseException {
+    void testScanFile() throws DatabaseException {
         try (Engine instance = new Engine(getSettings())) {
             instance.addFileTypeAnalyzer(new JarAnalyzer());
             File file = BaseTest.getResourceAsFile(this, "dwr.jar");

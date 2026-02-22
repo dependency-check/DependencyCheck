@@ -20,9 +20,9 @@ package org.owasp.dependencycheck.analyzer;
 import org.apache.commons.collections4.MultiValuedMap;
 import org.apache.commons.collections4.multimap.HashSetValuedHashMap;
 import org.apache.commons.lang3.StringUtils;
-import org.jetbrains.annotations.NotNull;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.jspecify.annotations.NonNull;
 import org.owasp.dependencycheck.Engine;
 import org.owasp.dependencycheck.analyzer.exception.AnalysisException;
 import org.owasp.dependencycheck.analyzer.exception.SearchException;
@@ -59,6 +59,11 @@ public class PnpmAuditAnalyzer extends AbstractNpmAnalyzer {
      * The file name to scan.
      */
     public static final String PNPM_PACKAGE_LOCK = "pnpm-lock.yaml";
+
+    /**
+     * The default registry parameter to pass to the pnpm audit execution.
+     */
+    public static final String DEFAULT_REGISTRY = "https://registry.npmjs.org/";
 
     /**
      * Filter that detects files named "pnpm-lock.yaml"
@@ -202,9 +207,9 @@ public class PnpmAuditAnalyzer extends AbstractNpmAnalyzer {
             }
             // pnpm audit returns a json compliant with NpmAuditParser
             args.add("--json");
-            // ensure we are using the right registry despite .npmrc
+            // ensure we are using the right registry despite .npmrc, but allow override
             args.add("--registry");
-            args.add("https://registry.npmjs.org/");
+            args.add(getSettings().getString(Settings.KEYS.ANALYZER_PNPM_AUDIT_REGISTRY, DEFAULT_REGISTRY));
             final ProcessBuilder builder = new ProcessBuilder(args);
             builder.directory(folder);
             // Workaround 64k limitation of InputStream, redirect stdout to a file that we will read later
@@ -276,7 +281,7 @@ public class PnpmAuditAnalyzer extends AbstractNpmAnalyzer {
         }
     }
 
-    @NotNull
+    @NonNull
     private NpmAuditParser getAuditParser() {
         return new NpmAuditParser();
     }

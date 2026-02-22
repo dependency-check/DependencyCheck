@@ -17,20 +17,28 @@
  */
 package org.owasp.dependencycheck.dependency;
 
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertFalse;
-
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.owasp.dependencycheck.BaseTest;
 import us.springett.parsers.cpe.exceptions.CpeValidationException;
 import us.springett.parsers.cpe.values.LogicalValue;
 import us.springett.parsers.cpe.values.Part;
 
+import java.net.URLDecoder;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+
+import static java.nio.charset.StandardCharsets.UTF_8;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 /**
  *
  * @author Jeremy Long
  */
-public class VulnerableSoftwareTest extends BaseTest {
+class VulnerableSoftwareTest extends BaseTest {
 
     /**
      * Test of equals method, of class VulnerableSoftware.
@@ -38,19 +46,19 @@ public class VulnerableSoftwareTest extends BaseTest {
      * @throws CpeValidationException
      */
     @Test
-    public void testEquals() throws CpeValidationException {
+    void testEquals() throws CpeValidationException {
         VulnerableSoftwareBuilder builder = new VulnerableSoftwareBuilder();
         VulnerableSoftware obj = null;
         VulnerableSoftware instance = builder.part(Part.APPLICATION).vendor("mortbay").product("jetty").version("6.1").build();
-        assertFalse(instance.equals(obj));
+        assertNotEquals(obj, instance);
 
         obj = builder.part(Part.APPLICATION).vendor("mortbay").product("jetty").version("6.1.0").build();
         instance = builder.part(Part.APPLICATION).vendor("mortbay").product("jetty").version("6.1").build();
-        assertFalse(instance.equals(obj));
+        assertNotEquals(instance, obj);
 
         obj = builder.part(Part.APPLICATION).vendor("mortbay").product("jetty").version("6.1.0").build();
         instance = builder.part(Part.APPLICATION).vendor("mortbay").product("jetty").version("6.1.0").build();
-        assertTrue(instance.equals(obj));
+        assertEquals(instance, obj);
     }
 
     /**
@@ -59,7 +67,7 @@ public class VulnerableSoftwareTest extends BaseTest {
      * @throws CpeValidationException
      */
     @Test
-    public void testCompareTo() throws CpeValidationException {
+    void testCompareTo() throws CpeValidationException {
         VulnerableSoftwareBuilder builder = new VulnerableSoftwareBuilder();
         VulnerableSoftware obj = builder.part(Part.APPLICATION).vendor("mortbay").product("jetty").version("6.1.0").build();
         VulnerableSoftware instance = builder.part(Part.APPLICATION).vendor("mortbay").product("jetty").version("6.1").build();
@@ -73,7 +81,7 @@ public class VulnerableSoftwareTest extends BaseTest {
     }
 
     @Test
-    public void testCompareVersionRange() throws CpeValidationException {
+    void testCompareVersionRange() throws CpeValidationException {
         VulnerableSoftwareBuilder builder = new VulnerableSoftwareBuilder();
         VulnerableSoftware instance = builder.version("2.0.0").build();
         assertTrue(instance.compareVersionRange("2.0.0"));
@@ -103,7 +111,7 @@ public class VulnerableSoftwareTest extends BaseTest {
     }
 
     @Test
-    public void testcompareUpdateAttributes() throws CpeValidationException {
+    void testCompareUpdateAttributes() {
 
         assertTrue(VulnerableSoftware.compareUpdateAttributes("update1", "u1"));
         assertTrue(VulnerableSoftware.compareUpdateAttributes("u1", "update1"));
@@ -113,6 +121,13 @@ public class VulnerableSoftwareTest extends BaseTest {
         assertTrue(VulnerableSoftware.compareUpdateAttributes("b-1", "beta1"));
         assertFalse(VulnerableSoftware.compareUpdateAttributes("a1", "beta1"));
 
+    }
+
+    @Test
+    void testToNvdSearchUrl() throws Exception {
+        String encodedURL = new VulnerableSoftwareBuilder().part(Part.APPLICATION).vendor("apache").version("1.2.3").build().toNvdSearchUrl();
+        assertEquals("https://nvd.nist.gov/vuln/search#/nvd/home?sortOrder=3&sortDirection=2&cpeFilterMode=applicability&resultType=records&cpeName=cpe%3A2.3%3Aa%3Aapache%3A%2A%3A1.2.3%3A%2A%3A%2A%3A%2A%3A%2A%3A%2A%3A%2A%3A%2A", encodedURL);
+        assertEquals("https://nvd.nist.gov/vuln/search#/nvd/home?sortOrder=3&sortDirection=2&cpeFilterMode=applicability&resultType=records&cpeName=cpe:2.3:a:apache:*:1.2.3:*:*:*:*:*:*:*", URLDecoder.decode(encodedURL, UTF_8));
     }
 
 }

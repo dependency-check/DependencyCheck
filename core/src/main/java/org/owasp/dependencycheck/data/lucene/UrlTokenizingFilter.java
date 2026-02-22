@@ -35,7 +35,7 @@ import org.slf4j.LoggerFactory;
  * @author Jeremy Long
  */
 @NotThreadSafe
-public final class UrlTokenizingFilter extends AbstractTokenizingFilter {
+public class UrlTokenizingFilter extends AbstractTokenizingFilter {
 
     /**
      * The logger.
@@ -60,8 +60,7 @@ public final class UrlTokenizingFilter extends AbstractTokenizingFilter {
      * @throws IOException is thrown when an IOException occurs
      */
     @Override
-    @SuppressWarnings("StringSplitter")
-    public boolean incrementToken() throws IOException {
+    public final boolean incrementToken() throws IOException {
         final ArrayDeque<String> tokens = getTokens();
         final CharTermAttribute termAtt = getTermAtt();
         if (tokens.isEmpty() && input.incrementToken()) {

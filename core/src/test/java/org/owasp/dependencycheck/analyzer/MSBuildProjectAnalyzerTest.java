@@ -17,26 +17,27 @@
  */
 package org.owasp.dependencycheck.analyzer;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.owasp.dependencycheck.BaseTest;
 import org.owasp.dependencycheck.Engine;
 import org.owasp.dependencycheck.dependency.Dependency;
+import org.owasp.dependencycheck.dependency.Evidence;
 import org.owasp.dependencycheck.dependency.EvidenceType;
 
 import java.io.File;
 import java.util.stream.Collectors;
 
-import static junit.framework.TestCase.assertTrue;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.owasp.dependencycheck.analyzer.NuspecAnalyzer.DEPENDENCY_ECOSYSTEM;
 
-public class MSBuildProjectAnalyzerTest extends BaseTest {
+class MSBuildProjectAnalyzerTest extends BaseTest {
 
     private MSBuildProjectAnalyzer instance;
 
-    @Before
+    @BeforeEach
     @Override
     public void setUp() throws Exception {
         super.setUp();
@@ -48,24 +49,24 @@ public class MSBuildProjectAnalyzerTest extends BaseTest {
     }
 
     @Test
-    public void testGetAnalyzerName() {
+    void testGetAnalyzerName() {
         assertEquals("MSBuild Project Analyzer", instance.getName());
     }
 
     @Test
-    public void testSupportsFileExtensions() {
+    void testSupportsFileExtensions() {
         assertTrue(instance.accept(new File("test.csproj")));
         assertTrue(instance.accept(new File("test.vbproj")));
         assertFalse(instance.accept(new File("test.nuspec")));
     }
 
     @Test
-    public void testGetAnalysisPhaze() {
+    void testGetAnalysisPhaze() {
         assertEquals(AnalysisPhase.INFORMATION_COLLECTION, instance.getAnalysisPhase());
     }
 
     @Test
-    public void testMSBuildProjectAnalysis() throws Exception {
+    void testMSBuildProjectAnalysis() throws Exception {
 
         try (Engine engine = new Engine(getSettings())) {
             File file = BaseTest.getResourceAsFile(this, "msbuild/test.csproj");
@@ -77,7 +78,7 @@ public class MSBuildProjectAnalyzerTest extends BaseTest {
             analyzer.setEnabled(true);
             analyzer.analyze(toScan, engine);
 
-            assertEquals("5 dependencies should be found", 5, engine.getDependencies().length);
+            assertEquals(5, engine.getDependencies().length, "5 dependencies should be found");
 
             int foundCount = 0;
 
@@ -120,7 +121,7 @@ public class MSBuildProjectAnalyzerTest extends BaseTest {
                             foundCount++;
                             assertTrue(result.getEvidence(EvidenceType.VENDOR).toString().contains("NodaTime"));
                             assertTrue(result.getEvidence(EvidenceType.PRODUCT).toString().contains("NodaTime"));
-                            assertTrue("Expected 3.0.0; contained: " + result.getEvidence(EvidenceType.VERSION).stream().map(e -> e.toString()).collect(Collectors.joining(",", "{", "}")), result.getEvidence(EvidenceType.VERSION).toString().contains("3.0.0"));
+                            assertTrue(result.getEvidence(EvidenceType.VERSION).toString().contains("3.0.0"), "Expected 3.0.0; contained: " + result.getEvidence(EvidenceType.VERSION).stream().map(Evidence::toString).collect(Collectors.joining(",", "{", "}")));
                             break;
                         default:
                             break;
@@ -128,12 +129,12 @@ public class MSBuildProjectAnalyzerTest extends BaseTest {
                 }
             }
 
-            assertEquals("5 expected dependencies should be found", 5, foundCount);
+            assertEquals(5, foundCount, "5 expected dependencies should be found");
         }
     }
 
     @Test
-    public void testMSBuildProjectAnalysis_WithImports() throws Exception {
+    void testMSBuildProjectAnalysis_WithImports() throws Exception {
         testMSBuildProjectAnalysisWithImport("msbuild/ProjectA/ProjectA.csproj", "3.0.0", "1.0.0");
         testMSBuildProjectAnalysisWithImport("msbuild/ProjectB/ProjectB.csproj", "3.0.0", "2.0.0");
         testMSBuildProjectAnalysisWithImport("msbuild/ProjectC/ProjectC.csproj", "3.0.0", "3.0.0");
@@ -154,7 +155,7 @@ public class MSBuildProjectAnalyzerTest extends BaseTest {
             analyzer.setEnabled(true);
             analyzer.analyze(toScan, engine);
 
-            assertEquals("2 dependencies should be found", 2, engine.getDependencies().length);
+            assertEquals(2, engine.getDependencies().length, "2 dependencies should be found");
 
             int foundCount = 0;
 
@@ -168,13 +169,13 @@ public class MSBuildProjectAnalyzerTest extends BaseTest {
                             foundCount++;
                             assertTrue(result.getEvidence(EvidenceType.VENDOR).toString().contains("Humanizer"));
                             assertTrue(result.getEvidence(EvidenceType.PRODUCT).toString().contains("Humanizer"));
-                            assertTrue("Expected " + humanizerVersion + "; contained: " + result.getEvidence(EvidenceType.VERSION).stream().map(e -> e.toString()).collect(Collectors.joining(",", "{", "}")), result.getEvidence(EvidenceType.VERSION).toString().contains(humanizerVersion));
+                            assertTrue(result.getEvidence(EvidenceType.VERSION).toString().contains(humanizerVersion), "Expected " + humanizerVersion + "; contained: " + result.getEvidence(EvidenceType.VERSION).stream().map(Evidence::toString).collect(Collectors.joining(",", "{", "}")));
                             break;
                         case "NodaTime":
                             foundCount++;
                             assertTrue(result.getEvidence(EvidenceType.VENDOR).toString().contains("NodaTime"));
                             assertTrue(result.getEvidence(EvidenceType.PRODUCT).toString().contains("NodaTime"));
-                            assertTrue("Expected " + nodaVersion + "; contained: " + result.getEvidence(EvidenceType.VERSION).stream().map(e -> e.toString()).collect(Collectors.joining(",", "{", "}")), result.getEvidence(EvidenceType.VERSION).toString().contains(nodaVersion));
+                            assertTrue(result.getEvidence(EvidenceType.VERSION).toString().contains(nodaVersion), "Expected " + nodaVersion + "; contained: " + result.getEvidence(EvidenceType.VERSION).stream().map(Evidence::toString).collect(Collectors.joining(",", "{", "}")));
                             break;
                         default:
                             break;
@@ -182,7 +183,7 @@ public class MSBuildProjectAnalyzerTest extends BaseTest {
                 }
             }
 
-            assertEquals("2 expected dependencies should be found", 2, foundCount);
+            assertEquals(2, foundCount, "2 expected dependencies should be found");
         }
     }
 }

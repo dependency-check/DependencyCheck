@@ -17,26 +17,26 @@
  */
 package org.owasp.dependencycheck.analyzer;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.owasp.dependencycheck.BaseTest;
 import org.owasp.dependencycheck.analyzer.exception.AnalysisException;
 import org.owasp.dependencycheck.dependency.Dependency;
 import org.owasp.dependencycheck.dependency.Evidence;
+import org.owasp.dependencycheck.dependency.EvidenceType;
 
 import java.io.File;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import org.owasp.dependencycheck.dependency.EvidenceType;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Unit tests for PythonPackageAnalyzer.
  *
  * @author Dale Visser
  */
-public class PythonPackageAnalyzerTest extends BaseTest {
+class PythonPackageAnalyzerTest extends BaseTest {
 
     /**
      * The package analyzer to test.
@@ -48,7 +48,7 @@ public class PythonPackageAnalyzerTest extends BaseTest {
      *
      * @throws Exception if there is a problem
      */
-    @Before
+    @BeforeEach
     @Override
     public void setUp() throws Exception {
         super.setUp();
@@ -63,7 +63,7 @@ public class PythonPackageAnalyzerTest extends BaseTest {
      *
      * @throws Exception if there is a problem
      */
-    @After
+    @AfterEach
     @Override
     public void tearDown() throws Exception {
         analyzer.close();
@@ -74,35 +74,36 @@ public class PythonPackageAnalyzerTest extends BaseTest {
      * Test of getName method, of class PythonPackageAnalyzer.
      */
     @Test
-    public void testGetName() {
-        assertEquals("Analyzer name wrong.", "Python Package Analyzer",
-                analyzer.getName());
+    void testGetName() {
+        assertEquals("Python Package Analyzer",
+                analyzer.getName(),
+                "Analyzer name wrong.");
     }
 
     /**
      * Test of supportsExtension method, of class PythonPackageAnalyzer.
      */
     @Test
-    public void testSupportsFileExtension() {
-        assertTrue("Should support \"py\" extension.",
-                analyzer.accept(new File("test.py")));
+    void testSupportsFileExtension() {
+        assertTrue(analyzer.accept(new File("test.py")),
+                "Should support \"py\" extension.");
     }
 
     @Test
-    public void testAnalyzeSourceMetadata() throws AnalysisException {
+    void testAnalyzeSourceMetadata() throws AnalysisException {
         boolean found = false;
         final Dependency result = new Dependency(BaseTest.getResourceAsFile(
                 this, "python/eggtest/__init__.py"));
         analyzer.analyze(result, null);
-        assertTrue("Expected vendor evidence to contain \"example\".", 
-                result.getEvidence(EvidenceType.VENDOR).toString().contains("example"));
+        assertTrue(result.getEvidence(EvidenceType.VENDOR).toString().contains("example"),
+                "Expected vendor evidence to contain \"example\".");
         for (final Evidence e : result.getEvidence(EvidenceType.VERSION)) {
             if ("0.0.1".equals(e.getValue())) {
                 found = true;
                 break;
             }
         }
-        assertTrue("Version 0.0.1 not found in EggTest dependency.", found);
+        assertTrue(found, "Version 0.0.1 not found in EggTest dependency.");
         assertEquals("0.0.1",result.getVersion());
         assertEquals("eggtest",result.getName());
         assertEquals("eggtest:0.0.1",result.getDisplayFileName());

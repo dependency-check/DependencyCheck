@@ -26,8 +26,9 @@ import javax.annotation.concurrent.ThreadSafe;
 import org.apache.commons.lang3.builder.CompareToBuilder;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 import org.owasp.dependencycheck.analyzer.exception.UnexpectedAnalysisException;
+import org.owasp.dependencycheck.dependency.naming.CpeIdentifier;
 import org.owasp.dependencycheck.utils.DependencyVersion;
 import us.springett.parsers.cpe.Cpe;
 import us.springett.parsers.cpe.ICpe;
@@ -123,16 +124,25 @@ public class VulnerableSoftware extends Cpe implements Serializable {
     }
     //CSON: ParameterNumber
 
+    /**
+     * Normalizes null and empty strings to null for consistent comparison.
+     * @param s the string to normalize
+     * @return null if s is null or empty, otherwise s
+     */
+    private static String normalizeForComparison(String s) {
+        return (s == null || s.isEmpty()) ? null : s;
+    }
+
     @Override
-    public int compareTo(@NotNull ICpe o) {
+    public int compareTo(@NonNull ICpe o) {
         if (o instanceof VulnerableSoftware) {
             final VulnerableSoftware other = (VulnerableSoftware) o;
             return new CompareToBuilder()
                     .appendSuper(super.compareTo(other))
-                    .append(versionStartIncluding, other.versionStartIncluding)
-                    .append(versionStartExcluding, other.versionStartExcluding)
-                    .append(versionEndIncluding, other.versionEndIncluding)
-                    .append(versionEndExcluding, other.versionEndExcluding)
+                    .append(normalizeForComparison(versionStartIncluding), normalizeForComparison(other.versionStartIncluding))
+                    .append(normalizeForComparison(versionStartExcluding), normalizeForComparison(other.versionStartExcluding))
+                    .append(normalizeForComparison(versionEndIncluding), normalizeForComparison(other.versionEndIncluding))
+                    .append(normalizeForComparison(versionEndExcluding), normalizeForComparison(other.versionEndExcluding))
                     .append(this.vulnerable, other.vulnerable)
                     .build();
         } else if (o instanceof Cpe) {
@@ -147,10 +157,10 @@ public class VulnerableSoftware extends Cpe implements Serializable {
         // ideally different for each class
         return new HashCodeBuilder(13, 59)
                 .appendSuper(super.hashCode())
-                .append(versionEndExcluding)
-                .append(versionEndIncluding)
-                .append(versionStartExcluding)
-                .append(versionStartIncluding)
+                .append(normalizeForComparison(versionEndExcluding))
+                .append(normalizeForComparison(versionEndIncluding))
+                .append(normalizeForComparison(versionStartExcluding))
+                .append(normalizeForComparison(versionStartIncluding))
                 .toHashCode();
     }
 
@@ -165,10 +175,10 @@ public class VulnerableSoftware extends Cpe implements Serializable {
         final VulnerableSoftware rhs = (VulnerableSoftware) obj;
         return new EqualsBuilder()
                 .appendSuper(super.equals(obj))
-                .append(versionEndExcluding, rhs.versionEndExcluding)
-                .append(versionEndIncluding, rhs.versionEndIncluding)
-                .append(versionStartExcluding, rhs.versionStartExcluding)
-                .append(versionStartIncluding, rhs.versionStartIncluding)
+                .append(normalizeForComparison(versionEndExcluding), normalizeForComparison(rhs.versionEndExcluding))
+                .append(normalizeForComparison(versionEndIncluding), normalizeForComparison(rhs.versionEndIncluding))
+                .append(normalizeForComparison(versionStartExcluding), normalizeForComparison(rhs.versionStartExcluding))
+                .append(normalizeForComparison(versionStartIncluding), normalizeForComparison(rhs.versionStartIncluding))
                 .isEquals();
     }
 
@@ -197,7 +207,7 @@ public class VulnerableSoftware extends Cpe implements Serializable {
         //TODO implement versionStart etc.
         result &= compareVersionRange(target.getVersion());
 
-        //todo - if the vulnerablity has an update we are might not be collecting it correctly...
+        //todo - if the vulnerability has an update we are might not be collecting it correctly...
         // as such, this check might cause FN if the CVE has an update in the data set
         result &= compareUpdateAttributes(this.getUpdate(), target.getUpdate());
         result &= compareAttributes(this.getEdition(), target.getEdition());
@@ -338,7 +348,7 @@ public class VulnerableSoftware extends Cpe implements Serializable {
             result &= compareAttributes(left.getWellFormedVersion(), right.getWellFormedVersion());
         }
 
-        //todo - if the vulnerablity has an update we are might not be collecting it correctly...
+        //todo - if the vulnerability has an update we are might not be collecting it correctly...
         // as such, this check might cause FN if the CVE has an update in the data set
         result &= compareUpdateAttributes(left.getWellFormedUpdate(), right.getWellFormedUpdate());
         result &= compareAttributes(left.getWellFormedEdition(), right.getWellFormedEdition());
@@ -516,5 +526,14 @@ public class VulnerableSoftware extends Cpe implements Serializable {
             sb.append(" version is NOT VULNERABLE");
         }
         return sb.toString();
+    }
+
+    /**
+     * Returns the NVD search URL for this vulnerable software.
+     *
+     * @return the NVD search URL
+     */
+    public String toNvdSearchUrl() {
+        return CpeIdentifier.nvdSearchUrlFor(this);
     }
 }

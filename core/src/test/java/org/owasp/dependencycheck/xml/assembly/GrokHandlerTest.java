@@ -17,25 +17,28 @@
  */
 package org.owasp.dependencycheck.xml.assembly;
 
+import org.junit.jupiter.api.Test;
+import org.owasp.dependencycheck.BaseTest;
+import org.owasp.dependencycheck.utils.AutoCloseableInputSource;
+import org.owasp.dependencycheck.utils.XmlUtils;
+import org.xml.sax.InputSource;
+import org.xml.sax.XMLReader;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.nio.charset.StandardCharsets;
-import javax.xml.parsers.SAXParser;
-import static org.junit.Assert.assertEquals;
-import org.junit.Test;
-import org.owasp.dependencycheck.BaseTest;
-import org.owasp.dependencycheck.utils.XmlUtils;
-import org.xml.sax.InputSource;
-import org.xml.sax.XMLReader;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.owasp.dependencycheck.utils.AutoCloseableInputSource.fromResource;
 
 /**
  *
  * @author Jeremy Long
  */
-public class GrokHandlerTest extends BaseTest {
+class GrokHandlerTest extends BaseTest {
 
     /**
      * Test of getSuppressionRules method, of class SuppressionHandler.
@@ -43,26 +46,25 @@ public class GrokHandlerTest extends BaseTest {
      * @throws Exception thrown if there is an exception....
      */
     @Test
-    public void testHandler() throws Exception {
+    void testHandler() throws Exception {
         File file = BaseTest.getResourceAsFile(this, "assembly/sample-grok.xml");
-        InputStream schemaStream = BaseTest.getResourceAsStream(this, "schema/grok-assembly.1.0.xsd");
 
-        GrokHandler handler = new GrokHandler();
-        SAXParser saxParser = XmlUtils.buildSecureSaxParser(schemaStream);
-        XMLReader xmlReader = saxParser.getXMLReader();
-        xmlReader.setErrorHandler(new GrokErrorHandler());
-        xmlReader.setContentHandler(handler);
+        try (AutoCloseableInputSource schema = fromResource("schema/grok-assembly.1.0.xsd")) {
+            GrokHandler handler = new GrokHandler();
+            XMLReader xmlReader = XmlUtils.buildSecureValidatingXmlReader(schema);
+            xmlReader.setErrorHandler(new GrokErrorHandler());
+            xmlReader.setContentHandler(handler);
 
-        InputStream inputStream = new FileInputStream(file);
-        Reader reader = new InputStreamReader(inputStream, StandardCharsets.UTF_8);
-        InputSource in = new InputSource(reader);
+            try (Reader reader = new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8)) {
+                InputSource in = new InputSource(reader);
+                xmlReader.parse(in);
+            }
 
-        xmlReader.parse(in);
-
-        AssemblyData result = handler.getAssemblyData();
-        assertEquals("OWASP Contributors", result.getCompanyName());
-        assertEquals("GrokAssembly", result.getProductName());
-        assertEquals("Inspects a .NET Assembly to determine Company, Product, and Version information", result.getComments());
-        assertEquals(1, result.getNamespaces().size());
+            AssemblyData result = handler.getAssemblyData();
+            assertEquals("OWASP Contributors", result.getCompanyName());
+            assertEquals("GrokAssembly", result.getProductName());
+            assertEquals("Inspects a .NET Assembly to determine Company, Product, and Version information", result.getComments());
+            assertEquals(1, result.getNamespaces().size());
+        }
     }
 }

@@ -514,6 +514,7 @@ public final class CliParser {
                 .addOption(newOption(ARGUMENT.DISABLE_FILENAME, "Disable the File Name Analyzer."))
                 .addOption(newOption(ARGUMENT.DISABLE_AUTOCONF, "Disable the Autoconf Analyzer."))
                 .addOption(newOption(ARGUMENT.DISABLE_MAVEN_INSTALL, "Disable the Maven install Analyzer."))
+                .addOption(newOption(ARGUMENT.DISABLE_PE, "Disable the PE Analyzer."))
                 .addOption(newOption(ARGUMENT.DISABLE_PIP, "Disable the pip Analyzer."))
                 .addOption(newOption(ARGUMENT.DISABLE_PIPFILE, "Disable the Pipfile Analyzer."))
                 .addOption(newOption(ARGUMENT.DISABLE_COMPOSER, "Disable the PHP Composer Analyzer."))
@@ -1388,6 +1389,10 @@ public final class CliParser {
          * Disables the Assembly Analyzer.
          */
         public static final String DISABLE_ASSEMBLY = "disableAssembly";
+        /**
+         * Disables the PE Analyzer.
+         */
+        public static final String DISABLE_PE = "disablePE";
         /**
          * Disables the Ruby Bundler Audit Analyzer.
          */

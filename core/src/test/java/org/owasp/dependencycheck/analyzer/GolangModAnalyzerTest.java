@@ -17,36 +17,36 @@
  */
 package org.owasp.dependencycheck.analyzer;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.owasp.dependencycheck.BaseTest;
 import org.owasp.dependencycheck.Engine;
 import org.owasp.dependencycheck.analyzer.exception.AnalysisException;
 import org.owasp.dependencycheck.dependency.Dependency;
 import org.owasp.dependencycheck.dependency.EvidenceType;
 import org.owasp.dependencycheck.exception.InitializationException;
+import org.owasp.dependencycheck.utils.Settings;
 
 import java.io.File;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import org.owasp.dependencycheck.utils.Settings;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Unit tests for GolangModAnalyzer.
  *
  * @author Matthijs van den Bos
  */
-public class GolangModAnalyzerTest extends BaseTest {
+class GolangModAnalyzerTest extends BaseTest {
 
     private GolangModAnalyzer analyzer;
     private Engine engine;
 
     @Override
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         super.setUp();
         getSettings().setBoolean(Settings.KEYS.AUTO_UPDATE, false);
@@ -71,7 +71,7 @@ public class GolangModAnalyzerTest extends BaseTest {
      *
      * @throws Exception thrown if there is a problem
      */
-    @After
+    @AfterEach
     @Override
     public void tearDown() throws Exception {
         if (analyzer != null) {
@@ -82,18 +82,19 @@ public class GolangModAnalyzerTest extends BaseTest {
     }
 
     @Test
-    public void testName() {
-        assertEquals("Analyzer name wrong.", "Golang Mod Analyzer",
-                analyzer.getName());
+    void testName() {
+        assertEquals("Golang Mod Analyzer",
+                analyzer.getName(),
+                "Analyzer name wrong.");
     }
 
     @Test
-    public void testSupportsFiles() {
+    void testSupportsFiles() {
         assertThat(analyzer.accept(new File("go.mod")), is(true));
     }
 
     @Test
-    public void testGoMod() throws AnalysisException, InitializationException {
+    void testGoMod() throws AnalysisException, InitializationException {
         analyzer.prepare(engine);
         final Dependency result = new Dependency(BaseTest.getResourceAsFile(this, "golang/go.mod"));
         analyzer.analyze(result, engine);
@@ -112,6 +113,6 @@ public class GolangModAnalyzerTest extends BaseTest {
                 assertTrue(d.getEvidence(EvidenceType.VERSION).toString().toLowerCase().contains("1.5.0"));
             }
         }
-        assertTrue("Expected to find gitea/gitea", found);
+        assertTrue(found, "Expected to find gitea/gitea");
     }
 }

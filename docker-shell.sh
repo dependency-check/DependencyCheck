@@ -1,17 +1,6 @@
-#!/bin/bash -e
-
-VERSION=$(mvn -q \
-    -Dexec.executable="echo" \
-    -Dexec.args='${project.version}' \
-    --non-recursive \
-    org.codehaus.mojo:exec-maven-plugin:1.3.1:exec)
-
-SCAN_TARGET="./cli/target/release/lib"
-
-if [ ! -d "$SCAN_TARGET" ]; then 
-  echo "Scan target does not exist: $SCAN_TARGET"
-  exit 1
-fi
+#!/usr/bin/env bash
+set -euo pipefail
+VERSION="$(mvn help:evaluate -q --non-recursive -DforceStdout -Dexpression=project.version)"
 
 OWASPDC_DIRECTORY=$HOME/OWASP-Dependency-Check
 DATA_DIRECTORY="$OWASPDC_DIRECTORY/data"

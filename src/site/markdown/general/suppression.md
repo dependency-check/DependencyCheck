@@ -6,7 +6,10 @@ A sample suppression file would look like:
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
-<suppressions xmlns="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.3.xsd">
+<suppressions xmlns="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.4.xsd"
+              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:schemaLocation="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.4.xsd
+                                  https://dependency-check.github.io/DependencyCheck/dependency-suppression.1.4.xsd">
    <suppress>
       <notes><![CDATA[
       file name: some.jar
@@ -26,7 +29,10 @@ HTML version of the report. The other common scenario would be to ignore all CVE
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
-<suppressions xmlns="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.3.xsd">
+<suppressions xmlns="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.4.xsd"
+              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:schemaLocation="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.4.xsd
+                                  https://dependency-check.github.io/DependencyCheck/dependency-suppression.1.4.xsd">
     <suppress>
         <notes><![CDATA[
         This suppresses a CVE identified by OSS Index using the vulnerability name and packageUrl.
@@ -82,7 +88,7 @@ HTML version of the report. The other common scenario would be to ignore all CVE
         This suppresses false positives identified on spring security.
         ]]></notes>
         <gav regex="true">org\.springframework\.security:spring.*</gav>
-        <vulnerabilityName regex="true"></vulnerabilityName>
+        <vulnerabilityName regex="true">.*</vulnerabilityName>
     </suppress>
     <suppress until="2020-01-01Z">
         <notes><![CDATA[
@@ -98,13 +104,55 @@ It is also possible to set an expiration date for a suppression rule:
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
-<suppressions xmlns="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.3.xsd">
+<suppressions xmlns="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.4.xsd"
+              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:schemaLocation="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.4.xsd
+                                  https://dependency-check.github.io/DependencyCheck/dependency-suppression.1.4.xsd">
     <suppress until="2020-01-01Z">
         <notes><![CDATA[
         Suppresses a given CVE for a dependency with the given sha1 until the current date is 1 Jan 2020 or beyond.
         ]]></notes>
         <sha1>384FAA82E193D4E4B0546059CA09572654BC3970</sha1>
         <cve>CVE-2013-1337</cve>
+    </suppress>
+</suppressions>
+```
+
+Suppressions can also be configured based on CVSS scores.  The element cvssScore specifies
+a score threshold.  Vulnerabilities that have any score below this threshold will be suppressed.
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<suppressions xmlns="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.4.xsd"
+              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:schemaLocation="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.4.xsd
+                                  https://dependency-check.github.io/DependencyCheck/dependency-suppression.1.4.xsd">
+    <suppress until="2020-01-01Z">
+        <notes><![CDATA[
+        Suppress any vulnerability with a score below 7
+        ]]></notes>
+        <cvssScore>7</cvssScore>
+    </suppress>
+</suppressions>
+```
+
+Suppressions can also be configured per CVSS score version.  In the example that follows a vulnerability
+will be suppressed only if its CVSS v2 score is below 7, its CVSS v3 score is below 8,
+and its CVSS v4 score is below 9.  If the vulnerability does not have a score for a given
+version the threshold not be applied to the suppression decision.  If you specify a cvssScore 
+element and cvssVnScore elements, the later will be ignored.
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<suppressions xmlns="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.4.xsd"
+              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:schemaLocation="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.4.xsd
+                                  https://dependency-check.github.io/DependencyCheck/dependency-suppression.1.4.xsd">
+    <suppress until="2020-01-01Z">
+        <notes><![CDATA[
+        Suppress any vulnerability with different threshold per CVSS version
+        ]]></notes>
+        <cvssV2Score>7</cvssV2Score>
+        <cvssV3Score>8</cvssV3Score>
+        <cvssV4Score>9</cvssV4Score>
     </suppress>
 </suppressions>
 ```

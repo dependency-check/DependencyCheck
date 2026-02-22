@@ -17,33 +17,34 @@
  */
 package org.owasp.dependencycheck.analyzer;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.owasp.dependencycheck.BaseTest;
+import org.owasp.dependencycheck.Engine;
 import org.owasp.dependencycheck.analyzer.exception.AnalysisException;
 import org.owasp.dependencycheck.dependency.Dependency;
+import org.owasp.dependencycheck.dependency.EvidenceType;
+import org.owasp.dependencycheck.exception.InitializationException;
+import org.owasp.dependencycheck.utils.InvalidSettingException;
+import org.owasp.dependencycheck.utils.Settings;
 
 import java.io.File;
 
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.*;
-
-import org.junit.Assume;
-import org.owasp.dependencycheck.Engine;
-import org.owasp.dependencycheck.dependency.EvidenceType;
-import org.owasp.dependencycheck.exception.InitializationException;
-import org.owasp.dependencycheck.utils.InvalidSettingException;
-import org.owasp.dependencycheck.utils.Settings;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 /**
  * Unit tests for NodePackageAnalyzer.
  *
  * @author Dale Visser
  */
-public class NodePackageAnalyzerTest extends BaseTest {
+class NodePackageAnalyzerTest extends BaseTest {
 
     /**
      * The analyzer to test.
@@ -89,7 +90,7 @@ public class NodePackageAnalyzerTest extends BaseTest {
      *
      * @throws Exception thrown if there is a problem
      */
-    @Before
+    @BeforeEach
     @Override
     public void setUp() throws Exception {
         super.setUp();
@@ -115,7 +116,7 @@ public class NodePackageAnalyzerTest extends BaseTest {
      *
      * @throws Exception thrown if there is a problem
      */
-    @After
+    @AfterEach
     @Override
     public void tearDown() throws Exception {
         if (getSettings().getBoolean(Settings.KEYS.ANALYZER_NODE_PACKAGE_ENABLED)) {
@@ -130,9 +131,9 @@ public class NodePackageAnalyzerTest extends BaseTest {
      * Test of getName method, of class PythonDistributionAnalyzer.
      */
     @Test
-    public void testGetName() throws InvalidSettingException {
-        Assume.assumeThat(getSettings().getBoolean(Settings.KEYS.ANALYZER_NODE_PACKAGE_ENABLED), is(true));
-        Assume.assumeThat(getSettings().getBoolean(Settings.KEYS.ANALYZER_NODE_AUDIT_ENABLED), is(true));
+    void testGetName() throws InvalidSettingException {
+        assumeTrue(getSettings().getBoolean(Settings.KEYS.ANALYZER_NODE_PACKAGE_ENABLED));
+        assumeTrue(getSettings().getBoolean(Settings.KEYS.ANALYZER_NODE_AUDIT_ENABLED));
         assertThat(analyzer.getName(), is("Node.js Package Analyzer"));
     }
 
@@ -140,9 +141,9 @@ public class NodePackageAnalyzerTest extends BaseTest {
      * Test of supportsExtension method, of class PythonDistributionAnalyzer.
      */
     @Test
-    public void testSupportsFiles() throws InvalidSettingException {
-        Assume.assumeThat(getSettings().getBoolean(Settings.KEYS.ANALYZER_NODE_PACKAGE_ENABLED), is(true));
-        Assume.assumeThat(getSettings().getBoolean(Settings.KEYS.ANALYZER_NODE_AUDIT_ENABLED), is(true));
+    void testSupportsFiles() throws InvalidSettingException {
+        assumeTrue(getSettings().getBoolean(Settings.KEYS.ANALYZER_NODE_PACKAGE_ENABLED));
+        assumeTrue(getSettings().getBoolean(Settings.KEYS.ANALYZER_NODE_AUDIT_ENABLED));
         assertThat(analyzer.accept(new File("package-lock.json")), is(true));
         assertThat(analyzer.accept(new File("npm-shrinkwrap.json")), is(true));
     }
@@ -153,9 +154,9 @@ public class NodePackageAnalyzerTest extends BaseTest {
      * @throws AnalysisException is thrown when an exception occurs.
      */
     @Test
-    public void testAnalyzeShrinkwrapJson() throws AnalysisException, InvalidSettingException {
-        Assume.assumeThat(getSettings().getBoolean(Settings.KEYS.ANALYZER_NODE_PACKAGE_ENABLED), is(true));
-        Assume.assumeThat(getSettings().getBoolean(Settings.KEYS.ANALYZER_NODE_AUDIT_ENABLED), is(true));
+    void testAnalyzeShrinkwrapJson() throws AnalysisException, InvalidSettingException {
+        assumeTrue(getSettings().getBoolean(Settings.KEYS.ANALYZER_NODE_PACKAGE_ENABLED));
+        assumeTrue(getSettings().getBoolean(Settings.KEYS.ANALYZER_NODE_AUDIT_ENABLED));
         final Dependency toScan = new Dependency(BaseTest.getResourceAsFile(this,
                 "nodejs/npm-shrinkwrap.json"));
         final Dependency toCombine = new Dependency(BaseTest.getResourceAsFile(this,
@@ -206,9 +207,9 @@ public class NodePackageAnalyzerTest extends BaseTest {
             }
         }
 
-        assertTrue("need to contain braces", bracesFound);
+        assertTrue(bracesFound, "need to contain braces");
         //check if dependencies of dependencies are imported
-        assertTrue("need to contain expand-range (dependency of braces)", expandRangeFound);
+        assertTrue(expandRangeFound, "need to contain expand-range (dependency of braces)");
 
         final String vendorString = result.getEvidence(EvidenceType.VENDOR).toString();
         assertThat(vendorString, containsString("Sanjeev Koranga"));
@@ -232,9 +233,9 @@ public class NodePackageAnalyzerTest extends BaseTest {
      * @throws AnalysisException is thrown when an exception occurs.
      */
     @Test
-    public void testAnalyzePackageJsonWithShrinkwrap() throws AnalysisException, InvalidSettingException {
-        Assume.assumeThat(getSettings().getBoolean(Settings.KEYS.ANALYZER_NODE_PACKAGE_ENABLED), is(true));
-        Assume.assumeThat(getSettings().getBoolean(Settings.KEYS.ANALYZER_NODE_AUDIT_ENABLED), is(true));
+    void testAnalyzePackageJsonWithShrinkwrap() throws AnalysisException, InvalidSettingException {
+        assumeTrue(getSettings().getBoolean(Settings.KEYS.ANALYZER_NODE_PACKAGE_ENABLED));
+        assumeTrue(getSettings().getBoolean(Settings.KEYS.ANALYZER_NODE_AUDIT_ENABLED));
         final Dependency packageJson = new Dependency(BaseTest.getResourceAsFile(this,
                 "nodejs/package.json"));
         final Dependency shrinkwrap = new Dependency(BaseTest.getResourceAsFile(this,
@@ -256,16 +257,16 @@ public class NodePackageAnalyzerTest extends BaseTest {
      * @throws AnalysisException is thrown when an exception occurs.
      */
     @Test
-    public void testWithoutLock() throws AnalysisException, InvalidSettingException {
-        Assume.assumeThat(getSettings().getBoolean(Settings.KEYS.ANALYZER_NODE_PACKAGE_ENABLED), is(true));
-        Assume.assumeThat(getSettings().getBoolean(Settings.KEYS.ANALYZER_NODE_AUDIT_ENABLED), is(true));
+    void testWithoutLock() throws AnalysisException, InvalidSettingException {
+        assumeTrue(getSettings().getBoolean(Settings.KEYS.ANALYZER_NODE_PACKAGE_ENABLED));
+        assumeTrue(getSettings().getBoolean(Settings.KEYS.ANALYZER_NODE_AUDIT_ENABLED));
         final Dependency packageJson = new Dependency(BaseTest.getResourceAsFile(this,
                 "nodejs/no_lock/package.json"));
         engine.addDependency(packageJson);
         analyzer.analyze(packageJson, engine);
 
         //final boolean isMac = !System.getProperty("os.name").toLowerCase().contains("mac");
-        assertEquals("Expected 1 dependencies", 1, engine.getDependencies().length);
+        assertEquals(1, engine.getDependencies().length, "Expected 1 dependencies");
     }
 
     /**
@@ -274,9 +275,9 @@ public class NodePackageAnalyzerTest extends BaseTest {
      * @throws AnalysisException is thrown when an exception occurs.
      */
     @Test
-    public void testPackageLockV2() throws AnalysisException, InvalidSettingException {
-        Assume.assumeThat(getSettings().getBoolean(Settings.KEYS.ANALYZER_NODE_PACKAGE_ENABLED), is(true));
-        Assume.assumeThat(getSettings().getBoolean(Settings.KEYS.ANALYZER_NODE_AUDIT_ENABLED), is(true));
+    void testPackageLockV2() throws AnalysisException, InvalidSettingException {
+        assumeTrue(getSettings().getBoolean(Settings.KEYS.ANALYZER_NODE_PACKAGE_ENABLED));
+        assumeTrue(getSettings().getBoolean(Settings.KEYS.ANALYZER_NODE_AUDIT_ENABLED));
         final Dependency packageJson = new Dependency(BaseTest.getResourceAsFile(this,
                 "nodejs/test_lockv2/package.json"));
         final Dependency packageLockJson = new Dependency(BaseTest.getResourceAsFile(this,
@@ -284,9 +285,9 @@ public class NodePackageAnalyzerTest extends BaseTest {
         engine.addDependency(packageJson);
         engine.addDependency(packageLockJson);
         analyzer.analyze(packageJson, engine);
-        assertEquals("Expected 1 dependencies", 1, engine.getDependencies().length);
+        assertEquals(1, engine.getDependencies().length, "Expected 1 dependencies");
         analyzer.analyze(packageLockJson, engine);
-        assertEquals("Expected 1 dependencies", 6, engine.getDependencies().length);
+        assertEquals(6, engine.getDependencies().length, "Expected 1 dependencies");
     }
 
     /**
@@ -295,9 +296,9 @@ public class NodePackageAnalyzerTest extends BaseTest {
      * @throws AnalysisException is thrown when an exception occurs.
      */
     @Test
-    public void testPackageLockV3() throws AnalysisException, InvalidSettingException {
-        Assume.assumeThat(getSettings().getBoolean(Settings.KEYS.ANALYZER_NODE_PACKAGE_ENABLED), is(true));
-        Assume.assumeThat(getSettings().getBoolean(Settings.KEYS.ANALYZER_NODE_AUDIT_ENABLED), is(true));
+    void testPackageLockV3() throws AnalysisException, InvalidSettingException {
+        assumeTrue(getSettings().getBoolean(Settings.KEYS.ANALYZER_NODE_PACKAGE_ENABLED));
+        assumeTrue(getSettings().getBoolean(Settings.KEYS.ANALYZER_NODE_AUDIT_ENABLED));
         final Dependency packageJson = new Dependency(BaseTest.getResourceAsFile(this,
                 "nodejs/test_lockv3/package.json"));
         final Dependency packageLockJson = new Dependency(BaseTest.getResourceAsFile(this,
@@ -305,9 +306,9 @@ public class NodePackageAnalyzerTest extends BaseTest {
         engine.addDependency(packageJson);
         engine.addDependency(packageLockJson);
         analyzer.analyze(packageJson, engine);
-        assertEquals("Expected 1 dependencies", 1, engine.getDependencies().length);
+        assertEquals(1, engine.getDependencies().length, "Expected 1 dependencies");
         analyzer.analyze(packageLockJson, engine);
-        assertEquals("Expected 1 dependencies", 6, engine.getDependencies().length);
+        assertEquals(6, engine.getDependencies().length, "Expected 1 dependencies");
     }
 
     /**
@@ -318,8 +319,8 @@ public class NodePackageAnalyzerTest extends BaseTest {
      * @throws AnalysisException if there was a problem with the analysis
      */
     @Test
-    public void testLocalPackageDependency() throws AnalysisException, InvalidSettingException {
-        Assume.assumeThat(getSettings().getBoolean(Settings.KEYS.ANALYZER_NODE_PACKAGE_ENABLED), is(true));
+    void testLocalPackageDependency() throws AnalysisException, InvalidSettingException {
+        assumeTrue(getSettings().getBoolean(Settings.KEYS.ANALYZER_NODE_PACKAGE_ENABLED));
         final Dependency packageJson = new Dependency(BaseTest.getResourceAsFile(this,
                 "nodejs/local_package/package.json"));
         final Dependency packageLockJson = new Dependency(BaseTest.getResourceAsFile(this,
@@ -327,8 +328,8 @@ public class NodePackageAnalyzerTest extends BaseTest {
         engine.addDependency(packageJson);
         engine.addDependency(packageLockJson);
         analyzer.analyze(packageJson, engine);
-        assertEquals("Expected 1 dependencies", 1, engine.getDependencies().length);
+        assertEquals(1, engine.getDependencies().length, "Expected 1 dependencies");
         analyzer.analyze(packageLockJson, engine);
-        assertEquals("Expected 2 dependencies", 2, engine.getDependencies().length);
+        assertEquals(2, engine.getDependencies().length, "Expected 2 dependencies");
     }
 }

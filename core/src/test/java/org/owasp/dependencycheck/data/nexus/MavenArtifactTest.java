@@ -1,14 +1,14 @@
 package org.owasp.dependencycheck.data.nexus;
 
-import org.junit.Test;
-
-import static org.junit.Assert.assertEquals;
+import org.junit.jupiter.api.Test;
 import org.owasp.dependencycheck.BaseTest;
 
-public class MavenArtifactTest extends BaseTest {
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+class MavenArtifactTest extends BaseTest {
 
     @Test
-    public void getPomUrl() {
+    void getPomUrl() {
         // Given
         final MavenArtifact mavenArtifact = new MavenArtifact("com.google.code.gson", "gson", "2.1",
                 "https://artifactory.techno.ingenico.com/artifactory/jcenter-cache/com/google/code/gson/gson/2.1/gson-2.1.jar", MavenArtifact.derivePomUrl("gson", "2.1",
@@ -21,7 +21,7 @@ public class MavenArtifactTest extends BaseTest {
     }
 
     @Test
-    public void getPomUrlWithQualifier() {
+    void getPomUrlWithQualifier() {
         // Given
         final MavenArtifact mavenArtifact = new MavenArtifact("com.google.code.gson", "gson", "2.8.5",
                 "https://artifactory.techno.ingenico.com/artifactory/repo1-cache/com/google/code/gson/gson/2.8.5/gson-2.8.5-sources.jar", MavenArtifact.derivePomUrl("gson", "2.8.5",

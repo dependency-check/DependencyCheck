@@ -17,24 +17,24 @@
  */
 package org.owasp.dependencycheck.data.lucene;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.owasp.dependencycheck.BaseTest;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  *
  * @author Jeremy Long
  */
-public class LuceneUtilsTest extends BaseTest {
+class LuceneUtilsTest extends BaseTest {
 
     /**
      * Test of appendEscapedLuceneQuery method, of class LuceneUtils.
      */
     @Test
-    public void testAppendEscapedLuceneQuery() {
+    void testAppendEscapedLuceneQuery() {
         StringBuilder buf = new StringBuilder();
         CharSequence text = "test encoding + - & | ! ( ) { } [ ] ^ \" ~ * ? : \\";
         String expResult = "test encoding \\+ \\- \\& \\| \\! \\( \\) \\{ \\} \\[ \\] \\^ \\\" \\~ \\* \\? \\: \\\\";
@@ -46,7 +46,7 @@ public class LuceneUtilsTest extends BaseTest {
      * Test of appendEscapedLuceneQuery method, of class LuceneUtils.
      */
     @Test
-    public void testAppendEscapedLuceneQuery_null() {
+    void testAppendEscapedLuceneQuery_null() {
         StringBuilder buf = new StringBuilder();
         CharSequence text = null;
         LuceneUtils.appendEscapedLuceneQuery(buf, text);
@@ -57,7 +57,7 @@ public class LuceneUtilsTest extends BaseTest {
      * Test of escapeLuceneQuery method, of class LuceneUtils.
      */
     @Test
-    public void testEscapeLuceneQuery() {
+    void testEscapeLuceneQuery() {
         CharSequence text = "test encoding + - & | ! ( ) { } [ ] ^ \" ~ * ? : \\";
         String expResult = "test encoding \\+ \\- \\& \\| \\! \\( \\) \\{ \\} \\[ \\] \\^ \\\" \\~ \\* \\? \\: \\\\";
         String result = LuceneUtils.escapeLuceneQuery(text);
@@ -68,7 +68,7 @@ public class LuceneUtilsTest extends BaseTest {
      * Test of escapeLuceneQuery method, of class LuceneUtils.
      */
     @Test
-    public void testEscapeLuceneQuery_null() {
+    void testEscapeLuceneQuery_null() {
         CharSequence text = null;
         String expResult = null;
         String result = LuceneUtils.escapeLuceneQuery(text);
@@ -76,13 +76,13 @@ public class LuceneUtilsTest extends BaseTest {
     }
 
     @Test
-    public void testIsKeyword() {
-        assertTrue("'AND' is a keyword and should return true", LuceneUtils.isKeyword("And"));
-        assertTrue("'OR' is a keyword and should return true", LuceneUtils.isKeyword("OR"));
-        assertTrue("'NOT' is a keyword and should return true", LuceneUtils.isKeyword("nOT"));
-        assertTrue("'TO' is being considered a keyword and should return true", LuceneUtils.isKeyword("TO"));
-        assertTrue("'+' is being considered a keyword and should return true", LuceneUtils.isKeyword("+"));
-        assertTrue("'-' is being considered a keyword and should return true", LuceneUtils.isKeyword("-"));
-        assertFalse("'the' is not a keyword and should return false", LuceneUtils.isKeyword("test"));
+    void testIsKeyword() {
+        assertTrue(LuceneUtils.isKeyword("And"), "'AND' is a keyword and should return true");
+        assertTrue(LuceneUtils.isKeyword("OR"), "'OR' is a keyword and should return true");
+        assertTrue(LuceneUtils.isKeyword("nOT"), "'NOT' is a keyword and should return true");
+        assertTrue(LuceneUtils.isKeyword("TO"), "'TO' is being considered a keyword and should return true");
+        assertTrue(LuceneUtils.isKeyword("+"), "'+' is being considered a keyword and should return true");
+        assertTrue(LuceneUtils.isKeyword("-"), "'-' is being considered a keyword and should return true");
+        assertFalse(LuceneUtils.isKeyword("test"), "'the' is not a keyword and should return false");
     }
 }

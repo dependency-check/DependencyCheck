@@ -56,6 +56,7 @@ _odc_completions()
             --ossIndexRemoteErrorWarnOnly
             --disableKnownExploited
             --kevURL <url>
+            --disablePE
             --disablePip
             --disablePipfile
             --disablePyDist

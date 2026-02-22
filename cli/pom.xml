@@ -32,7 +32,7 @@ Copyright (c) 2012 - Jeremy Long. All Rights Reserved.
         <connection>scm:git:https://github.com/dependency-check/DependencyCheck.git</connection>
         <url>https://github.com/dependency-check/DependencyCheck/tree/main/cli</url>
         <developerConnection>scm:git:git@github.com/dependency-check/DependencyCheck.git</developerConnection>
-        <tag>v6.4.1</tag>
+        <tag>HEAD</tag>
     </scm>
     <build>
         <finalName>dependency-check-${project.version}</finalName>
@@ -67,7 +67,11 @@ Copyright (c) 2012 - Jeremy Long. All Rights Reserved.
                     <archive>
                         <manifest>
                             <mainClass>org.owasp.dependencycheck.App</mainClass>
+                            <addClasspath>true</addClasspath>
                         </manifest>
+                        <manifestEntries>
+                            <Premain-Class>org.owasp.dependencycheck.PluginLoader</Premain-Class>
+                        </manifestEntries>
                     </archive>
                 </configuration>
             </plugin>
@@ -79,6 +83,11 @@ Copyright (c) 2012 - Jeremy Long. All Rights Reserved.
                         <program>
                             <mainClass>org.owasp.dependencycheck.App</mainClass>
                             <id>dependency-check</id>
+                            <commandLineArguments>
+                                <commandLineArgument>-javaagent:@REPO@/${project.artifactId}-${project.version}.jar=@BASEDIR@/plugins</commandLineArgument>
+                                <commandLineArgument>-jar</commandLineArgument>
+                                <commandLineArgument>@REPO@/${project.artifactId}-${project.version}.jar</commandLineArgument>
+                            </commandLineArguments>
                         </program>
                     </programs>
                     <assembleDirectory>${project.build.directory}/release</assembleDirectory>
@@ -88,14 +97,14 @@ Copyright (c) 2012 - Jeremy Long. All Rights Reserved.
                     </binFileExtensions>
                     <repositoryLayout>flat</repositoryLayout>
                     <repositoryName>lib</repositoryName>
-                    <useWildcardClassPath>true</useWildcardClassPath>
-                    <configurationDirectory>plugins/*</configurationDirectory>
-                    <includeConfigurationDirectoryInClasspath>true</includeConfigurationDirectoryInClasspath>
-                    <unixScriptTemplate>${project.basedir}/src/main/conf/unixBinTemplate</unixScriptTemplate>
+                    <unixScriptTemplate>${project.basedir}/src/main/conf/unixBinTemplate.sh</unixScriptTemplate>
+                    <windowsScriptTemplate>${project.basedir}/src/main/conf/windowsBinTemplate.bat</windowsScriptTemplate>
+                    <extraJvmArguments>${runtime.extra.jvm.args}</extraJvmArguments>
                 </configuration>
                 <executions>
                     <execution>
                         <id>assemble</id>
+                        <phase>package</phase>
                         <goals>
                             <goal>assemble</goal>
                         </goals>
@@ -153,10 +162,6 @@ Copyright (c) 2012 - Jeremy Long. All Rights Reserved.
             <artifactId>slf4j-api</artifactId>
         </dependency>
         <dependency>
-            <groupId>io.github.jeremylong</groupId>
-            <artifactId>jcs3-slf4j</artifactId>
-        </dependency>
-        <dependency>
             <!-- not visible in imports due to method chaining, but App code uses classes from this library -->
             <groupId>io.github.jeremylong</groupId>
             <artifactId>open-vulnerability-clients</artifactId>
@@ -168,10 +173,6 @@ Copyright (c) 2012 - Jeremy Long. All Rights Reserved.
                 <exclusion>
                     <groupId>org.apache.ant</groupId>
                     <artifactId>ant-launcher</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>com.sun</groupId>
-                    <artifactId>tools</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>

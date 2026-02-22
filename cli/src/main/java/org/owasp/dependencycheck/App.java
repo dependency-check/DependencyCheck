@@ -26,6 +26,7 @@ import java.util.Set;
 
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
 import org.apache.commons.cli.ParseException;
 import org.apache.tools.ant.DirectoryScanner;
 import org.owasp.dependencycheck.data.nvdcve.DatabaseException;
@@ -39,6 +40,7 @@ import org.owasp.dependencycheck.exception.ReportException;
 import org.owasp.dependencycheck.utils.Downloader;
 import org.owasp.dependencycheck.utils.InvalidSettingException;
 import org.owasp.dependencycheck.utils.Settings;
+import org.owasp.dependencycheck.utils.scarf.TelemetryCollector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,8 +50,9 @@ import ch.qos.logback.classic.filter.ThresholdFilter;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.LoggerContext;
-import io.github.jeremylong.jcs3.slf4j.Slf4jAdapter;
+
 import java.util.TreeSet;
+
 import org.owasp.dependencycheck.utils.SeverityUtil;
 
 /**
@@ -84,10 +87,6 @@ public class App {
      */
     @SuppressWarnings("squid:S4823")
     public static void main(String[] args) {
-        System.setProperty("jcs.logSystem", "slf4j");
-        if (!LOGGER.isDebugEnabled()) {
-            Slf4jAdapter.muteLogging(true);
-        }
         final int exitCode;
         final App app = new App();
         exitCode = app.run(args);
@@ -189,6 +188,7 @@ public class App {
             try {
                 populateSettings(cli);
                 Downloader.getInstance().configure(settings);
+                TelemetryCollector.send(settings);
             } catch (InvalidSettingException ex) {
                 LOGGER.error(ex.getMessage(), ex);
                 LOGGER.debug(ERROR_LOADING_PROPERTIES_FILE, ex);
@@ -254,7 +254,7 @@ public class App {
      * collection.
      */
     private int runScan(String reportDirectory, String[] outputFormats, String applicationName, String[] files,
-            String[] excludes, int symLinkDepth, float cvssFailScore) throws DatabaseException,
+                        String[] excludes, int symLinkDepth, float cvssFailScore) throws DatabaseException,
             ExceptionCollection, ReportException {
         Engine engine = null;
         try {
@@ -341,10 +341,10 @@ public class App {
                     if (addName) {
                         addName = false;
                         ids.append(NEW_LINE).append(d.getFileName()).append(" (")
-                           .append(Stream.concat(d.getSoftwareIdentifiers().stream(), d.getVulnerableSoftwareIdentifiers().stream())
-                                         .map(Identifier::getValue)
-                                         .collect(Collectors.joining(", ")))
-                           .append("): ");
+                                .append(Stream.concat(d.getSoftwareIdentifiers().stream(), d.getVulnerableSoftwareIdentifiers().stream())
+                                        .map(Identifier::getValue)
+                                        .collect(Collectors.joining(", ")))
+                                .append("): ");
                         ids.append(v.getName()).append('(').append(score).append(')');
                     } else {
                         ids.append(", ").append(v.getName()).append('(').append(score).append(')');
@@ -450,6 +450,7 @@ public class App {
     }
 
     //CSOFF: MethodLength
+
     /**
      * Updates the global Settings.
      *
@@ -459,6 +460,12 @@ public class App {
      * file is unable to be loaded.
      */
     protected void populateSettings(CliParser cli) throws InvalidSettingException {
+        String name = System.getenv("ODC_NAME") != null ? System.getenv("ODC_NAME") : "dependency-check-cli";
+        if (name.isBlank()) {
+            name = "dependency-check-cli";
+        }
+        name = name.replace("/", "-").replace(" ", "_");
+        settings.setString(Settings.KEYS.APPLICATION_NAME, name);
         final File propertiesFile = cli.getFileArgument(CliParser.ARGUMENT.PROP);
         if (propertiesFile != null) {
             try {
@@ -562,6 +569,8 @@ public class App {
                 !cli.isDisabled(CliParser.ARGUMENT.DISABLE_AUTOCONF, Settings.KEYS.ANALYZER_AUTOCONF_ENABLED));
         settings.setBoolean(Settings.KEYS.ANALYZER_MAVEN_INSTALL_ENABLED,
                 !cli.isDisabled(CliParser.ARGUMENT.DISABLE_MAVEN_INSTALL, Settings.KEYS.ANALYZER_MAVEN_INSTALL_ENABLED));
+        settings.setBoolean(Settings.KEYS.ANALYZER_PE_ENABLED,
+                !cli.isDisabled(CliParser.ARGUMENT.DISABLE_PE, Settings.KEYS.ANALYZER_PE_ENABLED));
         settings.setBoolean(Settings.KEYS.ANALYZER_PIP_ENABLED,
                 !cli.isDisabled(CliParser.ARGUMENT.DISABLE_PIP, Settings.KEYS.ANALYZER_PIP_ENABLED));
         settings.setBoolean(Settings.KEYS.ANALYZER_PIPFILE_ENABLED,
@@ -731,6 +740,7 @@ public class App {
     }
 
     //CSON: MethodLength
+
     /**
      * Creates a file appender and adds it to logback.
      *

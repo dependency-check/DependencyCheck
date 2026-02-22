@@ -17,7 +17,7 @@
  */
 package org.owasp.dependencycheck.analyzer;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.owasp.dependencycheck.BaseTest;
 import org.owasp.dependencycheck.Engine;
 import org.owasp.dependencycheck.dependency.Dependency;
@@ -32,14 +32,14 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * @author Jeremy Long
  */
-public class JarAnalyzerTest extends BaseTest {
+class JarAnalyzerTest extends BaseTest {
 
     /**
      * Test of inspect method, of class JarAnalyzer.
@@ -47,9 +47,8 @@ public class JarAnalyzerTest extends BaseTest {
      * @throws Exception is thrown when an exception occurs.
      */
     @Test
-    public void testAnalyze() throws Exception {
-        //File file = new File(this.getClass().getClassLoader().getResource("struts2-core-2.1.2.jar").getPath());
-        File file = BaseTest.getResourceAsFile(this, "struts2-core-2.1.2.jar");
+    void testAnalyze() throws Exception {
+        File file = BaseTest.getResourceAsFile(this, "maven-lib/struts2-core-2.1.2.jar");
         Dependency result = new Dependency(file);
         JarAnalyzer instance = new JarAnalyzer();
         instance.initialize(getSettings());
@@ -65,12 +64,12 @@ public class JarAnalyzerTest extends BaseTest {
         boolean found = false;
         for (Evidence e : result.getEvidence(EvidenceType.VENDOR)) {
             if (e.getName().equals("url")) {
-                assertEquals("Project url was not as expected in dwr.jar", "http://getahead.ltd.uk/dwr", e.getValue());
+                assertEquals("http://getahead.ltd.uk/dwr", e.getValue(), "Project url was not as expected in dwr.jar");
                 found = true;
                 break;
             }
         }
-        assertTrue("Project url was not found in dwr.jar", found);
+        assertTrue(found, "Project url was not found in dwr.jar");
 
         //file = new File(this.getClass().getClassLoader().getResource("org.mortbay.jetty.jar").getPath());
         file = BaseTest.getResourceAsFile(this, "org.mortbay.jetty.jar");
@@ -84,7 +83,7 @@ public class JarAnalyzerTest extends BaseTest {
                 break;
             }
         }
-        assertTrue("package-title of org.mortbay.http not found in org.mortbay.jetty.jar", found);
+        assertTrue(found, "package-title of org.mortbay.http not found in org.mortbay.jetty.jar");
 
         found = false;
         for (Evidence e : result.getEvidence(EvidenceType.VENDOR)) {
@@ -94,7 +93,7 @@ public class JarAnalyzerTest extends BaseTest {
                 break;
             }
         }
-        assertTrue("implementation-url of http://jetty.mortbay.org not found in org.mortbay.jetty.jar", found);
+        assertTrue(found, "implementation-url of http://jetty.mortbay.org not found in org.mortbay.jetty.jar");
 
         found = false;
         for (Evidence e : result.getEvidence(EvidenceType.VERSION)) {
@@ -104,18 +103,18 @@ public class JarAnalyzerTest extends BaseTest {
                 break;
             }
         }
-        assertTrue("implementation-version of 4.2.27 not found in org.mortbay.jetty.jar", found);
+        assertTrue(found, "implementation-version of 4.2.27 not found in org.mortbay.jetty.jar");
 
         //file = new File(this.getClass().getClassLoader().getResource("org.mortbay.jmx.jar").getPath());
         file = BaseTest.getResourceAsFile(this, "org.mortbay.jmx.jar");
         result = new Dependency(file);
         instance.analyze(result, null);
-        assertEquals("org.mortbar.jmx.jar has version evidence?", 0, result.getEvidence(EvidenceType.VERSION).size());
+        assertEquals(0, result.getEvidence(EvidenceType.VERSION).size(), "org.mortbar.jmx.jar has version evidence?");
     }
 
     @Test
-    public void testAddMatchingValues() throws Exception {
-        File file = BaseTest.getResourceAsFile(this, "struts2-core-2.1.2.jar");
+    void testAddMatchingValues() throws Exception {
+        File file = BaseTest.getResourceAsFile(this, "maven-lib/struts2-core-2.1.2.jar");
         Dependency dependency = new Dependency(file);
         JarAnalyzer instance = new JarAnalyzer();
         instance.initialize(getSettings());
@@ -148,14 +147,14 @@ public class JarAnalyzerTest extends BaseTest {
      * Test of getSupportedExtensions method, of class JarAnalyzer.
      */
     @Test
-    public void testAcceptSupportedExtensions() throws Exception {
+    void testAcceptSupportedExtensions() throws Exception {
         JarAnalyzer instance = new JarAnalyzer();
         instance.initialize(getSettings());
         instance.prepare(null);
         instance.setEnabled(true);
         String[] files = {"test.jar", "test.war"};
         for (String name : files) {
-            assertTrue(name, instance.accept(new File(name)));
+            assertTrue(instance.accept(new File(name)), name);
         }
     }
 
@@ -163,7 +162,7 @@ public class JarAnalyzerTest extends BaseTest {
      * Test of getName method, of class JarAnalyzer.
      */
     @Test
-    public void testGetName() {
+    void testGetName() {
         JarAnalyzer instance = new JarAnalyzer();
         String expResult = "Jar Analyzer";
         String result = instance.getName();
@@ -171,8 +170,8 @@ public class JarAnalyzerTest extends BaseTest {
     }
 
     @Test
-    public void testParseManifest() throws Exception {
-        File file = BaseTest.getResourceAsFile(this, "xalan-2.7.0.jar");
+    void testParseManifest() throws Exception {
+        File file = BaseTest.getResourceAsFile(this, "maven-lib/xalan-2.7.0.jar");
         Dependency result = new Dependency(file);
         JarAnalyzer instance = new JarAnalyzer();
         List<JarAnalyzer.ClassNameInformation> cni = new ArrayList<>();
@@ -185,7 +184,7 @@ public class JarAnalyzerTest extends BaseTest {
      * Test of getAnalysisPhase method, of class JarAnalyzer.
      */
     @Test
-    public void testGetAnalysisPhase() {
+    void testGetAnalysisPhase() {
         JarAnalyzer instance = new JarAnalyzer();
         AnalysisPhase expResult = AnalysisPhase.INFORMATION_COLLECTION;
         AnalysisPhase result = instance.getAnalysisPhase();
@@ -196,7 +195,7 @@ public class JarAnalyzerTest extends BaseTest {
      * Test of getAnalyzerEnabledSettingKey method, of class JarAnalyzer.
      */
     @Test
-    public void testGetAnalyzerEnabledSettingKey() {
+    void testGetAnalyzerEnabledSettingKey() {
         JarAnalyzer instance = new JarAnalyzer();
         String expResult = Settings.KEYS.ANALYZER_JAR_ENABLED;
         String result = instance.getAnalyzerEnabledSettingKey();
@@ -204,7 +203,7 @@ public class JarAnalyzerTest extends BaseTest {
     }
 
     @Test
-    public void testClassInformation() {
+    void testClassInformation() {
         JarAnalyzer.ClassNameInformation instance = new JarAnalyzer.ClassNameInformation("org/owasp/dependencycheck/analyzer/JarAnalyzer");
         assertEquals("org/owasp/dependencycheck/analyzer/JarAnalyzer", instance.getName());
         List<String> expected = Arrays.asList("owasp", "dependencycheck", "analyzer", "jaranalyzer");
@@ -213,7 +212,7 @@ public class JarAnalyzerTest extends BaseTest {
     }
 
     @Test
-    public void testAnalyzeDependency_SkipsMacOSMetaDataFile() throws Exception {
+    void testAnalyzeDependency_SkipsMacOSMetaDataFile() throws Exception {
         JarAnalyzer instance = new JarAnalyzer();
         Dependency macOSMetaDataFile = new Dependency();
 
@@ -232,7 +231,7 @@ public class JarAnalyzerTest extends BaseTest {
     }
 
     @Test
-    public void testAnalyseDependency_SkipsNonZipFile() throws Exception {
+    void testAnalyseDependency_SkipsNonZipFile() throws Exception {
         JarAnalyzer instance = new JarAnalyzer();
         Dependency textFileWithJarExtension = new Dependency();
         textFileWithJarExtension

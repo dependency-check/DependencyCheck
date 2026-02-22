@@ -15,7 +15,7 @@ jobs:
     steps:
       - name: Remove Labels
         if: contains(github.event.issue.labels.*.name, 'pending more information')
-        uses: actions/github-script@v7.0.1
+        uses: actions/github-script@v8.0.0
         with:
           script: |
               github.rest.issues.removeLabel({
@@ -32,7 +32,7 @@ jobs:
                 repo: context.repo.repo
               })
               )
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           path: odc
       - name: Parse False Positive Issue
@@ -41,7 +41,7 @@ jobs:
         with:
           issue-body: ${{ github.event.issue.body }}
           template-path: odc/.github/ISSUE_TEMPLATE/false-positive-report.yml
-      - uses: actions/setup-node@v4.4.0
+      - uses: actions/setup-node@v6.2.0
         with:
           node-version: 14
       - name: Initialize npm
@@ -50,7 +50,7 @@ jobs:
           npm install packageurl-js
       - name: Parse Package URL
         id: purl-parser
-        uses: actions/github-script@v7.0.1
+        uses: actions/github-script@v8.0.0
         env:
           PURL: ${{ fromJSON(steps.issue-parser.outputs.jsonString).purl }}
         with:
@@ -97,7 +97,7 @@ jobs:
           cd ./fp-project
           ## not ideal as verify would be better then using the docker image...
           ##mvn verify
-          mvn dependency:copy-dependencies --no-transfer-progress --batch-mode 
+          mvn dependency:copy-dependencies --no-transfer-progress --batch-mode -Dstyle.color=always
           cd ..
       - name: Setup npm fp-project
         if: ${{ fromJSON(steps.purl-parser.outputs.result).type == 'npm' }}
@@ -111,7 +111,7 @@ jobs:
           cd ..
       - name: Setup dotnet
         if: ${{ fromJSON(steps.purl-parser.outputs.result).type == 'nuget' }}
-        uses: actions/setup-dotnet@v4.3.1
+        uses: actions/setup-dotnet@v5.1.0
         with:
           dotnet-version: '8.0.x'
       - name: Setup dotnet fp-project
@@ -140,15 +140,17 @@ jobs:
           args: >
             --failOnCVSS 11
             --enableExperimental
+            --ossIndexUsername ${{ secrets.OSS_INDEX_USERNAME }}
+            --ossIndexPassword ${{ secrets.OSS_INDEX_API_TOKEN }}
       - name: Upload FP Report
         if: steps.check_files.outputs.files_exists == 'true'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
            name: FP Report
            path: ${{github.workspace}}/reports
       - name: Comment on maven issue
         if: ${{ fromJSON(steps.purl-parser.outputs.result).type == 'maven' }}
-        uses: actions/github-script@v7.0.1
+        uses: actions/github-script@v8.0.0
         env:
           GROUPID: ${{ fromJSON(steps.purl-parser.outputs.result).namespace }}
           ARTIFACTID: ${{ fromJSON(steps.purl-parser.outputs.result).name }}
@@ -180,14 +182,14 @@ jobs:
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: 'Maven Coordinates\n\n```xml\n<dependency>\n   <groupId>' + process.env.GROUPID + '</groupId>\n   <artifactId>' + process.env.ARTIFACTID + '</artifactId>\n   <version>' + process.env.VERSION + '</version>\n</dependency>\n```\n\n' +
+              body: 'Maven Coordinates\n\n```xml\n<dependency>\n  <groupId>' + process.env.GROUPID + '</groupId>\n  <artifactId>' + process.env.ARTIFACTID + '</artifactId>\n  <version>' + process.env.VERSION + '</version>\n</dependency>\n```\n\n' +
                     'Suppression rule:\n```xml\n' +
                     '<suppress base="true">\n' +
-                    '   <notes><![CDATA[\n' +
-                    '   FP per issue #' + context.issue.number + '\n' +
-                    '   ]]></notes>\n' +
-                    '   <packageUrl regex="true">' + purl + '</packageUrl>\n' +
-                    '   <cpe>' + matchcpe + '</cpe>\n' +
+                    '    <notes><![CDATA[\n' +
+                    '    FP per issue #' + context.issue.number + '\n' +
+                    '    ]]></notes>\n' +
+                    '    <packageUrl regex="true">' + purl + '</packageUrl>\n' +
+                    '    <cpe>' + matchcpe + '</cpe>\n' +
                     '</suppress>\n```\n\n' +
                     'Link to test results: ' + context.serverUrl + '/' + context.repo.owner + '/' + context.repo.repo + '/actions/runs/' + context.runId
             })
@@ -199,7 +201,7 @@ jobs:
             })
       - name: Comment on npm issue
         if: ${{ fromJSON(steps.purl-parser.outputs.result).type == 'npm' }}
-        uses: actions/github-script@v7.0.1
+        uses: actions/github-script@v8.0.0
         env:
           NAME: ${{ fromJSON(steps.purl-parser.outputs.result).name }}
           VERSION: ${{ fromJSON(steps.purl-parser.outputs.result).version }}
@@ -230,11 +232,11 @@ jobs:
               body: 'Npm Coordinates\n\n```shell\nnpm -i ' + process.env.NAME + '@' + process.env.VERSION + '\n```\n\n' +
                     'Suppression rule:\n```xml\n' +
                     '<suppress base="true">\n' +
-                    '   <notes><![CDATA[\n' +
-                    '   FP per issue #' + context.issue.number + '\n' +
-                    '   ]]></notes>\n' +
-                    '   <packageUrl regex="true">' + purl + '</packageUrl>\n' +
-                    '   <cpe>' + matchcpe + '</cpe>\n' +
+                    '    <notes><![CDATA[\n' +
+                    '    FP per issue #' + context.issue.number + '\n' +
+                    '    ]]></notes>\n' +
+                    '    <packageUrl regex="true">' + purl + '</packageUrl>\n' +
+                    '    <cpe>' + matchcpe + '</cpe>\n' +
                     '</suppress>\n```\n\n' +
                     'Link to test results: ' + context.serverUrl + '/' + context.repo.owner + '/' + context.repo.repo + '/actions/runs/' + context.runId
             })
@@ -246,7 +248,7 @@ jobs:
             })
       - name: Comment on dotnet issue
         if: ${{ fromJSON(steps.purl-parser.outputs.result).type == 'nuget' }}
-        uses: actions/github-script@v7.0.1
+        uses: actions/github-script@v8.0.0
         env:
           NAME: ${{ fromJSON(steps.purl-parser.outputs.result).name }}
           VERSION: ${{ fromJSON(steps.purl-parser.outputs.result).version }}
@@ -276,11 +278,11 @@ jobs:
               body: 'Nuget Coordinates\n\n```shell\ndotnet add package ' + process.env.NAME + ' --version ' + process.env.VERSION + '\n```\n\n' +
                     'Suppression rule:\n```xml\n' +
                     '<suppress base="true">\n' +
-                    '   <notes><![CDATA[\n' +
-                    '   FP per issue #' + context.issue.number + '\n' +
-                    '   ]]></notes>\n' +
-                    '   <packageUrl regex="true">' + purl + '</packageUrl>\n' +
-                    '   <cpe>' + matchcpe + '</cpe>\n' +
+                    '    <notes><![CDATA[\n' +
+                    '    FP per issue #' + context.issue.number + '\n' +
+                    '    ]]></notes>\n' +
+                    '    <packageUrl regex="true">' + purl + '</packageUrl>\n' +
+                    '    <cpe>' + matchcpe + '</cpe>\n' +
                     '</suppress>\n```\n\n' +
                     'Link to test results: ' + context.serverUrl + '/' + context.repo.owner + '/' + context.repo.repo + '/actions/runs/' + context.runId
             })
@@ -293,7 +295,7 @@ jobs:
             
       - name: Message failure
         if: ${{ failure() }}
-        uses: actions/github-script@v7.0.1
+        uses: actions/github-script@v8.0.0
         with:
           script: |
             github.rest.issues.createComment({

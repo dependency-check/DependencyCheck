@@ -373,7 +373,7 @@ public class AssemblyAnalyzer extends AbstractFileTypeAnalyzer {
                 if (p.exitValue() != 1 || !StringUtils.isBlank(error)) {
                     LOGGER.warn("An error occurred with the .NET AssemblyAnalyzer, please see the log for more details.\n"
                     + "dependency-check requires dotnet 8.0 core runtime or sdk to be installed to analyze assemblies.");
-                    LOGGER.debug("GrokAssembly.dll is not working properly");
+                    LOGGER.debug("GrokAssembly.dll is not working properly: {}", error);
                     grokAssembly = null;
                     setEnabled(false);
                     throw new InitializationException("Could not execute .NET AssemblyAnalyzer, is the dotnet 8.0 runtime or sdk installed?");
@@ -407,9 +407,6 @@ public class AssemblyAnalyzer extends AbstractFileTypeAnalyzer {
     private File extractGrokAssembly() throws InitializationException {
         final File location;
         try (InputStream in = FileUtils.getResourceAsStream("GrokAssembly.zip")) {
-            if (in == null) {
-                throw new InitializationException("Unable to extract GrokAssembly.dll - file not found");
-            }
             location = FileUtils.createTempDirectory(getSettings().getTempDirectory());
             ExtractionUtil.extractFiles(in, location);
         } catch (ExtractionException ex) {
@@ -427,7 +424,9 @@ public class AssemblyAnalyzer extends AbstractFileTypeAnalyzer {
      */
     @Override
     public void closeAnalyzer() throws Exception {
-        FileUtils.delete(grokAssembly.getParentFile());
+        if (grokAssembly != null) {
+            FileUtils.delete(grokAssembly.getParentFile());
+        }
     }
 
     @Override

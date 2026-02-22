@@ -32,12 +32,15 @@ import org.slf4j.LoggerFactory;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import static org.owasp.dependencycheck.data.artifactory.ArtifactorySearch.X_RESULT_DETAIL_HEADER;
 
 class ArtifactorySearchResponseHandler implements HttpClientResponseHandler<List<MavenArtifact>> {
     /**
@@ -61,13 +64,20 @@ class ArtifactorySearchResponseHandler implements HttpClientResponseHandler<List
     private final Dependency expectedDependency;
 
     /**
-     * Creates a responsehandler for the response on a single dependency-search attempt.
+     * The search request URL i.e., the location at which to search artifacts with checksum information
+     */
+    private final URL sourceUrl;
+
+    /**
+     * Creates a response handler for the response on a single dependency-search attempt.
      *
+     * @param sourceUrl The search request URL
      * @param dependency The dependency that is expected to be in the response when found (for validating the FileItem(s) in the response)
      */
-    ArtifactorySearchResponseHandler(Dependency dependency) {
+    ArtifactorySearchResponseHandler(URL sourceUrl, Dependency dependency) {
         this.fileImplReader = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false).readerFor(FileImpl.class);
         this.expectedDependency = dependency;
+        this.sourceUrl = sourceUrl;
     }
 
     protected boolean init(JsonParser parser) throws IOException {
@@ -114,7 +124,7 @@ class ArtifactorySearchResponseHandler implements HttpClientResponseHandler<List
             match = false;
         }
         final String sha256sum = expectedDependency.getSha256sum();
-        /* For sha256 we need to validate that the checksum is non-null in the artifactory response.
+        /* For SHA-256, we need to validate that the checksum is non-null in the artifactory response.
          * Extract from Artifactory documentation:
          * New artifacts that are uploaded to Artifactory 5.5 and later will automatically have their SHA-256 checksum calculated.
          * However, artifacts that were already hosted in Artifactory before the upgrade will not have their SHA-256 checksum in the database yet.
@@ -132,7 +142,7 @@ class ArtifactorySearchResponseHandler implements HttpClientResponseHandler<List
      * Process the Artifactory response.
      *
      * @param response the HTTP response
-     * @return a list of the Maven Artifact informations that match the searched dependency hash
+     * @return a list of the Maven Artifact information that matches the searched dependency hash
      * @throws FileNotFoundException When a matching artifact is not found
      * @throws IOException           thrown if there is an I/O error
      */
@@ -149,8 +159,11 @@ class ArtifactorySearchResponseHandler implements HttpClientResponseHandler<List
                     final FileImpl file = fileImplReader.readValue(parser);
 
                     if (file.getChecksums() == null) {
-                        LOGGER.warn("No checksums found in artifactory search result of uri {}. Please make sure that header X-Result-Detail is retained on any (reverse)-proxy, loadbalancer or WebApplicationFirewall in the network path to your Artifactory Server",
-                                file.getUri());
+                        LOGGER.warn(
+                                "No checksums found in Artifactory search result for '{}'. " +
+                                "Specifically, the result set contains URI '{}' but it is missing the 'checksums' property. " +
+                                "Please make sure that the '{}' header is retained on any (reverse-)proxy, load-balancer or Web Application Firewall in the network path to your Artifactory server.",
+                                sourceUrl, file.getUri(), X_RESULT_DETAIL_HEADER);
                         continue;
                     }
 
@@ -174,7 +187,7 @@ class ArtifactorySearchResponseHandler implements HttpClientResponseHandler<List
         }
         if (result.isEmpty()) {
             throw new FileNotFoundException("Artifact " + expectedDependency
-                    + " not found in Artifactory; discovered sha1 hits not recognized as matching maven artifacts");
+                    + " not found in Artifactory; discovered SHA1 hits not recognized as matching Maven artifacts");
         }
         return result;
     }
@@ -182,10 +195,10 @@ class ArtifactorySearchResponseHandler implements HttpClientResponseHandler<List
     /**
      * Validate the FileImpl result for usability as a dependency.
      * <br/>
-     * Checks that the actually matches all known hashes and the path appears to match a maven repository G/A/V pattern.
+     * Checks that the file actually matches all known hashes and the path appears to match a maven repository G/A/V pattern.
      *
      * @param file The FileImpl from an Artifactory search response
-     * @return An Optional with the Matcher for the file path to retrieve the Maven G/A/V coordinates in case result is usable for further
+     * @return An Optional with the Matcher for the file path to retrieve the Maven G/A/V coordinates in case the result is usable for further
      * processing, otherwise an empty Optional.
      */
     private Optional<Matcher> validateUsability(FileImpl file) {

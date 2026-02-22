@@ -45,7 +45,8 @@ import org.owasp.dependencycheck.utils.Downloader;
 import org.owasp.dependencycheck.utils.InvalidSettingException;
 import org.owasp.dependencycheck.utils.Settings;
 import org.owasp.dependencycheck.utils.SeverityUtil;
-import org.slf4j.impl.StaticLoggerBinder;
+import org.owasp.dependencycheck.utils.scarf.TelemetryCollector;
+import org.owasp.dependencycheck.ant.logging.AntTaskHolder;
 
 //CSOFF: MethodCount
 /**
@@ -201,7 +202,7 @@ public class Check extends Update {
      * Specifies the destination directory for the generated Dependency-Check
      * report.
      */
-    private String reportOutputDirectory = ".";
+    private String reportOutputDirectory;
     /**
      * If using the JUNIT report format the junitFailOnCVSS sets the CVSS score
      * threshold that is considered a failure. The default is 0.
@@ -410,7 +411,7 @@ public class Check extends Update {
     private Boolean versionCheckEnabled;
 
     /**
-     * whether an unsused suppression rule should get force the build to fail
+     * whether an unused suppression rule should get force the build to fail
      */
     private boolean failBuildOnUnusedSuppressionRule = false;
 
@@ -516,7 +517,7 @@ public class Check extends Update {
         super();
         // Call this before Dependency Check Core starts logging anything - this way, all SLF4J messages from
         // core end up coming through this tasks logger
-        StaticLoggerBinder.getSingleton().setTask(this);
+        AntTaskHolder.setTask(this);
     }
 
     /**
@@ -527,7 +528,7 @@ public class Check extends Update {
      * @param suppressionFile the suppression file to add.
      */
     public void addConfiguredSuppressionFile(final SuppressionFile suppressionFile) {
-        suppressionFiles.add(suppressionFile.getPath());
+        suppressionFiles.add(resolveRelative(suppressionFile.getPath()));
     }
 
     /**
@@ -572,13 +573,26 @@ public class Check extends Update {
         this.projectName = projectName;
     }
 
+    private String resolveRelative(String path) {
+        if (path == null) {
+            return null;
+        }
+
+        File file = new File(path);
+        if (file.isAbsolute()) {
+            return path;
+        }
+
+        return new File(getProject().getBaseDir(), path).getPath();
+    }
+
     /**
      * Set the value of reportOutputDirectory.
      *
      * @param reportOutputDirectory new value of reportOutputDirectory
      */
     public void setReportOutputDirectory(String reportOutputDirectory) {
-        this.reportOutputDirectory = reportOutputDirectory;
+        this.reportOutputDirectory = resolveRelative(reportOutputDirectory);
     }
 
     /**
@@ -645,7 +659,7 @@ public class Check extends Update {
      * @param suppressionFile new value of suppressionFile
      */
     public void setSuppressionFile(String suppressionFile) {
-        suppressionFiles.add(suppressionFile);
+        suppressionFiles.add(resolveRelative(suppressionFile));
     }
 
     /**
@@ -1335,6 +1349,7 @@ public class Check extends Update {
         } catch (InvalidSettingException e) {
             throw new BuildException(e);
         }
+        TelemetryCollector.send(getSettings());
         try (Engine engine = new Engine(Check.class.getClassLoader(), getSettings())) {
             for (Resource resource : getPath()) {
                 final FileProvider provider = resource.as(FileProvider.class);

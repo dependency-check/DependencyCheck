@@ -18,30 +18,30 @@
 package org.owasp.dependencycheck.analyzer;
 
 import com.github.packageurl.MalformedPackageURLException;
-import java.io.File;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Answers;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.owasp.dependencycheck.BaseTest;
 import org.owasp.dependencycheck.Engine;
+import org.owasp.dependencycheck.dependency.Confidence;
 import org.owasp.dependencycheck.dependency.Dependency;
+import org.owasp.dependencycheck.dependency.naming.PurlIdentifier;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import java.io.File;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-
-import org.owasp.dependencycheck.dependency.Confidence;
-import org.owasp.dependencycheck.dependency.naming.PurlIdentifier;
 
 /**
  * @author Jeremy Long
  */
-@RunWith(MockitoJUnitRunner.class)
-public class DependencyBundlingAnalyzerTest extends BaseTest {
+@ExtendWith(MockitoExtension.class)
+class DependencyBundlingAnalyzerTest extends BaseTest {
 
     @Mock(answer = Answers.RETURNS_SMART_NULLS)
     private Engine engineMock;
@@ -50,7 +50,7 @@ public class DependencyBundlingAnalyzerTest extends BaseTest {
      * Test of getName method, of class DependencyBundlingAnalyzer.
      */
     @Test
-    public void testGetName() {
+    void testGetName() {
         DependencyBundlingAnalyzer instance = new DependencyBundlingAnalyzer();
         String expResult = "Dependency Bundling Analyzer";
         String result = instance.getName();
@@ -61,7 +61,7 @@ public class DependencyBundlingAnalyzerTest extends BaseTest {
      * Test of getAnalysisPhase method, of class DependencyBundlingAnalyzer.
      */
     @Test
-    public void testGetAnalysisPhase() {
+    void testGetAnalysisPhase() {
         DependencyBundlingAnalyzer instance = new DependencyBundlingAnalyzer();
         AnalysisPhase expResult = AnalysisPhase.FINAL;
         AnalysisPhase result = instance.getAnalysisPhase();
@@ -73,7 +73,7 @@ public class DependencyBundlingAnalyzerTest extends BaseTest {
      * passed dependency does not matter. The analyzer only runs once.
      */
     @Test
-    public void testAnalyze() throws Exception {
+    void testAnalyze() throws Exception {
         DependencyBundlingAnalyzer instance = new DependencyBundlingAnalyzer();
 
         // the actual dependency does not matter
@@ -93,7 +93,7 @@ public class DependencyBundlingAnalyzerTest extends BaseTest {
      * Test of isCore method, of class DependencyBundlingAnalyzer.
      */
     @Test
-    public void testIsCore() {
+    void testIsCore() {
         Dependency left = new Dependency();
         Dependency right = new Dependency();
 
@@ -120,7 +120,7 @@ public class DependencyBundlingAnalyzerTest extends BaseTest {
     }
 
     @Test
-    public void testFirstPathIsShortest() {
+    void testFirstPathIsShortest() {
         String left = "./a/c.jar";
         String right = "./d/e/f.jar";
         boolean expResult = true;
@@ -153,7 +153,7 @@ public class DependencyBundlingAnalyzerTest extends BaseTest {
     }
 
     @Test
-    public void testIsShaded() throws MalformedPackageURLException {
+    void testIsShaded() throws MalformedPackageURLException {
         DependencyBundlingAnalyzer instance = new DependencyBundlingAnalyzer();
 
         Dependency left = null;
@@ -221,7 +221,7 @@ public class DependencyBundlingAnalyzerTest extends BaseTest {
     }
 
     @Test
-    public void testIsWebJar() throws MalformedPackageURLException {
+    void testIsWebJar() throws MalformedPackageURLException {
         DependencyBundlingAnalyzer instance = new DependencyBundlingAnalyzer();
 
         Dependency left = null;
@@ -273,8 +273,8 @@ public class DependencyBundlingAnalyzerTest extends BaseTest {
         expResult = true;
         result = instance.isWebJar(left, right);
         assertEquals(expResult, result);
-        
-        
+
+
         left = new Dependency(new File("/path/spring-core.jar"), true);
         left.addSoftwareIdentifier(new PurlIdentifier("maven", "org.springframework", "spring-core", "3.0.0", Confidence.HIGHEST));
         expResult = false;

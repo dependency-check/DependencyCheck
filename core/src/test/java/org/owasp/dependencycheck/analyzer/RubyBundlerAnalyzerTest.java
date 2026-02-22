@@ -17,27 +17,27 @@
  */
 package org.owasp.dependencycheck.analyzer;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.owasp.dependencycheck.BaseTest;
 import org.owasp.dependencycheck.analyzer.exception.AnalysisException;
 import org.owasp.dependencycheck.dependency.Dependency;
+import org.owasp.dependencycheck.dependency.EvidenceType;
 
 import java.io.File;
 
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertEquals;
-import org.owasp.dependencycheck.dependency.EvidenceType;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Unit tests for {@link RubyBundlerAnalyzer}.
  *
  * @author Bianca Jiang
  */
-public class RubyBundlerAnalyzerTest extends BaseTest {
+class RubyBundlerAnalyzerTest extends BaseTest {
 
     /**
      * The analyzer to test.
@@ -49,7 +49,7 @@ public class RubyBundlerAnalyzerTest extends BaseTest {
      *
      * @throws Exception thrown if there is a problem
      */
-    @Before
+    @BeforeEach
     @Override
     public void setUp() throws Exception {
         super.setUp();
@@ -64,7 +64,7 @@ public class RubyBundlerAnalyzerTest extends BaseTest {
      *
      * @throws Exception thrown if there is a problem
      */
-    @After
+    @AfterEach
     @Override
     public void tearDown() throws Exception {
         analyzer.close();
@@ -75,7 +75,7 @@ public class RubyBundlerAnalyzerTest extends BaseTest {
      * Test Analyzer name.
      */
     @Test
-    public void testGetName() {
+    void testGetName() {
         assertThat(analyzer.getName(), is("Ruby Bundler Analyzer"));
     }
 
@@ -83,7 +83,7 @@ public class RubyBundlerAnalyzerTest extends BaseTest {
      * Test Ruby Gemspec file support.
      */
     @Test
-    public void testSupportsFiles() {
+    void testSupportsFiles() {
         assertThat(analyzer.accept(new File("test.gemspec")), is(false));
         assertThat(analyzer.accept(new File("specifications" + File.separator + "test.gemspec")), is(true));
         assertThat(analyzer.accept(new File("gemspec.lock")), is(false));
@@ -95,7 +95,7 @@ public class RubyBundlerAnalyzerTest extends BaseTest {
      * @throws AnalysisException is thrown when an exception occurs.
      */
     @Test
-    public void testAnalyzeGemspec() throws AnalysisException {
+    void testAnalyzeGemspec() throws AnalysisException {
         final Dependency result = new Dependency(BaseTest.getResourceAsFile(this,
                 "ruby/vulnerable/gems/rails-4.1.15/vendor/bundle/ruby/2.2.0/specifications/dalli-2.7.5.gemspec"));
         analyzer.analyze(result, null);

@@ -117,7 +117,7 @@ public final class SeverityUtil {
      * the lower bound of the CVSSv3 baseScore for that severity. For recognized
      * critical severities it returns a score in-between the upper bound of the
      * HIGH CVSSv2 score and the lowest sort-adjusted CVSSv3 critical score, so
-     * that unscored critical vulnerabilties are ordered in between CRITICAL
+     * that unscored critical vulnerabilities are ordered in between CRITICAL
      * scored CVSSv3 rated vulnerabilities and HIGH-scored CVSSv2 rated
      * vulnerabilities. For unrecognized severities it returns a score
      * in-between the top HIGH CVSSv2 score and the estimatedSortAdjustedCVSSv3
@@ -173,7 +173,7 @@ public final class SeverityUtil {
 
     /**
      * An enum to translate unscored severity texts to a severity level of a
-     * defined set of severities. Allows for re-use of the text-to-severity
+     * defined set of severities. Allows for reuse of the text-to-severity
      * mapping in multiple helper methods.
      */
     private enum Severity {
@@ -184,7 +184,7 @@ public final class SeverityUtil {
         CRITICAL,
         /**
          * A severity level for textual values that are not recognized and
-         * therefor assumed to be accompanying a critical severity vulnerability
+         * therefore assumed to be accompanying a critical severity vulnerability
          */
         ASSUMED_CRITICAL,
         /**

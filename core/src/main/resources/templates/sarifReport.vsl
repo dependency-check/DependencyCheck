@@ -19,14 +19,7 @@
               },
               "help": {
                 "text": "",
-                "markdown": "#if($rule.getSource().equals("NVD"))For more information see [$enc.json($rule.name)](https://web.nvd.nist.gov/view/vuln/detail?vulnId=$enc.url($rule.name)).\n
-#elseif($rule.getSource().equals("NPM"))For more information see [$enc.json($rule.name)](https://github.com/advisories/$enc.url($rule.name))\n#end
-\n\n
-If this is a false positive - consider using the HTML report to generate a suppression file. 
-For more information see [How dependency-check works](https://dependency-check.github.io/DependencyCheck/general/internals.html),
-[How to read the HTML report](https://dependency-check.github.io/DependencyCheck/general/thereport.html), and
-[Suppressing false positives](https://dependency-check.github.io/DependencyCheck/general/suppression.html).
-"
+                "markdown": "#if($rule.getSource().equals("NVD"))For more information see [$enc.json($rule.name)](https://web.nvd.nist.gov/view/vuln/detail?vulnId=$enc.url($rule.name)).\n#elseif($rule.getSource().equals("NPM"))For more information see [$enc.json($rule.name)](https://github.com/advisories/$enc.url($rule.name))\n#end\n\nIf this is a false positive - consider using the HTML report to generate a suppression file.\nFor more information see [How dependency-check works](https://dependency-check.github.io/DependencyCheck/general/internals.html),\n[How to read the HTML report](https://dependency-check.github.io/DependencyCheck/general/thereport.html), and\n[Suppressing false positives](https://dependency-check.github.io/DependencyCheck/general/suppression.html)."
               },
               "properties": {
                 #if($rule.cvssv2Severity)

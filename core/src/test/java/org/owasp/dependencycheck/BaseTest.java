@@ -15,16 +15,15 @@
  */
 package org.owasp.dependencycheck;
 
-import io.github.jeremylong.jcs3.slf4j.Slf4jAdapter;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.owasp.dependencycheck.utils.Settings;
+
 import java.io.File;
 import java.io.InputStream;
 import java.net.URISyntaxException;
-import org.junit.After;
-
-import org.junit.AfterClass;
-import org.junit.Assume;
-import org.junit.Before;
-import org.owasp.dependencycheck.utils.Settings;
+import java.util.Objects;
 
 /**
  *
@@ -40,23 +39,21 @@ public abstract class BaseTest {
     /**
      * Initialize the {@link Settings}.
      */
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
-        System.setProperty("jcs.logSystem", "slf4j");
-        Slf4jAdapter.muteLogging(true);
         settings = new Settings();
     }
 
     /**
      * Clean the {@link Settings}.
      */
-    @After
+    @AfterEach
     public void tearDown() throws Exception {
         settings.cleanup(true);
     }
 
-    @AfterClass
-    public static void tearDownClass() throws Exception {
+    @AfterAll
+    public static void tearDownClass() {
         File f = new File("./target/data/odc.mv.db");
         if (f.exists() && f.isFile() && f.length() < 71680) {
             System.err.println("------------------------------------------------");
@@ -68,23 +65,18 @@ public abstract class BaseTest {
     }
 
     /**
-     * Returns the given resource as an InputStream using the object's class
-     * loader. The org.junit.Assume API is used so that test cases are skipped
-     * if the resource is not available.
+     * Returns the given resource as an InputStream using the object's class loader.
      *
      * @param o the object used to obtain a reference to the class loader
      * @param resource the name of the resource to load
      * @return the resource as an InputStream
      */
     public static InputStream getResourceAsStream(Object o, String resource) {
-        getResourceAsFile(o, resource);
-        return o.getClass().getClassLoader().getResourceAsStream(resource);
+        return Objects.requireNonNull(o.getClass().getClassLoader().getResourceAsStream(resource), resource + " not found on classpath");
     }
 
     /**
-     * Returns the given resource as a File using the object's class loader. The
-     * org.junit.Assume API is used so that test cases are skipped if the
-     * resource is not available.
+     * Returns the given resource as a File using the object's class loader.
      *
      * @param o the object used to obtain a reference to the class loader
      * @param resource the name of the resource to load
@@ -92,18 +84,14 @@ public abstract class BaseTest {
      */
     public static File getResourceAsFile(Object o, String resource) {
         try {
-            File f = new File(o.getClass().getClassLoader().getResource(resource).toURI().getPath());
-            Assume.assumeTrue(String.format("%n%n[SEVERE] Unable to load resource for test case: %s%n%n", resource), f.exists());
-            return f;
+            return new File(Objects.requireNonNull(o.getClass().getClassLoader().getResource(resource), resource + " not found on classpath").toURI().getPath());
         } catch (URISyntaxException e) {
             throw new UnsupportedOperationException(e);
         }
     }
 
     /**
-     * Returns the settings for the test cases.
-     *
-     * @return
+     * @return the settings for the test cases.
      */
     protected Settings getSettings() {
         return settings;

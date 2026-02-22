@@ -15,26 +15,26 @@
  */
 package org.owasp.dependencycheck.utils;
 
+import org.junit.jupiter.api.Test;
+import org.owasp.dependencycheck.BaseTest;
+import org.owasp.dependencycheck.exception.ParseException;
+
 import java.time.ZonedDateTime;
 import java.util.Calendar;
 
-import static org.junit.Assert.assertEquals;
-
-import org.junit.Test;
-import org.owasp.dependencycheck.BaseTest;
-import org.owasp.dependencycheck.exception.ParseException;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  *
  * @author Jeremy Long
  */
-public class DateUtilTest extends BaseTest {
+class DateUtilTest extends BaseTest {
 
     /**
      * Test of withinDateRange method, of class DateUtil.
      */
     @Test
-    public void testWithinDateRange() {
+    void testWithinDateRange() {
         Calendar c = Calendar.getInstance();
 
         long current = c.getTimeInMillis() / 1000;
@@ -49,12 +49,12 @@ public class DateUtilTest extends BaseTest {
         result = DateUtil.withinDateRange(lastRun, current, range);
         assertEquals(expResult, result);
     }
-    
-       /**
+
+    /**
      * Test of withinDateRange method, of class DateUtil.
      */
     @Test
-    public void testWithinZonedDateRange() {
+    void testWithinZonedDateRange() {
         ZonedDateTime lastRun = ZonedDateTime.parse("2023-11-15T11:15:03Z");
         ZonedDateTime current = ZonedDateTime.parse("2023-11-17T11:15:03Z");
         int range = 5;
@@ -74,7 +74,7 @@ public class DateUtilTest extends BaseTest {
      * @throws ParseException thrown when there is a parse error
      */
     @Test
-    public void testParseXmlDate() throws ParseException {
+    void testParseXmlDate() throws ParseException {
         String xsDate = "2019-01-02Z";
         Calendar result = DateUtil.parseXmlDate(xsDate);
         assertEquals(2019, result.get(Calendar.YEAR));
@@ -84,7 +84,7 @@ public class DateUtilTest extends BaseTest {
     }
 
     @Test
-    public void testGetEpochValueInSeconds() throws ParseException {
+    void testGetEpochValueInSeconds() {
         String milliseconds = "1550538553466";
         long expected = 1550538553;
         long result = DateUtil.getEpochValueInSeconds(milliseconds);

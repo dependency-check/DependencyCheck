@@ -18,24 +18,17 @@
 package org.owasp.dependencycheck.analyzer;
 
 import com.github.packageurl.MalformedPackageURLException;
-import java.io.File;
-import java.io.FileFilter;
-import java.io.IOException;
-
-import org.boris.pecoff4j.PE;
-import org.boris.pecoff4j.ResourceDirectory;
-import org.boris.pecoff4j.ResourceEntry;
-import org.boris.pecoff4j.constant.ResourceType;
-import org.owasp.dependencycheck.utils.PEParser;
-import org.boris.pecoff4j.io.ResourceParser;
-import org.boris.pecoff4j.resources.StringFileInfo;
-import org.boris.pecoff4j.resources.StringTable;
-import org.boris.pecoff4j.resources.VersionInfo;
-import org.boris.pecoff4j.util.ResourceHelper;
-
-import javax.annotation.concurrent.ThreadSafe;
+import com.kichik.pecoff4j.PE;
+import com.kichik.pecoff4j.ResourceDirectory;
+import com.kichik.pecoff4j.ResourceEntry;
+import com.kichik.pecoff4j.constant.ResourceType;
+import com.kichik.pecoff4j.io.DataReader;
+import com.kichik.pecoff4j.resources.StringFileInfo;
+import com.kichik.pecoff4j.resources.StringPair;
+import com.kichik.pecoff4j.resources.StringTable;
+import com.kichik.pecoff4j.resources.VersionInfo;
+import com.kichik.pecoff4j.util.ResourceHelper;
 import org.apache.commons.lang3.StringUtils;
-
 import org.owasp.dependencycheck.Engine;
 import org.owasp.dependencycheck.analyzer.exception.AnalysisException;
 import org.owasp.dependencycheck.data.nvd.ecosystem.Ecosystem;
@@ -50,9 +43,15 @@ import org.owasp.dependencycheck.utils.DependencyVersion;
 import org.owasp.dependencycheck.utils.DependencyVersionUtil;
 import org.owasp.dependencycheck.utils.FileFilterBuilder;
 import org.owasp.dependencycheck.utils.FileUtils;
+import org.owasp.dependencycheck.utils.PEParser;
 import org.owasp.dependencycheck.utils.Settings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.annotation.concurrent.ThreadSafe;
+import java.io.File;
+import java.io.FileFilter;
+import java.io.IOException;
 
 /**
  * Takes a dependency and analyze the PE header for meta data that can be used
@@ -68,7 +67,7 @@ public class PEAnalyzer extends AbstractFileTypeAnalyzer {
     /**
      * Logger
      */
-    private static final Logger LOGGER = LoggerFactory.getLogger(AssemblyAnalyzer.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(PEAnalyzer.class);
     /**
      * The name of the analyzer.
      */
@@ -157,20 +156,19 @@ public class PEAnalyzer extends AbstractFileTypeAnalyzer {
         }
         try {
             final File fileToCheck = dependency.getActualFile();
-            final PE pe = PEParser.parse(fileToCheck.getPath());
+            final PE pe = PEParser.parse(fileToCheck);
             final ResourceDirectory rd = pe.getImageData().getResourceTable();
-            final ResourceEntry[] entries = ResourceHelper.findResources(rd, ResourceType.VERSION_INFO);
-            for (ResourceEntry entrie : entries) {
-                final byte[] data = entrie.getData();
-                final VersionInfo version = ResourceParser.readVersionInfo(data);
+
+            for (ResourceEntry entry : ResourceHelper.findResources(rd, ResourceType.VERSION_INFO)) {
+                final VersionInfo version = VersionInfo.read(new DataReader(entry.getData()));
                 final StringFileInfo strings = version.getStringFileInfo();
                 final StringTable table = strings.getTable(0);
                 String pVersion = null;
                 String fVersion = null;
 
-                for (int j = 0; j < table.getCount(); j++) {
-                    final String key = table.getString(j).getKey();
-                    final String value = table.getString(j).getValue();
+                for (StringPair pair : table.getStrings()) {
+                    final String key = pair.getKey();
+                    final String value = pair.getValue();
                     switch (key) {
                         case "ProductVersion":
                             dependency.addEvidence(EvidenceType.VERSION, "PE Header", "ProductVersion", value, Confidence.HIGHEST);
@@ -190,7 +188,7 @@ public class PEAnalyzer extends AbstractFileTypeAnalyzer {
                             break;
                         case "LegalCopyright":
                             dependency.addEvidence(EvidenceType.VENDOR, "PE Header", "LegalCopyright", value, Confidence.HIGHEST);
-                            if (dependency.getLicense() != null && dependency.getLicense().length() > 0) {
+                            if (dependency.getLicense() != null && !dependency.getLicense().isEmpty()) {
                                 dependency.setLicense(dependency.getLicense() + "/n/nLegal Copyright: " + value);
                             } else {
                                 dependency.setLicense("Legal Copyright: " + value);
@@ -206,7 +204,7 @@ public class PEAnalyzer extends AbstractFileTypeAnalyzer {
                             determineDependencyName(dependency, value);
                             break;
                         default:
-                            LOGGER.debug("PE Analyzer found `" + key + "` with a value:" + value);
+                            LOGGER.debug("PE Analyzer found `{}` with a value: {}", key, value);
                     }
                     if (fVersion != null && pVersion != null) {
                         final int max = Math.min(fVersion.length(), pVersion.length());

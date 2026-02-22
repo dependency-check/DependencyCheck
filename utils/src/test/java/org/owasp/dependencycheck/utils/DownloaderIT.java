@@ -17,29 +17,29 @@
  */
 package org.owasp.dependencycheck.utils;
 
+import org.apache.hc.client5.http.impl.classic.AbstractHttpClientResponseHandler;
+import org.apache.hc.core5.http.HttpEntity;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 
-import org.apache.hc.client5.http.impl.classic.AbstractHttpClientResponseHandler;
-import org.apache.hc.core5.http.HttpEntity;
-import org.junit.Test;
-
 import static java.nio.charset.StandardCharsets.UTF_8;
-import static org.junit.Assert.assertTrue;
-import org.junit.Before;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  *
  * @author Jeremy Long
  */
-public class DownloaderIT extends BaseTest {
+class DownloaderIT extends BaseTest {
 
     /**
      * Initialize the {@link Settings}.
      */
-    @Before
+    @BeforeEach
     @Override
     public void setUp() {
         super.setUp();
@@ -51,7 +51,7 @@ public class DownloaderIT extends BaseTest {
      * @throws Exception thrown when an exception occurs.
      */
     @Test
-    public void testFetchFile() throws Exception {
+    void testFetchFile() throws Exception {
         final String str = getSettings().getString(Settings.KEYS.ENGINE_VERSION_CHECK_URL, "https://dependency-check.github.io/DependencyCheck/current.txt");
         URL url = new URL(str);
         File outputPath = new File("target/current.txt");
@@ -66,9 +66,9 @@ public class DownloaderIT extends BaseTest {
      * @throws Exception thrown when an exception occurs.
      */
     @Test
-    public void testfetchAndHandleContent() throws Exception {
+    void testfetchAndHandleContent() throws Exception {
         URL url = new URL(getSettings().getString(Settings.KEYS.ENGINE_VERSION_CHECK_URL));
-        AbstractHttpClientResponseHandler<String> versionHandler = new AbstractHttpClientResponseHandler<String>() {
+        AbstractHttpClientResponseHandler<String> versionHandler = new AbstractHttpClientResponseHandler<>() {
             @Override
             public String handleEntity(HttpEntity entity) throws IOException {
                 try (InputStream in = entity.getContent()) {

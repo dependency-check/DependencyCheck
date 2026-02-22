@@ -32,7 +32,7 @@ Copyright (c) 2012 Jeremy Long. All Rights Reserved.
         <connection>scm:git:https://github.com/dependency-check/DependencyCheck.git</connection>
         <url>https://github.com/dependency-check/DependencyCheck/tree/main/core</url>
         <developerConnection>scm:git:git@github.com/dependency-check/DependencyCheck.git</developerConnection>
-        <tag>v6.4.1</tag>
+        <tag>HEAD</tag>
     </scm>
     <build>
         <resources>
@@ -101,6 +101,24 @@ Copyright (c) 2012 Jeremy Long. All Rights Reserved.
         </testResources>
         <plugins>
             <plugin>
+                <groupId>io.github.download-maven-plugin</groupId>
+                <artifactId>download-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>download-published-suppressions</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>wget</goal>
+                        </goals>
+                        <configuration>
+                            <url>https://dependency-check.github.io/DependencyCheck/suppressions/publishedSuppressions.xml</url>
+                            <outputDirectory>${project.build.directory}/classes</outputDirectory>
+                            <outputFileName>dependencycheck-hosted-suppression-snapshot.xml</outputFileName>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
                 <groupId>org.jsonschema2pojo</groupId>
                 <artifactId>jsonschema2pojo-maven-plugin</artifactId>
 
@@ -138,30 +156,6 @@ Copyright (c) 2012 Jeremy Long. All Rights Reserved.
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-javadoc-plugin</artifactId>
-                <configuration>
-                    <excludes>${project.build.directory}/generated-sources/java/**/*.java</excludes>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-dependency-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <phase>generate-resources</phase>
-                        <goals>
-                            <goal>copy-dependencies</goal>
-                        </goals>
-                        <configuration>
-                            <outputDirectory>${project.build.directory}/test-classes</outputDirectory>
-                            <includeScope>test</includeScope>
-                            <excludeArtifactIds>dependency-check-utils</excludeArtifactIds>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-resources-plugin</artifactId>
             </plugin>
             <plugin>
@@ -169,16 +163,9 @@ Copyright (c) 2012 Jeremy Long. All Rights Reserved.
                 <artifactId>maven-jar-plugin</artifactId>
                 <executions>
                     <execution>
-                        <id>test-jar</id>
-                        <phase>package</phase>
                         <goals>
                             <goal>test-jar</goal>
                         </goals>
-                        <configuration>
-                            <includes>
-                                <include>**/*.class</include>
-                            </includes>
-                        </configuration>
                     </execution>
                 </executions>
             </plugin>
@@ -194,17 +181,17 @@ Copyright (c) 2012 Jeremy Long. All Rights Reserved.
             <artifactId>jdiagnostics</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.whitesource</groupId>
+            <groupId>com.kichik.pecoff4j</groupId>
             <artifactId>pecoff4j</artifactId>
+        </dependency>
+        <!-- JCS 3 logging adapter; intentionally higher on classpath than JCS itself -->
+        <dependency>
+            <groupId>io.github.jeremylong</groupId>
+            <artifactId>jcs3-slf4j</artifactId>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-jcs3-core</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>io.github.jeremylong</groupId>
-            <artifactId>jcs3-slf4j</artifactId>
-            <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>com.github.package-url</groupId>
@@ -237,11 +224,6 @@ Copyright (c) 2012 Jeremy Long. All Rights Reserved.
             <groupId>org.owasp</groupId>
             <artifactId>dependency-check-utils</artifactId>
             <version>${project.parent.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.lucene</groupId>
-            <artifactId>lucene-test-framework</artifactId>
-            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
@@ -279,6 +261,16 @@ Copyright (c) 2012 Jeremy Long. All Rights Reserved.
             <groupId>org.apache.lucene</groupId>
             <artifactId>lucene-queryparser</artifactId>
         </dependency>
+        <!-- Allow redirection of lucene logs to slf4j -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>jul-to-slf4j</artifactId>
+        </dependency>
+        <!-- Allow redirection of Commons Logging to slf4j -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>jcl-over-slf4j</artifactId>
+        </dependency>
         <dependency>
             <groupId>org.apache.velocity</groupId>
             <artifactId>velocity-engine-core</artifactId>
@@ -289,7 +281,7 @@ Copyright (c) 2012 Jeremy Long. All Rights Reserved.
             <scope>compile</scope>
         </dependency>
         <dependency>
-            <groupId>org.glassfish</groupId>
+            <groupId>org.eclipse.parsson</groupId>
             <artifactId>jakarta.json</artifactId>
         </dependency>
         <dependency>
@@ -332,11 +324,6 @@ Copyright (c) 2012 Jeremy Long. All Rights Reserved.
         <dependency>
             <groupId>com.hankcs</groupId>
             <artifactId>aho-corasick-double-array-trie</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.mockito</groupId>
-            <artifactId>mockito-core</artifactId>
-            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>commons-validator</groupId>
@@ -383,44 +370,11 @@ Copyright (c) 2012 Jeremy Long. All Rights Reserved.
             <version>1.3.1</version>
         </dependency>
         <dependency>
-            <groupId>com.vaadin.external.google</groupId>
-            <artifactId>android-json</artifactId>
-            <version>0.0.20131108.vaadin1</version>
-        </dependency>
-        <dependency>
-            <groupId>xml-apis</groupId>
-            <artifactId>xml-apis</artifactId>
-            <version>1.4.01</version>
-            <scope>test</scope>
+            <groupId>org.json</groupId>
+            <artifactId>json</artifactId>
         </dependency>
     </dependencies>
     <profiles>
-        <profile>
-            <id>TestMavenPlugin-core</id>
-            <activation>
-                <property>
-                    <name>testMavenPlugin</name>
-                </property>
-            </activation>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-surefire-plugin</artifactId>
-                        <configuration>
-                            <skip>true</skip>
-                        </configuration>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-failsafe-plugin</artifactId>
-                        <configuration>
-                            <skip>true</skip>
-                        </configuration>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
         <profile>
             <id>MySQL-IntegrationTest</id>
             <activation>
@@ -428,6 +382,13 @@ Copyright (c) 2012 Jeremy Long. All Rights Reserved.
                     <name>mysql</name>
                 </property>
             </activation>
+            <dependencies>
+                <dependency>
+                    <groupId>com.mysql</groupId>
+                    <artifactId>mysql-connector-j</artifactId>
+                    <version>${driver.mysql.version}</version>
+                </dependency>
+            </dependencies>
             <build>
                 <plugins>
                     <plugin>
@@ -466,7 +427,7 @@ Copyright (c) 2012 Jeremy Long. All Rights Reserved.
                 <dependency>
                     <groupId>org.postgresql</groupId>
                     <artifactId>postgresql</artifactId>
-                    <version>42.7.5</version>
+                    <version>${driver.postgresql.version}</version>
                 </dependency>
             </dependencies>
             <build>
@@ -503,199 +464,146 @@ Copyright (c) 2012 Jeremy Long. All Rights Reserved.
                 <activeByDefault>true</activeByDefault>
             </activation>
             <build>
-                <pluginManagement>
-                    <plugins>
-                        <plugin>
-                            <groupId>org.apache.maven.plugins</groupId>
-                            <artifactId>maven-dependency-plugin</artifactId>
-                            <version>${maven-dependency-plugin.version}</version>
-                            <configuration>
-                                <usedDependencies combine.children="append">
-                                    <!-- dependencies to be copied for use in unit/integration testcases are, due to
-                                    lack of a test-runtime scope, configured as test-scoped / optional and should be
-                                    considered used for dependency:analyze-report -->
-                                    <usedDependency>org.springframework:spring-webmvc</usedDependency>
-                                    <usedDependency>org.mortbay.jetty:jetty</usedDependency>
-                                    <usedDependency>net.sf.ehcache:ehcache-core</usedDependency>
-                                    <usedDependency>com.google.inject:guice</usedDependency>
-                                    <usedDependency>org.apache.struts:struts2-core</usedDependency>
-                                    <usedDependency>xalan:xalan</usedDependency>
-                                    <usedDependency>com.hazelcast:hazelcast</usedDependency>
-                                    <usedDependency>commons-fileupload:commons-fileupload</usedDependency>
-                                    <usedDependency>org.jslipc:jslipc</usedDependency>
-                                    <usedDependency>com.thoughtworks.xstream:xstream</usedDependency>
-                                    <usedDependency>org.dojotoolkit:dojo-war</usedDependency>
-                                    <usedDependency>org.apache.openjpa:openjpa</usedDependency>
-                                    <usedDependency>uk.ltd.getahead:dwr</usedDependency>
-                                    <usedDependency>org.glassfish.main.admingui:war</usedDependency>
-                                    <usedDependency>org.springframework.retry:spring-retry</usedDependency>
-                                    <usedDependency>io.github.faob-dev:aar</usedDependency>
-                                    <usedDependency>org.apache.maven.scm:maven-scm-provider-cvsexe</usedDependency>
-                                    <usedDependency>org.apache.axis2:axis2-spring</usedDependency>
-                                    <usedDependency>org.apache.geronimo.daytrader:daytrader-ear</usedDependency>
-                                    <usedDependency>org.springframework.security:spring-security-web</usedDependency>
-                                    <usedDependency>org.apache.axis2:axis2-adb</usedDependency>
-                                </usedDependencies>
-                            </configuration>
-                        </plugin>
-                    </plugins>
-                </pluginManagement>
-            </build>
-            <dependencies>
-                <!-- The following dependencies are only used during testing
-                and must not be converted to a properties based version number -->
-                <dependency>
-                    <groupId>io.github.faob-dev</groupId>
-                    <artifactId>aar</artifactId>
-                    <version>1.0.0</version>
-                    <type>aar</type>
-                    <scope>test</scope>
-                    <optional>true</optional>
-                </dependency>
-                <dependency>
-                    <groupId>org.jslipc</groupId>
-                    <artifactId>jslipc</artifactId>
-                    <version>0.2.0</version>
-                    <scope>test</scope>
-                    <optional>true</optional>
-                </dependency>
-                <dependency>
-                    <groupId>org.apache.maven.scm</groupId>
-                    <artifactId>maven-scm-provider-cvsexe</artifactId>
-                    <version>1.8.1</version>
-                    <scope>test</scope>
-                    <optional>true</optional>
-                </dependency>
-                <dependency>
-                    <groupId>org.springframework</groupId>
-                    <artifactId>spring-webmvc</artifactId>
-                    <version>2.5.5</version>
-                    <scope>test</scope>
-                    <optional>true</optional>
-                </dependency>
-                <dependency>
-                    <groupId>org.springframework.security</groupId>
-                    <artifactId>spring-security-web</artifactId>
-                    <version>3.0.0.RELEASE</version>
-                    <scope>test</scope>
-                    <optional>true</optional>
-                </dependency>
-                <dependency>
-                    <groupId>com.hazelcast</groupId>
-                    <artifactId>hazelcast</artifactId>
-                    <version>2.5</version>
-                    <scope>test</scope>
-                    <optional>true</optional>
-                </dependency>
-                <dependency>
-                    <groupId>net.sf.ehcache</groupId>
-                    <artifactId>ehcache-core</artifactId>
-                    <version>2.2.0</version>
-                    <scope>test</scope>
-                    <optional>true</optional>
-                </dependency>
-                <dependency>
-                    <groupId>org.apache.struts</groupId>
-                    <artifactId>struts2-core</artifactId>
-                    <version>2.1.2</version>
-                    <scope>test</scope>
-                    <optional>true</optional>
-                </dependency>
-                <dependency>
-                    <groupId>org.mortbay.jetty</groupId>
-                    <artifactId>jetty</artifactId>
-                    <version>6.1.0</version>
-                    <scope>test</scope>
-                    <optional>true</optional>
-                </dependency>
-                <dependency>
-                    <groupId>org.apache.axis2</groupId>
-                    <artifactId>axis2-spring</artifactId>
-                    <version>1.4.1</version>
-                    <scope>test</scope>
-                    <optional>true</optional>
-                </dependency>
-                <dependency>
-                    <groupId>org.apache.axis2</groupId>
-                    <artifactId>axis2-adb</artifactId>
-                    <version>1.4.1</version>
-                    <scope>test</scope>
-                    <optional>true</optional>
-                </dependency>
-                <dependency>
-                    <groupId>org.apache.geronimo.daytrader</groupId>
-                    <artifactId>daytrader-ear</artifactId>
-                    <version>2.1.7</version>
-                    <type>ear</type>
-                    <scope>test</scope>
-                    <optional>true</optional>
-                </dependency>
-                <dependency>
-                    <groupId>org.glassfish.main.admingui</groupId>
-                    <artifactId>war</artifactId>
-                    <version>4.0</version>
-                    <type>war</type>
-                    <scope>test</scope>
-                    <optional>true</optional>
-                </dependency>
-                <dependency>
-                    <groupId>org.dojotoolkit</groupId>
-                    <artifactId>dojo-war</artifactId>
-                    <version>1.3.0</version>
-                    <type>war</type>
-                    <scope>test</scope>
-                    <optional>true</optional>
-                </dependency>
-                <dependency>
-                    <groupId>org.apache.openjpa</groupId>
-                    <artifactId>openjpa</artifactId>
-                    <version>2.0.1</version>
-                    <scope>test</scope>
-                    <optional>true</optional>
-                </dependency>
-                <dependency>
-                    <groupId>com.google.inject</groupId>
-                    <artifactId>guice</artifactId>
-                    <version>3.0</version>
-                    <scope>test</scope>
-                    <optional>true</optional>
-                </dependency>
-                <dependency>
-                    <groupId>org.springframework.retry</groupId>
-                    <artifactId>spring-retry</artifactId>
-                    <version>1.1.0.RELEASE</version>
-                    <scope>test</scope>
-                    <optional>true</optional>
-                </dependency>
-                <dependency>
-                    <groupId>uk.ltd.getahead</groupId>
-                    <artifactId>dwr</artifactId>
-                    <version>1.1.1</version>
-                    <scope>test</scope>
-                    <optional>true</optional>
-                </dependency>
-                <dependency>
-                    <groupId>xalan</groupId>
-                    <artifactId>xalan</artifactId>
-                    <version>2.7.0</version>
-                    <scope>test</scope>
-                    <optional>true</optional>
-                </dependency>
-                <dependency>
-                    <groupId>com.thoughtworks.xstream</groupId>
-                    <artifactId>xstream</artifactId>
-                    <version>1.4.8</version>
-                    <scope>test</scope>
-                    <optional>true</optional>
-                </dependency>
-                <dependency>
-                    <groupId>commons-fileupload</groupId>
-                    <artifactId>commons-fileupload</artifactId>
-                    <version>1.2.1</version>
-                    <scope>test</scope>
-                    <optional>true</optional>
-                </dependency>
-            </dependencies>
-        </profile>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-dependency-plugin</artifactId>
+                        <version>${maven-dependency-plugin.version}</version>
+                        <executions>
+                            <execution>
+                                <id>copy-test-dependencies</id>
+                                <phase>generate-test-resources</phase>
+                                <goals>
+                                    <goal>copy</goal>
+                                </goals>
+                                <configuration>
+                                    <!-- Copy the artifacts that used to be test-scoped into target/test-classes/lib so
+                                         they are available for both surefire (test) and failsafe (integration-test). -->
+                                    <outputDirectory>${project.build.directory}/test-classes/maven-lib</outputDirectory>
+                                    <artifactItems>
+                                        <!-- The following dependencies are only used during testing
+                                        and must not be converted to a properties based version number -->
+                                        <artifactItem>
+                                            <groupId>io.github.faob-dev</groupId>
+                                            <artifactId>aar</artifactId>
+                                            <version>1.0.0</version>
+                                            <type>aar</type>
+                                        </artifactItem>
+                                        <artifactItem>
+                                            <groupId>org.jslipc</groupId>
+                                            <artifactId>jslipc</artifactId>
+                                            <version>0.2.0</version>
+                                        </artifactItem>
+                                        <artifactItem>
+                                            <groupId>org.apache.maven.scm</groupId>
+                                            <artifactId>maven-scm-provider-cvsexe</artifactId>
+                                            <version>1.8.1</version>
+                                        </artifactItem>
+                                        <artifactItem>
+                                            <groupId>org.springframework</groupId>
+                                            <artifactId>spring-core</artifactId>
+                                            <version>2.5.5</version>
+                                        </artifactItem>
+                                        <artifactItem>
+                                            <groupId>org.springframework</groupId>
+                                            <artifactId>spring-context-support</artifactId>
+                                            <version>2.5.5</version>
+                                        </artifactItem>
+                                        <artifactItem>
+                                            <groupId>org.springframework.security</groupId>
+                                            <artifactId>spring-security-web</artifactId>
+                                            <version>3.0.0.RELEASE</version>
+                                        </artifactItem>
+                                        <artifactItem>
+                                            <groupId>com.hazelcast</groupId>
+                                            <artifactId>hazelcast</artifactId>
+                                            <version>2.5</version>
+                                        </artifactItem>
+                                        <artifactItem>
+                                            <groupId>net.sf.ehcache</groupId>
+                                            <artifactId>ehcache-core</artifactId>
+                                            <version>2.2.0</version>
+                                        </artifactItem>
+                                        <artifactItem>
+                                            <groupId>org.apache.struts</groupId>
+                                            <artifactId>struts2-core</artifactId>
+                                            <version>2.1.2</version>
+                                        </artifactItem>
+                                        <artifactItem>
+                                            <groupId>org.mortbay.jetty</groupId>
+                                            <artifactId>jetty</artifactId>
+                                            <version>6.1.0</version>
+                                        </artifactItem>
+                                        <artifactItem>
+                                            <groupId>org.apache.axis2</groupId>
+                                            <artifactId>axis2-spring</artifactId>
+                                            <version>1.4.1</version>
+                                        </artifactItem>
+                                        <artifactItem>
+                                            <groupId>org.apache.axis2</groupId>
+                                            <artifactId>axis2-adb</artifactId>
+                                            <version>1.4.1</version>
+                                        </artifactItem>
+                                        <artifactItem>
+                                            <groupId>org.apache.geronimo.daytrader</groupId>
+                                            <artifactId>daytrader-ear</artifactId>
+                                            <version>2.1.7</version>
+                                            <type>ear</type>
+                                        </artifactItem>
+                                        <artifactItem>
+                                            <groupId>org.glassfish.main.admingui</groupId>
+                                            <artifactId>war</artifactId>
+                                            <version>4.0</version>
+                                            <type>war</type>
+                                        </artifactItem>
+                                        <artifactItem>
+                                            <groupId>org.dojotoolkit</groupId>
+                                            <artifactId>dojo-war</artifactId>
+                                            <version>1.3.0</version>
+                                            <type>war</type>
+                                        </artifactItem>
+                                        <artifactItem>
+                                            <groupId>org.apache.openjpa</groupId>
+                                            <artifactId>openjpa</artifactId>
+                                            <version>2.0.1</version>
+                                        </artifactItem>
+                                        <artifactItem>
+                                            <groupId>com.google.inject</groupId>
+                                            <artifactId>guice</artifactId>
+                                            <version>3.0</version>
+                                        </artifactItem>
+                                        <artifactItem>
+                                            <groupId>org.springframework.retry</groupId>
+                                            <artifactId>spring-retry</artifactId>
+                                            <version>1.1.0.RELEASE</version>
+                                        </artifactItem>
+                                        <artifactItem>
+                                            <groupId>uk.ltd.getahead</groupId>
+                                            <artifactId>dwr</artifactId>
+                                            <version>1.1.1</version>
+                                        </artifactItem>
+                                        <artifactItem>
+                                            <groupId>xalan</groupId>
+                                            <artifactId>xalan</artifactId>
+                                            <version>2.7.0</version>
+                                        </artifactItem>
+                                        <artifactItem>
+                                            <groupId>com.thoughtworks.xstream</groupId>
+                                            <artifactId>xstream</artifactId>
+                                            <version>1.4.8</version>
+                                        </artifactItem>
+                                        <artifactItem>
+                                            <groupId>commons-fileupload</groupId>
+                                            <artifactId>commons-fileupload</artifactId>
+                                            <version>1.2.1</version>
+                                        </artifactItem>
+                                    </artifactItems>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                 </plugins>
+             </build>
+         </profile>
     </profiles>
 </project>
