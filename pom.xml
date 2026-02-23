@@ -342,6 +342,17 @@ Copyright (c) 2012 - Jeremy Long
                         <ignoredVersions>.*-(alpha|beta|M|rc)[-0-9]+</ignoredVersions>
                     </configuration>
                 </plugin>
+                <plugin>
+                    <groupId>org.cyclonedx</groupId>
+                    <artifactId>cyclonedx-maven-plugin</artifactId>
+                    <version>2.9.1</version>
+                    <configuration>
+                        <includeProvidedScope>false</includeProvidedScope>
+                        <skipNotDeployed>false</skipNotDeployed>
+                        <outputName>sbom</outputName>
+                        <outputFormat>json</outputFormat>
+                    </configuration>
+                </plugin>
             </plugins>
         </pluginManagement>
         <plugins>
@@ -1036,12 +1047,6 @@ Copyright (c) 2012 - Jeremy Long
                 <version>5.8.0</version>
             </dependency>
             <dependency>
-                <groupId>org.jspecify</groupId>
-                <artifactId>jspecify</artifactId>
-                <version>1.0.1</version>
-                <optional>true</optional>
-            </dependency>
-            <dependency>
                 <groupId>com.h2database</groupId>
                 <artifactId>h2</artifactId>
                 <version>${driver.h2database.version}</version>
@@ -1249,6 +1254,20 @@ Copyright (c) 2012 - Jeremy Long
                     </exclusion>
                 </exclusions>
             </dependency>
+            <dependency>
+                <groupId>org.jspecify</groupId>
+                <artifactId>jspecify</artifactId>
+                <version>1.0.0</version>
+                <!-- Use provided scope to ensure not used at runtime, even from transitive dependencies -->
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>com.github.spotbugs</groupId>
+                <artifactId>spotbugs-annotations</artifactId>
+                <version>4.9.8</version>
+                <!-- Use provided scope to ensure not used at runtime, even from transitive dependencies -->
+                <scope>provided</scope>
+            </dependency>
         </dependencies>
     </dependencyManagement>
     <dependencies>
@@ -1288,15 +1307,12 @@ Copyright (c) 2012 - Jeremy Long
         <dependency>
             <groupId>org.jspecify</groupId>
             <artifactId>jspecify</artifactId>
-            <scope>compile</scope>
-            <optional>true</optional>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.github.spotbugs</groupId>
             <artifactId>spotbugs-annotations</artifactId>
-            <version>4.10.3</version>
-            <scope>compile</scope>
-            <optional>true</optional>
+            <scope>provided</scope>
         </dependency>
         <!-- endregion -->
     </dependencies>
