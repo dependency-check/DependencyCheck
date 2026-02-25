@@ -127,7 +127,7 @@ public class ProcessReader implements AutoCloseable {
      *
      * @param p a reference to the processor to start.
      */
-    private void startProcessor(Processor p) {
+    private void startProcessor(Processor<?> p) {
         if (p != null) {
             final Thread t = new Thread(p);
             threads.add(t);
