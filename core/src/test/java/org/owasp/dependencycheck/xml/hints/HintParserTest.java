@@ -73,7 +73,7 @@ class HintParserTest extends BaseTest {
      * Test the application of the correct XSD by the parser by using a
      * hints-file with namespace
      * {@code https://jeremylong.github.io/DependencyCheck/dependency-hint.1.1.xsd}
-     * that is using the version evidence for {@code<given>} that was introduced
+     * that is using the version evidence for {@code <given>} that was introduced
      * with namespace
      * {@code https://jeremylong.github.io/DependencyCheck/dependency-hint.1.2.xsd}.
      * This should yield a specific SAXParseException that gets wrapped into a
