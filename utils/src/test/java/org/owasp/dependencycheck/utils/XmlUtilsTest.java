@@ -15,6 +15,7 @@ import org.xml.sax.SAXParseException;
 import org.xml.sax.XMLReader;
 
 import javax.xml.parsers.ParserConfigurationException;
+import java.util.List;
 import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -49,28 +50,28 @@ class XmlUtilsTest {
         }
     }
 
-    static Stream<Pair<String, String>> invalidSchemaDocProvider() {
+    static Stream<Pair<String, List<String>>> invalidSchemaDocProvider() {
         return Stream.of(
                 Pair.of("schema-validation/simpledoc-invalid-schemaloc-https-badprefix.xml",
-                        "'https' access is not allowed due to restriction set by the accessExternalSchema property"),
+                        List.of("'https'", "accessExternalSchema")),
                 Pair.of("schema-validation/simpledoc-invalid-schemaloc-https-notfound.xml",
-                        "'https' access is not allowed due to restriction set by the accessExternalSchema property"),
+                        List.of("'https'", "accessExternalSchema")),
                 Pair.of("schema-validation/simpledoc-invalid-schemaloc-file.xml",
-                        "'file' access is not allowed due to restriction set by the accessExternalSchema property"),
+                        List.of("'file'", "accessExternalSchema")),
                 Pair.of("schema-validation/simpledoc-invalid-schemaloc-ambiguous-uri.xml",
-                        "'file' access is not allowed due to restriction set by the accessExternalSchema property.")
+                        List.of("'file'", "accessExternalSchema"))
         );
     }
 
     @ParameterizedTest
     @MethodSource("invalidSchemaDocProvider")
-    void shouldFailValidationWhenUnableToFindExternalSchema(Pair<String, String> test) throws Exception {
+    void shouldFailValidationWhenUnableToFindExternalSchema(Pair<String, List<String>> test) throws Exception {
         try (AutoCloseableInputSource simple = fromResource("schema-validation/simple.xsd");
              AutoCloseableInputSource irrelevant = fromResource("schema-validation/irrelevant.xsd");
              AutoCloseableInputSource toValidate = fromResource(test.getLeft())) {
 
             Throwable t = assertThrows(SAXException.class, () -> withDefaultReader(simple, irrelevant).parse(toValidate));
-            assertThat(t.getMessage(), containsString(test.getRight()));
+            test.getRight().forEach(msg -> assertThat(t.getMessage(), containsString(msg)));
         }
     }
 
@@ -81,7 +82,7 @@ class XmlUtilsTest {
              AutoCloseableInputSource toValidate = fromResource("schema-validation/simpledoc-invalid-no-schemaloc-bad-content.xml")) {
 
             Throwable t = assertThrows(SAXException.class, () -> withDefaultReader(simple, irrelevant).parse(toValidate));
-            assertThat(t.getMessage(), containsString("Invalid content was found starting with element"));
+            assertThat(t.getMessage(), containsString("cvc-complex-type.2.4.a"));
         }
     }
 
@@ -90,7 +91,8 @@ class XmlUtilsTest {
         try (AutoCloseableInputSource toValidate = fromResource("schema-validation/simpledoc-valid-no-schemaloc.xml")) {
 
             Throwable t = assertThrows(SAXException.class, () -> withDefaultReader().parse(toValidate));
-            assertThat(t.getMessage(), containsString("Cannot find the declaration of element 'items'."));
+            assertThat(t.getMessage(), containsString("cvc-elt.1.a"));
+            assertThat(t.getMessage(), containsString("'items'"));
         }
     }
 
@@ -100,7 +102,8 @@ class XmlUtilsTest {
              AutoCloseableInputSource toValidate = fromResource("schema-validation/simpledoc-valid-no-schemaloc.xml")) {
 
             Throwable t = assertThrows(SAXException.class, () -> withDefaultReader(irrelevant).parse(toValidate));
-            assertThat(t.getMessage(), containsString("Cannot find the declaration of element 'items'."));
+            assertThat(t.getMessage(), containsString("cvc-elt.1.a"));
+            assertThat(t.getMessage(), containsString("'items'"));
         }
     }
 
