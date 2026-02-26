@@ -1737,6 +1737,14 @@ only pkg:maven/org.clojure:clojure@.* is the CPE cpe:/a:clojure:clojure
 </suppress>
 <suppress base="true">
     <notes><![CDATA[
+    FP per issue #7981. GRPC intention is to not match Netty, and to have any CVEs reported against grpc-java itself
+    per https://github.com/grpc/grpc-java/issues/11135#issuecomment-2088568147
+    ]]></notes>
+    <packageUrl regex="true">^pkg:maven/io\.grpc/grpc-netty-shaded@.*$</packageUrl>
+    <cpe>cpe:/a:netty:netty</cpe>
+</suppress>
+<suppress base="true">
+    <notes><![CDATA[
     FP per issue #7734
     ]]></notes>
     <packageUrl regex="true">^pkg:maven/edu\.washington\.cs\.knowitall/opennlp-postag-models@.*$</packageUrl>
