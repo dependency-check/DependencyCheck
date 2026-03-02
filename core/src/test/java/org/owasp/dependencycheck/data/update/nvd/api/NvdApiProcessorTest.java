@@ -21,8 +21,7 @@ import org.owasp.dependencycheck.BaseTest;
 import org.owasp.dependencycheck.data.nvdcve.CveDB;
 
 import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -46,7 +45,7 @@ class NvdApiProcessorTest extends BaseTest {
     void unspecifiedFileName() throws Exception {
         try (CveDB cve = new CveDB(getSettings())) {
             File file = File.createTempFile("test", "test");
-            writeFileString(file, "");
+            Files.writeString(file.toPath(), "");
             NvdApiProcessor processor = new NvdApiProcessor(null, file);
             processor.call();
         }
@@ -57,7 +56,7 @@ class NvdApiProcessorTest extends BaseTest {
         try (CveDB cve = new CveDB(getSettings())) {
             File file = File.createTempFile("test", "test.json");
             // invalid content (broken array)
-            writeFileString(file, "[}");
+            Files.writeString(file.toPath(), "[}");
             NvdApiProcessor processor = new NvdApiProcessor(null, file);
             assertThrows(JsonParseException.class, processor::call);
         }
@@ -67,16 +66,10 @@ class NvdApiProcessorTest extends BaseTest {
     void processValidStructure() throws Exception {
         try (CveDB cve = new CveDB(getSettings())) {
             File file = File.createTempFile("test", "test.json");
-            writeFileString(file, "[]");
+            Files.writeString(file.toPath(), "[]");
             NvdApiProcessor processor = new NvdApiProcessor(null, file);
             processor.call();
         }
     }
 
-    static void writeFileString(File file, String content) throws IOException {
-        try (FileWriter writer = new FileWriter(file, false)) {
-            writer.write(content);
-            writer.flush();
-        }
-    }
 }

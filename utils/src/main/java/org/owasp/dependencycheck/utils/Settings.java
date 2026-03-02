@@ -33,7 +33,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.security.ProtectionDomain;
@@ -1306,19 +1305,12 @@ public final class Settings {
      * @return a File object
      */
     private File getJarPath() {
-        String decodedPath = ".";
         String jarPath = "";
         final ProtectionDomain domain = Settings.class.getProtectionDomain();
         if (domain != null && domain.getCodeSource() != null && domain.getCodeSource().getLocation() != null) {
             jarPath = Settings.class.getProtectionDomain().getCodeSource().getLocation().getPath();
         }
-        try {
-            decodedPath = URLDecoder.decode(jarPath, StandardCharsets.UTF_8.name());
-        } catch (UnsupportedEncodingException ex) {
-            LOGGER.trace("", ex);
-        }
-
-        final File path = new File(decodedPath);
+        final File path = new File(URLDecoder.decode(jarPath, StandardCharsets.UTF_8));
         if (path.getName().toLowerCase().endsWith(".jar")) {
             return path.getParentFile();
         } else {

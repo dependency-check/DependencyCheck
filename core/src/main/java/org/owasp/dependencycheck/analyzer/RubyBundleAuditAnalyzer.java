@@ -20,7 +20,6 @@ package org.owasp.dependencycheck.analyzer;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -208,7 +207,7 @@ public class RubyBundleAuditAnalyzer extends AbstractFileTypeAnalyzer {
         if (engine != null) {
             this.cvedb = engine.getDatabase();
         }
-        String bundleAuditVersionDetails = null;
+        String bundleAuditVersionDetails;
         try {
             final List<String> bundleAuditArgs = Collections.singletonList("version");
             final Process process = launchBundleAudit(getSettings().getTempDirectory(), bundleAuditArgs);
@@ -232,10 +231,6 @@ public class RubyBundleAuditAnalyzer extends AbstractFileTypeAnalyzer {
             final String msg = String.format("Exception from bundle-audit process: %s. "
                     + "Disabling %s", ae.getCause(), ANALYZER_NAME);
             throw new InitializationException(msg, ae);
-        } catch (UnsupportedEncodingException ex) {
-            setEnabled(false);
-            throw new InitializationException("Unexpected bundle-audit encoding when "
-                    + "reading input stream.", ex);
         } catch (IOException ex) {
             setEnabled(false);
             throw new InitializationException("Unable to read bundle-audit output.", ex);

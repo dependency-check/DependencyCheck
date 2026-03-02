@@ -62,7 +62,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.time.ZonedDateTime;
@@ -463,8 +462,6 @@ public class ReportGenerator {
                 }
                 writer.flush();
             }
-        } catch (UnsupportedEncodingException ex) {
-            throw new ReportException("Unable to generate the report using UTF-8", ex);
         } catch (FileNotFoundException ex) {
             throw new ReportException("Unable to locate template file: " + templateName, ex);
         } catch (IOException ex) {
@@ -504,7 +501,7 @@ public class ReportGenerator {
             final TransformerFactory transformerFactory = SAXTransformerFactory.newInstance();
             transformerFactory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
             final Transformer transformer = transformerFactory.newTransformer();
-            transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
+            transformer.setOutputProperty(OutputKeys.ENCODING, StandardCharsets.UTF_8.name());
             transformer.setOutputProperty(OutputKeys.INDENT, "yes");
             transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
 

@@ -83,7 +83,7 @@ jobs:
       - name: Archive IT test logs
         id: archive-logs
         if: always()
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: it-test-logs-jdk-${{ matrix.jdk_test_version }}
           retention-days: 7
@@ -91,7 +91,7 @@ jobs:
       - name: Archive code coverage results
         if: matrix.jdk_test_version == matrix.jdk_default_version
         id: archive-coverage
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: code-coverage-report
           retention-days: 7
@@ -101,7 +101,7 @@ jobs:
       - name: Archive Snapshot
         if: matrix.jdk_test_version == matrix.jdk_default_version
         id: archive-snapshot
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: archive-snapshot
           retention-days: 7
@@ -131,7 +131,7 @@ jobs:
           cache: 'maven'
           cache-dependency-path: '**/pom.xml'
       - name: Download release build
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v8
         with:
           name: archive-snapshot
       - name: Set up Docker

@@ -234,12 +234,9 @@ public class JsonArrayFixingInputStream extends InputStream {
 
     @Override
     public void close() throws IOException {
-        in.close();
-    }
-
-    @Override
-    public boolean markSupported() {
-        return false;
+        if (in != null) {
+            in.close();
+        }
     }
 
     /**

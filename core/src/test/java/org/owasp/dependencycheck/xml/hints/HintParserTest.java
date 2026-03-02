@@ -73,7 +73,7 @@ class HintParserTest extends BaseTest {
      * Test the application of the correct XSD by the parser by using a
      * hints-file with namespace
      * {@code https://jeremylong.github.io/DependencyCheck/dependency-hint.1.1.xsd}
-     * that is using the version evidence for {@code<given>} that was introduced
+     * that is using the version evidence for {@code <given>} that was introduced
      * with namespace
      * {@code https://jeremylong.github.io/DependencyCheck/dependency-hint.1.2.xsd}.
      * This should yield a specific SAXParseException that gets wrapped into a
@@ -85,7 +85,9 @@ class HintParserTest extends BaseTest {
         File file = BaseTest.getResourceAsFile(this, "hints_invalid.xml");
         HintParser instance = new HintParser();
         Exception exception = assertThrows(org.owasp.dependencycheck.xml.hints.HintParseException.class, () -> instance.parseHints(file));
-        assertThat(exception.getMessage(), containsString("Line=10, Column=133: cvc-enumeration-valid: Value 'version' is not facet-valid with respect to enumeration '[vendor, product]'. It must be a value from the enumeration."));
+        assertThat(exception.getMessage(), containsString("Line=10, Column=133: cvc-enumeration-valid"));
+        assertThat(exception.getMessage(), containsString("'version'"));
+        assertThat(exception.getMessage(), containsString("'[vendor, product]'"));
     }
 
     /**

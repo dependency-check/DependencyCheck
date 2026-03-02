@@ -23,6 +23,7 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.List;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
@@ -786,8 +787,7 @@ class GoModJsonParserTest {
      */
     @Test
     void testProcess() throws Exception {
-        InputStream inputStream = new ByteArrayInputStream(issue2891.getBytes());
-        List<GoModDependency> expResult = null;
+        InputStream inputStream = new ByteArrayInputStream(issue2891.getBytes(UTF_8));
         List<GoModDependency> result = GoModJsonParser.process(inputStream);
         assertEquals(96, result.size());
     }

@@ -33,6 +33,7 @@ import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.spi.SLF4JServiceProvider;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -100,7 +101,7 @@ class AntSlf4jServiceProviderTest {
                     assertEquals(AntSlf4jServiceProvider.class.getName(), line.trim());
                 }
             } else {
-                try (BufferedReader reader = new BufferedReader(new InputStreamReader(is))) {
+                try (BufferedReader reader = new BufferedReader(new InputStreamReader(is, UTF_8))) {
                     String line = reader.readLine();
                     assertNotNull(line);
                     assertEquals(AntSlf4jServiceProvider.class.getName(), line.trim());
