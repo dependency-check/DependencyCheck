@@ -22,8 +22,19 @@ A sample suppression file would look like:
 The above XML file will suppress the cpe:/a:apache:struts:2.0.0 from any file with the a matching SHA1 hash.
 
 The following shows some other ways to suppress individual findings. Note the ways to select files using either
-the sha1 hash or the filePath (the filePath can also be a regex). Additionally, there are several things that
-can be suppressed - individual CPEs, individual CVEs, or all CVE entries below a specified CVSS score. The most common
+
+- their sha1 hash (via element `<sha1>),
+- their package URL (via element `<packageUrl>`),
+- their Maven like coordinates (groupId/namespace, artifactId/name and version via element `<gav>`), or
+- their file path (via element `<filePath>`).
+
+The latter three can optionally be given as regular expression. The `<packageUrl>` value is matched against the dependency 
+specific software identifiers (can be looked up from the report) and `<gav>` against these identifiers after they have been mapped 
+to coordinates via `PurlIdentifier.toGav()`. The latter is not always available while the former is mandatory.
+The `<filePath>` value is matched against the OS-specific absolute file path of the according dependency
+(for example a path inside the local Maven repository).
+
+Additionally, there are several things that can be suppressed - individual CPEs, individual CVEs, or all CVE entries below a specified CVSS score. The most common
 would be suppressing CPEs based off of SHA1 hashes or filePath (regexes) - these entries can be generated using the
 HTML version of the report. The other common scenario would be to ignore all CVEs below a certain CVSS threshold.
 
