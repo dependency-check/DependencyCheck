@@ -998,9 +998,21 @@ public class Check extends Update {
      *
      * @param retirejsFilterNonVulnerable new value of
      * retirejsFilterNonVulnerable
+     * @deprecated Use {@link #setRetireJsFilterNonVulnerable(Boolean)} instead.
      */
+    @Deprecated
     public void setRetirejsFilterNonVulnerable(Boolean retirejsFilterNonVulnerable) {
         this.retirejsFilterNonVulnerable = retirejsFilterNonVulnerable;
+    }
+
+    /**
+     * Set the value of retireJsFilterNonVulnerable.
+     *
+     * @param retireJsFilterNonVulnerable new value of
+     * retireJsFilterNonVulnerable
+     */
+    public void setRetireJsFilterNonVulnerable(Boolean retireJsFilterNonVulnerable) {
+        this.retirejsFilterNonVulnerable = retireJsFilterNonVulnerable;
     }
 
     /**
@@ -1010,9 +1022,23 @@ public class Check extends Update {
      *
      * @param retirejsFilter the regular expression used to filter based on file
      * content
+     * @deprecated Use {@link #addConfiguredRetireJsFilter(RetirejsFilter)} instead.
      */
+    @Deprecated
     public void addConfiguredRetirejsFilter(final RetirejsFilter retirejsFilter) {
         retirejsFilters.add(retirejsFilter.getRegex());
+    }
+
+    /**
+     * Add a regular expression to the set of retire JS content filters.
+     * <p>
+     * This is called by Ant.
+     *
+     * @param retireJsFilter the regular expression used to filter based on file
+     * content
+     */
+    public void addConfiguredRetireJsFilter(final RetirejsFilter retireJsFilter) {
+        retirejsFilters.add(retireJsFilter.getRegex());
     }
 
     /**
@@ -1199,45 +1225,100 @@ public class Check extends Update {
      * Set value of {@link #ossindexAnalyzerEnabled}.
      *
      * @param ossindexAnalyzerEnabled new value of ossindexAnalyzerEnabled
+     * @deprecated Use {@link #setOssIndexAnalyzerEnabled(Boolean)} instead.
      */
+    @Deprecated
     public void setOssindexAnalyzerEnabled(Boolean ossindexAnalyzerEnabled) {
         this.ossindexAnalyzerEnabled = ossindexAnalyzerEnabled;
+    }
+
+    /**
+     * Set value of ossIndexAnalyzerEnabled.
+     *
+     * @param ossIndexAnalyzerEnabled new value of ossIndexAnalyzerEnabled
+     */
+    public void setOssIndexAnalyzerEnabled(Boolean ossIndexAnalyzerEnabled) {
+        this.ossindexAnalyzerEnabled = ossIndexAnalyzerEnabled;
     }
 
     /**
      * Set value of {@link #ossindexAnalyzerUseCache}.
      *
      * @param ossindexAnalyzerUseCache new value of ossindexAnalyzerUseCache
+     * @deprecated Use {@link #setOssIndexAnalyzerUseCache(Boolean)} instead.
      */
+    @Deprecated
     public void setOssindexAnalyzerUseCache(Boolean ossindexAnalyzerUseCache) {
         this.ossindexAnalyzerUseCache = ossindexAnalyzerUseCache;
+    }
+
+    /**
+     * Set value of ossIndexAnalyzerUseCache.
+     *
+     * @param ossIndexAnalyzerUseCache new value of ossIndexAnalyzerUseCache
+     */
+    public void setOssIndexAnalyzerUseCache(Boolean ossIndexAnalyzerUseCache) {
+        this.ossindexAnalyzerUseCache = ossIndexAnalyzerUseCache;
     }
 
     /**
      * Set value of {@link #ossindexAnalyzerUrl}.
      *
      * @param ossindexAnalyzerUrl new value of ossindexAnalyzerUrl
+     * @deprecated Use {@link #setOssIndexAnalyzerUrl(String)} instead.
      */
+    @Deprecated
     public void setOssindexAnalyzerUrl(String ossindexAnalyzerUrl) {
         this.ossindexAnalyzerUrl = ossindexAnalyzerUrl;
+    }
+
+    /**
+     * Set value of ossIndexAnalyzerUrl.
+     *
+     * @param ossIndexAnalyzerUrl new value of ossIndexAnalyzerUrl
+     */
+    public void setOssIndexAnalyzerUrl(String ossIndexAnalyzerUrl) {
+        this.ossindexAnalyzerUrl = ossIndexAnalyzerUrl;
     }
 
     /**
      * Set value of {@link #ossindexAnalyzerUsername}.
      *
      * @param ossindexAnalyzerUsername new value of ossindexAnalyzerUsername
+     * @deprecated Use {@link #setOssIndexAnalyzerUsername(String)} instead.
      */
+    @Deprecated
     public void setOssindexAnalyzerUsername(String ossindexAnalyzerUsername) {
         this.ossindexAnalyzerUsername = ossindexAnalyzerUsername;
+    }
+
+    /**
+     * Set value of ossIndexAnalyzerUsername.
+     *
+     * @param ossIndexAnalyzerUsername new value of ossIndexAnalyzerUsername
+     */
+    public void setOssIndexAnalyzerUsername(String ossIndexAnalyzerUsername) {
+        this.ossindexAnalyzerUsername = ossIndexAnalyzerUsername;
     }
 
     /**
      * Set value of {@link #ossindexAnalyzerPassword}.
      *
      * @param ossindexAnalyzerPassword new value of ossindexAnalyzerPassword
+     * @deprecated Use {@link #setOssIndexAnalyzerPassword(String)} instead.
      */
+    @Deprecated
     public void setOssindexAnalyzerPassword(String ossindexAnalyzerPassword) {
         this.ossindexAnalyzerPassword = ossindexAnalyzerPassword;
+    }
+
+    /**
+     * Set value of ossIndexAnalyzerPassword.
+     *
+     * @param ossIndexAnalyzerPassword new value of ossIndexAnalyzerPassword
+     */
+    public void setOssIndexAnalyzerPassword(String ossIndexAnalyzerPassword) {
+        this.ossindexAnalyzerPassword = ossIndexAnalyzerPassword;
     }
 
     /**

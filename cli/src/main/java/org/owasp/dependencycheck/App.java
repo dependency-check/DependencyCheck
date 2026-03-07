@@ -539,10 +539,16 @@ public class App {
                 cli.getStringArgument(CliParser.ARGUMENT.RETIREJS_URL_BEARER_TOKEN));
         settings.setBooleanIfNotNull(Settings.KEYS.ANALYZER_RETIREJS_FORCEUPDATE,
                 cli.hasOption(CliParser.ARGUMENT.RETIRE_JS_FORCEUPDATE));
-        settings.setStringIfNotNull(Settings.KEYS.ANALYZER_RETIREJS_FILTERS,
-                cli.getStringArgument(CliParser.ARGUMENT.RETIREJS_FILTERS));
-        settings.setBooleanIfNotNull(Settings.KEYS.ANALYZER_RETIREJS_FILTER_NON_VULNERABLE,
-                cli.hasOption(CliParser.ARGUMENT.RETIREJS_FILTER_NON_VULNERABLE));
+        String retireJsFilters = cli.getStringArgument(CliParser.ARGUMENT.RETIRE_JS_FILTERS);
+        if (retireJsFilters == null) {
+            retireJsFilters = cli.getStringArgument(CliParser.ARGUMENT.RETIREJS_FILTERS);
+        }
+        settings.setStringIfNotNull(Settings.KEYS.ANALYZER_RETIREJS_FILTERS, retireJsFilters);
+        Boolean retireJsFilterNonVuln = cli.hasOption(CliParser.ARGUMENT.RETIRE_JS_FILTER_NON_VULNERABLE);
+        if (retireJsFilterNonVuln == null) {
+            retireJsFilterNonVuln = cli.hasOption(CliParser.ARGUMENT.RETIREJS_FILTER_NON_VULNERABLE);
+        }
+        settings.setBooleanIfNotNull(Settings.KEYS.ANALYZER_RETIREJS_FILTER_NON_VULNERABLE, retireJsFilterNonVuln);
         settings.setBoolean(Settings.KEYS.ANALYZER_JAR_ENABLED,
                 !cli.isDisabled(CliParser.ARGUMENT.DISABLE_JAR, Settings.KEYS.ANALYZER_JAR_ENABLED));
         settings.setBoolean(Settings.KEYS.UPDATE_VERSION_CHECK_ENABLED,

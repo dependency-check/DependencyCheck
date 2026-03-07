@@ -452,6 +452,8 @@ public final class CliParser {
                         "The password to authenticate to Retire JS Repository URL"))
                 .addOption(newOption(ARGUMENT.RETIREJS_FILTER_NON_VULNERABLE, "Specifies that the Retire JS "
                         + "Analyzer should filter out non-vulnerable JS files from the report."))
+                .addOption(newOption(ARGUMENT.RETIRE_JS_FILTER_NON_VULNERABLE, "Specifies that the Retire JS "
+                        + "Analyzer should filter out non-vulnerable JS files from the report."))
                 .addOption(newOptionWithArg(ARGUMENT.ARTIFACTORY_PARALLEL_ANALYSIS, "true/false",
                         "Whether the Artifactory Analyzer should use parallel analysis."))
                 .addOption(newOptionWithArg(ARGUMENT.ARTIFACTORY_USES_PROXY, "true/false",
@@ -471,6 +473,10 @@ public final class CliParser {
                 .addOption(newOptionWithArg(ARGUMENT.PATH_TO_PNPM, "path",
                         "The path to the `pnpm` executable."))
                 .addOption(newOptionWithArg(ARGUMENT.RETIREJS_FILTERS, "pattern",
+                        "Specify Retire JS content filter used to exclude files from analysis based on their content; "
+                                + "most commonly used to exclude based on your applications own copyright line. This "
+                                + "option can be specified multiple times."))
+                .addOption(newOptionWithArg(ARGUMENT.RETIRE_JS_FILTERS, "pattern",
                         "Specify Retire JS content filter used to exclude files from analysis based on their content; "
                                 + "most commonly used to exclude based on your applications own copyright line. This "
                                 + "option can be specified multiple times."))
@@ -826,7 +832,8 @@ public final class CliParser {
      * @return the retireJS filters
      */
     public String[] getRetireJsFilters() {
-        return line.getOptionValues(ARGUMENT.RETIREJS_FILTERS);
+        final String[] values = line.getOptionValues(ARGUMENT.RETIRE_JS_FILTERS);
+        return values != null ? values : line.getOptionValues(ARGUMENT.RETIREJS_FILTERS);
     }
 
     /**
@@ -839,7 +846,8 @@ public final class CliParser {
     @SuppressFBWarnings(justification = "Accepting that this is a bad practice - but made more sense in this use case",
             value = {"NP_BOOLEAN_RETURN_NULL"})
     public Boolean isRetireJsFilterNonVulnerable() {
-        return (line != null && line.hasOption(ARGUMENT.RETIREJS_FILTER_NON_VULNERABLE)) ? true : null;
+        return (line != null && (line.hasOption(ARGUMENT.RETIRE_JS_FILTER_NON_VULNERABLE)
+                || line.hasOption(ARGUMENT.RETIREJS_FILTER_NON_VULNERABLE))) ? true : null;
     }
 
     /**
@@ -1596,12 +1604,24 @@ public final class CliParser {
         public static final String RETIRED = "enableRetired";
         /**
          * The CLI argument for the retire js content filters.
+         * @deprecated Use {@link #RETIRE_JS_FILTERS} instead.
          */
+        @Deprecated
         public static final String RETIREJS_FILTERS = "retirejsFilter";
         /**
-         * The CLI argument for the retire js content filters.
+         * The CLI argument for the retire JS content filters.
          */
+        public static final String RETIRE_JS_FILTERS = "retireJsFilter";
+        /**
+         * The CLI argument for the retire js content filters.
+         * @deprecated Use {@link #RETIRE_JS_FILTER_NON_VULNERABLE} instead.
+         */
+        @Deprecated
         public static final String RETIREJS_FILTER_NON_VULNERABLE = "retirejsFilterNonVulnerable";
+        /**
+         * The CLI argument for the retire JS content filter for non-vulnerable.
+         */
+        public static final String RETIRE_JS_FILTER_NON_VULNERABLE = "retireJsFilterNonVulnerable";
         /**
          * The CLI argument for indicating if the Artifactory analyzer should be
          * enabled.
