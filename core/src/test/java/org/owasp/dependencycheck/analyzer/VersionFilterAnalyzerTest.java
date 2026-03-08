@@ -17,6 +17,7 @@
  */
 package org.owasp.dependencycheck.analyzer;
 
+import java.io.File;
 import org.junit.jupiter.api.Test;
 import org.owasp.dependencycheck.BaseTest;
 import org.owasp.dependencycheck.dependency.Confidence;
@@ -25,13 +26,29 @@ import org.owasp.dependencycheck.dependency.EvidenceType;
 import org.owasp.dependencycheck.utils.Settings;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  *
  * @author Jeremy Long
  */
 class VersionFilterAnalyzerTest extends BaseTest {
+
+    /**
+     * Test that the analyzer only accepts JAR files.
+     */
+    @Test
+    void testAcceptOnlyJarFiles() {
+        VersionFilterAnalyzer instance = new VersionFilterAnalyzer();
+        instance.initialize(getSettings());
+        assertTrue(instance.accept(new File("example-1.2.3.jar")));
+        assertFalse(instance.accept(new File("example-1.2.3.war")));
+        assertFalse(instance.accept(new File("example-1.2.3.dll")));
+        assertFalse(instance.accept(new File("example-1.2.3.exe")));
+        assertFalse(instance.accept(new File("pom.xml")));
+    }
 
     /**
      * Test of getName method, of class VersionFilterAnalyzer.
