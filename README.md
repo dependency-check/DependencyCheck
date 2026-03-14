@@ -179,7 +179,7 @@ For instructions on the use of the Ant Task, please see the [dependency-check-an
 ## Development Prerequisites
 
 For installation to pass, you must have the following components installed:
-* Java: `java -version` 11.0
+* Java: `java -version` 17.0
 * Maven: `mvn -version` 3.6.3 and higher
 
 Tests cases require:
