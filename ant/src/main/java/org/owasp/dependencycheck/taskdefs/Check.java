@@ -100,12 +100,12 @@ public class Check extends Update {
      * to exclude files that contain matching content..
      */
     @SuppressWarnings("CanBeFinal")
-    private final List<String> retirejsFilters = new ArrayList<>();
+    private final List<String> retireJsFilters = new ArrayList<>();
     /**
      * Whether or not the RetireJS Analyzer filters non-vulnerable JS files from
      * the report; default is false.
      */
-    private Boolean retirejsFilterNonVulnerable;
+    private Boolean retireJsFilterNonVulnerable;
     /**
      * Whether or not the Ruby Bundle Audit Analyzer is enabled.
      */
@@ -996,13 +996,13 @@ public class Check extends Update {
     /**
      * Set the value of retirejsFilterNonVulnerable.
      *
-     * @param retirejsFilterNonVulnerable new value of
+     * @param retireJsFilterNonVulnerable new value of
      * retirejsFilterNonVulnerable
      * @deprecated Use {@link #setRetireJsFilterNonVulnerable(Boolean)} instead.
      */
     @Deprecated
-    public void setRetirejsFilterNonVulnerable(Boolean retirejsFilterNonVulnerable) {
-        this.retirejsFilterNonVulnerable = retirejsFilterNonVulnerable;
+    public void setRetirejsFilterNonVulnerable(Boolean retireJsFilterNonVulnerable) {
+        this.retireJsFilterNonVulnerable = retireJsFilterNonVulnerable;
     }
 
     /**
@@ -1012,7 +1012,7 @@ public class Check extends Update {
      * retireJsFilterNonVulnerable
      */
     public void setRetireJsFilterNonVulnerable(Boolean retireJsFilterNonVulnerable) {
-        this.retirejsFilterNonVulnerable = retireJsFilterNonVulnerable;
+        this.retireJsFilterNonVulnerable = retireJsFilterNonVulnerable;
     }
 
     /**
@@ -1020,13 +1020,13 @@ public class Check extends Update {
      * <p>
      * This is called by Ant.
      *
-     * @param retirejsFilter the regular expression used to filter based on file
+     * @param retireJsFilter the regular expression used to filter based on file
      * content
      * @deprecated Use {@link #addConfiguredRetireJsFilter(RetirejsFilter)} instead.
      */
     @Deprecated
-    public void addConfiguredRetirejsFilter(final RetirejsFilter retirejsFilter) {
-        retirejsFilters.add(retirejsFilter.getRegex());
+    public void addConfiguredRetirejsFilter(final RetirejsFilter retireJsFilter) {
+        retireJsFilters.add(retireJsFilter.getRegex());
     }
 
     /**
@@ -1038,7 +1038,7 @@ public class Check extends Update {
      * content
      */
     public void addConfiguredRetireJsFilter(final RetirejsFilter retireJsFilter) {
-        retirejsFilters.add(retireJsFilter.getRegex());
+        retireJsFilters.add(retireJsFilter.getRegex());
     }
 
     /**
@@ -1570,8 +1570,8 @@ public class Check extends Update {
         getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_PNPM_AUDIT_ENABLED, pnpmAuditAnalyzerEnabled);
         getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_NODE_AUDIT_USE_CACHE, nodeAuditAnalyzerUseCache);
         getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_NODE_AUDIT_SKIPDEV, nodeAuditSkipDevDependencies);
-        getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_RETIREJS_FILTER_NON_VULNERABLE, retirejsFilterNonVulnerable);
-        getSettings().setArrayIfNotEmpty(Settings.KEYS.ANALYZER_RETIREJS_FILTERS, retirejsFilters);
+        getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_RETIREJS_FILTER_NON_VULNERABLE, retireJsFilterNonVulnerable);
+        getSettings().setArrayIfNotEmpty(Settings.KEYS.ANALYZER_RETIREJS_FILTERS, retireJsFilters);
         getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_GOLANG_DEP_ENABLED, golangDepEnabled);
         getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_GOLANG_MOD_ENABLED, golangModEnabled);
         getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_DART_ENABLED, dartAnalyzerEnabled);
