@@ -450,8 +450,6 @@ public final class CliParser {
                         "The password to authenticate to Retire JS Repository URL"))
                 .addOption(newOptionWithArg(ARGUMENT.RETIREJS_URL_BEARER_TOKEN, "token",
                         "The password to authenticate to Retire JS Repository URL"))
-                .addOption(newOption(ARGUMENT.RETIREJS_FILTER_NON_VULNERABLE, "Specifies that the Retire JS "
-                        + "Analyzer should filter out non-vulnerable JS files from the report."))
                 .addOption(newOption(ARGUMENT.RETIRE_JS_FILTER_NON_VULNERABLE, "Specifies that the Retire JS "
                         + "Analyzer should filter out non-vulnerable JS files from the report."))
                 .addOption(newOptionWithArg(ARGUMENT.ARTIFACTORY_PARALLEL_ANALYSIS, "true/false",
@@ -472,10 +470,6 @@ public final class CliParser {
                         "The path to the `yarn` executable."))
                 .addOption(newOptionWithArg(ARGUMENT.PATH_TO_PNPM, "path",
                         "The path to the `pnpm` executable."))
-                .addOption(newOptionWithArg(ARGUMENT.RETIREJS_FILTERS, "pattern",
-                        "Specify Retire JS content filter used to exclude files from analysis based on their content; "
-                                + "most commonly used to exclude based on your applications own copyright line. This "
-                                + "option can be specified multiple times."))
                 .addOption(newOptionWithArg(ARGUMENT.RETIRE_JS_FILTERS, "pattern",
                         "Specify Retire JS content filter used to exclude files from analysis based on their content; "
                                 + "most commonly used to exclude based on your applications own copyright line. This "
@@ -582,6 +576,13 @@ public final class CliParser {
         //not a real option - but enables java debugging via the shell script
         options.addOption(newOption("debug",
                 "Used to enable java debugging of the cli via dependency-check.sh."));
+        options.addOption(newOption(ARGUMENT.DISABLE_RETIREJS, "Disable the RetireJS Analyzer."));
+        options.addOption(newOption(ARGUMENT.RETIREJS_FILTER_NON_VULNERABLE, "Specifies that the Retire JS "
+                + "Analyzer should filter out non-vulnerable JS files from the report."));
+        options.addOption(newOptionWithArg(ARGUMENT.RETIREJS_FILTERS, "pattern",
+                "Specify Retire JS content filter used to exclude files from analysis based on their content; "
+                        + "most commonly used to exclude based on your applications own copyright line. This "
+                        + "option can be specified multiple times."));
     }
 
     /**
@@ -1504,8 +1505,14 @@ public final class CliParser {
         public static final String DISABLE_NODE_AUDIT_SKIPDEV = "nodeAuditSkipDevDependencies";
         /**
          * Disables the RetireJS Analyzer.
+         * @deprecated Use {@link #DISABLE_RETIRE_JS} instead.
          */
-        public static final String DISABLE_RETIRE_JS = "disableRetireJS";
+        @Deprecated
+        public static final String DISABLE_RETIREJS = "disableRetireJS";
+        /**
+         * Disables the RetireJS Analyzer.
+         */
+        public static final String DISABLE_RETIRE_JS = "disableRetireJs";
         /**
          * Whether the RetireJS Analyzer will update regardless of the
          * `autoupdate` setting.

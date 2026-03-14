@@ -61,7 +61,7 @@ _odc_completions()
             --disablePipfile
             --disablePyDist
             --disablePyPkg
-            --disableRetireJS
+            --disableRetireJs
             --disableRubygems
             --disableSwiftPackageManagerAnalyzer
             --disableSwiftPackageResolvedAnalyzer
@@ -107,8 +107,8 @@ _odc_completions()
             --proxyuser <user>
             --pnpm
             --purge
-            --retirejsFilter <pattern>
-            --retirejsFilterNonVulnerable
+            --retireJsFilter <pattern>
+            --retireJsFilterNonVulnerable
             --retireJsForceUpdate
             --retireJsUrl <url>
         -s --scan

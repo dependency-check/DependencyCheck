@@ -621,8 +621,11 @@ public class App {
                 !cli.isPnpmAuditDisabled());
         settings.setBoolean(Settings.KEYS.ANALYZER_NODE_AUDIT_USE_CACHE,
                 !cli.isDisabled(CliParser.ARGUMENT.DISABLE_NODE_AUDIT_CACHE, Settings.KEYS.ANALYZER_NODE_AUDIT_USE_CACHE));
-        settings.setBoolean(Settings.KEYS.ANALYZER_RETIREJS_ENABLED,
-                !cli.isDisabled(CliParser.ARGUMENT.DISABLE_RETIRE_JS, Settings.KEYS.ANALYZER_RETIREJS_ENABLED));
+        boolean retireJsDisabled = cli.isDisabled(CliParser.ARGUMENT.DISABLE_RETIRE_JS, Settings.KEYS.ANALYZER_RETIREJS_ENABLED);
+        if (!retireJsDisabled) {
+            retireJsDisabled = cli.isDisabled(CliParser.ARGUMENT.DISABLE_RETIREJS, Settings.KEYS.ANALYZER_RETIREJS_ENABLED);
+        }
+        settings.setBoolean(Settings.KEYS.ANALYZER_RETIREJS_ENABLED, !retireJsDisabled);
         settings.setBoolean(Settings.KEYS.ANALYZER_SWIFT_PACKAGE_MANAGER_ENABLED,
                 !cli.isDisabled(CliParser.ARGUMENT.DISABLE_SWIFT, Settings.KEYS.ANALYZER_SWIFT_PACKAGE_MANAGER_ENABLED));
         settings.setBoolean(Settings.KEYS.ANALYZER_SWIFT_PACKAGE_RESOLVED_ENABLED,
