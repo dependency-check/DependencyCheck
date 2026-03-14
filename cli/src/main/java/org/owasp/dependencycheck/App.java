@@ -541,12 +541,12 @@ public class App {
                 cli.hasOption(CliParser.ARGUMENT.RETIRE_JS_FORCEUPDATE));
         String retireJsFilters = cli.getStringArgument(CliParser.ARGUMENT.RETIRE_JS_FILTERS);
         if (retireJsFilters == null) {
-            retireJsFilters = cli.getStringArgument(CliParser.ARGUMENT.RETIREJS_FILTERS);
+            retireJsFilters = cli.getStringArgument(CliParser.ARGUMENT.RETIREJS_FILTERS_DEPRECATED);
         }
         settings.setStringIfNotNull(Settings.KEYS.ANALYZER_RETIREJS_FILTERS, retireJsFilters);
         Boolean retireJsFilterNonVuln = cli.hasOption(CliParser.ARGUMENT.RETIRE_JS_FILTER_NON_VULNERABLE);
         if (retireJsFilterNonVuln == null) {
-            retireJsFilterNonVuln = cli.hasOption(CliParser.ARGUMENT.RETIREJS_FILTER_NON_VULNERABLE);
+            retireJsFilterNonVuln = cli.hasOption(CliParser.ARGUMENT.RETIREJS_FILTER_NON_VULNERABLE_DEPRECATED);
         }
         settings.setBooleanIfNotNull(Settings.KEYS.ANALYZER_RETIREJS_FILTER_NON_VULNERABLE, retireJsFilterNonVuln);
         settings.setBoolean(Settings.KEYS.ANALYZER_JAR_ENABLED,
@@ -623,7 +623,7 @@ public class App {
                 !cli.isDisabled(CliParser.ARGUMENT.DISABLE_NODE_AUDIT_CACHE, Settings.KEYS.ANALYZER_NODE_AUDIT_USE_CACHE));
         boolean retireJsDisabled = cli.isDisabled(CliParser.ARGUMENT.DISABLE_RETIRE_JS, Settings.KEYS.ANALYZER_RETIREJS_ENABLED);
         if (!retireJsDisabled) {
-            retireJsDisabled = cli.isDisabled(CliParser.ARGUMENT.DISABLE_RETIREJS, Settings.KEYS.ANALYZER_RETIREJS_ENABLED);
+            retireJsDisabled = cli.isDisabled(CliParser.ARGUMENT.DISABLE_RETIREJS_DEPRECATED, Settings.KEYS.ANALYZER_RETIREJS_ENABLED);
         }
         settings.setBoolean(Settings.KEYS.ANALYZER_RETIREJS_ENABLED, !retireJsDisabled);
         settings.setBoolean(Settings.KEYS.ANALYZER_SWIFT_PACKAGE_MANAGER_ENABLED,
