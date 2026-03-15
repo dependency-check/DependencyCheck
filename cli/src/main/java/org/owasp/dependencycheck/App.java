@@ -542,11 +542,19 @@ public class App {
         String retireJsFilters = cli.getStringArgument(CliParser.ARGUMENT.RETIRE_JS_FILTERS);
         if (retireJsFilters == null) {
             retireJsFilters = cli.getStringArgument(CliParser.ARGUMENT.RETIREJS_FILTERS_DEPRECATED);
+            if (retireJsFilters != null) {
+                LOGGER.warn("'--{}' is deprecated and may be removed in the next major release, please migrate to '--{}'",
+                        CliParser.ARGUMENT.RETIREJS_FILTERS_DEPRECATED, CliParser.ARGUMENT.RETIRE_JS_FILTERS);
+            }
         }
         settings.setStringIfNotNull(Settings.KEYS.ANALYZER_RETIREJS_FILTERS, retireJsFilters);
         Boolean retireJsFilterNonVuln = cli.hasOption(CliParser.ARGUMENT.RETIRE_JS_FILTER_NON_VULNERABLE);
         if (retireJsFilterNonVuln == null) {
             retireJsFilterNonVuln = cli.hasOption(CliParser.ARGUMENT.RETIREJS_FILTER_NON_VULNERABLE_DEPRECATED);
+            if (retireJsFilterNonVuln != null) {
+                LOGGER.warn("'--{}' is deprecated and may be removed in the next major release, please migrate to '--{}'",
+                        CliParser.ARGUMENT.RETIREJS_FILTER_NON_VULNERABLE_DEPRECATED, CliParser.ARGUMENT.RETIRE_JS_FILTER_NON_VULNERABLE);
+            }
         }
         settings.setBooleanIfNotNull(Settings.KEYS.ANALYZER_RETIREJS_FILTER_NON_VULNERABLE, retireJsFilterNonVuln);
         settings.setBoolean(Settings.KEYS.ANALYZER_JAR_ENABLED,
@@ -624,6 +632,10 @@ public class App {
         boolean retireJsDisabled = cli.isDisabled(CliParser.ARGUMENT.DISABLE_RETIRE_JS, Settings.KEYS.ANALYZER_RETIREJS_ENABLED);
         if (!retireJsDisabled) {
             retireJsDisabled = cli.isDisabled(CliParser.ARGUMENT.DISABLE_RETIREJS_DEPRECATED, Settings.KEYS.ANALYZER_RETIREJS_ENABLED);
+            if (retireJsDisabled) {
+                LOGGER.warn("'--{}' is deprecated and may be removed in the next major release, please migrate to '--{}'",
+                        CliParser.ARGUMENT.DISABLE_RETIREJS_DEPRECATED, CliParser.ARGUMENT.DISABLE_RETIRE_JS);
+            }
         }
         settings.setBoolean(Settings.KEYS.ANALYZER_RETIREJS_ENABLED, !retireJsDisabled);
         settings.setBoolean(Settings.KEYS.ANALYZER_SWIFT_PACKAGE_MANAGER_ENABLED,
