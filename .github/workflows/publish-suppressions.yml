@@ -15,7 +15,7 @@ jobs:
       - uses: actions/checkout@v6
         with:
           ref: generatedSuppressions
-      - uses: actions/setup-node@v6.3.0
+      - uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6.3.0
       - run: |
           npm install fs
       - name: Create Generated Suppressions XML
