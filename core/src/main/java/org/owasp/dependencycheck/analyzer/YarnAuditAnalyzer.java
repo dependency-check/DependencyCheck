@@ -394,6 +394,7 @@ public class YarnAuditAnalyzer extends AbstractNpmAnalyzer {
         }
         args.add("--all");
         args.add("--recursive");
+        args.add("--no-deprecations");
         args.add("--json");
         final ProcessBuilder builder = new ProcessBuilder(args);
         builder.directory(getDependencyDirectory(dependency));

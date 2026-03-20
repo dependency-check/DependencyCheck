@@ -32,43 +32,36 @@ import static org.junit.jupiter.api.Assumptions.assumeTrue;
 class YarnAuditAnalyzerIT extends BaseTest {
 
     @Test
-    void testAnalyzePackageYarnClassic() throws AnalysisException {
+    void testAnalyzePackageYarnClassic() throws Exception {
         testAnalyzePackageYarn("yarn/yarn-classic-audit/yarn.lock");
     }
 
     @Test
-    void testAnalyzePackageYarnBerry() throws AnalysisException {
+    void testAnalyzePackageYarnBerry() throws Exception {
         testAnalyzePackageYarn("yarn/yarn-berry-audit/yarn.lock");
     }
 
     @Test
-    void testAnalyzePackageYarnBerryNoVulnerability() throws AnalysisException {
-        //Assume.assumeThat(getSettings().getBoolean(Settings.KEYS.ANALYZER_YARN_AUDIT_ENABLED), is(true));
+    void testAnalyzePackageYarnBerryNoVulnerability() throws Exception {
         try (Engine engine = new Engine(getSettings())) {
-            var analyzer = new YarnAuditAnalyzer();
-            analyzer.setFilesMatched(true);
-            analyzer.initialize(getSettings());
-            analyzer.prepare(engine);
-            final Dependency toScan = new Dependency(BaseTest.getResourceAsFile(this, "yarn/yarn-berry-audit-no-vulnerability/yarn.lock"));
-            analyzer.analyze(toScan, engine);
+            analyze("yarn/yarn-berry-audit-no-vulnerability/yarn.lock", engine);
             assertEquals(0, engine.getDependencies().length, "No dependency should be identified");
-        } catch (InitializationException ex) {
-            //yarn is not installed - skip the test case.
-            assumeTrue(false, ex.toString());
         }
     }
 
-    private void testAnalyzePackageYarn(String yarnLockFile) throws AnalysisException {
-        //Assume.assumeThat(getSettings().getBoolean(Settings.KEYS.ANALYZER_YARN_AUDIT_ENABLED), is(true));
+    @Test
+    void testAnalyzePackageYarnBerryExcludesDeprecations() throws Exception {
         try (Engine engine = new Engine(getSettings())) {
-            var analyzer = new YarnAuditAnalyzer();
-            analyzer.setFilesMatched(true);
-            analyzer.initialize(getSettings());
-            analyzer.prepare(engine);
-            final Dependency toScan = new Dependency(BaseTest.getResourceAsFile(this, yarnLockFile));
-            analyzer.analyze(toScan, engine);
+            analyze("yarn/yarn-berry-audit-no-deprecations/yarn.lock", engine);
+            assertEquals(0, engine.getDependencies().length, "No dependency should be identified");
+        }
+    }
+
+    private void testAnalyzePackageYarn(String yarnLockFile) throws Exception {
+        try (Engine engine = new Engine(getSettings())) {
+            analyze(yarnLockFile, engine);
+            assertTrue(1 < engine.getDependencies().length, "More than 1 dependency should be identified");
             boolean found = false;
-            assertTrue(1 < engine.getDependencies().length, "More then 1 dependency should be identified");
             for (Dependency result : engine.getDependencies()) {
                 if ("yarn.lock?uglify-js".equals(result.getFileName())) {
                     found = true;
@@ -79,9 +72,15 @@ class YarnAuditAnalyzerIT extends BaseTest {
                 }
             }
             assertTrue(found, "Uglify was not found");
-        } catch (InitializationException ex) {
-            //yarn is not installed - skip the test case.
-            assumeTrue(false, ex.toString());
         }
+    }
+
+    private void analyze(String yarnLockFile, Engine engine) throws InitializationException, AnalysisException {
+        var analyzer = new YarnAuditAnalyzer();
+        analyzer.setFilesMatched(true);
+        analyzer.initialize(getSettings());
+        analyzer.prepare(engine);
+        final Dependency toScan = new Dependency(BaseTest.getResourceAsFile(this, yarnLockFile));
+        analyzer.analyze(toScan, engine);
     }
 }
