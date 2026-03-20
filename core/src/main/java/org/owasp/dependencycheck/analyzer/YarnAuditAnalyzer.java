@@ -141,10 +141,10 @@ public class YarnAuditAnalyzer extends AbstractNpmAnalyzer {
             try (ProcessReader processReader = new ProcessReader(process)) {
                 processReader.readAll();
                 final int exitValue = process.waitFor();
-                if (exitValue != 0) {
-                    throw new IllegalStateException("Unable to determine yarn version, unexpected response.");
-                }
                 final var yarnVersion = processReader.getOutput();
+                if (exitValue != 0) {
+                    throw new IllegalStateException(String.format("Unable to determine yarn version, unexpected response (exit value %s, output: %s, error: %s)", exitValue, yarnVersion, processReader.getError()));
+                }
                 if (StringUtils.isBlank(yarnVersion)) {
                     throw new IllegalStateException("Unable to determine yarn version, blank output.");
                 }

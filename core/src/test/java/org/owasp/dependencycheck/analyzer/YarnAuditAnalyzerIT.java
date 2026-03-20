@@ -17,6 +17,7 @@
  */
 package org.owasp.dependencycheck.analyzer;
 
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.owasp.dependencycheck.BaseTest;
 import org.owasp.dependencycheck.Engine;
@@ -25,35 +26,64 @@ import org.owasp.dependencycheck.dependency.Dependency;
 import org.owasp.dependencycheck.dependency.EvidenceType;
 import org.owasp.dependencycheck.exception.InitializationException;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.containsString;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 class YarnAuditAnalyzerIT extends BaseTest {
 
-    @Test
-    void testAnalyzePackageYarnClassic() throws Exception {
-        testAnalyzePackageYarn("yarn/yarn-classic-audit/yarn.lock");
-    }
-
-    @Test
-    void testAnalyzePackageYarnBerry() throws Exception {
-        testAnalyzePackageYarn("yarn/yarn-berry-audit/yarn.lock");
-    }
-
-    @Test
-    void testAnalyzePackageYarnBerryNoVulnerability() throws Exception {
-        try (Engine engine = new Engine(getSettings())) {
-            analyze("yarn/yarn-berry-audit-no-vulnerability/yarn.lock", engine);
-            assertEquals(0, engine.getDependencies().length, "No dependency should be identified");
+    @Nested
+    class Classic {
+        @Test
+        void testAnalyzePackageYarnClassic() throws Exception {
+            testAnalyzePackageYarn("yarn/yarn-classic-audit/yarn.lock");
         }
     }
 
-    @Test
-    void testAnalyzePackageYarnBerryExcludesDeprecations() throws Exception {
-        try (Engine engine = new Engine(getSettings())) {
-            analyze("yarn/yarn-berry-audit-no-deprecations/yarn.lock", engine);
-            assertEquals(0, engine.getDependencies().length, "No dependency should be identified");
+    @Nested
+    class Berry {
+        @Test
+        void testAnalyzePackage() throws Exception {
+            testAnalyzePackageYarn("yarn/yarn-berry-audit/yarn.lock");
+        }
+
+        @Test
+        void testAnalyzeWithBadYarnConfiguration() {
+            IllegalStateException exception = assertThrows(IllegalStateException.class, () -> testAnalyzePackageYarn("yarn/yarn-berry-audit-bad-yarnrc/yarn.lock"));
+            assertThat(exception.getMessage(), containsString("Unable to determine yarn version"));
+            assertThat(exception.getCause().getMessage(), allOf(
+                    containsString("exit value 1"),
+                    containsString("bad-path-to-yarn.js")
+            ));
+        }
+
+        @Test
+        void testAnalyzeWithBadPackageManagerConfiguration() {
+            IllegalStateException exception = assertThrows(IllegalStateException.class, () -> testAnalyzePackageYarn("yarn/yarn-berry-audit-bad-package-manager/yarn.lock"));
+            assertThat(exception.getMessage(), containsString("Unable to determine yarn version"));
+            assertThat(exception.getCause().getMessage(), allOf(
+                    containsString("exit value 1"),
+                    containsString("4.999.0-bad-version")
+            ));
+        }
+
+        @Test
+        void testAnalyzePackageNoVulnerability() throws Exception {
+            try (Engine engine = new Engine(getSettings())) {
+                analyze("yarn/yarn-berry-audit-no-vulnerability/yarn.lock", engine);
+                assertEquals(0, engine.getDependencies().length, "No dependency should be identified");
+            }
+        }
+
+        @Test
+        void testAnalyzePackageExcludesDeprecations() throws Exception {
+            try (Engine engine = new Engine(getSettings())) {
+                analyze("yarn/yarn-berry-audit-no-deprecations/yarn.lock", engine);
+                assertEquals(0, engine.getDependencies().length, "No dependency should be identified");
+            }
         }
     }
 
