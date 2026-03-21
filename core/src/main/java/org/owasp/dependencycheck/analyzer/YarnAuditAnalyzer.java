@@ -311,7 +311,8 @@ public class YarnAuditAnalyzer extends AbstractNpmAnalyzer {
         final String verboseJson = startAndReadStdoutToString(builder);
         final String auditRequestJson = Arrays.stream(verboseJson.split("\n"))
                 .filter(line -> line.contains("Audit Request"))
-                .findFirst().get();
+                .findFirst()
+                .orElseThrow(() -> new AnalysisException("No results from Yarn Classic (offline step) - possibly trying to use classic analyzer on Yarn Berry lockfile"));
         String auditRequest;
         try (JsonReader reader = Json.createReader(IOUtils.toInputStream(auditRequestJson, StandardCharsets.UTF_8))) {
             final JsonObject jsonObject = reader.readObject();

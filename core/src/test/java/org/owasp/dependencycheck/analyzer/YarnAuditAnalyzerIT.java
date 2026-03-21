@@ -41,6 +41,12 @@ class YarnAuditAnalyzerIT extends BaseTest {
         void testAnalyzePackageYarnClassic() throws Exception {
             testAnalyzePackageYarn("yarn/yarn-classic-audit/yarn.lock");
         }
+
+        @Test
+        void testAnalyzePackageYarnClassicOnYarnBerryLockfile() {
+            AnalysisException exception = assertThrows(AnalysisException.class, () -> testAnalyzePackageYarn("yarn/yarn-classic-audit-bad-berry-lockfile/yarn.lock"));
+            assertThat(exception.getMessage(), containsString("No results from Yarn Classic (offline step) - possibly trying to use classic analyzer on Yarn Berry lockfile"));
+        }
     }
 
     @Nested
