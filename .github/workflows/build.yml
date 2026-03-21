@@ -30,24 +30,24 @@ jobs:
         run: |
           cat <(echo -e "${{ secrets.GPG_PRIVATE_KEY }}") | gpg --batch --import
           gpg --list-secret-keys --keyid-format LONG
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
       - name: Maven Integration Test Cache
         id: maven-it-cache
-        uses: actions/cache@v5
+        uses: actions/cache@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5.0.4
         with:
           path: maven/target/local-repo
           key: mvn-it-repo
       - name: Check ODC Data Cache
         id: odc-data-cache
-        uses: actions/cache@v5
+        uses: actions/cache@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5.0.4
         with:
           path: core/target/data
           key: odc-data
-      - uses: actions/setup-dotnet@v5.2.0
+      - uses: actions/setup-dotnet@c2fa09f4bde5ebb9d1777cf28262a3eb3db3ced7 # v5.2.0
         with:
           dotnet-version: '8.0.x'
       - name: Set up JDKs
-        uses: actions/setup-java@v5
+        uses: actions/setup-java@be666c2fcd27ec809703dec50e508c2fdc7f6654 # v5.2.0
         with:
           java-version: | # last version takes precedence as default
             ${{ matrix.jdk_test_version }}
@@ -78,14 +78,14 @@ jobs:
           ${{ steps.install-gpg-key.outcome == 'success' && '-Prelease gpg:sign deploy' || '' }} 
           --no-transfer-progress --batch-mode -Dstyle.color=always
       - name: SARIF Multitool
-        uses: microsoft/sarif-actions@v0.2
+        uses: microsoft/sarif-actions@c8dd8ba66449523fe92a68cbe13aab3c271efe3c # v0.2
         with:
           # Command to be sent to SARIF Multitool
           command: 'validate core/target/test-reports/Report.sarif'
       - name: Archive IT test logs
         id: archive-logs
         if: always()
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
         with:
           name: it-test-logs-jdk-${{ matrix.jdk_test_version }}
           retention-days: 7
@@ -93,7 +93,7 @@ jobs:
       - name: Archive code coverage results
         if: matrix.jdk_test_version == matrix.jdk_default_version
         id: archive-coverage
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
         with:
           name: code-coverage-report
           retention-days: 7
@@ -103,7 +103,7 @@ jobs:
       - name: Archive Snapshot
         if: matrix.jdk_test_version == matrix.jdk_default_version
         id: archive-snapshot
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
         with:
           name: archive-snapshot
           retention-days: 7
@@ -123,9 +123,9 @@ jobs:
     needs: build
     steps:
       - name: Checkout code
-        uses: actions/checkout@v6
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
       - name: Set up JDK
-        uses: actions/setup-java@v5
+        uses: actions/setup-java@be666c2fcd27ec809703dec50e508c2fdc7f6654 # v5.2.0
         with:
           java-version: '25'
           distribution: 'zulu'
@@ -133,13 +133,13 @@ jobs:
           cache: 'maven'
           cache-dependency-path: '**/pom.xml'
       - name: Download release build
-        uses: actions/download-artifact@v8
+        uses: actions/download-artifact@70fc10c6e5e1ce46ad2ea6f2b72d43f7d47b13c3 # v8.0.0
         with:
           name: archive-snapshot
       - name: Set up Docker
-        uses: docker/setup-docker-action@v5
+        uses: docker/setup-docker-action@1a6edb0ba9ac496f6850236981f15d8f9a82254d # v5.0.0
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v4
+        uses: docker/setup-buildx-action@4d04d5d9486b7bd6fa91e7baf45bbb4f8b9deedd # v4.0.0
       - name: Build Docker Image
         run: ./docker-build.sh
       - name: build scan target
