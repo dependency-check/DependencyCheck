@@ -17,6 +17,7 @@ ENV user=dependencycheck
 ENV JAVA_HOME=/opt/jdk
 ENV JAVA_OPTS="-Danalyzer.assembly.dotnet.path=/usr/bin/dotnet -Danalyzer.bundle.audit.path=/usr/bin/bundle-audit -Danalyzer.golang.path=/usr/local/go/bin/go"
 ENV ODC_NAME=dependency-check-docker
+ENV COREPACK_ENABLE_DOWNLOAD_PROMPT=false
 
 COPY --from=jlink /jlinked /opt/jdk/
 COPY --from=go /usr/local/go/ /usr/local/go/
@@ -28,10 +29,7 @@ RUN apk update                                                                  
     apk add --no-cache git ruby ruby-rdoc npm                                                        && \
     gem install bundler-audit                                                                        && \
     bundle audit update                                                                              && \
-    mkdir /opt/yarn                                                                                  && \
-    curl -Ls https://yarnpkg.com/latest.tar.gz | tar -xz --strip-components=1 --directory /opt/yarn  && \
-    ln -s /opt/yarn/bin/yarn /usr/bin/yarn                                                           && \
-    npm install -g pnpm                                                                              && \
+    npm install -g corepack                                                                          && \
     unzip dependency-check-${VERSION}-release.zip -d /usr/share/                                     && \
     rm dependency-check-${VERSION}-release.zip                                                       && \
     cd /usr/share/dependency-check/plugins                                                           && \
@@ -49,6 +47,11 @@ RUN apk update                                                                  
 ### remove any suid sgid - we don't need them
 RUN find / -path /proc -prune -perm +6000 -type f -exec chmod a-s {} \;
 USER ${UID}
+
+### preload pnpm and yarn
+RUN corepack enable                                                                                  && \
+    corepack prepare pnpm@latest --activate                                                          && \
+    corepack prepare yarn@1.22.22 --activate
 
 VOLUME ["/src", "/report"]
 
