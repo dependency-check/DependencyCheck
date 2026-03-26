@@ -2060,4 +2060,11 @@ only pkg:maven/org.clojure:clojure@.* is the CPE cpe:/a:clojure:clojure
     <packageUrl regex="true">^pkg:maven/com\.sun\.xml\.bind/jaxb-impl@.*$</packageUrl>
     <cpe>cpe:/a:eclipse:glassfish</cpe>
 </suppress>
+<suppress base="true">
+    <notes><![CDATA[
+    FP per issue #8387
+    ]]></notes>
+    <packageUrl regex="true">^pkg:maven/com\.graphql-java/java-dataloader@.*$</packageUrl>
+    <cpe>cpe:/a:graphql-java_project:graphql-java</cpe>
+</suppress>
 </suppressions>
