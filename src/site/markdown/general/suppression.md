@@ -34,8 +34,8 @@ to coordinates via `PurlIdentifier.toGav()`. The latter is not always available 
 The `<filePath>` value is matched against the OS-specific absolute file path of the according dependency
 (for example a path inside the local Maven repository).
 
-Additionally, there are several things that can be suppressed - individual CPEs, individual CVEs, or all CVE entries below a specified CVSS score. The most common
-would be suppressing CPEs based off of SHA1 hashes or filePath (regexes) - these entries can be generated using the
+Additionally, there are several ways to suppress vulnerabilities: individual CPEs, individual CVEs, or all vulnerabilities below a specified CVSS score. The most common
+would be suppressing CPEs based on the identified Package URL (PURL) - these suppression entries can be generated using the
 HTML version of the report. The other common scenario would be to ignore all CVEs below a certain CVSS threshold.
 
 ```xml
