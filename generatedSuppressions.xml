@@ -1264,12 +1264,12 @@ only pkg:maven/org.clojure:clojure@.* is the CPE cpe:/a:clojure:clojure
 <suppress base="true">
     <notes><![CDATA[
     FP per issue #4852, #4803, #4853, #4851, #4859, #4860, #4862, #4863, #4854, #5275, #5333, #5636, #5639, #5638,
-                #5637, #5657, #5646, #5647, #5641, #5643, #5648, #5719, #8094, #8093, #8091, #8089
+                #5637, #5657, #5646, #5647, #5641, #5643, #5648, #5719, #8094, #8093, #8091, #8089, #8387, #8398
     Consolidated suppression. Only com.graphql-java/graphql-java represents graphql-java project, the rest are other
     artifacts independently versioned and released.
     ]]></notes>
     <packageUrl regex="true">^pkg:(?!maven/com\.graphql-java/graphql-java@).*$</packageUrl>
-    <cpe>cpe:/a:graphql-java:graphql-java:</cpe>
+    <cpe regex="true">cpe:/a:graphql-java(_project)?:graphql-java:.*</cpe>
 </suppress>
 <suppress base="true">
     <notes><![CDATA[
@@ -2054,13 +2054,6 @@ only pkg:maven/org.clojure:clojure@.* is the CPE cpe:/a:clojure:clojure
     ]]></notes>
     <packageUrl regex="true">^pkg:maven/com\.sun\.xml\.bind/jaxb-impl@.*$</packageUrl>
     <cpe>cpe:/a:eclipse:glassfish</cpe>
-</suppress>
-<suppress base="true">
-    <notes><![CDATA[
-    FP per issue #8387
-    ]]></notes>
-    <packageUrl regex="true">^pkg:maven/com\.graphql-java/java-dataloader@.*$</packageUrl>
-    <cpe>cpe:/a:graphql-java_project:graphql-java</cpe>
 </suppress>
 <suppress base="true">
     <notes><![CDATA[
