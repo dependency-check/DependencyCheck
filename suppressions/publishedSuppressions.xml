@@ -2081,4 +2081,11 @@ only pkg:maven/org.clojure:clojure@.* is the CPE cpe:/a:clojure:clojure
     <packageUrl regex="true">^pkg:maven/org\.springframework\.ai/mcp-spring-webmvc@.*$</packageUrl>
     <cpe>cpe:/a:vmware:server</cpe>
 </suppress>
+<suppress base="true">
+    <notes><![CDATA[
+    FP per issue #8395
+    ]]></notes>
+    <packageUrl regex="true">^pkg:maven/org\.springframework\.grpc/spring-grpc-spring-boot-starter@.*$</packageUrl>
+    <cpe>cpe:/a:netty:netty</cpe>
+</suppress>
 </suppressions>
