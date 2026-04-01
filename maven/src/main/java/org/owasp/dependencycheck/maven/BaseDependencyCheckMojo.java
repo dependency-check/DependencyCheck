@@ -18,20 +18,23 @@
 package org.owasp.dependencycheck.maven;
 
 import com.github.packageurl.MalformedPackageURLException;
-import com.github.packageurl.PackageURL.StandardTypes;
 import com.github.packageurl.PackageURL;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
+import com.github.packageurl.PackageURL.StandardTypes;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.DefaultArtifact;
 import org.apache.maven.artifact.handler.DefaultArtifactHandler;
+import org.apache.maven.artifact.repository.ArtifactRepository;
+import org.apache.maven.artifact.resolver.filter.ExcludesArtifactFilter;
 import org.apache.maven.artifact.versioning.ArtifactVersion;
+import org.apache.maven.artifact.versioning.InvalidVersionSpecificationException;
+import org.apache.maven.artifact.versioning.Restriction;
+import org.apache.maven.artifact.versioning.VersionRange;
 import org.apache.maven.doxia.sink.Sink;
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.model.License;
 import org.apache.maven.plugin.AbstractMojo;
+import org.apache.maven.plugin.MojoExecution;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.Component;
@@ -47,38 +50,51 @@ import org.apache.maven.settings.building.SettingsProblem;
 import org.apache.maven.settings.crypto.DefaultSettingsDecryptionRequest;
 import org.apache.maven.settings.crypto.SettingsDecrypter;
 import org.apache.maven.settings.crypto.SettingsDecryptionResult;
-import org.apache.maven.shared.transfer.artifact.DefaultArtifactCoordinate;
-import org.apache.maven.shared.transfer.artifact.resolve.ArtifactResolver;
-import org.apache.maven.shared.transfer.artifact.resolve.ArtifactResolverException;
-import org.apache.maven.shared.transfer.artifact.resolve.ArtifactResult;
-import org.apache.maven.shared.transfer.dependencies.resolve.DependencyResolver;
-import org.apache.maven.shared.transfer.dependencies.resolve.DependencyResolverException;
-import org.eclipse.aether.artifact.ArtifactType;
 import org.apache.maven.shared.artifact.filter.PatternExcludesArtifactFilter;
 import org.apache.maven.shared.dependency.graph.DependencyGraphBuilder;
 import org.apache.maven.shared.dependency.graph.DependencyGraphBuilderException;
 import org.apache.maven.shared.dependency.graph.DependencyNode;
 import org.apache.maven.shared.dependency.graph.filter.ArtifactDependencyNodeFilter;
 import org.apache.maven.shared.dependency.graph.internal.DefaultDependencyNode;
+import org.apache.maven.shared.dependency.graph.traversal.DependencyNodeVisitor;
+import org.apache.maven.shared.dependency.graph.traversal.FilteringDependencyNodeVisitor;
 import org.apache.maven.shared.model.fileset.FileSet;
 import org.apache.maven.shared.model.fileset.util.FileSetManager;
+import org.apache.maven.shared.transfer.artifact.DefaultArtifactCoordinate;
+import org.apache.maven.shared.transfer.artifact.resolve.ArtifactResolver;
+import org.apache.maven.shared.transfer.artifact.resolve.ArtifactResolverException;
+import org.apache.maven.shared.transfer.artifact.resolve.ArtifactResult;
+import org.apache.maven.shared.transfer.dependencies.DefaultDependableCoordinate;
+import org.apache.maven.shared.transfer.dependencies.DependableCoordinate;
+import org.apache.maven.shared.transfer.dependencies.resolve.DependencyResolver;
+import org.apache.maven.shared.transfer.dependencies.resolve.DependencyResolverException;
+import org.eclipse.aether.artifact.ArtifactType;
 import org.owasp.dependencycheck.Engine;
+import org.owasp.dependencycheck.agent.DependencyCheckScanAgent;
 import org.owasp.dependencycheck.analyzer.JarAnalyzer;
+import org.owasp.dependencycheck.analyzer.exception.AnalysisException;
 import org.owasp.dependencycheck.data.nexus.MavenArtifact;
 import org.owasp.dependencycheck.data.nvdcve.DatabaseException;
 import org.owasp.dependencycheck.dependency.Confidence;
 import org.owasp.dependencycheck.dependency.Dependency;
 import org.owasp.dependencycheck.dependency.EvidenceType;
 import org.owasp.dependencycheck.dependency.Vulnerability;
+import org.owasp.dependencycheck.dependency.naming.GenericIdentifier;
+import org.owasp.dependencycheck.dependency.naming.Identifier;
+import org.owasp.dependencycheck.dependency.naming.PurlIdentifier;
 import org.owasp.dependencycheck.exception.DependencyNotFoundException;
 import org.owasp.dependencycheck.exception.ExceptionCollection;
 import org.owasp.dependencycheck.exception.InitializationException;
 import org.owasp.dependencycheck.exception.ReportException;
+import org.owasp.dependencycheck.reporting.ReportGenerator;
 import org.owasp.dependencycheck.utils.Checksum;
-import org.owasp.dependencycheck.utils.Filter;
 import org.owasp.dependencycheck.utils.Downloader;
+import org.owasp.dependencycheck.utils.Filter;
 import org.owasp.dependencycheck.utils.InvalidSettingException;
 import org.owasp.dependencycheck.utils.Settings;
+import org.owasp.dependencycheck.utils.SeverityUtil;
+import org.owasp.dependencycheck.xml.pom.Model;
+import org.owasp.dependencycheck.xml.pom.PomUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -93,28 +109,11 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
-import org.apache.maven.artifact.repository.ArtifactRepository;
-
-import org.apache.maven.artifact.resolver.filter.ExcludesArtifactFilter;
-import org.apache.maven.artifact.versioning.InvalidVersionSpecificationException;
-import org.apache.maven.artifact.versioning.Restriction;
-import org.apache.maven.artifact.versioning.VersionRange;
-
-import org.owasp.dependencycheck.agent.DependencyCheckScanAgent;
-import org.owasp.dependencycheck.dependency.naming.GenericIdentifier;
-import org.owasp.dependencycheck.dependency.naming.Identifier;
-import org.owasp.dependencycheck.dependency.naming.PurlIdentifier;
-import org.apache.maven.shared.dependency.graph.traversal.DependencyNodeVisitor;
-import org.apache.maven.shared.dependency.graph.traversal.FilteringDependencyNodeVisitor;
-import org.apache.maven.shared.transfer.dependencies.DefaultDependableCoordinate;
-import org.apache.maven.shared.transfer.dependencies.DependableCoordinate;
-import org.owasp.dependencycheck.analyzer.exception.AnalysisException;
-import org.owasp.dependencycheck.reporting.ReportGenerator;
-import org.owasp.dependencycheck.utils.SeverityUtil;
-import org.owasp.dependencycheck.xml.pom.Model;
-import org.owasp.dependencycheck.xml.pom.PomUtils;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 //CSOFF: FileLength
+
 /**
  * @author Jeremy Long
  */
@@ -168,6 +167,11 @@ public abstract class BaseDependencyCheckMojo extends AbstractMojo implements Ma
     @SuppressWarnings("CanBeFinal")
     @Parameter(property = "project", required = true, readonly = true)
     private MavenProject project;
+    /**
+     * The Maven Mojo Execution Object.
+     */
+    @Parameter(defaultValue = "${mojoExecution}", readonly = true)
+    private MojoExecution mojoExecution;
     /**
      * List of Maven project of the current build
      */
@@ -381,12 +385,14 @@ public abstract class BaseDependencyCheckMojo extends AbstractMojo implements Ma
     @Parameter(property = "suppressionFileUser")
     private String suppressionFileUser;
     /**
-     * The password used for Basic auth to the suppressionFiles. The `suppressionFileServerId` with user/password should be used instead otherwise maven debug logging could expose the password.
+     * The password used for Basic auth to the suppressionFiles. The `suppressionFileServerId` with user/password should
+     * be used instead otherwise maven debug logging could expose the password.
      */
     @Parameter(property = "suppressionFilePassword")
     private String suppressionFilePassword;
     /**
-     * The token used for Bearer auth to the suppressionFiles. The `suppressionFileServerId` with only password should be used instead otherwise maven debug logging could expose the token.
+     * The token used for Bearer auth to the suppressionFiles. The `suppressionFileServerId` with only password should
+     * be used instead otherwise maven debug logging could expose the token.
      */
     @Parameter(property = "suppressionFileBearerToken")
     private String suppressionFileBearerToken;
@@ -452,19 +458,22 @@ public abstract class BaseDependencyCheckMojo extends AbstractMojo implements Ma
     @Parameter(property = "knownExploitedServerId")
     private String knownExploitedServerId;
     /**
-     * The username for basic auth mirror of CISA Known Exploited Vulnerabilities JSON datafeed. A `knownExploitedServerId` with user/password set should be used instead otherwise maven debug logging could expose the password.
+     * The username for basic auth mirror of CISA Known Exploited Vulnerabilities JSON datafeed. A `knownExploitedServerId`
+     * with user/password set should be used instead otherwise maven debug logging could expose the password.
      */
     @SuppressWarnings("CanBeFinal")
     @Parameter(property = "knownExploitedUser")
     private String knownExploitedUser;
     /**
-     * The password for basic auth mirror of CISA Known Exploited Vulnerabilities JSON datafeed. A `knownExploitedServerId` with user/password set should be used instead otherwise maven debug logging could expose the password.
+     * The password for basic auth mirror of CISA Known Exploited Vulnerabilities JSON datafeed. A `knownExploitedServerId`
+     * with user/password set should be used instead otherwise maven debug logging could expose the password.
      */
     @SuppressWarnings("CanBeFinal")
     @Parameter(property = "knownExploitedPassword")
     private String knownExploitedPassword;
     /**
-     * The token for bearer auth mirror of CISA Known Exploited Vulnerabilities JSON datafeed. A `knownExploitedServerId` with only password set should be used instead otherwise maven debug logging could expose the token.
+     * The token for bearer auth mirror of CISA Known Exploited Vulnerabilities JSON datafeed. A `knownExploitedServerId`
+     * with only password set should be used instead otherwise maven debug logging could expose the token.
      */
     @SuppressWarnings("CanBeFinal")
     @Parameter(property = "knownExploitedBearerToken")
@@ -618,7 +627,8 @@ public abstract class BaseDependencyCheckMojo extends AbstractMojo implements Ma
     @Parameter(property = "retireJsPassword")
     private String retireJsPassword;
     /**
-     * The token for Bearer auth to the retireJsUrl. The `retireJsUrlServerId` with only password set should be used instead otherwise maven debug logging could expose the token.
+     * The token for Bearer auth to the retireJsUrl. The `retireJsUrlServerId` with only password set should be used instead
+     * otherwise maven debug logging could expose the token.
      */
     @Parameter(property = "retireJsBearerToken")
     private String retireJsBearerToken;
@@ -1059,19 +1069,22 @@ public abstract class BaseDependencyCheckMojo extends AbstractMojo implements Ma
     @Parameter(property = "nvdDatafeedServerId")
     private String nvdDatafeedServerId;
     /**
-     * The username for basic auth to the NVD Data Feed. A `nvdDatafeedServerId` with user/password set should be used instead otherwise maven debug logging could expose the password.
+     * The username for basic auth to the NVD Data Feed. A `nvdDatafeedServerId` with user/password set should be used
+     * instead otherwise maven debug logging could expose the password.
      */
     @SuppressWarnings("CanBeFinal")
     @Parameter(property = "nvdUser")
     private String nvdUser;
     /**
-     * The password for basic auth to the NVD Data Feed. A `nvdDatafeedServerId` with user/password set should be used instead otherwise maven debug logging could expose the password.
+     * The password for basic auth to the NVD Data Feed. A `nvdDatafeedServerId` with user/password set should be used
+     * instead otherwise maven debug logging could expose the password.
      */
     @SuppressWarnings("CanBeFinal")
     @Parameter(property = "nvdPassword")
     private String nvdPassword;
     /**
-     * The token for bearer auth to the NVD Data Feed. A `nvdDatafeedServerId` with only password set should be used instead otherwise maven debug logging could expose the token.
+     * The token for bearer auth to the NVD Data Feed. A `nvdDatafeedServerId` with only password set should be used
+     * instead otherwise maven debug logging could expose the token.
      */
     @SuppressWarnings("CanBeFinal")
     @Parameter(property = "nvdBearerToken")
@@ -1115,7 +1128,8 @@ public abstract class BaseDependencyCheckMojo extends AbstractMojo implements Ma
     @Parameter(property = "hostedSuppressionsPassword")
     private String hostedSuppressionsPassword;
     /**
-     * The token used for Bearer auth to the suppressionFiles. The `hostedSuppressionsServerId` with only password should be used instead otherwise maven debug logging could expose the token.
+     * The token used for Bearer auth to the suppressionFiles. The `hostedSuppressionsServerId` with only password should
+     * be used instead otherwise maven debug logging could expose the token.
      */
     @SuppressWarnings("CanBeFinal")
     @Parameter(property = "hostedSuppressionsBearerToken")
@@ -1222,6 +1236,7 @@ public abstract class BaseDependencyCheckMojo extends AbstractMojo implements Ma
 
     // </editor-fold>
     //<editor-fold defaultstate="collapsed" desc="Base Maven implementation">
+
     /**
      * Determines if the groupId, artifactId, and version of the Maven
      * dependency and artifact match.
@@ -1556,7 +1571,7 @@ public abstract class BaseDependencyCheckMojo extends AbstractMojo implements Ma
      * retrieved
      */
     private DependencyNode toDependencyNode(List<DependencyNode> nodes, ProjectBuildingRequest buildingRequest,
-            DependencyNode parent, org.apache.maven.model.Dependency dependency) throws ArtifactResolverException {
+                                            DependencyNode parent, org.apache.maven.model.Dependency dependency) throws ArtifactResolverException {
 
         final DefaultArtifactCoordinate coordinate = new DefaultArtifactCoordinate();
 
@@ -1639,7 +1654,7 @@ public abstract class BaseDependencyCheckMojo extends AbstractMojo implements Ma
      * <code>null</code>
      */
     private ExceptionCollection collectDependencyManagementDependencies(Engine engine, ProjectBuildingRequest buildingRequest,
-            MavenProject project, List<DependencyNode> nodes, boolean aggregate) {
+                                                                        MavenProject project, List<DependencyNode> nodes, boolean aggregate) {
         if (skipDependencyManagement || project.getDependencyManagement() == null) {
             return null;
         }
@@ -1687,7 +1702,7 @@ public abstract class BaseDependencyCheckMojo extends AbstractMojo implements Ma
      */
     //CSOFF: OperatorWrap
     private ExceptionCollection collectMavenDependencies(Engine engine, MavenProject project,
-            Map<DependencyNode, List<DependencyNode>> nodeMap, ProjectBuildingRequest buildingRequest, boolean aggregate) {
+                                                         Map<DependencyNode, List<DependencyNode>> nodeMap, ProjectBuildingRequest buildingRequest, boolean aggregate) {
 
         final List<ArtifactResult> allResolvedDeps = new ArrayList<>();
 
@@ -1721,7 +1736,7 @@ public abstract class BaseDependencyCheckMojo extends AbstractMojo implements Ma
      * not be found within {@code allDeps}
      */
     private Artifact findInAllDeps(final List<ArtifactResult> allDeps, final Artifact unresolvedArtifact,
-            final MavenProject project)
+                                   final MavenProject project)
             throws DependencyNotFoundException {
         Artifact result = null;
         for (final ArtifactResult res : allDeps) {
@@ -1790,7 +1805,7 @@ public abstract class BaseDependencyCheckMojo extends AbstractMojo implements Ma
      * and scanning the dependencies
      */
     private ExceptionCollection collectDependencies(Engine engine, MavenProject project,
-            Map<DependencyNode, List<DependencyNode>> nodes, ProjectBuildingRequest buildingRequest, boolean aggregate) {
+                                                    Map<DependencyNode, List<DependencyNode>> nodes, ProjectBuildingRequest buildingRequest, boolean aggregate) {
 
         ExceptionCollection exCol;
         exCol = collectMavenDependencies(engine, project, nodes, buildingRequest, aggregate);
@@ -1924,7 +1939,7 @@ public abstract class BaseDependencyCheckMojo extends AbstractMojo implements Ma
      * <code>false</code>
      */
     private boolean addVirtualDependencyFromReactor(Engine engine, Artifact artifact,
-            final MavenProject depender, String infoLogTemplate) {
+                                                    final MavenProject depender, String infoLogTemplate) {
 
         getLog().debug(String.format("Checking the reactor projects (%d) for %s:%s:%s",
                 reactorProjects.size(),
@@ -2277,6 +2292,7 @@ public abstract class BaseDependencyCheckMojo extends AbstractMojo implements Ma
     }
 
     //CSOFF: MethodLength
+
     /**
      * Takes the properties supplied and updates the dependency-check settings.
      * Additionally, this sets the system properties required to change the
@@ -2304,6 +2320,8 @@ public abstract class BaseDependencyCheckMojo extends AbstractMojo implements Ma
                 }
             }
         }
+        checkForDeprecatedParameters();
+
         settings.setStringIfNotEmpty(Settings.KEYS.MAVEN_LOCAL_REPO, mavenSettings.getLocalRepository());
         settings.setBooleanIfNotNull(Settings.KEYS.AUTO_UPDATE, autoUpdate);
         settings.setBooleanIfNotNull(Settings.KEYS.ANALYZER_EXPERIMENTAL_ENABLED, enableExperimental);
@@ -2429,7 +2447,8 @@ public abstract class BaseDependencyCheckMojo extends AbstractMojo implements Ma
 
         try {
             configureCredentials(retireJsUrlServerId, retireJsUser, retireJsPassword, retireJsBearerToken,
-                    Settings.KEYS.ANALYZER_RETIREJS_REPO_JS_USER, Settings.KEYS.ANALYZER_RETIREJS_REPO_JS_PASSWORD, Settings.KEYS.ANALYZER_RETIREJS_REPO_JS_BEARER_TOKEN);
+                    Settings.KEYS.ANALYZER_RETIREJS_REPO_JS_USER, Settings.KEYS.ANALYZER_RETIREJS_REPO_JS_PASSWORD,
+                    Settings.KEYS.ANALYZER_RETIREJS_REPO_JS_BEARER_TOKEN);
         } catch (InitializationException ex) {
             if (this.failOnError) {
                 throw new MojoFailureException("Invalid plugin configuration specified for retireJsUrl authentication", ex);
@@ -2546,13 +2565,13 @@ public abstract class BaseDependencyCheckMojo extends AbstractMojo implements Ma
      * filled will fill the `tokenKey` from Bearer Auth.<br/>
      * In absence of the serverId, any non-null value will be transferred to the settings.
      *
-     * @param serverId      The serverId specified for the connection or {@code null}
+     * @param serverId The serverId specified for the connection or {@code null}
      * @param usernameValue The username specified for the connection or {@code null}
      * @param passwordValue The password specified for the connection or {@code null}
-     * @param tokenValue    The token specified for the connection or {@code null}
-     * @param userKey       The settings key that configures the user or {@code null} when Basic auth is not configurable for the connection
-     * @param passwordKey   The settings key that configures the password or {@code null} when Basic auth is not configurable for the connection
-     * @param tokenKey      The settings key that configures the token or {@code null} when Bearer auth is not configurable for the connection
+     * @param tokenValue The token specified for the connection or {@code null}
+     * @param userKey The settings key that configures the user or {@code null} when Basic auth is not configurable for the connection
+     * @param passwordKey The settings key that configures the password or {@code null} when Basic auth is not configurable for the connection
+     * @param tokenKey The settings key that configures the token or {@code null} when Bearer auth is not configurable for the connection
      * @throws InitializationException When both serverId and at least one other property value are filled.
      */
     private void configureCredentials(String serverId, String usernameValue, String passwordValue, String tokenValue,
@@ -2581,11 +2600,11 @@ public abstract class BaseDependencyCheckMojo extends AbstractMojo implements Ma
      * A serverId with username/password will fill the `userKey` and `passwordKey` settings for Basic Auth.<br/>
      * A serverId with only password filled will fill the `tokenKey` fro Bearer Auth.<br/>
      *
-     * @param server        The server entry from the settings to configure authentication
-     * @param userKey       The settings key that configures the user or {@code null} when Basic auth is not configurable for the connection
-     * @param passwordKey   The settings key that configures the password or {@code null} when Basic auth is not configurable for the connection
-     * @param tokenKey      The settings key that configures the token or {@code null} when Bearer auth is not configurable for the connection
-     * @param serverId      The serverId specified for the connection or {@code null}
+     * @param server The server entry from the settings to configure authentication
+     * @param userKey The settings key that configures the user or {@code null} when Basic auth is not configurable for the connection
+     * @param passwordKey The settings key that configures the password or {@code null} when Basic auth is not configurable for the connection
+     * @param tokenKey The settings key that configures the token or {@code null} when Bearer auth is not configurable for the connection
+     * @param serverId The serverId specified for the connection or {@code null}
      * @throws InitializationException When both serverId and at least one other property value are filled.
      */
     private void configureFromServer(Server server, String userKey, String passwordKey, String tokenKey, String serverId) throws InitializationException {
@@ -2732,9 +2751,9 @@ public abstract class BaseDependencyCheckMojo extends AbstractMojo implements Ma
     void muteNoisyLoggers() {
         // Mirrors the configuration within cli/src/main/resources/logback.xml
         final List<String> noisyLoggers = List.of(
-            "org.apache.lucene",
-            "org.apache.commons.jcs3",
-            "org.apache.hc"
+                "org.apache.lucene",
+                "org.apache.commons.jcs3",
+                "org.apache.hc"
         );
         for (String loggerName : noisyLoggers) {
             System.setProperty("org.slf4j.simpleLogger.log." + loggerName, "error");
@@ -2849,6 +2868,7 @@ public abstract class BaseDependencyCheckMojo extends AbstractMojo implements Ma
     }
 
     //<editor-fold defaultstate="collapsed" desc="Methods to fail build or show summary">
+
     /**
      * Checks to see if a vulnerability has been identified with a CVSS score
      * that is above the threshold set in the configuration.
@@ -2889,11 +2909,11 @@ public abstract class BaseDependencyCheckMojo extends AbstractMojo implements Ma
                     if (addName) {
                         addName = false;
                         ids.append(NEW_LINE).append(d.getFileName()).append(" (")
-                           .append(Stream.concat(d.getSoftwareIdentifiers().stream(), d.getVulnerableSoftwareIdentifiers().stream())
-                                         .map(Identifier::getValue)
-                                         .collect(Collectors.joining(", ")))
-                           .append("): ")
-                           .append(name);
+                                .append(Stream.concat(d.getSoftwareIdentifiers().stream(), d.getVulnerableSoftwareIdentifiers().stream())
+                                        .map(Identifier::getValue)
+                                        .collect(Collectors.joining(", ")))
+                                .append("): ")
+                                .append(name);
                     } else {
                         ids.append(", ").append(name);
                     }
@@ -2934,8 +2954,8 @@ public abstract class BaseDependencyCheckMojo extends AbstractMojo implements Ma
     //</editor-fold>
     //CSOFF: ParameterNumber
     private ExceptionCollection scanDependencyNode(DependencyNode dependencyNode, DependencyNode root,
-            Engine engine, MavenProject project, List<ArtifactResult> allResolvedDeps,
-            ProjectBuildingRequest buildingRequest, boolean aggregate, ExceptionCollection exceptionCollection) {
+                                                   Engine engine, MavenProject project, List<ArtifactResult> allResolvedDeps,
+                                                   ProjectBuildingRequest buildingRequest, boolean aggregate, ExceptionCollection exceptionCollection) {
         ExceptionCollection exCol = exceptionCollection;
         if (artifactScopeExcluded.passes(dependencyNode.getArtifact().getScope())
                 || artifactTypeExcluded.passes(dependencyNode.getArtifact().getType())) {
@@ -3121,9 +3141,9 @@ public abstract class BaseDependencyCheckMojo extends AbstractMojo implements Ma
 
     //CSOFF: ParameterNumber
     private void processResolvedArtifact(File artifactFile, final List<Dependency> deps,
-            String groupId, String artifactId, String version, DependencyNode root,
-            MavenProject project1, List<ArtifactVersion> availableVersions,
-            DependencyNode dependencyNode) {
+                                         String groupId, String artifactId, String version, DependencyNode root,
+                                         MavenProject project1, List<ArtifactVersion> availableVersions,
+                                         DependencyNode dependencyNode) {
         scannedFiles.add(artifactFile);
         Dependency d = null;
         if (deps.size() == 1) {
@@ -3170,7 +3190,7 @@ public abstract class BaseDependencyCheckMojo extends AbstractMojo implements Ma
     //CSON: ParameterNumber
 
     private ExceptionCollection processPomArtifact(File artifactFile, DependencyNode root,
-            MavenProject project1, Engine engine, ExceptionCollection exCollection) {
+                                                   MavenProject project1, Engine engine, ExceptionCollection exCollection) {
         ExceptionCollection exCol = exCollection;
         try {
             final Dependency d = new Dependency(artifactFile.getAbsoluteFile());
@@ -3197,5 +3217,34 @@ public abstract class BaseDependencyCheckMojo extends AbstractMojo implements Ma
         return exCol;
     }
 
+
+    private void checkForDeprecatedParameters() {
+        warnIfDeprecatedParamUsed("ossIndexAnalyzerEnabled", "ossindexAnalyzerEnabled");
+        warnIfDeprecatedParamUsed("ossIndexAnalyzerUseCache", "ossindexAnalyzerUseCache");
+        warnIfDeprecatedParamUsed("ossIndexAnalyzerUrl", "ossindexAnalyzerUrl");
+    }
+
+    /**
+     * Checks if the deprecated (aka aliased) parameter is used in the plugin configuration and logs a warning if so.
+     *
+     * @param currentName the name of the current parameter (the one that should be used)
+     * @param deprecatedName the name of the deprecated parameter (the one that should not be used anymore)
+     */
+    private void warnIfDeprecatedParamUsed(String currentName, String deprecatedName) {
+        final org.apache.maven.model.Plugin plugin = project.getBuild().getPluginsAsMap()
+                .get(mojoExecution.getGroupId() + ":" + mojoExecution.getArtifactId());
+        if (plugin == null) {
+            return;
+        }
+        final Object cfg = plugin.getConfiguration();
+        if (cfg instanceof org.codehaus.plexus.util.xml.Xpp3Dom) {
+            final org.codehaus.plexus.util.xml.Xpp3Dom dom = (org.codehaus.plexus.util.xml.Xpp3Dom) cfg;
+            if (dom.getChild(deprecatedName) != null) {
+                getLog().warn(String.format(
+                        "The parameter '%s' is deprecated and should not be used anymore. Please use '%s' instead.",
+                        deprecatedName, currentName));
+            }
+        }
+    }
 }
 //CSON: FileLength

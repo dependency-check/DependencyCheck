@@ -1002,6 +1002,8 @@ public class Check extends Update {
      */
     @Deprecated
     public void setRetirejsFilterNonVulnerable(Boolean retireJsFilterNonVulnerable) {
+        log("'retirejsFilterNonVulnerable' is deprecated and may be removed in the next major release, please migrate to 'retireJsFilterNonVulnerable'",
+                Project.MSG_WARN);
         this.retireJsFilterNonVulnerable = retireJsFilterNonVulnerable;
     }
 
@@ -1026,6 +1028,8 @@ public class Check extends Update {
      */
     @Deprecated
     public void addConfiguredRetirejsFilter(final RetirejsFilter retireJsFilter) {
+        log("'retirejsFilter' is deprecated and may be removed in the next major release, please migrate to 'retireJsFilter'",
+                Project.MSG_WARN);
         retireJsFilters.add(retireJsFilter.getRegex());
     }
 
@@ -1229,6 +1233,8 @@ public class Check extends Update {
      */
     @Deprecated
     public void setOssindexAnalyzerEnabled(Boolean ossindexAnalyzerEnabled) {
+        log("'ossindexAnalyzerEnabled' is deprecated and may be removed in the next major release, please migrate to 'ossIndexAnalyzerEnabled'",
+                Project.MSG_WARN);
         this.ossindexAnalyzerEnabled = ossindexAnalyzerEnabled;
     }
 
@@ -1249,6 +1255,8 @@ public class Check extends Update {
      */
     @Deprecated
     public void setOssindexAnalyzerUseCache(Boolean ossindexAnalyzerUseCache) {
+        log("'ossindexAnalyzerUseCache' is deprecated and may be removed in the next major release, please migrate to 'ossIndexAnalyzerUseCache'",
+                Project.MSG_WARN);
         this.ossindexAnalyzerUseCache = ossindexAnalyzerUseCache;
     }
 
@@ -1269,6 +1277,8 @@ public class Check extends Update {
      */
     @Deprecated
     public void setOssindexAnalyzerUrl(String ossindexAnalyzerUrl) {
+        log("'ossindexAnalyzerUrl' is deprecated and may be removed in the next major release, please migrate to 'ossIndexAnalyzerUrl'",
+                Project.MSG_WARN);
         this.ossindexAnalyzerUrl = ossindexAnalyzerUrl;
     }
 
@@ -1289,6 +1299,8 @@ public class Check extends Update {
      */
     @Deprecated
     public void setOssindexAnalyzerUsername(String ossindexAnalyzerUsername) {
+        log("'ossindexAnalyzerUsername' is deprecated and may be removed in the next major release, please migrate to 'ossIndexAnalyzerUsername'",
+                Project.MSG_WARN);
         this.ossindexAnalyzerUsername = ossindexAnalyzerUsername;
     }
 
@@ -1309,6 +1321,8 @@ public class Check extends Update {
      */
     @Deprecated
     public void setOssindexAnalyzerPassword(String ossindexAnalyzerPassword) {
+        log("'ossindexAnalyzerPassword' is deprecated and may be removed in the next major release, please migrate to 'ossIndexAnalyzerPassword'",
+                Project.MSG_WARN);
         this.ossindexAnalyzerPassword = ossindexAnalyzerPassword;
     }
 

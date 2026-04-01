@@ -121,22 +121,7 @@ Copyright (c) 2012 Jeremy Long. All Rights Reserved.
             <plugin>
                 <groupId>org.jsonschema2pojo</groupId>
                 <artifactId>jsonschema2pojo-maven-plugin</artifactId>
-
                 <executions>
-                    <!--                    <execution>
-                        <id>generate-nvd</id>
-                        <phase>generate-sources</phase>
-                        <goals>
-                            <goal>generate</goal>
-                        </goals>
-                        <configuration>
-                            <sourceDirectory>${basedir}/src/main/resources/schema/external/nvd</sourceDirectory>
-                            <outputDirectory>${project.build.directory}/generated-sources/java</outputDirectory>
-                            <includeGetters>true</includeGetters>
-                            <annotationStyle>jackson</annotationStyle>
-                            <targetPackage>org.owasp.dependencycheck.data.nvd.json</targetPackage>
-                        </configuration>
-                    </execution>-->
                     <execution>
                         <id>generate-knownexploited</id>
                         <phase>generate-sources</phase>

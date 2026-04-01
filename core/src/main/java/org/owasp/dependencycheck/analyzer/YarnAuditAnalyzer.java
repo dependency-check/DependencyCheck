@@ -114,42 +114,31 @@ public class YarnAuditAnalyzer extends AbstractNpmAnalyzer {
     }
 
     /**
-     * Extracts the major version from a version string.
+     * Determines the Yarn major version implied by the metadata in the passed directory.
      *
-     * @param dependency the dependency to extract the yarn version from
-     * @return the major version (e.g., `4` from "4.2.1")
+     * @param dependencyDirectory The directory containing the lockfile and/or package.json
+     * @return the yarn version detected
      */
-    private int getYarnMajorVersion(Dependency dependency) {
-        final var yarnVersion = getYarnVersion(dependency);
-        try {
-            final var semver = Semver.coerce(yarnVersion);
-            return semver.getMajor();
-        } catch (SemverException e) {
-            throw new IllegalStateException("Invalid version string format", e);
-        }
-    }
-
-    private String getYarnVersion(Dependency dependency) {
-        final List<String> args = new ArrayList<>();
-        args.add(getYarn());
-        args.add("--version");
+    private Semver getYarnVersion(File dependencyDirectory) {
+        List<String> args = List.of(yarnPath, "--version");
         final ProcessBuilder builder = new ProcessBuilder(args);
-        builder.directory(getDependencyDirectory(dependency));
-        LOGGER.debug("Launching: {}", args);
+        builder.directory(dependencyDirectory);
         try {
             final Process process = builder.start();
             try (ProcessReader processReader = new ProcessReader(process)) {
                 processReader.readAll();
                 final int exitValue = process.waitFor();
+                final var yarnVersion = StringUtils.trimToEmpty(processReader.getOutput());
                 if (exitValue != 0) {
-                    throw new IllegalStateException("Unable to determine yarn version, unexpected response.");
+                    throw new IllegalStateException(String.format("Unable to determine yarn version, unexpected response (exit value %s, output: %s, error: %s)", exitValue, yarnVersion, processReader.getError()));
                 }
-                final var yarnVersion = processReader.getOutput();
                 if (StringUtils.isBlank(yarnVersion)) {
                     throw new IllegalStateException("Unable to determine yarn version, blank output.");
                 }
-                return yarnVersion;
+                return Semver.coerce(yarnVersion);
             }
+        }  catch (SemverException e) {
+            throw new IllegalStateException("Invalid version string format", e);
         } catch (Exception ex) {
             throw new IllegalStateException("Unable to determine yarn version.", ex);
         }
@@ -169,62 +158,35 @@ public class YarnAuditAnalyzer extends AbstractNpmAnalyzer {
             LOGGER.debug("{} Analyzer is disabled skipping yarn executable check", getName());
             return;
         }
-        final List<String> args = new ArrayList<>();
-        args.add(getYarn());
-        args.add("--help");
-        final ProcessBuilder builder = new ProcessBuilder(args);
-        LOGGER.debug("Launching: {}", args);
         try {
-            final Process process = builder.start();
-            try (ProcessReader processReader = new ProcessReader(process)) {
-                processReader.readAll();
-                final int exitValue = process.waitFor();
-                final int expectedExitValue = 0;
-                final int yarnExecutableNotFoundExitValue = 127;
-                switch (exitValue) {
-                    case expectedExitValue:
-                        LOGGER.debug("{} is enabled.", getName());
-                        break;
-                    case yarnExecutableNotFoundExitValue:
-                    default:
-                        this.setEnabled(false);
-                        LOGGER.warn("The {} has been disabled after receiving exit value {}. Yarn executable was not " +
-                                        "found or received a non-zero exit value.", getName(), exitValue);
-                }
-            }
-        } catch (Exception ex) {
+            cacheYarnCommandPath();
+            getYarnVersion(new File("."));
+        } catch (Exception ex){
             this.setEnabled(false);
-            LOGGER.warn("The {} has been disabled after receiving an exception. This can occur when Yarn executable " +
-                    "is not found.", getName());
-            throw new InitializationException("Unable to read yarn audit output.", ex);
+            LOGGER.warn("The {} has been disabled after failing to find yarn. Yarn executable was not " +
+                    "found or received a non-zero exit value: {}", getName(), ex.getMessage());
+            throw new InitializationException("Unable to determine yarn executable to use.", ex);
         }
     }
 
     /**
-     * Attempts to determine the path to `yarn`.
-     *
-     * @return the path to `yarn`
+     * Attempts to determine and cache the path to `yarn`.
      */
-    private String getYarn() {
-        final String value;
-        synchronized (this) {
-            if (yarnPath == null) {
-                final String path = getSettings().getString(Settings.KEYS.ANALYZER_YARN_PATH);
-                if (path == null) {
-                    yarnPath = "yarn";
-                } else {
-                    final File yarnFile = new File(path);
-                    if (yarnFile.isFile()) {
-                        yarnPath = yarnFile.getAbsolutePath();
-                    } else {
-                        LOGGER.warn("Provided path to `yarn` executable is invalid.");
-                        yarnPath = "yarn";
-                    }
-                }
+    private void cacheYarnCommandPath() {
+        String value = getSettings().getString(Settings.KEYS.ANALYZER_YARN_PATH);
+        if (value == null || value.isBlank()) {
+            value = "yarn";
+        } else {
+            File fileValue = new File(value);
+            if (fileValue.isFile()) {
+                value = fileValue.getAbsolutePath();
+            } else {
+                LOGGER.warn("Provided path to `yarn` executable is invalid; defaulting to `yarn`.");
+                value = "yarn";
             }
-            value = yarnPath;
         }
-        return value;
+
+        yarnPath = value;
     }
 
     /**
@@ -247,7 +209,7 @@ public class YarnAuditAnalyzer extends AbstractNpmAnalyzer {
                     LOGGER.debug("Process Error Out: {}", errOutput);
                     LOGGER.debug("Process Out: {}", processReader.getOutput());
                 }
-                return new String(Files.readAllBytes(tmpFile.toPath()), StandardCharsets.UTF_8);
+                return Files.readString(tmpFile.toPath());
             } catch (InterruptedException ex) {
                 Thread.currentThread().interrupt();
                 throw new AnalysisException("Yarn audit process was interrupted.", ex);
@@ -274,16 +236,16 @@ public class YarnAuditAnalyzer extends AbstractNpmAnalyzer {
         if (!packageLock.isFile() || packageLock.length() == 0 || !shouldProcess(packageLock)) {
             return;
         }
-        final File packageJson = new File(packageLock.getParentFile(), "package.json");
+        File dependencyDirectory = getDependencyDirectory(packageLock);
+        final var yarnVersion = getYarnVersion(dependencyDirectory);
         final List<Advisory> advisories;
         final MultiValuedMap<String, String> dependencyMap = new HashSetValuedHashMap<>();
-        final var yarnMajorVersion = getYarnMajorVersion(dependency);
-        if (YARN_CLASSIC_MAJOR_VERSION < yarnMajorVersion) {
-            LOGGER.info("Analyzing using Yarn Berry audit");
+        if (YARN_CLASSIC_MAJOR_VERSION < yarnVersion.getMajor()) {
+            LOGGER.info("Analyzing using Yarn Berry ({}) audit for {}", yarnVersion, dependency.getActualFilePath());
             advisories = analyzePackageWithYarnBerry(dependency);
         } else {
-            LOGGER.info("Analyzing using Yarn Classic audit");
-            advisories = analyzePackageWithYarnClassic(packageLock, packageJson, dependency, dependencyMap);
+            LOGGER.info("Analyzing using Yarn Classic ({}) audit for {}", yarnVersion, dependency.getActualFilePath());
+            advisories = analyzePackageWithYarnClassic(packageLock, dependency, dependencyMap);
         }
         try {
             processResults(advisories, engine, dependency, dependencyMap);
@@ -292,9 +254,9 @@ public class YarnAuditAnalyzer extends AbstractNpmAnalyzer {
         }
     }
 
-    private JsonObject fetchYarnAuditJson(Dependency dependency, boolean skipDevDependencies) throws AnalysisException {
+    private JsonObject fetchYarnAuditJson(File dependencyDirectory, boolean skipDevDependencies) throws AnalysisException {
         final List<String> args = new ArrayList<>();
-        args.add(getYarn());
+        args.add(yarnPath);
         args.add("audit");
         //offline audit is not supported - but the audit request is generated in the verbose output
         args.add("--offline");
@@ -305,13 +267,14 @@ public class YarnAuditAnalyzer extends AbstractNpmAnalyzer {
         args.add("--json");
         args.add("--verbose");
         final ProcessBuilder builder = new ProcessBuilder(args);
-        builder.directory(getDependencyDirectory(dependency));
+        builder.directory(dependencyDirectory);
         LOGGER.debug("Launching: {}", args);
 
         final String verboseJson = startAndReadStdoutToString(builder);
         final String auditRequestJson = Arrays.stream(verboseJson.split("\n"))
                 .filter(line -> line.contains("Audit Request"))
-                .findFirst().get();
+                .findFirst()
+                .orElseThrow(() -> new AnalysisException("No results from Yarn Classic (offline step) - possibly trying to use classic analyzer on Yarn Berry lockfile"));
         String auditRequest;
         try (JsonReader reader = Json.createReader(IOUtils.toInputStream(auditRequestJson, StandardCharsets.UTF_8))) {
             final JsonObject jsonObject = reader.readObject();
@@ -323,8 +286,8 @@ public class YarnAuditAnalyzer extends AbstractNpmAnalyzer {
         return Json.createReader(IOUtils.toInputStream(auditRequest, StandardCharsets.UTF_8)).readObject();
     }
 
-    private static File getDependencyDirectory(Dependency dependency) {
-        final File folder = dependency.getActualFile().getParentFile();
+    private static File getDependencyDirectory(File lockFile) {
+        final File folder = lockFile.getParentFile();
         if (!folder.isDirectory()) {
             throw new IllegalArgumentException(String.format("%s should have been a directory.", folder.getAbsolutePath()));
         }
@@ -337,7 +300,6 @@ public class YarnAuditAnalyzer extends AbstractNpmAnalyzer {
      * submitting the payload, and returning the identified advisories.
      *
      * @param lockFile a reference to the package-lock.json
-     * @param packageFile a reference to the package.json
      * @param dependency a reference to the dependency-object for the yarn.lock
      * @param dependencyMap a collection of module/version pairs; during
      * creation of the payload the dependency map is populated with the
@@ -346,16 +308,16 @@ public class YarnAuditAnalyzer extends AbstractNpmAnalyzer {
      * @throws AnalysisException thrown when there is an error creating or
      * submitting the npm audit API payload
      */
-    private List<Advisory> analyzePackageWithYarnClassic(final File lockFile, final File packageFile,
-                                                         Dependency dependency, MultiValuedMap<String, String> dependencyMap)
+    private List<Advisory> analyzePackageWithYarnClassic(final File lockFile, Dependency dependency,
+                                                         MultiValuedMap<String, String> dependencyMap)
             throws AnalysisException {
         try {
             final boolean skipDevDependencies = getSettings().getBoolean(Settings.KEYS.ANALYZER_NODE_AUDIT_SKIPDEV, false);
             // Retrieves the contents of package-lock.json from the Dependency
-            final JsonObject lockJson = fetchYarnAuditJson(dependency, skipDevDependencies);
+            final JsonObject lockJson = fetchYarnAuditJson(getDependencyDirectory(lockFile), skipDevDependencies);
             // Retrieves the contents of package-lock.json from the Dependency
             final JsonObject packageJson;
-            try (JsonReader packageReader = Json.createReader(Files.newInputStream(packageFile.toPath()))) {
+            try (JsonReader packageReader = Json.createReader(Files.newInputStream(lockFile.getParentFile().toPath().resolve("package.json")))) {
                 packageJson = packageReader.readObject();
             }
             // Modify the payload to meet the NPM Audit API requirements
@@ -385,7 +347,7 @@ public class YarnAuditAnalyzer extends AbstractNpmAnalyzer {
     private List<JSONObject> fetchYarnAdvisories(Dependency dependency, boolean skipDevDependencies) throws AnalysisException {
         final List<String> args = new ArrayList<>();
 
-        args.add(getYarn());
+        args.add(yarnPath);
         args.add("npm");
         args.add("audit");
         if (skipDevDependencies) {
@@ -394,9 +356,10 @@ public class YarnAuditAnalyzer extends AbstractNpmAnalyzer {
         }
         args.add("--all");
         args.add("--recursive");
+        args.add("--no-deprecations");
         args.add("--json");
         final ProcessBuilder builder = new ProcessBuilder(args);
-        builder.directory(getDependencyDirectory(dependency));
+        builder.directory(getDependencyDirectory(dependency.getActualFile()));
 
         final String advisoriesJsons = startAndReadStdoutToString(builder);
 

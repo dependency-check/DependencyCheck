@@ -17,6 +17,10 @@
  */
 package org.owasp.dependencycheck.analyzer;
 
+import org.jspecify.annotations.NonNull;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.owasp.dependencycheck.BaseTest;
 import org.owasp.dependencycheck.Engine;
@@ -25,63 +29,110 @@ import org.owasp.dependencycheck.dependency.Dependency;
 import org.owasp.dependencycheck.dependency.EvidenceType;
 import org.owasp.dependencycheck.exception.InitializationException;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.containsString;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 class YarnAuditAnalyzerIT extends BaseTest {
 
-    @Test
-    void testAnalyzePackageYarnClassic() throws AnalysisException {
-        testAnalyzePackageYarn("yarn/yarn-classic-audit/yarn.lock");
+    private Engine engine;
+    private YarnAuditAnalyzer analyzer;
+
+    @BeforeEach
+    void prepareAnalyzer() {
+        engine = new Engine(getSettings());
+        analyzer = assertDoesNotThrow(() -> prepareAnalyzer(engine),  "Yarn Analyzer could not be initialized - yarn possibly not available on path for tests");
     }
 
-    @Test
-    void testAnalyzePackageYarnBerry() throws AnalysisException {
-        testAnalyzePackageYarn("yarn/yarn-berry-audit/yarn.lock");
+    @AfterEach
+    void cleanup() {
+        if (engine != null) {
+            engine.close();
+        }
     }
 
-    @Test
-    void testAnalyzePackageYarnBerryNoVulnerability() throws AnalysisException {
-        //Assume.assumeThat(getSettings().getBoolean(Settings.KEYS.ANALYZER_YARN_AUDIT_ENABLED), is(true));
-        try (Engine engine = new Engine(getSettings())) {
-            var analyzer = new YarnAuditAnalyzer();
-            analyzer.setFilesMatched(true);
-            analyzer.initialize(getSettings());
-            analyzer.prepare(engine);
-            final Dependency toScan = new Dependency(BaseTest.getResourceAsFile(this, "yarn/yarn-berry-audit-no-vulnerability/yarn.lock"));
+    @Nested
+    class Classic {
+        @Test
+        void testAnalyzePackageYarnClassic() throws Exception {
+            testAnalyzeForUglifyJs("yarn/yarn-classic-audit/yarn.lock");
+        }
+
+        @Test
+        void testAnalyzePackageYarnClassicOnYarnBerryLockfile() {
+            AnalysisException exception = assertThrows(AnalysisException.class, () -> testAnalyzeForUglifyJs("yarn/yarn-classic-audit-bad-berry-lockfile/yarn.lock"));
+            assertThat(exception.getMessage(), containsString("No results from Yarn Classic (offline step) - possibly trying to use classic analyzer on Yarn Berry lockfile"));
+        }
+    }
+
+    @Nested
+    class Berry {
+        @Test
+        void testAnalyzePackage() throws Exception {
+            testAnalyzeForUglifyJs("yarn/yarn-berry-audit/yarn.lock");
+        }
+
+        @Test
+        void testAnalyzeWithBadYarnConfiguration() {
+            IllegalStateException exception = assertThrows(IllegalStateException.class, () -> testAnalyzeForUglifyJs("yarn/yarn-berry-audit-bad-yarnrc/yarn.lock"));
+            assertThat(exception.getMessage(), containsString("Unable to determine yarn version"));
+            assertThat(exception.getCause().getMessage(), allOf(
+                    containsString("exit value 1"),
+                    containsString("bad-path-to-yarn.js")
+            ));
+        }
+
+        @Test
+        void testAnalyzeWithBadPackageManagerConfiguration() {
+            IllegalStateException exception = assertThrows(IllegalStateException.class, () -> testAnalyzeForUglifyJs("yarn/yarn-berry-audit-bad-package-manager/yarn.lock"));
+            assertThat(exception.getMessage(), containsString("Unable to determine yarn version"));
+            assertThat(exception.getCause().getMessage(), allOf(
+                    containsString("exit value 1"),
+                    containsString("4.999.0-bad-version")
+            ));
+        }
+
+        @Test
+        void testAnalyzePackageNoVulnerability() throws Exception {
+            final Dependency toScan = new Dependency(BaseTest.getResourceAsFile(YarnAuditAnalyzerIT.this, "yarn/yarn-berry-audit-no-vulnerability/yarn.lock"));
             analyzer.analyze(toScan, engine);
             assertEquals(0, engine.getDependencies().length, "No dependency should be identified");
-        } catch (InitializationException ex) {
-            //yarn is not installed - skip the test case.
-            assumeTrue(false, ex.toString());
+        }
+
+        @Test
+        void testAnalyzePackageExcludesDeprecations() throws Exception {
+            final Dependency toScan = new Dependency(BaseTest.getResourceAsFile(YarnAuditAnalyzerIT.this, "yarn/yarn-berry-audit-no-deprecations/yarn.lock"));
+            analyzer.analyze(toScan, engine);
+            assertEquals(0, engine.getDependencies().length, "No dependency should be identified");
         }
     }
 
-    private void testAnalyzePackageYarn(String yarnLockFile) throws AnalysisException {
-        //Assume.assumeThat(getSettings().getBoolean(Settings.KEYS.ANALYZER_YARN_AUDIT_ENABLED), is(true));
-        try (Engine engine = new Engine(getSettings())) {
-            var analyzer = new YarnAuditAnalyzer();
-            analyzer.setFilesMatched(true);
-            analyzer.initialize(getSettings());
-            analyzer.prepare(engine);
-            final Dependency toScan = new Dependency(BaseTest.getResourceAsFile(this, yarnLockFile));
-            analyzer.analyze(toScan, engine);
-            boolean found = false;
-            assertTrue(1 < engine.getDependencies().length, "More then 1 dependency should be identified");
-            for (Dependency result : engine.getDependencies()) {
-                if ("yarn.lock?uglify-js".equals(result.getFileName())) {
-                    found = true;
-                    assertTrue(result.getEvidence(EvidenceType.VENDOR).toString().contains("uglify-js"));
-                    assertTrue(result.getEvidence(EvidenceType.PRODUCT).toString().contains("uglify-js"));
-                    assertTrue(result.getEvidence(EvidenceType.VERSION).toString().contains("2.4.24"), "Unable to find version 2.4.24: " + result.getEvidence(EvidenceType.VERSION).toString());
-                    assertTrue(result.isVirtual());
-                }
+    private void testAnalyzeForUglifyJs(String yarnLockFile) throws Exception {
+        final Dependency toScan = new Dependency(BaseTest.getResourceAsFile(this, yarnLockFile));
+        analyzer.analyze(toScan, engine);
+        assertTrue(1 < engine.getDependencies().length, "More than 1 dependency should be identified");
+        boolean found = false;
+        for (Dependency result : engine.getDependencies()) {
+            if ("yarn.lock?uglify-js".equals(result.getFileName())) {
+                found = true;
+                assertTrue(result.getEvidence(EvidenceType.VENDOR).toString().contains("uglify-js"));
+                assertTrue(result.getEvidence(EvidenceType.PRODUCT).toString().contains("uglify-js"));
+                assertTrue(result.getEvidence(EvidenceType.VERSION).toString().contains("2.4.24"), "Unable to find version 2.4.24: " + result.getEvidence(EvidenceType.VERSION).toString());
+                assertTrue(result.isVirtual());
             }
-            assertTrue(found, "Uglify was not found");
-        } catch (InitializationException ex) {
-            //yarn is not installed - skip the test case.
-            assumeTrue(false, ex.toString());
         }
+        assertTrue(found, "Uglify was not found");
+    }
+
+    private @NonNull YarnAuditAnalyzer prepareAnalyzer(Engine engine) throws InitializationException {
+        var analyzer = new YarnAuditAnalyzer();
+        analyzer.setFilesMatched(true);
+        analyzer.initialize(getSettings());
+        analyzer.prepare(engine);
+        return analyzer;
     }
 }
