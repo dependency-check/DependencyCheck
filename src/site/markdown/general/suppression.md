@@ -23,19 +23,20 @@ The above XML file will suppress the cpe:/a:apache:struts:2.0.0 from any file wi
 
 The following shows some other ways to suppress individual findings. Note the ways to select files using either
 
-- their sha1 hash (via element `<sha1>),
-- their package URL (via element `<packageUrl>`),
+- their sha1 hash (via element `<sha1>`),
+- their [package URL (PURL)][purl] (via element `<packageUrl>`),
 - their Maven like coordinates (groupId/namespace, artifactId/name and version via element `<gav>`), or
 - their file path (via element `<filePath>`).
 
 The latter three can optionally be given as regular expression. The `<packageUrl>` value is matched against the dependency 
 specific software identifiers (can be looked up from the report) and `<gav>` against these identifiers after they have been mapped 
-to coordinates via `PurlIdentifier.toGav()`. The latter is not always available while the former is mandatory.
+to coordinates via `PurlIdentifier.toGav()`.
 The `<filePath>` value is matched against the OS-specific absolute file path of the according dependency
 (for example a path inside the local Maven repository).
 
-Additionally, there are several ways to suppress vulnerabilities: individual CPEs, individual CVEs, or all vulnerabilities below a specified CVSS score. The most common
-would be suppressing CPEs based on the identified Package URL (PURL) - these suppression entries can be generated using the
+Additionally, there are several ways to suppress vulnerabilities: individual CPEs, individual CVEs, or all vulnerabilities below a specified CVSS score. 
+
+The most common would be suppressing CPEs based on the identified [Package URL (PURL)][purl] - these suppression entries can be generated using the
 HTML version of the report. The other common scenario would be to ignore all CVEs below a certain CVSS threshold.
 
 ```xml
@@ -177,3 +178,6 @@ Please see the appropriate configuration option in each interfaces configuration
 -  [Gradle Plugin](../dependency-check-gradle/configuration.html)
 -  [Ant Task](../dependency-check-ant/configuration.html)
 -  [Jenkins Plugin](../dependency-check-jenkins/index.html)
+
+
+[purl]: https://packageurl.org/
