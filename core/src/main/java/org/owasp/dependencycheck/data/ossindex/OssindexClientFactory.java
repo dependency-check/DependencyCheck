@@ -42,6 +42,16 @@ import org.sonatype.ossindex.service.client.transport.AuthConfiguration;
  * @since 5.0.0
  */
 public final class OssindexClientFactory {
+    /**
+     * Default base URL for Sonatype OSS Index after its migration to part of Sonatype Guide. This overrides the default
+     * from {@link OssindexClientConfiguration#DEFAULT_BASE_URL} which is now outdated.
+     */
+    public static final String DEFAULT_BASE_URL = "https://api.guide.sonatype.com";
+
+    /**
+     * Default number of hours to cache entries from OSS Index when the cache is enabled.
+     */
+    public static final int DEFAULT_CACHE_VALID_FOR_HOURS = 24;
 
     /**
      * Static logger.
@@ -69,18 +79,11 @@ public final class OssindexClientFactory {
     public static OssindexClient create(final Settings settings) {
         final OssindexClientConfiguration config = new OssindexClientConfiguration();
 
-        final String baseUrl = settings.getString(Settings.KEYS.ANALYZER_OSSINDEX_URL, null);
-        if (baseUrl != null) {
-            config.setBaseUrl(baseUrl);
-        }
-
-        final String username = settings.getString(Settings.KEYS.ANALYZER_OSSINDEX_USER);
-        final String password = settings.getString(Settings.KEYS.ANALYZER_OSSINDEX_PASSWORD);
-
-        if (username != null && password != null) {
-            final AuthConfiguration auth = new AuthConfiguration(username, password);
-            config.setAuthConfiguration(auth);
-        }
+        config.setBaseUrl(settings.getString(Settings.KEYS.ANALYZER_OSSINDEX_URL, DEFAULT_BASE_URL));
+        config.setAuthConfiguration(new AuthConfiguration(
+                settings.getString(Settings.KEYS.ANALYZER_OSSINDEX_USER, ""),
+                settings.getString(Settings.KEYS.ANALYZER_OSSINDEX_PASSWORD))
+        );
 
         final int batchSize = settings.getInt(Settings.KEYS.ANALYZER_OSSINDEX_BATCH_SIZE, OssindexClientConfiguration.DEFAULT_BATCH_SIZE);
         config.setBatchSize(batchSize);
@@ -93,7 +96,7 @@ public final class OssindexClientFactory {
                 final File cacheDir = new File(data, "oss_cache");
                 if (cacheDir.isDirectory() || cacheDir.mkdirs()) {
                     cache.setBaseDir(cacheDir.toPath());
-                    cache.setExpireAfter(Duration.standardHours(24));
+                    cache.setExpireAfter(Duration.standardHours(DEFAULT_CACHE_VALID_FOR_HOURS));
                     config.setCacheConfiguration(cache);
                     LOGGER.debug("OSS Index Cache: {}", cache);
                 } else {

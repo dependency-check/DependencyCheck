@@ -20,6 +20,8 @@ package org.owasp.dependencycheck.analyzer;
 import io.github.jeremylong.openvulnerability.client.nvd.CvssV2;
 import io.github.jeremylong.openvulnerability.client.nvd.CvssV2Data;
 import io.github.jeremylong.openvulnerability.client.nvd.CvssV4;
+import org.apache.commons.lang3.Strings;
+import org.jspecify.annotations.NonNull;
 import org.sonatype.ossindex.service.api.componentreport.ComponentReport;
 import org.sonatype.ossindex.service.api.componentreport.ComponentReportVulnerability;
 import org.sonatype.ossindex.service.api.cvss.Cvss2Severity;
@@ -132,13 +134,36 @@ public class OssIndexAnalyzer extends AbstractAnalyzer {
     @Override
     protected void prepareAnalyzer(Engine engine) throws InitializationException {
         synchronized (FETCH_MUTIX) {
-            if (StringUtils.isEmpty(getSettings().getString(KEYS.ANALYZER_OSSINDEX_USER, StringUtils.EMPTY))
-                    || StringUtils.isEmpty(getSettings().getString(KEYS.ANALYZER_OSSINDEX_PASSWORD, StringUtils.EMPTY))) {
-                LOG.warn("Disabling OSS Index analyzer due to missing user/password credentials. Authentication is now " +
-                        "required: https://ossindex.sonatype.org/doc/auth-required");
+            if (getSettings().getString(KEYS.ANALYZER_OSSINDEX_URL, "").contains("ossindex.sonatype.org")) {
+                LOG.warn("{} capabilities are being migrated to Sonatype Guide. All integrations must migrate to using " +
+                        "a Sonatype Guide base URL or proxy. See " +
+                        "https://dependency-check.github.io/DependencyCheck/analyzers/oss-index-analyzer.html " +
+                        "for more information on migration to Sonatype Guide.", getName());
+            }
+            if (StringUtils.isEmpty(password()) || (StringUtils.isEmpty(user()) && passwordNotSonatypeGuideToken())) {
+                LOG.warn("{} disabled due to missing credentials. Authentication with token is now required, and OSS Index " +
+                        "is migrating to Sonatype Guide. See https://dependency-check.github.io/DependencyCheck/analyzers/oss-index-analyzer.html " +
+                        "for more information on authentication with Sonatype Guide OSS Index.", getName());
                 setEnabled(false);
+            } else if (passwordNotSonatypeGuideToken()) {
+                LOG.warn("Sonatype OSS Index is migrating to Sonatype Guide, but it looks like you're not yet using a Sonatype Guide personal " +
+                        "access token. Legacy OSS Index API tokens should be replaced with Sonatype Guide Personal Access Tokens " +
+                        "before December 31, 2026. See https://dependency-check.github.io/DependencyCheck/analyzers/oss-index-analyzer.html " +
+                        "for more information on authentication with Sonatype Guide OSS Index.");
             }
         }
+    }
+
+    private boolean passwordNotSonatypeGuideToken() {
+        return !password().startsWith("sonatype_pat_");
+    }
+
+    private @NonNull String user() {
+        return getSettings().getString(KEYS.ANALYZER_OSSINDEX_USER, StringUtils.EMPTY);
+    }
+
+    private @NonNull String password() {
+        return getSettings().getString(KEYS.ANALYZER_OSSINDEX_PASSWORD, StringUtils.EMPTY).trim();
     }
 
     @Override
@@ -153,40 +178,40 @@ public class OssIndexAnalyzer extends AbstractAnalyzer {
                     final boolean warnOnly = getSettings().getBoolean(Settings.KEYS.ANALYZER_OSSINDEX_WARN_ONLY_ON_REMOTE_ERRORS, false);
                     this.setEnabled(false);
                     if (warnOnly) {
-                        LOG.warn("OSS Index socket timeout, disabling the analyzer", e);
+                        LOG.warn("Sonatype OSS Index / Guide socket timeout, disabling the analyzer", e);
                     } else {
-                        LOG.debug("OSS Index socket timeout", e);
-                        throw new AnalysisException("Failed to establish socket to OSS Index", e);
+                        LOG.debug("Sonatype OSS Index / Guide socket timeout", e);
+                        throw new AnalysisException("Failed to establish socket to Sonatype OSS Index / Guide", e);
                     }
                 } catch (Exception ex) {
                     final String message = ex.getMessage();
                     final boolean warnOnly = getSettings().getBoolean(Settings.KEYS.ANALYZER_OSSINDEX_WARN_ONLY_ON_REMOTE_ERRORS, false);
                     this.setEnabled(false);
-                    if (StringUtils.contains(message, "401")) {
+                    if (Strings.CS.contains(message, "401")) {
                         if (warnOnly) {
-                            LOG.warn("Invalid credentials for the OSS Index, disabling the analyzer");
+                            LOG.warn("Invalid credentials for Sonatype OSS Index / Guide, disabling the analyzer");
                         } else {
-                            LOG.error("Invalid credentials for the OSS Index, disabling the analyzer");
-                            throw new AnalysisException("Invalid credentials provided for OSS Index", ex);
+                            LOG.error("Invalid credentials for Sonatype OSS Index / Guide, disabling the analyzer");
+                            throw new AnalysisException("Invalid credentials provided for Sonatype OSS Index / Guide", ex);
                         }
-                    } else if (StringUtils.contains(message, "403")) {
+                    } else if (Strings.CS.contains(message, "403")) {
                         if (warnOnly) {
-                            LOG.warn("OSS Index access forbidden, disabling the analyzer");
+                            LOG.warn("Sonatype OSS Index / Guide access forbidden, disabling the analyzer");
                         } else {
-                            LOG.error("OSS Index access forbidden, disabling the analyzer");
-                            throw new AnalysisException("OSS Index access forbidden", ex);
+                            LOG.error("Sonatype OSS Index / Guide access forbidden, disabling the analyzer");
+                            throw new AnalysisException("Sonatype OSS Index / Guide access forbidden", ex);
                         }
-                    } else if (StringUtils.contains(message, "429")) {
+                    } else if (Strings.CS.contains(message, "429")) {
                         if (warnOnly) {
-                            LOG.warn("OSS Index rate limit exceeded, disabling the analyzer", ex);
+                            LOG.warn("Sonatype OSS Index / Guide rate limit exceeded, disabling the analyzer", ex);
                         } else {
-                            throw new AnalysisException("OSS Index rate limit exceeded, disabling the analyzer", ex);
+                            throw new AnalysisException("Sonatype OSS Index / Guide rate limit exceeded, disabling the analyzer", ex);
                         }
                     } else if (warnOnly) {
-                        LOG.warn("Error requesting component reports, disabling the analyzer. " + ex.getMessage(), ex);
+                        LOG.warn("Error requesting Sonatype OSS Index / Guide component reports, disabling the analyzer. {}", ex.getMessage(), ex);
                     } else {
-                        LOG.debug("Error requesting component reports, disabling the analyzer", ex);
-                        throw new AnalysisException("Failed to request component-reports. " + ex.getMessage(), ex);
+                        LOG.debug("Error requesting Sonatype OSS Index / Guide component reports, disabling the analyzer", ex);
+                        throw new AnalysisException("Failed to request Sonatype OSS Index / Guide component reports. " + ex.getMessage(), ex);
                     }
                 }
             }

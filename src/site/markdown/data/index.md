@@ -12,7 +12,7 @@ Dependency-Check may contact the following external hosts depending on the enabl
 | NVD API (CVE & CPE data)             | `services.nvd.nist.gov`                | All                                | All               | ✅                         | ✅           |
 | CISA Known Exploited Vulnerabilities | `www.cisa.gov`                         | Known Exploited Vulnerabilities    | All               | ✅                         | ✅           |
 | ODC Hosted suppressions file         | `dependency-check.github.io`           | Hosted Suppressions                | All               | ✅                         | ✅           |
-| Sonatype OSS Index API               | `ossindex.sonatype.org`                | OSS Index                          | All               | ✅                         | ❌           |
+| Sonatype OSS Index API via Guide     | `api.guide.sonatype.com`               | OSS Index                          | All               | ✅                         | ❌           |
 | RetireJS definitions                 | `raw.githubusercontent.com`            | RetireJS                           | Javascript        | ✅                         | ✅           |
 | NPM audit advisories                 | `registry.npmjs.org`                   | Node Audit, Yarn Audit, PNPM Audit | Javascript        | ✅                         | ❌           |
 | Maven Central search                 | `search.maven.org` / `repo1.maven.org` | Central                            | Java / JVM        | ✅                         | ❌           |

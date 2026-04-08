@@ -431,15 +431,14 @@ public final class CliParser {
                 .addOption(newOptionWithArg(ARGUMENT.CENTRAL_BEARER_TOKEN, "token",
                         "Token for bearer auth towards the --centralUrl"))
                 .addOption(newOptionWithArg(ARGUMENT.OSSINDEX_URL, "url",
-                        "Alternative URL for the OSS Index. If not set the public Sonatype OSS Index will be used."))
+                        "Alternative base URL for the OSS Index API. If not set the public Sonatype OSS Index API on Sonatype Guide will be used."))
                 .addOption(newOptionWithArg(ARGUMENT.OSSINDEX_USERNAME, "username",
-                        "The username to authenticate to Sonatype's OSS Index. If not set the Sonatype OSS Index "
-                                + "Analyzer will use an unauthenticated connection."))
-                .addOption(newOptionWithArg(ARGUMENT.OSSINDEX_PASSWORD, "password", ""
-                        + "The password to authenticate to Sonatype's OSS Index. If not set the Sonatype OSS "
-                        + "Index Analyzer will use an unauthenticated connection."))
-                .addOption(newOptionWithArg(ARGUMENT.OSSINDEX_WARN_ONLY_ON_REMOTE_ERRORS, "true/false", ""
-                        + "Whether a Sonatype OSS Index remote error should result in a warning only or a failure."))
+                        "(deprecated) Sets the OSS Index API username for use with legacy OSS Index API tokens. " +
+                                "Username is not required after migration to using Sonatype Guide personal access token as password."))
+                .addOption(newOptionWithArg(ARGUMENT.OSSINDEX_PASSWORD, "password", "Sets the Sonatype Guide personal " +
+                        "access token or (deprecated) legacy OSS Index API token to authenticate with."))
+                .addOption(newOptionWithArg(ARGUMENT.OSSINDEX_WARN_ONLY_ON_REMOTE_ERRORS, "true/false",
+                        "Whether a Sonatype OSS Index remote error should result in a warning only or a failure."))
                 .addOption(newOption(ARGUMENT.RETIRE_JS_FORCEUPDATE, "Force the RetireJS Analyzer to update "
                         + "even if autoupdate is disabled"))
                 .addOption(newOptionWithArg(ARGUMENT.RETIREJS_URL, "url",

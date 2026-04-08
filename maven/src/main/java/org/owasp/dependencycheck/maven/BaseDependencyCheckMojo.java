@@ -2467,8 +2467,8 @@ public abstract class BaseDependencyCheckMojo extends AbstractMojo implements Ma
         settings.setBooleanIfNotNull(Settings.KEYS.ANALYZER_SWIFT_PACKAGE_RESOLVED_ENABLED, swiftPackageResolvedAnalyzerEnabled);
         settings.setBooleanIfNotNull(Settings.KEYS.ANALYZER_OSSINDEX_ENABLED, ossIndexAnalyzerEnabled);
         settings.setStringIfNotEmpty(Settings.KEYS.ANALYZER_OSSINDEX_URL, ossIndexAnalyzerUrl);
-        if (StringUtils.isEmpty(ossIndexUsername) || StringUtils.isEmpty(ossIndexPassword)) {
-            configureServerCredentials(ossIndexServerId, Settings.KEYS.ANALYZER_OSSINDEX_USER, Settings.KEYS.ANALYZER_OSSINDEX_PASSWORD);
+        if (StringUtils.isEmpty(ossIndexPassword)) {
+            configureServerCredentialsUserPassOrApiKey(ossIndexServerId, Settings.KEYS.ANALYZER_OSSINDEX_USER, Settings.KEYS.ANALYZER_OSSINDEX_PASSWORD);
         } else {
             settings.setStringIfNotEmpty(Settings.KEYS.ANALYZER_OSSINDEX_USER, ossIndexUsername);
             settings.setStringIfNotEmpty(Settings.KEYS.ANALYZER_OSSINDEX_PASSWORD, ossIndexPassword);
@@ -2693,6 +2693,29 @@ public abstract class BaseDependencyCheckMojo extends AbstractMojo implements Ma
     /**
      * Retrieves the server credentials from the settings.xml, decrypts the
      * password, and places the values into the settings under the given key
+     * names with fallback to API key style if the username is not set.
+     *
+     * @param serverId the server id
+     * @param userSettingKey the property name for the username (setting this value must be optional)
+     * @param passwordOrApiKeySetting the property name for the password or API key
+     */
+    @SuppressWarnings("SameParameterValue")
+    private void configureServerCredentialsUserPassOrApiKey(String serverId, String userSettingKey, String passwordOrApiKeySetting) throws MojoFailureException, MojoExecutionException {
+        try {
+            configureCredentials(serverId, null, null, null, userSettingKey, passwordOrApiKeySetting, passwordOrApiKeySetting);
+        } catch (InitializationException ex) {
+            if (this.failOnError) {
+                throw new MojoFailureException(String.format("Error setting credentials (%s, %s) from serverId %s", userSettingKey, passwordOrApiKeySetting, serverId), ex);
+            } else {
+                throw new MojoExecutionException(String.format("Error setting credentials (%s, %s) from serverId %s", userSettingKey, passwordOrApiKeySetting, serverId), ex);
+            }
+        }
+    }
+
+
+    /**
+     * Retrieves the server credentials from the settings.xml, decrypts the
+     * password, and places the values into the settings under the given key
      * names. This is used to retrieve an encrypted password as an API key.
      *
      * @param serverId the server id
@@ -2703,7 +2726,7 @@ public abstract class BaseDependencyCheckMojo extends AbstractMojo implements Ma
     }
 
     /**
-     * Logs the problems encountered during settings decryption of a {@code <}server>} or {@code <proxy>} config
+     * Logs the problems encountered during settings decryption of a {@code <server>} or {@code <proxy>} config
      * from the maven settings.<br/>
      * Logs a generic message about decryption problems at WARN level. If debug logging is enabled a additional message is logged at DEBUG level
      * detailing all the encountered problems and their underlying exceptions.

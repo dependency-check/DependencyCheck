@@ -184,10 +184,10 @@ Within the `analyzers` group, the following sub-groups are configurable.
 | retirejs     | bearerToken            | Credentials used for bearer authentication for the Retire JS repository URL.                                                                                                                         | &nbsp;                                                                                   |
 | retirejs     | filterNonVulnerable    | Configures the RetireJS Analyzer to remove non-vulnerable JS dependencies from the report.                                                                                                           | false                                                                                    |
 | retirejs     | filters                | Configures the list of regular expressions used to filter JS files based on content.                                                                                                                 | &nbsp;                                                                                   |
-| ossIndex     | enabled                | Sets whether [OSS Index Analyzer](../analyzers/oss-index-analyzer.html) will be used. This analyzer requires an internet connection.                                                                 | true                                                                                     |
-| ossIndex     | url                    | Alternative URL for the OSS Index. If not set the public Sonatype OSS Index will be used.                                                                                                            | https://api.guide.sonatype.com                                                           |
-| ossIndex     | username               | To authenticate Sonatype OSS Index requests and profit from higher rate limits, provide the OSS account email address as username. Provide both a username _and_ a password (see below) or none.     | &nbsp;                                                                                   |
-| ossIndex     | password               | Password or API token to connect to Sonatype's OSS Index. Provide both a username (see above) _and_ a password or none.                                                                              | &nbsp;                                                                                   |
+| ossIndex     | enabled                | Sets whether the [OSS Index Analyzer](../analyzers/oss-index-analyzer.html) will be used. This analyzer requires an internet connection, and authentication is mandatory.                            | true                                                                                     |
+| ossIndex     | url                    | Alternative base URL for the OSS Index API. If not set the public Sonatype OSS Index API on Sonatype Guide will be used.                                                                             | https://api.guide.sonatype.com                                                           |
+| ossIndex     | username               | *(deprecated)* Sets the OSS Index API username for use with legacy OSS Index API tokens. Username is not required after migration to using Sonatype Guide personal access token as password.         | &nbsp;                                                                                   |
+| ossIndex     | password               | Sets the Sonatype Guide personal access token or (deprecated) legacy OSS Index API token to authenticate with.                                                                                       | &nbsp;                                                                                   |
 | ossIndex     | warnOnlyOnRemoteErrors | Sets whether remote errors from the OSS Index (e.g. BAD GATEWAY, RATE LIMIT EXCEEDED) will result in warnings only instead of failing execution.                                                     | false                                                                                    |
 
 #### Example
@@ -201,7 +201,6 @@ dependencyCheck {
 
     analyzers.retirejs.filters = ['(i)copyright Jeremy Long']
 
-    analyzers.ossIndex.username = 'example@gmail.com'
-    analyzers.ossIndex.password = '42cc601cd7ff12a531a0b1eada8dcf56d777b336'
+    analyzers.ossIndex.password = 'sonatype_pat_42cc601cd7ff12a531a0b1eada8dcf56d777b336'
 }
 ```

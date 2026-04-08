@@ -46,14 +46,17 @@ The NVD API has enforced rate limits. If you are using a single API KEY and
 multiple builds occur you could hit the rate limit and receive 403 errors. In
 a CI environment one must use a caching strategy.
 
-### OSSIndex API Token Now Required for usage
+### Sonatype OSS Index API Token Now Required for usage
 
-In September 2025 Sonatype OSSIndex started enforcing use of API tokens. If you 
-wish to use Sonatype OSSIndex you must configure Dependency-Check
-to use a username and API token/password; see https://ossindex.sonatype.org/doc/api-token.
-Without OSSIndex credentials, Dependency Check will **automatically disable the OSSIndex analyzer**.
-Please see the documentation for the cli, maven, gradle, or ant integrations on
-how to set the OSSIndex credentials.
+Since September 2025 Sonatype OSS Index started enforcing use of API tokens for authentication. In April 2026 a
+subsequent migration to Sonatype Guide began.
+
+If you wish to use Sonatype OSS Index you must configure Dependency-Check and consider implications for migration to 
+Sonatype Guide. See the [analyzer documentation](https://dependency-check.github.io/DependencyCheck/analyzers/oss-index-analyzer.html)
+for more information.
+
+Without credentials, Dependency Check will **automatically disable the OSS Index analyzer**. Please see the documentation 
+for the cli, maven, gradle, or ant integrations on how to set the OSS Index credentials.
 
 ### Gradle build Environment
 
