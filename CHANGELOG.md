@@ -1437,7 +1437,7 @@ See the full listing of [resolved issues](https://github.com/dependency-check/De
 
 - Excess white space has been removed from the XML and HTML reports; the JSON report is still pretty printed (a future release will convert this to a configurable option)
 - Better error reporting
-- Changed to use commons-text instead of commons-lang3 as a portion of commons-lang3 was moved to commonts-text
+- Changed to use commons-text instead of commons-lang3 as a portion of commons-lang3 was moved to commons-text
 - Added more flexible suppression rules with the introduction of the `until` attribute (see [#1145](https://github.com/dependency-check/DependencyCheck/issues/1145) and [dependency-suppression.1.2.xsd](https://dependency-check.github.io/DependencyCheck/dependency-suppression.1.2.xsd)
 
 ### Fixed
