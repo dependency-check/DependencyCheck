@@ -1295,7 +1295,7 @@ See the full listing of [resolved issues](https://github.com/dependency-check/De
 - **Breaking:** The NVD CVE data import now uses the JSON data feeds instead of the XML data feeds.
   - The parameter names have changed if you are mirroring the data feeds locally.
 - **Breaking:** For developers using the core engine the identifiers have been drastically changed;
-  ODC now uses [Package URL](https://github.com/package-url/packageurl-java) for software
+  ODC now uses [Package URL](https://github.com/package-url/purl-spec) for software
   identifiers and CPE objects from [CPE-Parser](https://github.com/stevespringett/CPE-Parser)
   for vulnerable library identifiers.
 - All of the report formats have been updated to include the additional data from the NVD CVE JSON data feeds.

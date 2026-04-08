@@ -101,7 +101,7 @@ organization and to configure dependency-check to use the alternative Nexus or A
 
 ### Sonatype OSS Index
 
-OWASP dependency-check includes support to consult the [Sonatype OSS Index](https://ossindex.sonatype.org)
+OWASP dependency-check includes support to consult the [Sonatype Guide OSS Index](https://www.sonatype.com/products/sonatype-guide/oss-index-users)
 to enrich the report with supplemental vulnerability information.
 
 For more details on this integration see [Sonatype OSS Index](./ossindex.html).
