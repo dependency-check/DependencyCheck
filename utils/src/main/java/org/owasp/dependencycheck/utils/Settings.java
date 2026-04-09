@@ -740,9 +740,17 @@ public final class Settings {
          */
         public static final String ANALYZER_CENTRAL_QUERY = "analyzer.central.query";
         /**
+         * The properties key for the Central search query when using JSON.
+         */
+        public static final String ANALYZER_CENTRAL_QUERY_JSON = "analyzer.central.query.json";
+        /**
          * The properties key for whether Central search results will be cached.
          */
         public static final String ANALYZER_CENTRAL_USE_CACHE = "analyzer.central.use.cache";
+        /**
+         * The properties key for whether Central search results will be cached.
+         */
+        public static final String ANALYZER_CENTRAL_JSON = "analyzer.central.json";
         /**
          * The path to dotnet core, if available.
          */

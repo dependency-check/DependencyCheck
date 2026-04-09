@@ -1427,6 +1427,10 @@ public final class CliParser {
          */
         public static final String DISABLE_CENTRAL_CACHE = "disableCentralCache";
         /**
+         * Use JSON response type when querying Maven central.
+         */
+        public static final String ANALYZER_CENTRAL_JSON = "centralJson";
+        /**
          * The alternative URL for Maven Central Search.
          */
         public static final String CENTRAL_URL = "centralUrl";

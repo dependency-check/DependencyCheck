@@ -139,6 +139,10 @@ public class Check extends Update {
      */
     private Boolean centralAnalyzerUseCache;
     /**
+     * Whether or not the Central Analyzer should use JSON responses.
+     */
+    private Boolean centralAnalyzerUseJson;
+    /**
      * Whether or not the nexus analyzer is enabled.
      */
     private Boolean nexusAnalyzerEnabled;
@@ -1109,6 +1113,15 @@ public class Check extends Update {
     }
 
     /**
+     * Set the value of centralAnalyzerUseJson.
+     *
+     * @param centralAnalyzerUseJson new value of centralAnalyzerUseJson
+     */
+    public void setCentralAnalyzerUseJson(Boolean centralAnalyzerUseJson) {
+        this.centralAnalyzerUseJson = centralAnalyzerUseJson;
+    }
+
+    /**
      * Set the value of nexusAnalyzerEnabled.
      *
      * @param nexusAnalyzerEnabled new value of nexusAnalyzerEnabled
@@ -1599,6 +1612,7 @@ public class Check extends Update {
         getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_LIBMAN_ENABLED, libmanAnalyzerEnabled);
         getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_CENTRAL_ENABLED, centralAnalyzerEnabled);
         getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_CENTRAL_USE_CACHE, centralAnalyzerUseCache);
+        getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_CENTRAL_JSON, centralAnalyzerUseJson);
         getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_NEXUS_ENABLED, nexusAnalyzerEnabled);
         getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_ARCHIVE_ENABLED, archiveAnalyzerEnabled);
         getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_ASSEMBLY_ENABLED, assemblyAnalyzerEnabled);

@@ -652,6 +652,8 @@ public class App {
                 !cli.isDisabled(CliParser.ARGUMENT.DISABLE_CENTRAL, Settings.KEYS.ANALYZER_CENTRAL_ENABLED));
         settings.setBoolean(Settings.KEYS.ANALYZER_CENTRAL_USE_CACHE,
                 !cli.isDisabled(CliParser.ARGUMENT.DISABLE_CENTRAL_CACHE, Settings.KEYS.ANALYZER_CENTRAL_USE_CACHE));
+        settings.setBoolean(Settings.KEYS.ANALYZER_CENTRAL_JSON,
+                !cli.isDisabled(CliParser.ARGUMENT.ANALYZER_CENTRAL_JSON, Settings.KEYS.ANALYZER_CENTRAL_JSON));
         settings.setBoolean(Settings.KEYS.ANALYZER_OSSINDEX_ENABLED,
                 !cli.isDisabled(CliParser.ARGUMENT.DISABLE_OSSINDEX, Settings.KEYS.ANALYZER_OSSINDEX_ENABLED));
         settings.setBoolean(Settings.KEYS.ANALYZER_OSSINDEX_USE_CACHE,
