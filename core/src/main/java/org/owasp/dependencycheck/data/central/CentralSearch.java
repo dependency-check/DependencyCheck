@@ -17,7 +17,6 @@
  */
 package org.owasp.dependencycheck.data.central;
 
-import org.apache.hc.client5.http.impl.classic.AbstractHttpClientResponseHandler;
 import org.apache.hc.core5.http.message.BasicHeader;
 import org.owasp.dependencycheck.utils.DownloadFailedException;
 import org.owasp.dependencycheck.utils.Downloader;
@@ -42,6 +41,9 @@ import org.owasp.dependencycheck.data.cache.DataCacheFactory;
 import org.owasp.dependencycheck.data.nexus.MavenArtifact;
 import org.owasp.dependencycheck.utils.Settings;
 import org.owasp.dependencycheck.utils.ToXMLDocumentResponseHandler;
+import org.owasp.dependencycheck.utils.json.CentralSearchResponse;
+import org.owasp.dependencycheck.utils.json.ResponseDocument;
+import org.owasp.dependencycheck.utils.json.ToJsonResponseHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -71,6 +73,11 @@ public class CentralSearch {
     private final boolean useProxy;
 
     /**
+     * Whether to use JSON response or the default XML response.
+     */
+    private final boolean useJson;
+
+    /**
      * Used for logging.
      */
     private static final Logger LOGGER = LoggerFactory.getLogger(CentralSearch.class);
@@ -98,7 +105,13 @@ public class CentralSearch {
             throw new MalformedURLException(String.format("The configured central analyzer URL is invalid: %s", searchUrl));
         }
         this.rootURL = searchUrl;
-        final String queryStr = settings.getString(Settings.KEYS.ANALYZER_CENTRAL_QUERY);
+
+        this.useJson = settings.getBoolean(Settings.KEYS.ANALYZER_CENTRAL_JSON, false);
+        if (this.useJson) {
+            LOGGER.debug("Using json response format");
+        }
+
+        final String queryStr = settings.getString(this.useJson ? Settings.KEYS.ANALYZER_CENTRAL_QUERY_JSON : Settings.KEYS.ANALYZER_CENTRAL_QUERY);
         LOGGER.debug("Central Search Query: {}", queryStr);
         if (!queryStr.matches("^%s.*%s.*$")) {
             final String msg = String.format("The configured central analyzer query parameter is invalid (it must have two %%s): %s", queryStr);
@@ -155,13 +168,23 @@ public class CentralSearch {
 
         LOGGER.trace("Searching Central url {}", url);
 
-        // JSON would be more elegant, but there's not currently a dependency
-        // on JSON, so don't want to add one just for this
-        final BasicHeader acceptHeader = new BasicHeader("Accept", "application/xml");
-        final AbstractHttpClientResponseHandler<Document> handler = new ToXMLDocumentResponseHandler();
+        final BasicHeader acceptHeader;
+        if (useJson) {
+            acceptHeader = new BasicHeader("Accept", "application/json");
+        } else {
+            acceptHeader = new BasicHeader("Accept", "application/xml");
+        }
         try {
-            final Document doc = Downloader.getInstance().fetchAndHandle(url, handler, List.of(acceptHeader), useProxy);
-            final boolean missing = addMavenArtifacts(doc, result);
+            final boolean missing;
+            if (useJson) {
+                final CentralSearchResponse json = Downloader.getInstance()
+                        .fetchAndHandle(url, new ToJsonResponseHandler(), List.of(acceptHeader), useProxy);
+                missing = addMavenArtifacts(json, result);
+            } else {
+                final Document doc = Downloader.getInstance()
+                        .fetchAndHandle(url, new ToXMLDocumentResponseHandler(), List.of(acceptHeader), useProxy);
+                missing = addMavenArtifacts(doc, result);
+            }
 
             if (missing) {
                 if (cache != null) {
@@ -189,6 +212,33 @@ public class CentralSearch {
             cache.put(sha1, result);
         }
         return result;
+    }
+
+    /**
+     * Collect the artifacts from a MavenCentral search result and add them to the list.
+     *
+     * @param response The JSON response received in response to the SHA1 search-request
+     * @param result   The list of MavenArtifacts to which found artifacts will be added
+     * @return Whether the given document holds no search results
+     */
+    private boolean addMavenArtifacts(CentralSearchResponse response, List<MavenArtifact> result) throws XPathExpressionException {
+        boolean missing = false;
+        final CentralSearchResponse.CentralSearchResponseContent body = response.getBody();
+        final int numFound = body.getNumFound();
+        if (numFound == 0) {
+            missing = true;
+        } else {
+            final List<ResponseDocument> docs = body.getDocs();
+            for (ResponseDocument doc : docs) {
+                LOGGER.trace("GroupId: {}", doc.getGroupId());
+                LOGGER.trace("ArtifactId: {}", doc.getArtifactId());
+                final List<String> attributes = doc.getAttributes();
+                boolean pomAvailable = attributes.stream().anyMatch(".pom"::equals);
+                boolean jarAvailable = attributes.stream().anyMatch(".jar"::equals);
+                result.add(toMavenArtifact(doc.getGroupId(), doc.getArtifactId(), doc.getVersion(), pomAvailable, jarAvailable));
+            }
+        }
+        return missing;
     }
 
     /**
@@ -222,23 +272,27 @@ public class CentralSearch {
                         jarAvailable = true;
                     }
                 }
-                final String centralContentUrl = settings.getString(Settings.KEYS.CENTRAL_CONTENT_URL);
-                String artifactUrl = null;
-                String pomUrl = null;
-                if (jarAvailable) {
-                    //org/springframework/spring-core/3.2.0.RELEASE/spring-core-3.2.0.RELEASE.pom
-                    artifactUrl = centralContentUrl + g.replace('.', '/') + '/' + a + '/'
-                            + v + '/' + a + '-' + v + ".jar";
-                }
-                if (pomAvailable) {
-                    //org/springframework/spring-core/3.2.0.RELEASE/spring-core-3.2.0.RELEASE.pom
-                    pomUrl = centralContentUrl + g.replace('.', '/') + '/' + a + '/'
-                            + v + '/' + a + '-' + v + ".pom";
-                }
-                result.add(new MavenArtifact(g, a, v, artifactUrl, pomUrl));
+                result.add(toMavenArtifact(g, a, v, pomAvailable, jarAvailable));
             }
         }
         return missing;
+    }
+
+    private MavenArtifact toMavenArtifact(String groupId, String artifactId, String version, boolean pomAvailable, boolean jarAvailable) {
+        final String centralContentUrl = settings.getString(Settings.KEYS.CENTRAL_CONTENT_URL);
+        String artifactUrl = null;
+        String pomUrl = null;
+        if (jarAvailable) {
+            //org/springframework/spring-core/3.2.0.RELEASE/spring-core-3.2.0.RELEASE.pom
+            artifactUrl = centralContentUrl + groupId.replace('.', '/') + '/' + artifactId + '/'
+                    + version + '/' + artifactId + '-' + version + ".jar";
+        }
+        if (pomAvailable) {
+            //org/springframework/spring-core/3.2.0.RELEASE/spring-core-3.2.0.RELEASE.pom
+            pomUrl = centralContentUrl + groupId.replace('.', '/') + '/' + artifactId + '/'
+                    + version + '/' + artifactId + '-' + version + ".pom";
+        }
+        return new MavenArtifact(groupId, artifactId, version, artifactUrl, pomUrl);
     }
 
     /**
