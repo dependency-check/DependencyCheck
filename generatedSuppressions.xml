@@ -2090,3 +2090,12 @@ only pkg:maven/org.clojure:clojure@.* is the CPE cpe:/a:clojure:clojure
     <packageUrl regex="true">^pkg:maven/dev\.detekt/detekt-report-checkstyle@.*$</packageUrl>
     <cpe>cpe:/a:checkstyle:checkstyle</cpe>
 </suppress>
+<suppress base="true">
+    <notes><![CDATA[
+    FP per issue #8408
+    Consolidated suppression aginst any non-golang packages. The distribution project is a golang toolkit with a
+    very generic name, likely to mistakenly match many other artifacts.
+    ]]></notes>
+    <packageUrl regex="true">^pkg:(?!golang/).*$</packageUrl>
+    <cpe regex="true">cpe:/a:distribution(_project)?:distribution:.*</cpe>
+</suppress>
