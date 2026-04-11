@@ -66,7 +66,7 @@ class YarnAuditAnalyzerIT extends BaseTest {
         @Disabled("broken test case on my local machine - needs further investigation")
         @Test
         void testAnalyzePackageYarnClassicOnYarnBerryLockfile() {
-            AnalysisException exception = assertThrows(AnalysisException.class, () -> testAnalyzeForMimeDb("yarn/yarn-classic-audit-bad-berry-lockfile/yarn.lock"));
+            AnalysisException exception = assertThrows(AnalysisException.class, () -> testAnalyzeForUglifyJs("yarn/yarn-classic-audit-bad-berry-lockfile/yarn.lock"));
             assertThat(exception.getMessage(), containsString("No results from Yarn Classic (offline step) - possibly trying to use classic analyzer on Yarn Berry lockfile"));
         }
     }
@@ -111,23 +111,6 @@ class YarnAuditAnalyzerIT extends BaseTest {
             analyzer.analyze(toScan, engine);
             assertEquals(0, engine.getDependencies().length, "No dependency should be identified");
         }
-    }
-
-    private void testAnalyzeForMimeDb(String yarnLockFile) throws Exception {
-        final Dependency toScan = new Dependency(BaseTest.getResourceAsFile(this, yarnLockFile));
-        analyzer.analyze(toScan, engine);
-        assertTrue(0 < engine.getDependencies().length, "More than 0 dependencies should be identified");
-        boolean found = false;
-        for (Dependency result : engine.getDependencies()) {
-            if ("yarn.lock?mime-db".equals(result.getFileName())) {
-                found = true;
-                assertTrue(result.getEvidence(EvidenceType.VENDOR).toString().contains("mime-db"));
-                assertTrue(result.getEvidence(EvidenceType.PRODUCT).toString().contains("mime-db"));
-                assertTrue(result.getEvidence(EvidenceType.VERSION).toString().contains("1.5.4"), "Unable to find version 1.5.4: " + result.getEvidence(EvidenceType.VERSION).toString());
-                assertTrue(result.isVirtual());
-            }
-        }
-        assertTrue(found, "Uglify was not found");
     }
 
     private void testAnalyzeForUglifyJs(String yarnLockFile) throws Exception {
