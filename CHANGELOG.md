@@ -1,5 +1,44 @@
 # Change Log
 
+## [Version 12.2.1](https://github.com/dependency-check/DependencyCheck/releases/tag/v12.2.1) (2026-04-11)
+
+- build: improve GHA workflow experience for forks ([#8285](https://github.com/dependency-check/DependencyCheck/pull/8285))
+- build: use maven jdk toolchains to build with Java 25; test against Java 11/17/21/25 ([#8292](https://github.com/dependency-check/DependencyCheck/pull/8292))
+- chore: avoid use of parent pom and maven properties where unnecessary ([#8322](https://github.com/dependency-check/DependencyCheck/pull/8322))
+- chore: bump java development to 25.0 ([#8365](https://github.com/dependency-check/DependencyCheck/pull/8365))
+- chore: fix Charset warnings; preferring typed charsets ([#8326](https://github.com/dependency-check/DependencyCheck/pull/8326))
+- chore: fix Maven scm tags after 12.2.1-SNAPSHOT bump ([#8265](https://github.com/dependency-check/DependencyCheck/pull/8265))
+- chore: pin GitHub actions to specific SHAs rather than mutable tags ([#8381](https://github.com/dependency-check/DependencyCheck/pull/8381))
+- chore: remove unused properties and schemas ([#8378](https://github.com/dependency-check/DependencyCheck/pull/8378))
+- docs: define schema locations in XML examples ([#8254](https://github.com/dependency-check/DependencyCheck/pull/8254))
+- docs: document external data sources and hostnames ([#8219](https://github.com/dependency-check/DependencyCheck/pull/8219))
+- docs: ensure OSS Index URL override is consistently documented ([#8338](https://github.com/dependency-check/DependencyCheck/pull/8338))
+- docs: fix minor typo in README ([#8246](https://github.com/dependency-check/DependencyCheck/pull/8246))
+- fix(core): correct xml schema validation handling without needing external access ([#8272](https://github.com/dependency-check/DependencyCheck/pull/8272))
+- fix(deps): upgrade slf4j and logback ([#8306](https://github.com/dependency-check/DependencyCheck/pull/8306))
+- fix(test): disable pnpm analyzer during test ([#8305](https://github.com/dependency-check/DependencyCheck/pull/8305))
+- fix: Correct published/hosted suppressions namespace header and indent ([#8258](https://github.com/dependency-check/DependencyCheck/pull/8258))
+- fix: Suppress noisy WARN logging from Apache Lucene within Maven and Ant plugins ([#8248](https://github.com/dependency-check/DependencyCheck/pull/8248))
+- fix: [#8140](https://github.com/dependency-check/DependencyCheck/pull/8140) AssemblyAnalyzer version resolution issue ([#8352](https://github.com/dependency-check/DependencyCheck/pull/8352))
+- fix: [#8140](https://github.com/dependency-check/DependencyCheck/pull/8140) fix version resolution
+- fix: [#8140](https://github.com/dependency-check/DependencyCheck/pull/8140) hint azure_identity_library_for_.net
+- fix: [#8356](https://github.com/dependency-check/DependencyCheck/pull/8356) narrow down VersionFilterAnalyzer scope to JAR files ([#8358](https://github.com/dependency-check/DependencyCheck/pull/8358))
+- fix: correct parsing for CVSSv4 strings with Provider Urgency ([#8377](https://github.com/dependency-check/DependencyCheck/pull/8377))
+- fix: evidence source in Retire JS analyzer ([#8303](https://github.com/dependency-check/DependencyCheck/pull/8303))
+- fix: exclude deprecations from Yarn Berry audit results ([#8380](https://github.com/dependency-check/DependencyCheck/pull/8380))
+- fix: improve PEAnalyzer reliability by migrating to maintained PE/COFF 4J library fork ([#8245](https://github.com/dependency-check/DependencyCheck/pull/8245))
+- fix: improve configuration consistency (casing) ([#8355](https://github.com/dependency-check/DependencyCheck/pull/8355))
+- fix: improve logging of unexpected Java Errors during processing of NVD ([#8250](https://github.com/dependency-check/DependencyCheck/pull/8250))
+- fix: raw type warning in ProcessReader ([#8324](https://github.com/dependency-check/DependencyCheck/pull/8324))
+- fix: suppress false positives for zabbix-utils [#8087](https://github.com/dependency-check/DependencyCheck/pull/8087) ([#8218](https://github.com/dependency-check/DependencyCheck/pull/8218))
+- fix: update docs ([#8405](https://github.com/dependency-check/DependencyCheck/pull/8405))
+- fix: warn if deprecated configs are used ([#8366](https://github.com/dependency-check/DependencyCheck/pull/8366))
+- test: Make tests locale independent ([#8328](https://github.com/dependency-check/DependencyCheck/pull/8328))
+- test: [#8140](https://github.com/dependency-check/DependencyCheck/pull/8140) reproduce current behavior
+- test: avoid polluting test classpaths with sample dependencies to be scanned ([#8267](https://github.com/dependency-check/DependencyCheck/pull/8267))
+
+- See the full listing of [changes](https://github.com/dependency-check/DependencyCheck/milestone/104?closed=1)
+
 ## [Version 12.2.0](https://github.com/dependency-check/DependencyCheck/releases/tag/v12.2.0) (2026-01-09)
 
 - feat: package and utilize generated suppression file ([#8116](https://github.com/dependency-check/DependencyCheck/pull/8116))
@@ -1437,7 +1476,7 @@ See the full listing of [resolved issues](https://github.com/dependency-check/De
 
 - Excess white space has been removed from the XML and HTML reports; the JSON report is still pretty printed (a future release will convert this to a configurable option)
 - Better error reporting
-- Changed to use commons-text instead of commons-lang3 as a portion of commons-lang3 was moved to commonts-text
+- Changed to use commons-text instead of commons-lang3 as a portion of commons-lang3 was moved to commons-text
 - Added more flexible suppression rules with the introduction of the `until` attribute (see [#1145](https://github.com/dependency-check/DependencyCheck/issues/1145) and [dependency-suppression.1.2.xsd](https://dependency-check.github.io/DependencyCheck/dependency-suppression.1.2.xsd)
 
 ### Fixed
