@@ -17,263 +17,444 @@
  */
 package org.owasp.dependencycheck.ant.logging;
 
+import java.util.Objects;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.Task;
+import org.slf4j.Logger;
+import org.slf4j.Marker;
 import org.slf4j.helpers.FormattingTuple;
-import org.slf4j.helpers.MarkerIgnoringBase;
 import org.slf4j.helpers.MessageFormatter;
 
 /**
  * An instance of {@link org.slf4j.Logger} which simply calls the log method on
- * the delegate Ant task.
+ * the current Ant task obtained from {@link AntTaskHolder}.
  *
  * @author colezlaw
  */
-public class AntLoggerAdapter extends MarkerIgnoringBase {
+public class AntLoggerAdapter implements Logger {
+
 
     /**
-     * The serial version UID for serialization.
+     * The logger name.
      */
-    private static final long serialVersionUID = -8546294566287970709L;
-    /**
-     * A reference to the Ant task used for logging.
-     */
-    private transient Task task;
+    private final String name;
 
     /**
-     * Constructs an Ant Logger Adapter.
+     * Constructor.
      *
-     * @param task the Ant Task to use for logging
+     * @param name the logger name
      */
-    public AntLoggerAdapter(Task task) {
-<span class="fc" id="L49">        super();</span>
-<span class="fc" id="L50">        this.task = task;</span>
-<span class="fc" id="L51">    }</span>
+<span class="fc" id="L47">    public AntLoggerAdapter(String name) {</span>
+<span class="fc" id="L48">        this.name = Objects.requireNonNull(name, &quot;Logger name cannot be null&quot;);</span>
+<span class="fc" id="L49">    }</span>
 
-    /**
-     * Sets the current Ant task to use for logging.
-     *
-     * @param task the Ant task to use for logging
-     */
-    public void setTask(Task task) {
-<span class="nc" id="L59">        this.task = task;</span>
-<span class="nc" id="L60">    }</span>
+    @Override
+    public String getName() {
+<span class="fc" id="L53">        return name;</span>
+    }
+
+    private Task task() {
+<span class="fc" id="L57">        return AntTaskHolder.getTask();</span>
+    }
+
+    // --- TRACE ---
 
     @Override
     public boolean isTraceEnabled() {
-        // Might be a more efficient way to do this, but Ant doesn't enable or disable
-        // various levels globally - it just fires things at registered Listeners.
-<span class="fc" id="L66">        return true;</span>
+<span class="fc" id="L64">        return true;</span>
     }
 
     @Override
     public void trace(String msg) {
-<span class="pc bpc" id="L71" title="1 of 2 branches missed.">        if (task != null) {</span>
-<span class="fc" id="L72">            task.log(msg, Project.MSG_VERBOSE);</span>
+<span class="fc" id="L69">        final Task t = task();</span>
+<span class="pc bpc" id="L70" title="1 of 2 branches missed.">        if (t != null) {</span>
+<span class="fc" id="L71">            t.log(msg, Project.MSG_VERBOSE);</span>
         }
-<span class="fc" id="L74">    }</span>
+<span class="fc" id="L73">    }</span>
 
     @Override
     public void trace(String format, Object arg) {
-<span class="fc bfc" id="L78" title="All 2 branches covered.">        if (task != null) {</span>
+<span class="fc" id="L77">        final Task t = task();</span>
+<span class="fc bfc" id="L78" title="All 2 branches covered.">        if (t != null) {</span>
 <span class="fc" id="L79">            final FormattingTuple tp = MessageFormatter.format(format, arg);</span>
-<span class="fc" id="L80">            task.log(tp.getMessage(), Project.MSG_VERBOSE);</span>
+<span class="fc" id="L80">            t.log(tp.getMessage(), Project.MSG_VERBOSE);</span>
         }
 <span class="fc" id="L82">    }</span>
 
     @Override
     public void trace(String format, Object arg1, Object arg2) {
-<span class="pc bpc" id="L86" title="1 of 2 branches missed.">        if (task != null) {</span>
-<span class="fc" id="L87">            final FormattingTuple tp = MessageFormatter.format(format, arg1, arg2);</span>
-<span class="fc" id="L88">            task.log(tp.getMessage(), Project.MSG_VERBOSE);</span>
+<span class="fc" id="L86">        final Task t = task();</span>
+<span class="pc bpc" id="L87" title="1 of 2 branches missed.">        if (t != null) {</span>
+<span class="nc" id="L88">            final FormattingTuple tp = MessageFormatter.format(format, arg1, arg2);</span>
+<span class="nc" id="L89">            t.log(tp.getMessage(), Project.MSG_VERBOSE);</span>
         }
-<span class="fc" id="L90">    }</span>
+<span class="fc" id="L91">    }</span>
 
     @Override
     public void trace(String format, Object... arguments) {
-<span class="pc bpc" id="L94" title="1 of 2 branches missed.">        if (task != null) {</span>
-<span class="fc" id="L95">            final FormattingTuple tp = MessageFormatter.format(format, arguments);</span>
-<span class="fc" id="L96">            task.log(tp.getMessage(), Project.MSG_VERBOSE);</span>
+<span class="fc" id="L95">        final Task t = task();</span>
+<span class="pc bpc" id="L96" title="1 of 2 branches missed.">        if (t != null) {</span>
+<span class="nc" id="L97">            final FormattingTuple tp = MessageFormatter.arrayFormat(format, arguments);</span>
+<span class="nc" id="L98">            t.log(tp.getMessage(), Project.MSG_VERBOSE);</span>
         }
-<span class="fc" id="L98">    }</span>
+<span class="fc" id="L100">    }</span>
 
     @Override
-    public void trace(String msg, Throwable t) {
-<span class="nc bnc" id="L102" title="All 2 branches missed.">        if (task != null) {</span>
-<span class="nc" id="L103">            task.log(msg, t, Project.MSG_VERBOSE);</span>
+    public void trace(String msg, Throwable throwable) {
+<span class="nc" id="L104">        final Task t = task();</span>
+<span class="nc bnc" id="L105" title="All 2 branches missed.">        if (t != null) {</span>
+<span class="nc" id="L106">            t.log(msg, throwable, Project.MSG_VERBOSE);</span>
         }
-<span class="nc" id="L105">    }</span>
+<span class="nc" id="L108">    }</span>
+
+    @Override
+    public boolean isTraceEnabled(Marker marker) {
+<span class="nc" id="L112">        return isTraceEnabled();</span>
+    }
+
+    @Override
+    public void trace(Marker marker, String msg) {
+<span class="nc" id="L117">        trace(msg);</span>
+<span class="nc" id="L118">    }</span>
+
+    @Override
+    public void trace(Marker marker, String format, Object arg) {
+<span class="nc" id="L122">        trace(format, arg);</span>
+<span class="nc" id="L123">    }</span>
+
+    @Override
+    public void trace(Marker marker, String format, Object arg1, Object arg2) {
+<span class="nc" id="L127">        trace(format, arg1, arg2);</span>
+<span class="nc" id="L128">    }</span>
+
+    @Override
+    public void trace(Marker marker, String format, Object... argArray) {
+<span class="nc" id="L132">        trace(format, argArray);</span>
+<span class="nc" id="L133">    }</span>
+
+    @Override
+    public void trace(Marker marker, String msg, Throwable throwable) {
+<span class="nc" id="L137">        trace(msg, throwable);</span>
+<span class="nc" id="L138">    }</span>
+
+    // --- DEBUG ---
 
     @Override
     public boolean isDebugEnabled() {
-<span class="fc" id="L109">        return true;</span>
+<span class="fc" id="L144">        return true;</span>
     }
 
     @Override
     public void debug(String msg) {
-<span class="fc bfc" id="L114" title="All 2 branches covered.">        if (task != null) {</span>
-<span class="fc" id="L115">            task.log(msg, Project.MSG_DEBUG);</span>
+<span class="fc" id="L149">        final Task t = task();</span>
+<span class="fc bfc" id="L150" title="All 2 branches covered.">        if (t != null) {</span>
+<span class="fc" id="L151">            t.log(msg, Project.MSG_DEBUG);</span>
         }
-<span class="fc" id="L117">    }</span>
+<span class="fc" id="L153">    }</span>
 
     @Override
     public void debug(String format, Object arg) {
-<span class="fc bfc" id="L121" title="All 2 branches covered.">        if (task != null) {</span>
-<span class="fc" id="L122">            final FormattingTuple tp = MessageFormatter.format(format, arg);</span>
-<span class="fc" id="L123">            task.log(tp.getMessage(), Project.MSG_DEBUG);</span>
+<span class="fc" id="L157">        final Task t = task();</span>
+<span class="fc bfc" id="L158" title="All 2 branches covered.">        if (t != null) {</span>
+<span class="fc" id="L159">            final FormattingTuple tp = MessageFormatter.format(format, arg);</span>
+<span class="fc" id="L160">            t.log(tp.getMessage(), Project.MSG_DEBUG);</span>
         }
-<span class="fc" id="L125">    }</span>
+<span class="fc" id="L162">    }</span>
 
     @Override
     public void debug(String format, Object arg1, Object arg2) {
-<span class="fc bfc" id="L129" title="All 2 branches covered.">        if (task != null) {</span>
-<span class="fc" id="L130">            final FormattingTuple tp = MessageFormatter.format(format, arg1, arg2);</span>
-<span class="fc" id="L131">            task.log(tp.getMessage(), Project.MSG_DEBUG);</span>
+<span class="fc" id="L166">        final Task t = task();</span>
+<span class="fc bfc" id="L167" title="All 2 branches covered.">        if (t != null) {</span>
+<span class="fc" id="L168">            final FormattingTuple tp = MessageFormatter.format(format, arg1, arg2);</span>
+<span class="fc" id="L169">            t.log(tp.getMessage(), Project.MSG_DEBUG);</span>
         }
-<span class="fc" id="L133">    }</span>
+<span class="fc" id="L171">    }</span>
 
     @Override
     public void debug(String format, Object... arguments) {
-<span class="fc bfc" id="L137" title="All 2 branches covered.">        if (task != null) {</span>
-<span class="fc" id="L138">            final FormattingTuple tp = MessageFormatter.format(format, arguments);</span>
-<span class="fc" id="L139">            task.log(tp.getMessage(), Project.MSG_DEBUG);</span>
+<span class="fc" id="L175">        final Task t = task();</span>
+<span class="fc bfc" id="L176" title="All 2 branches covered.">        if (t != null) {</span>
+<span class="fc" id="L177">            final FormattingTuple tp = MessageFormatter.arrayFormat(format, arguments);</span>
+<span class="fc" id="L178">            t.log(tp.getMessage(), Project.MSG_DEBUG);</span>
         }
-<span class="fc" id="L141">    }</span>
+<span class="fc" id="L180">    }</span>
 
     @Override
-    public void debug(String msg, Throwable t) {
-<span class="nc bnc" id="L145" title="All 2 branches missed.">        if (task != null) {</span>
-<span class="nc" id="L146">            task.log(msg, t, Project.MSG_DEBUG);</span>
+    public void debug(String msg, Throwable throwable) {
+<span class="nc" id="L184">        final Task t = task();</span>
+<span class="nc bnc" id="L185" title="All 2 branches missed.">        if (t != null) {</span>
+<span class="nc" id="L186">            t.log(msg, throwable, Project.MSG_DEBUG);</span>
         }
-<span class="nc" id="L148">    }</span>
+<span class="nc" id="L188">    }</span>
+
+    @Override
+    public boolean isDebugEnabled(Marker marker) {
+<span class="nc" id="L192">        return isDebugEnabled();</span>
+    }
+
+    @Override
+    public void debug(Marker marker, String msg) {
+<span class="nc" id="L197">        debug(msg);</span>
+<span class="nc" id="L198">    }</span>
+
+    @Override
+    public void debug(Marker marker, String format, Object arg) {
+<span class="nc" id="L202">        debug(format, arg);</span>
+<span class="nc" id="L203">    }</span>
+
+    @Override
+    public void debug(Marker marker, String format, Object arg1, Object arg2) {
+<span class="nc" id="L207">        debug(format, arg1, arg2);</span>
+<span class="nc" id="L208">    }</span>
+
+    @Override
+    public void debug(Marker marker, String format, Object... arguments) {
+<span class="nc" id="L212">        debug(format, arguments);</span>
+<span class="nc" id="L213">    }</span>
+
+    @Override
+    public void debug(Marker marker, String msg, Throwable throwable) {
+<span class="nc" id="L217">        debug(msg, throwable);</span>
+<span class="nc" id="L218">    }</span>
+
+    // --- INFO ---
 
     @Override
     public boolean isInfoEnabled() {
-<span class="nc" id="L152">        return true;</span>
+<span class="nc" id="L224">        return true;</span>
     }
 
     @Override
     public void info(String msg) {
-<span class="pc bpc" id="L157" title="1 of 2 branches missed.">        if (task != null) {</span>
-<span class="fc" id="L158">            task.log(msg, Project.MSG_INFO);</span>
+<span class="fc" id="L229">        final Task t = task();</span>
+<span class="fc bfc" id="L230" title="All 2 branches covered.">        if (t != null) {</span>
+<span class="fc" id="L231">            t.log(msg, Project.MSG_INFO);</span>
         }
-<span class="fc" id="L160">    }</span>
+<span class="fc" id="L233">    }</span>
 
     @Override
     public void info(String format, Object arg) {
-<span class="pc bpc" id="L164" title="1 of 2 branches missed.">        if (task != null) {</span>
-<span class="fc" id="L165">            final FormattingTuple tp = MessageFormatter.format(format, arg);</span>
-<span class="fc" id="L166">            task.log(tp.getMessage(), Project.MSG_INFO);</span>
+<span class="fc" id="L237">        final Task t = task();</span>
+<span class="pc bpc" id="L238" title="1 of 2 branches missed.">        if (t != null) {</span>
+<span class="fc" id="L239">            final FormattingTuple tp = MessageFormatter.format(format, arg);</span>
+<span class="fc" id="L240">            t.log(tp.getMessage(), Project.MSG_INFO);</span>
         }
-<span class="fc" id="L168">    }</span>
+<span class="fc" id="L242">    }</span>
 
     @Override
     public void info(String format, Object arg1, Object arg2) {
-<span class="pc bpc" id="L172" title="1 of 2 branches missed.">        if (task != null) {</span>
-<span class="fc" id="L173">            final FormattingTuple tp = MessageFormatter.format(format, arg1, arg2);</span>
-<span class="fc" id="L174">            task.log(tp.getMessage(), Project.MSG_INFO);</span>
+<span class="fc" id="L246">        final Task t = task();</span>
+<span class="pc bpc" id="L247" title="1 of 2 branches missed.">        if (t != null) {</span>
+<span class="fc" id="L248">            final FormattingTuple tp = MessageFormatter.format(format, arg1, arg2);</span>
+<span class="fc" id="L249">            t.log(tp.getMessage(), Project.MSG_INFO);</span>
         }
-<span class="fc" id="L176">    }</span>
+<span class="fc" id="L251">    }</span>
 
     @Override
     public void info(String format, Object... arguments) {
-<span class="nc bnc" id="L180" title="All 2 branches missed.">        if (task != null) {</span>
-<span class="nc" id="L181">            final FormattingTuple tp = MessageFormatter.format(format, arguments);</span>
-<span class="nc" id="L182">            task.log(tp.getMessage(), Project.MSG_INFO);</span>
+<span class="nc" id="L255">        final Task t = task();</span>
+<span class="nc bnc" id="L256" title="All 2 branches missed.">        if (t != null) {</span>
+<span class="nc" id="L257">            final FormattingTuple tp = MessageFormatter.arrayFormat(format, arguments);</span>
+<span class="nc" id="L258">            t.log(tp.getMessage(), Project.MSG_INFO);</span>
         }
-<span class="nc" id="L184">    }</span>
+<span class="nc" id="L260">    }</span>
 
     @Override
-    public void info(String msg, Throwable t) {
-<span class="nc bnc" id="L188" title="All 2 branches missed.">        if (task != null) {</span>
-<span class="nc" id="L189">            task.log(msg, t, Project.MSG_INFO);</span>
+    public void info(String msg, Throwable throwable) {
+<span class="fc" id="L264">        final Task t = task();</span>
+<span class="pc bpc" id="L265" title="1 of 2 branches missed.">        if (t != null) {</span>
+<span class="fc" id="L266">            t.log(msg, throwable, Project.MSG_INFO);</span>
         }
-<span class="nc" id="L191">    }</span>
+<span class="fc" id="L268">    }</span>
+
+    @Override
+    public boolean isInfoEnabled(Marker marker) {
+<span class="nc" id="L272">        return isInfoEnabled();</span>
+    }
+
+    @Override
+    public void info(Marker marker, String msg) {
+<span class="nc" id="L277">        info(msg);</span>
+<span class="nc" id="L278">    }</span>
+
+    @Override
+    public void info(Marker marker, String format, Object arg) {
+<span class="nc" id="L282">        info(format, arg);</span>
+<span class="nc" id="L283">    }</span>
+
+    @Override
+    public void info(Marker marker, String format, Object arg1, Object arg2) {
+<span class="nc" id="L287">        info(format, arg1, arg2);</span>
+<span class="nc" id="L288">    }</span>
+
+    @Override
+    public void info(Marker marker, String format, Object... arguments) {
+<span class="nc" id="L292">        info(format, arguments);</span>
+<span class="nc" id="L293">    }</span>
+
+    @Override
+    public void info(Marker marker, String msg, Throwable throwable) {
+<span class="nc" id="L297">        info(msg, throwable);</span>
+<span class="nc" id="L298">    }</span>
+
+    // --- WARN ---
 
     @Override
     public boolean isWarnEnabled() {
-<span class="nc" id="L195">        return true;</span>
+<span class="nc" id="L304">        return true;</span>
     }
 
     @Override
     public void warn(String msg) {
-<span class="nc bnc" id="L200" title="All 2 branches missed.">        if (task != null) {</span>
-<span class="nc" id="L201">            task.log(msg, Project.MSG_WARN);</span>
+<span class="fc" id="L309">        final Task t = task();</span>
+<span class="pc bpc" id="L310" title="1 of 2 branches missed.">        if (t != null) {</span>
+<span class="fc" id="L311">            t.log(msg, Project.MSG_WARN);</span>
         }
-<span class="nc" id="L203">    }</span>
+<span class="fc" id="L313">    }</span>
 
     @Override
     public void warn(String format, Object arg) {
-<span class="pc bpc" id="L207" title="1 of 2 branches missed.">        if (task != null) {</span>
-<span class="fc" id="L208">            final FormattingTuple tp = MessageFormatter.format(format, arg);</span>
-<span class="fc" id="L209">            task.log(tp.getMessage(), Project.MSG_WARN);</span>
+<span class="fc" id="L317">        final Task t = task();</span>
+<span class="pc bpc" id="L318" title="1 of 2 branches missed.">        if (t != null) {</span>
+<span class="fc" id="L319">            final FormattingTuple tp = MessageFormatter.format(format, arg);</span>
+<span class="fc" id="L320">            t.log(tp.getMessage(), Project.MSG_WARN);</span>
         }
-<span class="fc" id="L211">    }</span>
+<span class="fc" id="L322">    }</span>
 
     @Override
     public void warn(String format, Object... arguments) {
-<span class="nc bnc" id="L215" title="All 2 branches missed.">        if (task != null) {</span>
-<span class="nc" id="L216">            final FormattingTuple tp = MessageFormatter.format(format, arguments);</span>
-<span class="nc" id="L217">            task.log(tp.getMessage(), Project.MSG_WARN);</span>
+<span class="nc" id="L326">        final Task t = task();</span>
+<span class="nc bnc" id="L327" title="All 2 branches missed.">        if (t != null) {</span>
+<span class="nc" id="L328">            final FormattingTuple tp = MessageFormatter.arrayFormat(format, arguments);</span>
+<span class="nc" id="L329">            t.log(tp.getMessage(), Project.MSG_WARN);</span>
         }
-<span class="nc" id="L219">    }</span>
+<span class="nc" id="L331">    }</span>
 
     @Override
     public void warn(String format, Object arg1, Object arg2) {
-<span class="nc bnc" id="L223" title="All 2 branches missed.">        if (task != null) {</span>
-<span class="nc" id="L224">            final FormattingTuple tp = MessageFormatter.format(format, arg1, arg2);</span>
-<span class="nc" id="L225">            task.log(tp.getMessage(), Project.MSG_WARN);</span>
+<span class="nc" id="L335">        final Task t = task();</span>
+<span class="nc bnc" id="L336" title="All 2 branches missed.">        if (t != null) {</span>
+<span class="nc" id="L337">            final FormattingTuple tp = MessageFormatter.format(format, arg1, arg2);</span>
+<span class="nc" id="L338">            t.log(tp.getMessage(), Project.MSG_WARN);</span>
         }
-<span class="nc" id="L227">    }</span>
+<span class="nc" id="L340">    }</span>
 
     @Override
-    public void warn(String msg, Throwable t) {
-<span class="nc bnc" id="L231" title="All 2 branches missed.">        if (task != null) {</span>
-<span class="nc" id="L232">            task.log(msg, t, Project.MSG_WARN);</span>
+    public void warn(String msg, Throwable throwable) {
+<span class="fc" id="L344">        final Task t = task();</span>
+<span class="pc bpc" id="L345" title="1 of 2 branches missed.">        if (t != null) {</span>
+<span class="fc" id="L346">            t.log(msg, throwable, Project.MSG_WARN);</span>
         }
-<span class="nc" id="L234">    }</span>
+<span class="fc" id="L348">    }</span>
+
+    @Override
+    public boolean isWarnEnabled(Marker marker) {
+<span class="nc" id="L352">        return isWarnEnabled();</span>
+    }
+
+    @Override
+    public void warn(Marker marker, String msg) {
+<span class="nc" id="L357">        warn(msg);</span>
+<span class="nc" id="L358">    }</span>
+
+    @Override
+    public void warn(Marker marker, String format, Object arg) {
+<span class="nc" id="L362">        warn(format, arg);</span>
+<span class="nc" id="L363">    }</span>
+
+    @Override
+    public void warn(Marker marker, String format, Object arg1, Object arg2) {
+<span class="nc" id="L367">        warn(format, arg1, arg2);</span>
+<span class="nc" id="L368">    }</span>
+
+    @Override
+    public void warn(Marker marker, String format, Object... arguments) {
+<span class="nc" id="L372">        warn(format, arguments);</span>
+<span class="nc" id="L373">    }</span>
+
+    @Override
+    public void warn(Marker marker, String msg, Throwable throwable) {
+<span class="nc" id="L377">        warn(msg, throwable);</span>
+<span class="nc" id="L378">    }</span>
+
+    // --- ERROR ---
 
     @Override
     public boolean isErrorEnabled() {
-<span class="nc" id="L238">        return true;</span>
+<span class="nc" id="L384">        return true;</span>
     }
 
     @Override
     public void error(String msg) {
-<span class="nc bnc" id="L243" title="All 2 branches missed.">        if (task != null) {</span>
-<span class="nc" id="L244">            task.log(msg, Project.MSG_ERR);</span>
+<span class="fc" id="L389">        final Task t = task();</span>
+<span class="fc bfc" id="L390" title="All 2 branches covered.">        if (t != null) {</span>
+<span class="fc" id="L391">            t.log(msg, Project.MSG_ERR);</span>
         }
-<span class="nc" id="L246">    }</span>
+<span class="fc" id="L393">    }</span>
 
     @Override
     public void error(String format, Object arg) {
-<span class="nc bnc" id="L250" title="All 2 branches missed.">        if (task != null) {</span>
-<span class="nc" id="L251">            final FormattingTuple tp = MessageFormatter.format(format, arg);</span>
-<span class="nc" id="L252">            task.log(tp.getMessage(), Project.MSG_ERR);</span>
+<span class="nc" id="L397">        final Task t = task();</span>
+<span class="nc bnc" id="L398" title="All 2 branches missed.">        if (t != null) {</span>
+<span class="nc" id="L399">            final FormattingTuple tp = MessageFormatter.format(format, arg);</span>
+<span class="nc" id="L400">            t.log(tp.getMessage(), Project.MSG_ERR);</span>
         }
-<span class="nc" id="L254">    }</span>
+<span class="nc" id="L402">    }</span>
 
     @Override
     public void error(String format, Object arg1, Object arg2) {
-<span class="nc bnc" id="L258" title="All 2 branches missed.">        if (task != null) {</span>
-<span class="nc" id="L259">            final FormattingTuple tp = MessageFormatter.format(format, arg1, arg2);</span>
-<span class="nc" id="L260">            task.log(tp.getMessage(), Project.MSG_ERR);</span>
+<span class="nc" id="L406">        final Task t = task();</span>
+<span class="nc bnc" id="L407" title="All 2 branches missed.">        if (t != null) {</span>
+<span class="nc" id="L408">            final FormattingTuple tp = MessageFormatter.format(format, arg1, arg2);</span>
+<span class="nc" id="L409">            t.log(tp.getMessage(), Project.MSG_ERR);</span>
         }
-<span class="nc" id="L262">    }</span>
+<span class="nc" id="L411">    }</span>
 
     @Override
     public void error(String format, Object... arguments) {
-<span class="nc bnc" id="L266" title="All 2 branches missed.">        if (task != null) {</span>
-<span class="nc" id="L267">            final FormattingTuple tp = MessageFormatter.format(format, arguments);</span>
-<span class="nc" id="L268">            task.log(tp.getMessage(), Project.MSG_ERR);</span>
+<span class="nc" id="L415">        final Task t = task();</span>
+<span class="nc bnc" id="L416" title="All 2 branches missed.">        if (t != null) {</span>
+<span class="nc" id="L417">            final FormattingTuple tp = MessageFormatter.arrayFormat(format, arguments);</span>
+<span class="nc" id="L418">            t.log(tp.getMessage(), Project.MSG_ERR);</span>
         }
-<span class="nc" id="L270">    }</span>
+<span class="nc" id="L420">    }</span>
 
     @Override
-    public void error(String msg, Throwable t) {
-<span class="nc bnc" id="L274" title="All 2 branches missed.">        if (task != null) {</span>
-<span class="nc" id="L275">            task.log(msg, t, Project.MSG_ERR);</span>
+    public void error(String msg, Throwable throwable) {
+<span class="nc" id="L424">        final Task t = task();</span>
+<span class="nc bnc" id="L425" title="All 2 branches missed.">        if (t != null) {</span>
+<span class="nc" id="L426">            t.log(msg, throwable, Project.MSG_ERR);</span>
         }
-<span class="nc" id="L277">    }</span>
+<span class="nc" id="L428">    }</span>
+
+    @Override
+    public boolean isErrorEnabled(Marker marker) {
+<span class="nc" id="L432">        return isErrorEnabled();</span>
+    }
+
+    @Override
+    public void error(Marker marker, String msg) {
+<span class="nc" id="L437">        error(msg);</span>
+<span class="nc" id="L438">    }</span>
+
+    @Override
+    public void error(Marker marker, String format, Object arg) {
+<span class="nc" id="L442">        error(format, arg);</span>
+<span class="nc" id="L443">    }</span>
+
+    @Override
+    public void error(Marker marker, String format, Object arg1, Object arg2) {
+<span class="nc" id="L447">        error(format, arg1, arg2);</span>
+<span class="nc" id="L448">    }</span>
+
+    @Override
+    public void error(Marker marker, String format, Object... arguments) {
+<span class="nc" id="L452">        error(format, arguments);</span>
+<span class="nc" id="L453">    }</span>
+
+    @Override
+    public void error(Marker marker, String msg, Throwable throwable) {
+<span class="nc" id="L457">        error(msg, throwable);</span>
+<span class="nc" id="L458">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.14.202510111229</span></div></body></html>

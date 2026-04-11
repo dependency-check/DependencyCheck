@@ -28,11 +28,11 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 import javax.annotation.concurrent.NotThreadSafe;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.parsers.SAXParser;
+
 import org.apache.commons.io.ByteOrderMark;
 import org.apache.commons.io.input.BOMInputStream;
 
-import org.owasp.dependencycheck.utils.FileUtils;
+import org.owasp.dependencycheck.utils.AutoCloseableInputSource;
 import org.owasp.dependencycheck.utils.XmlUtils;
 
 import org.slf4j.Logger;
@@ -41,33 +41,20 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 
+import static org.owasp.dependencycheck.utils.AutoCloseableInputSource.fromResource;
+
 /**
  * A simple validating parser for XML Hint Rules.
  *
  * @author Jeremy Long
  */
 @NotThreadSafe
-<span class="fc" id="L50">public class HintParser {</span>
+<span class="fc" id="L52">public class HintParser {</span>
 
     /**
      * The logger.
      */
-<span class="fc" id="L55">    private static final Logger LOGGER = LoggerFactory.getLogger(HintParser.class);</span>
-    /**
-     * JAXP Schema Language. Source:
-     * http://docs.oracle.com/javase/tutorial/jaxp/sax/validation.html
-     */
-    public static final String JAXP_SCHEMA_LANGUAGE = &quot;http://java.sun.com/xml/jaxp/properties/schemaLanguage&quot;;
-    /**
-     * W3C XML Schema. Source:
-     * http://docs.oracle.com/javase/tutorial/jaxp/sax/validation.html
-     */
-    public static final String W3C_XML_SCHEMA = &quot;http://www.w3.org/2001/XMLSchema&quot;;
-    /**
-     * JAXP Schema Source. Source:
-     * http://docs.oracle.com/javase/tutorial/jaxp/sax/validation.html
-     */
-    public static final String JAXP_SCHEMA_SOURCE = &quot;http://java.sun.com/xml/jaxp/properties/schemaSource&quot;;
+<span class="fc" id="L57">    private static final Logger LOGGER = LoggerFactory.getLogger(HintParser.class);</span>
 
     /**
      * The schema for the hint XML files.
@@ -105,7 +92,7 @@ import org.xml.sax.XMLReader;
      */
     @SuppressWarnings({&quot;EI_EXPOSE_REP&quot;, &quot;EI_EXPOSE_REP2&quot;})
     public List&lt;HintRule&gt; getHintRules() {
-<span class="fc" id="L108">        return hintRules;</span>
+<span class="fc" id="L95">        return hintRules;</span>
     }
 
     /**
@@ -114,7 +101,7 @@ import org.xml.sax.XMLReader;
      * @return the vendor duplicating hint rules
      */
     public List&lt;VendorDuplicatingHintRule&gt; getVendorDuplicatingHintRules() {
-<span class="fc" id="L117">        return vendorDuplicatingHintRules;</span>
+<span class="fc" id="L104">        return vendorDuplicatingHintRules;</span>
     }
 
     /**
@@ -125,13 +112,13 @@ import org.xml.sax.XMLReader;
      */
     @SuppressFBWarnings(justification = &quot;try with resources will clean up the input stream&quot;, value = {&quot;OBL_UNSATISFIED_OBLIGATION&quot;})
     public void parseHints(File file) throws HintParseException {
-<span class="fc" id="L128">        try (InputStream fis = new FileInputStream(file)) {</span>
-<span class="fc" id="L129">            parseHints(fis);</span>
-<span class="fc" id="L130">        } catch (SAXException | IOException ex) {</span>
-<span class="fc" id="L131">            LOGGER.debug(&quot;&quot;, ex);</span>
-<span class="fc" id="L132">            throw new HintParseException(ex);</span>
-<span class="fc" id="L133">        }</span>
-<span class="fc" id="L134">    }</span>
+<span class="fc" id="L115">        try (InputStream fis = new FileInputStream(file)) {</span>
+<span class="fc" id="L116">            parseHints(fis);</span>
+<span class="fc" id="L117">        } catch (SAXException | IOException ex) {</span>
+<span class="fc" id="L118">            LOGGER.debug(&quot;&quot;, ex);</span>
+<span class="fc" id="L119">            throw new HintParseException(ex);</span>
+<span class="fc" id="L120">        }</span>
+<span class="fc" id="L121">    }</span>
 
     /**
      * Parses the given XML stream and returns a list of the hint rules
@@ -142,39 +129,37 @@ import org.xml.sax.XMLReader;
      * @throws SAXException thrown if the XML cannot be parsed
      */
     public void parseHints(InputStream inputStream) throws HintParseException, SAXException {
-        try (
-<span class="fc" id="L146">                InputStream schemaStream14 = FileUtils.getResourceAsStream(HINT_SCHEMA_1_4);</span>
-<span class="fc" id="L147">                InputStream schemaStream13 = FileUtils.getResourceAsStream(HINT_SCHEMA_1_3);</span>
-<span class="fc" id="L148">                InputStream schemaStream12 = FileUtils.getResourceAsStream(HINT_SCHEMA_1_2);</span>
-<span class="fc" id="L149">                InputStream schemaStream11 = FileUtils.getResourceAsStream(HINT_SCHEMA_1_1)) {</span>
+<span class="fc" id="L132">        try (AutoCloseableInputSource schemaStream14 = fromResource(HINT_SCHEMA_1_4);</span>
+<span class="fc" id="L133">             AutoCloseableInputSource schemaStream13 = fromResource(HINT_SCHEMA_1_3);</span>
+<span class="fc" id="L134">             AutoCloseableInputSource schemaStream12 = fromResource(HINT_SCHEMA_1_2);</span>
+<span class="fc" id="L135">             AutoCloseableInputSource schemaStream11 = fromResource(HINT_SCHEMA_1_1)) {</span>
 
-<span class="fc" id="L151">            final BOMInputStream bomStream = BOMInputStream.builder().setInputStream(inputStream).get();</span>
-<span class="fc" id="L152">            final ByteOrderMark bom = bomStream.getBOM();</span>
-<span class="fc" id="L153">            final String defaultEncoding = StandardCharsets.UTF_8.name();</span>
-<span class="pc bpc" id="L154" title="1 of 2 branches missed.">            final String charsetName = bom == null ? defaultEncoding : bom.getCharsetName();</span>
+<span class="fc" id="L137">            final BOMInputStream bomStream = BOMInputStream.builder().setInputStream(inputStream).get();</span>
+<span class="fc" id="L138">            final ByteOrderMark bom = bomStream.getBOM();</span>
+<span class="fc" id="L139">            final String defaultEncoding = StandardCharsets.UTF_8.name();</span>
+<span class="pc bpc" id="L140" title="1 of 2 branches missed.">            final String charsetName = bom == null ? defaultEncoding : bom.getCharsetName();</span>
 
-<span class="fc" id="L156">            final HintHandler handler = new HintHandler();</span>
-<span class="fc" id="L157">            final SAXParser saxParser = XmlUtils.buildSecureSaxParser(schemaStream14, schemaStream13, schemaStream12, schemaStream11);</span>
-<span class="fc" id="L158">            final XMLReader xmlReader = saxParser.getXMLReader();</span>
-<span class="fc" id="L159">            xmlReader.setErrorHandler(new HintErrorHandler());</span>
-<span class="fc" id="L160">            xmlReader.setContentHandler(handler);</span>
-<span class="fc" id="L161">            try (Reader reader = new InputStreamReader(bomStream, charsetName)) {</span>
-<span class="fc" id="L162">                final InputSource in = new InputSource(reader);</span>
-<span class="fc" id="L163">                xmlReader.parse(in);</span>
-<span class="fc" id="L164">                this.hintRules = handler.getHintRules();</span>
-<span class="fc" id="L165">                this.vendorDuplicatingHintRules = handler.getVendorDuplicatingHintRules();</span>
+<span class="fc" id="L142">            final HintHandler handler = new HintHandler();</span>
+<span class="fc" id="L143">            final XMLReader xmlReader = XmlUtils.buildSecureValidatingXmlReader(schemaStream14, schemaStream13, schemaStream12, schemaStream11);</span>
+<span class="fc" id="L144">            xmlReader.setErrorHandler(new HintErrorHandler());</span>
+<span class="fc" id="L145">            xmlReader.setContentHandler(handler);</span>
+<span class="fc" id="L146">            try (Reader reader = new InputStreamReader(bomStream, charsetName)) {</span>
+<span class="fc" id="L147">                final InputSource in = new InputSource(reader);</span>
+<span class="fc" id="L148">                xmlReader.parse(in);</span>
+<span class="fc" id="L149">                this.hintRules = handler.getHintRules();</span>
+<span class="fc" id="L150">                this.vendorDuplicatingHintRules = handler.getVendorDuplicatingHintRules();</span>
             }
-<span class="nc" id="L167">        } catch (ParserConfigurationException | IOException ex) {</span>
-<span class="nc" id="L168">            LOGGER.debug(&quot;&quot;, ex);</span>
-<span class="nc" id="L169">            throw new HintParseException(ex);</span>
-<span class="fc" id="L170">        } catch (SAXException ex) {</span>
-<span class="pc bpc" id="L171" title="1 of 2 branches missed.">            if (ex.getMessage().contains(&quot;Cannot find the declaration of element 'hints'.&quot;)) {</span>
-<span class="nc" id="L172">                throw ex;</span>
+<span class="nc" id="L152">        } catch (ParserConfigurationException | IOException ex) {</span>
+<span class="nc" id="L153">            LOGGER.debug(&quot;&quot;, ex);</span>
+<span class="nc" id="L154">            throw new HintParseException(ex);</span>
+<span class="fc" id="L155">        } catch (SAXException ex) {</span>
+<span class="pc bpc" id="L156" title="1 of 2 branches missed.">            if (ex.getMessage().contains(&quot;Cannot find the declaration of element 'hints'.&quot;)) {</span>
+<span class="nc" id="L157">                throw ex;</span>
             } else {
-<span class="fc" id="L174">                LOGGER.debug(&quot;&quot;, ex);</span>
-<span class="fc" id="L175">                throw new HintParseException(ex);</span>
+<span class="fc" id="L159">                LOGGER.debug(&quot;&quot;, ex);</span>
+<span class="fc" id="L160">                throw new HintParseException(ex);</span>
             }
-<span class="fc" id="L177">        }</span>
-<span class="fc" id="L178">    }</span>
+<span class="fc" id="L162">        }</span>
+<span class="fc" id="L163">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.14.202510111229</span></div></body></html>

@@ -29,7 +29,7 @@
 <a class="jxr_linenumber" name="L21" href="#L21">21</a>  <strong class="jxr_keyword">import</strong> org.apache.commons.lang3.builder.CompareToBuilder;
 <a class="jxr_linenumber" name="L22" href="#L22">22</a>  <strong class="jxr_keyword">import</strong> org.apache.commons.lang3.builder.EqualsBuilder;
 <a class="jxr_linenumber" name="L23" href="#L23">23</a>  <strong class="jxr_keyword">import</strong> org.apache.commons.lang3.builder.HashCodeBuilder;
-<a class="jxr_linenumber" name="L24" href="#L24">24</a>  <strong class="jxr_keyword">import</strong> org.jetbrains.annotations.NotNull;
+<a class="jxr_linenumber" name="L24" href="#L24">24</a>  <strong class="jxr_keyword">import</strong> org.jspecify.annotations.NonNull;
 <a class="jxr_linenumber" name="L25" href="#L25">25</a>  <strong class="jxr_keyword">import</strong> org.owasp.dependencycheck.dependency.Confidence;
 <a class="jxr_linenumber" name="L26" href="#L26">26</a>  
 <a class="jxr_linenumber" name="L27" href="#L27">27</a>  <em class="jxr_javadoccomment">/**</em>
@@ -197,7 +197,7 @@
 <a class="jxr_linenumber" name="L189" href="#L189">189</a> <em class="jxr_javadoccomment">     * @return an integer indicating the ordering</em>
 <a class="jxr_linenumber" name="L190" href="#L190">190</a> <em class="jxr_javadoccomment">     */</em>
 <a class="jxr_linenumber" name="L191" href="#L191">191</a>     @Override
-<a class="jxr_linenumber" name="L192" href="#L192">192</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">int</strong> compareTo(@NotNull <a href="../../../../../org/owasp/dependencycheck/dependency/naming/Identifier.html">Identifier</a> o) {
+<a class="jxr_linenumber" name="L192" href="#L192">192</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">int</strong> compareTo(@NonNull <a href="../../../../../org/owasp/dependencycheck/dependency/naming/Identifier.html">Identifier</a> o) {
 <a class="jxr_linenumber" name="L193" href="#L193">193</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> CompareToBuilder()
 <a class="jxr_linenumber" name="L194" href="#L194">194</a>                 .append(<strong class="jxr_keyword">this</strong>.value, o.toString())
 <a class="jxr_linenumber" name="L195" href="#L195">195</a>                 .append(<strong class="jxr_keyword">this</strong>.url, o.getUrl())

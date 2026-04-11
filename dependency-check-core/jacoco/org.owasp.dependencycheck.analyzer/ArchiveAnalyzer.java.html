@@ -598,8 +598,8 @@ public class ArchiveAnalyzer extends AbstractFileTypeAnalyzer {
 <span class="fc" id="L598">                    extractAcceptedFile(input, file);</span>
                 }
 <span class="fc" id="L600">            }</span>
-<span class="nc" id="L601">        } catch (IOException | AnalysisException ex) {</span>
-<span class="nc" id="L602">            throw new ArchiveExtractionException(ex);</span>
+<span class="fc" id="L601">        } catch (IOException | AnalysisException ex) {</span>
+<span class="fc" id="L602">            throw new ArchiveExtractionException(ex);</span>
         } finally {
 <span class="fc" id="L604">            FileUtils.close(input);</span>
         }

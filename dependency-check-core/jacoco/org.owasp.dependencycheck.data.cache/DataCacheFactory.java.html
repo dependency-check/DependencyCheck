@@ -104,26 +104,22 @@ public class DataCacheFactory {
 <span class="nc" id="L104">                    throw new CacheException(&quot;Unable to create disk cache: &quot; + cacheDirectory);</span>
                 }
 <span class="fc" id="L106">                try (InputStream in = FileUtils.getResourceAsStream(CACHE_PROPERTIES)) {</span>
-<span class="pc bpc" id="L107" title="1 of 2 branches missed.">                    if (in == null) {</span>
-<span class="nc" id="L108">                        throw new RuntimeException(&quot;Cache properties `&quot; + CACHE_PROPERTIES + &quot;` could not be found&quot;);</span>
+<span class="fc" id="L107">                    final Properties properties = new Properties();</span>
+<span class="fc" id="L108">                    properties.load(in);</span>
+<span class="fc" id="L109">                    properties.put(&quot;jcs.auxiliary.ODC.attributes.DiskPath&quot;, cacheDirectory.getCanonicalPath());</span>
+<span class="fc bfc" id="L110" title="All 2 branches covered.">                    for (CacheType t : CacheType.values()) {</span>
+<span class="fc" id="L111">                        final File fp = new File(cacheDirectory, t.toString());</span>
+<span class="fc" id="L112">                        properties.put(&quot;jcs.auxiliary.&quot; + t + &quot;.attributes.DiskPath&quot;, fp.getCanonicalPath());</span>
                     }
 
-<span class="fc" id="L111">                    final Properties properties = new Properties();</span>
-<span class="fc" id="L112">                    properties.load(in);</span>
-<span class="fc" id="L113">                    properties.put(&quot;jcs.auxiliary.ODC.attributes.DiskPath&quot;, cacheDirectory.getCanonicalPath());</span>
-<span class="fc bfc" id="L114" title="All 2 branches covered.">                    for (CacheType t : CacheType.values()) {</span>
-<span class="fc" id="L115">                        final File fp = new File(cacheDirectory, t.toString());</span>
-<span class="fc" id="L116">                        properties.put(&quot;jcs.auxiliary.&quot; + t + &quot;.attributes.DiskPath&quot;, fp.getCanonicalPath());</span>
-                    }
-
-<span class="fc" id="L119">                    JCS.setConfigProperties(properties);</span>
-<span class="fc" id="L120">                    initialized = true;</span>
-<span class="nc" id="L121">                } catch (IOException ex) {</span>
-<span class="nc" id="L122">                    throw new CacheException(&quot;Error creating disk cache&quot;, ex);</span>
-<span class="fc" id="L123">                }</span>
+<span class="fc" id="L115">                    JCS.setConfigProperties(properties);</span>
+<span class="fc" id="L116">                    initialized = true;</span>
+<span class="nc" id="L117">                } catch (IOException ex) {</span>
+<span class="nc" id="L118">                    throw new CacheException(&quot;Error creating disk cache&quot;, ex);</span>
+<span class="fc" id="L119">                }</span>
             }
-<span class="fc" id="L125">        }</span>
-<span class="fc" id="L126">    }</span>
+<span class="fc" id="L121">        }</span>
+<span class="fc" id="L122">    }</span>
 
     /**
      * Returns the data cache for Node Audit.
@@ -132,21 +128,21 @@ public class DataCacheFactory {
      */
     public DataCache&lt;List&lt;Advisory&gt;&gt; getNodeAuditCache() {
         try {
-<span class="fc" id="L135">            final ICompositeCacheAttributes attr = new CompositeCacheAttributes();</span>
-<span class="fc" id="L136">            attr.setUseDisk(true);</span>
-<span class="fc" id="L137">            attr.setUseLateral(false);</span>
-<span class="fc" id="L138">            attr.setUseRemote(false);</span>
-<span class="fc" id="L139">            final CacheAccess&lt;String, List&lt;Advisory&gt;&gt; ca = JCS.getInstance(&quot;NODEAUDIT&quot;, attr);</span>
-<span class="fc" id="L140">            final DataCache&lt;List&lt;Advisory&gt;&gt; dc = new DataCache&lt;&gt;(ca);</span>
-<span class="fc" id="L141">            return dc;</span>
-<span class="nc" id="L142">        } catch (Throwable ex) {</span>
+<span class="fc" id="L131">            final ICompositeCacheAttributes attr = new CompositeCacheAttributes();</span>
+<span class="fc" id="L132">            attr.setUseDisk(true);</span>
+<span class="fc" id="L133">            attr.setUseLateral(false);</span>
+<span class="fc" id="L134">            attr.setUseRemote(false);</span>
+<span class="fc" id="L135">            final CacheAccess&lt;String, List&lt;Advisory&gt;&gt; ca = JCS.getInstance(&quot;NODEAUDIT&quot;, attr);</span>
+<span class="fc" id="L136">            final DataCache&lt;List&lt;Advisory&gt;&gt; dc = new DataCache&lt;&gt;(ca);</span>
+<span class="fc" id="L137">            return dc;</span>
+<span class="nc" id="L138">        } catch (Throwable ex) {</span>
             //some reports of class not found exception, log and disable the cache.
-<span class="nc bnc" id="L144" title="All 2 branches missed.">            if (ex instanceof CacheException) {</span>
-<span class="nc" id="L145">                throw ex;</span>
+<span class="nc bnc" id="L140" title="All 2 branches missed.">            if (ex instanceof CacheException) {</span>
+<span class="nc" id="L141">                throw ex;</span>
             }
             //TODO we may want to instrument w/ jdiagnostics per #2509
-<span class="nc" id="L148">            LOGGER.debug(&quot;Error constructing cache for node audit files&quot;, ex);</span>
-<span class="nc" id="L149">            throw new CacheException(ex);</span>
+<span class="nc" id="L144">            LOGGER.debug(&quot;Error constructing cache for node audit files&quot;, ex);</span>
+<span class="nc" id="L145">            throw new CacheException(ex);</span>
         }
     }
 
@@ -157,21 +153,21 @@ public class DataCacheFactory {
      */
     public DataCache&lt;Model&gt; getPomCache() {
         try {
-<span class="fc" id="L160">            final ICompositeCacheAttributes attr = new CompositeCacheAttributes();</span>
-<span class="fc" id="L161">            attr.setUseDisk(true);</span>
-<span class="fc" id="L162">            attr.setUseLateral(false);</span>
-<span class="fc" id="L163">            attr.setUseRemote(false);</span>
-<span class="fc" id="L164">            final CacheAccess&lt;String, Model&gt; ca = JCS.getInstance(&quot;POM&quot;, attr);</span>
-<span class="fc" id="L165">            final DataCache&lt;Model&gt; dc = new DataCache&lt;&gt;(ca);</span>
-<span class="fc" id="L166">            return dc;</span>
-<span class="nc" id="L167">        } catch (Throwable ex) {</span>
+<span class="fc" id="L156">            final ICompositeCacheAttributes attr = new CompositeCacheAttributes();</span>
+<span class="fc" id="L157">            attr.setUseDisk(true);</span>
+<span class="fc" id="L158">            attr.setUseLateral(false);</span>
+<span class="fc" id="L159">            attr.setUseRemote(false);</span>
+<span class="fc" id="L160">            final CacheAccess&lt;String, Model&gt; ca = JCS.getInstance(&quot;POM&quot;, attr);</span>
+<span class="fc" id="L161">            final DataCache&lt;Model&gt; dc = new DataCache&lt;&gt;(ca);</span>
+<span class="fc" id="L162">            return dc;</span>
+<span class="nc" id="L163">        } catch (Throwable ex) {</span>
             //some reports of class not found exception, log and disable the cache.
-<span class="nc bnc" id="L169" title="All 2 branches missed.">            if (ex instanceof CacheException) {</span>
-<span class="nc" id="L170">                throw ex;</span>
+<span class="nc bnc" id="L165" title="All 2 branches missed.">            if (ex instanceof CacheException) {</span>
+<span class="nc" id="L166">                throw ex;</span>
             }
             //TODO we may want to instrument w/ jdiagnostics per #2509
-<span class="nc" id="L173">            LOGGER.debug(&quot;Error constructing cache for POM files&quot;, ex);</span>
-<span class="nc" id="L174">            throw new CacheException(ex);</span>
+<span class="nc" id="L169">            LOGGER.debug(&quot;Error constructing cache for POM files&quot;, ex);</span>
+<span class="nc" id="L170">            throw new CacheException(ex);</span>
         }
     }
 
@@ -182,21 +178,21 @@ public class DataCacheFactory {
      */
     public DataCache&lt;List&lt;MavenArtifact&gt;&gt; getCentralCache() {
         try {
-<span class="fc" id="L185">            final ICompositeCacheAttributes attr = new CompositeCacheAttributes();</span>
-<span class="fc" id="L186">            attr.setUseDisk(true);</span>
-<span class="fc" id="L187">            attr.setUseLateral(false);</span>
-<span class="fc" id="L188">            attr.setUseRemote(false);</span>
-<span class="fc" id="L189">            final CacheAccess&lt;String, List&lt;MavenArtifact&gt;&gt; ca = JCS.getInstance(&quot;CENTRAL&quot;, attr);</span>
-<span class="fc" id="L190">            final DataCache&lt;List&lt;MavenArtifact&gt;&gt; dc = new DataCache&lt;&gt;(ca);</span>
-<span class="fc" id="L191">            return dc;</span>
-<span class="nc" id="L192">        } catch (Throwable ex) {</span>
+<span class="fc" id="L181">            final ICompositeCacheAttributes attr = new CompositeCacheAttributes();</span>
+<span class="fc" id="L182">            attr.setUseDisk(true);</span>
+<span class="fc" id="L183">            attr.setUseLateral(false);</span>
+<span class="fc" id="L184">            attr.setUseRemote(false);</span>
+<span class="fc" id="L185">            final CacheAccess&lt;String, List&lt;MavenArtifact&gt;&gt; ca = JCS.getInstance(&quot;CENTRAL&quot;, attr);</span>
+<span class="fc" id="L186">            final DataCache&lt;List&lt;MavenArtifact&gt;&gt; dc = new DataCache&lt;&gt;(ca);</span>
+<span class="fc" id="L187">            return dc;</span>
+<span class="nc" id="L188">        } catch (Throwable ex) {</span>
             //some reports of class not found exception, log and disable the cache.
-<span class="nc bnc" id="L194" title="All 2 branches missed.">            if (ex instanceof CacheException) {</span>
-<span class="nc" id="L195">                throw ex;</span>
+<span class="nc bnc" id="L190" title="All 2 branches missed.">            if (ex instanceof CacheException) {</span>
+<span class="nc" id="L191">                throw ex;</span>
             }
             //TODO we may want to instrument w/ jdiagnostics per #2509
-<span class="nc" id="L198">            LOGGER.debug(&quot;Error constructing cache for Central files&quot;, ex);</span>
-<span class="nc" id="L199">            throw new CacheException(ex);</span>
+<span class="nc" id="L194">            LOGGER.debug(&quot;Error constructing cache for Central files&quot;, ex);</span>
+<span class="nc" id="L195">            throw new CacheException(ex);</span>
         }
     }
 }

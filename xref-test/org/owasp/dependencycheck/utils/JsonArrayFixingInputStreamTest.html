@@ -120,8 +120,8 @@
 <a class="jxr_linenumber" name="L112" href="#L112">112</a> <em class="jxr_javadoccomment">     */</em>
 <a class="jxr_linenumber" name="L113" href="#L113">113</a>     @Test
 <a class="jxr_linenumber" name="L114" href="#L114">114</a>     <strong class="jxr_keyword">void</strong> testRead_0args() <strong class="jxr_keyword">throws</strong> Exception {
-<a class="jxr_linenumber" name="L115" href="#L115">115</a>         <strong class="jxr_keyword">try</strong> (InputStream sample = <strong class="jxr_keyword">new</strong> ByteArrayInputStream(sample1.getBytes());
-<a class="jxr_linenumber" name="L116" href="#L116">116</a>                 JsonArrayFixingInputStream instance = <strong class="jxr_keyword">new</strong> JsonArrayFixingInputStream(sample)) {
+<a class="jxr_linenumber" name="L115" href="#L115">115</a>         <strong class="jxr_keyword">try</strong> (InputStream sample = <strong class="jxr_keyword">new</strong> ByteArrayInputStream(sample1.getBytes(UTF_8));
+<a class="jxr_linenumber" name="L116" href="#L116">116</a>              JsonArrayFixingInputStream instance = <strong class="jxr_keyword">new</strong> JsonArrayFixingInputStream(sample)) {
 <a class="jxr_linenumber" name="L117" href="#L117">117</a>             assertEquals('[', instance.read());
 <a class="jxr_linenumber" name="L118" href="#L118">118</a>             assertEquals('{', instance.read());
 <a class="jxr_linenumber" name="L119" href="#L119">119</a>             assertEquals('}', instance.read());
@@ -129,8 +129,8 @@
 <a class="jxr_linenumber" name="L121" href="#L121">121</a>             assertEquals(-1, instance.read());
 <a class="jxr_linenumber" name="L122" href="#L122">122</a>         }
 <a class="jxr_linenumber" name="L123" href="#L123">123</a> 
-<a class="jxr_linenumber" name="L124" href="#L124">124</a>         <strong class="jxr_keyword">try</strong> (InputStream sample = <strong class="jxr_keyword">new</strong> ByteArrayInputStream(sample2.getBytes());
-<a class="jxr_linenumber" name="L125" href="#L125">125</a>                 JsonArrayFixingInputStream instance = <strong class="jxr_keyword">new</strong> JsonArrayFixingInputStream(sample)) {
+<a class="jxr_linenumber" name="L124" href="#L124">124</a>         <strong class="jxr_keyword">try</strong> (InputStream sample = <strong class="jxr_keyword">new</strong> ByteArrayInputStream(sample2.getBytes(UTF_8));
+<a class="jxr_linenumber" name="L125" href="#L125">125</a>              JsonArrayFixingInputStream instance = <strong class="jxr_keyword">new</strong> JsonArrayFixingInputStream(sample)) {
 <a class="jxr_linenumber" name="L126" href="#L126">126</a>             assertEquals('[', instance.read());
 <a class="jxr_linenumber" name="L127" href="#L127">127</a>             assertEquals('{', instance.read());
 <a class="jxr_linenumber" name="L128" href="#L128">128</a>             assertEquals('}', instance.read());
@@ -150,8 +150,8 @@
 <a class="jxr_linenumber" name="L142" href="#L142">142</a>     @Test
 <a class="jxr_linenumber" name="L143" href="#L143">143</a>     <strong class="jxr_keyword">void</strong> testRead_byteArr() <strong class="jxr_keyword">throws</strong> Exception {
 <a class="jxr_linenumber" name="L144" href="#L144">144</a>         byte[] b = <strong class="jxr_keyword">new</strong> byte[9];
-<a class="jxr_linenumber" name="L145" href="#L145">145</a>         <strong class="jxr_keyword">try</strong> (InputStream sample = <strong class="jxr_keyword">new</strong> ByteArrayInputStream(sample2.getBytes());
-<a class="jxr_linenumber" name="L146" href="#L146">146</a>                 JsonArrayFixingInputStream instance = <strong class="jxr_keyword">new</strong> JsonArrayFixingInputStream(sample)) {
+<a class="jxr_linenumber" name="L145" href="#L145">145</a>         <strong class="jxr_keyword">try</strong> (InputStream sample = <strong class="jxr_keyword">new</strong> ByteArrayInputStream(sample2.getBytes(UTF_8));
+<a class="jxr_linenumber" name="L146" href="#L146">146</a>              JsonArrayFixingInputStream instance = <strong class="jxr_keyword">new</strong> JsonArrayFixingInputStream(sample)) {
 <a class="jxr_linenumber" name="L147" href="#L147">147</a>             <strong class="jxr_keyword">int</strong> read = instance.read(b);
 <a class="jxr_linenumber" name="L148" href="#L148">148</a>             assertEquals(2, read);
 <a class="jxr_linenumber" name="L149" href="#L149">149</a>             assertEquals('[', b[0]);
@@ -178,8 +178,8 @@
 <a class="jxr_linenumber" name="L170" href="#L170">170</a> 
 <a class="jxr_linenumber" name="L171" href="#L171">171</a>     @Test
 <a class="jxr_linenumber" name="L172" href="#L172">172</a>     <strong class="jxr_keyword">void</strong> testRead_IOUtils() <strong class="jxr_keyword">throws</strong> Exception {
-<a class="jxr_linenumber" name="L173" href="#L173">173</a>         <strong class="jxr_keyword">try</strong> (InputStream sample = <strong class="jxr_keyword">new</strong> ByteArrayInputStream(sample3.getBytes());
-<a class="jxr_linenumber" name="L174" href="#L174">174</a>                 JsonArrayFixingInputStream instance = <strong class="jxr_keyword">new</strong> JsonArrayFixingInputStream(sample)) {
+<a class="jxr_linenumber" name="L173" href="#L173">173</a>         <strong class="jxr_keyword">try</strong> (InputStream sample = <strong class="jxr_keyword">new</strong> ByteArrayInputStream(sample3.getBytes(UTF_8));
+<a class="jxr_linenumber" name="L174" href="#L174">174</a>              JsonArrayFixingInputStream instance = <strong class="jxr_keyword">new</strong> JsonArrayFixingInputStream(sample)) {
 <a class="jxr_linenumber" name="L175" href="#L175">175</a>             String results = IOUtils.toString(instance, UTF_8);
 <a class="jxr_linenumber" name="L176" href="#L176">176</a>             assertEquals(<span class="jxr_string">"[{'key'='value'},{'key'='value'}]"</span>, results);
 <a class="jxr_linenumber" name="L177" href="#L177">177</a> 
@@ -188,8 +188,8 @@
 <a class="jxr_linenumber" name="L180" href="#L180">180</a> 
 <a class="jxr_linenumber" name="L181" href="#L181">181</a>     @Test
 <a class="jxr_linenumber" name="L182" href="#L182">182</a>     <strong class="jxr_keyword">void</strong> testRead_RealSample() <strong class="jxr_keyword">throws</strong> Exception {
-<a class="jxr_linenumber" name="L183" href="#L183">183</a>         <strong class="jxr_keyword">try</strong> (InputStream sample = <strong class="jxr_keyword">new</strong> ByteArrayInputStream(sample4.getBytes());
-<a class="jxr_linenumber" name="L184" href="#L184">184</a>                 JsonArrayFixingInputStream instance = <strong class="jxr_keyword">new</strong> JsonArrayFixingInputStream(sample)) {
+<a class="jxr_linenumber" name="L183" href="#L183">183</a>         <strong class="jxr_keyword">try</strong> (InputStream sample = <strong class="jxr_keyword">new</strong> ByteArrayInputStream(sample4.getBytes(UTF_8));
+<a class="jxr_linenumber" name="L184" href="#L184">184</a>              JsonArrayFixingInputStream instance = <strong class="jxr_keyword">new</strong> JsonArrayFixingInputStream(sample)) {
 <a class="jxr_linenumber" name="L185" href="#L185">185</a>             <strong class="jxr_keyword">try</strong> (JsonReader reader = Json.createReader(instance)) {
 <a class="jxr_linenumber" name="L186" href="#L186">186</a>                 <strong class="jxr_keyword">final</strong> JsonArray modules = reader.readArray();
 <a class="jxr_linenumber" name="L187" href="#L187">187</a>                 assertEquals(8, modules.size());
@@ -230,76 +230,73 @@
 <a class="jxr_linenumber" name="L222" href="#L222">222</a>     <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L223" href="#L223">223</a> <em class="jxr_javadoccomment">     * Test of skip method, of class JsonArrayFixingInputStream.</em>
 <a class="jxr_linenumber" name="L224" href="#L224">224</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L225" href="#L225">225</a> <em class="jxr_javadoccomment">     * @throws Exception because one might happen</em>
-<a class="jxr_linenumber" name="L226" href="#L226">226</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L227" href="#L227">227</a>     @Test
-<a class="jxr_linenumber" name="L228" href="#L228">228</a>     <strong class="jxr_keyword">void</strong> testSkip() {
-<a class="jxr_linenumber" name="L229" href="#L229">229</a>         assertThrows(UnsupportedOperationException.<strong class="jxr_keyword">class</strong>, () -&gt; {
-<a class="jxr_linenumber" name="L230" href="#L230">230</a>             <strong class="jxr_keyword">try</strong> (InputStream sample = <strong class="jxr_keyword">new</strong> ByteArrayInputStream(sample1.getBytes());
-<a class="jxr_linenumber" name="L231" href="#L231">231</a>                 JsonArrayFixingInputStream instance = <strong class="jxr_keyword">new</strong> JsonArrayFixingInputStream(sample)) {
-<a class="jxr_linenumber" name="L232" href="#L232">232</a>                 instance.skip(1);
-<a class="jxr_linenumber" name="L233" href="#L233">233</a>             }
-<a class="jxr_linenumber" name="L234" href="#L234">234</a>         });
-<a class="jxr_linenumber" name="L235" href="#L235">235</a>     }
-<a class="jxr_linenumber" name="L236" href="#L236">236</a> 
-<a class="jxr_linenumber" name="L237" href="#L237">237</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L238" href="#L238">238</a> <em class="jxr_javadoccomment">     * Test of available method, of class JsonArrayFixingInputStream.</em>
-<a class="jxr_linenumber" name="L239" href="#L239">239</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L240" href="#L240">240</a> <em class="jxr_javadoccomment">     * @throws Exception because one might happen</em>
-<a class="jxr_linenumber" name="L241" href="#L241">241</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L242" href="#L242">242</a>     @Test
-<a class="jxr_linenumber" name="L243" href="#L243">243</a>     <strong class="jxr_keyword">void</strong> testAvailable() <strong class="jxr_keyword">throws</strong> Exception {
-<a class="jxr_linenumber" name="L244" href="#L244">244</a>         <strong class="jxr_keyword">try</strong> (InputStream sample = <strong class="jxr_keyword">new</strong> ByteArrayInputStream(sample1.getBytes());
-<a class="jxr_linenumber" name="L245" href="#L245">245</a>                 JsonArrayFixingInputStream instance = <strong class="jxr_keyword">new</strong> JsonArrayFixingInputStream(sample)) {
-<a class="jxr_linenumber" name="L246" href="#L246">246</a>             <strong class="jxr_keyword">int</strong> results = instance.available();
-<a class="jxr_linenumber" name="L247" href="#L247">247</a>             assertTrue(results &gt; 0);
-<a class="jxr_linenumber" name="L248" href="#L248">248</a>             String text = IOUtils.toString(instance, UTF_8);
-<a class="jxr_linenumber" name="L249" href="#L249">249</a>             <strong class="jxr_keyword">int</strong> i = instance.read();
-<a class="jxr_linenumber" name="L250" href="#L250">250</a>             assertEquals(-1, i);
-<a class="jxr_linenumber" name="L251" href="#L251">251</a>             <em class="jxr_comment">//odd buffer is 0 and we've read to the end - but available on the underlying stream still says 3...</em>
-<a class="jxr_linenumber" name="L252" href="#L252">252</a>             <em class="jxr_comment">//results = instance.available();</em>
-<a class="jxr_linenumber" name="L253" href="#L253">253</a>             <em class="jxr_comment">//assertEquals(0, results);</em>
-<a class="jxr_linenumber" name="L254" href="#L254">254</a>         }
-<a class="jxr_linenumber" name="L255" href="#L255">255</a>     }
-<a class="jxr_linenumber" name="L256" href="#L256">256</a> 
-<a class="jxr_linenumber" name="L257" href="#L257">257</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L258" href="#L258">258</a> <em class="jxr_javadoccomment">     * Test of close method, of class JsonArrayFixingInputStream.</em>
-<a class="jxr_linenumber" name="L259" href="#L259">259</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L260" href="#L260">260</a> <em class="jxr_javadoccomment">     * @throws Exception because one might happen</em>
-<a class="jxr_linenumber" name="L261" href="#L261">261</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L262" href="#L262">262</a>     @Test
-<a class="jxr_linenumber" name="L263" href="#L263">263</a>     <strong class="jxr_keyword">void</strong> testClose() <strong class="jxr_keyword">throws</strong> Exception {
-<a class="jxr_linenumber" name="L264" href="#L264">264</a>         <strong class="jxr_keyword">try</strong> (InputStream sample = <strong class="jxr_keyword">new</strong> ByteArrayInputStream(sample1.getBytes());
-<a class="jxr_linenumber" name="L265" href="#L265">265</a>                 JsonArrayFixingInputStream instance = <strong class="jxr_keyword">new</strong> JsonArrayFixingInputStream(sample)) {
-<a class="jxr_linenumber" name="L266" href="#L266">266</a>             <strong class="jxr_keyword">int</strong> i = instance.read();
-<a class="jxr_linenumber" name="L267" href="#L267">267</a>         }
-<a class="jxr_linenumber" name="L268" href="#L268">268</a>     }
-<a class="jxr_linenumber" name="L269" href="#L269">269</a> 
-<a class="jxr_linenumber" name="L270" href="#L270">270</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L271" href="#L271">271</a> <em class="jxr_javadoccomment">     * Test of markSupported method, of class JsonArrayFixingInputStream.</em>
-<a class="jxr_linenumber" name="L272" href="#L272">272</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L273" href="#L273">273</a> <em class="jxr_javadoccomment">     * @throws Exception because one might happen</em>
-<a class="jxr_linenumber" name="L274" href="#L274">274</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L275" href="#L275">275</a>     @Test
-<a class="jxr_linenumber" name="L276" href="#L276">276</a>     <strong class="jxr_keyword">void</strong> testMarkSupported() <strong class="jxr_keyword">throws</strong> Exception {
-<a class="jxr_linenumber" name="L277" href="#L277">277</a>         <strong class="jxr_keyword">try</strong> (InputStream sample = <strong class="jxr_keyword">new</strong> ByteArrayInputStream(sample1.getBytes());
-<a class="jxr_linenumber" name="L278" href="#L278">278</a>                 JsonArrayFixingInputStream instance = <strong class="jxr_keyword">new</strong> JsonArrayFixingInputStream(sample)) {
-<a class="jxr_linenumber" name="L279" href="#L279">279</a>             <strong class="jxr_keyword">boolean</strong> result = instance.markSupported();
-<a class="jxr_linenumber" name="L280" href="#L280">280</a>             assertFalse(result);
-<a class="jxr_linenumber" name="L281" href="#L281">281</a>         }
-<a class="jxr_linenumber" name="L282" href="#L282">282</a>     }
-<a class="jxr_linenumber" name="L283" href="#L283">283</a> 
-<a class="jxr_linenumber" name="L284" href="#L284">284</a>     @Test
-<a class="jxr_linenumber" name="L285" href="#L285">285</a>     <strong class="jxr_keyword">void</strong> testIsWhiteSpace() {
-<a class="jxr_linenumber" name="L286" href="#L286">286</a>         JsonArrayFixingInputStream instance = <strong class="jxr_keyword">new</strong> JsonArrayFixingInputStream(<strong class="jxr_keyword">null</strong>);
-<a class="jxr_linenumber" name="L287" href="#L287">287</a>         assertFalse(instance.isWhiteSpace((byte) 'a'));
-<a class="jxr_linenumber" name="L288" href="#L288">288</a>         assertTrue(instance.isWhiteSpace((byte) '\n'));
-<a class="jxr_linenumber" name="L289" href="#L289">289</a>         assertTrue(instance.isWhiteSpace((byte) '\t'));
-<a class="jxr_linenumber" name="L290" href="#L290">290</a>         assertTrue(instance.isWhiteSpace((byte) '\r'));
-<a class="jxr_linenumber" name="L291" href="#L291">291</a>         assertTrue(instance.isWhiteSpace((byte) ' '));
-<a class="jxr_linenumber" name="L292" href="#L292">292</a>     }
-<a class="jxr_linenumber" name="L293" href="#L293">293</a> 
-<a class="jxr_linenumber" name="L294" href="#L294">294</a> }
+<a class="jxr_linenumber" name="L225" href="#L225">225</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L226" href="#L226">226</a>     @Test
+<a class="jxr_linenumber" name="L227" href="#L227">227</a>     <strong class="jxr_keyword">void</strong> testSkip() {
+<a class="jxr_linenumber" name="L228" href="#L228">228</a>         assertThrows(UnsupportedOperationException.<strong class="jxr_keyword">class</strong>, () -&gt; {
+<a class="jxr_linenumber" name="L229" href="#L229">229</a>             <strong class="jxr_keyword">try</strong> (InputStream sample = <strong class="jxr_keyword">new</strong> ByteArrayInputStream(sample1.getBytes(UTF_8));
+<a class="jxr_linenumber" name="L230" href="#L230">230</a>                  JsonArrayFixingInputStream instance = <strong class="jxr_keyword">new</strong> JsonArrayFixingInputStream(sample)) {
+<a class="jxr_linenumber" name="L231" href="#L231">231</a>                 instance.skip(1);
+<a class="jxr_linenumber" name="L232" href="#L232">232</a>             }
+<a class="jxr_linenumber" name="L233" href="#L233">233</a>         });
+<a class="jxr_linenumber" name="L234" href="#L234">234</a>     }
+<a class="jxr_linenumber" name="L235" href="#L235">235</a> 
+<a class="jxr_linenumber" name="L236" href="#L236">236</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L237" href="#L237">237</a> <em class="jxr_javadoccomment">     * Test of available method, of class JsonArrayFixingInputStream.</em>
+<a class="jxr_linenumber" name="L238" href="#L238">238</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L239" href="#L239">239</a> <em class="jxr_javadoccomment">     * @throws Exception because one might happen</em>
+<a class="jxr_linenumber" name="L240" href="#L240">240</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L241" href="#L241">241</a>     @Test
+<a class="jxr_linenumber" name="L242" href="#L242">242</a>     <strong class="jxr_keyword">void</strong> testAvailable() <strong class="jxr_keyword">throws</strong> Exception {
+<a class="jxr_linenumber" name="L243" href="#L243">243</a>         <strong class="jxr_keyword">try</strong> (InputStream sample = <strong class="jxr_keyword">new</strong> ByteArrayInputStream(sample1.getBytes(UTF_8));
+<a class="jxr_linenumber" name="L244" href="#L244">244</a>              JsonArrayFixingInputStream instance = <strong class="jxr_keyword">new</strong> JsonArrayFixingInputStream(sample)) {
+<a class="jxr_linenumber" name="L245" href="#L245">245</a>             <strong class="jxr_keyword">int</strong> results = instance.available();
+<a class="jxr_linenumber" name="L246" href="#L246">246</a>             assertTrue(results &gt; 0);
+<a class="jxr_linenumber" name="L247" href="#L247">247</a>             IOUtils.toString(instance, UTF_8);
+<a class="jxr_linenumber" name="L248" href="#L248">248</a>             <strong class="jxr_keyword">int</strong> i = instance.read();
+<a class="jxr_linenumber" name="L249" href="#L249">249</a>             assertEquals(-1, i);
+<a class="jxr_linenumber" name="L250" href="#L250">250</a>         }
+<a class="jxr_linenumber" name="L251" href="#L251">251</a>     }
+<a class="jxr_linenumber" name="L252" href="#L252">252</a> 
+<a class="jxr_linenumber" name="L253" href="#L253">253</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L254" href="#L254">254</a> <em class="jxr_javadoccomment">     * Test of close method, of class JsonArrayFixingInputStream.</em>
+<a class="jxr_linenumber" name="L255" href="#L255">255</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L256" href="#L256">256</a> <em class="jxr_javadoccomment">     * @throws Exception because one might happen</em>
+<a class="jxr_linenumber" name="L257" href="#L257">257</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L258" href="#L258">258</a>     @Test
+<a class="jxr_linenumber" name="L259" href="#L259">259</a>     <strong class="jxr_keyword">void</strong> testClose() <strong class="jxr_keyword">throws</strong> Exception {
+<a class="jxr_linenumber" name="L260" href="#L260">260</a>         <strong class="jxr_keyword">try</strong> (InputStream sample = <strong class="jxr_keyword">new</strong> ByteArrayInputStream(sample1.getBytes(UTF_8));
+<a class="jxr_linenumber" name="L261" href="#L261">261</a>              JsonArrayFixingInputStream instance = <strong class="jxr_keyword">new</strong> JsonArrayFixingInputStream(sample)) {
+<a class="jxr_linenumber" name="L262" href="#L262">262</a>             <strong class="jxr_keyword">int</strong> i = instance.read();
+<a class="jxr_linenumber" name="L263" href="#L263">263</a>         }
+<a class="jxr_linenumber" name="L264" href="#L264">264</a>     }
+<a class="jxr_linenumber" name="L265" href="#L265">265</a> 
+<a class="jxr_linenumber" name="L266" href="#L266">266</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L267" href="#L267">267</a> <em class="jxr_javadoccomment">     * Test of markSupported method, of class JsonArrayFixingInputStream.</em>
+<a class="jxr_linenumber" name="L268" href="#L268">268</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L269" href="#L269">269</a> <em class="jxr_javadoccomment">     * @throws Exception because one might happen</em>
+<a class="jxr_linenumber" name="L270" href="#L270">270</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L271" href="#L271">271</a>     @Test
+<a class="jxr_linenumber" name="L272" href="#L272">272</a>     <strong class="jxr_keyword">void</strong> testMarkSupported() <strong class="jxr_keyword">throws</strong> Exception {
+<a class="jxr_linenumber" name="L273" href="#L273">273</a>         <strong class="jxr_keyword">try</strong> (InputStream sample = <strong class="jxr_keyword">new</strong> ByteArrayInputStream(sample1.getBytes(UTF_8));
+<a class="jxr_linenumber" name="L274" href="#L274">274</a>              JsonArrayFixingInputStream instance = <strong class="jxr_keyword">new</strong> JsonArrayFixingInputStream(sample)) {
+<a class="jxr_linenumber" name="L275" href="#L275">275</a>             <strong class="jxr_keyword">boolean</strong> result = instance.markSupported();
+<a class="jxr_linenumber" name="L276" href="#L276">276</a>             assertFalse(result);
+<a class="jxr_linenumber" name="L277" href="#L277">277</a>         }
+<a class="jxr_linenumber" name="L278" href="#L278">278</a>     }
+<a class="jxr_linenumber" name="L279" href="#L279">279</a> 
+<a class="jxr_linenumber" name="L280" href="#L280">280</a>     @Test
+<a class="jxr_linenumber" name="L281" href="#L281">281</a>     <strong class="jxr_keyword">void</strong> testIsWhiteSpace() <strong class="jxr_keyword">throws</strong> Exception {
+<a class="jxr_linenumber" name="L282" href="#L282">282</a>         <strong class="jxr_keyword">try</strong> (JsonArrayFixingInputStream instance = <strong class="jxr_keyword">new</strong> JsonArrayFixingInputStream(<strong class="jxr_keyword">null</strong>)) {
+<a class="jxr_linenumber" name="L283" href="#L283">283</a>             assertFalse(instance.isWhiteSpace((byte) 'a'));
+<a class="jxr_linenumber" name="L284" href="#L284">284</a>             assertTrue(instance.isWhiteSpace((byte) '\n'));
+<a class="jxr_linenumber" name="L285" href="#L285">285</a>             assertTrue(instance.isWhiteSpace((byte) '\t'));
+<a class="jxr_linenumber" name="L286" href="#L286">286</a>             assertTrue(instance.isWhiteSpace((byte) '\r'));
+<a class="jxr_linenumber" name="L287" href="#L287">287</a>             assertTrue(instance.isWhiteSpace((byte) ' '));
+<a class="jxr_linenumber" name="L288" href="#L288">288</a>         }
+<a class="jxr_linenumber" name="L289" href="#L289">289</a>     }
+<a class="jxr_linenumber" name="L290" href="#L290">290</a> 
+<a class="jxr_linenumber" name="L291" href="#L291">291</a> }
 </pre>
 <hr/>
 <div id="footer">Copyright &#169; 2012&#x2013;2026 <a href="https://www.owasp.org">OWASP</a>. All rights reserved.</div>

@@ -36,7 +36,7 @@ import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
  * @author Jeremy Long
  */
 @NotThreadSafe
-public final class TokenPairConcatenatingFilter extends TokenFilter {
+public class TokenPairConcatenatingFilter extends TokenFilter {
 
     /**
      * The char term attribute.
@@ -72,11 +72,11 @@ public final class TokenPairConcatenatingFilter extends TokenFilter {
      * @throws IOException is thrown when an IOException occurs
      */
     @Override
-    public boolean incrementToken() throws IOException {
+    public final boolean incrementToken() throws IOException {
 <span class="fc bfc" id="L76" title="All 4 branches covered.">        if (addSingleTerm &amp;&amp; previousWord != null) {</span>
 <span class="fc" id="L77">            addSingleTerm = false;</span>
 <span class="fc" id="L78">            clearAttributes();</span>
-<span class="fc" id="L79">            termAtt.append(previousWord);</span>
+<span class="fc" id="L79">            appendTerm(previousWord);</span>
 <span class="fc" id="L80">            return true;</span>
 
 <span class="fc bfc" id="L82" title="All 2 branches covered.">        } else if (input.incrementToken()) {</span>
@@ -86,19 +86,24 @@ public final class TokenPairConcatenatingFilter extends TokenFilter {
             }
 <span class="fc bfc" id="L87" title="All 2 branches covered.">            if (addSingleTerm) {</span>
 <span class="fc" id="L88">                clearAttributes();</span>
-<span class="fc" id="L89">                termAtt.append(word);</span>
+<span class="fc" id="L89">                appendTerm(word);</span>
 <span class="fc" id="L90">                previousWord = word;</span>
 <span class="fc" id="L91">                addSingleTerm = false;</span>
             } else {
 <span class="fc" id="L93">                clearAttributes();</span>
-<span class="fc" id="L94">                termAtt.append(previousWord).append(word);</span>
-<span class="fc" id="L95">                previousWord = word;</span>
-<span class="fc" id="L96">                addSingleTerm = true;</span>
+<span class="fc" id="L94">                appendTerm(previousWord);</span>
+<span class="fc" id="L95">                appendTerm(word);</span>
+<span class="fc" id="L96">                previousWord = word;</span>
+<span class="fc" id="L97">                addSingleTerm = true;</span>
             }
-<span class="fc" id="L98">            return true;</span>
+<span class="fc" id="L99">            return true;</span>
         }
-<span class="fc" id="L100">        return false;</span>
+<span class="fc" id="L101">        return false;</span>
     }
+
+    protected void appendTerm(String term) {
+<span class="fc" id="L105">        termAtt.append(term);</span>
+<span class="fc" id="L106">    }</span>
 
     /**
      * Resets the filter. This must be manually called between searching and
@@ -108,21 +113,21 @@ public final class TokenPairConcatenatingFilter extends TokenFilter {
      * @throws IOException thrown if there is an error reseting the tokenizer
      */
     public void clear() throws IOException {
-<span class="fc" id="L111">        previousWord = null;</span>
-<span class="fc" id="L112">        addSingleTerm = true;</span>
-<span class="fc" id="L113">    }</span>
+<span class="fc" id="L116">        previousWord = null;</span>
+<span class="fc" id="L117">        addSingleTerm = true;</span>
+<span class="fc" id="L118">    }</span>
 
     /**
      * {@inheritDoc}
      */
     @Override
     public int hashCode() {
-<span class="nc" id="L120">        return new HashCodeBuilder(13, 27)</span>
-<span class="nc" id="L121">                .appendSuper(super.hashCode())</span>
-<span class="nc" id="L122">                .append(addSingleTerm)</span>
-<span class="nc" id="L123">                .append(previousWord)</span>
-<span class="nc" id="L124">                .append(termAtt)</span>
-<span class="nc" id="L125">                .build();</span>
+<span class="nc" id="L125">        return new HashCodeBuilder(13, 27)</span>
+<span class="nc" id="L126">                .appendSuper(super.hashCode())</span>
+<span class="nc" id="L127">                .append(addSingleTerm)</span>
+<span class="nc" id="L128">                .append(previousWord)</span>
+<span class="nc" id="L129">                .append(termAtt)</span>
+<span class="nc" id="L130">                .build();</span>
     }
 
     /**
@@ -130,19 +135,19 @@ public final class TokenPairConcatenatingFilter extends TokenFilter {
      */
     @Override
     public boolean equals(Object obj) {
-<span class="nc bnc" id="L133" title="All 4 branches missed.">        if (obj == null || !(obj instanceof TokenPairConcatenatingFilter)) {</span>
-<span class="nc" id="L134">            return false;</span>
+<span class="nc bnc" id="L138" title="All 4 branches missed.">        if (obj == null || !(obj instanceof TokenPairConcatenatingFilter)) {</span>
+<span class="nc" id="L139">            return false;</span>
         }
-<span class="nc bnc" id="L136" title="All 2 branches missed.">        if (this == obj) {</span>
-<span class="nc" id="L137">            return true;</span>
+<span class="nc bnc" id="L141" title="All 2 branches missed.">        if (this == obj) {</span>
+<span class="nc" id="L142">            return true;</span>
         }
-<span class="nc" id="L139">        final TokenPairConcatenatingFilter rhs = (TokenPairConcatenatingFilter) obj;</span>
-<span class="nc" id="L140">        return new EqualsBuilder()</span>
-<span class="nc" id="L141">                .appendSuper(super.equals(obj))</span>
-<span class="nc" id="L142">                .append(addSingleTerm, rhs.addSingleTerm)</span>
-<span class="nc" id="L143">                .append(previousWord, rhs.previousWord)</span>
-<span class="nc" id="L144">                .append(termAtt, rhs.termAtt)</span>
-<span class="nc" id="L145">                .isEquals();</span>
+<span class="nc" id="L144">        final TokenPairConcatenatingFilter rhs = (TokenPairConcatenatingFilter) obj;</span>
+<span class="nc" id="L145">        return new EqualsBuilder()</span>
+<span class="nc" id="L146">                .appendSuper(super.equals(obj))</span>
+<span class="nc" id="L147">                .append(addSingleTerm, rhs.addSingleTerm)</span>
+<span class="nc" id="L148">                .append(previousWord, rhs.previousWord)</span>
+<span class="nc" id="L149">                .append(termAtt, rhs.termAtt)</span>
+<span class="nc" id="L150">                .isEquals();</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.14.202510111229</span></div></body></html>

@@ -1,1 +1,1 @@
-packageSearchIndex = [{"l":"All Packages","url":"allpackages-index.html"},{"l":"org.owasp.dependency_check_maven"},{"l":"org.owasp.dependencycheck.maven"}]
+packageSearchIndex = [{"l":"All Packages","u":"allpackages-index.html","k":"18"},{"l":"org.owasp.dependency_check_maven"},{"l":"org.owasp.dependencycheck.maven"}];updateSearchResults();

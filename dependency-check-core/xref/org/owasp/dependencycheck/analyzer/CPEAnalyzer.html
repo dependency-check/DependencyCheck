@@ -54,8 +54,8 @@
 <a class="jxr_linenumber" name="L46" href="#L46">46</a>  <strong class="jxr_keyword">import</strong> org.apache.lucene.search.Query;
 <a class="jxr_linenumber" name="L47" href="#L47">47</a>  <strong class="jxr_keyword">import</strong> org.apache.lucene.search.ScoreDoc;
 <a class="jxr_linenumber" name="L48" href="#L48">48</a>  <strong class="jxr_keyword">import</strong> org.apache.lucene.search.TopDocs;
-<a class="jxr_linenumber" name="L49" href="#L49">49</a>  <strong class="jxr_keyword">import</strong> org.jetbrains.annotations.NotNull;
-<a class="jxr_linenumber" name="L50" href="#L50">50</a>  <strong class="jxr_keyword">import</strong> org.jetbrains.annotations.Nullable;
+<a class="jxr_linenumber" name="L49" href="#L49">49</a>  <strong class="jxr_keyword">import</strong> org.jspecify.annotations.NonNull;
+<a class="jxr_linenumber" name="L50" href="#L50">50</a>  <strong class="jxr_keyword">import</strong> org.jspecify.annotations.Nullable;
 <a class="jxr_linenumber" name="L51" href="#L51">51</a>  <strong class="jxr_keyword">import</strong> org.owasp.dependencycheck.Engine;
 <a class="jxr_linenumber" name="L52" href="#L52">52</a>  <strong class="jxr_keyword">import</strong> org.owasp.dependencycheck.analyzer.exception.AnalysisException;
 <a class="jxr_linenumber" name="L53" href="#L53">53</a>  <strong class="jxr_keyword">import</strong> org.owasp.dependencycheck.data.cpe.CpeMemoryIndex;
@@ -1285,7 +1285,7 @@
 <a class="jxr_linenumber" name="L1277" href="#L1277">1277</a> <em class="jxr_javadoccomment">         * @return the natural ordering of IdentifierMatch</em>
 <a class="jxr_linenumber" name="L1278" href="#L1278">1278</a> <em class="jxr_javadoccomment">         */</em>
 <a class="jxr_linenumber" name="L1279" href="#L1279">1279</a>         @Override
-<a class="jxr_linenumber" name="L1280" href="#L1280">1280</a>         <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">int</strong> compareTo(@NotNull <a href="../../../../org/owasp/dependencycheck/analyzer/CPEAnalyzer.html">IdentifierMatch</a> o) {
+<a class="jxr_linenumber" name="L1280" href="#L1280">1280</a>         <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">int</strong> compareTo(@NonNull <a href="../../../../org/owasp/dependencycheck/analyzer/CPEAnalyzer.html">IdentifierMatch</a> o) {
 <a class="jxr_linenumber" name="L1281" href="#L1281">1281</a>             <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> CompareToBuilder()
 <a class="jxr_linenumber" name="L1282" href="#L1282">1282</a>                     .append(identifierConfidence, o.identifierConfidence)
 <a class="jxr_linenumber" name="L1283" href="#L1283">1283</a>                     .append(identifier, o.identifier)

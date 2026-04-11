@@ -328,9 +328,9 @@
 <a class="jxr_linenumber" name="L320" href="#L320">320</a>                         dependency.addSoftwareIdentifier(id);
 <a class="jxr_linenumber" name="L321" href="#L321">321</a>                     }
 <a class="jxr_linenumber" name="L322" href="#L322">322</a> 
-<a class="jxr_linenumber" name="L323" href="#L323">323</a>                     dependency.addEvidence(EvidenceType.VERSION, <span class="jxr_string">"file"</span>, <span class="jxr_string">"version"</span>, libraryResult.getDetectedVersion(), Confidence.HIGH);
-<a class="jxr_linenumber" name="L324" href="#L324">324</a>                     dependency.addEvidence(EvidenceType.PRODUCT, <span class="jxr_string">"file"</span>, <span class="jxr_string">"name"</span>, libraryResult.getLibrary().getName(), Confidence.HIGH);
-<a class="jxr_linenumber" name="L325" href="#L325">325</a>                     dependency.addEvidence(EvidenceType.VENDOR, <span class="jxr_string">"file"</span>, <span class="jxr_string">"name"</span>, libraryResult.getLibrary().getName(), Confidence.HIGH);
+<a class="jxr_linenumber" name="L323" href="#L323">323</a>                     dependency.addEvidence(EvidenceType.VERSION, <span class="jxr_string">"RetireJS"</span>, <span class="jxr_string">"version"</span>, libraryResult.getDetectedVersion(), Confidence.HIGH);
+<a class="jxr_linenumber" name="L324" href="#L324">324</a>                     dependency.addEvidence(EvidenceType.PRODUCT, <span class="jxr_string">"RetireJS"</span>, <span class="jxr_string">"name"</span>, libraryResult.getLibrary().getName(), Confidence.HIGH);
+<a class="jxr_linenumber" name="L325" href="#L325">325</a>                     dependency.addEvidence(EvidenceType.VENDOR, <span class="jxr_string">"RetireJS"</span>, <span class="jxr_string">"name"</span>, libraryResult.getLibrary().getName(), Confidence.HIGH);
 <a class="jxr_linenumber" name="L326" href="#L326">326</a> 
 <a class="jxr_linenumber" name="L327" href="#L327">327</a>                     <strong class="jxr_keyword">final</strong> List&lt;Vulnerability&gt; vulns = <strong class="jxr_keyword">new</strong> ArrayList&lt;&gt;();
 <a class="jxr_linenumber" name="L328" href="#L328">328</a>                     <strong class="jxr_keyword">final</strong> JsVulnerability jsVuln = libraryResult.getVuln();

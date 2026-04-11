@@ -17,6 +17,7 @@
  */
 package org.owasp.dependencycheck.analyzer;
 
+import com.google.common.annotations.VisibleForTesting;
 import org.owasp.dependencycheck.Engine;
 import org.owasp.dependencycheck.analyzer.exception.AnalysisException;
 import org.owasp.dependencycheck.dependency.Dependency;
@@ -57,12 +58,12 @@ import java.util.regex.Pattern;
  * @author Jeremy Long
  */
 @ThreadSafe
-<span class="fc" id="L60">public class HintAnalyzer extends AbstractAnalyzer {</span>
+<span class="fc" id="L61">public class HintAnalyzer extends AbstractAnalyzer {</span>
 
     /**
      * The Logger for use throughout the class
      */
-<span class="fc" id="L65">    private static final Logger LOGGER = LoggerFactory.getLogger(HintAnalyzer.class);</span>
+<span class="fc" id="L66">    private static final Logger LOGGER = LoggerFactory.getLogger(HintAnalyzer.class);</span>
     /**
      * The name of the hint rule file
      */
@@ -70,7 +71,7 @@ import java.util.regex.Pattern;
     /**
      * The array of hint rules.
      */
-<span class="fc" id="L73">    private HintRule[] hints = null;</span>
+<span class="fc" id="L74">    private HintRule[] hints = null;</span>
     /**
      * The array of vendor duplicating hint rules.
      */
@@ -82,7 +83,7 @@ import java.util.regex.Pattern;
     /**
      * The phase that this analyzer is intended to run in.
      */
-<span class="fc" id="L85">    private static final AnalysisPhase ANALYSIS_PHASE = AnalysisPhase.POST_INFORMATION_COLLECTION2;</span>
+<span class="fc" id="L86">    private static final AnalysisPhase ANALYSIS_PHASE = AnalysisPhase.POST_INFORMATION_COLLECTION2;</span>
 
     /**
      * Returns the name of the analyzer.
@@ -91,7 +92,7 @@ import java.util.regex.Pattern;
      */
     @Override
     public String getName() {
-<span class="fc" id="L94">        return ANALYZER_NAME;</span>
+<span class="fc" id="L95">        return ANALYZER_NAME;</span>
     }
 
     /**
@@ -101,7 +102,7 @@ import java.util.regex.Pattern;
      */
     @Override
     public AnalysisPhase getAnalysisPhase() {
-<span class="fc" id="L104">        return ANALYSIS_PHASE;</span>
+<span class="fc" id="L105">        return ANALYSIS_PHASE;</span>
     }
 
     /**
@@ -112,7 +113,7 @@ import java.util.regex.Pattern;
      */
     @Override
     protected String getAnalyzerEnabledSettingKey() {
-<span class="fc" id="L115">        return Settings.KEYS.ANALYZER_HINT_ENABLED;</span>
+<span class="fc" id="L116">        return Settings.KEYS.ANALYZER_HINT_ENABLED;</span>
     }
 
     /**
@@ -124,12 +125,12 @@ import java.util.regex.Pattern;
     @Override
     public void prepareAnalyzer(Engine engine) throws InitializationException {
         try {
-<span class="fc" id="L127">            loadHintRules();</span>
-<span class="nc" id="L128">        } catch (HintParseException ex) {</span>
-<span class="nc" id="L129">            LOGGER.debug(&quot;Unable to parse hint file&quot;, ex);</span>
-<span class="nc" id="L130">            throw new InitializationException(&quot;Unable to parse the hint file&quot;, ex);</span>
-<span class="fc" id="L131">        }</span>
-<span class="fc" id="L132">    }</span>
+<span class="fc" id="L128">            loadHintRules();</span>
+<span class="nc" id="L129">        } catch (HintParseException ex) {</span>
+<span class="nc" id="L130">            LOGGER.debug(&quot;Unable to parse hint file&quot;, ex);</span>
+<span class="nc" id="L131">            throw new InitializationException(&quot;Unable to parse the hint file&quot;, ex);</span>
+<span class="fc" id="L132">        }</span>
+<span class="fc" id="L133">    }</span>
 
     /**
      * The HintAnalyzer uses knowledge about a dependency to add additional
@@ -143,68 +144,68 @@ import java.util.regex.Pattern;
     @Override
     @SuppressWarnings(&quot;StringSplitter&quot;)
     protected void analyzeDependency(Dependency dependency, Engine engine) throws AnalysisException {
-<span class="fc bfc" id="L146" title="All 2 branches covered.">        for (HintRule hint : hints) {</span>
-<span class="fc" id="L147">            boolean matchFound = false;</span>
-<span class="fc bfc" id="L148" title="All 2 branches covered.">            for (EvidenceMatcher given : hint.getGivenVendor()) {</span>
-<span class="fc bfc" id="L149" title="All 2 branches covered.">                if (hasMatchingEvidence(dependency.getEvidence(EvidenceType.VENDOR), given)) {</span>
-<span class="fc" id="L150">                    matchFound = true;</span>
-<span class="fc" id="L151">                    break;</span>
+<span class="fc bfc" id="L147" title="All 2 branches covered.">        for (HintRule hint : hints) {</span>
+<span class="fc" id="L148">            boolean matchFound = false;</span>
+<span class="fc bfc" id="L149" title="All 2 branches covered.">            for (EvidenceMatcher given : hint.getGivenVendor()) {</span>
+<span class="fc bfc" id="L150" title="All 2 branches covered.">                if (hasMatchingEvidence(dependency.getEvidence(EvidenceType.VENDOR), given)) {</span>
+<span class="fc" id="L151">                    matchFound = true;</span>
+<span class="fc" id="L152">                    break;</span>
                 }
-<span class="fc" id="L153">            }</span>
-<span class="fc bfc" id="L154" title="All 2 branches covered.">            if (!matchFound) {</span>
-<span class="fc bfc" id="L155" title="All 2 branches covered.">                for (EvidenceMatcher given : hint.getGivenProduct()) {</span>
-<span class="fc bfc" id="L156" title="All 2 branches covered.">                    if (hasMatchingEvidence(dependency.getEvidence(EvidenceType.PRODUCT), given)) {</span>
-<span class="fc" id="L157">                        matchFound = true;</span>
-<span class="fc" id="L158">                        break;</span>
+<span class="fc" id="L154">            }</span>
+<span class="fc bfc" id="L155" title="All 2 branches covered.">            if (!matchFound) {</span>
+<span class="fc bfc" id="L156" title="All 2 branches covered.">                for (EvidenceMatcher given : hint.getGivenProduct()) {</span>
+<span class="fc bfc" id="L157" title="All 2 branches covered.">                    if (hasMatchingEvidence(dependency.getEvidence(EvidenceType.PRODUCT), given)) {</span>
+<span class="fc" id="L158">                        matchFound = true;</span>
+<span class="fc" id="L159">                        break;</span>
                     }
-<span class="fc" id="L160">                }</span>
+<span class="fc" id="L161">                }</span>
             }
-<span class="fc bfc" id="L162" title="All 2 branches covered.">            if (!matchFound) {</span>
-<span class="fc bfc" id="L163" title="All 2 branches covered.">                for (EvidenceMatcher given : hint.getGivenVersion()) {</span>
-<span class="fc bfc" id="L164" title="All 2 branches covered.">                    if (hasMatchingEvidence(dependency.getEvidence(EvidenceType.VERSION), given)) {</span>
-<span class="fc" id="L165">                        matchFound = true;</span>
-<span class="fc" id="L166">                        break;</span>
+<span class="fc bfc" id="L163" title="All 2 branches covered.">            if (!matchFound) {</span>
+<span class="fc bfc" id="L164" title="All 2 branches covered.">                for (EvidenceMatcher given : hint.getGivenVersion()) {</span>
+<span class="fc bfc" id="L165" title="All 2 branches covered.">                    if (hasMatchingEvidence(dependency.getEvidence(EvidenceType.VERSION), given)) {</span>
+<span class="fc" id="L166">                        matchFound = true;</span>
+<span class="fc" id="L167">                        break;</span>
                     }
-<span class="fc" id="L168">                }</span>
+<span class="fc" id="L169">                }</span>
             }
-<span class="fc bfc" id="L170" title="All 2 branches covered.">            if (!matchFound) {</span>
-<span class="fc bfc" id="L171" title="All 2 branches covered.">                for (PropertyType pt : hint.getFileNames()) {</span>
-<span class="fc bfc" id="L172" title="All 2 branches covered.">                    if (pt.matches(dependency.getFileName())) {</span>
-<span class="fc" id="L173">                        matchFound = true;</span>
-<span class="fc" id="L174">                        break;</span>
+<span class="fc bfc" id="L171" title="All 2 branches covered.">            if (!matchFound) {</span>
+<span class="fc bfc" id="L172" title="All 2 branches covered.">                for (PropertyType pt : hint.getFileNames()) {</span>
+<span class="fc bfc" id="L173" title="All 2 branches covered.">                    if (pt.matches(dependency.getFileName())) {</span>
+<span class="fc" id="L174">                        matchFound = true;</span>
+<span class="fc" id="L175">                        break;</span>
                     }
-<span class="fc" id="L176">                }</span>
+<span class="fc" id="L177">                }</span>
             }
-<span class="fc bfc" id="L178" title="All 2 branches covered.">            if (matchFound) {</span>
-<span class="fc" id="L179">                hint.getAddVendor().forEach((e) -&gt; {</span>
-<span class="fc" id="L180">                    dependency.addEvidence(EvidenceType.VENDOR, e);</span>
-<span class="fc bfc" id="L181" title="All 2 branches covered.">                    for (String weighting : e.getValue().split(&quot; &quot;)) {</span>
-<span class="fc" id="L182">                        dependency.addVendorWeighting(weighting);</span>
+<span class="fc bfc" id="L179" title="All 2 branches covered.">            if (matchFound) {</span>
+<span class="fc" id="L180">                hint.getAddVendor().forEach((e) -&gt; {</span>
+<span class="fc" id="L181">                    dependency.addEvidence(EvidenceType.VENDOR, e);</span>
+<span class="fc bfc" id="L182" title="All 2 branches covered.">                    for (String weighting : e.getValue().split(&quot; &quot;)) {</span>
+<span class="fc" id="L183">                        dependency.addVendorWeighting(weighting);</span>
                     }
-<span class="fc" id="L184">                });</span>
-<span class="fc" id="L185">                hint.getAddProduct().forEach((e) -&gt; {</span>
-<span class="fc" id="L186">                    dependency.addEvidence(EvidenceType.PRODUCT, e);</span>
-<span class="fc bfc" id="L187" title="All 2 branches covered.">                    for (String weighting : e.getValue().split(&quot; &quot;)) {</span>
-<span class="fc" id="L188">                        dependency.addProductWeighting(weighting);</span>
+<span class="fc" id="L185">                });</span>
+<span class="fc" id="L186">                hint.getAddProduct().forEach((e) -&gt; {</span>
+<span class="fc" id="L187">                    dependency.addEvidence(EvidenceType.PRODUCT, e);</span>
+<span class="fc bfc" id="L188" title="All 2 branches covered.">                    for (String weighting : e.getValue().split(&quot; &quot;)) {</span>
+<span class="fc" id="L189">                        dependency.addProductWeighting(weighting);</span>
                     }
-<span class="fc" id="L190">                });</span>
-<span class="pc" id="L191">                hint.getAddVersion().forEach((e) -&gt; dependency.addEvidence(EvidenceType.VERSION, e));</span>
+<span class="fc" id="L191">                });</span>
+<span class="pc" id="L192">                hint.getAddVersion().forEach((e) -&gt; dependency.addEvidence(EvidenceType.VERSION, e));</span>
 
-<span class="fc" id="L193">                hint.getRemoveVendor().forEach((e) -&gt; removeMatchingEvidences(dependency, EvidenceType.VENDOR, e));</span>
-<span class="fc" id="L194">                hint.getRemoveProduct().forEach((e) -&gt; removeMatchingEvidences(dependency, EvidenceType.PRODUCT, e));</span>
-<span class="fc" id="L195">                hint.getRemoveVersion().forEach((e) -&gt; removeMatchingEvidences(dependency, EvidenceType.VERSION, e));</span>
+<span class="fc" id="L194">                hint.getRemoveVendor().forEach((e) -&gt; removeMatchingEvidences(dependency, EvidenceType.VENDOR, e));</span>
+<span class="fc" id="L195">                hint.getRemoveProduct().forEach((e) -&gt; removeMatchingEvidences(dependency, EvidenceType.PRODUCT, e));</span>
+<span class="fc" id="L196">                hint.getRemoveVersion().forEach((e) -&gt; removeMatchingEvidences(dependency, EvidenceType.VERSION, e));</span>
             }
         }
 
-<span class="fc bfc" id="L199" title="All 2 branches covered.">        for (Evidence e : dependency.getEvidence(EvidenceType.VENDOR)) {</span>
-<span class="fc bfc" id="L200" title="All 2 branches covered.">            for (VendorDuplicatingHintRule dhr : vendorHints) {</span>
-<span class="fc bfc" id="L201" title="All 2 branches covered.">                if (dhr.getValue().equalsIgnoreCase(e.getValue())) {</span>
-<span class="fc" id="L202">                    dependency.addEvidence(EvidenceType.VENDOR, new Evidence(e.getSource() + &quot; (hint)&quot;,</span>
-<span class="fc" id="L203">                            e.getName(), dhr.getDuplicate(), e.getConfidence(), true));</span>
+<span class="fc bfc" id="L200" title="All 2 branches covered.">        for (Evidence e : dependency.getEvidence(EvidenceType.VENDOR)) {</span>
+<span class="fc bfc" id="L201" title="All 2 branches covered.">            for (VendorDuplicatingHintRule dhr : vendorHints) {</span>
+<span class="fc bfc" id="L202" title="All 2 branches covered.">                if (dhr.getValue().equalsIgnoreCase(e.getValue())) {</span>
+<span class="fc" id="L203">                    dependency.addEvidence(EvidenceType.VENDOR, new Evidence(e.getSource() + &quot; (hint)&quot;,</span>
+<span class="fc" id="L204">                            e.getName(), dhr.getDuplicate(), e.getConfidence(), true));</span>
                 }
             }
-<span class="fc" id="L206">        }</span>
-<span class="fc" id="L207">    }</span>
+<span class="fc" id="L207">        }</span>
+<span class="fc" id="L208">    }</span>
 
     /**
      * Determine if there is matching evidence.
@@ -214,12 +215,12 @@ import java.util.regex.Pattern;
      * @return true if the evidence matches, otherwise false
      */
     private boolean hasMatchingEvidence(Set&lt;Evidence&gt; evidences, EvidenceMatcher criterion) {
-<span class="fc bfc" id="L217" title="All 2 branches covered.">        for (Evidence evidence : evidences) {</span>
-<span class="fc bfc" id="L218" title="All 2 branches covered.">            if (criterion.matches(evidence)) {</span>
-<span class="fc" id="L219">                return true;</span>
+<span class="fc bfc" id="L218" title="All 2 branches covered.">        for (Evidence evidence : evidences) {</span>
+<span class="fc bfc" id="L219" title="All 2 branches covered.">            if (criterion.matches(evidence)) {</span>
+<span class="fc" id="L220">                return true;</span>
             }
-<span class="fc" id="L221">        }</span>
-<span class="fc" id="L222">        return false;</span>
+<span class="fc" id="L222">        }</span>
+<span class="fc" id="L223">        return false;</span>
     }
 
     /**
@@ -230,12 +231,12 @@ import java.util.regex.Pattern;
      * @param e the evidence matcher
      */
     private void removeMatchingEvidences(Dependency dependency, EvidenceType type, EvidenceMatcher e) {
-<span class="fc bfc" id="L233" title="All 2 branches covered.">        for (Evidence evidence : dependency.getEvidence(type)) {</span>
-<span class="fc bfc" id="L234" title="All 2 branches covered.">            if (e.matches(evidence)) {</span>
-<span class="fc" id="L235">                dependency.removeEvidence(type, evidence);</span>
+<span class="fc bfc" id="L234" title="All 2 branches covered.">        for (Evidence evidence : dependency.getEvidence(type)) {</span>
+<span class="fc bfc" id="L235" title="All 2 branches covered.">            if (e.matches(evidence)) {</span>
+<span class="fc" id="L236">                dependency.removeEvidence(type, evidence);</span>
             }
-<span class="fc" id="L237">        }</span>
-<span class="fc" id="L238">    }</span>
+<span class="fc" id="L238">        }</span>
+<span class="fc" id="L239">    }</span>
 
     /**
      * Loads the hint rules file.
@@ -245,94 +246,97 @@ import java.util.regex.Pattern;
     private void loadHintRules() throws HintParseException {
         final List&lt;HintRule&gt; localHints;
         final List&lt;VendorDuplicatingHintRule&gt; localVendorHints;
-<span class="fc" id="L248">        final HintParser parser = new HintParser();</span>
-<span class="fc" id="L249">        File file = null;</span>
-<span class="fc" id="L250">        try (InputStream in = FileUtils.getResourceAsStream(HINT_RULE_FILE_NAME)) {</span>
-<span class="pc bpc" id="L251" title="1 of 2 branches missed.">            if (in == null) {</span>
-<span class="nc" id="L252">                throw new HintParseException(&quot;Hint rules `&quot; + HINT_RULE_FILE_NAME + &quot;` could not be found&quot;);</span>
-            }
-<span class="fc" id="L254">            parser.parseHints(in);</span>
-<span class="nc" id="L255">        } catch (SAXException | IOException ex) {</span>
-<span class="nc" id="L256">            throw new HintParseException(&quot;Error parsing hints: &quot; + ex.getMessage(), ex);</span>
-<span class="fc" id="L257">        }</span>
-<span class="fc" id="L258">        localHints = parser.getHintRules();</span>
-<span class="fc" id="L259">        localVendorHints = parser.getVendorDuplicatingHintRules();</span>
+<span class="fc" id="L249">        final HintParser parser = new HintParser();</span>
+<span class="fc" id="L250">        File file = null;</span>
+<span class="fc" id="L251">        try (InputStream in = FileUtils.getResourceAsStream(HINT_RULE_FILE_NAME)) {</span>
+<span class="fc" id="L252">            parser.parseHints(in);</span>
+<span class="nc" id="L253">        } catch (SAXException | IOException ex) {</span>
+<span class="nc" id="L254">            throw new HintParseException(&quot;Error parsing hints: &quot; + ex.getMessage(), ex);</span>
+<span class="fc" id="L255">        }</span>
+<span class="fc" id="L256">        localHints = parser.getHintRules();</span>
+<span class="fc" id="L257">        localVendorHints = parser.getVendorDuplicatingHintRules();</span>
 
-<span class="fc" id="L261">        final String filePath = getSettings().getString(Settings.KEYS.HINTS_FILE);</span>
-<span class="fc bfc" id="L262" title="All 2 branches covered.">        if (filePath != null) {</span>
-<span class="fc" id="L263">            boolean deleteTempFile = false;</span>
+<span class="fc" id="L259">        final String filePath = getSettings().getString(Settings.KEYS.HINTS_FILE);</span>
+<span class="fc bfc" id="L260" title="All 2 branches covered.">        if (filePath != null) {</span>
+<span class="fc" id="L261">            boolean deleteTempFile = false;</span>
             try {
-<span class="fc" id="L265">                final Pattern uriRx = Pattern.compile(&quot;^(https?|file):.*&quot;, Pattern.CASE_INSENSITIVE);</span>
-<span class="pc bpc" id="L266" title="1 of 2 branches missed.">                if (uriRx.matcher(filePath).matches()) {</span>
-<span class="nc" id="L267">                    deleteTempFile = true;</span>
-<span class="nc" id="L268">                    file = getSettings().getTempFile(&quot;hint&quot;, &quot;xml&quot;);</span>
-<span class="nc" id="L269">                    final URL url = new URL(filePath);</span>
+<span class="fc" id="L263">                final Pattern uriRx = Pattern.compile(&quot;^(https?|file):.*&quot;, Pattern.CASE_INSENSITIVE);</span>
+<span class="pc bpc" id="L264" title="1 of 2 branches missed.">                if (uriRx.matcher(filePath).matches()) {</span>
+<span class="nc" id="L265">                    deleteTempFile = true;</span>
+<span class="nc" id="L266">                    file = getSettings().getTempFile(&quot;hint&quot;, &quot;xml&quot;);</span>
+<span class="nc" id="L267">                    final URL url = new URL(filePath);</span>
                     try {
-<span class="nc" id="L271">                        Downloader.getInstance().fetchFile(url, file, false);</span>
-<span class="nc" id="L272">                    } catch (DownloadFailedException ex) {</span>
+<span class="nc" id="L269">                        Downloader.getInstance().fetchFile(url, file, false);</span>
+<span class="nc" id="L270">                    } catch (DownloadFailedException ex) {</span>
                         try {
-<span class="nc" id="L274">                            Thread.sleep(500);</span>
-<span class="nc" id="L275">                            Downloader.getInstance().fetchFile(url, file, true);</span>
-<span class="nc" id="L276">                        } catch (TooManyRequestsException ex1) {</span>
-<span class="nc" id="L277">                            throw new HintParseException(&quot;Unable to download hint file `&quot; + file + &quot;`; received 429 - too many requests&quot;, ex1);</span>
-<span class="nc" id="L278">                        } catch (ResourceNotFoundException ex1) {</span>
-<span class="nc" id="L279">                            throw new HintParseException(&quot;Unable to download hint file `&quot; + file + &quot;`; received 404 - resource not found&quot;, ex1);</span>
-<span class="nc" id="L280">                        } catch (InterruptedException ex1) {</span>
-<span class="nc" id="L281">                            Thread.currentThread().interrupt();</span>
-<span class="nc" id="L282">                            throw new HintParseException(&quot;Unable to download hint file `&quot; + file + &quot;`&quot;, ex1);</span>
-<span class="nc" id="L283">                        }</span>
-<span class="nc" id="L284">                    } catch (TooManyRequestsException ex) {</span>
-<span class="nc" id="L285">                        throw new HintParseException(&quot;Unable to download hint file `&quot; + file + &quot;`; received 429 - too many requests&quot;, ex);</span>
-<span class="nc" id="L286">                    } catch (ResourceNotFoundException ex) {</span>
-<span class="nc" id="L287">                        throw new HintParseException(&quot;Unable to download hint file `&quot; + file + &quot;`; received 404 - resource not found&quot;, ex);</span>
-<span class="nc" id="L288">                    }</span>
-<span class="nc" id="L289">                } else {</span>
-<span class="fc" id="L290">                    file = new File(filePath);</span>
-<span class="pc bpc" id="L291" title="1 of 2 branches missed.">                    if (!file.exists()) {</span>
-<span class="nc" id="L292">                        try (InputStream fromClasspath = FileUtils.getResourceAsStream(filePath)) {</span>
-<span class="nc" id="L293">                            deleteTempFile = true;</span>
-<span class="nc" id="L294">                            file = getSettings().getTempFile(&quot;hint&quot;, &quot;xml&quot;);</span>
-<span class="nc" id="L295">                            Files.copy(fromClasspath, file.toPath());</span>
-<span class="nc" id="L296">                        } catch (IOException ex) {</span>
-<span class="nc" id="L297">                            throw new HintParseException(&quot;Unable to locate hints file in classpath&quot;, ex);</span>
-<span class="nc" id="L298">                        }</span>
+<span class="nc" id="L272">                            Thread.sleep(500);</span>
+<span class="nc" id="L273">                            Downloader.getInstance().fetchFile(url, file, true);</span>
+<span class="nc" id="L274">                        } catch (TooManyRequestsException ex1) {</span>
+<span class="nc" id="L275">                            throw new HintParseException(&quot;Unable to download hint file `&quot; + file + &quot;`; received 429 - too many requests&quot;, ex1);</span>
+<span class="nc" id="L276">                        } catch (ResourceNotFoundException ex1) {</span>
+<span class="nc" id="L277">                            throw new HintParseException(&quot;Unable to download hint file `&quot; + file + &quot;`; received 404 - resource not found&quot;, ex1);</span>
+<span class="nc" id="L278">                        } catch (InterruptedException ex1) {</span>
+<span class="nc" id="L279">                            Thread.currentThread().interrupt();</span>
+<span class="nc" id="L280">                            throw new HintParseException(&quot;Unable to download hint file `&quot; + file + &quot;`&quot;, ex1);</span>
+<span class="nc" id="L281">                        }</span>
+<span class="nc" id="L282">                    } catch (TooManyRequestsException ex) {</span>
+<span class="nc" id="L283">                        throw new HintParseException(&quot;Unable to download hint file `&quot; + file + &quot;`; received 429 - too many requests&quot;, ex);</span>
+<span class="nc" id="L284">                    } catch (ResourceNotFoundException ex) {</span>
+<span class="nc" id="L285">                        throw new HintParseException(&quot;Unable to download hint file `&quot; + file + &quot;`; received 404 - resource not found&quot;, ex);</span>
+<span class="nc" id="L286">                    }</span>
+<span class="nc" id="L287">                } else {</span>
+<span class="fc" id="L288">                    file = new File(filePath);</span>
+<span class="pc bpc" id="L289" title="1 of 2 branches missed.">                    if (!file.exists()) {</span>
+<span class="nc" id="L290">                        try (InputStream fromClasspath = FileUtils.getResourceAsStream(filePath)) {</span>
+<span class="nc" id="L291">                            deleteTempFile = true;</span>
+<span class="nc" id="L292">                            file = getSettings().getTempFile(&quot;hint&quot;, &quot;xml&quot;);</span>
+<span class="nc" id="L293">                            Files.copy(fromClasspath, file.toPath());</span>
+<span class="nc" id="L294">                        } catch (IOException ex) {</span>
+<span class="nc" id="L295">                            throw new HintParseException(&quot;Unable to locate hints file in classpath&quot;, ex);</span>
+<span class="nc" id="L296">                        }</span>
                     }
                 }
 
-<span class="pc bpc" id="L302" title="1 of 2 branches missed.">                if (file == null) {</span>
-<span class="nc" id="L303">                    throw new HintParseException(&quot;Unable to locate hints file:&quot; + filePath);</span>
-                } else {
-                    try {
-<span class="fc" id="L306">                        parser.parseHints(file);</span>
-<span class="pc bpc" id="L307" title="2 of 4 branches missed.">                        if (parser.getHintRules() != null &amp;&amp; !parser.getHintRules().isEmpty()) {</span>
-<span class="fc" id="L308">                            localHints.addAll(parser.getHintRules());</span>
-                        }
-<span class="pc bpc" id="L310" title="2 of 4 branches missed.">                        if (parser.getVendorDuplicatingHintRules() != null &amp;&amp; !parser.getVendorDuplicatingHintRules().isEmpty()) {</span>
-<span class="nc" id="L311">                            localVendorHints.addAll(parser.getVendorDuplicatingHintRules());</span>
-                        }
-<span class="nc" id="L313">                    } catch (HintParseException ex) {</span>
-<span class="nc" id="L314">                        LOGGER.warn(&quot;Unable to parse hint rule xml file '{}'&quot;, file.getPath());</span>
-<span class="nc" id="L315">                        LOGGER.warn(ex.getMessage());</span>
-<span class="nc" id="L316">                        LOGGER.debug(&quot;&quot;, ex);</span>
-<span class="nc" id="L317">                        throw ex;</span>
-<span class="fc" id="L318">                    }</span>
-                }
-<span class="nc" id="L320">            } catch (DownloadFailedException ex) {</span>
-<span class="nc" id="L321">                throw new HintParseException(&quot;Unable to fetch the configured hint file&quot;, ex);</span>
-<span class="nc" id="L322">            } catch (MalformedURLException ex) {</span>
-<span class="nc" id="L323">                throw new HintParseException(&quot;Configured hint file has an invalid URL&quot;, ex);</span>
-<span class="nc" id="L324">            } catch (IOException ex) {</span>
-<span class="nc" id="L325">                throw new HintParseException(&quot;Unable to create temp file for hints&quot;, ex);</span>
+                try {
+<span class="fc" id="L301">                    parser.parseHints(file);</span>
+<span class="pc bpc" id="L302" title="2 of 4 branches missed.">                    if (parser.getHintRules() != null &amp;&amp; !parser.getHintRules().isEmpty()) {</span>
+<span class="fc" id="L303">                        localHints.addAll(parser.getHintRules());</span>
+                    }
+<span class="pc bpc" id="L305" title="2 of 4 branches missed.">                    if (parser.getVendorDuplicatingHintRules() != null &amp;&amp; !parser.getVendorDuplicatingHintRules().isEmpty()) {</span>
+<span class="nc" id="L306">                        localVendorHints.addAll(parser.getVendorDuplicatingHintRules());</span>
+                    }
+<span class="nc" id="L308">                } catch (HintParseException ex) {</span>
+<span class="nc" id="L309">                    LOGGER.warn(&quot;Unable to parse hint rule xml file '{}'&quot;, file.getPath());</span>
+<span class="nc" id="L310">                    LOGGER.warn(ex.getMessage());</span>
+<span class="nc" id="L311">                    LOGGER.debug(&quot;&quot;, ex);</span>
+<span class="nc" id="L312">                    throw ex;</span>
+<span class="fc" id="L313">                }</span>
+<span class="nc" id="L314">            } catch (DownloadFailedException ex) {</span>
+<span class="nc" id="L315">                throw new HintParseException(&quot;Unable to fetch the configured hint file&quot;, ex);</span>
+<span class="nc" id="L316">            } catch (MalformedURLException ex) {</span>
+<span class="nc" id="L317">                throw new HintParseException(&quot;Configured hint file has an invalid URL&quot;, ex);</span>
+<span class="nc" id="L318">            } catch (IOException ex) {</span>
+<span class="nc" id="L319">                throw new HintParseException(&quot;Unable to create temp file for hints&quot;, ex);</span>
             } finally {
-<span class="pc bpc" id="L327" title="3 of 4 branches missed.">                if (deleteTempFile &amp;&amp; file != null) {</span>
-<span class="nc" id="L328">                    FileUtils.delete(file);</span>
+<span class="pc bpc" id="L321" title="3 of 4 branches missed.">                if (deleteTempFile &amp;&amp; file != null) {</span>
+<span class="nc" id="L322">                    FileUtils.delete(file);</span>
                 }
             }
         }
-<span class="fc" id="L332">        hints = localHints.toArray(new HintRule[0]);</span>
-<span class="fc" id="L333">        vendorHints = localVendorHints.toArray(new VendorDuplicatingHintRule[0]);</span>
-<span class="fc" id="L334">        LOGGER.debug(&quot;{} hint rules were loaded.&quot;, hints.length);</span>
-<span class="fc" id="L335">        LOGGER.debug(&quot;{} duplicating hint rules were loaded.&quot;, vendorHints.length);</span>
-<span class="fc" id="L336">    }</span>
+<span class="fc" id="L326">        hints = localHints.toArray(new HintRule[0]);</span>
+<span class="fc" id="L327">        vendorHints = localVendorHints.toArray(new VendorDuplicatingHintRule[0]);</span>
+<span class="fc" id="L328">        LOGGER.debug(&quot;{} hint rules were loaded.&quot;, hints.length);</span>
+<span class="fc" id="L329">        LOGGER.debug(&quot;{} duplicating hint rules were loaded.&quot;, vendorHints.length);</span>
+<span class="fc" id="L330">    }</span>
+
+    @VisibleForTesting
+    HintRule[] getHintRules() {
+<span class="fc" id="L334">        return hints;</span>
+    }
+
+    @VisibleForTesting
+    VendorDuplicatingHintRule[] getVendorDuplicatingHintRules() {
+<span class="fc" id="L339">        return vendorHints;</span>
+    }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.14.202510111229</span></div></body></html>

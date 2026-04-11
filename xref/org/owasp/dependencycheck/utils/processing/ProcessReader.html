@@ -135,7 +135,7 @@
 <a class="jxr_linenumber" name="L127" href="#L127">127</a> <em class="jxr_javadoccomment">     *</em>
 <a class="jxr_linenumber" name="L128" href="#L128">128</a> <em class="jxr_javadoccomment">     * @param p a reference to the processor to start.</em>
 <a class="jxr_linenumber" name="L129" href="#L129">129</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L130" href="#L130">130</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> startProcessor(<a href="../../../../../org/owasp/dependencycheck/utils/processing/Processor.html">Processor</a> p) {
+<a class="jxr_linenumber" name="L130" href="#L130">130</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> startProcessor(Processor&lt;InputStream&gt; p) {
 <a class="jxr_linenumber" name="L131" href="#L131">131</a>         <strong class="jxr_keyword">if</strong> (p != <strong class="jxr_keyword">null</strong>) {
 <a class="jxr_linenumber" name="L132" href="#L132">132</a>             <strong class="jxr_keyword">final</strong> Thread t = <strong class="jxr_keyword">new</strong> Thread(p);
 <a class="jxr_linenumber" name="L133" href="#L133">133</a>             threads.add(t);
@@ -186,7 +186,7 @@
 <a class="jxr_linenumber" name="L178" href="#L178">178</a>         <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> run() {
 <a class="jxr_linenumber" name="L179" href="#L179">179</a>             <strong class="jxr_keyword">try</strong> {
 <a class="jxr_linenumber" name="L180" href="#L180">180</a>                 <strong class="jxr_keyword">final</strong> InputStream inputStream = getInput();
-<a class="jxr_linenumber" name="L181" href="#L181">181</a>                 text = IOUtils.toString(inputStream, StandardCharsets.UTF_8.name());
+<a class="jxr_linenumber" name="L181" href="#L181">181</a>                 text = IOUtils.toString(inputStream, StandardCharsets.UTF_8);
 <a class="jxr_linenumber" name="L182" href="#L182">182</a> 
 <a class="jxr_linenumber" name="L183" href="#L183">183</a>             } <strong class="jxr_keyword">catch</strong> (IOException ex) {
 <a class="jxr_linenumber" name="L184" href="#L184">184</a>                 exception = ex;

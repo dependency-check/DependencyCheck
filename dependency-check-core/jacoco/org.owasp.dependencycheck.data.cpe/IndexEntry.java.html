@@ -18,7 +18,6 @@
 package org.owasp.dependencycheck.data.cpe;
 
 import java.io.Serializable;
-import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import javax.annotation.concurrent.ThreadSafe;
@@ -32,7 +31,7 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
  * @author Jeremy Long
  */
 @ThreadSafe
-<span class="fc" id="L35">public class IndexEntry implements Serializable {</span>
+<span class="fc" id="L34">public class IndexEntry implements Serializable {</span>
 
     /**
      * the serial version uid.
@@ -61,7 +60,7 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
      * @return the value of documentId
      */
     public int getDocumentId() {
-<span class="fc" id="L64">        return documentId;</span>
+<span class="fc" id="L63">        return documentId;</span>
     }
 
     /**
@@ -70,8 +69,8 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
      * @param documentId new value of documentId
      */
     public void setDocumentId(int documentId) {
-<span class="fc" id="L73">        this.documentId = documentId;</span>
-<span class="fc" id="L74">    }</span>
+<span class="fc" id="L72">        this.documentId = documentId;</span>
+<span class="fc" id="L73">    }</span>
 
     /**
      * Get the value of vendor.
@@ -79,7 +78,7 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
      * @return the value of vendor
      */
     public String getVendor() {
-<span class="fc" id="L82">        return vendor;</span>
+<span class="fc" id="L81">        return vendor;</span>
     }
 
     /**
@@ -88,8 +87,8 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
      * @param vendor new value of vendor
      */
     public void setVendor(String vendor) {
-<span class="fc" id="L91">        this.vendor = vendor;</span>
-<span class="fc" id="L92">    }</span>
+<span class="fc" id="L90">        this.vendor = vendor;</span>
+<span class="fc" id="L91">    }</span>
 
     /**
      * Get the value of product.
@@ -97,7 +96,7 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
      * @return the value of product
      */
     public String getProduct() {
-<span class="fc" id="L100">        return product;</span>
+<span class="fc" id="L99">        return product;</span>
     }
 
     /**
@@ -106,8 +105,8 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
      * @param product new value of product
      */
     public void setProduct(String product) {
-<span class="fc" id="L109">        this.product = product;</span>
-<span class="fc" id="L110">    }</span>
+<span class="fc" id="L108">        this.product = product;</span>
+<span class="fc" id="L109">    }</span>
 
     /**
      * Get the value of searchScore.
@@ -115,7 +114,7 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
      * @return the value of searchScore
      */
     public float getSearchScore() {
-<span class="nc" id="L118">        return searchScore;</span>
+<span class="nc" id="L117">        return searchScore;</span>
     }
 
     /**
@@ -124,8 +123,8 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
      * @param searchScore new value of searchScore
      */
     public void setSearchScore(float searchScore) {
-<span class="fc" id="L127">        this.searchScore = searchScore;</span>
-<span class="fc" id="L128">    }</span>
+<span class="fc" id="L126">        this.searchScore = searchScore;</span>
+<span class="fc" id="L127">    }</span>
 
     /**
      * &lt;p&gt;
@@ -143,44 +142,43 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
      * version and revision) then you should use the `cpe-parser`.
      *
      * @param cpeName the CPE name
-     * @throws UnsupportedEncodingException should never be thrown...
      */
-    public void parseName(String cpeName) throws UnsupportedEncodingException {
-<span class="pc bpc" id="L149" title="2 of 4 branches missed.">        if (cpeName != null &amp;&amp; cpeName.length() &gt; 7) {</span>
-<span class="fc" id="L150">            final String cpeNameWithoutPrefix = cpeName.substring(7);</span>
-<span class="fc" id="L151">            final String[] data = StringUtils.split(cpeNameWithoutPrefix, ':');</span>
-<span class="pc bpc" id="L152" title="1 of 2 branches missed.">            if (data.length &gt;= 1) {</span>
-<span class="fc" id="L153">                vendor = URLDecoder.decode(data[0].replace(&quot;+&quot;, &quot;%2B&quot;), StandardCharsets.UTF_8.name());</span>
-<span class="pc bpc" id="L154" title="1 of 2 branches missed.">                if (data.length &gt;= 2) {</span>
-<span class="fc" id="L155">                    product = URLDecoder.decode(data[1].replace(&quot;+&quot;, &quot;%2B&quot;), StandardCharsets.UTF_8.name());</span>
+    public void parseName(String cpeName) {
+<span class="pc bpc" id="L147" title="2 of 4 branches missed.">        if (cpeName != null &amp;&amp; cpeName.length() &gt; 7) {</span>
+<span class="fc" id="L148">            final String cpeNameWithoutPrefix = cpeName.substring(7);</span>
+<span class="fc" id="L149">            final String[] data = StringUtils.split(cpeNameWithoutPrefix, ':');</span>
+<span class="pc bpc" id="L150" title="1 of 2 branches missed.">            if (data.length &gt;= 1) {</span>
+<span class="fc" id="L151">                vendor = URLDecoder.decode(data[0].replace(&quot;+&quot;, &quot;%2B&quot;), StandardCharsets.UTF_8);</span>
+<span class="pc bpc" id="L152" title="1 of 2 branches missed.">                if (data.length &gt;= 2) {</span>
+<span class="fc" id="L153">                    product = URLDecoder.decode(data[1].replace(&quot;+&quot;, &quot;%2B&quot;), StandardCharsets.UTF_8);</span>
                 }
             }
         }
-<span class="fc" id="L159">    }</span>
+<span class="fc" id="L157">    }</span>
 
     @Override
     public int hashCode() {
-<span class="nc" id="L163">        return new HashCodeBuilder(5, 27)</span>
-<span class="nc" id="L164">                .append(documentId)</span>
-<span class="nc" id="L165">                .append(vendor)</span>
-<span class="nc" id="L166">                .append(product)</span>
-<span class="nc" id="L167">                .append(searchScore)</span>
-<span class="nc" id="L168">                .build();</span>
+<span class="nc" id="L161">        return new HashCodeBuilder(5, 27)</span>
+<span class="nc" id="L162">                .append(documentId)</span>
+<span class="nc" id="L163">                .append(vendor)</span>
+<span class="nc" id="L164">                .append(product)</span>
+<span class="nc" id="L165">                .append(searchScore)</span>
+<span class="nc" id="L166">                .build();</span>
     }
 
     @Override
     public boolean equals(Object obj) {
-<span class="pc bpc" id="L173" title="2 of 4 branches missed.">        if (obj == null || !(obj instanceof IndexEntry)) {</span>
-<span class="nc" id="L174">            return false;</span>
+<span class="pc bpc" id="L171" title="2 of 4 branches missed.">        if (obj == null || !(obj instanceof IndexEntry)) {</span>
+<span class="nc" id="L172">            return false;</span>
         }
-<span class="pc bpc" id="L176" title="1 of 2 branches missed.">        if (this == obj) {</span>
-<span class="nc" id="L177">            return true;</span>
+<span class="pc bpc" id="L174" title="1 of 2 branches missed.">        if (this == obj) {</span>
+<span class="nc" id="L175">            return true;</span>
         }
-<span class="fc" id="L179">        final IndexEntry rhs = (IndexEntry) obj;</span>
-<span class="fc" id="L180">        return new EqualsBuilder()</span>
-<span class="fc" id="L181">                .append(vendor, rhs.vendor)</span>
-<span class="fc" id="L182">                .append(product, rhs.product)</span>
-<span class="fc" id="L183">                .isEquals();</span>
+<span class="fc" id="L177">        final IndexEntry rhs = (IndexEntry) obj;</span>
+<span class="fc" id="L178">        return new EqualsBuilder()</span>
+<span class="fc" id="L179">                .append(vendor, rhs.vendor)</span>
+<span class="fc" id="L180">                .append(product, rhs.product)</span>
+<span class="fc" id="L181">                .isEquals();</span>
     }
 
     /**
@@ -190,7 +188,7 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
      */
     @Override
     public String toString() {
-<span class="nc" id="L193">        return &quot;IndexEntry{&quot; + &quot;vendor=&quot; + vendor + &quot;, product=&quot; + product + &quot;', score=&quot; + searchScore + &quot;}&quot;;</span>
+<span class="nc" id="L191">        return &quot;IndexEntry{&quot; + &quot;vendor=&quot; + vendor + &quot;, product=&quot; + product + &quot;', score=&quot; + searchScore + &quot;}&quot;;</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.14.202510111229</span></div></body></html>

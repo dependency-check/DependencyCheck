@@ -194,7 +194,7 @@ import org.owasp.dependencycheck.xml.assembly.GrokParseException;
      * @param data the assembly data
      * @param dependency the dependency to update
      */
-    private void updateDependency(final AssemblyData data, Dependency dependency) {
+    void updateDependency(final AssemblyData data, Dependency dependency) {
 <span class="fc" id="L198">        final StringBuilder sb = new StringBuilder();</span>
 <span class="fc bfc" id="L199" title="All 2 branches covered.">        if (!StringUtils.isBlank(data.getFileDescription())) {</span>
 <span class="fc" id="L200">            sb.append(data.getFileDescription());</span>
@@ -235,8 +235,8 @@ import org.owasp.dependencycheck.xml.assembly.GrokParseException;
 <span class="fc" id="L235">            final int max = Math.min(data.getFileVersion().length(), data.getProductVersion().length());</span>
             int pos;
 <span class="fc bfc" id="L237" title="All 2 branches covered.">            for (pos = 0; pos &lt; max; pos++) {</span>
-<span class="pc bpc" id="L238" title="1 of 2 branches missed.">                if (data.getFileVersion().charAt(pos) != data.getProductVersion().charAt(pos)) {</span>
-<span class="nc" id="L239">                    break;</span>
+<span class="fc bfc" id="L238" title="All 2 branches covered.">                if (data.getFileVersion().charAt(pos) != data.getProductVersion().charAt(pos)) {</span>
+<span class="fc" id="L239">                    break;</span>
                 }
             }
 <span class="fc" id="L242">            final DependencyVersion fileVersion = DependencyVersionUtil.parseVersion(data.getFileVersion(), true);</span>
@@ -253,93 +253,86 @@ import org.owasp.dependencycheck.xml.assembly.GrokParseException;
                 }
             }
 <span class="fc bfc" id="L255" title="All 2 branches covered.">            if (dependency.getVersion() == null) {</span>
-<span class="pc bpc" id="L256" title="2 of 4 branches missed.">                if (data.getFileVersion() != null &amp;&amp; data.getProductVersion() != null</span>
-<span class="pc bpc" id="L257" title="1 of 2 branches missed.">                        &amp;&amp; data.getFileVersion().length() &gt;= data.getProductVersion().length()) {</span>
-<span class="pc bpc" id="L258" title="2 of 4 branches missed.">                    if (fileVersion != null &amp;&amp; fileVersion.toString().length() == data.getFileVersion().length()) {</span>
-<span class="fc" id="L259">                        dependency.setVersion(fileVersion.toString());</span>
-<span class="nc bnc" id="L260" title="All 4 branches missed.">                    } else if (productVersion != null &amp;&amp; productVersion.toString().length() == data.getProductVersion().length()) {</span>
-<span class="nc" id="L261">                        dependency.setVersion(productVersion.toString());</span>
-                    }
-                } else {
-<span class="nc bnc" id="L264" title="All 4 branches missed.">                    if (productVersion != null &amp;&amp; productVersion.toString().length() == data.getProductVersion().length()) {</span>
-<span class="nc" id="L265">                        dependency.setVersion(productVersion.toString());</span>
-<span class="nc bnc" id="L266" title="All 4 branches missed.">                    } else if (fileVersion != null &amp;&amp; fileVersion.toString().length() == data.getFileVersion().length()) {</span>
-<span class="nc" id="L267">                        dependency.setVersion(fileVersion.toString());</span>
+<span class="pc bpc" id="L256" title="2 of 4 branches missed.">                if (fileVersion != null &amp;&amp; productVersion != null) {</span>
+<span class="fc bfc" id="L257" title="All 2 branches covered.">                    if (fileVersion.toString().startsWith(productVersion.toString())) {</span>
+<span class="fc" id="L258">                        dependency.setVersion(fileVersion.toString());</span>
+<span class="pc bpc" id="L259" title="1 of 2 branches missed.">                    } else if (productVersion.toString().startsWith(fileVersion.toString())) {</span>
+<span class="nc" id="L260">                        dependency.setVersion(productVersion.toString());</span>
                     }
                 }
             }
         }
-<span class="pc bpc" id="L272" title="1 of 4 branches missed.">        if (dependency.getVersion() == null &amp;&amp; data.getFileVersion() != null) {</span>
-<span class="nc" id="L273">            final DependencyVersion version = DependencyVersionUtil.parseVersion(data.getFileVersion(), true);</span>
-<span class="nc bnc" id="L274" title="All 2 branches missed.">            if (version != null) {</span>
-<span class="nc" id="L275">                dependency.setVersion(version.toString());</span>
+<span class="pc bpc" id="L265" title="1 of 4 branches missed.">        if (dependency.getVersion() == null &amp;&amp; data.getProductVersion() != null) {</span>
+<span class="fc" id="L266">            final DependencyVersion version = DependencyVersionUtil.parseVersion(data.getProductVersion(), true);</span>
+<span class="pc bpc" id="L267" title="1 of 2 branches missed.">            if (version != null) {</span>
+<span class="fc" id="L268">                dependency.setVersion(version.toString());</span>
             }
         }
-<span class="pc bpc" id="L278" title="1 of 4 branches missed.">        if (dependency.getVersion() == null &amp;&amp; data.getProductVersion() != null) {</span>
-<span class="fc" id="L279">            final DependencyVersion version = DependencyVersionUtil.parseVersion(data.getProductVersion(), true);</span>
-<span class="pc bpc" id="L280" title="1 of 2 branches missed.">            if (version != null) {</span>
-<span class="fc" id="L281">                dependency.setVersion(version.toString());</span>
+<span class="pc bpc" id="L271" title="3 of 4 branches missed.">        if (dependency.getVersion() == null &amp;&amp; data.getFileVersion() != null) {</span>
+<span class="nc" id="L272">            final DependencyVersion version = DependencyVersionUtil.parseVersion(data.getFileVersion(), true);</span>
+<span class="nc bnc" id="L273" title="All 2 branches missed.">            if (version != null) {</span>
+<span class="nc" id="L274">                dependency.setVersion(version.toString());</span>
             }
         }
 
-<span class="fc bfc" id="L285" title="All 2 branches covered.">        if (!StringUtils.isBlank(data.getCompanyName())) {</span>
-<span class="fc" id="L286">            dependency.addEvidence(EvidenceType.VENDOR, &quot;grokassembly&quot;, &quot;CompanyName&quot;, data.getCompanyName(), Confidence.HIGHEST);</span>
-<span class="fc" id="L287">            dependency.addEvidence(EvidenceType.PRODUCT, &quot;grokassembly&quot;, &quot;CompanyName&quot;, data.getCompanyName(), Confidence.LOW);</span>
-<span class="fc" id="L288">            addMatchingValues(data.getNamespaces(), data.getCompanyName(), dependency, EvidenceType.VENDOR);</span>
+<span class="fc bfc" id="L278" title="All 2 branches covered.">        if (!StringUtils.isBlank(data.getCompanyName())) {</span>
+<span class="fc" id="L279">            dependency.addEvidence(EvidenceType.VENDOR, &quot;grokassembly&quot;, &quot;CompanyName&quot;, data.getCompanyName(), Confidence.HIGHEST);</span>
+<span class="fc" id="L280">            dependency.addEvidence(EvidenceType.PRODUCT, &quot;grokassembly&quot;, &quot;CompanyName&quot;, data.getCompanyName(), Confidence.LOW);</span>
+<span class="fc" id="L281">            addMatchingValues(data.getNamespaces(), data.getCompanyName(), dependency, EvidenceType.VENDOR);</span>
         }
-<span class="fc bfc" id="L290" title="All 2 branches covered.">        if (!StringUtils.isBlank(data.getProductName())) {</span>
-<span class="fc" id="L291">            dependency.addEvidence(EvidenceType.PRODUCT, &quot;grokassembly&quot;, &quot;ProductName&quot;, data.getProductName(), Confidence.HIGHEST);</span>
-<span class="fc" id="L292">            dependency.addEvidence(EvidenceType.VENDOR, &quot;grokassembly&quot;, &quot;ProductName&quot;, data.getProductName(), Confidence.MEDIUM);</span>
-<span class="fc" id="L293">            addMatchingValues(data.getNamespaces(), data.getProductName(), dependency, EvidenceType.PRODUCT);</span>
+<span class="fc bfc" id="L283" title="All 2 branches covered.">        if (!StringUtils.isBlank(data.getProductName())) {</span>
+<span class="fc" id="L284">            dependency.addEvidence(EvidenceType.PRODUCT, &quot;grokassembly&quot;, &quot;ProductName&quot;, data.getProductName(), Confidence.HIGHEST);</span>
+<span class="fc" id="L285">            dependency.addEvidence(EvidenceType.VENDOR, &quot;grokassembly&quot;, &quot;ProductName&quot;, data.getProductName(), Confidence.MEDIUM);</span>
+<span class="fc" id="L286">            addMatchingValues(data.getNamespaces(), data.getProductName(), dependency, EvidenceType.PRODUCT);</span>
         }
-<span class="fc bfc" id="L295" title="All 2 branches covered.">        if (!StringUtils.isBlank(data.getFileDescription())) {</span>
-<span class="fc" id="L296">            dependency.addEvidence(EvidenceType.PRODUCT, &quot;grokassembly&quot;, &quot;FileDescription&quot;, data.getFileDescription(), Confidence.HIGH);</span>
-<span class="fc" id="L297">            dependency.addEvidence(EvidenceType.VENDOR, &quot;grokassembly&quot;, &quot;FileDescription&quot;, data.getFileDescription(), Confidence.LOW);</span>
-<span class="fc" id="L298">            addMatchingValues(data.getNamespaces(), data.getFileDescription(), dependency, EvidenceType.PRODUCT);</span>
+<span class="fc bfc" id="L288" title="All 2 branches covered.">        if (!StringUtils.isBlank(data.getFileDescription())) {</span>
+<span class="fc" id="L289">            dependency.addEvidence(EvidenceType.PRODUCT, &quot;grokassembly&quot;, &quot;FileDescription&quot;, data.getFileDescription(), Confidence.HIGH);</span>
+<span class="fc" id="L290">            dependency.addEvidence(EvidenceType.VENDOR, &quot;grokassembly&quot;, &quot;FileDescription&quot;, data.getFileDescription(), Confidence.LOW);</span>
+<span class="fc" id="L291">            addMatchingValues(data.getNamespaces(), data.getFileDescription(), dependency, EvidenceType.PRODUCT);</span>
         }
 
-<span class="fc" id="L301">        final String internalName = data.getInternalName();</span>
-<span class="pc bpc" id="L302" title="1 of 2 branches missed.">        if (!StringUtils.isBlank(internalName)) {</span>
-<span class="fc" id="L303">            dependency.addEvidence(EvidenceType.PRODUCT, &quot;grokassembly&quot;, &quot;InternalName&quot;, internalName, Confidence.MEDIUM);</span>
-<span class="fc" id="L304">            dependency.addEvidence(EvidenceType.VENDOR, &quot;grokassembly&quot;, &quot;InternalName&quot;, internalName, Confidence.LOW);</span>
-<span class="fc" id="L305">            addMatchingValues(data.getNamespaces(), internalName, dependency, EvidenceType.PRODUCT);</span>
-<span class="fc" id="L306">            addMatchingValues(data.getNamespaces(), internalName, dependency, EvidenceType.VENDOR);</span>
-<span class="pc bpc" id="L307" title="1 of 4 branches missed.">            if (dependency.getName() == null &amp;&amp; StringUtils.containsIgnoreCase(dependency.getActualFile().getName(), internalName)) {</span>
-<span class="fc" id="L308">                final String ext = FileUtils.getFileExtension(internalName);</span>
-<span class="pc bpc" id="L309" title="1 of 2 branches missed.">                if (ext != null) {</span>
-<span class="fc" id="L310">                    dependency.setName(internalName.substring(0, internalName.length() - ext.length() - 1));</span>
+<span class="fc" id="L294">        final String internalName = data.getInternalName();</span>
+<span class="pc bpc" id="L295" title="1 of 2 branches missed.">        if (!StringUtils.isBlank(internalName)) {</span>
+<span class="fc" id="L296">            dependency.addEvidence(EvidenceType.PRODUCT, &quot;grokassembly&quot;, &quot;InternalName&quot;, internalName, Confidence.MEDIUM);</span>
+<span class="fc" id="L297">            dependency.addEvidence(EvidenceType.VENDOR, &quot;grokassembly&quot;, &quot;InternalName&quot;, internalName, Confidence.LOW);</span>
+<span class="fc" id="L298">            addMatchingValues(data.getNamespaces(), internalName, dependency, EvidenceType.PRODUCT);</span>
+<span class="fc" id="L299">            addMatchingValues(data.getNamespaces(), internalName, dependency, EvidenceType.VENDOR);</span>
+<span class="pc bpc" id="L300" title="1 of 4 branches missed.">            if (dependency.getName() == null &amp;&amp; StringUtils.containsIgnoreCase(dependency.getActualFile().getName(), internalName)) {</span>
+<span class="fc" id="L301">                final String ext = FileUtils.getFileExtension(internalName);</span>
+<span class="pc bpc" id="L302" title="1 of 2 branches missed.">                if (ext != null) {</span>
+<span class="fc" id="L303">                    dependency.setName(internalName.substring(0, internalName.length() - ext.length() - 1));</span>
                 } else {
-<span class="nc" id="L312">                    dependency.setName(internalName);</span>
+<span class="nc" id="L305">                    dependency.setName(internalName);</span>
                 }
             }
         }
 
-<span class="fc" id="L317">        final String originalFilename = data.getOriginalFilename();</span>
-<span class="pc bpc" id="L318" title="1 of 2 branches missed.">        if (!StringUtils.isBlank(originalFilename)) {</span>
-<span class="fc" id="L319">            dependency.addEvidence(EvidenceType.PRODUCT, &quot;grokassembly&quot;, &quot;OriginalFilename&quot;, originalFilename, Confidence.MEDIUM);</span>
-<span class="fc" id="L320">            dependency.addEvidence(EvidenceType.VENDOR, &quot;grokassembly&quot;, &quot;OriginalFilename&quot;, originalFilename, Confidence.LOW);</span>
-<span class="fc" id="L321">            addMatchingValues(data.getNamespaces(), originalFilename, dependency, EvidenceType.PRODUCT);</span>
-<span class="pc bpc" id="L322" title="1 of 4 branches missed.">            if (dependency.getName() == null &amp;&amp; StringUtils.containsIgnoreCase(dependency.getActualFile().getName(), originalFilename)) {</span>
-<span class="nc" id="L323">                final String ext = FileUtils.getFileExtension(originalFilename);</span>
-<span class="nc bnc" id="L324" title="All 2 branches missed.">                if (ext != null) {</span>
-<span class="nc" id="L325">                    dependency.setName(originalFilename.substring(0, originalFilename.length() - ext.length() - 1));</span>
+<span class="fc" id="L310">        final String originalFilename = data.getOriginalFilename();</span>
+<span class="pc bpc" id="L311" title="1 of 2 branches missed.">        if (!StringUtils.isBlank(originalFilename)) {</span>
+<span class="fc" id="L312">            dependency.addEvidence(EvidenceType.PRODUCT, &quot;grokassembly&quot;, &quot;OriginalFilename&quot;, originalFilename, Confidence.MEDIUM);</span>
+<span class="fc" id="L313">            dependency.addEvidence(EvidenceType.VENDOR, &quot;grokassembly&quot;, &quot;OriginalFilename&quot;, originalFilename, Confidence.LOW);</span>
+<span class="fc" id="L314">            addMatchingValues(data.getNamespaces(), originalFilename, dependency, EvidenceType.PRODUCT);</span>
+<span class="pc bpc" id="L315" title="1 of 4 branches missed.">            if (dependency.getName() == null &amp;&amp; StringUtils.containsIgnoreCase(dependency.getActualFile().getName(), originalFilename)) {</span>
+<span class="nc" id="L316">                final String ext = FileUtils.getFileExtension(originalFilename);</span>
+<span class="nc bnc" id="L317" title="All 2 branches missed.">                if (ext != null) {</span>
+<span class="nc" id="L318">                    dependency.setName(originalFilename.substring(0, originalFilename.length() - ext.length() - 1));</span>
                 } else {
-<span class="nc" id="L327">                    dependency.setName(originalFilename);</span>
+<span class="nc" id="L320">                    dependency.setName(originalFilename);</span>
                 }
             }
         }
-<span class="pc bpc" id="L331" title="1 of 4 branches missed.">        if (dependency.getName() != null &amp;&amp; dependency.getVersion() != null) {</span>
+<span class="pc bpc" id="L324" title="1 of 4 branches missed.">        if (dependency.getName() != null &amp;&amp; dependency.getVersion() != null) {</span>
             try {
-<span class="fc" id="L333">                dependency.addSoftwareIdentifier(new PurlIdentifier(&quot;generic&quot;, dependency.getName(), dependency.getVersion(), Confidence.MEDIUM));</span>
-<span class="nc" id="L334">            } catch (MalformedPackageURLException ex) {</span>
-<span class="nc" id="L335">                LOGGER.debug(&quot;Unable to create Package URL Identifier for &quot; + dependency.getName(), ex);</span>
-<span class="nc" id="L336">                dependency.addSoftwareIdentifier(new GenericIdentifier(</span>
-<span class="nc" id="L337">                        String.format(&quot;%s@%s&quot;, dependency.getName(), dependency.getVersion()),</span>
+<span class="fc" id="L326">                dependency.addSoftwareIdentifier(new PurlIdentifier(&quot;generic&quot;, dependency.getName(), dependency.getVersion(), Confidence.MEDIUM));</span>
+<span class="nc" id="L327">            } catch (MalformedPackageURLException ex) {</span>
+<span class="nc" id="L328">                LOGGER.debug(&quot;Unable to create Package URL Identifier for &quot; + dependency.getName(), ex);</span>
+<span class="nc" id="L329">                dependency.addSoftwareIdentifier(new GenericIdentifier(</span>
+<span class="nc" id="L330">                        String.format(&quot;%s@%s&quot;, dependency.getName(), dependency.getVersion()),</span>
                         Confidence.MEDIUM));
-<span class="fc" id="L339">            }</span>
+<span class="fc" id="L332">            }</span>
         }
-<span class="fc" id="L341">        dependency.setEcosystem(DEPENDENCY_ECOSYSTEM);</span>
-<span class="fc" id="L342">    }</span>
+<span class="fc" id="L334">        dependency.setEcosystem(DEPENDENCY_ECOSYSTEM);</span>
+<span class="fc" id="L335">    }</span>
 
     /**
      * Initialize the analyzer. In this case, extract GrokAssembly.dll to a
@@ -350,52 +343,52 @@ import org.owasp.dependencycheck.xml.assembly.GrokParseException;
      */
     @Override
     public void prepareFileTypeAnalyzer(Engine engine) throws InitializationException {
-<span class="fc" id="L353">        grokAssembly = extractGrokAssembly();</span>
+<span class="fc" id="L346">        grokAssembly = extractGrokAssembly();</span>
 
-<span class="fc" id="L355">        baseArgumentList = buildArgumentList();</span>
-<span class="pc bpc" id="L356" title="1 of 2 branches missed.">        if (baseArgumentList == null) {</span>
-<span class="nc" id="L357">            setEnabled(false);</span>
-<span class="nc" id="L358">            LOGGER.error(&quot;----------------------------------------------------&quot;);</span>
-<span class="nc" id="L359">            LOGGER.error(&quot;.NET Assembly Analyzer could not be initialized and at least one &quot;</span>
+<span class="fc" id="L348">        baseArgumentList = buildArgumentList();</span>
+<span class="pc bpc" id="L349" title="1 of 2 branches missed.">        if (baseArgumentList == null) {</span>
+<span class="nc" id="L350">            setEnabled(false);</span>
+<span class="nc" id="L351">            LOGGER.error(&quot;----------------------------------------------------&quot;);</span>
+<span class="nc" id="L352">            LOGGER.error(&quot;.NET Assembly Analyzer could not be initialized and at least one &quot;</span>
                     + &quot;'exe' or 'dll' was scanned. The 'dotnet' executable could not be found on &quot;
                     + &quot;the path; either disable the Assembly Analyzer or add the path to dotnet &quot;
                     + &quot;core in the configuration.&quot;);
-<span class="nc" id="L363">            LOGGER.error(&quot;The dotnet 8.0 core runtime or SDK is required to analyze assemblies&quot;);</span>
-<span class="nc" id="L364">            LOGGER.error(&quot;----------------------------------------------------&quot;);</span>
-<span class="nc" id="L365">            return;</span>
+<span class="nc" id="L356">            LOGGER.error(&quot;The dotnet 8.0 core runtime or SDK is required to analyze assemblies&quot;);</span>
+<span class="nc" id="L357">            LOGGER.error(&quot;----------------------------------------------------&quot;);</span>
+<span class="nc" id="L358">            return;</span>
         }
         try {
-<span class="fc" id="L368">            final ProcessBuilder pb = new ProcessBuilder(baseArgumentList);</span>
-<span class="fc" id="L369">            final Process p = pb.start();</span>
-<span class="fc" id="L370">            try (ProcessReader processReader = new ProcessReader(p)) {</span>
-<span class="fc" id="L371">                processReader.readAll();</span>
-<span class="fc" id="L372">                final String error = processReader.getError();</span>
-<span class="pc bpc" id="L373" title="2 of 4 branches missed.">                if (p.exitValue() != 1 || !StringUtils.isBlank(error)) {</span>
-<span class="nc" id="L374">                    LOGGER.warn(&quot;An error occurred with the .NET AssemblyAnalyzer, please see the log for more details.\n&quot;</span>
+<span class="fc" id="L361">            final ProcessBuilder pb = new ProcessBuilder(baseArgumentList);</span>
+<span class="fc" id="L362">            final Process p = pb.start();</span>
+<span class="fc" id="L363">            try (ProcessReader processReader = new ProcessReader(p)) {</span>
+<span class="fc" id="L364">                processReader.readAll();</span>
+<span class="fc" id="L365">                final String error = processReader.getError();</span>
+<span class="pc bpc" id="L366" title="2 of 4 branches missed.">                if (p.exitValue() != 1 || !StringUtils.isBlank(error)) {</span>
+<span class="nc" id="L367">                    LOGGER.warn(&quot;An error occurred with the .NET AssemblyAnalyzer, please see the log for more details.\n&quot;</span>
                     + &quot;dependency-check requires dotnet 8.0 core runtime or sdk to be installed to analyze assemblies.&quot;);
-<span class="nc" id="L376">                    LOGGER.debug(&quot;GrokAssembly.dll is not working properly: {}&quot;, error);</span>
-<span class="nc" id="L377">                    grokAssembly = null;</span>
-<span class="nc" id="L378">                    setEnabled(false);</span>
-<span class="nc" id="L379">                    throw new InitializationException(&quot;Could not execute .NET AssemblyAnalyzer, is the dotnet 8.0 runtime or sdk installed?&quot;);</span>
+<span class="nc" id="L369">                    LOGGER.debug(&quot;GrokAssembly.dll is not working properly: {}&quot;, error);</span>
+<span class="nc" id="L370">                    grokAssembly = null;</span>
+<span class="nc" id="L371">                    setEnabled(false);</span>
+<span class="nc" id="L372">                    throw new InitializationException(&quot;Could not execute .NET AssemblyAnalyzer, is the dotnet 8.0 runtime or sdk installed?&quot;);</span>
                 }
             }
-<span class="nc" id="L382">        } catch (InterruptedException e) {</span>
-<span class="nc" id="L383">            Thread.currentThread().interrupt();</span>
-<span class="nc" id="L384">            LOGGER.warn(&quot;An error occurred with the .NET AssemblyAnalyzer;\n&quot;</span>
+<span class="nc" id="L375">        } catch (InterruptedException e) {</span>
+<span class="nc" id="L376">            Thread.currentThread().interrupt();</span>
+<span class="nc" id="L377">            LOGGER.warn(&quot;An error occurred with the .NET AssemblyAnalyzer;\n&quot;</span>
                     + &quot;dependency-check requires dotnet 8.0 core runtime or sdk to be installed to analyze assemblies;\n&quot;
                     + &quot;this can be ignored unless you are scanning .NET DLLs. Please see the log for more details.&quot;);
-<span class="nc" id="L387">            LOGGER.debug(&quot;Could not execute GrokAssembly {}&quot;, e.getMessage());</span>
-<span class="nc" id="L388">            setEnabled(false);</span>
-<span class="nc" id="L389">            throw new InitializationException(&quot;An error occurred with the .NET AssemblyAnalyzer&quot;, e);</span>
-<span class="fc" id="L390">        } catch (IOException e) {</span>
-<span class="fc" id="L391">            LOGGER.warn(&quot;An error occurred with the .NET AssemblyAnalyzer;\n&quot;</span>
+<span class="nc" id="L380">            LOGGER.debug(&quot;Could not execute GrokAssembly {}&quot;, e.getMessage());</span>
+<span class="nc" id="L381">            setEnabled(false);</span>
+<span class="nc" id="L382">            throw new InitializationException(&quot;An error occurred with the .NET AssemblyAnalyzer&quot;, e);</span>
+<span class="fc" id="L383">        } catch (IOException e) {</span>
+<span class="fc" id="L384">            LOGGER.warn(&quot;An error occurred with the .NET AssemblyAnalyzer;\n&quot;</span>
                     + &quot;dependency-check requires dotnet 8.0 core to be installed to analyze assemblies;\n&quot;
                     + &quot;this can be ignored unless you are scanning .NET DLLs. Please see the log for more details.&quot;);
-<span class="fc" id="L394">            LOGGER.debug(&quot;Could not execute GrokAssembly {}&quot;, e.getMessage());</span>
-<span class="fc" id="L395">            setEnabled(false);</span>
-<span class="fc" id="L396">            throw new InitializationException(&quot;An error occurred with the .NET AssemblyAnalyzer, is the dotnet 8.0 runtime or sdk installed?&quot;, e);</span>
-<span class="fc" id="L397">        }</span>
-<span class="fc" id="L398">    }</span>
+<span class="fc" id="L387">            LOGGER.debug(&quot;Could not execute GrokAssembly {}&quot;, e.getMessage());</span>
+<span class="fc" id="L388">            setEnabled(false);</span>
+<span class="fc" id="L389">            throw new InitializationException(&quot;An error occurred with the .NET AssemblyAnalyzer, is the dotnet 8.0 runtime or sdk installed?&quot;, e);</span>
+<span class="fc" id="L390">        }</span>
+<span class="fc" id="L391">    }</span>
 
     /**
      * Extracts the GrokAssembly executable.
@@ -406,18 +399,15 @@ import org.owasp.dependencycheck.xml.assembly.GrokParseException;
      */
     private File extractGrokAssembly() throws InitializationException {
         final File location;
-<span class="fc" id="L409">        try (InputStream in = FileUtils.getResourceAsStream(&quot;GrokAssembly.zip&quot;)) {</span>
-<span class="pc bpc" id="L410" title="1 of 2 branches missed.">            if (in == null) {</span>
-<span class="nc" id="L411">                throw new InitializationException(&quot;Unable to extract GrokAssembly.dll - file not found&quot;);</span>
-            }
-<span class="fc" id="L413">            location = FileUtils.createTempDirectory(getSettings().getTempDirectory());</span>
-<span class="fc" id="L414">            ExtractionUtil.extractFiles(in, location);</span>
-<span class="nc" id="L415">        } catch (ExtractionException ex) {</span>
-<span class="nc" id="L416">            throw new InitializationException(&quot;Unable to extract GrokAssembly.dll&quot;, ex);</span>
-<span class="nc" id="L417">        } catch (IOException ex) {</span>
-<span class="nc" id="L418">            throw new InitializationException(&quot;Unable to create temp directory for GrokAssembly&quot;, ex);</span>
-<span class="fc" id="L419">        }</span>
-<span class="fc" id="L420">        return new File(location, &quot;GrokAssembly.dll&quot;);</span>
+<span class="fc" id="L402">        try (InputStream in = FileUtils.getResourceAsStream(&quot;GrokAssembly.zip&quot;)) {</span>
+<span class="fc" id="L403">            location = FileUtils.createTempDirectory(getSettings().getTempDirectory());</span>
+<span class="fc" id="L404">            ExtractionUtil.extractFiles(in, location);</span>
+<span class="nc" id="L405">        } catch (ExtractionException ex) {</span>
+<span class="nc" id="L406">            throw new InitializationException(&quot;Unable to extract GrokAssembly.dll&quot;, ex);</span>
+<span class="nc" id="L407">        } catch (IOException ex) {</span>
+<span class="nc" id="L408">            throw new InitializationException(&quot;Unable to create temp directory for GrokAssembly&quot;, ex);</span>
+<span class="fc" id="L409">        }</span>
+<span class="fc" id="L410">        return new File(location, &quot;GrokAssembly.dll&quot;);</span>
     }
 
     /**
@@ -427,14 +417,14 @@ import org.owasp.dependencycheck.xml.assembly.GrokParseException;
      */
     @Override
     public void closeAnalyzer() throws Exception {
-<span class="pc bpc" id="L430" title="1 of 2 branches missed.">        if (grokAssembly != null) {</span>
-<span class="fc" id="L431">            FileUtils.delete(grokAssembly.getParentFile());</span>
+<span class="pc bpc" id="L420" title="1 of 2 branches missed.">        if (grokAssembly != null) {</span>
+<span class="fc" id="L421">            FileUtils.delete(grokAssembly.getParentFile());</span>
         }
-<span class="fc" id="L433">    }</span>
+<span class="fc" id="L423">    }</span>
 
     @Override
     protected FileFilter getFileFilter() {
-<span class="fc" id="L437">        return FILTER;</span>
+<span class="fc" id="L427">        return FILTER;</span>
     }
 
     /**
@@ -444,7 +434,7 @@ import org.owasp.dependencycheck.xml.assembly.GrokParseException;
      */
     @Override
     public String getName() {
-<span class="fc" id="L447">        return ANALYZER_NAME;</span>
+<span class="fc" id="L437">        return ANALYZER_NAME;</span>
     }
 
     /**
@@ -454,7 +444,7 @@ import org.owasp.dependencycheck.xml.assembly.GrokParseException;
      */
     @Override
     public AnalysisPhase getAnalysisPhase() {
-<span class="fc" id="L457">        return ANALYSIS_PHASE;</span>
+<span class="fc" id="L447">        return ANALYSIS_PHASE;</span>
     }
 
     /**
@@ -465,7 +455,7 @@ import org.owasp.dependencycheck.xml.assembly.GrokParseException;
      */
     @Override
     protected String getAnalyzerEnabledSettingKey() {
-<span class="fc" id="L468">        return Settings.KEYS.ANALYZER_ASSEMBLY_ENABLED;</span>
+<span class="fc" id="L458">        return Settings.KEYS.ANALYZER_ASSEMBLY_ENABLED;</span>
     }
 
     /**
@@ -475,30 +465,30 @@ import org.owasp.dependencycheck.xml.assembly.GrokParseException;
      * &lt;code&gt;false&lt;/code&gt;
      */
     private boolean isDotnetPath() {
-<span class="fc" id="L478">        final String[] args = new String[2];</span>
-<span class="fc" id="L479">        args[0] = &quot;dotnet&quot;;</span>
-<span class="fc" id="L480">        args[1] = &quot;--info&quot;;</span>
-<span class="fc" id="L481">        final ProcessBuilder pb = new ProcessBuilder(args);</span>
+<span class="fc" id="L468">        final String[] args = new String[2];</span>
+<span class="fc" id="L469">        args[0] = &quot;dotnet&quot;;</span>
+<span class="fc" id="L470">        args[1] = &quot;--info&quot;;</span>
+<span class="fc" id="L471">        final ProcessBuilder pb = new ProcessBuilder(args);</span>
         try {
-<span class="fc" id="L483">            final Process proc = pb.start();</span>
-<span class="fc" id="L484">            try (ProcessReader processReader = new ProcessReader(proc)) {</span>
-<span class="fc" id="L485">                processReader.readAll();</span>
-<span class="fc" id="L486">                final int exitValue = proc.exitValue();</span>
-<span class="pc bpc" id="L487" title="1 of 2 branches missed.">                if (exitValue == 0) {</span>
-<span class="fc" id="L488">                    return true;</span>
+<span class="fc" id="L473">            final Process proc = pb.start();</span>
+<span class="fc" id="L474">            try (ProcessReader processReader = new ProcessReader(proc)) {</span>
+<span class="fc" id="L475">                processReader.readAll();</span>
+<span class="fc" id="L476">                final int exitValue = proc.exitValue();</span>
+<span class="pc bpc" id="L477" title="1 of 2 branches missed.">                if (exitValue == 0) {</span>
+<span class="fc" id="L478">                    return true;</span>
                 }
-<span class="nc" id="L490">                final String output = processReader.getOutput();</span>
-<span class="nc bnc" id="L491" title="All 2 branches missed.">                if (output.length() &gt; 0) {</span>
-<span class="nc" id="L492">                    return true;</span>
+<span class="nc" id="L480">                final String output = processReader.getOutput();</span>
+<span class="nc bnc" id="L481" title="All 2 branches missed.">                if (output.length() &gt; 0) {</span>
+<span class="nc" id="L482">                    return true;</span>
                 }
-<span class="pc" id="L494">            }</span>
-<span class="nc" id="L495">        } catch (InterruptedException ex) {</span>
-<span class="nc" id="L496">            Thread.currentThread().interrupt();</span>
-<span class="nc" id="L497">            LOGGER.debug(&quot;Path search failed for dotnet&quot;, ex);</span>
-<span class="nc" id="L498">        } catch (IOException ex) {</span>
-<span class="nc" id="L499">            LOGGER.debug(&quot;Path search failed for dotnet&quot;, ex);</span>
-<span class="nc" id="L500">        }</span>
-<span class="nc" id="L501">        return false;</span>
+<span class="pc" id="L484">            }</span>
+<span class="nc" id="L485">        } catch (InterruptedException ex) {</span>
+<span class="nc" id="L486">            Thread.currentThread().interrupt();</span>
+<span class="nc" id="L487">            LOGGER.debug(&quot;Path search failed for dotnet&quot;, ex);</span>
+<span class="nc" id="L488">        } catch (IOException ex) {</span>
+<span class="nc" id="L489">            LOGGER.debug(&quot;Path search failed for dotnet&quot;, ex);</span>
+<span class="nc" id="L490">        }</span>
+<span class="nc" id="L491">        return false;</span>
     }
 
     /**
@@ -513,21 +503,21 @@ import org.owasp.dependencycheck.xml.assembly.GrokParseException;
      * @param type the type of evidence (vendor, product, or version)
      */
     protected static void addMatchingValues(List&lt;String&gt; packages, String value, Dependency dep, EvidenceType type) {
-<span class="pc bpc" id="L516" title="4 of 8 branches missed.">        if (value == null || value.isEmpty() || packages == null || packages.isEmpty()) {</span>
-<span class="nc" id="L517">            return;</span>
+<span class="pc bpc" id="L506" title="4 of 8 branches missed.">        if (value == null || value.isEmpty() || packages == null || packages.isEmpty()) {</span>
+<span class="nc" id="L507">            return;</span>
         }
-<span class="fc bfc" id="L519" title="All 2 branches covered.">        for (String key : packages) {</span>
-<span class="fc" id="L520">            final int pos = StringUtils.indexOfIgnoreCase(value, key);</span>
-<span class="pc bpc" id="L521" title="1 of 6 branches missed.">            if ((pos == 0 &amp;&amp; (key.length() == value.length() || (key.length() &lt; value.length()</span>
-<span class="pc bpc" id="L522" title="1 of 4 branches missed.">                    &amp;&amp; !Character.isLetterOrDigit(value.charAt(key.length())))))</span>
-<span class="pc bpc" id="L523" title="1 of 2 branches missed.">                    || (pos &gt; 0 &amp;&amp; !Character.isLetterOrDigit(value.charAt(pos - 1))</span>
-<span class="pc bpc" id="L524" title="2 of 4 branches missed.">                    &amp;&amp; (pos + key.length() == value.length() || (key.length() &lt; value.length()</span>
-<span class="pc bpc" id="L525" title="1 of 2 branches missed.">                    &amp;&amp; !Character.isLetterOrDigit(value.charAt(pos + key.length())))))) {</span>
-<span class="fc" id="L526">                dep.addEvidence(type, &quot;dll&quot;, &quot;namespace&quot;, key, Confidence.HIGHEST);</span>
+<span class="fc bfc" id="L509" title="All 2 branches covered.">        for (String key : packages) {</span>
+<span class="fc" id="L510">            final int pos = StringUtils.indexOfIgnoreCase(value, key);</span>
+<span class="pc bpc" id="L511" title="1 of 6 branches missed.">            if ((pos == 0 &amp;&amp; (key.length() == value.length() || (key.length() &lt; value.length()</span>
+<span class="pc bpc" id="L512" title="1 of 4 branches missed.">                    &amp;&amp; !Character.isLetterOrDigit(value.charAt(key.length())))))</span>
+<span class="pc bpc" id="L513" title="1 of 2 branches missed.">                    || (pos &gt; 0 &amp;&amp; !Character.isLetterOrDigit(value.charAt(pos - 1))</span>
+<span class="pc bpc" id="L514" title="2 of 4 branches missed.">                    &amp;&amp; (pos + key.length() == value.length() || (key.length() &lt; value.length()</span>
+<span class="pc bpc" id="L515" title="1 of 2 branches missed.">                    &amp;&amp; !Character.isLetterOrDigit(value.charAt(pos + key.length())))))) {</span>
+<span class="fc" id="L516">                dep.addEvidence(type, &quot;dll&quot;, &quot;namespace&quot;, key, Confidence.HIGHEST);</span>
             }
 
-<span class="fc" id="L529">        }</span>
-<span class="fc" id="L530">    }</span>
+<span class="fc" id="L519">        }</span>
+<span class="fc" id="L520">    }</span>
 
     /**
      * Used in testing only - this simply returns the path to the extracted
@@ -536,7 +526,7 @@ import org.owasp.dependencycheck.xml.assembly.GrokParseException;
      * @return the path to the extracted GrokAssembly.dll
      */
     File getGrokAssemblyPath() {
-<span class="fc" id="L539">        return grokAssembly;</span>
+<span class="fc" id="L529">        return grokAssembly;</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.14.202510111229</span></div></body></html>

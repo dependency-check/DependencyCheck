@@ -54,7 +54,7 @@
 <a class="jxr_linenumber" name="L46" href="#L46">46</a>  <strong class="jxr_keyword">import</strong> org.owasp.dependencycheck.utils.Settings;
 <a class="jxr_linenumber" name="L47" href="#L47">47</a>  <strong class="jxr_keyword">import</strong> org.owasp.dependencycheck.utils.SeverityUtil;
 <a class="jxr_linenumber" name="L48" href="#L48">48</a>  <strong class="jxr_keyword">import</strong> org.owasp.dependencycheck.utils.scarf.TelemetryCollector;
-<a class="jxr_linenumber" name="L49" href="#L49">49</a>  <strong class="jxr_keyword">import</strong> org.slf4j.impl.StaticLoggerBinder;
+<a class="jxr_linenumber" name="L49" href="#L49">49</a>  <strong class="jxr_keyword">import</strong> org.owasp.dependencycheck.ant.logging.AntTaskHolder;
 <a class="jxr_linenumber" name="L50" href="#L50">50</a>  
 <a class="jxr_linenumber" name="L51" href="#L51">51</a>  <em class="jxr_comment">//CSOFF: MethodCount</em>
 <a class="jxr_linenumber" name="L52" href="#L52">52</a>  <em class="jxr_javadoccomment">/**</em>
@@ -108,12 +108,12 @@
 <a class="jxr_linenumber" name="L100" href="#L100">100</a> <em class="jxr_javadoccomment">     * to exclude files that contain matching content..</em>
 <a class="jxr_linenumber" name="L101" href="#L101">101</a> <em class="jxr_javadoccomment">     */</em>
 <a class="jxr_linenumber" name="L102" href="#L102">102</a>     @SuppressWarnings(<span class="jxr_string">"CanBeFinal"</span>)
-<a class="jxr_linenumber" name="L103" href="#L103">103</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> List&lt;String&gt; retirejsFilters = <strong class="jxr_keyword">new</strong> ArrayList&lt;&gt;();
+<a class="jxr_linenumber" name="L103" href="#L103">103</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> List&lt;String&gt; retireJsFilters = <strong class="jxr_keyword">new</strong> ArrayList&lt;&gt;();
 <a class="jxr_linenumber" name="L104" href="#L104">104</a>     <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L105" href="#L105">105</a> <em class="jxr_javadoccomment">     * Whether or not the RetireJS Analyzer filters non-vulnerable JS files from</em>
 <a class="jxr_linenumber" name="L106" href="#L106">106</a> <em class="jxr_javadoccomment">     * the report; default is false.</em>
 <a class="jxr_linenumber" name="L107" href="#L107">107</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L108" href="#L108">108</a>     <strong class="jxr_keyword">private</strong> Boolean retirejsFilterNonVulnerable;
+<a class="jxr_linenumber" name="L108" href="#L108">108</a>     <strong class="jxr_keyword">private</strong> Boolean retireJsFilterNonVulnerable;
 <a class="jxr_linenumber" name="L109" href="#L109">109</a>     <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L110" href="#L110">110</a> <em class="jxr_javadoccomment">     * Whether or not the Ruby Bundle Audit Analyzer is enabled.</em>
 <a class="jxr_linenumber" name="L111" href="#L111">111</a> <em class="jxr_javadoccomment">     */</em>
@@ -525,7 +525,7 @@
 <a class="jxr_linenumber" name="L517" href="#L517">517</a>         <strong class="jxr_keyword">super</strong>();
 <a class="jxr_linenumber" name="L518" href="#L518">518</a>         <em class="jxr_comment">// Call this before Dependency Check Core starts logging anything - this way, all SLF4J messages from</em>
 <a class="jxr_linenumber" name="L519" href="#L519">519</a>         <em class="jxr_comment">// core end up coming through this tasks logger</em>
-<a class="jxr_linenumber" name="L520" href="#L520">520</a>         StaticLoggerBinder.getSingleton().setTask(<strong class="jxr_keyword">this</strong>);
+<a class="jxr_linenumber" name="L520" href="#L520">520</a>         AntTaskHolder.setTask(<strong class="jxr_keyword">this</strong>);
 <a class="jxr_linenumber" name="L521" href="#L521">521</a>     }
 <a class="jxr_linenumber" name="L522" href="#L522">522</a> 
 <a class="jxr_linenumber" name="L523" href="#L523">523</a>     <em class="jxr_javadoccomment">/**</em>
@@ -1004,652 +1004,747 @@
 <a class="jxr_linenumber" name="L996" href="#L996">996</a>     <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L997" href="#L997">997</a> <em class="jxr_javadoccomment">     * Set the value of retirejsFilterNonVulnerable.</em>
 <a class="jxr_linenumber" name="L998" href="#L998">998</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L999" href="#L999">999</a> <em class="jxr_javadoccomment">     * @param retirejsFilterNonVulnerable new value of</em>
+<a class="jxr_linenumber" name="L999" href="#L999">999</a> <em class="jxr_javadoccomment">     * @param retireJsFilterNonVulnerable new value of</em>
 <a class="jxr_linenumber" name="L1000" href="#L1000">1000</a> <em class="jxr_javadoccomment">     * retirejsFilterNonVulnerable</em>
-<a class="jxr_linenumber" name="L1001" href="#L1001">1001</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L1002" href="#L1002">1002</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> setRetirejsFilterNonVulnerable(Boolean retirejsFilterNonVulnerable) {
-<a class="jxr_linenumber" name="L1003" href="#L1003">1003</a>         <strong class="jxr_keyword">this</strong>.retirejsFilterNonVulnerable = retirejsFilterNonVulnerable;
-<a class="jxr_linenumber" name="L1004" href="#L1004">1004</a>     }
-<a class="jxr_linenumber" name="L1005" href="#L1005">1005</a> 
-<a class="jxr_linenumber" name="L1006" href="#L1006">1006</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L1007" href="#L1007">1007</a> <em class="jxr_javadoccomment">     * Add a regular expression to the set of retire JS content filters.</em>
-<a class="jxr_linenumber" name="L1008" href="#L1008">1008</a> <em class="jxr_javadoccomment">     * &lt;p&gt;</em>
-<a class="jxr_linenumber" name="L1009" href="#L1009">1009</a> <em class="jxr_javadoccomment">     * This is called by Ant.</em>
-<a class="jxr_linenumber" name="L1010" href="#L1010">1010</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L1011" href="#L1011">1011</a> <em class="jxr_javadoccomment">     * @param retirejsFilter the regular expression used to filter based on file</em>
-<a class="jxr_linenumber" name="L1012" href="#L1012">1012</a> <em class="jxr_javadoccomment">     * content</em>
-<a class="jxr_linenumber" name="L1013" href="#L1013">1013</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L1014" href="#L1014">1014</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> addConfiguredRetirejsFilter(<strong class="jxr_keyword">final</strong> <a href="../../../../org/owasp/dependencycheck/taskdefs/RetirejsFilter.html">RetirejsFilter</a> retirejsFilter) {
-<a class="jxr_linenumber" name="L1015" href="#L1015">1015</a>         retirejsFilters.add(retirejsFilter.getRegex());
-<a class="jxr_linenumber" name="L1016" href="#L1016">1016</a>     }
-<a class="jxr_linenumber" name="L1017" href="#L1017">1017</a> 
-<a class="jxr_linenumber" name="L1018" href="#L1018">1018</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L1019" href="#L1019">1019</a> <em class="jxr_javadoccomment">     * Set the value of rubygemsAnalyzerEnabled.</em>
-<a class="jxr_linenumber" name="L1020" href="#L1020">1020</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L1021" href="#L1021">1021</a> <em class="jxr_javadoccomment">     * @param rubygemsAnalyzerEnabled new value of rubygemsAnalyzerEnabled</em>
-<a class="jxr_linenumber" name="L1022" href="#L1022">1022</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L1023" href="#L1023">1023</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> setRubygemsAnalyzerEnabled(Boolean rubygemsAnalyzerEnabled) {
-<a class="jxr_linenumber" name="L1024" href="#L1024">1024</a>         <strong class="jxr_keyword">this</strong>.rubygemsAnalyzerEnabled = rubygemsAnalyzerEnabled;
-<a class="jxr_linenumber" name="L1025" href="#L1025">1025</a>     }
-<a class="jxr_linenumber" name="L1026" href="#L1026">1026</a> 
-<a class="jxr_linenumber" name="L1027" href="#L1027">1027</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L1028" href="#L1028">1028</a> <em class="jxr_javadoccomment">     * Set the value of pyPackageAnalyzerEnabled.</em>
-<a class="jxr_linenumber" name="L1029" href="#L1029">1029</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L1030" href="#L1030">1030</a> <em class="jxr_javadoccomment">     * @param pyPackageAnalyzerEnabled new value of pyPackageAnalyzerEnabled</em>
-<a class="jxr_linenumber" name="L1031" href="#L1031">1031</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L1032" href="#L1032">1032</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> setPyPackageAnalyzerEnabled(Boolean pyPackageAnalyzerEnabled) {
-<a class="jxr_linenumber" name="L1033" href="#L1033">1033</a>         <strong class="jxr_keyword">this</strong>.pyPackageAnalyzerEnabled = pyPackageAnalyzerEnabled;
+<a class="jxr_linenumber" name="L1001" href="#L1001">1001</a> <em class="jxr_javadoccomment">     * @deprecated Use {@link #setRetireJsFilterNonVulnerable(Boolean)} instead.</em>
+<a class="jxr_linenumber" name="L1002" href="#L1002">1002</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L1003" href="#L1003">1003</a>     @Deprecated
+<a class="jxr_linenumber" name="L1004" href="#L1004">1004</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> setRetirejsFilterNonVulnerable(Boolean retireJsFilterNonVulnerable) {
+<a class="jxr_linenumber" name="L1005" href="#L1005">1005</a>         log(<span class="jxr_string">"'retirejsFilterNonVulnerable' is deprecated and may be removed in the next major release, please migrate to 'retireJsFilterNonVulnerable'"</span>,
+<a class="jxr_linenumber" name="L1006" href="#L1006">1006</a>                 Project.MSG_WARN);
+<a class="jxr_linenumber" name="L1007" href="#L1007">1007</a>         <strong class="jxr_keyword">this</strong>.retireJsFilterNonVulnerable = retireJsFilterNonVulnerable;
+<a class="jxr_linenumber" name="L1008" href="#L1008">1008</a>     }
+<a class="jxr_linenumber" name="L1009" href="#L1009">1009</a> 
+<a class="jxr_linenumber" name="L1010" href="#L1010">1010</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L1011" href="#L1011">1011</a> <em class="jxr_javadoccomment">     * Set the value of retireJsFilterNonVulnerable.</em>
+<a class="jxr_linenumber" name="L1012" href="#L1012">1012</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L1013" href="#L1013">1013</a> <em class="jxr_javadoccomment">     * @param retireJsFilterNonVulnerable new value of</em>
+<a class="jxr_linenumber" name="L1014" href="#L1014">1014</a> <em class="jxr_javadoccomment">     * retireJsFilterNonVulnerable</em>
+<a class="jxr_linenumber" name="L1015" href="#L1015">1015</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L1016" href="#L1016">1016</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> setRetireJsFilterNonVulnerable(Boolean retireJsFilterNonVulnerable) {
+<a class="jxr_linenumber" name="L1017" href="#L1017">1017</a>         <strong class="jxr_keyword">this</strong>.retireJsFilterNonVulnerable = retireJsFilterNonVulnerable;
+<a class="jxr_linenumber" name="L1018" href="#L1018">1018</a>     }
+<a class="jxr_linenumber" name="L1019" href="#L1019">1019</a> 
+<a class="jxr_linenumber" name="L1020" href="#L1020">1020</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L1021" href="#L1021">1021</a> <em class="jxr_javadoccomment">     * Add a regular expression to the set of retire JS content filters.</em>
+<a class="jxr_linenumber" name="L1022" href="#L1022">1022</a> <em class="jxr_javadoccomment">     * &lt;p&gt;</em>
+<a class="jxr_linenumber" name="L1023" href="#L1023">1023</a> <em class="jxr_javadoccomment">     * This is called by Ant.</em>
+<a class="jxr_linenumber" name="L1024" href="#L1024">1024</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L1025" href="#L1025">1025</a> <em class="jxr_javadoccomment">     * @param retireJsFilter the regular expression used to filter based on file</em>
+<a class="jxr_linenumber" name="L1026" href="#L1026">1026</a> <em class="jxr_javadoccomment">     * content</em>
+<a class="jxr_linenumber" name="L1027" href="#L1027">1027</a> <em class="jxr_javadoccomment">     * @deprecated Use {@link #addConfiguredRetireJsFilter(RetirejsFilter)} instead.</em>
+<a class="jxr_linenumber" name="L1028" href="#L1028">1028</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L1029" href="#L1029">1029</a>     @Deprecated
+<a class="jxr_linenumber" name="L1030" href="#L1030">1030</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> addConfiguredRetirejsFilter(<strong class="jxr_keyword">final</strong> <a href="../../../../org/owasp/dependencycheck/taskdefs/RetirejsFilter.html">RetirejsFilter</a> retireJsFilter) {
+<a class="jxr_linenumber" name="L1031" href="#L1031">1031</a>         log(<span class="jxr_string">"'retirejsFilter' is deprecated and may be removed in the next major release, please migrate to 'retireJsFilter'"</span>,
+<a class="jxr_linenumber" name="L1032" href="#L1032">1032</a>                 Project.MSG_WARN);
+<a class="jxr_linenumber" name="L1033" href="#L1033">1033</a>         retireJsFilters.add(retireJsFilter.getRegex());
 <a class="jxr_linenumber" name="L1034" href="#L1034">1034</a>     }
 <a class="jxr_linenumber" name="L1035" href="#L1035">1035</a> 
 <a class="jxr_linenumber" name="L1036" href="#L1036">1036</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L1037" href="#L1037">1037</a> <em class="jxr_javadoccomment">     * Set the value of pyDistributionAnalyzerEnabled.</em>
-<a class="jxr_linenumber" name="L1038" href="#L1038">1038</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L1039" href="#L1039">1039</a> <em class="jxr_javadoccomment">     * @param pyDistributionAnalyzerEnabled new value of</em>
-<a class="jxr_linenumber" name="L1040" href="#L1040">1040</a> <em class="jxr_javadoccomment">     * pyDistributionAnalyzerEnabled</em>
-<a class="jxr_linenumber" name="L1041" href="#L1041">1041</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L1042" href="#L1042">1042</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> setPyDistributionAnalyzerEnabled(Boolean pyDistributionAnalyzerEnabled) {
-<a class="jxr_linenumber" name="L1043" href="#L1043">1043</a>         <strong class="jxr_keyword">this</strong>.pyDistributionAnalyzerEnabled = pyDistributionAnalyzerEnabled;
-<a class="jxr_linenumber" name="L1044" href="#L1044">1044</a>     }
-<a class="jxr_linenumber" name="L1045" href="#L1045">1045</a> 
-<a class="jxr_linenumber" name="L1046" href="#L1046">1046</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L1047" href="#L1047">1047</a> <em class="jxr_javadoccomment">     * Set the value of mixAuditAnalyzerEnabled.</em>
-<a class="jxr_linenumber" name="L1048" href="#L1048">1048</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L1049" href="#L1049">1049</a> <em class="jxr_javadoccomment">     * @param mixAuditAnalyzerEnabled new value of mixAuditAnalyzerEnabled</em>
-<a class="jxr_linenumber" name="L1050" href="#L1050">1050</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L1051" href="#L1051">1051</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> setMixAuditAnalyzerEnabled(Boolean mixAuditAnalyzerEnabled) {
-<a class="jxr_linenumber" name="L1052" href="#L1052">1052</a>         <strong class="jxr_keyword">this</strong>.mixAuditAnalyzerEnabled = mixAuditAnalyzerEnabled;
-<a class="jxr_linenumber" name="L1053" href="#L1053">1053</a>     }
-<a class="jxr_linenumber" name="L1054" href="#L1054">1054</a> 
-<a class="jxr_linenumber" name="L1055" href="#L1055">1055</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L1056" href="#L1056">1056</a> <em class="jxr_javadoccomment">     * Sets the path to the mix audit executable.</em>
-<a class="jxr_linenumber" name="L1057" href="#L1057">1057</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L1058" href="#L1058">1058</a> <em class="jxr_javadoccomment">     * @param mixAuditPath the path to the bundle audit executable</em>
-<a class="jxr_linenumber" name="L1059" href="#L1059">1059</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L1060" href="#L1060">1060</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> setMixAuditPath(String mixAuditPath) {
-<a class="jxr_linenumber" name="L1061" href="#L1061">1061</a>         <strong class="jxr_keyword">this</strong>.mixAuditPath = mixAuditPath;
-<a class="jxr_linenumber" name="L1062" href="#L1062">1062</a>     }
-<a class="jxr_linenumber" name="L1063" href="#L1063">1063</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L1064" href="#L1064">1064</a> <em class="jxr_javadoccomment">     * Set the value of centralAnalyzerEnabled.</em>
-<a class="jxr_linenumber" name="L1065" href="#L1065">1065</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L1066" href="#L1066">1066</a> <em class="jxr_javadoccomment">     * @param centralAnalyzerEnabled new value of centralAnalyzerEnabled</em>
-<a class="jxr_linenumber" name="L1067" href="#L1067">1067</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L1068" href="#L1068">1068</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> setCentralAnalyzerEnabled(Boolean centralAnalyzerEnabled) {
-<a class="jxr_linenumber" name="L1069" href="#L1069">1069</a>         <strong class="jxr_keyword">this</strong>.centralAnalyzerEnabled = centralAnalyzerEnabled;
-<a class="jxr_linenumber" name="L1070" href="#L1070">1070</a>     }
-<a class="jxr_linenumber" name="L1071" href="#L1071">1071</a> 
-<a class="jxr_linenumber" name="L1072" href="#L1072">1072</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L1073" href="#L1073">1073</a> <em class="jxr_javadoccomment">     * Set the value of centralAnalyzerUseCache.</em>
-<a class="jxr_linenumber" name="L1074" href="#L1074">1074</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L1075" href="#L1075">1075</a> <em class="jxr_javadoccomment">     * @param centralAnalyzerUseCache new value of centralAnalyzerUseCache</em>
-<a class="jxr_linenumber" name="L1076" href="#L1076">1076</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L1077" href="#L1077">1077</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> setCentralAnalyzerUseCache(Boolean centralAnalyzerUseCache) {
-<a class="jxr_linenumber" name="L1078" href="#L1078">1078</a>         <strong class="jxr_keyword">this</strong>.centralAnalyzerUseCache = centralAnalyzerUseCache;
-<a class="jxr_linenumber" name="L1079" href="#L1079">1079</a>     }
-<a class="jxr_linenumber" name="L1080" href="#L1080">1080</a> 
-<a class="jxr_linenumber" name="L1081" href="#L1081">1081</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L1082" href="#L1082">1082</a> <em class="jxr_javadoccomment">     * Set the value of nexusAnalyzerEnabled.</em>
-<a class="jxr_linenumber" name="L1083" href="#L1083">1083</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L1084" href="#L1084">1084</a> <em class="jxr_javadoccomment">     * @param nexusAnalyzerEnabled new value of nexusAnalyzerEnabled</em>
-<a class="jxr_linenumber" name="L1085" href="#L1085">1085</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L1086" href="#L1086">1086</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> setNexusAnalyzerEnabled(Boolean nexusAnalyzerEnabled) {
-<a class="jxr_linenumber" name="L1087" href="#L1087">1087</a>         <strong class="jxr_keyword">this</strong>.nexusAnalyzerEnabled = nexusAnalyzerEnabled;
-<a class="jxr_linenumber" name="L1088" href="#L1088">1088</a>     }
-<a class="jxr_linenumber" name="L1089" href="#L1089">1089</a> 
-<a class="jxr_linenumber" name="L1090" href="#L1090">1090</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L1091" href="#L1091">1091</a> <em class="jxr_javadoccomment">     * Set the value of golangDepEnabled.</em>
-<a class="jxr_linenumber" name="L1092" href="#L1092">1092</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L1093" href="#L1093">1093</a> <em class="jxr_javadoccomment">     * @param golangDepEnabled new value of golangDepEnabled</em>
-<a class="jxr_linenumber" name="L1094" href="#L1094">1094</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L1095" href="#L1095">1095</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> setGolangDepEnabled(Boolean golangDepEnabled) {
-<a class="jxr_linenumber" name="L1096" href="#L1096">1096</a>         <strong class="jxr_keyword">this</strong>.golangDepEnabled = golangDepEnabled;
-<a class="jxr_linenumber" name="L1097" href="#L1097">1097</a>     }
-<a class="jxr_linenumber" name="L1098" href="#L1098">1098</a> 
-<a class="jxr_linenumber" name="L1099" href="#L1099">1099</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L1100" href="#L1100">1100</a> <em class="jxr_javadoccomment">     * Set the value of golangModEnabled.</em>
-<a class="jxr_linenumber" name="L1101" href="#L1101">1101</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L1102" href="#L1102">1102</a> <em class="jxr_javadoccomment">     * @param golangModEnabled new value of golangModEnabled</em>
-<a class="jxr_linenumber" name="L1103" href="#L1103">1103</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L1104" href="#L1104">1104</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> setGolangModEnabled(Boolean golangModEnabled) {
-<a class="jxr_linenumber" name="L1105" href="#L1105">1105</a>         <strong class="jxr_keyword">this</strong>.golangModEnabled = golangModEnabled;
-<a class="jxr_linenumber" name="L1106" href="#L1106">1106</a>     }
-<a class="jxr_linenumber" name="L1107" href="#L1107">1107</a> 
-<a class="jxr_linenumber" name="L1108" href="#L1108">1108</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L1109" href="#L1109">1109</a> <em class="jxr_javadoccomment">     * Set the value of dartAnalyzerEnabled.</em>
-<a class="jxr_linenumber" name="L1110" href="#L1110">1110</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L1111" href="#L1111">1111</a> <em class="jxr_javadoccomment">     * @param dartAnalyzerEnabled new value of dartAnalyzerEnabled</em>
-<a class="jxr_linenumber" name="L1112" href="#L1112">1112</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L1113" href="#L1113">1113</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> setDartAnalyzerEnabled(Boolean dartAnalyzerEnabled) {
-<a class="jxr_linenumber" name="L1114" href="#L1114">1114</a>         <strong class="jxr_keyword">this</strong>.dartAnalyzerEnabled = dartAnalyzerEnabled;
-<a class="jxr_linenumber" name="L1115" href="#L1115">1115</a>     }
-<a class="jxr_linenumber" name="L1116" href="#L1116">1116</a> 
-<a class="jxr_linenumber" name="L1117" href="#L1117">1117</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L1118" href="#L1118">1118</a> <em class="jxr_javadoccomment">     * Set the value of pathToYarn.</em>
-<a class="jxr_linenumber" name="L1119" href="#L1119">1119</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L1120" href="#L1120">1120</a> <em class="jxr_javadoccomment">     * @param pathToYarn new value of pathToYarn</em>
-<a class="jxr_linenumber" name="L1121" href="#L1121">1121</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L1122" href="#L1122">1122</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> setPathToYarn(String pathToYarn) {
-<a class="jxr_linenumber" name="L1123" href="#L1123">1123</a>         <strong class="jxr_keyword">this</strong>.pathToYarn = pathToYarn;
-<a class="jxr_linenumber" name="L1124" href="#L1124">1124</a>     }
-<a class="jxr_linenumber" name="L1125" href="#L1125">1125</a> 
-<a class="jxr_linenumber" name="L1126" href="#L1126">1126</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L1127" href="#L1127">1127</a> <em class="jxr_javadoccomment">     * Set the value of pathToPnpm.</em>
-<a class="jxr_linenumber" name="L1128" href="#L1128">1128</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L1129" href="#L1129">1129</a> <em class="jxr_javadoccomment">     * @param pathToPnpm new value of pathToPnpm</em>
-<a class="jxr_linenumber" name="L1130" href="#L1130">1130</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L1131" href="#L1131">1131</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> setPathToPnpm(String pathToPnpm) {
-<a class="jxr_linenumber" name="L1132" href="#L1132">1132</a>         <strong class="jxr_keyword">this</strong>.pathToPnpm = pathToPnpm;
-<a class="jxr_linenumber" name="L1133" href="#L1133">1133</a>     }
-<a class="jxr_linenumber" name="L1134" href="#L1134">1134</a> 
-<a class="jxr_linenumber" name="L1135" href="#L1135">1135</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L1136" href="#L1136">1136</a> <em class="jxr_javadoccomment">     * Set the value of pathToGo.</em>
-<a class="jxr_linenumber" name="L1137" href="#L1137">1137</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L1138" href="#L1138">1138</a> <em class="jxr_javadoccomment">     * @param pathToGo new value of pathToGo</em>
-<a class="jxr_linenumber" name="L1139" href="#L1139">1139</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L1140" href="#L1140">1140</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> setPathToGo(String pathToGo) {
-<a class="jxr_linenumber" name="L1141" href="#L1141">1141</a>         <strong class="jxr_keyword">this</strong>.pathToGo = pathToGo;
-<a class="jxr_linenumber" name="L1142" href="#L1142">1142</a>     }
-<a class="jxr_linenumber" name="L1143" href="#L1143">1143</a> 
-<a class="jxr_linenumber" name="L1144" href="#L1144">1144</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L1145" href="#L1145">1145</a> <em class="jxr_javadoccomment">     * Set the value of nexusUrl.</em>
-<a class="jxr_linenumber" name="L1146" href="#L1146">1146</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L1147" href="#L1147">1147</a> <em class="jxr_javadoccomment">     * @param nexusUrl new value of nexusUrl</em>
-<a class="jxr_linenumber" name="L1148" href="#L1148">1148</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L1149" href="#L1149">1149</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> setNexusUrl(String nexusUrl) {
-<a class="jxr_linenumber" name="L1150" href="#L1150">1150</a>         <strong class="jxr_keyword">this</strong>.nexusUrl = nexusUrl;
-<a class="jxr_linenumber" name="L1151" href="#L1151">1151</a>     }
-<a class="jxr_linenumber" name="L1152" href="#L1152">1152</a> 
-<a class="jxr_linenumber" name="L1153" href="#L1153">1153</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L1154" href="#L1154">1154</a> <em class="jxr_javadoccomment">     * Set the value of nexusUser.</em>
-<a class="jxr_linenumber" name="L1155" href="#L1155">1155</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L1156" href="#L1156">1156</a> <em class="jxr_javadoccomment">     * @param nexusUser new value of nexusUser</em>
-<a class="jxr_linenumber" name="L1157" href="#L1157">1157</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L1158" href="#L1158">1158</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> setNexusUser(String nexusUser) {
-<a class="jxr_linenumber" name="L1159" href="#L1159">1159</a>         <strong class="jxr_keyword">this</strong>.nexusUser = nexusUser;
-<a class="jxr_linenumber" name="L1160" href="#L1160">1160</a>     }
-<a class="jxr_linenumber" name="L1161" href="#L1161">1161</a> 
-<a class="jxr_linenumber" name="L1162" href="#L1162">1162</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L1163" href="#L1163">1163</a> <em class="jxr_javadoccomment">     * Set the value of nexusPassword.</em>
-<a class="jxr_linenumber" name="L1164" href="#L1164">1164</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L1165" href="#L1165">1165</a> <em class="jxr_javadoccomment">     * @param nexusPassword new value of nexusPassword</em>
-<a class="jxr_linenumber" name="L1166" href="#L1166">1166</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L1167" href="#L1167">1167</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> setNexusPassword(String nexusPassword) {
-<a class="jxr_linenumber" name="L1168" href="#L1168">1168</a>         <strong class="jxr_keyword">this</strong>.nexusPassword = nexusPassword;
-<a class="jxr_linenumber" name="L1169" href="#L1169">1169</a>     }
-<a class="jxr_linenumber" name="L1170" href="#L1170">1170</a> 
-<a class="jxr_linenumber" name="L1171" href="#L1171">1171</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L1172" href="#L1172">1172</a> <em class="jxr_javadoccomment">     * Set the value of nexusUsesProxy.</em>
-<a class="jxr_linenumber" name="L1173" href="#L1173">1173</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L1174" href="#L1174">1174</a> <em class="jxr_javadoccomment">     * @param nexusUsesProxy new value of nexusUsesProxy</em>
-<a class="jxr_linenumber" name="L1175" href="#L1175">1175</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L1176" href="#L1176">1176</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> setNexusUsesProxy(Boolean nexusUsesProxy) {
-<a class="jxr_linenumber" name="L1177" href="#L1177">1177</a>         <strong class="jxr_keyword">this</strong>.nexusUsesProxy = nexusUsesProxy;
-<a class="jxr_linenumber" name="L1178" href="#L1178">1178</a>     }
-<a class="jxr_linenumber" name="L1179" href="#L1179">1179</a> 
-<a class="jxr_linenumber" name="L1180" href="#L1180">1180</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L1181" href="#L1181">1181</a> <em class="jxr_javadoccomment">     * Set the value of zipExtensions.</em>
-<a class="jxr_linenumber" name="L1182" href="#L1182">1182</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L1183" href="#L1183">1183</a> <em class="jxr_javadoccomment">     * @param zipExtensions new value of zipExtensions</em>
-<a class="jxr_linenumber" name="L1184" href="#L1184">1184</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L1185" href="#L1185">1185</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> setZipExtensions(String zipExtensions) {
-<a class="jxr_linenumber" name="L1186" href="#L1186">1186</a>         <strong class="jxr_keyword">this</strong>.zipExtensions = zipExtensions;
-<a class="jxr_linenumber" name="L1187" href="#L1187">1187</a>     }
-<a class="jxr_linenumber" name="L1188" href="#L1188">1188</a> 
-<a class="jxr_linenumber" name="L1189" href="#L1189">1189</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L1190" href="#L1190">1190</a> <em class="jxr_javadoccomment">     * Set the value of pathToCore.</em>
-<a class="jxr_linenumber" name="L1191" href="#L1191">1191</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L1192" href="#L1192">1192</a> <em class="jxr_javadoccomment">     * @param pathToCore new value of pathToCore</em>
-<a class="jxr_linenumber" name="L1193" href="#L1193">1193</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L1194" href="#L1194">1194</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> setPathToDotnetCore(String pathToCore) {
-<a class="jxr_linenumber" name="L1195" href="#L1195">1195</a>         <strong class="jxr_keyword">this</strong>.pathToCore = pathToCore;
-<a class="jxr_linenumber" name="L1196" href="#L1196">1196</a>     }
-<a class="jxr_linenumber" name="L1197" href="#L1197">1197</a> 
-<a class="jxr_linenumber" name="L1198" href="#L1198">1198</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L1199" href="#L1199">1199</a> <em class="jxr_javadoccomment">     * Set value of {@link #ossindexAnalyzerEnabled}.</em>
-<a class="jxr_linenumber" name="L1200" href="#L1200">1200</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L1201" href="#L1201">1201</a> <em class="jxr_javadoccomment">     * @param ossindexAnalyzerEnabled new value of ossindexAnalyzerEnabled</em>
-<a class="jxr_linenumber" name="L1202" href="#L1202">1202</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L1203" href="#L1203">1203</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> setOssindexAnalyzerEnabled(Boolean ossindexAnalyzerEnabled) {
-<a class="jxr_linenumber" name="L1204" href="#L1204">1204</a>         <strong class="jxr_keyword">this</strong>.ossindexAnalyzerEnabled = ossindexAnalyzerEnabled;
-<a class="jxr_linenumber" name="L1205" href="#L1205">1205</a>     }
-<a class="jxr_linenumber" name="L1206" href="#L1206">1206</a> 
-<a class="jxr_linenumber" name="L1207" href="#L1207">1207</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L1208" href="#L1208">1208</a> <em class="jxr_javadoccomment">     * Set value of {@link #ossindexAnalyzerUseCache}.</em>
-<a class="jxr_linenumber" name="L1209" href="#L1209">1209</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L1210" href="#L1210">1210</a> <em class="jxr_javadoccomment">     * @param ossindexAnalyzerUseCache new value of ossindexAnalyzerUseCache</em>
-<a class="jxr_linenumber" name="L1211" href="#L1211">1211</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L1212" href="#L1212">1212</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> setOssindexAnalyzerUseCache(Boolean ossindexAnalyzerUseCache) {
-<a class="jxr_linenumber" name="L1213" href="#L1213">1213</a>         <strong class="jxr_keyword">this</strong>.ossindexAnalyzerUseCache = ossindexAnalyzerUseCache;
-<a class="jxr_linenumber" name="L1214" href="#L1214">1214</a>     }
-<a class="jxr_linenumber" name="L1215" href="#L1215">1215</a> 
-<a class="jxr_linenumber" name="L1216" href="#L1216">1216</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L1217" href="#L1217">1217</a> <em class="jxr_javadoccomment">     * Set value of {@link #ossindexAnalyzerUrl}.</em>
-<a class="jxr_linenumber" name="L1218" href="#L1218">1218</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L1219" href="#L1219">1219</a> <em class="jxr_javadoccomment">     * @param ossindexAnalyzerUrl new value of ossindexAnalyzerUrl</em>
-<a class="jxr_linenumber" name="L1220" href="#L1220">1220</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L1221" href="#L1221">1221</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> setOssindexAnalyzerUrl(String ossindexAnalyzerUrl) {
-<a class="jxr_linenumber" name="L1222" href="#L1222">1222</a>         <strong class="jxr_keyword">this</strong>.ossindexAnalyzerUrl = ossindexAnalyzerUrl;
-<a class="jxr_linenumber" name="L1223" href="#L1223">1223</a>     }
-<a class="jxr_linenumber" name="L1224" href="#L1224">1224</a> 
-<a class="jxr_linenumber" name="L1225" href="#L1225">1225</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L1226" href="#L1226">1226</a> <em class="jxr_javadoccomment">     * Set value of {@link #ossindexAnalyzerUsername}.</em>
-<a class="jxr_linenumber" name="L1227" href="#L1227">1227</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L1228" href="#L1228">1228</a> <em class="jxr_javadoccomment">     * @param ossindexAnalyzerUsername new value of ossindexAnalyzerUsername</em>
-<a class="jxr_linenumber" name="L1229" href="#L1229">1229</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L1230" href="#L1230">1230</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> setOssindexAnalyzerUsername(String ossindexAnalyzerUsername) {
-<a class="jxr_linenumber" name="L1231" href="#L1231">1231</a>         <strong class="jxr_keyword">this</strong>.ossindexAnalyzerUsername = ossindexAnalyzerUsername;
-<a class="jxr_linenumber" name="L1232" href="#L1232">1232</a>     }
-<a class="jxr_linenumber" name="L1233" href="#L1233">1233</a> 
-<a class="jxr_linenumber" name="L1234" href="#L1234">1234</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L1235" href="#L1235">1235</a> <em class="jxr_javadoccomment">     * Set value of {@link #ossindexAnalyzerPassword}.</em>
-<a class="jxr_linenumber" name="L1236" href="#L1236">1236</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L1237" href="#L1237">1237</a> <em class="jxr_javadoccomment">     * @param ossindexAnalyzerPassword new value of ossindexAnalyzerPassword</em>
-<a class="jxr_linenumber" name="L1238" href="#L1238">1238</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L1239" href="#L1239">1239</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> setOssindexAnalyzerPassword(String ossindexAnalyzerPassword) {
-<a class="jxr_linenumber" name="L1240" href="#L1240">1240</a>         <strong class="jxr_keyword">this</strong>.ossindexAnalyzerPassword = ossindexAnalyzerPassword;
-<a class="jxr_linenumber" name="L1241" href="#L1241">1241</a>     }
-<a class="jxr_linenumber" name="L1242" href="#L1242">1242</a> 
-<a class="jxr_linenumber" name="L1243" href="#L1243">1243</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L1244" href="#L1244">1244</a> <em class="jxr_javadoccomment">     * Set value of {@link #ossIndexAnalyzerWarnOnlyOnRemoteErrors}.</em>
-<a class="jxr_linenumber" name="L1245" href="#L1245">1245</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L1246" href="#L1246">1246</a> <em class="jxr_javadoccomment">     * @param ossIndexWarnOnlyOnRemoteErrors the value of</em>
-<a class="jxr_linenumber" name="L1247" href="#L1247">1247</a> <em class="jxr_javadoccomment">     * ossIndexWarnOnlyOnRemoteErrors</em>
-<a class="jxr_linenumber" name="L1248" href="#L1248">1248</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L1249" href="#L1249">1249</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> setOssIndexWarnOnlyOnRemoteErrors(Boolean ossIndexWarnOnlyOnRemoteErrors) {
-<a class="jxr_linenumber" name="L1250" href="#L1250">1250</a>         <strong class="jxr_keyword">this</strong>.ossIndexAnalyzerWarnOnlyOnRemoteErrors = ossIndexWarnOnlyOnRemoteErrors;
-<a class="jxr_linenumber" name="L1251" href="#L1251">1251</a>     }
-<a class="jxr_linenumber" name="L1252" href="#L1252">1252</a> 
-<a class="jxr_linenumber" name="L1253" href="#L1253">1253</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L1254" href="#L1254">1254</a> <em class="jxr_javadoccomment">     * Set the value of cmakeAnalyzerEnabled.</em>
-<a class="jxr_linenumber" name="L1255" href="#L1255">1255</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L1256" href="#L1256">1256</a> <em class="jxr_javadoccomment">     * @param cmakeAnalyzerEnabled new value of cmakeAnalyzerEnabled</em>
-<a class="jxr_linenumber" name="L1257" href="#L1257">1257</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L1258" href="#L1258">1258</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> setCmakeAnalyzerEnabled(Boolean cmakeAnalyzerEnabled) {
-<a class="jxr_linenumber" name="L1259" href="#L1259">1259</a>         <strong class="jxr_keyword">this</strong>.cmakeAnalyzerEnabled = cmakeAnalyzerEnabled;
-<a class="jxr_linenumber" name="L1260" href="#L1260">1260</a>     }
-<a class="jxr_linenumber" name="L1261" href="#L1261">1261</a> 
-<a class="jxr_linenumber" name="L1262" href="#L1262">1262</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L1263" href="#L1263">1263</a> <em class="jxr_javadoccomment">     * Set the value of artifactoryAnalyzerEnabled.</em>
-<a class="jxr_linenumber" name="L1264" href="#L1264">1264</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L1265" href="#L1265">1265</a> <em class="jxr_javadoccomment">     * @param artifactoryAnalyzerEnabled new value of artifactoryAnalyzerEnabled</em>
-<a class="jxr_linenumber" name="L1266" href="#L1266">1266</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L1267" href="#L1267">1267</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> setArtifactoryAnalyzerEnabled(Boolean artifactoryAnalyzerEnabled) {
-<a class="jxr_linenumber" name="L1268" href="#L1268">1268</a>         <strong class="jxr_keyword">this</strong>.artifactoryAnalyzerEnabled = artifactoryAnalyzerEnabled;
-<a class="jxr_linenumber" name="L1269" href="#L1269">1269</a>     }
-<a class="jxr_linenumber" name="L1270" href="#L1270">1270</a> 
-<a class="jxr_linenumber" name="L1271" href="#L1271">1271</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L1272" href="#L1272">1272</a> <em class="jxr_javadoccomment">     * Set the value of artifactoryAnalyzerUrl.</em>
-<a class="jxr_linenumber" name="L1273" href="#L1273">1273</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L1274" href="#L1274">1274</a> <em class="jxr_javadoccomment">     * @param artifactoryAnalyzerUrl new value of artifactoryAnalyzerUrl</em>
-<a class="jxr_linenumber" name="L1275" href="#L1275">1275</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L1276" href="#L1276">1276</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> setArtifactoryAnalyzerUrl(String artifactoryAnalyzerUrl) {
-<a class="jxr_linenumber" name="L1277" href="#L1277">1277</a>         <strong class="jxr_keyword">this</strong>.artifactoryAnalyzerUrl = artifactoryAnalyzerUrl;
-<a class="jxr_linenumber" name="L1278" href="#L1278">1278</a>     }
-<a class="jxr_linenumber" name="L1279" href="#L1279">1279</a> 
-<a class="jxr_linenumber" name="L1280" href="#L1280">1280</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L1281" href="#L1281">1281</a> <em class="jxr_javadoccomment">     * Set the value of artifactoryAnalyzerUseProxy.</em>
-<a class="jxr_linenumber" name="L1282" href="#L1282">1282</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L1283" href="#L1283">1283</a> <em class="jxr_javadoccomment">     * @param artifactoryAnalyzerUseProxy new value of</em>
-<a class="jxr_linenumber" name="L1284" href="#L1284">1284</a> <em class="jxr_javadoccomment">     * artifactoryAnalyzerUseProxy</em>
-<a class="jxr_linenumber" name="L1285" href="#L1285">1285</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L1286" href="#L1286">1286</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> setArtifactoryAnalyzerUseProxy(Boolean artifactoryAnalyzerUseProxy) {
-<a class="jxr_linenumber" name="L1287" href="#L1287">1287</a>         <strong class="jxr_keyword">this</strong>.artifactoryAnalyzerUseProxy = artifactoryAnalyzerUseProxy;
-<a class="jxr_linenumber" name="L1288" href="#L1288">1288</a>     }
-<a class="jxr_linenumber" name="L1289" href="#L1289">1289</a> 
-<a class="jxr_linenumber" name="L1290" href="#L1290">1290</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L1291" href="#L1291">1291</a> <em class="jxr_javadoccomment">     * Set the value of artifactoryAnalyzerParallelAnalysis.</em>
-<a class="jxr_linenumber" name="L1292" href="#L1292">1292</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L1293" href="#L1293">1293</a> <em class="jxr_javadoccomment">     * @param artifactoryAnalyzerParallelAnalysis new value of</em>
-<a class="jxr_linenumber" name="L1294" href="#L1294">1294</a> <em class="jxr_javadoccomment">     * artifactoryAnalyzerParallelAnalysis</em>
-<a class="jxr_linenumber" name="L1295" href="#L1295">1295</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L1296" href="#L1296">1296</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> setArtifactoryAnalyzerParallelAnalysis(Boolean artifactoryAnalyzerParallelAnalysis) {
-<a class="jxr_linenumber" name="L1297" href="#L1297">1297</a>         <strong class="jxr_keyword">this</strong>.artifactoryAnalyzerParallelAnalysis = artifactoryAnalyzerParallelAnalysis;
-<a class="jxr_linenumber" name="L1298" href="#L1298">1298</a>     }
-<a class="jxr_linenumber" name="L1299" href="#L1299">1299</a> 
-<a class="jxr_linenumber" name="L1300" href="#L1300">1300</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L1301" href="#L1301">1301</a> <em class="jxr_javadoccomment">     * Set the value of artifactoryAnalyzerUsername.</em>
-<a class="jxr_linenumber" name="L1302" href="#L1302">1302</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L1303" href="#L1303">1303</a> <em class="jxr_javadoccomment">     * @param artifactoryAnalyzerUsername new value of</em>
-<a class="jxr_linenumber" name="L1304" href="#L1304">1304</a> <em class="jxr_javadoccomment">     * artifactoryAnalyzerUsername</em>
-<a class="jxr_linenumber" name="L1305" href="#L1305">1305</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L1306" href="#L1306">1306</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> setArtifactoryAnalyzerUsername(String artifactoryAnalyzerUsername) {
-<a class="jxr_linenumber" name="L1307" href="#L1307">1307</a>         <strong class="jxr_keyword">this</strong>.artifactoryAnalyzerUsername = artifactoryAnalyzerUsername;
-<a class="jxr_linenumber" name="L1308" href="#L1308">1308</a>     }
-<a class="jxr_linenumber" name="L1309" href="#L1309">1309</a> 
-<a class="jxr_linenumber" name="L1310" href="#L1310">1310</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L1311" href="#L1311">1311</a> <em class="jxr_javadoccomment">     * Set the value of artifactoryAnalyzerApiToken.</em>
-<a class="jxr_linenumber" name="L1312" href="#L1312">1312</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L1313" href="#L1313">1313</a> <em class="jxr_javadoccomment">     * @param artifactoryAnalyzerApiToken new value of</em>
-<a class="jxr_linenumber" name="L1314" href="#L1314">1314</a> <em class="jxr_javadoccomment">     * artifactoryAnalyzerApiToken</em>
-<a class="jxr_linenumber" name="L1315" href="#L1315">1315</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L1316" href="#L1316">1316</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> setArtifactoryAnalyzerApiToken(String artifactoryAnalyzerApiToken) {
-<a class="jxr_linenumber" name="L1317" href="#L1317">1317</a>         <strong class="jxr_keyword">this</strong>.artifactoryAnalyzerApiToken = artifactoryAnalyzerApiToken;
-<a class="jxr_linenumber" name="L1318" href="#L1318">1318</a>     }
-<a class="jxr_linenumber" name="L1319" href="#L1319">1319</a> 
-<a class="jxr_linenumber" name="L1320" href="#L1320">1320</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L1321" href="#L1321">1321</a> <em class="jxr_javadoccomment">     * Set the value of artifactoryAnalyzerBearerToken.</em>
-<a class="jxr_linenumber" name="L1322" href="#L1322">1322</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L1323" href="#L1323">1323</a> <em class="jxr_javadoccomment">     * @param artifactoryAnalyzerBearerToken new value of</em>
-<a class="jxr_linenumber" name="L1324" href="#L1324">1324</a> <em class="jxr_javadoccomment">     * artifactoryAnalyzerBearerToken</em>
-<a class="jxr_linenumber" name="L1325" href="#L1325">1325</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L1326" href="#L1326">1326</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> setArtifactoryAnalyzerBearerToken(String artifactoryAnalyzerBearerToken) {
-<a class="jxr_linenumber" name="L1327" href="#L1327">1327</a>         <strong class="jxr_keyword">this</strong>.artifactoryAnalyzerBearerToken = artifactoryAnalyzerBearerToken;
-<a class="jxr_linenumber" name="L1328" href="#L1328">1328</a>     }
-<a class="jxr_linenumber" name="L1329" href="#L1329">1329</a> 
-<a class="jxr_linenumber" name="L1330" href="#L1330">1330</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L1331" href="#L1331">1331</a> <em class="jxr_javadoccomment">     * Set the value of failBuildOnUnusedSuppressionRule.</em>
-<a class="jxr_linenumber" name="L1332" href="#L1332">1332</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L1333" href="#L1333">1333</a> <em class="jxr_javadoccomment">     * @param failBuildOnUnusedSuppressionRule new value of</em>
-<a class="jxr_linenumber" name="L1334" href="#L1334">1334</a> <em class="jxr_javadoccomment">     * failBuildOnUnusedSuppressionRule</em>
-<a class="jxr_linenumber" name="L1335" href="#L1335">1335</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L1336" href="#L1336">1336</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> setFailBuildOnUnusedSuppressionRule(<strong class="jxr_keyword">boolean</strong> failBuildOnUnusedSuppressionRule) {
-<a class="jxr_linenumber" name="L1337" href="#L1337">1337</a>         <strong class="jxr_keyword">this</strong>.failBuildOnUnusedSuppressionRule = failBuildOnUnusedSuppressionRule;
-<a class="jxr_linenumber" name="L1338" href="#L1338">1338</a>     }
-<a class="jxr_linenumber" name="L1339" href="#L1339">1339</a> 
-<a class="jxr_linenumber" name="L1340" href="#L1340">1340</a>     <em class="jxr_comment">//see note on `dealWithReferences()` for information on this suppression</em>
-<a class="jxr_linenumber" name="L1341" href="#L1341">1341</a>     @SuppressWarnings(<span class="jxr_string">"squid:RedundantThrowsDeclarationCheck"</span>)
-<a class="jxr_linenumber" name="L1342" href="#L1342">1342</a>     @Override
-<a class="jxr_linenumber" name="L1343" href="#L1343">1343</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">void</strong> executeWithContextClassloader() <strong class="jxr_keyword">throws</strong> BuildException {
-<a class="jxr_linenumber" name="L1344" href="#L1344">1344</a>         dealWithReferences();
-<a class="jxr_linenumber" name="L1345" href="#L1345">1345</a>         validateConfiguration();
-<a class="jxr_linenumber" name="L1346" href="#L1346">1346</a>         populateSettings();
-<a class="jxr_linenumber" name="L1347" href="#L1347">1347</a>         <strong class="jxr_keyword">try</strong> {
-<a class="jxr_linenumber" name="L1348" href="#L1348">1348</a>             Downloader.getInstance().configure(getSettings());
-<a class="jxr_linenumber" name="L1349" href="#L1349">1349</a>         } <strong class="jxr_keyword">catch</strong> (InvalidSettingException e) {
-<a class="jxr_linenumber" name="L1350" href="#L1350">1350</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> BuildException(e);
-<a class="jxr_linenumber" name="L1351" href="#L1351">1351</a>         }
-<a class="jxr_linenumber" name="L1352" href="#L1352">1352</a>         TelemetryCollector.send(getSettings());
-<a class="jxr_linenumber" name="L1353" href="#L1353">1353</a>         <strong class="jxr_keyword">try</strong> (Engine engine = <strong class="jxr_keyword">new</strong> Engine(Check.<strong class="jxr_keyword">class</strong>.getClassLoader(), getSettings())) {
-<a class="jxr_linenumber" name="L1354" href="#L1354">1354</a>             <strong class="jxr_keyword">for</strong> (Resource resource : getPath()) {
-<a class="jxr_linenumber" name="L1355" href="#L1355">1355</a>                 <strong class="jxr_keyword">final</strong> FileProvider provider = resource.as(FileProvider.<strong class="jxr_keyword">class</strong>);
-<a class="jxr_linenumber" name="L1356" href="#L1356">1356</a>                 <strong class="jxr_keyword">if</strong> (provider != <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="L1357" href="#L1357">1357</a>                     <strong class="jxr_keyword">final</strong> File file = provider.getFile();
-<a class="jxr_linenumber" name="L1358" href="#L1358">1358</a>                     <strong class="jxr_keyword">if</strong> (file != <strong class="jxr_keyword">null</strong> &amp;&amp; file.exists()) {
-<a class="jxr_linenumber" name="L1359" href="#L1359">1359</a>                         engine.scan(file);
-<a class="jxr_linenumber" name="L1360" href="#L1360">1360</a>                     }
-<a class="jxr_linenumber" name="L1361" href="#L1361">1361</a>                 }
-<a class="jxr_linenumber" name="L1362" href="#L1362">1362</a>             }
-<a class="jxr_linenumber" name="L1363" href="#L1363">1363</a>             <strong class="jxr_keyword">final</strong> ExceptionCollection exceptions = callExecuteAnalysis(engine);
-<a class="jxr_linenumber" name="L1364" href="#L1364">1364</a>             <strong class="jxr_keyword">if</strong> (exceptions == <strong class="jxr_keyword">null</strong> || !exceptions.isFatal()) {
-<a class="jxr_linenumber" name="L1365" href="#L1365">1365</a>                 <strong class="jxr_keyword">for</strong> (String format : getReportFormats()) {
-<a class="jxr_linenumber" name="L1366" href="#L1366">1366</a>                     engine.writeReports(getProjectName(), <strong class="jxr_keyword">new</strong> File(reportOutputDirectory), format, exceptions);
-<a class="jxr_linenumber" name="L1367" href="#L1367">1367</a>                 }
-<a class="jxr_linenumber" name="L1368" href="#L1368">1368</a>                 <strong class="jxr_keyword">if</strong> (<strong class="jxr_keyword">this</strong>.failBuildOnCVSS &lt;= 10) {
-<a class="jxr_linenumber" name="L1369" href="#L1369">1369</a>                     checkForFailure(engine.getDependencies());
-<a class="jxr_linenumber" name="L1370" href="#L1370">1370</a>                 }
-<a class="jxr_linenumber" name="L1371" href="#L1371">1371</a>                 <strong class="jxr_keyword">if</strong> (<strong class="jxr_keyword">this</strong>.showSummary) {
-<a class="jxr_linenumber" name="L1372" href="#L1372">1372</a>                     DependencyCheckScanAgent.showSummary(engine.getDependencies());
-<a class="jxr_linenumber" name="L1373" href="#L1373">1373</a>                 }
-<a class="jxr_linenumber" name="L1374" href="#L1374">1374</a>             }
-<a class="jxr_linenumber" name="L1375" href="#L1375">1375</a>         } <strong class="jxr_keyword">catch</strong> (DatabaseException ex) {
-<a class="jxr_linenumber" name="L1376" href="#L1376">1376</a>             <strong class="jxr_keyword">final</strong> String msg = <span class="jxr_string">"Unable to connect to the dependency-check database; analysis has stopped"</span>;
-<a class="jxr_linenumber" name="L1377" href="#L1377">1377</a>             <strong class="jxr_keyword">if</strong> (<strong class="jxr_keyword">this</strong>.isFailOnError()) {
-<a class="jxr_linenumber" name="L1378" href="#L1378">1378</a>                 <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> BuildException(msg, ex);
-<a class="jxr_linenumber" name="L1379" href="#L1379">1379</a>             }
-<a class="jxr_linenumber" name="L1380" href="#L1380">1380</a>             log(msg, ex, Project.MSG_ERR);
-<a class="jxr_linenumber" name="L1381" href="#L1381">1381</a>         } <strong class="jxr_keyword">catch</strong> (ReportException ex) {
-<a class="jxr_linenumber" name="L1382" href="#L1382">1382</a>             <strong class="jxr_keyword">final</strong> String msg = <span class="jxr_string">"Unable to generate the dependency-check report"</span>;
-<a class="jxr_linenumber" name="L1383" href="#L1383">1383</a>             <strong class="jxr_keyword">if</strong> (<strong class="jxr_keyword">this</strong>.isFailOnError()) {
-<a class="jxr_linenumber" name="L1384" href="#L1384">1384</a>                 <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> BuildException(msg, ex);
-<a class="jxr_linenumber" name="L1385" href="#L1385">1385</a>             }
-<a class="jxr_linenumber" name="L1386" href="#L1386">1386</a>             log(msg, ex, Project.MSG_ERR);
-<a class="jxr_linenumber" name="L1387" href="#L1387">1387</a>         } <strong class="jxr_keyword">finally</strong> {
-<a class="jxr_linenumber" name="L1388" href="#L1388">1388</a>             getSettings().cleanup();
-<a class="jxr_linenumber" name="L1389" href="#L1389">1389</a>         }
-<a class="jxr_linenumber" name="L1390" href="#L1390">1390</a>     }
-<a class="jxr_linenumber" name="L1391" href="#L1391">1391</a> 
-<a class="jxr_linenumber" name="L1392" href="#L1392">1392</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L1393" href="#L1393">1393</a> <em class="jxr_javadoccomment">     * Wraps the call to `engine.analyzeDependencies()` and correctly handles</em>
-<a class="jxr_linenumber" name="L1394" href="#L1394">1394</a> <em class="jxr_javadoccomment">     * any exceptions</em>
-<a class="jxr_linenumber" name="L1395" href="#L1395">1395</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L1396" href="#L1396">1396</a> <em class="jxr_javadoccomment">     * @param engine a reference to the engine</em>
-<a class="jxr_linenumber" name="L1397" href="#L1397">1397</a> <em class="jxr_javadoccomment">     * @return the collection of any exceptions that occurred; otherwise</em>
-<a class="jxr_linenumber" name="L1398" href="#L1398">1398</a> <em class="jxr_javadoccomment">     * &lt;code&gt;null&lt;/code&gt;</em>
-<a class="jxr_linenumber" name="L1399" href="#L1399">1399</a> <em class="jxr_javadoccomment">     * @throws BuildException thrown if configured to fail the build on errors</em>
+<a class="jxr_linenumber" name="L1037" href="#L1037">1037</a> <em class="jxr_javadoccomment">     * Add a regular expression to the set of retire JS content filters.</em>
+<a class="jxr_linenumber" name="L1038" href="#L1038">1038</a> <em class="jxr_javadoccomment">     * &lt;p&gt;</em>
+<a class="jxr_linenumber" name="L1039" href="#L1039">1039</a> <em class="jxr_javadoccomment">     * This is called by Ant.</em>
+<a class="jxr_linenumber" name="L1040" href="#L1040">1040</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L1041" href="#L1041">1041</a> <em class="jxr_javadoccomment">     * @param retireJsFilter the regular expression used to filter based on file</em>
+<a class="jxr_linenumber" name="L1042" href="#L1042">1042</a> <em class="jxr_javadoccomment">     * content</em>
+<a class="jxr_linenumber" name="L1043" href="#L1043">1043</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L1044" href="#L1044">1044</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> addConfiguredRetireJsFilter(<strong class="jxr_keyword">final</strong> <a href="../../../../org/owasp/dependencycheck/taskdefs/RetirejsFilter.html">RetirejsFilter</a> retireJsFilter) {
+<a class="jxr_linenumber" name="L1045" href="#L1045">1045</a>         retireJsFilters.add(retireJsFilter.getRegex());
+<a class="jxr_linenumber" name="L1046" href="#L1046">1046</a>     }
+<a class="jxr_linenumber" name="L1047" href="#L1047">1047</a> 
+<a class="jxr_linenumber" name="L1048" href="#L1048">1048</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L1049" href="#L1049">1049</a> <em class="jxr_javadoccomment">     * Set the value of rubygemsAnalyzerEnabled.</em>
+<a class="jxr_linenumber" name="L1050" href="#L1050">1050</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L1051" href="#L1051">1051</a> <em class="jxr_javadoccomment">     * @param rubygemsAnalyzerEnabled new value of rubygemsAnalyzerEnabled</em>
+<a class="jxr_linenumber" name="L1052" href="#L1052">1052</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L1053" href="#L1053">1053</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> setRubygemsAnalyzerEnabled(Boolean rubygemsAnalyzerEnabled) {
+<a class="jxr_linenumber" name="L1054" href="#L1054">1054</a>         <strong class="jxr_keyword">this</strong>.rubygemsAnalyzerEnabled = rubygemsAnalyzerEnabled;
+<a class="jxr_linenumber" name="L1055" href="#L1055">1055</a>     }
+<a class="jxr_linenumber" name="L1056" href="#L1056">1056</a> 
+<a class="jxr_linenumber" name="L1057" href="#L1057">1057</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L1058" href="#L1058">1058</a> <em class="jxr_javadoccomment">     * Set the value of pyPackageAnalyzerEnabled.</em>
+<a class="jxr_linenumber" name="L1059" href="#L1059">1059</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L1060" href="#L1060">1060</a> <em class="jxr_javadoccomment">     * @param pyPackageAnalyzerEnabled new value of pyPackageAnalyzerEnabled</em>
+<a class="jxr_linenumber" name="L1061" href="#L1061">1061</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L1062" href="#L1062">1062</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> setPyPackageAnalyzerEnabled(Boolean pyPackageAnalyzerEnabled) {
+<a class="jxr_linenumber" name="L1063" href="#L1063">1063</a>         <strong class="jxr_keyword">this</strong>.pyPackageAnalyzerEnabled = pyPackageAnalyzerEnabled;
+<a class="jxr_linenumber" name="L1064" href="#L1064">1064</a>     }
+<a class="jxr_linenumber" name="L1065" href="#L1065">1065</a> 
+<a class="jxr_linenumber" name="L1066" href="#L1066">1066</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L1067" href="#L1067">1067</a> <em class="jxr_javadoccomment">     * Set the value of pyDistributionAnalyzerEnabled.</em>
+<a class="jxr_linenumber" name="L1068" href="#L1068">1068</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L1069" href="#L1069">1069</a> <em class="jxr_javadoccomment">     * @param pyDistributionAnalyzerEnabled new value of</em>
+<a class="jxr_linenumber" name="L1070" href="#L1070">1070</a> <em class="jxr_javadoccomment">     * pyDistributionAnalyzerEnabled</em>
+<a class="jxr_linenumber" name="L1071" href="#L1071">1071</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L1072" href="#L1072">1072</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> setPyDistributionAnalyzerEnabled(Boolean pyDistributionAnalyzerEnabled) {
+<a class="jxr_linenumber" name="L1073" href="#L1073">1073</a>         <strong class="jxr_keyword">this</strong>.pyDistributionAnalyzerEnabled = pyDistributionAnalyzerEnabled;
+<a class="jxr_linenumber" name="L1074" href="#L1074">1074</a>     }
+<a class="jxr_linenumber" name="L1075" href="#L1075">1075</a> 
+<a class="jxr_linenumber" name="L1076" href="#L1076">1076</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L1077" href="#L1077">1077</a> <em class="jxr_javadoccomment">     * Set the value of mixAuditAnalyzerEnabled.</em>
+<a class="jxr_linenumber" name="L1078" href="#L1078">1078</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L1079" href="#L1079">1079</a> <em class="jxr_javadoccomment">     * @param mixAuditAnalyzerEnabled new value of mixAuditAnalyzerEnabled</em>
+<a class="jxr_linenumber" name="L1080" href="#L1080">1080</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L1081" href="#L1081">1081</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> setMixAuditAnalyzerEnabled(Boolean mixAuditAnalyzerEnabled) {
+<a class="jxr_linenumber" name="L1082" href="#L1082">1082</a>         <strong class="jxr_keyword">this</strong>.mixAuditAnalyzerEnabled = mixAuditAnalyzerEnabled;
+<a class="jxr_linenumber" name="L1083" href="#L1083">1083</a>     }
+<a class="jxr_linenumber" name="L1084" href="#L1084">1084</a> 
+<a class="jxr_linenumber" name="L1085" href="#L1085">1085</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L1086" href="#L1086">1086</a> <em class="jxr_javadoccomment">     * Sets the path to the mix audit executable.</em>
+<a class="jxr_linenumber" name="L1087" href="#L1087">1087</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L1088" href="#L1088">1088</a> <em class="jxr_javadoccomment">     * @param mixAuditPath the path to the bundle audit executable</em>
+<a class="jxr_linenumber" name="L1089" href="#L1089">1089</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L1090" href="#L1090">1090</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> setMixAuditPath(String mixAuditPath) {
+<a class="jxr_linenumber" name="L1091" href="#L1091">1091</a>         <strong class="jxr_keyword">this</strong>.mixAuditPath = mixAuditPath;
+<a class="jxr_linenumber" name="L1092" href="#L1092">1092</a>     }
+<a class="jxr_linenumber" name="L1093" href="#L1093">1093</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L1094" href="#L1094">1094</a> <em class="jxr_javadoccomment">     * Set the value of centralAnalyzerEnabled.</em>
+<a class="jxr_linenumber" name="L1095" href="#L1095">1095</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L1096" href="#L1096">1096</a> <em class="jxr_javadoccomment">     * @param centralAnalyzerEnabled new value of centralAnalyzerEnabled</em>
+<a class="jxr_linenumber" name="L1097" href="#L1097">1097</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L1098" href="#L1098">1098</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> setCentralAnalyzerEnabled(Boolean centralAnalyzerEnabled) {
+<a class="jxr_linenumber" name="L1099" href="#L1099">1099</a>         <strong class="jxr_keyword">this</strong>.centralAnalyzerEnabled = centralAnalyzerEnabled;
+<a class="jxr_linenumber" name="L1100" href="#L1100">1100</a>     }
+<a class="jxr_linenumber" name="L1101" href="#L1101">1101</a> 
+<a class="jxr_linenumber" name="L1102" href="#L1102">1102</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L1103" href="#L1103">1103</a> <em class="jxr_javadoccomment">     * Set the value of centralAnalyzerUseCache.</em>
+<a class="jxr_linenumber" name="L1104" href="#L1104">1104</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L1105" href="#L1105">1105</a> <em class="jxr_javadoccomment">     * @param centralAnalyzerUseCache new value of centralAnalyzerUseCache</em>
+<a class="jxr_linenumber" name="L1106" href="#L1106">1106</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L1107" href="#L1107">1107</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> setCentralAnalyzerUseCache(Boolean centralAnalyzerUseCache) {
+<a class="jxr_linenumber" name="L1108" href="#L1108">1108</a>         <strong class="jxr_keyword">this</strong>.centralAnalyzerUseCache = centralAnalyzerUseCache;
+<a class="jxr_linenumber" name="L1109" href="#L1109">1109</a>     }
+<a class="jxr_linenumber" name="L1110" href="#L1110">1110</a> 
+<a class="jxr_linenumber" name="L1111" href="#L1111">1111</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L1112" href="#L1112">1112</a> <em class="jxr_javadoccomment">     * Set the value of nexusAnalyzerEnabled.</em>
+<a class="jxr_linenumber" name="L1113" href="#L1113">1113</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L1114" href="#L1114">1114</a> <em class="jxr_javadoccomment">     * @param nexusAnalyzerEnabled new value of nexusAnalyzerEnabled</em>
+<a class="jxr_linenumber" name="L1115" href="#L1115">1115</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L1116" href="#L1116">1116</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> setNexusAnalyzerEnabled(Boolean nexusAnalyzerEnabled) {
+<a class="jxr_linenumber" name="L1117" href="#L1117">1117</a>         <strong class="jxr_keyword">this</strong>.nexusAnalyzerEnabled = nexusAnalyzerEnabled;
+<a class="jxr_linenumber" name="L1118" href="#L1118">1118</a>     }
+<a class="jxr_linenumber" name="L1119" href="#L1119">1119</a> 
+<a class="jxr_linenumber" name="L1120" href="#L1120">1120</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L1121" href="#L1121">1121</a> <em class="jxr_javadoccomment">     * Set the value of golangDepEnabled.</em>
+<a class="jxr_linenumber" name="L1122" href="#L1122">1122</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L1123" href="#L1123">1123</a> <em class="jxr_javadoccomment">     * @param golangDepEnabled new value of golangDepEnabled</em>
+<a class="jxr_linenumber" name="L1124" href="#L1124">1124</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L1125" href="#L1125">1125</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> setGolangDepEnabled(Boolean golangDepEnabled) {
+<a class="jxr_linenumber" name="L1126" href="#L1126">1126</a>         <strong class="jxr_keyword">this</strong>.golangDepEnabled = golangDepEnabled;
+<a class="jxr_linenumber" name="L1127" href="#L1127">1127</a>     }
+<a class="jxr_linenumber" name="L1128" href="#L1128">1128</a> 
+<a class="jxr_linenumber" name="L1129" href="#L1129">1129</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L1130" href="#L1130">1130</a> <em class="jxr_javadoccomment">     * Set the value of golangModEnabled.</em>
+<a class="jxr_linenumber" name="L1131" href="#L1131">1131</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L1132" href="#L1132">1132</a> <em class="jxr_javadoccomment">     * @param golangModEnabled new value of golangModEnabled</em>
+<a class="jxr_linenumber" name="L1133" href="#L1133">1133</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L1134" href="#L1134">1134</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> setGolangModEnabled(Boolean golangModEnabled) {
+<a class="jxr_linenumber" name="L1135" href="#L1135">1135</a>         <strong class="jxr_keyword">this</strong>.golangModEnabled = golangModEnabled;
+<a class="jxr_linenumber" name="L1136" href="#L1136">1136</a>     }
+<a class="jxr_linenumber" name="L1137" href="#L1137">1137</a> 
+<a class="jxr_linenumber" name="L1138" href="#L1138">1138</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L1139" href="#L1139">1139</a> <em class="jxr_javadoccomment">     * Set the value of dartAnalyzerEnabled.</em>
+<a class="jxr_linenumber" name="L1140" href="#L1140">1140</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L1141" href="#L1141">1141</a> <em class="jxr_javadoccomment">     * @param dartAnalyzerEnabled new value of dartAnalyzerEnabled</em>
+<a class="jxr_linenumber" name="L1142" href="#L1142">1142</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L1143" href="#L1143">1143</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> setDartAnalyzerEnabled(Boolean dartAnalyzerEnabled) {
+<a class="jxr_linenumber" name="L1144" href="#L1144">1144</a>         <strong class="jxr_keyword">this</strong>.dartAnalyzerEnabled = dartAnalyzerEnabled;
+<a class="jxr_linenumber" name="L1145" href="#L1145">1145</a>     }
+<a class="jxr_linenumber" name="L1146" href="#L1146">1146</a> 
+<a class="jxr_linenumber" name="L1147" href="#L1147">1147</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L1148" href="#L1148">1148</a> <em class="jxr_javadoccomment">     * Set the value of pathToYarn.</em>
+<a class="jxr_linenumber" name="L1149" href="#L1149">1149</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L1150" href="#L1150">1150</a> <em class="jxr_javadoccomment">     * @param pathToYarn new value of pathToYarn</em>
+<a class="jxr_linenumber" name="L1151" href="#L1151">1151</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L1152" href="#L1152">1152</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> setPathToYarn(String pathToYarn) {
+<a class="jxr_linenumber" name="L1153" href="#L1153">1153</a>         <strong class="jxr_keyword">this</strong>.pathToYarn = pathToYarn;
+<a class="jxr_linenumber" name="L1154" href="#L1154">1154</a>     }
+<a class="jxr_linenumber" name="L1155" href="#L1155">1155</a> 
+<a class="jxr_linenumber" name="L1156" href="#L1156">1156</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L1157" href="#L1157">1157</a> <em class="jxr_javadoccomment">     * Set the value of pathToPnpm.</em>
+<a class="jxr_linenumber" name="L1158" href="#L1158">1158</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L1159" href="#L1159">1159</a> <em class="jxr_javadoccomment">     * @param pathToPnpm new value of pathToPnpm</em>
+<a class="jxr_linenumber" name="L1160" href="#L1160">1160</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L1161" href="#L1161">1161</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> setPathToPnpm(String pathToPnpm) {
+<a class="jxr_linenumber" name="L1162" href="#L1162">1162</a>         <strong class="jxr_keyword">this</strong>.pathToPnpm = pathToPnpm;
+<a class="jxr_linenumber" name="L1163" href="#L1163">1163</a>     }
+<a class="jxr_linenumber" name="L1164" href="#L1164">1164</a> 
+<a class="jxr_linenumber" name="L1165" href="#L1165">1165</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L1166" href="#L1166">1166</a> <em class="jxr_javadoccomment">     * Set the value of pathToGo.</em>
+<a class="jxr_linenumber" name="L1167" href="#L1167">1167</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L1168" href="#L1168">1168</a> <em class="jxr_javadoccomment">     * @param pathToGo new value of pathToGo</em>
+<a class="jxr_linenumber" name="L1169" href="#L1169">1169</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L1170" href="#L1170">1170</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> setPathToGo(String pathToGo) {
+<a class="jxr_linenumber" name="L1171" href="#L1171">1171</a>         <strong class="jxr_keyword">this</strong>.pathToGo = pathToGo;
+<a class="jxr_linenumber" name="L1172" href="#L1172">1172</a>     }
+<a class="jxr_linenumber" name="L1173" href="#L1173">1173</a> 
+<a class="jxr_linenumber" name="L1174" href="#L1174">1174</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L1175" href="#L1175">1175</a> <em class="jxr_javadoccomment">     * Set the value of nexusUrl.</em>
+<a class="jxr_linenumber" name="L1176" href="#L1176">1176</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L1177" href="#L1177">1177</a> <em class="jxr_javadoccomment">     * @param nexusUrl new value of nexusUrl</em>
+<a class="jxr_linenumber" name="L1178" href="#L1178">1178</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L1179" href="#L1179">1179</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> setNexusUrl(String nexusUrl) {
+<a class="jxr_linenumber" name="L1180" href="#L1180">1180</a>         <strong class="jxr_keyword">this</strong>.nexusUrl = nexusUrl;
+<a class="jxr_linenumber" name="L1181" href="#L1181">1181</a>     }
+<a class="jxr_linenumber" name="L1182" href="#L1182">1182</a> 
+<a class="jxr_linenumber" name="L1183" href="#L1183">1183</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L1184" href="#L1184">1184</a> <em class="jxr_javadoccomment">     * Set the value of nexusUser.</em>
+<a class="jxr_linenumber" name="L1185" href="#L1185">1185</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L1186" href="#L1186">1186</a> <em class="jxr_javadoccomment">     * @param nexusUser new value of nexusUser</em>
+<a class="jxr_linenumber" name="L1187" href="#L1187">1187</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L1188" href="#L1188">1188</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> setNexusUser(String nexusUser) {
+<a class="jxr_linenumber" name="L1189" href="#L1189">1189</a>         <strong class="jxr_keyword">this</strong>.nexusUser = nexusUser;
+<a class="jxr_linenumber" name="L1190" href="#L1190">1190</a>     }
+<a class="jxr_linenumber" name="L1191" href="#L1191">1191</a> 
+<a class="jxr_linenumber" name="L1192" href="#L1192">1192</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L1193" href="#L1193">1193</a> <em class="jxr_javadoccomment">     * Set the value of nexusPassword.</em>
+<a class="jxr_linenumber" name="L1194" href="#L1194">1194</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L1195" href="#L1195">1195</a> <em class="jxr_javadoccomment">     * @param nexusPassword new value of nexusPassword</em>
+<a class="jxr_linenumber" name="L1196" href="#L1196">1196</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L1197" href="#L1197">1197</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> setNexusPassword(String nexusPassword) {
+<a class="jxr_linenumber" name="L1198" href="#L1198">1198</a>         <strong class="jxr_keyword">this</strong>.nexusPassword = nexusPassword;
+<a class="jxr_linenumber" name="L1199" href="#L1199">1199</a>     }
+<a class="jxr_linenumber" name="L1200" href="#L1200">1200</a> 
+<a class="jxr_linenumber" name="L1201" href="#L1201">1201</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L1202" href="#L1202">1202</a> <em class="jxr_javadoccomment">     * Set the value of nexusUsesProxy.</em>
+<a class="jxr_linenumber" name="L1203" href="#L1203">1203</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L1204" href="#L1204">1204</a> <em class="jxr_javadoccomment">     * @param nexusUsesProxy new value of nexusUsesProxy</em>
+<a class="jxr_linenumber" name="L1205" href="#L1205">1205</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L1206" href="#L1206">1206</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> setNexusUsesProxy(Boolean nexusUsesProxy) {
+<a class="jxr_linenumber" name="L1207" href="#L1207">1207</a>         <strong class="jxr_keyword">this</strong>.nexusUsesProxy = nexusUsesProxy;
+<a class="jxr_linenumber" name="L1208" href="#L1208">1208</a>     }
+<a class="jxr_linenumber" name="L1209" href="#L1209">1209</a> 
+<a class="jxr_linenumber" name="L1210" href="#L1210">1210</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L1211" href="#L1211">1211</a> <em class="jxr_javadoccomment">     * Set the value of zipExtensions.</em>
+<a class="jxr_linenumber" name="L1212" href="#L1212">1212</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L1213" href="#L1213">1213</a> <em class="jxr_javadoccomment">     * @param zipExtensions new value of zipExtensions</em>
+<a class="jxr_linenumber" name="L1214" href="#L1214">1214</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L1215" href="#L1215">1215</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> setZipExtensions(String zipExtensions) {
+<a class="jxr_linenumber" name="L1216" href="#L1216">1216</a>         <strong class="jxr_keyword">this</strong>.zipExtensions = zipExtensions;
+<a class="jxr_linenumber" name="L1217" href="#L1217">1217</a>     }
+<a class="jxr_linenumber" name="L1218" href="#L1218">1218</a> 
+<a class="jxr_linenumber" name="L1219" href="#L1219">1219</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L1220" href="#L1220">1220</a> <em class="jxr_javadoccomment">     * Set the value of pathToCore.</em>
+<a class="jxr_linenumber" name="L1221" href="#L1221">1221</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L1222" href="#L1222">1222</a> <em class="jxr_javadoccomment">     * @param pathToCore new value of pathToCore</em>
+<a class="jxr_linenumber" name="L1223" href="#L1223">1223</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L1224" href="#L1224">1224</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> setPathToDotnetCore(String pathToCore) {
+<a class="jxr_linenumber" name="L1225" href="#L1225">1225</a>         <strong class="jxr_keyword">this</strong>.pathToCore = pathToCore;
+<a class="jxr_linenumber" name="L1226" href="#L1226">1226</a>     }
+<a class="jxr_linenumber" name="L1227" href="#L1227">1227</a> 
+<a class="jxr_linenumber" name="L1228" href="#L1228">1228</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L1229" href="#L1229">1229</a> <em class="jxr_javadoccomment">     * Set value of {@link #ossindexAnalyzerEnabled}.</em>
+<a class="jxr_linenumber" name="L1230" href="#L1230">1230</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L1231" href="#L1231">1231</a> <em class="jxr_javadoccomment">     * @param ossindexAnalyzerEnabled new value of ossindexAnalyzerEnabled</em>
+<a class="jxr_linenumber" name="L1232" href="#L1232">1232</a> <em class="jxr_javadoccomment">     * @deprecated Use {@link #setOssIndexAnalyzerEnabled(Boolean)} instead.</em>
+<a class="jxr_linenumber" name="L1233" href="#L1233">1233</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L1234" href="#L1234">1234</a>     @Deprecated
+<a class="jxr_linenumber" name="L1235" href="#L1235">1235</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> setOssindexAnalyzerEnabled(Boolean ossindexAnalyzerEnabled) {
+<a class="jxr_linenumber" name="L1236" href="#L1236">1236</a>         log(<span class="jxr_string">"'ossindexAnalyzerEnabled' is deprecated and may be removed in the next major release, please migrate to 'ossIndexAnalyzerEnabled'"</span>,
+<a class="jxr_linenumber" name="L1237" href="#L1237">1237</a>                 Project.MSG_WARN);
+<a class="jxr_linenumber" name="L1238" href="#L1238">1238</a>         <strong class="jxr_keyword">this</strong>.ossindexAnalyzerEnabled = ossindexAnalyzerEnabled;
+<a class="jxr_linenumber" name="L1239" href="#L1239">1239</a>     }
+<a class="jxr_linenumber" name="L1240" href="#L1240">1240</a> 
+<a class="jxr_linenumber" name="L1241" href="#L1241">1241</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L1242" href="#L1242">1242</a> <em class="jxr_javadoccomment">     * Set value of ossIndexAnalyzerEnabled.</em>
+<a class="jxr_linenumber" name="L1243" href="#L1243">1243</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L1244" href="#L1244">1244</a> <em class="jxr_javadoccomment">     * @param ossIndexAnalyzerEnabled new value of ossIndexAnalyzerEnabled</em>
+<a class="jxr_linenumber" name="L1245" href="#L1245">1245</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L1246" href="#L1246">1246</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> setOssIndexAnalyzerEnabled(Boolean ossIndexAnalyzerEnabled) {
+<a class="jxr_linenumber" name="L1247" href="#L1247">1247</a>         <strong class="jxr_keyword">this</strong>.ossindexAnalyzerEnabled = ossIndexAnalyzerEnabled;
+<a class="jxr_linenumber" name="L1248" href="#L1248">1248</a>     }
+<a class="jxr_linenumber" name="L1249" href="#L1249">1249</a> 
+<a class="jxr_linenumber" name="L1250" href="#L1250">1250</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L1251" href="#L1251">1251</a> <em class="jxr_javadoccomment">     * Set value of {@link #ossindexAnalyzerUseCache}.</em>
+<a class="jxr_linenumber" name="L1252" href="#L1252">1252</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L1253" href="#L1253">1253</a> <em class="jxr_javadoccomment">     * @param ossindexAnalyzerUseCache new value of ossindexAnalyzerUseCache</em>
+<a class="jxr_linenumber" name="L1254" href="#L1254">1254</a> <em class="jxr_javadoccomment">     * @deprecated Use {@link #setOssIndexAnalyzerUseCache(Boolean)} instead.</em>
+<a class="jxr_linenumber" name="L1255" href="#L1255">1255</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L1256" href="#L1256">1256</a>     @Deprecated
+<a class="jxr_linenumber" name="L1257" href="#L1257">1257</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> setOssindexAnalyzerUseCache(Boolean ossindexAnalyzerUseCache) {
+<a class="jxr_linenumber" name="L1258" href="#L1258">1258</a>         log(<span class="jxr_string">"'ossindexAnalyzerUseCache' is deprecated and may be removed in the next major release, please migrate to 'ossIndexAnalyzerUseCache'"</span>,
+<a class="jxr_linenumber" name="L1259" href="#L1259">1259</a>                 Project.MSG_WARN);
+<a class="jxr_linenumber" name="L1260" href="#L1260">1260</a>         <strong class="jxr_keyword">this</strong>.ossindexAnalyzerUseCache = ossindexAnalyzerUseCache;
+<a class="jxr_linenumber" name="L1261" href="#L1261">1261</a>     }
+<a class="jxr_linenumber" name="L1262" href="#L1262">1262</a> 
+<a class="jxr_linenumber" name="L1263" href="#L1263">1263</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L1264" href="#L1264">1264</a> <em class="jxr_javadoccomment">     * Set value of ossIndexAnalyzerUseCache.</em>
+<a class="jxr_linenumber" name="L1265" href="#L1265">1265</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L1266" href="#L1266">1266</a> <em class="jxr_javadoccomment">     * @param ossIndexAnalyzerUseCache new value of ossIndexAnalyzerUseCache</em>
+<a class="jxr_linenumber" name="L1267" href="#L1267">1267</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L1268" href="#L1268">1268</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> setOssIndexAnalyzerUseCache(Boolean ossIndexAnalyzerUseCache) {
+<a class="jxr_linenumber" name="L1269" href="#L1269">1269</a>         <strong class="jxr_keyword">this</strong>.ossindexAnalyzerUseCache = ossIndexAnalyzerUseCache;
+<a class="jxr_linenumber" name="L1270" href="#L1270">1270</a>     }
+<a class="jxr_linenumber" name="L1271" href="#L1271">1271</a> 
+<a class="jxr_linenumber" name="L1272" href="#L1272">1272</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L1273" href="#L1273">1273</a> <em class="jxr_javadoccomment">     * Set value of {@link #ossindexAnalyzerUrl}.</em>
+<a class="jxr_linenumber" name="L1274" href="#L1274">1274</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L1275" href="#L1275">1275</a> <em class="jxr_javadoccomment">     * @param ossindexAnalyzerUrl new value of ossindexAnalyzerUrl</em>
+<a class="jxr_linenumber" name="L1276" href="#L1276">1276</a> <em class="jxr_javadoccomment">     * @deprecated Use {@link #setOssIndexAnalyzerUrl(String)} instead.</em>
+<a class="jxr_linenumber" name="L1277" href="#L1277">1277</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L1278" href="#L1278">1278</a>     @Deprecated
+<a class="jxr_linenumber" name="L1279" href="#L1279">1279</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> setOssindexAnalyzerUrl(String ossindexAnalyzerUrl) {
+<a class="jxr_linenumber" name="L1280" href="#L1280">1280</a>         log(<span class="jxr_string">"'ossindexAnalyzerUrl' is deprecated and may be removed in the next major release, please migrate to 'ossIndexAnalyzerUrl'"</span>,
+<a class="jxr_linenumber" name="L1281" href="#L1281">1281</a>                 Project.MSG_WARN);
+<a class="jxr_linenumber" name="L1282" href="#L1282">1282</a>         <strong class="jxr_keyword">this</strong>.ossindexAnalyzerUrl = ossindexAnalyzerUrl;
+<a class="jxr_linenumber" name="L1283" href="#L1283">1283</a>     }
+<a class="jxr_linenumber" name="L1284" href="#L1284">1284</a> 
+<a class="jxr_linenumber" name="L1285" href="#L1285">1285</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L1286" href="#L1286">1286</a> <em class="jxr_javadoccomment">     * Set value of ossIndexAnalyzerUrl.</em>
+<a class="jxr_linenumber" name="L1287" href="#L1287">1287</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L1288" href="#L1288">1288</a> <em class="jxr_javadoccomment">     * @param ossIndexAnalyzerUrl new value of ossIndexAnalyzerUrl</em>
+<a class="jxr_linenumber" name="L1289" href="#L1289">1289</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L1290" href="#L1290">1290</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> setOssIndexAnalyzerUrl(String ossIndexAnalyzerUrl) {
+<a class="jxr_linenumber" name="L1291" href="#L1291">1291</a>         <strong class="jxr_keyword">this</strong>.ossindexAnalyzerUrl = ossIndexAnalyzerUrl;
+<a class="jxr_linenumber" name="L1292" href="#L1292">1292</a>     }
+<a class="jxr_linenumber" name="L1293" href="#L1293">1293</a> 
+<a class="jxr_linenumber" name="L1294" href="#L1294">1294</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L1295" href="#L1295">1295</a> <em class="jxr_javadoccomment">     * Set value of {@link #ossindexAnalyzerUsername}.</em>
+<a class="jxr_linenumber" name="L1296" href="#L1296">1296</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L1297" href="#L1297">1297</a> <em class="jxr_javadoccomment">     * @param ossindexAnalyzerUsername new value of ossindexAnalyzerUsername</em>
+<a class="jxr_linenumber" name="L1298" href="#L1298">1298</a> <em class="jxr_javadoccomment">     * @deprecated Use {@link #setOssIndexAnalyzerUsername(String)} instead.</em>
+<a class="jxr_linenumber" name="L1299" href="#L1299">1299</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L1300" href="#L1300">1300</a>     @Deprecated
+<a class="jxr_linenumber" name="L1301" href="#L1301">1301</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> setOssindexAnalyzerUsername(String ossindexAnalyzerUsername) {
+<a class="jxr_linenumber" name="L1302" href="#L1302">1302</a>         log(<span class="jxr_string">"'ossindexAnalyzerUsername' is deprecated and may be removed in the next major release, please migrate to 'ossIndexAnalyzerUsername'"</span>,
+<a class="jxr_linenumber" name="L1303" href="#L1303">1303</a>                 Project.MSG_WARN);
+<a class="jxr_linenumber" name="L1304" href="#L1304">1304</a>         <strong class="jxr_keyword">this</strong>.ossindexAnalyzerUsername = ossindexAnalyzerUsername;
+<a class="jxr_linenumber" name="L1305" href="#L1305">1305</a>     }
+<a class="jxr_linenumber" name="L1306" href="#L1306">1306</a> 
+<a class="jxr_linenumber" name="L1307" href="#L1307">1307</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L1308" href="#L1308">1308</a> <em class="jxr_javadoccomment">     * Set value of ossIndexAnalyzerUsername.</em>
+<a class="jxr_linenumber" name="L1309" href="#L1309">1309</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L1310" href="#L1310">1310</a> <em class="jxr_javadoccomment">     * @param ossIndexAnalyzerUsername new value of ossIndexAnalyzerUsername</em>
+<a class="jxr_linenumber" name="L1311" href="#L1311">1311</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L1312" href="#L1312">1312</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> setOssIndexAnalyzerUsername(String ossIndexAnalyzerUsername) {
+<a class="jxr_linenumber" name="L1313" href="#L1313">1313</a>         <strong class="jxr_keyword">this</strong>.ossindexAnalyzerUsername = ossIndexAnalyzerUsername;
+<a class="jxr_linenumber" name="L1314" href="#L1314">1314</a>     }
+<a class="jxr_linenumber" name="L1315" href="#L1315">1315</a> 
+<a class="jxr_linenumber" name="L1316" href="#L1316">1316</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L1317" href="#L1317">1317</a> <em class="jxr_javadoccomment">     * Set value of {@link #ossindexAnalyzerPassword}.</em>
+<a class="jxr_linenumber" name="L1318" href="#L1318">1318</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L1319" href="#L1319">1319</a> <em class="jxr_javadoccomment">     * @param ossindexAnalyzerPassword new value of ossindexAnalyzerPassword</em>
+<a class="jxr_linenumber" name="L1320" href="#L1320">1320</a> <em class="jxr_javadoccomment">     * @deprecated Use {@link #setOssIndexAnalyzerPassword(String)} instead.</em>
+<a class="jxr_linenumber" name="L1321" href="#L1321">1321</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L1322" href="#L1322">1322</a>     @Deprecated
+<a class="jxr_linenumber" name="L1323" href="#L1323">1323</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> setOssindexAnalyzerPassword(String ossindexAnalyzerPassword) {
+<a class="jxr_linenumber" name="L1324" href="#L1324">1324</a>         log(<span class="jxr_string">"'ossindexAnalyzerPassword' is deprecated and may be removed in the next major release, please migrate to 'ossIndexAnalyzerPassword'"</span>,
+<a class="jxr_linenumber" name="L1325" href="#L1325">1325</a>                 Project.MSG_WARN);
+<a class="jxr_linenumber" name="L1326" href="#L1326">1326</a>         <strong class="jxr_keyword">this</strong>.ossindexAnalyzerPassword = ossindexAnalyzerPassword;
+<a class="jxr_linenumber" name="L1327" href="#L1327">1327</a>     }
+<a class="jxr_linenumber" name="L1328" href="#L1328">1328</a> 
+<a class="jxr_linenumber" name="L1329" href="#L1329">1329</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L1330" href="#L1330">1330</a> <em class="jxr_javadoccomment">     * Set value of ossIndexAnalyzerPassword.</em>
+<a class="jxr_linenumber" name="L1331" href="#L1331">1331</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L1332" href="#L1332">1332</a> <em class="jxr_javadoccomment">     * @param ossIndexAnalyzerPassword new value of ossIndexAnalyzerPassword</em>
+<a class="jxr_linenumber" name="L1333" href="#L1333">1333</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L1334" href="#L1334">1334</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> setOssIndexAnalyzerPassword(String ossIndexAnalyzerPassword) {
+<a class="jxr_linenumber" name="L1335" href="#L1335">1335</a>         <strong class="jxr_keyword">this</strong>.ossindexAnalyzerPassword = ossIndexAnalyzerPassword;
+<a class="jxr_linenumber" name="L1336" href="#L1336">1336</a>     }
+<a class="jxr_linenumber" name="L1337" href="#L1337">1337</a> 
+<a class="jxr_linenumber" name="L1338" href="#L1338">1338</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L1339" href="#L1339">1339</a> <em class="jxr_javadoccomment">     * Set value of {@link #ossIndexAnalyzerWarnOnlyOnRemoteErrors}.</em>
+<a class="jxr_linenumber" name="L1340" href="#L1340">1340</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L1341" href="#L1341">1341</a> <em class="jxr_javadoccomment">     * @param ossIndexWarnOnlyOnRemoteErrors the value of</em>
+<a class="jxr_linenumber" name="L1342" href="#L1342">1342</a> <em class="jxr_javadoccomment">     * ossIndexWarnOnlyOnRemoteErrors</em>
+<a class="jxr_linenumber" name="L1343" href="#L1343">1343</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L1344" href="#L1344">1344</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> setOssIndexWarnOnlyOnRemoteErrors(Boolean ossIndexWarnOnlyOnRemoteErrors) {
+<a class="jxr_linenumber" name="L1345" href="#L1345">1345</a>         <strong class="jxr_keyword">this</strong>.ossIndexAnalyzerWarnOnlyOnRemoteErrors = ossIndexWarnOnlyOnRemoteErrors;
+<a class="jxr_linenumber" name="L1346" href="#L1346">1346</a>     }
+<a class="jxr_linenumber" name="L1347" href="#L1347">1347</a> 
+<a class="jxr_linenumber" name="L1348" href="#L1348">1348</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L1349" href="#L1349">1349</a> <em class="jxr_javadoccomment">     * Set the value of cmakeAnalyzerEnabled.</em>
+<a class="jxr_linenumber" name="L1350" href="#L1350">1350</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L1351" href="#L1351">1351</a> <em class="jxr_javadoccomment">     * @param cmakeAnalyzerEnabled new value of cmakeAnalyzerEnabled</em>
+<a class="jxr_linenumber" name="L1352" href="#L1352">1352</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L1353" href="#L1353">1353</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> setCmakeAnalyzerEnabled(Boolean cmakeAnalyzerEnabled) {
+<a class="jxr_linenumber" name="L1354" href="#L1354">1354</a>         <strong class="jxr_keyword">this</strong>.cmakeAnalyzerEnabled = cmakeAnalyzerEnabled;
+<a class="jxr_linenumber" name="L1355" href="#L1355">1355</a>     }
+<a class="jxr_linenumber" name="L1356" href="#L1356">1356</a> 
+<a class="jxr_linenumber" name="L1357" href="#L1357">1357</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L1358" href="#L1358">1358</a> <em class="jxr_javadoccomment">     * Set the value of artifactoryAnalyzerEnabled.</em>
+<a class="jxr_linenumber" name="L1359" href="#L1359">1359</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L1360" href="#L1360">1360</a> <em class="jxr_javadoccomment">     * @param artifactoryAnalyzerEnabled new value of artifactoryAnalyzerEnabled</em>
+<a class="jxr_linenumber" name="L1361" href="#L1361">1361</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L1362" href="#L1362">1362</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> setArtifactoryAnalyzerEnabled(Boolean artifactoryAnalyzerEnabled) {
+<a class="jxr_linenumber" name="L1363" href="#L1363">1363</a>         <strong class="jxr_keyword">this</strong>.artifactoryAnalyzerEnabled = artifactoryAnalyzerEnabled;
+<a class="jxr_linenumber" name="L1364" href="#L1364">1364</a>     }
+<a class="jxr_linenumber" name="L1365" href="#L1365">1365</a> 
+<a class="jxr_linenumber" name="L1366" href="#L1366">1366</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L1367" href="#L1367">1367</a> <em class="jxr_javadoccomment">     * Set the value of artifactoryAnalyzerUrl.</em>
+<a class="jxr_linenumber" name="L1368" href="#L1368">1368</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L1369" href="#L1369">1369</a> <em class="jxr_javadoccomment">     * @param artifactoryAnalyzerUrl new value of artifactoryAnalyzerUrl</em>
+<a class="jxr_linenumber" name="L1370" href="#L1370">1370</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L1371" href="#L1371">1371</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> setArtifactoryAnalyzerUrl(String artifactoryAnalyzerUrl) {
+<a class="jxr_linenumber" name="L1372" href="#L1372">1372</a>         <strong class="jxr_keyword">this</strong>.artifactoryAnalyzerUrl = artifactoryAnalyzerUrl;
+<a class="jxr_linenumber" name="L1373" href="#L1373">1373</a>     }
+<a class="jxr_linenumber" name="L1374" href="#L1374">1374</a> 
+<a class="jxr_linenumber" name="L1375" href="#L1375">1375</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L1376" href="#L1376">1376</a> <em class="jxr_javadoccomment">     * Set the value of artifactoryAnalyzerUseProxy.</em>
+<a class="jxr_linenumber" name="L1377" href="#L1377">1377</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L1378" href="#L1378">1378</a> <em class="jxr_javadoccomment">     * @param artifactoryAnalyzerUseProxy new value of</em>
+<a class="jxr_linenumber" name="L1379" href="#L1379">1379</a> <em class="jxr_javadoccomment">     * artifactoryAnalyzerUseProxy</em>
+<a class="jxr_linenumber" name="L1380" href="#L1380">1380</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L1381" href="#L1381">1381</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> setArtifactoryAnalyzerUseProxy(Boolean artifactoryAnalyzerUseProxy) {
+<a class="jxr_linenumber" name="L1382" href="#L1382">1382</a>         <strong class="jxr_keyword">this</strong>.artifactoryAnalyzerUseProxy = artifactoryAnalyzerUseProxy;
+<a class="jxr_linenumber" name="L1383" href="#L1383">1383</a>     }
+<a class="jxr_linenumber" name="L1384" href="#L1384">1384</a> 
+<a class="jxr_linenumber" name="L1385" href="#L1385">1385</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L1386" href="#L1386">1386</a> <em class="jxr_javadoccomment">     * Set the value of artifactoryAnalyzerParallelAnalysis.</em>
+<a class="jxr_linenumber" name="L1387" href="#L1387">1387</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L1388" href="#L1388">1388</a> <em class="jxr_javadoccomment">     * @param artifactoryAnalyzerParallelAnalysis new value of</em>
+<a class="jxr_linenumber" name="L1389" href="#L1389">1389</a> <em class="jxr_javadoccomment">     * artifactoryAnalyzerParallelAnalysis</em>
+<a class="jxr_linenumber" name="L1390" href="#L1390">1390</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L1391" href="#L1391">1391</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> setArtifactoryAnalyzerParallelAnalysis(Boolean artifactoryAnalyzerParallelAnalysis) {
+<a class="jxr_linenumber" name="L1392" href="#L1392">1392</a>         <strong class="jxr_keyword">this</strong>.artifactoryAnalyzerParallelAnalysis = artifactoryAnalyzerParallelAnalysis;
+<a class="jxr_linenumber" name="L1393" href="#L1393">1393</a>     }
+<a class="jxr_linenumber" name="L1394" href="#L1394">1394</a> 
+<a class="jxr_linenumber" name="L1395" href="#L1395">1395</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L1396" href="#L1396">1396</a> <em class="jxr_javadoccomment">     * Set the value of artifactoryAnalyzerUsername.</em>
+<a class="jxr_linenumber" name="L1397" href="#L1397">1397</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L1398" href="#L1398">1398</a> <em class="jxr_javadoccomment">     * @param artifactoryAnalyzerUsername new value of</em>
+<a class="jxr_linenumber" name="L1399" href="#L1399">1399</a> <em class="jxr_javadoccomment">     * artifactoryAnalyzerUsername</em>
 <a class="jxr_linenumber" name="L1400" href="#L1400">1400</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L1401" href="#L1401">1401</a>     <em class="jxr_comment">//see note on `dealWithReferences()` for information on this suppression</em>
-<a class="jxr_linenumber" name="L1402" href="#L1402">1402</a>     @SuppressWarnings(<span class="jxr_string">"squid:RedundantThrowsDeclarationCheck"</span>)
-<a class="jxr_linenumber" name="L1403" href="#L1403">1403</a>     <strong class="jxr_keyword">private</strong> ExceptionCollection callExecuteAnalysis(<strong class="jxr_keyword">final</strong> Engine engine) <strong class="jxr_keyword">throws</strong> BuildException {
-<a class="jxr_linenumber" name="L1404" href="#L1404">1404</a>         ExceptionCollection exceptions = <strong class="jxr_keyword">null</strong>;
-<a class="jxr_linenumber" name="L1405" href="#L1405">1405</a>         <strong class="jxr_keyword">try</strong> {
-<a class="jxr_linenumber" name="L1406" href="#L1406">1406</a>             engine.analyzeDependencies();
-<a class="jxr_linenumber" name="L1407" href="#L1407">1407</a>         } <strong class="jxr_keyword">catch</strong> (ExceptionCollection ex) {
-<a class="jxr_linenumber" name="L1408" href="#L1408">1408</a>             <strong class="jxr_keyword">if</strong> (<strong class="jxr_keyword">this</strong>.isFailOnError()) {
-<a class="jxr_linenumber" name="L1409" href="#L1409">1409</a>                 <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> BuildException(ex);
-<a class="jxr_linenumber" name="L1410" href="#L1410">1410</a>             }
-<a class="jxr_linenumber" name="L1411" href="#L1411">1411</a>             exceptions = ex;
-<a class="jxr_linenumber" name="L1412" href="#L1412">1412</a>         }
-<a class="jxr_linenumber" name="L1413" href="#L1413">1413</a>         <strong class="jxr_keyword">return</strong> exceptions;
-<a class="jxr_linenumber" name="L1414" href="#L1414">1414</a>     }
-<a class="jxr_linenumber" name="L1415" href="#L1415">1415</a> 
-<a class="jxr_linenumber" name="L1416" href="#L1416">1416</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L1417" href="#L1417">1417</a> <em class="jxr_javadoccomment">     * Validate the configuration to ensure the parameters have been properly</em>
-<a class="jxr_linenumber" name="L1418" href="#L1418">1418</a> <em class="jxr_javadoccomment">     * configured/initialized.</em>
-<a class="jxr_linenumber" name="L1419" href="#L1419">1419</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L1420" href="#L1420">1420</a> <em class="jxr_javadoccomment">     * @throws BuildException if the task was not configured correctly.</em>
-<a class="jxr_linenumber" name="L1421" href="#L1421">1421</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L1422" href="#L1422">1422</a>     <em class="jxr_comment">//see note on `dealWithReferences()` for information on this suppression</em>
-<a class="jxr_linenumber" name="L1423" href="#L1423">1423</a>     @SuppressWarnings(<span class="jxr_string">"squid:RedundantThrowsDeclarationCheck"</span>)
-<a class="jxr_linenumber" name="L1424" href="#L1424">1424</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">synchronized</strong> <strong class="jxr_keyword">void</strong> validateConfiguration() <strong class="jxr_keyword">throws</strong> BuildException {
-<a class="jxr_linenumber" name="L1425" href="#L1425">1425</a>         <strong class="jxr_keyword">if</strong> (path == <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="L1426" href="#L1426">1426</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> BuildException(<span class="jxr_string">"No project dependencies have been defined to analyze."</span>);
-<a class="jxr_linenumber" name="L1427" href="#L1427">1427</a>         }
-<a class="jxr_linenumber" name="L1428" href="#L1428">1428</a>         <strong class="jxr_keyword">if</strong> (failBuildOnCVSS &lt; 0 || failBuildOnCVSS &gt; 11) {
-<a class="jxr_linenumber" name="L1429" href="#L1429">1429</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> BuildException(<span class="jxr_string">"Invalid configuration, failBuildOnCVSS must be between 0 and 11."</span>);
-<a class="jxr_linenumber" name="L1430" href="#L1430">1430</a>         }
-<a class="jxr_linenumber" name="L1431" href="#L1431">1431</a>     }
-<a class="jxr_linenumber" name="L1432" href="#L1432">1432</a> 
-<a class="jxr_linenumber" name="L1433" href="#L1433">1433</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L1434" href="#L1434">1434</a> <em class="jxr_javadoccomment">     * Takes the properties supplied and updates the dependency-check settings.</em>
-<a class="jxr_linenumber" name="L1435" href="#L1435">1435</a> <em class="jxr_javadoccomment">     * Additionally, this sets the system properties required to change the</em>
-<a class="jxr_linenumber" name="L1436" href="#L1436">1436</a> <em class="jxr_javadoccomment">     * proxy server, port, and connection timeout.</em>
-<a class="jxr_linenumber" name="L1437" href="#L1437">1437</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L1438" href="#L1438">1438</a> <em class="jxr_javadoccomment">     * @throws BuildException thrown when an invalid setting is configured.</em>
-<a class="jxr_linenumber" name="L1439" href="#L1439">1439</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L1440" href="#L1440">1440</a>     <em class="jxr_comment">//see note on `dealWithReferences()` for information on this suppression</em>
-<a class="jxr_linenumber" name="L1441" href="#L1441">1441</a>     @SuppressWarnings(<span class="jxr_string">"squid:RedundantThrowsDeclarationCheck"</span>)
-<a class="jxr_linenumber" name="L1442" href="#L1442">1442</a>     @Override
-<a class="jxr_linenumber" name="L1443" href="#L1443">1443</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">void</strong> populateSettings() <strong class="jxr_keyword">throws</strong> BuildException {
-<a class="jxr_linenumber" name="L1444" href="#L1444">1444</a>         <strong class="jxr_keyword">super</strong>.populateSettings();
-<a class="jxr_linenumber" name="L1445" href="#L1445">1445</a>         getSettings().setBooleanIfNotNull(Settings.KEYS.AUTO_UPDATE, autoUpdate);
-<a class="jxr_linenumber" name="L1446" href="#L1446">1446</a>         getSettings().setArrayIfNotEmpty(Settings.KEYS.SUPPRESSION_FILE, suppressionFiles);
-<a class="jxr_linenumber" name="L1447" href="#L1447">1447</a>         getSettings().setStringIfNotEmpty(Settings.KEYS.SUPPRESSION_FILE_USER, suppressionFileUser);
-<a class="jxr_linenumber" name="L1448" href="#L1448">1448</a>         getSettings().setStringIfNotEmpty(Settings.KEYS.SUPPRESSION_FILE_PASSWORD, suppressionFilePassword);
-<a class="jxr_linenumber" name="L1449" href="#L1449">1449</a>         getSettings().setStringIfNotEmpty(Settings.KEYS.SUPPRESSION_FILE_BEARER_TOKEN, suppressionFileBearerToken);
-<a class="jxr_linenumber" name="L1450" href="#L1450">1450</a>         getSettings().setBooleanIfNotNull(Settings.KEYS.UPDATE_VERSION_CHECK_ENABLED, versionCheckEnabled);
-<a class="jxr_linenumber" name="L1451" href="#L1451">1451</a>         getSettings().setStringIfNotEmpty(Settings.KEYS.HINTS_FILE, hintsFile);
-<a class="jxr_linenumber" name="L1452" href="#L1452">1452</a>         getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_EXPERIMENTAL_ENABLED, enableExperimental);
-<a class="jxr_linenumber" name="L1453" href="#L1453">1453</a>         getSettings().setBooleanIfNotNull(Settings.KEYS.PRETTY_PRINT, prettyPrint);
-<a class="jxr_linenumber" name="L1454" href="#L1454">1454</a>         getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_RETIRED_ENABLED, enableRetired);
-<a class="jxr_linenumber" name="L1455" href="#L1455">1455</a>         getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_JAR_ENABLED, jarAnalyzerEnabled);
-<a class="jxr_linenumber" name="L1456" href="#L1456">1456</a>         getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_PYTHON_DISTRIBUTION_ENABLED, pyDistributionAnalyzerEnabled);
-<a class="jxr_linenumber" name="L1457" href="#L1457">1457</a>         getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_PYTHON_PACKAGE_ENABLED, pyPackageAnalyzerEnabled);
-<a class="jxr_linenumber" name="L1458" href="#L1458">1458</a>         getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_RUBY_GEMSPEC_ENABLED, rubygemsAnalyzerEnabled);
-<a class="jxr_linenumber" name="L1459" href="#L1459">1459</a>         getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_OPENSSL_ENABLED, opensslAnalyzerEnabled);
-<a class="jxr_linenumber" name="L1460" href="#L1460">1460</a>         getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_CMAKE_ENABLED, cmakeAnalyzerEnabled);
-<a class="jxr_linenumber" name="L1461" href="#L1461">1461</a> 
-<a class="jxr_linenumber" name="L1462" href="#L1462">1462</a>         getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_ARTIFACTORY_ENABLED, artifactoryAnalyzerEnabled);
-<a class="jxr_linenumber" name="L1463" href="#L1463">1463</a>         getSettings().setStringIfNotEmpty(Settings.KEYS.ANALYZER_ARTIFACTORY_URL, artifactoryAnalyzerUrl);
-<a class="jxr_linenumber" name="L1464" href="#L1464">1464</a>         getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_ARTIFACTORY_USES_PROXY, artifactoryAnalyzerUseProxy);
-<a class="jxr_linenumber" name="L1465" href="#L1465">1465</a>         getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_ARTIFACTORY_PARALLEL_ANALYSIS, artifactoryAnalyzerParallelAnalysis);
-<a class="jxr_linenumber" name="L1466" href="#L1466">1466</a>         getSettings().setStringIfNotEmpty(Settings.KEYS.ANALYZER_ARTIFACTORY_API_USERNAME, artifactoryAnalyzerUsername);
-<a class="jxr_linenumber" name="L1467" href="#L1467">1467</a>         getSettings().setStringIfNotEmpty(Settings.KEYS.ANALYZER_ARTIFACTORY_API_TOKEN, artifactoryAnalyzerApiToken);
-<a class="jxr_linenumber" name="L1468" href="#L1468">1468</a>         getSettings().setStringIfNotEmpty(Settings.KEYS.ANALYZER_ARTIFACTORY_BEARER_TOKEN, artifactoryAnalyzerBearerToken);
-<a class="jxr_linenumber" name="L1469" href="#L1469">1469</a> 
-<a class="jxr_linenumber" name="L1470" href="#L1470">1470</a>         getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_SWIFT_PACKAGE_MANAGER_ENABLED, swiftPackageManagerAnalyzerEnabled);
-<a class="jxr_linenumber" name="L1471" href="#L1471">1471</a>         getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_SWIFT_PACKAGE_RESOLVED_ENABLED, swiftPackageResolvedAnalyzerEnabled);
-<a class="jxr_linenumber" name="L1472" href="#L1472">1472</a>         getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_COCOAPODS_ENABLED, cocoapodsAnalyzerEnabled);
-<a class="jxr_linenumber" name="L1473" href="#L1473">1473</a>         getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_CARTHAGE_ENABLED, carthageAnalyzerEnabled);
-<a class="jxr_linenumber" name="L1474" href="#L1474">1474</a>         getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_BUNDLE_AUDIT_ENABLED, bundleAuditAnalyzerEnabled);
-<a class="jxr_linenumber" name="L1475" href="#L1475">1475</a>         getSettings().setStringIfNotNull(Settings.KEYS.ANALYZER_BUNDLE_AUDIT_PATH, bundleAuditPath);
-<a class="jxr_linenumber" name="L1476" href="#L1476">1476</a>         getSettings().setStringIfNotNull(Settings.KEYS.ANALYZER_BUNDLE_AUDIT_WORKING_DIRECTORY, bundleAuditWorkingDirectory);
-<a class="jxr_linenumber" name="L1477" href="#L1477">1477</a>         getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_AUTOCONF_ENABLED, autoconfAnalyzerEnabled);
-<a class="jxr_linenumber" name="L1478" href="#L1478">1478</a>         getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_MAVEN_INSTALL_ENABLED, mavenInstallAnalyzerEnabled);
-<a class="jxr_linenumber" name="L1479" href="#L1479">1479</a>         getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_PIP_ENABLED, pipAnalyzerEnabled);
-<a class="jxr_linenumber" name="L1480" href="#L1480">1480</a>         getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_PIPFILE_ENABLED, pipfileAnalyzerEnabled);
-<a class="jxr_linenumber" name="L1481" href="#L1481">1481</a>         getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_POETRY_ENABLED, poetryAnalyzerEnabled);
-<a class="jxr_linenumber" name="L1482" href="#L1482">1482</a>         getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_COMPOSER_LOCK_ENABLED, composerAnalyzerEnabled);
-<a class="jxr_linenumber" name="L1483" href="#L1483">1483</a>         getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_COMPOSER_LOCK_SKIP_DEV, composerAnalyzerSkipDev);
-<a class="jxr_linenumber" name="L1484" href="#L1484">1484</a>         getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_CPANFILE_ENABLED, cpanfileAnalyzerEnabled);
-<a class="jxr_linenumber" name="L1485" href="#L1485">1485</a>         getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_NODE_PACKAGE_ENABLED, nodeAnalyzerEnabled);
-<a class="jxr_linenumber" name="L1486" href="#L1486">1486</a>         getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_NODE_PACKAGE_SKIPDEV, nodePackageSkipDevDependencies);
-<a class="jxr_linenumber" name="L1487" href="#L1487">1487</a>         getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_NODE_AUDIT_ENABLED, nodeAuditAnalyzerEnabled);
-<a class="jxr_linenumber" name="L1488" href="#L1488">1488</a>         getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_YARN_AUDIT_ENABLED, yarnAuditAnalyzerEnabled);
-<a class="jxr_linenumber" name="L1489" href="#L1489">1489</a>         getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_PNPM_AUDIT_ENABLED, pnpmAuditAnalyzerEnabled);
-<a class="jxr_linenumber" name="L1490" href="#L1490">1490</a>         getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_NODE_AUDIT_USE_CACHE, nodeAuditAnalyzerUseCache);
-<a class="jxr_linenumber" name="L1491" href="#L1491">1491</a>         getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_NODE_AUDIT_SKIPDEV, nodeAuditSkipDevDependencies);
-<a class="jxr_linenumber" name="L1492" href="#L1492">1492</a>         getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_RETIREJS_FILTER_NON_VULNERABLE, retirejsFilterNonVulnerable);
-<a class="jxr_linenumber" name="L1493" href="#L1493">1493</a>         getSettings().setArrayIfNotEmpty(Settings.KEYS.ANALYZER_RETIREJS_FILTERS, retirejsFilters);
-<a class="jxr_linenumber" name="L1494" href="#L1494">1494</a>         getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_GOLANG_DEP_ENABLED, golangDepEnabled);
-<a class="jxr_linenumber" name="L1495" href="#L1495">1495</a>         getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_GOLANG_MOD_ENABLED, golangModEnabled);
-<a class="jxr_linenumber" name="L1496" href="#L1496">1496</a>         getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_DART_ENABLED, dartAnalyzerEnabled);
-<a class="jxr_linenumber" name="L1497" href="#L1497">1497</a>         getSettings().setStringIfNotNull(Settings.KEYS.ANALYZER_GOLANG_PATH, pathToGo);
-<a class="jxr_linenumber" name="L1498" href="#L1498">1498</a>         getSettings().setStringIfNotNull(Settings.KEYS.ANALYZER_YARN_PATH, pathToYarn);
-<a class="jxr_linenumber" name="L1499" href="#L1499">1499</a>         getSettings().setStringIfNotNull(Settings.KEYS.ANALYZER_PNPM_PATH, pathToPnpm);
-<a class="jxr_linenumber" name="L1500" href="#L1500">1500</a>         getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_MIX_AUDIT_ENABLED, mixAuditAnalyzerEnabled);
-<a class="jxr_linenumber" name="L1501" href="#L1501">1501</a>         getSettings().setStringIfNotNull(Settings.KEYS.ANALYZER_MIX_AUDIT_PATH, mixAuditPath);
-<a class="jxr_linenumber" name="L1502" href="#L1502">1502</a>         getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_NUSPEC_ENABLED, nuspecAnalyzerEnabled);
-<a class="jxr_linenumber" name="L1503" href="#L1503">1503</a>         getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_NUGETCONF_ENABLED, nugetconfAnalyzerEnabled);
-<a class="jxr_linenumber" name="L1504" href="#L1504">1504</a>         getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_LIBMAN_ENABLED, libmanAnalyzerEnabled);
-<a class="jxr_linenumber" name="L1505" href="#L1505">1505</a>         getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_CENTRAL_ENABLED, centralAnalyzerEnabled);
-<a class="jxr_linenumber" name="L1506" href="#L1506">1506</a>         getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_CENTRAL_USE_CACHE, centralAnalyzerUseCache);
-<a class="jxr_linenumber" name="L1507" href="#L1507">1507</a>         getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_NEXUS_ENABLED, nexusAnalyzerEnabled);
-<a class="jxr_linenumber" name="L1508" href="#L1508">1508</a>         getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_ARCHIVE_ENABLED, archiveAnalyzerEnabled);
-<a class="jxr_linenumber" name="L1509" href="#L1509">1509</a>         getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_ASSEMBLY_ENABLED, assemblyAnalyzerEnabled);
-<a class="jxr_linenumber" name="L1510" href="#L1510">1510</a>         getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_MSBUILD_PROJECT_ENABLED, msbuildAnalyzerEnabled);
-<a class="jxr_linenumber" name="L1511" href="#L1511">1511</a>         getSettings().setStringIfNotEmpty(Settings.KEYS.ANALYZER_NEXUS_URL, nexusUrl);
-<a class="jxr_linenumber" name="L1512" href="#L1512">1512</a>         getSettings().setStringIfNotEmpty(Settings.KEYS.ANALYZER_NEXUS_USER, nexusUser);
-<a class="jxr_linenumber" name="L1513" href="#L1513">1513</a>         getSettings().setStringIfNotEmpty(Settings.KEYS.ANALYZER_NEXUS_PASSWORD, nexusPassword);
-<a class="jxr_linenumber" name="L1514" href="#L1514">1514</a>         getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_NEXUS_USES_PROXY, nexusUsesProxy);
-<a class="jxr_linenumber" name="L1515" href="#L1515">1515</a>         getSettings().setStringIfNotEmpty(Settings.KEYS.ADDITIONAL_ZIP_EXTENSIONS, zipExtensions);
-<a class="jxr_linenumber" name="L1516" href="#L1516">1516</a>         getSettings().setStringIfNotEmpty(Settings.KEYS.ANALYZER_ASSEMBLY_DOTNET_PATH, pathToCore);
-<a class="jxr_linenumber" name="L1517" href="#L1517">1517</a>         getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_OSSINDEX_ENABLED, ossindexAnalyzerEnabled);
-<a class="jxr_linenumber" name="L1518" href="#L1518">1518</a>         getSettings().setStringIfNotEmpty(Settings.KEYS.ANALYZER_OSSINDEX_URL, ossindexAnalyzerUrl);
-<a class="jxr_linenumber" name="L1519" href="#L1519">1519</a>         getSettings().setStringIfNotEmpty(Settings.KEYS.ANALYZER_OSSINDEX_USER, ossindexAnalyzerUsername);
-<a class="jxr_linenumber" name="L1520" href="#L1520">1520</a>         getSettings().setStringIfNotEmpty(Settings.KEYS.ANALYZER_OSSINDEX_PASSWORD, ossindexAnalyzerPassword);
-<a class="jxr_linenumber" name="L1521" href="#L1521">1521</a>         getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_OSSINDEX_USE_CACHE, ossindexAnalyzerUseCache);
-<a class="jxr_linenumber" name="L1522" href="#L1522">1522</a>         getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_OSSINDEX_WARN_ONLY_ON_REMOTE_ERRORS, ossIndexAnalyzerWarnOnlyOnRemoteErrors);
-<a class="jxr_linenumber" name="L1523" href="#L1523">1523</a>         getSettings().setFloat(Settings.KEYS.JUNIT_FAIL_ON_CVSS, junitFailOnCVSS);
-<a class="jxr_linenumber" name="L1524" href="#L1524">1524</a>         getSettings().setBooleanIfNotNull(Settings.KEYS.FAIL_ON_UNUSED_SUPPRESSION_RULE, failBuildOnUnusedSuppressionRule);
-<a class="jxr_linenumber" name="L1525" href="#L1525">1525</a>     }
-<a class="jxr_linenumber" name="L1526" href="#L1526">1526</a> 
-<a class="jxr_linenumber" name="L1527" href="#L1527">1527</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L1528" href="#L1528">1528</a> <em class="jxr_javadoccomment">     * Checks to see if a vulnerability has been identified with a CVSS score</em>
-<a class="jxr_linenumber" name="L1529" href="#L1529">1529</a> <em class="jxr_javadoccomment">     * that is above the threshold set in the configuration.</em>
-<a class="jxr_linenumber" name="L1530" href="#L1530">1530</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L1531" href="#L1531">1531</a> <em class="jxr_javadoccomment">     * @param dependencies the list of dependency objects</em>
-<a class="jxr_linenumber" name="L1532" href="#L1532">1532</a> <em class="jxr_javadoccomment">     * @throws BuildException thrown if a CVSS score is found that is higher</em>
-<a class="jxr_linenumber" name="L1533" href="#L1533">1533</a> <em class="jxr_javadoccomment">     * than the threshold set</em>
+<a class="jxr_linenumber" name="L1401" href="#L1401">1401</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> setArtifactoryAnalyzerUsername(String artifactoryAnalyzerUsername) {
+<a class="jxr_linenumber" name="L1402" href="#L1402">1402</a>         <strong class="jxr_keyword">this</strong>.artifactoryAnalyzerUsername = artifactoryAnalyzerUsername;
+<a class="jxr_linenumber" name="L1403" href="#L1403">1403</a>     }
+<a class="jxr_linenumber" name="L1404" href="#L1404">1404</a> 
+<a class="jxr_linenumber" name="L1405" href="#L1405">1405</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L1406" href="#L1406">1406</a> <em class="jxr_javadoccomment">     * Set the value of artifactoryAnalyzerApiToken.</em>
+<a class="jxr_linenumber" name="L1407" href="#L1407">1407</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L1408" href="#L1408">1408</a> <em class="jxr_javadoccomment">     * @param artifactoryAnalyzerApiToken new value of</em>
+<a class="jxr_linenumber" name="L1409" href="#L1409">1409</a> <em class="jxr_javadoccomment">     * artifactoryAnalyzerApiToken</em>
+<a class="jxr_linenumber" name="L1410" href="#L1410">1410</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L1411" href="#L1411">1411</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> setArtifactoryAnalyzerApiToken(String artifactoryAnalyzerApiToken) {
+<a class="jxr_linenumber" name="L1412" href="#L1412">1412</a>         <strong class="jxr_keyword">this</strong>.artifactoryAnalyzerApiToken = artifactoryAnalyzerApiToken;
+<a class="jxr_linenumber" name="L1413" href="#L1413">1413</a>     }
+<a class="jxr_linenumber" name="L1414" href="#L1414">1414</a> 
+<a class="jxr_linenumber" name="L1415" href="#L1415">1415</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L1416" href="#L1416">1416</a> <em class="jxr_javadoccomment">     * Set the value of artifactoryAnalyzerBearerToken.</em>
+<a class="jxr_linenumber" name="L1417" href="#L1417">1417</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L1418" href="#L1418">1418</a> <em class="jxr_javadoccomment">     * @param artifactoryAnalyzerBearerToken new value of</em>
+<a class="jxr_linenumber" name="L1419" href="#L1419">1419</a> <em class="jxr_javadoccomment">     * artifactoryAnalyzerBearerToken</em>
+<a class="jxr_linenumber" name="L1420" href="#L1420">1420</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L1421" href="#L1421">1421</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> setArtifactoryAnalyzerBearerToken(String artifactoryAnalyzerBearerToken) {
+<a class="jxr_linenumber" name="L1422" href="#L1422">1422</a>         <strong class="jxr_keyword">this</strong>.artifactoryAnalyzerBearerToken = artifactoryAnalyzerBearerToken;
+<a class="jxr_linenumber" name="L1423" href="#L1423">1423</a>     }
+<a class="jxr_linenumber" name="L1424" href="#L1424">1424</a> 
+<a class="jxr_linenumber" name="L1425" href="#L1425">1425</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L1426" href="#L1426">1426</a> <em class="jxr_javadoccomment">     * Set the value of failBuildOnUnusedSuppressionRule.</em>
+<a class="jxr_linenumber" name="L1427" href="#L1427">1427</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L1428" href="#L1428">1428</a> <em class="jxr_javadoccomment">     * @param failBuildOnUnusedSuppressionRule new value of</em>
+<a class="jxr_linenumber" name="L1429" href="#L1429">1429</a> <em class="jxr_javadoccomment">     * failBuildOnUnusedSuppressionRule</em>
+<a class="jxr_linenumber" name="L1430" href="#L1430">1430</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L1431" href="#L1431">1431</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> setFailBuildOnUnusedSuppressionRule(<strong class="jxr_keyword">boolean</strong> failBuildOnUnusedSuppressionRule) {
+<a class="jxr_linenumber" name="L1432" href="#L1432">1432</a>         <strong class="jxr_keyword">this</strong>.failBuildOnUnusedSuppressionRule = failBuildOnUnusedSuppressionRule;
+<a class="jxr_linenumber" name="L1433" href="#L1433">1433</a>     }
+<a class="jxr_linenumber" name="L1434" href="#L1434">1434</a> 
+<a class="jxr_linenumber" name="L1435" href="#L1435">1435</a>     <em class="jxr_comment">//see note on `dealWithReferences()` for information on this suppression</em>
+<a class="jxr_linenumber" name="L1436" href="#L1436">1436</a>     @SuppressWarnings(<span class="jxr_string">"squid:RedundantThrowsDeclarationCheck"</span>)
+<a class="jxr_linenumber" name="L1437" href="#L1437">1437</a>     @Override
+<a class="jxr_linenumber" name="L1438" href="#L1438">1438</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">void</strong> executeWithContextClassloader() <strong class="jxr_keyword">throws</strong> BuildException {
+<a class="jxr_linenumber" name="L1439" href="#L1439">1439</a>         dealWithReferences();
+<a class="jxr_linenumber" name="L1440" href="#L1440">1440</a>         validateConfiguration();
+<a class="jxr_linenumber" name="L1441" href="#L1441">1441</a>         populateSettings();
+<a class="jxr_linenumber" name="L1442" href="#L1442">1442</a>         <strong class="jxr_keyword">try</strong> {
+<a class="jxr_linenumber" name="L1443" href="#L1443">1443</a>             Downloader.getInstance().configure(getSettings());
+<a class="jxr_linenumber" name="L1444" href="#L1444">1444</a>         } <strong class="jxr_keyword">catch</strong> (InvalidSettingException e) {
+<a class="jxr_linenumber" name="L1445" href="#L1445">1445</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> BuildException(e);
+<a class="jxr_linenumber" name="L1446" href="#L1446">1446</a>         }
+<a class="jxr_linenumber" name="L1447" href="#L1447">1447</a>         TelemetryCollector.send(getSettings());
+<a class="jxr_linenumber" name="L1448" href="#L1448">1448</a>         <strong class="jxr_keyword">try</strong> (Engine engine = <strong class="jxr_keyword">new</strong> Engine(Check.<strong class="jxr_keyword">class</strong>.getClassLoader(), getSettings())) {
+<a class="jxr_linenumber" name="L1449" href="#L1449">1449</a>             <strong class="jxr_keyword">for</strong> (Resource resource : getPath()) {
+<a class="jxr_linenumber" name="L1450" href="#L1450">1450</a>                 <strong class="jxr_keyword">final</strong> FileProvider provider = resource.as(FileProvider.<strong class="jxr_keyword">class</strong>);
+<a class="jxr_linenumber" name="L1451" href="#L1451">1451</a>                 <strong class="jxr_keyword">if</strong> (provider != <strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="L1452" href="#L1452">1452</a>                     <strong class="jxr_keyword">final</strong> File file = provider.getFile();
+<a class="jxr_linenumber" name="L1453" href="#L1453">1453</a>                     <strong class="jxr_keyword">if</strong> (file != <strong class="jxr_keyword">null</strong> &amp;&amp; file.exists()) {
+<a class="jxr_linenumber" name="L1454" href="#L1454">1454</a>                         engine.scan(file);
+<a class="jxr_linenumber" name="L1455" href="#L1455">1455</a>                     }
+<a class="jxr_linenumber" name="L1456" href="#L1456">1456</a>                 }
+<a class="jxr_linenumber" name="L1457" href="#L1457">1457</a>             }
+<a class="jxr_linenumber" name="L1458" href="#L1458">1458</a>             <strong class="jxr_keyword">final</strong> ExceptionCollection exceptions = callExecuteAnalysis(engine);
+<a class="jxr_linenumber" name="L1459" href="#L1459">1459</a>             <strong class="jxr_keyword">if</strong> (exceptions == <strong class="jxr_keyword">null</strong> || !exceptions.isFatal()) {
+<a class="jxr_linenumber" name="L1460" href="#L1460">1460</a>                 <strong class="jxr_keyword">for</strong> (String format : getReportFormats()) {
+<a class="jxr_linenumber" name="L1461" href="#L1461">1461</a>                     engine.writeReports(getProjectName(), <strong class="jxr_keyword">new</strong> File(reportOutputDirectory), format, exceptions);
+<a class="jxr_linenumber" name="L1462" href="#L1462">1462</a>                 }
+<a class="jxr_linenumber" name="L1463" href="#L1463">1463</a>                 <strong class="jxr_keyword">if</strong> (<strong class="jxr_keyword">this</strong>.failBuildOnCVSS &lt;= 10) {
+<a class="jxr_linenumber" name="L1464" href="#L1464">1464</a>                     checkForFailure(engine.getDependencies());
+<a class="jxr_linenumber" name="L1465" href="#L1465">1465</a>                 }
+<a class="jxr_linenumber" name="L1466" href="#L1466">1466</a>                 <strong class="jxr_keyword">if</strong> (<strong class="jxr_keyword">this</strong>.showSummary) {
+<a class="jxr_linenumber" name="L1467" href="#L1467">1467</a>                     DependencyCheckScanAgent.showSummary(engine.getDependencies());
+<a class="jxr_linenumber" name="L1468" href="#L1468">1468</a>                 }
+<a class="jxr_linenumber" name="L1469" href="#L1469">1469</a>             }
+<a class="jxr_linenumber" name="L1470" href="#L1470">1470</a>         } <strong class="jxr_keyword">catch</strong> (DatabaseException ex) {
+<a class="jxr_linenumber" name="L1471" href="#L1471">1471</a>             <strong class="jxr_keyword">final</strong> String msg = <span class="jxr_string">"Unable to connect to the dependency-check database; analysis has stopped"</span>;
+<a class="jxr_linenumber" name="L1472" href="#L1472">1472</a>             <strong class="jxr_keyword">if</strong> (<strong class="jxr_keyword">this</strong>.isFailOnError()) {
+<a class="jxr_linenumber" name="L1473" href="#L1473">1473</a>                 <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> BuildException(msg, ex);
+<a class="jxr_linenumber" name="L1474" href="#L1474">1474</a>             }
+<a class="jxr_linenumber" name="L1475" href="#L1475">1475</a>             log(msg, ex, Project.MSG_ERR);
+<a class="jxr_linenumber" name="L1476" href="#L1476">1476</a>         } <strong class="jxr_keyword">catch</strong> (ReportException ex) {
+<a class="jxr_linenumber" name="L1477" href="#L1477">1477</a>             <strong class="jxr_keyword">final</strong> String msg = <span class="jxr_string">"Unable to generate the dependency-check report"</span>;
+<a class="jxr_linenumber" name="L1478" href="#L1478">1478</a>             <strong class="jxr_keyword">if</strong> (<strong class="jxr_keyword">this</strong>.isFailOnError()) {
+<a class="jxr_linenumber" name="L1479" href="#L1479">1479</a>                 <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> BuildException(msg, ex);
+<a class="jxr_linenumber" name="L1480" href="#L1480">1480</a>             }
+<a class="jxr_linenumber" name="L1481" href="#L1481">1481</a>             log(msg, ex, Project.MSG_ERR);
+<a class="jxr_linenumber" name="L1482" href="#L1482">1482</a>         } <strong class="jxr_keyword">finally</strong> {
+<a class="jxr_linenumber" name="L1483" href="#L1483">1483</a>             getSettings().cleanup();
+<a class="jxr_linenumber" name="L1484" href="#L1484">1484</a>         }
+<a class="jxr_linenumber" name="L1485" href="#L1485">1485</a>     }
+<a class="jxr_linenumber" name="L1486" href="#L1486">1486</a> 
+<a class="jxr_linenumber" name="L1487" href="#L1487">1487</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L1488" href="#L1488">1488</a> <em class="jxr_javadoccomment">     * Wraps the call to `engine.analyzeDependencies()` and correctly handles</em>
+<a class="jxr_linenumber" name="L1489" href="#L1489">1489</a> <em class="jxr_javadoccomment">     * any exceptions</em>
+<a class="jxr_linenumber" name="L1490" href="#L1490">1490</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L1491" href="#L1491">1491</a> <em class="jxr_javadoccomment">     * @param engine a reference to the engine</em>
+<a class="jxr_linenumber" name="L1492" href="#L1492">1492</a> <em class="jxr_javadoccomment">     * @return the collection of any exceptions that occurred; otherwise</em>
+<a class="jxr_linenumber" name="L1493" href="#L1493">1493</a> <em class="jxr_javadoccomment">     * &lt;code&gt;null&lt;/code&gt;</em>
+<a class="jxr_linenumber" name="L1494" href="#L1494">1494</a> <em class="jxr_javadoccomment">     * @throws BuildException thrown if configured to fail the build on errors</em>
+<a class="jxr_linenumber" name="L1495" href="#L1495">1495</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L1496" href="#L1496">1496</a>     <em class="jxr_comment">//see note on `dealWithReferences()` for information on this suppression</em>
+<a class="jxr_linenumber" name="L1497" href="#L1497">1497</a>     @SuppressWarnings(<span class="jxr_string">"squid:RedundantThrowsDeclarationCheck"</span>)
+<a class="jxr_linenumber" name="L1498" href="#L1498">1498</a>     <strong class="jxr_keyword">private</strong> ExceptionCollection callExecuteAnalysis(<strong class="jxr_keyword">final</strong> Engine engine) <strong class="jxr_keyword">throws</strong> BuildException {
+<a class="jxr_linenumber" name="L1499" href="#L1499">1499</a>         ExceptionCollection exceptions = <strong class="jxr_keyword">null</strong>;
+<a class="jxr_linenumber" name="L1500" href="#L1500">1500</a>         <strong class="jxr_keyword">try</strong> {
+<a class="jxr_linenumber" name="L1501" href="#L1501">1501</a>             engine.analyzeDependencies();
+<a class="jxr_linenumber" name="L1502" href="#L1502">1502</a>         } <strong class="jxr_keyword">catch</strong> (ExceptionCollection ex) {
+<a class="jxr_linenumber" name="L1503" href="#L1503">1503</a>             <strong class="jxr_keyword">if</strong> (<strong class="jxr_keyword">this</strong>.isFailOnError()) {
+<a class="jxr_linenumber" name="L1504" href="#L1504">1504</a>                 <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> BuildException(ex);
+<a class="jxr_linenumber" name="L1505" href="#L1505">1505</a>             }
+<a class="jxr_linenumber" name="L1506" href="#L1506">1506</a>             exceptions = ex;
+<a class="jxr_linenumber" name="L1507" href="#L1507">1507</a>         }
+<a class="jxr_linenumber" name="L1508" href="#L1508">1508</a>         <strong class="jxr_keyword">return</strong> exceptions;
+<a class="jxr_linenumber" name="L1509" href="#L1509">1509</a>     }
+<a class="jxr_linenumber" name="L1510" href="#L1510">1510</a> 
+<a class="jxr_linenumber" name="L1511" href="#L1511">1511</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L1512" href="#L1512">1512</a> <em class="jxr_javadoccomment">     * Validate the configuration to ensure the parameters have been properly</em>
+<a class="jxr_linenumber" name="L1513" href="#L1513">1513</a> <em class="jxr_javadoccomment">     * configured/initialized.</em>
+<a class="jxr_linenumber" name="L1514" href="#L1514">1514</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L1515" href="#L1515">1515</a> <em class="jxr_javadoccomment">     * @throws BuildException if the task was not configured correctly.</em>
+<a class="jxr_linenumber" name="L1516" href="#L1516">1516</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L1517" href="#L1517">1517</a>     <em class="jxr_comment">//see note on `dealWithReferences()` for information on this suppression</em>
+<a class="jxr_linenumber" name="L1518" href="#L1518">1518</a>     @SuppressWarnings(<span class="jxr_string">"squid:RedundantThrowsDeclarationCheck"</span>)
+<a class="jxr_linenumber" name="L1519" href="#L1519">1519</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">synchronized</strong> <strong class="jxr_keyword">void</strong> validateConfiguration() <strong class="jxr_keyword">throws</strong> BuildException {
+<a class="jxr_linenumber" name="L1520" href="#L1520">1520</a>         <strong class="jxr_keyword">if</strong> (path == <strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="L1521" href="#L1521">1521</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> BuildException(<span class="jxr_string">"No project dependencies have been defined to analyze."</span>);
+<a class="jxr_linenumber" name="L1522" href="#L1522">1522</a>         }
+<a class="jxr_linenumber" name="L1523" href="#L1523">1523</a>         <strong class="jxr_keyword">if</strong> (failBuildOnCVSS &lt; 0 || failBuildOnCVSS &gt; 11) {
+<a class="jxr_linenumber" name="L1524" href="#L1524">1524</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> BuildException(<span class="jxr_string">"Invalid configuration, failBuildOnCVSS must be between 0 and 11."</span>);
+<a class="jxr_linenumber" name="L1525" href="#L1525">1525</a>         }
+<a class="jxr_linenumber" name="L1526" href="#L1526">1526</a>     }
+<a class="jxr_linenumber" name="L1527" href="#L1527">1527</a> 
+<a class="jxr_linenumber" name="L1528" href="#L1528">1528</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L1529" href="#L1529">1529</a> <em class="jxr_javadoccomment">     * Takes the properties supplied and updates the dependency-check settings.</em>
+<a class="jxr_linenumber" name="L1530" href="#L1530">1530</a> <em class="jxr_javadoccomment">     * Additionally, this sets the system properties required to change the</em>
+<a class="jxr_linenumber" name="L1531" href="#L1531">1531</a> <em class="jxr_javadoccomment">     * proxy server, port, and connection timeout.</em>
+<a class="jxr_linenumber" name="L1532" href="#L1532">1532</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L1533" href="#L1533">1533</a> <em class="jxr_javadoccomment">     * @throws BuildException thrown when an invalid setting is configured.</em>
 <a class="jxr_linenumber" name="L1534" href="#L1534">1534</a> <em class="jxr_javadoccomment">     */</em>
 <a class="jxr_linenumber" name="L1535" href="#L1535">1535</a>     <em class="jxr_comment">//see note on `dealWithReferences()` for information on this suppression</em>
 <a class="jxr_linenumber" name="L1536" href="#L1536">1536</a>     @SuppressWarnings(<span class="jxr_string">"squid:RedundantThrowsDeclarationCheck"</span>)
-<a class="jxr_linenumber" name="L1537" href="#L1537">1537</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> checkForFailure(Dependency[] dependencies) <strong class="jxr_keyword">throws</strong> BuildException {
-<a class="jxr_linenumber" name="L1538" href="#L1538">1538</a>         <strong class="jxr_keyword">final</strong> StringBuilder ids = <strong class="jxr_keyword">new</strong> StringBuilder();
-<a class="jxr_linenumber" name="L1539" href="#L1539">1539</a>         <strong class="jxr_keyword">for</strong> (Dependency d : dependencies) {
-<a class="jxr_linenumber" name="L1540" href="#L1540">1540</a>             <strong class="jxr_keyword">boolean</strong> addName = <strong class="jxr_keyword">true</strong>;
-<a class="jxr_linenumber" name="L1541" href="#L1541">1541</a>             <strong class="jxr_keyword">for</strong> (Vulnerability v : d.getVulnerabilities()) {
-<a class="jxr_linenumber" name="L1542" href="#L1542">1542</a>                 <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">double</strong> cvssV2 = v.getCvssV2() != <strong class="jxr_keyword">null</strong> &amp;&amp; v.getCvssV2().getCvssData() != <strong class="jxr_keyword">null</strong>
-<a class="jxr_linenumber" name="L1543" href="#L1543">1543</a>                         &amp;&amp; v.getCvssV2().getCvssData().getBaseScore() != <strong class="jxr_keyword">null</strong> ? v.getCvssV2().getCvssData().getBaseScore() : -1;
-<a class="jxr_linenumber" name="L1544" href="#L1544">1544</a>                 <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">double</strong> cvssV3 = v.getCvssV3() != <strong class="jxr_keyword">null</strong> &amp;&amp; v.getCvssV3().getCvssData() != <strong class="jxr_keyword">null</strong>
-<a class="jxr_linenumber" name="L1545" href="#L1545">1545</a>                         &amp;&amp; v.getCvssV3().getCvssData().getBaseScore() != <strong class="jxr_keyword">null</strong> ? v.getCvssV3().getCvssData().getBaseScore() : -1;
-<a class="jxr_linenumber" name="L1546" href="#L1546">1546</a>                 <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">double</strong> cvssV4 = v.getCvssV4() != <strong class="jxr_keyword">null</strong> &amp;&amp; v.getCvssV4().getCvssData() != <strong class="jxr_keyword">null</strong>
-<a class="jxr_linenumber" name="L1547" href="#L1547">1547</a>                         &amp;&amp; v.getCvssV4().getCvssData().getBaseScore() != <strong class="jxr_keyword">null</strong> ? v.getCvssV4().getCvssData().getBaseScore() : -1;
-<a class="jxr_linenumber" name="L1548" href="#L1548">1548</a>                 <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">boolean</strong> useUnscored = cvssV2 == -1 &amp;&amp; cvssV3 == -1 &amp;&amp; cvssV4 == -1;
-<a class="jxr_linenumber" name="L1549" href="#L1549">1549</a>                 <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">double</strong> unscoredCvss =
-<a class="jxr_linenumber" name="L1550" href="#L1550">1550</a>                         useUnscored &amp;&amp; v.getUnscoredSeverity() != <strong class="jxr_keyword">null</strong> ? SeverityUtil.estimateCvssV2(v.getUnscoredSeverity()) : -1;
-<a class="jxr_linenumber" name="L1551" href="#L1551">1551</a> 
-<a class="jxr_linenumber" name="L1552" href="#L1552">1552</a>                 <strong class="jxr_keyword">if</strong> (cvssV2 &gt;= failBuildOnCVSS
-<a class="jxr_linenumber" name="L1553" href="#L1553">1553</a>                         || cvssV3 &gt;= failBuildOnCVSS
-<a class="jxr_linenumber" name="L1554" href="#L1554">1554</a>                         || cvssV4 &gt;= failBuildOnCVSS
-<a class="jxr_linenumber" name="L1555" href="#L1555">1555</a>                         || unscoredCvss &gt;= failBuildOnCVSS
-<a class="jxr_linenumber" name="L1556" href="#L1556">1556</a>                         <em class="jxr_comment">//safety net to fail on any if for some reason the above misses on 0</em>
-<a class="jxr_linenumber" name="L1557" href="#L1557">1557</a>                         || failBuildOnCVSS &lt;= 0.0f
-<a class="jxr_linenumber" name="L1558" href="#L1558">1558</a>                 ) {
-<a class="jxr_linenumber" name="L1559" href="#L1559">1559</a>                     <strong class="jxr_keyword">if</strong> (addName) {
-<a class="jxr_linenumber" name="L1560" href="#L1560">1560</a>                         addName = false;
-<a class="jxr_linenumber" name="L1561" href="#L1561">1561</a>                         ids.append(NEW_LINE).append(d.getFileName()).append(<span class="jxr_string">" ("</span>)
-<a class="jxr_linenumber" name="L1562" href="#L1562">1562</a>                            .append(Stream.concat(d.getSoftwareIdentifiers().stream(), d.getVulnerableSoftwareIdentifiers().stream())
-<a class="jxr_linenumber" name="L1563" href="#L1563">1563</a>                                          .map(Identifier::getValue)
-<a class="jxr_linenumber" name="L1564" href="#L1564">1564</a>                                          .collect(Collectors.joining(<span class="jxr_string">", "</span>)))
-<a class="jxr_linenumber" name="L1565" href="#L1565">1565</a>                            .append(<span class="jxr_string">"): "</span>)
-<a class="jxr_linenumber" name="L1566" href="#L1566">1566</a>                            .append(v.getName());
-<a class="jxr_linenumber" name="L1567" href="#L1567">1567</a>                     } <strong class="jxr_keyword">else</strong> {
-<a class="jxr_linenumber" name="L1568" href="#L1568">1568</a>                         ids.append(<span class="jxr_string">", "</span>).append(v.getName());
-<a class="jxr_linenumber" name="L1569" href="#L1569">1569</a>                     }
-<a class="jxr_linenumber" name="L1570" href="#L1570">1570</a>                 }
-<a class="jxr_linenumber" name="L1571" href="#L1571">1571</a>             }
-<a class="jxr_linenumber" name="L1572" href="#L1572">1572</a>         }
-<a class="jxr_linenumber" name="L1573" href="#L1573">1573</a>         <strong class="jxr_keyword">if</strong> (ids.length() &gt; 0) {
-<a class="jxr_linenumber" name="L1574" href="#L1574">1574</a>             <strong class="jxr_keyword">final</strong> String msg;
-<a class="jxr_linenumber" name="L1575" href="#L1575">1575</a>             <strong class="jxr_keyword">if</strong> (showSummary) {
-<a class="jxr_linenumber" name="L1576" href="#L1576">1576</a>                 msg = String.format(<span class="jxr_string">"%n%nDependency-Check Failure:%n"</span>
-<a class="jxr_linenumber" name="L1577" href="#L1577">1577</a>                         + <span class="jxr_string">"One or more dependencies were identified with vulnerabilities that have a CVSS score greater than or equal to '%.1f': %s%n"</span>
-<a class="jxr_linenumber" name="L1578" href="#L1578">1578</a>                         + <span class="jxr_string">"See the dependency-check report for more details.%n%n"</span>, failBuildOnCVSS, ids);
-<a class="jxr_linenumber" name="L1579" href="#L1579">1579</a>             } <strong class="jxr_keyword">else</strong> {
-<a class="jxr_linenumber" name="L1580" href="#L1580">1580</a>                 msg = String.format(<span class="jxr_string">"%n%nDependency-Check Failure:%n"</span>
-<a class="jxr_linenumber" name="L1581" href="#L1581">1581</a>                         + <span class="jxr_string">"One or more dependencies were identified with vulnerabilities.%n%n"</span>
-<a class="jxr_linenumber" name="L1582" href="#L1582">1582</a>                         + <span class="jxr_string">"See the dependency-check report for more details.%n%n"</span>);
-<a class="jxr_linenumber" name="L1583" href="#L1583">1583</a>             }
-<a class="jxr_linenumber" name="L1584" href="#L1584">1584</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> BuildException(msg);
-<a class="jxr_linenumber" name="L1585" href="#L1585">1585</a>         }
-<a class="jxr_linenumber" name="L1586" href="#L1586">1586</a>     }
-<a class="jxr_linenumber" name="L1587" href="#L1587">1587</a> 
-<a class="jxr_linenumber" name="L1588" href="#L1588">1588</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L1589" href="#L1589">1589</a> <em class="jxr_javadoccomment">     * An enumeration of supported report formats: "ALL", "HTML", "XML", "CSV",</em>
-<a class="jxr_linenumber" name="L1590" href="#L1590">1590</a> <em class="jxr_javadoccomment">     * "JSON", "JUNIT", "SARIF", 'JENkINS', etc..</em>
-<a class="jxr_linenumber" name="L1591" href="#L1591">1591</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L1592" href="#L1592">1592</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">class</strong> <a href="../../../../org/owasp/dependencycheck/taskdefs/Check.html">ReportFormats</a> <strong class="jxr_keyword">extends</strong> EnumeratedAttribute {
-<a class="jxr_linenumber" name="L1593" href="#L1593">1593</a> 
-<a class="jxr_linenumber" name="L1594" href="#L1594">1594</a>         <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L1595" href="#L1595">1595</a> <em class="jxr_javadoccomment">         * Returns the list of values for the report format.</em>
-<a class="jxr_linenumber" name="L1596" href="#L1596">1596</a> <em class="jxr_javadoccomment">         *</em>
-<a class="jxr_linenumber" name="L1597" href="#L1597">1597</a> <em class="jxr_javadoccomment">         * @return the list of values for the report format</em>
-<a class="jxr_linenumber" name="L1598" href="#L1598">1598</a> <em class="jxr_javadoccomment">         */</em>
-<a class="jxr_linenumber" name="L1599" href="#L1599">1599</a>         @Override
-<a class="jxr_linenumber" name="L1600" href="#L1600">1600</a>         <strong class="jxr_keyword">public</strong> String[] getValues() {
-<a class="jxr_linenumber" name="L1601" href="#L1601">1601</a>             <strong class="jxr_keyword">int</strong> i = 0;
-<a class="jxr_linenumber" name="L1602" href="#L1602">1602</a>             <strong class="jxr_keyword">final</strong> Format[] formats = Format.values();
-<a class="jxr_linenumber" name="L1603" href="#L1603">1603</a>             <strong class="jxr_keyword">final</strong> String[] values = <strong class="jxr_keyword">new</strong> String[formats.length];
-<a class="jxr_linenumber" name="L1604" href="#L1604">1604</a>             <strong class="jxr_keyword">for</strong> (Format format : formats) {
-<a class="jxr_linenumber" name="L1605" href="#L1605">1605</a>                 values[i++] = format.name();
-<a class="jxr_linenumber" name="L1606" href="#L1606">1606</a>             }
-<a class="jxr_linenumber" name="L1607" href="#L1607">1607</a>             <strong class="jxr_keyword">return</strong> values;
-<a class="jxr_linenumber" name="L1608" href="#L1608">1608</a>         }
-<a class="jxr_linenumber" name="L1609" href="#L1609">1609</a>     }
-<a class="jxr_linenumber" name="L1610" href="#L1610">1610</a> 
-<a class="jxr_linenumber" name="L1611" href="#L1611">1611</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L1612" href="#L1612">1612</a> <em class="jxr_javadoccomment">     * A class for Ant to represent the</em>
-<a class="jxr_linenumber" name="L1613" href="#L1613">1613</a> <em class="jxr_javadoccomment">     * {@code &lt;reportFormat format="&lt;format&gt;"/&gt;} nested element to define</em>
-<a class="jxr_linenumber" name="L1614" href="#L1614">1614</a> <em class="jxr_javadoccomment">     * multiple report formats for the ant-task.</em>
-<a class="jxr_linenumber" name="L1615" href="#L1615">1615</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L1616" href="#L1616">1616</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">class</strong> <a href="../../../../org/owasp/dependencycheck/taskdefs/Check.html">ReportFormat</a> {
-<a class="jxr_linenumber" name="L1617" href="#L1617">1617</a> 
-<a class="jxr_linenumber" name="L1618" href="#L1618">1618</a>         <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L1619" href="#L1619">1619</a> <em class="jxr_javadoccomment">         * The format of this ReportFormat.</em>
-<a class="jxr_linenumber" name="L1620" href="#L1620">1620</a> <em class="jxr_javadoccomment">         */</em>
-<a class="jxr_linenumber" name="L1621" href="#L1621">1621</a>         <strong class="jxr_keyword">private</strong> <a href="../../../../org/owasp/dependencycheck/taskdefs/Check.html">ReportFormats</a> format;
-<a class="jxr_linenumber" name="L1622" href="#L1622">1622</a> 
-<a class="jxr_linenumber" name="L1623" href="#L1623">1623</a>         <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L1624" href="#L1624">1624</a> <em class="jxr_javadoccomment">         * Gets the format as a String.</em>
-<a class="jxr_linenumber" name="L1625" href="#L1625">1625</a> <em class="jxr_javadoccomment">         *</em>
-<a class="jxr_linenumber" name="L1626" href="#L1626">1626</a> <em class="jxr_javadoccomment">         * @return the String representing a report format</em>
-<a class="jxr_linenumber" name="L1627" href="#L1627">1627</a> <em class="jxr_javadoccomment">         */</em>
-<a class="jxr_linenumber" name="L1628" href="#L1628">1628</a>         <strong class="jxr_keyword">public</strong> String getFormat() {
-<a class="jxr_linenumber" name="L1629" href="#L1629">1629</a>             <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">this</strong>.format.getValue();
-<a class="jxr_linenumber" name="L1630" href="#L1630">1630</a>         }
-<a class="jxr_linenumber" name="L1631" href="#L1631">1631</a> 
-<a class="jxr_linenumber" name="L1632" href="#L1632">1632</a>         <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L1633" href="#L1633">1633</a> <em class="jxr_javadoccomment">         * Sets the format.</em>
-<a class="jxr_linenumber" name="L1634" href="#L1634">1634</a> <em class="jxr_javadoccomment">         *</em>
-<a class="jxr_linenumber" name="L1635" href="#L1635">1635</a> <em class="jxr_javadoccomment">         * @param format the String value for one of the {@link ReportFormats}</em>
-<a class="jxr_linenumber" name="L1636" href="#L1636">1636</a> <em class="jxr_javadoccomment">         * @throws BuildException When the offered String is not one of the</em>
-<a class="jxr_linenumber" name="L1637" href="#L1637">1637</a> <em class="jxr_javadoccomment">         * valid values of the {@link ReportFormats} EnumeratedAttribute</em>
-<a class="jxr_linenumber" name="L1638" href="#L1638">1638</a> <em class="jxr_javadoccomment">         */</em>
-<a class="jxr_linenumber" name="L1639" href="#L1639">1639</a>         <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> setFormat(<strong class="jxr_keyword">final</strong> String format) {
-<a class="jxr_linenumber" name="L1640" href="#L1640">1640</a>             <strong class="jxr_keyword">this</strong>.format = (ReportFormats) EnumeratedAttribute.getInstance(ReportFormats.<strong class="jxr_keyword">class</strong>, format);
-<a class="jxr_linenumber" name="L1641" href="#L1641">1641</a>         }
-<a class="jxr_linenumber" name="L1642" href="#L1642">1642</a>     }
-<a class="jxr_linenumber" name="L1643" href="#L1643">1643</a> }
-<a class="jxr_linenumber" name="L1644" href="#L1644">1644</a> <em class="jxr_comment">//CSON: MethodCount</em>
+<a class="jxr_linenumber" name="L1537" href="#L1537">1537</a>     @Override
+<a class="jxr_linenumber" name="L1538" href="#L1538">1538</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">void</strong> populateSettings() <strong class="jxr_keyword">throws</strong> BuildException {
+<a class="jxr_linenumber" name="L1539" href="#L1539">1539</a>         <strong class="jxr_keyword">super</strong>.populateSettings();
+<a class="jxr_linenumber" name="L1540" href="#L1540">1540</a>         getSettings().setBooleanIfNotNull(Settings.KEYS.AUTO_UPDATE, autoUpdate);
+<a class="jxr_linenumber" name="L1541" href="#L1541">1541</a>         getSettings().setArrayIfNotEmpty(Settings.KEYS.SUPPRESSION_FILE, suppressionFiles);
+<a class="jxr_linenumber" name="L1542" href="#L1542">1542</a>         getSettings().setStringIfNotEmpty(Settings.KEYS.SUPPRESSION_FILE_USER, suppressionFileUser);
+<a class="jxr_linenumber" name="L1543" href="#L1543">1543</a>         getSettings().setStringIfNotEmpty(Settings.KEYS.SUPPRESSION_FILE_PASSWORD, suppressionFilePassword);
+<a class="jxr_linenumber" name="L1544" href="#L1544">1544</a>         getSettings().setStringIfNotEmpty(Settings.KEYS.SUPPRESSION_FILE_BEARER_TOKEN, suppressionFileBearerToken);
+<a class="jxr_linenumber" name="L1545" href="#L1545">1545</a>         getSettings().setBooleanIfNotNull(Settings.KEYS.UPDATE_VERSION_CHECK_ENABLED, versionCheckEnabled);
+<a class="jxr_linenumber" name="L1546" href="#L1546">1546</a>         getSettings().setStringIfNotEmpty(Settings.KEYS.HINTS_FILE, hintsFile);
+<a class="jxr_linenumber" name="L1547" href="#L1547">1547</a>         getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_EXPERIMENTAL_ENABLED, enableExperimental);
+<a class="jxr_linenumber" name="L1548" href="#L1548">1548</a>         getSettings().setBooleanIfNotNull(Settings.KEYS.PRETTY_PRINT, prettyPrint);
+<a class="jxr_linenumber" name="L1549" href="#L1549">1549</a>         getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_RETIRED_ENABLED, enableRetired);
+<a class="jxr_linenumber" name="L1550" href="#L1550">1550</a>         getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_JAR_ENABLED, jarAnalyzerEnabled);
+<a class="jxr_linenumber" name="L1551" href="#L1551">1551</a>         getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_PYTHON_DISTRIBUTION_ENABLED, pyDistributionAnalyzerEnabled);
+<a class="jxr_linenumber" name="L1552" href="#L1552">1552</a>         getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_PYTHON_PACKAGE_ENABLED, pyPackageAnalyzerEnabled);
+<a class="jxr_linenumber" name="L1553" href="#L1553">1553</a>         getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_RUBY_GEMSPEC_ENABLED, rubygemsAnalyzerEnabled);
+<a class="jxr_linenumber" name="L1554" href="#L1554">1554</a>         getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_OPENSSL_ENABLED, opensslAnalyzerEnabled);
+<a class="jxr_linenumber" name="L1555" href="#L1555">1555</a>         getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_CMAKE_ENABLED, cmakeAnalyzerEnabled);
+<a class="jxr_linenumber" name="L1556" href="#L1556">1556</a> 
+<a class="jxr_linenumber" name="L1557" href="#L1557">1557</a>         getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_ARTIFACTORY_ENABLED, artifactoryAnalyzerEnabled);
+<a class="jxr_linenumber" name="L1558" href="#L1558">1558</a>         getSettings().setStringIfNotEmpty(Settings.KEYS.ANALYZER_ARTIFACTORY_URL, artifactoryAnalyzerUrl);
+<a class="jxr_linenumber" name="L1559" href="#L1559">1559</a>         getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_ARTIFACTORY_USES_PROXY, artifactoryAnalyzerUseProxy);
+<a class="jxr_linenumber" name="L1560" href="#L1560">1560</a>         getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_ARTIFACTORY_PARALLEL_ANALYSIS, artifactoryAnalyzerParallelAnalysis);
+<a class="jxr_linenumber" name="L1561" href="#L1561">1561</a>         getSettings().setStringIfNotEmpty(Settings.KEYS.ANALYZER_ARTIFACTORY_API_USERNAME, artifactoryAnalyzerUsername);
+<a class="jxr_linenumber" name="L1562" href="#L1562">1562</a>         getSettings().setStringIfNotEmpty(Settings.KEYS.ANALYZER_ARTIFACTORY_API_TOKEN, artifactoryAnalyzerApiToken);
+<a class="jxr_linenumber" name="L1563" href="#L1563">1563</a>         getSettings().setStringIfNotEmpty(Settings.KEYS.ANALYZER_ARTIFACTORY_BEARER_TOKEN, artifactoryAnalyzerBearerToken);
+<a class="jxr_linenumber" name="L1564" href="#L1564">1564</a> 
+<a class="jxr_linenumber" name="L1565" href="#L1565">1565</a>         getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_SWIFT_PACKAGE_MANAGER_ENABLED, swiftPackageManagerAnalyzerEnabled);
+<a class="jxr_linenumber" name="L1566" href="#L1566">1566</a>         getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_SWIFT_PACKAGE_RESOLVED_ENABLED, swiftPackageResolvedAnalyzerEnabled);
+<a class="jxr_linenumber" name="L1567" href="#L1567">1567</a>         getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_COCOAPODS_ENABLED, cocoapodsAnalyzerEnabled);
+<a class="jxr_linenumber" name="L1568" href="#L1568">1568</a>         getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_CARTHAGE_ENABLED, carthageAnalyzerEnabled);
+<a class="jxr_linenumber" name="L1569" href="#L1569">1569</a>         getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_BUNDLE_AUDIT_ENABLED, bundleAuditAnalyzerEnabled);
+<a class="jxr_linenumber" name="L1570" href="#L1570">1570</a>         getSettings().setStringIfNotNull(Settings.KEYS.ANALYZER_BUNDLE_AUDIT_PATH, bundleAuditPath);
+<a class="jxr_linenumber" name="L1571" href="#L1571">1571</a>         getSettings().setStringIfNotNull(Settings.KEYS.ANALYZER_BUNDLE_AUDIT_WORKING_DIRECTORY, bundleAuditWorkingDirectory);
+<a class="jxr_linenumber" name="L1572" href="#L1572">1572</a>         getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_AUTOCONF_ENABLED, autoconfAnalyzerEnabled);
+<a class="jxr_linenumber" name="L1573" href="#L1573">1573</a>         getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_MAVEN_INSTALL_ENABLED, mavenInstallAnalyzerEnabled);
+<a class="jxr_linenumber" name="L1574" href="#L1574">1574</a>         getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_PIP_ENABLED, pipAnalyzerEnabled);
+<a class="jxr_linenumber" name="L1575" href="#L1575">1575</a>         getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_PIPFILE_ENABLED, pipfileAnalyzerEnabled);
+<a class="jxr_linenumber" name="L1576" href="#L1576">1576</a>         getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_POETRY_ENABLED, poetryAnalyzerEnabled);
+<a class="jxr_linenumber" name="L1577" href="#L1577">1577</a>         getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_COMPOSER_LOCK_ENABLED, composerAnalyzerEnabled);
+<a class="jxr_linenumber" name="L1578" href="#L1578">1578</a>         getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_COMPOSER_LOCK_SKIP_DEV, composerAnalyzerSkipDev);
+<a class="jxr_linenumber" name="L1579" href="#L1579">1579</a>         getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_CPANFILE_ENABLED, cpanfileAnalyzerEnabled);
+<a class="jxr_linenumber" name="L1580" href="#L1580">1580</a>         getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_NODE_PACKAGE_ENABLED, nodeAnalyzerEnabled);
+<a class="jxr_linenumber" name="L1581" href="#L1581">1581</a>         getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_NODE_PACKAGE_SKIPDEV, nodePackageSkipDevDependencies);
+<a class="jxr_linenumber" name="L1582" href="#L1582">1582</a>         getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_NODE_AUDIT_ENABLED, nodeAuditAnalyzerEnabled);
+<a class="jxr_linenumber" name="L1583" href="#L1583">1583</a>         getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_YARN_AUDIT_ENABLED, yarnAuditAnalyzerEnabled);
+<a class="jxr_linenumber" name="L1584" href="#L1584">1584</a>         getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_PNPM_AUDIT_ENABLED, pnpmAuditAnalyzerEnabled);
+<a class="jxr_linenumber" name="L1585" href="#L1585">1585</a>         getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_NODE_AUDIT_USE_CACHE, nodeAuditAnalyzerUseCache);
+<a class="jxr_linenumber" name="L1586" href="#L1586">1586</a>         getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_NODE_AUDIT_SKIPDEV, nodeAuditSkipDevDependencies);
+<a class="jxr_linenumber" name="L1587" href="#L1587">1587</a>         getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_RETIREJS_FILTER_NON_VULNERABLE, retireJsFilterNonVulnerable);
+<a class="jxr_linenumber" name="L1588" href="#L1588">1588</a>         getSettings().setArrayIfNotEmpty(Settings.KEYS.ANALYZER_RETIREJS_FILTERS, retireJsFilters);
+<a class="jxr_linenumber" name="L1589" href="#L1589">1589</a>         getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_GOLANG_DEP_ENABLED, golangDepEnabled);
+<a class="jxr_linenumber" name="L1590" href="#L1590">1590</a>         getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_GOLANG_MOD_ENABLED, golangModEnabled);
+<a class="jxr_linenumber" name="L1591" href="#L1591">1591</a>         getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_DART_ENABLED, dartAnalyzerEnabled);
+<a class="jxr_linenumber" name="L1592" href="#L1592">1592</a>         getSettings().setStringIfNotNull(Settings.KEYS.ANALYZER_GOLANG_PATH, pathToGo);
+<a class="jxr_linenumber" name="L1593" href="#L1593">1593</a>         getSettings().setStringIfNotNull(Settings.KEYS.ANALYZER_YARN_PATH, pathToYarn);
+<a class="jxr_linenumber" name="L1594" href="#L1594">1594</a>         getSettings().setStringIfNotNull(Settings.KEYS.ANALYZER_PNPM_PATH, pathToPnpm);
+<a class="jxr_linenumber" name="L1595" href="#L1595">1595</a>         getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_MIX_AUDIT_ENABLED, mixAuditAnalyzerEnabled);
+<a class="jxr_linenumber" name="L1596" href="#L1596">1596</a>         getSettings().setStringIfNotNull(Settings.KEYS.ANALYZER_MIX_AUDIT_PATH, mixAuditPath);
+<a class="jxr_linenumber" name="L1597" href="#L1597">1597</a>         getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_NUSPEC_ENABLED, nuspecAnalyzerEnabled);
+<a class="jxr_linenumber" name="L1598" href="#L1598">1598</a>         getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_NUGETCONF_ENABLED, nugetconfAnalyzerEnabled);
+<a class="jxr_linenumber" name="L1599" href="#L1599">1599</a>         getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_LIBMAN_ENABLED, libmanAnalyzerEnabled);
+<a class="jxr_linenumber" name="L1600" href="#L1600">1600</a>         getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_CENTRAL_ENABLED, centralAnalyzerEnabled);
+<a class="jxr_linenumber" name="L1601" href="#L1601">1601</a>         getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_CENTRAL_USE_CACHE, centralAnalyzerUseCache);
+<a class="jxr_linenumber" name="L1602" href="#L1602">1602</a>         getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_NEXUS_ENABLED, nexusAnalyzerEnabled);
+<a class="jxr_linenumber" name="L1603" href="#L1603">1603</a>         getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_ARCHIVE_ENABLED, archiveAnalyzerEnabled);
+<a class="jxr_linenumber" name="L1604" href="#L1604">1604</a>         getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_ASSEMBLY_ENABLED, assemblyAnalyzerEnabled);
+<a class="jxr_linenumber" name="L1605" href="#L1605">1605</a>         getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_MSBUILD_PROJECT_ENABLED, msbuildAnalyzerEnabled);
+<a class="jxr_linenumber" name="L1606" href="#L1606">1606</a>         getSettings().setStringIfNotEmpty(Settings.KEYS.ANALYZER_NEXUS_URL, nexusUrl);
+<a class="jxr_linenumber" name="L1607" href="#L1607">1607</a>         getSettings().setStringIfNotEmpty(Settings.KEYS.ANALYZER_NEXUS_USER, nexusUser);
+<a class="jxr_linenumber" name="L1608" href="#L1608">1608</a>         getSettings().setStringIfNotEmpty(Settings.KEYS.ANALYZER_NEXUS_PASSWORD, nexusPassword);
+<a class="jxr_linenumber" name="L1609" href="#L1609">1609</a>         getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_NEXUS_USES_PROXY, nexusUsesProxy);
+<a class="jxr_linenumber" name="L1610" href="#L1610">1610</a>         getSettings().setStringIfNotEmpty(Settings.KEYS.ADDITIONAL_ZIP_EXTENSIONS, zipExtensions);
+<a class="jxr_linenumber" name="L1611" href="#L1611">1611</a>         getSettings().setStringIfNotEmpty(Settings.KEYS.ANALYZER_ASSEMBLY_DOTNET_PATH, pathToCore);
+<a class="jxr_linenumber" name="L1612" href="#L1612">1612</a>         getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_OSSINDEX_ENABLED, ossindexAnalyzerEnabled);
+<a class="jxr_linenumber" name="L1613" href="#L1613">1613</a>         getSettings().setStringIfNotEmpty(Settings.KEYS.ANALYZER_OSSINDEX_URL, ossindexAnalyzerUrl);
+<a class="jxr_linenumber" name="L1614" href="#L1614">1614</a>         getSettings().setStringIfNotEmpty(Settings.KEYS.ANALYZER_OSSINDEX_USER, ossindexAnalyzerUsername);
+<a class="jxr_linenumber" name="L1615" href="#L1615">1615</a>         getSettings().setStringIfNotEmpty(Settings.KEYS.ANALYZER_OSSINDEX_PASSWORD, ossindexAnalyzerPassword);
+<a class="jxr_linenumber" name="L1616" href="#L1616">1616</a>         getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_OSSINDEX_USE_CACHE, ossindexAnalyzerUseCache);
+<a class="jxr_linenumber" name="L1617" href="#L1617">1617</a>         getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_OSSINDEX_WARN_ONLY_ON_REMOTE_ERRORS, ossIndexAnalyzerWarnOnlyOnRemoteErrors);
+<a class="jxr_linenumber" name="L1618" href="#L1618">1618</a>         getSettings().setFloat(Settings.KEYS.JUNIT_FAIL_ON_CVSS, junitFailOnCVSS);
+<a class="jxr_linenumber" name="L1619" href="#L1619">1619</a>         getSettings().setBooleanIfNotNull(Settings.KEYS.FAIL_ON_UNUSED_SUPPRESSION_RULE, failBuildOnUnusedSuppressionRule);
+<a class="jxr_linenumber" name="L1620" href="#L1620">1620</a>     }
+<a class="jxr_linenumber" name="L1621" href="#L1621">1621</a> 
+<a class="jxr_linenumber" name="L1622" href="#L1622">1622</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L1623" href="#L1623">1623</a> <em class="jxr_javadoccomment">     * Checks to see if a vulnerability has been identified with a CVSS score</em>
+<a class="jxr_linenumber" name="L1624" href="#L1624">1624</a> <em class="jxr_javadoccomment">     * that is above the threshold set in the configuration.</em>
+<a class="jxr_linenumber" name="L1625" href="#L1625">1625</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L1626" href="#L1626">1626</a> <em class="jxr_javadoccomment">     * @param dependencies the list of dependency objects</em>
+<a class="jxr_linenumber" name="L1627" href="#L1627">1627</a> <em class="jxr_javadoccomment">     * @throws BuildException thrown if a CVSS score is found that is higher</em>
+<a class="jxr_linenumber" name="L1628" href="#L1628">1628</a> <em class="jxr_javadoccomment">     * than the threshold set</em>
+<a class="jxr_linenumber" name="L1629" href="#L1629">1629</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L1630" href="#L1630">1630</a>     <em class="jxr_comment">//see note on `dealWithReferences()` for information on this suppression</em>
+<a class="jxr_linenumber" name="L1631" href="#L1631">1631</a>     @SuppressWarnings(<span class="jxr_string">"squid:RedundantThrowsDeclarationCheck"</span>)
+<a class="jxr_linenumber" name="L1632" href="#L1632">1632</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> checkForFailure(Dependency[] dependencies) <strong class="jxr_keyword">throws</strong> BuildException {
+<a class="jxr_linenumber" name="L1633" href="#L1633">1633</a>         <strong class="jxr_keyword">final</strong> StringBuilder ids = <strong class="jxr_keyword">new</strong> StringBuilder();
+<a class="jxr_linenumber" name="L1634" href="#L1634">1634</a>         <strong class="jxr_keyword">for</strong> (Dependency d : dependencies) {
+<a class="jxr_linenumber" name="L1635" href="#L1635">1635</a>             <strong class="jxr_keyword">boolean</strong> addName = <strong class="jxr_keyword">true</strong>;
+<a class="jxr_linenumber" name="L1636" href="#L1636">1636</a>             <strong class="jxr_keyword">for</strong> (Vulnerability v : d.getVulnerabilities()) {
+<a class="jxr_linenumber" name="L1637" href="#L1637">1637</a>                 <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">double</strong> cvssV2 = v.getCvssV2() != <strong class="jxr_keyword">null</strong> &amp;&amp; v.getCvssV2().getCvssData() != <strong class="jxr_keyword">null</strong>
+<a class="jxr_linenumber" name="L1638" href="#L1638">1638</a>                         &amp;&amp; v.getCvssV2().getCvssData().getBaseScore() != <strong class="jxr_keyword">null</strong> ? v.getCvssV2().getCvssData().getBaseScore() : -1;
+<a class="jxr_linenumber" name="L1639" href="#L1639">1639</a>                 <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">double</strong> cvssV3 = v.getCvssV3() != <strong class="jxr_keyword">null</strong> &amp;&amp; v.getCvssV3().getCvssData() != <strong class="jxr_keyword">null</strong>
+<a class="jxr_linenumber" name="L1640" href="#L1640">1640</a>                         &amp;&amp; v.getCvssV3().getCvssData().getBaseScore() != <strong class="jxr_keyword">null</strong> ? v.getCvssV3().getCvssData().getBaseScore() : -1;
+<a class="jxr_linenumber" name="L1641" href="#L1641">1641</a>                 <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">double</strong> cvssV4 = v.getCvssV4() != <strong class="jxr_keyword">null</strong> &amp;&amp; v.getCvssV4().getCvssData() != <strong class="jxr_keyword">null</strong>
+<a class="jxr_linenumber" name="L1642" href="#L1642">1642</a>                         &amp;&amp; v.getCvssV4().getCvssData().getBaseScore() != <strong class="jxr_keyword">null</strong> ? v.getCvssV4().getCvssData().getBaseScore() : -1;
+<a class="jxr_linenumber" name="L1643" href="#L1643">1643</a>                 <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">boolean</strong> useUnscored = cvssV2 == -1 &amp;&amp; cvssV3 == -1 &amp;&amp; cvssV4 == -1;
+<a class="jxr_linenumber" name="L1644" href="#L1644">1644</a>                 <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">double</strong> unscoredCvss =
+<a class="jxr_linenumber" name="L1645" href="#L1645">1645</a>                         useUnscored &amp;&amp; v.getUnscoredSeverity() != <strong class="jxr_keyword">null</strong> ? SeverityUtil.estimateCvssV2(v.getUnscoredSeverity()) : -1;
+<a class="jxr_linenumber" name="L1646" href="#L1646">1646</a> 
+<a class="jxr_linenumber" name="L1647" href="#L1647">1647</a>                 <strong class="jxr_keyword">if</strong> (cvssV2 &gt;= failBuildOnCVSS
+<a class="jxr_linenumber" name="L1648" href="#L1648">1648</a>                         || cvssV3 &gt;= failBuildOnCVSS
+<a class="jxr_linenumber" name="L1649" href="#L1649">1649</a>                         || cvssV4 &gt;= failBuildOnCVSS
+<a class="jxr_linenumber" name="L1650" href="#L1650">1650</a>                         || unscoredCvss &gt;= failBuildOnCVSS
+<a class="jxr_linenumber" name="L1651" href="#L1651">1651</a>                         <em class="jxr_comment">//safety net to fail on any if for some reason the above misses on 0</em>
+<a class="jxr_linenumber" name="L1652" href="#L1652">1652</a>                         || failBuildOnCVSS &lt;= 0.0f
+<a class="jxr_linenumber" name="L1653" href="#L1653">1653</a>                 ) {
+<a class="jxr_linenumber" name="L1654" href="#L1654">1654</a>                     <strong class="jxr_keyword">if</strong> (addName) {
+<a class="jxr_linenumber" name="L1655" href="#L1655">1655</a>                         addName = false;
+<a class="jxr_linenumber" name="L1656" href="#L1656">1656</a>                         ids.append(NEW_LINE).append(d.getFileName()).append(<span class="jxr_string">" ("</span>)
+<a class="jxr_linenumber" name="L1657" href="#L1657">1657</a>                            .append(Stream.concat(d.getSoftwareIdentifiers().stream(), d.getVulnerableSoftwareIdentifiers().stream())
+<a class="jxr_linenumber" name="L1658" href="#L1658">1658</a>                                          .map(Identifier::getValue)
+<a class="jxr_linenumber" name="L1659" href="#L1659">1659</a>                                          .collect(Collectors.joining(<span class="jxr_string">", "</span>)))
+<a class="jxr_linenumber" name="L1660" href="#L1660">1660</a>                            .append(<span class="jxr_string">"): "</span>)
+<a class="jxr_linenumber" name="L1661" href="#L1661">1661</a>                            .append(v.getName());
+<a class="jxr_linenumber" name="L1662" href="#L1662">1662</a>                     } <strong class="jxr_keyword">else</strong> {
+<a class="jxr_linenumber" name="L1663" href="#L1663">1663</a>                         ids.append(<span class="jxr_string">", "</span>).append(v.getName());
+<a class="jxr_linenumber" name="L1664" href="#L1664">1664</a>                     }
+<a class="jxr_linenumber" name="L1665" href="#L1665">1665</a>                 }
+<a class="jxr_linenumber" name="L1666" href="#L1666">1666</a>             }
+<a class="jxr_linenumber" name="L1667" href="#L1667">1667</a>         }
+<a class="jxr_linenumber" name="L1668" href="#L1668">1668</a>         <strong class="jxr_keyword">if</strong> (ids.length() &gt; 0) {
+<a class="jxr_linenumber" name="L1669" href="#L1669">1669</a>             <strong class="jxr_keyword">final</strong> String msg;
+<a class="jxr_linenumber" name="L1670" href="#L1670">1670</a>             <strong class="jxr_keyword">if</strong> (showSummary) {
+<a class="jxr_linenumber" name="L1671" href="#L1671">1671</a>                 msg = String.format(<span class="jxr_string">"%n%nDependency-Check Failure:%n"</span>
+<a class="jxr_linenumber" name="L1672" href="#L1672">1672</a>                         + <span class="jxr_string">"One or more dependencies were identified with vulnerabilities that have a CVSS score greater than or equal to '%.1f': %s%n"</span>
+<a class="jxr_linenumber" name="L1673" href="#L1673">1673</a>                         + <span class="jxr_string">"See the dependency-check report for more details.%n%n"</span>, failBuildOnCVSS, ids);
+<a class="jxr_linenumber" name="L1674" href="#L1674">1674</a>             } <strong class="jxr_keyword">else</strong> {
+<a class="jxr_linenumber" name="L1675" href="#L1675">1675</a>                 msg = String.format(<span class="jxr_string">"%n%nDependency-Check Failure:%n"</span>
+<a class="jxr_linenumber" name="L1676" href="#L1676">1676</a>                         + <span class="jxr_string">"One or more dependencies were identified with vulnerabilities.%n%n"</span>
+<a class="jxr_linenumber" name="L1677" href="#L1677">1677</a>                         + <span class="jxr_string">"See the dependency-check report for more details.%n%n"</span>);
+<a class="jxr_linenumber" name="L1678" href="#L1678">1678</a>             }
+<a class="jxr_linenumber" name="L1679" href="#L1679">1679</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> BuildException(msg);
+<a class="jxr_linenumber" name="L1680" href="#L1680">1680</a>         }
+<a class="jxr_linenumber" name="L1681" href="#L1681">1681</a>     }
+<a class="jxr_linenumber" name="L1682" href="#L1682">1682</a> 
+<a class="jxr_linenumber" name="L1683" href="#L1683">1683</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L1684" href="#L1684">1684</a> <em class="jxr_javadoccomment">     * An enumeration of supported report formats: "ALL", "HTML", "XML", "CSV",</em>
+<a class="jxr_linenumber" name="L1685" href="#L1685">1685</a> <em class="jxr_javadoccomment">     * "JSON", "JUNIT", "SARIF", 'JENkINS', etc..</em>
+<a class="jxr_linenumber" name="L1686" href="#L1686">1686</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L1687" href="#L1687">1687</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">class</strong> <a href="../../../../org/owasp/dependencycheck/taskdefs/Check.html">ReportFormats</a> <strong class="jxr_keyword">extends</strong> EnumeratedAttribute {
+<a class="jxr_linenumber" name="L1688" href="#L1688">1688</a> 
+<a class="jxr_linenumber" name="L1689" href="#L1689">1689</a>         <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L1690" href="#L1690">1690</a> <em class="jxr_javadoccomment">         * Returns the list of values for the report format.</em>
+<a class="jxr_linenumber" name="L1691" href="#L1691">1691</a> <em class="jxr_javadoccomment">         *</em>
+<a class="jxr_linenumber" name="L1692" href="#L1692">1692</a> <em class="jxr_javadoccomment">         * @return the list of values for the report format</em>
+<a class="jxr_linenumber" name="L1693" href="#L1693">1693</a> <em class="jxr_javadoccomment">         */</em>
+<a class="jxr_linenumber" name="L1694" href="#L1694">1694</a>         @Override
+<a class="jxr_linenumber" name="L1695" href="#L1695">1695</a>         <strong class="jxr_keyword">public</strong> String[] getValues() {
+<a class="jxr_linenumber" name="L1696" href="#L1696">1696</a>             <strong class="jxr_keyword">int</strong> i = 0;
+<a class="jxr_linenumber" name="L1697" href="#L1697">1697</a>             <strong class="jxr_keyword">final</strong> Format[] formats = Format.values();
+<a class="jxr_linenumber" name="L1698" href="#L1698">1698</a>             <strong class="jxr_keyword">final</strong> String[] values = <strong class="jxr_keyword">new</strong> String[formats.length];
+<a class="jxr_linenumber" name="L1699" href="#L1699">1699</a>             <strong class="jxr_keyword">for</strong> (Format format : formats) {
+<a class="jxr_linenumber" name="L1700" href="#L1700">1700</a>                 values[i++] = format.name();
+<a class="jxr_linenumber" name="L1701" href="#L1701">1701</a>             }
+<a class="jxr_linenumber" name="L1702" href="#L1702">1702</a>             <strong class="jxr_keyword">return</strong> values;
+<a class="jxr_linenumber" name="L1703" href="#L1703">1703</a>         }
+<a class="jxr_linenumber" name="L1704" href="#L1704">1704</a>     }
+<a class="jxr_linenumber" name="L1705" href="#L1705">1705</a> 
+<a class="jxr_linenumber" name="L1706" href="#L1706">1706</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L1707" href="#L1707">1707</a> <em class="jxr_javadoccomment">     * A class for Ant to represent the</em>
+<a class="jxr_linenumber" name="L1708" href="#L1708">1708</a> <em class="jxr_javadoccomment">     * {@code &lt;reportFormat format="&lt;format&gt;"/&gt;} nested element to define</em>
+<a class="jxr_linenumber" name="L1709" href="#L1709">1709</a> <em class="jxr_javadoccomment">     * multiple report formats for the ant-task.</em>
+<a class="jxr_linenumber" name="L1710" href="#L1710">1710</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L1711" href="#L1711">1711</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">class</strong> <a href="../../../../org/owasp/dependencycheck/taskdefs/Check.html">ReportFormat</a> {
+<a class="jxr_linenumber" name="L1712" href="#L1712">1712</a> 
+<a class="jxr_linenumber" name="L1713" href="#L1713">1713</a>         <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L1714" href="#L1714">1714</a> <em class="jxr_javadoccomment">         * The format of this ReportFormat.</em>
+<a class="jxr_linenumber" name="L1715" href="#L1715">1715</a> <em class="jxr_javadoccomment">         */</em>
+<a class="jxr_linenumber" name="L1716" href="#L1716">1716</a>         <strong class="jxr_keyword">private</strong> <a href="../../../../org/owasp/dependencycheck/taskdefs/Check.html">ReportFormats</a> format;
+<a class="jxr_linenumber" name="L1717" href="#L1717">1717</a> 
+<a class="jxr_linenumber" name="L1718" href="#L1718">1718</a>         <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L1719" href="#L1719">1719</a> <em class="jxr_javadoccomment">         * Gets the format as a String.</em>
+<a class="jxr_linenumber" name="L1720" href="#L1720">1720</a> <em class="jxr_javadoccomment">         *</em>
+<a class="jxr_linenumber" name="L1721" href="#L1721">1721</a> <em class="jxr_javadoccomment">         * @return the String representing a report format</em>
+<a class="jxr_linenumber" name="L1722" href="#L1722">1722</a> <em class="jxr_javadoccomment">         */</em>
+<a class="jxr_linenumber" name="L1723" href="#L1723">1723</a>         <strong class="jxr_keyword">public</strong> String getFormat() {
+<a class="jxr_linenumber" name="L1724" href="#L1724">1724</a>             <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">this</strong>.format.getValue();
+<a class="jxr_linenumber" name="L1725" href="#L1725">1725</a>         }
+<a class="jxr_linenumber" name="L1726" href="#L1726">1726</a> 
+<a class="jxr_linenumber" name="L1727" href="#L1727">1727</a>         <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L1728" href="#L1728">1728</a> <em class="jxr_javadoccomment">         * Sets the format.</em>
+<a class="jxr_linenumber" name="L1729" href="#L1729">1729</a> <em class="jxr_javadoccomment">         *</em>
+<a class="jxr_linenumber" name="L1730" href="#L1730">1730</a> <em class="jxr_javadoccomment">         * @param format the String value for one of the {@link ReportFormats}</em>
+<a class="jxr_linenumber" name="L1731" href="#L1731">1731</a> <em class="jxr_javadoccomment">         * @throws BuildException When the offered String is not one of the</em>
+<a class="jxr_linenumber" name="L1732" href="#L1732">1732</a> <em class="jxr_javadoccomment">         * valid values of the {@link ReportFormats} EnumeratedAttribute</em>
+<a class="jxr_linenumber" name="L1733" href="#L1733">1733</a> <em class="jxr_javadoccomment">         */</em>
+<a class="jxr_linenumber" name="L1734" href="#L1734">1734</a>         <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> setFormat(<strong class="jxr_keyword">final</strong> String format) {
+<a class="jxr_linenumber" name="L1735" href="#L1735">1735</a>             <strong class="jxr_keyword">this</strong>.format = (ReportFormats) EnumeratedAttribute.getInstance(ReportFormats.<strong class="jxr_keyword">class</strong>, format);
+<a class="jxr_linenumber" name="L1736" href="#L1736">1736</a>         }
+<a class="jxr_linenumber" name="L1737" href="#L1737">1737</a>     }
+<a class="jxr_linenumber" name="L1738" href="#L1738">1738</a> }
+<a class="jxr_linenumber" name="L1739" href="#L1739">1739</a> <em class="jxr_comment">//CSON: MethodCount</em>
 </pre>
 <hr/>
 <div id="footer">Copyright &#169; 2012&#x2013;2026 <a href="https://www.owasp.org">OWASP</a>. All rights reserved.</div>

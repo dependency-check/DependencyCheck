@@ -127,7 +127,7 @@ public class ProcessReader implements AutoCloseable {
      *
      * @param p a reference to the processor to start.
      */
-    private void startProcessor(Processor p) {
+    private void startProcessor(Processor&lt;InputStream&gt; p) {
 <span class="nc bnc" id="L131" title="All 2 branches missed.">        if (p != null) {</span>
 <span class="nc" id="L132">            final Thread t = new Thread(p);</span>
 <span class="nc" id="L133">            threads.add(t);</span>
@@ -178,7 +178,7 @@ public class ProcessReader implements AutoCloseable {
         public void run() {
             try {
 <span class="nc" id="L180">                final InputStream inputStream = getInput();</span>
-<span class="nc" id="L181">                text = IOUtils.toString(inputStream, StandardCharsets.UTF_8.name());</span>
+<span class="nc" id="L181">                text = IOUtils.toString(inputStream, StandardCharsets.UTF_8);</span>
 
 <span class="nc" id="L183">            } catch (IOException ex) {</span>
 <span class="nc" id="L184">                exception = ex;</span>

@@ -117,285 +117,278 @@
 <a class="jxr_linenumber" name="L109" href="#L109">109</a>             cpeSuppression.initialize(getSettings());
 <a class="jxr_linenumber" name="L110" href="#L110">110</a>             cpeSuppression.prepare(e);
 <a class="jxr_linenumber" name="L111" href="#L111">111</a> 
-<a class="jxr_linenumber" name="L112" href="#L112">112</a>             <em class="jxr_comment">//callDetermineCPE_full("hazelcast-2.5.jar", "cpe:2.3:a:hazelcast:hazelcast:2.5:*:*:*:*:*:*:*", cpeAnalyzer, fnAnalyzer, jarAnalyzer, hAnalyzer, fp, cpeSuppression);</em>
-<a class="jxr_linenumber" name="L113" href="#L113">113</a>             callDetermineCPE_full(<span class="jxr_string">"spring-context-support-2.5.5.jar"</span>, <span class="jxr_string">"cpe:2.3:a:springsource:spring_framework:2.5.5:*:*:*:*:*:*:*"</span>, cpeAnalyzer, fnAnalyzer, jarAnalyzer, hAnalyzer, fp, cpeSuppression);
-<a class="jxr_linenumber" name="L114" href="#L114">114</a>             callDetermineCPE_full(<span class="jxr_string">"spring-core-3.0.0.RELEASE.jar"</span>, <span class="jxr_string">"cpe:2.3:a:pivotal_software:spring_framework:3.0.0:release:*:*:*:*:*:*"</span>, cpeAnalyzer, fnAnalyzer, jarAnalyzer, hAnalyzer, fp, cpeSuppression);
-<a class="jxr_linenumber" name="L115" href="#L115">115</a>             callDetermineCPE_full(<span class="jxr_string">"spring-core-3.0.0.RELEASE.jar"</span>, <span class="jxr_string">"cpe:2.3:a:springsource:spring_framework:3.0.0:release:*:*:*:*:*:*"</span>, cpeAnalyzer, fnAnalyzer, jarAnalyzer, hAnalyzer, fp, cpeSuppression);
-<a class="jxr_linenumber" name="L116" href="#L116">116</a>             callDetermineCPE_full(<span class="jxr_string">"jaxb-xercesImpl-1.5.jar"</span>, <strong class="jxr_keyword">null</strong>, cpeAnalyzer, fnAnalyzer, jarAnalyzer, hAnalyzer, fp, cpeSuppression);
-<a class="jxr_linenumber" name="L117" href="#L117">117</a>             callDetermineCPE_full(<span class="jxr_string">"ehcache-core-2.2.0.jar"</span>, <strong class="jxr_keyword">null</strong>, cpeAnalyzer, fnAnalyzer, jarAnalyzer, hAnalyzer, fp, cpeSuppression);
-<a class="jxr_linenumber" name="L118" href="#L118">118</a>             callDetermineCPE_full(<span class="jxr_string">"xstream-1.4.8.jar"</span>, <span class="jxr_string">"cpe:2.3:a:xstream_project:xstream:1.4.8:*:*:*:*:*:*:*"</span>, cpeAnalyzer, fnAnalyzer, jarAnalyzer, hAnalyzer, fp, cpeSuppression);
-<a class="jxr_linenumber" name="L119" href="#L119">119</a>         } <strong class="jxr_keyword">finally</strong> {
-<a class="jxr_linenumber" name="L120" href="#L120">120</a>             cpeAnalyzer.close();
-<a class="jxr_linenumber" name="L121" href="#L121">121</a>         }
-<a class="jxr_linenumber" name="L122" href="#L122">122</a>     }
-<a class="jxr_linenumber" name="L123" href="#L123">123</a> 
-<a class="jxr_linenumber" name="L124" href="#L124">124</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L125" href="#L125">125</a> <em class="jxr_javadoccomment">     * Test of determineCPE method, of class CPEAnalyzer.</em>
-<a class="jxr_linenumber" name="L126" href="#L126">126</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L127" href="#L127">127</a> <em class="jxr_javadoccomment">     * @param depName dependency name</em>
-<a class="jxr_linenumber" name="L128" href="#L128">128</a> <em class="jxr_javadoccomment">     * @param expResult expected results</em>
-<a class="jxr_linenumber" name="L129" href="#L129">129</a> <em class="jxr_javadoccomment">     * @param cpeAnalyzer the CPE analyzer</em>
-<a class="jxr_linenumber" name="L130" href="#L130">130</a> <em class="jxr_javadoccomment">     * @param fnAnalyzer the file name analyzer</em>
-<a class="jxr_linenumber" name="L131" href="#L131">131</a> <em class="jxr_javadoccomment">     * @param jarAnalyzer the jar analyzer</em>
-<a class="jxr_linenumber" name="L132" href="#L132">132</a> <em class="jxr_javadoccomment">     * @param hAnalyzer the hint analyzer</em>
-<a class="jxr_linenumber" name="L133" href="#L133">133</a> <em class="jxr_javadoccomment">     * @param fp the false positive analyzer</em>
-<a class="jxr_linenumber" name="L134" href="#L134">134</a> <em class="jxr_javadoccomment">     * @param cpeSuppression the CPE suppression analyzer</em>
-<a class="jxr_linenumber" name="L135" href="#L135">135</a> <em class="jxr_javadoccomment">     * @throws Exception is thrown when an exception occurs</em>
-<a class="jxr_linenumber" name="L136" href="#L136">136</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L137" href="#L137">137</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> callDetermineCPE_full(String depName, String expResult, CPEAnalyzer cpeAnalyzer, FileNameAnalyzer fnAnalyzer,
-<a class="jxr_linenumber" name="L138" href="#L138">138</a>             JarAnalyzer jarAnalyzer, HintAnalyzer hAnalyzer, FalsePositiveAnalyzer fp, CpeSuppressionAnalyzer cpeSuppression) <strong class="jxr_keyword">throws</strong> Exception {
-<a class="jxr_linenumber" name="L139" href="#L139">139</a> 
-<a class="jxr_linenumber" name="L140" href="#L140">140</a>         <em class="jxr_comment">//File file = new File(this.getClass().getClassLoader().getResource(depName).getPath());</em>
-<a class="jxr_linenumber" name="L141" href="#L141">141</a>         File file = BaseTest.getResourceAsFile(<strong class="jxr_keyword">this</strong>, depName);
+<a class="jxr_linenumber" name="L112" href="#L112">112</a>             callDetermineCPE_full(<span class="jxr_string">"maven-lib/spring-context-support-2.5.5.jar"</span>, <span class="jxr_string">"cpe:2.3:a:springsource:spring_framework:2.5.5:*:*:*:*:*:*:*"</span>, cpeAnalyzer, fnAnalyzer, jarAnalyzer, hAnalyzer, fp, cpeSuppression);
+<a class="jxr_linenumber" name="L113" href="#L113">113</a>             callDetermineCPE_full(<span class="jxr_string">"spring-core-3.0.0.RELEASE.jar"</span>, <span class="jxr_string">"cpe:2.3:a:pivotal_software:spring_framework:3.0.0:release:*:*:*:*:*:*"</span>, cpeAnalyzer, fnAnalyzer, jarAnalyzer, hAnalyzer, fp, cpeSuppression);
+<a class="jxr_linenumber" name="L114" href="#L114">114</a>             callDetermineCPE_full(<span class="jxr_string">"spring-core-3.0.0.RELEASE.jar"</span>, <span class="jxr_string">"cpe:2.3:a:springsource:spring_framework:3.0.0:release:*:*:*:*:*:*"</span>, cpeAnalyzer, fnAnalyzer, jarAnalyzer, hAnalyzer, fp, cpeSuppression);
+<a class="jxr_linenumber" name="L115" href="#L115">115</a>             callDetermineCPE_full(<span class="jxr_string">"jaxb-xercesImpl-1.5.jar"</span>, <strong class="jxr_keyword">null</strong>, cpeAnalyzer, fnAnalyzer, jarAnalyzer, hAnalyzer, fp, cpeSuppression);
+<a class="jxr_linenumber" name="L116" href="#L116">116</a>             callDetermineCPE_full(<span class="jxr_string">"maven-lib/ehcache-core-2.2.0.jar"</span>, <strong class="jxr_keyword">null</strong>, cpeAnalyzer, fnAnalyzer, jarAnalyzer, hAnalyzer, fp, cpeSuppression);
+<a class="jxr_linenumber" name="L117" href="#L117">117</a>             callDetermineCPE_full(<span class="jxr_string">"maven-lib/xstream-1.4.8.jar"</span>, <span class="jxr_string">"cpe:2.3:a:xstream_project:xstream:1.4.8:*:*:*:*:*:*:*"</span>, cpeAnalyzer, fnAnalyzer, jarAnalyzer, hAnalyzer, fp, cpeSuppression);
+<a class="jxr_linenumber" name="L118" href="#L118">118</a>         } <strong class="jxr_keyword">finally</strong> {
+<a class="jxr_linenumber" name="L119" href="#L119">119</a>             cpeAnalyzer.close();
+<a class="jxr_linenumber" name="L120" href="#L120">120</a>         }
+<a class="jxr_linenumber" name="L121" href="#L121">121</a>     }
+<a class="jxr_linenumber" name="L122" href="#L122">122</a> 
+<a class="jxr_linenumber" name="L123" href="#L123">123</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L124" href="#L124">124</a> <em class="jxr_javadoccomment">     * Test of determineCPE method, of class CPEAnalyzer.</em>
+<a class="jxr_linenumber" name="L125" href="#L125">125</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L126" href="#L126">126</a> <em class="jxr_javadoccomment">     * @param depName dependency name</em>
+<a class="jxr_linenumber" name="L127" href="#L127">127</a> <em class="jxr_javadoccomment">     * @param expResult expected results</em>
+<a class="jxr_linenumber" name="L128" href="#L128">128</a> <em class="jxr_javadoccomment">     * @param cpeAnalyzer the CPE analyzer</em>
+<a class="jxr_linenumber" name="L129" href="#L129">129</a> <em class="jxr_javadoccomment">     * @param fnAnalyzer the file name analyzer</em>
+<a class="jxr_linenumber" name="L130" href="#L130">130</a> <em class="jxr_javadoccomment">     * @param jarAnalyzer the jar analyzer</em>
+<a class="jxr_linenumber" name="L131" href="#L131">131</a> <em class="jxr_javadoccomment">     * @param hAnalyzer the hint analyzer</em>
+<a class="jxr_linenumber" name="L132" href="#L132">132</a> <em class="jxr_javadoccomment">     * @param fp the false positive analyzer</em>
+<a class="jxr_linenumber" name="L133" href="#L133">133</a> <em class="jxr_javadoccomment">     * @param cpeSuppression the CPE suppression analyzer</em>
+<a class="jxr_linenumber" name="L134" href="#L134">134</a> <em class="jxr_javadoccomment">     * @throws Exception is thrown when an exception occurs</em>
+<a class="jxr_linenumber" name="L135" href="#L135">135</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L136" href="#L136">136</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> callDetermineCPE_full(String depName, String expResult, CPEAnalyzer cpeAnalyzer, FileNameAnalyzer fnAnalyzer,
+<a class="jxr_linenumber" name="L137" href="#L137">137</a>             JarAnalyzer jarAnalyzer, HintAnalyzer hAnalyzer, FalsePositiveAnalyzer fp, CpeSuppressionAnalyzer cpeSuppression) <strong class="jxr_keyword">throws</strong> Exception {
+<a class="jxr_linenumber" name="L138" href="#L138">138</a> 
+<a class="jxr_linenumber" name="L139" href="#L139">139</a>         File file = BaseTest.getResourceAsFile(<strong class="jxr_keyword">this</strong>, depName);
+<a class="jxr_linenumber" name="L140" href="#L140">140</a> 
+<a class="jxr_linenumber" name="L141" href="#L141">141</a>         Dependency dep = <strong class="jxr_keyword">new</strong> Dependency(file);
 <a class="jxr_linenumber" name="L142" href="#L142">142</a> 
-<a class="jxr_linenumber" name="L143" href="#L143">143</a>         Dependency dep = <strong class="jxr_keyword">new</strong> Dependency(file);
-<a class="jxr_linenumber" name="L144" href="#L144">144</a> 
-<a class="jxr_linenumber" name="L145" href="#L145">145</a>         fnAnalyzer.analyze(dep, <strong class="jxr_keyword">null</strong>);
-<a class="jxr_linenumber" name="L146" href="#L146">146</a>         jarAnalyzer.analyze(dep, <strong class="jxr_keyword">null</strong>);
-<a class="jxr_linenumber" name="L147" href="#L147">147</a>         hAnalyzer.analyze(dep, <strong class="jxr_keyword">null</strong>);
-<a class="jxr_linenumber" name="L148" href="#L148">148</a>         cpeAnalyzer.analyze(dep, <strong class="jxr_keyword">null</strong>);
-<a class="jxr_linenumber" name="L149" href="#L149">149</a>         fp.analyze(dep, <strong class="jxr_keyword">null</strong>);
-<a class="jxr_linenumber" name="L150" href="#L150">150</a>         cpeSuppression.analyze(dep, <strong class="jxr_keyword">null</strong>);
-<a class="jxr_linenumber" name="L151" href="#L151">151</a> 
-<a class="jxr_linenumber" name="L152" href="#L152">152</a>         <strong class="jxr_keyword">if</strong> (expResult != <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="L153" href="#L153">153</a>             <strong class="jxr_keyword">boolean</strong> found = false;
-<a class="jxr_linenumber" name="L154" href="#L154">154</a>             <strong class="jxr_keyword">for</strong> (Identifier i : dep.getVulnerableSoftwareIdentifiers()) {
-<a class="jxr_linenumber" name="L155" href="#L155">155</a>                 <strong class="jxr_keyword">if</strong> (expResult.equals(i.getValue())) {
-<a class="jxr_linenumber" name="L156" href="#L156">156</a>                     found = <strong class="jxr_keyword">true</strong>;
-<a class="jxr_linenumber" name="L157" href="#L157">157</a>                     <strong class="jxr_keyword">break</strong>;
-<a class="jxr_linenumber" name="L158" href="#L158">158</a>                 }
-<a class="jxr_linenumber" name="L159" href="#L159">159</a>             }
-<a class="jxr_linenumber" name="L160" href="#L160">160</a>             assertTrue(found, <span class="jxr_string">"Match not found: { dep:'"</span> + dep.getFileName() + <span class="jxr_string">"', exp:'"</span> + expResult + <span class="jxr_string">"' }"</span>);
-<a class="jxr_linenumber" name="L161" href="#L161">161</a>         } <strong class="jxr_keyword">else</strong> {
-<a class="jxr_linenumber" name="L162" href="#L162">162</a>             dep.getVulnerableSoftwareIdentifiers().forEach(id -&gt; fail(<span class="jxr_string">"Unexpected match found: { dep:'"</span> + dep.getFileName() + <span class="jxr_string">"', found:'"</span> + id + <span class="jxr_string">"' }"</span>));
-<a class="jxr_linenumber" name="L163" href="#L163">163</a>         }
-<a class="jxr_linenumber" name="L164" href="#L164">164</a>     }
-<a class="jxr_linenumber" name="L165" href="#L165">165</a> 
-<a class="jxr_linenumber" name="L166" href="#L166">166</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L167" href="#L167">167</a> <em class="jxr_javadoccomment">     * Test of determineCPE method, of class CPEAnalyzer.</em>
-<a class="jxr_linenumber" name="L168" href="#L168">168</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L169" href="#L169">169</a> <em class="jxr_javadoccomment">     * @throws Exception is thrown when an exception occurs</em>
-<a class="jxr_linenumber" name="L170" href="#L170">170</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L171" href="#L171">171</a>     @Test
-<a class="jxr_linenumber" name="L172" href="#L172">172</a>     <strong class="jxr_keyword">void</strong> testDetermineCPE() <strong class="jxr_keyword">throws</strong> Exception {
-<a class="jxr_linenumber" name="L173" href="#L173">173</a>         <em class="jxr_comment">//File file = new File(this.getClass().getClassLoader().getResource("struts2-core-2.1.2.jar").getPath());</em>
-<a class="jxr_linenumber" name="L174" href="#L174">174</a>         File file = BaseTest.getResourceAsFile(<strong class="jxr_keyword">this</strong>, <span class="jxr_string">"struts2-core-2.1.2.jar"</span>);
-<a class="jxr_linenumber" name="L175" href="#L175">175</a>         <em class="jxr_comment">//File file = new File(this.getClass().getClassLoader().getResource("axis2-adb-1.4.1.jar").getPath());</em>
-<a class="jxr_linenumber" name="L176" href="#L176">176</a>         Dependency struts = <strong class="jxr_keyword">new</strong> Dependency(file);
-<a class="jxr_linenumber" name="L177" href="#L177">177</a>         <strong class="jxr_keyword">try</strong> (Engine engine = <strong class="jxr_keyword">new</strong> Engine(getSettings())) {
-<a class="jxr_linenumber" name="L178" href="#L178">178</a>             CpeSuppressionAnalyzer suppressionAnalyzer = <strong class="jxr_keyword">new</strong> CpeSuppressionAnalyzer();
-<a class="jxr_linenumber" name="L179" href="#L179">179</a>             suppressionAnalyzer.initialize(getSettings());
-<a class="jxr_linenumber" name="L180" href="#L180">180</a>             suppressionAnalyzer.prepare(engine);
-<a class="jxr_linenumber" name="L181" href="#L181">181</a> 
-<a class="jxr_linenumber" name="L182" href="#L182">182</a>             FileNameAnalyzer fnAnalyzer = <strong class="jxr_keyword">new</strong> FileNameAnalyzer();
-<a class="jxr_linenumber" name="L183" href="#L183">183</a>             fnAnalyzer.analyze(struts, engine);
-<a class="jxr_linenumber" name="L184" href="#L184">184</a> 
-<a class="jxr_linenumber" name="L185" href="#L185">185</a>             HintAnalyzer hintAnalyzer = <strong class="jxr_keyword">new</strong> HintAnalyzer();
-<a class="jxr_linenumber" name="L186" href="#L186">186</a>             hintAnalyzer.initialize(getSettings());
-<a class="jxr_linenumber" name="L187" href="#L187">187</a>             hintAnalyzer.prepare(engine);
-<a class="jxr_linenumber" name="L188" href="#L188">188</a>             JarAnalyzer jarAnalyzer = <strong class="jxr_keyword">new</strong> JarAnalyzer();
-<a class="jxr_linenumber" name="L189" href="#L189">189</a>             jarAnalyzer.initialize(getSettings());
-<a class="jxr_linenumber" name="L190" href="#L190">190</a>             jarAnalyzer.accept(<strong class="jxr_keyword">new</strong> File(<span class="jxr_string">"test.jar"</span>));<em class="jxr_comment">//trick analyzer into "thinking it is active"</em>
-<a class="jxr_linenumber" name="L191" href="#L191">191</a>             jarAnalyzer.prepare(engine);
-<a class="jxr_linenumber" name="L192" href="#L192">192</a> 
-<a class="jxr_linenumber" name="L193" href="#L193">193</a>             jarAnalyzer.analyze(struts, engine);
-<a class="jxr_linenumber" name="L194" href="#L194">194</a>             hintAnalyzer.analyze(struts, engine);
-<a class="jxr_linenumber" name="L195" href="#L195">195</a>             <em class="jxr_comment">//File fileCommonValidator = new File(this.getClass().getClassLoader().getResource("commons-validator-1.4.0.jar").getPath());</em>
-<a class="jxr_linenumber" name="L196" href="#L196">196</a>             File fileCommonValidator = BaseTest.getResourceAsFile(<strong class="jxr_keyword">this</strong>, <span class="jxr_string">"commons-validator-1.4.0.jar"</span>);
-<a class="jxr_linenumber" name="L197" href="#L197">197</a>             Dependency commonValidator = <strong class="jxr_keyword">new</strong> Dependency(fileCommonValidator);
-<a class="jxr_linenumber" name="L198" href="#L198">198</a>             jarAnalyzer.analyze(commonValidator, engine);
-<a class="jxr_linenumber" name="L199" href="#L199">199</a>             hintAnalyzer.analyze(commonValidator, engine);
+<a class="jxr_linenumber" name="L143" href="#L143">143</a>         fnAnalyzer.analyze(dep, <strong class="jxr_keyword">null</strong>);
+<a class="jxr_linenumber" name="L144" href="#L144">144</a>         jarAnalyzer.analyze(dep, <strong class="jxr_keyword">null</strong>);
+<a class="jxr_linenumber" name="L145" href="#L145">145</a>         hAnalyzer.analyze(dep, <strong class="jxr_keyword">null</strong>);
+<a class="jxr_linenumber" name="L146" href="#L146">146</a>         cpeAnalyzer.analyze(dep, <strong class="jxr_keyword">null</strong>);
+<a class="jxr_linenumber" name="L147" href="#L147">147</a>         fp.analyze(dep, <strong class="jxr_keyword">null</strong>);
+<a class="jxr_linenumber" name="L148" href="#L148">148</a>         cpeSuppression.analyze(dep, <strong class="jxr_keyword">null</strong>);
+<a class="jxr_linenumber" name="L149" href="#L149">149</a> 
+<a class="jxr_linenumber" name="L150" href="#L150">150</a>         <strong class="jxr_keyword">if</strong> (expResult != <strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="L151" href="#L151">151</a>             <strong class="jxr_keyword">boolean</strong> found = false;
+<a class="jxr_linenumber" name="L152" href="#L152">152</a>             <strong class="jxr_keyword">for</strong> (Identifier i : dep.getVulnerableSoftwareIdentifiers()) {
+<a class="jxr_linenumber" name="L153" href="#L153">153</a>                 <strong class="jxr_keyword">if</strong> (expResult.equals(i.getValue())) {
+<a class="jxr_linenumber" name="L154" href="#L154">154</a>                     found = <strong class="jxr_keyword">true</strong>;
+<a class="jxr_linenumber" name="L155" href="#L155">155</a>                     <strong class="jxr_keyword">break</strong>;
+<a class="jxr_linenumber" name="L156" href="#L156">156</a>                 }
+<a class="jxr_linenumber" name="L157" href="#L157">157</a>             }
+<a class="jxr_linenumber" name="L158" href="#L158">158</a>             assertTrue(found, <span class="jxr_string">"Match not found: { dep:'"</span> + dep.getFileName() + <span class="jxr_string">"', exp:'"</span> + expResult + <span class="jxr_string">"' }"</span>);
+<a class="jxr_linenumber" name="L159" href="#L159">159</a>         } <strong class="jxr_keyword">else</strong> {
+<a class="jxr_linenumber" name="L160" href="#L160">160</a>             dep.getVulnerableSoftwareIdentifiers().forEach(id -&gt; fail(<span class="jxr_string">"Unexpected match found: { dep:'"</span> + dep.getFileName() + <span class="jxr_string">"', found:'"</span> + id + <span class="jxr_string">"' }"</span>));
+<a class="jxr_linenumber" name="L161" href="#L161">161</a>         }
+<a class="jxr_linenumber" name="L162" href="#L162">162</a>     }
+<a class="jxr_linenumber" name="L163" href="#L163">163</a> 
+<a class="jxr_linenumber" name="L164" href="#L164">164</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L165" href="#L165">165</a> <em class="jxr_javadoccomment">     * Test of determineCPE method, of class CPEAnalyzer.</em>
+<a class="jxr_linenumber" name="L166" href="#L166">166</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L167" href="#L167">167</a> <em class="jxr_javadoccomment">     * @throws Exception is thrown when an exception occurs</em>
+<a class="jxr_linenumber" name="L168" href="#L168">168</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L169" href="#L169">169</a>     @Test
+<a class="jxr_linenumber" name="L170" href="#L170">170</a>     <strong class="jxr_keyword">void</strong> testDetermineCPE() <strong class="jxr_keyword">throws</strong> Exception {
+<a class="jxr_linenumber" name="L171" href="#L171">171</a>         File file = BaseTest.getResourceAsFile(<strong class="jxr_keyword">this</strong>, <span class="jxr_string">"maven-lib/struts2-core-2.1.2.jar"</span>);
+<a class="jxr_linenumber" name="L172" href="#L172">172</a>         Dependency struts = <strong class="jxr_keyword">new</strong> Dependency(file);
+<a class="jxr_linenumber" name="L173" href="#L173">173</a>         <strong class="jxr_keyword">try</strong> (Engine engine = <strong class="jxr_keyword">new</strong> Engine(getSettings())) {
+<a class="jxr_linenumber" name="L174" href="#L174">174</a>             CpeSuppressionAnalyzer suppressionAnalyzer = <strong class="jxr_keyword">new</strong> CpeSuppressionAnalyzer();
+<a class="jxr_linenumber" name="L175" href="#L175">175</a>             suppressionAnalyzer.initialize(getSettings());
+<a class="jxr_linenumber" name="L176" href="#L176">176</a>             suppressionAnalyzer.prepare(engine);
+<a class="jxr_linenumber" name="L177" href="#L177">177</a> 
+<a class="jxr_linenumber" name="L178" href="#L178">178</a>             FileNameAnalyzer fnAnalyzer = <strong class="jxr_keyword">new</strong> FileNameAnalyzer();
+<a class="jxr_linenumber" name="L179" href="#L179">179</a>             fnAnalyzer.analyze(struts, engine);
+<a class="jxr_linenumber" name="L180" href="#L180">180</a> 
+<a class="jxr_linenumber" name="L181" href="#L181">181</a>             HintAnalyzer hintAnalyzer = <strong class="jxr_keyword">new</strong> HintAnalyzer();
+<a class="jxr_linenumber" name="L182" href="#L182">182</a>             hintAnalyzer.initialize(getSettings());
+<a class="jxr_linenumber" name="L183" href="#L183">183</a>             hintAnalyzer.prepare(engine);
+<a class="jxr_linenumber" name="L184" href="#L184">184</a>             JarAnalyzer jarAnalyzer = <strong class="jxr_keyword">new</strong> JarAnalyzer();
+<a class="jxr_linenumber" name="L185" href="#L185">185</a>             jarAnalyzer.initialize(getSettings());
+<a class="jxr_linenumber" name="L186" href="#L186">186</a>             jarAnalyzer.accept(<strong class="jxr_keyword">new</strong> File(<span class="jxr_string">"test.jar"</span>));<em class="jxr_comment">//trick analyzer into "thinking it is active"</em>
+<a class="jxr_linenumber" name="L187" href="#L187">187</a>             jarAnalyzer.prepare(engine);
+<a class="jxr_linenumber" name="L188" href="#L188">188</a> 
+<a class="jxr_linenumber" name="L189" href="#L189">189</a>             jarAnalyzer.analyze(struts, engine);
+<a class="jxr_linenumber" name="L190" href="#L190">190</a>             hintAnalyzer.analyze(struts, engine);
+<a class="jxr_linenumber" name="L191" href="#L191">191</a>             File fileCommonValidator = BaseTest.getResourceAsFile(<strong class="jxr_keyword">this</strong>, <span class="jxr_string">"commons-validator-1.4.0.jar"</span>);
+<a class="jxr_linenumber" name="L192" href="#L192">192</a>             Dependency commonValidator = <strong class="jxr_keyword">new</strong> Dependency(fileCommonValidator);
+<a class="jxr_linenumber" name="L193" href="#L193">193</a>             jarAnalyzer.analyze(commonValidator, engine);
+<a class="jxr_linenumber" name="L194" href="#L194">194</a>             hintAnalyzer.analyze(commonValidator, engine);
+<a class="jxr_linenumber" name="L195" href="#L195">195</a> 
+<a class="jxr_linenumber" name="L196" href="#L196">196</a>             File fileSpring = BaseTest.getResourceAsFile(<strong class="jxr_keyword">this</strong>, <span class="jxr_string">"maven-lib/spring-core-2.5.5.jar"</span>);
+<a class="jxr_linenumber" name="L197" href="#L197">197</a>             Dependency spring = <strong class="jxr_keyword">new</strong> Dependency(fileSpring);
+<a class="jxr_linenumber" name="L198" href="#L198">198</a>             jarAnalyzer.analyze(spring, engine);
+<a class="jxr_linenumber" name="L199" href="#L199">199</a>             hintAnalyzer.analyze(spring, engine);
 <a class="jxr_linenumber" name="L200" href="#L200">200</a> 
-<a class="jxr_linenumber" name="L201" href="#L201">201</a>             <em class="jxr_comment">//File fileSpring = new File(this.getClass().getClassLoader().getResource("spring-core-2.5.5.jar").getPath());</em>
-<a class="jxr_linenumber" name="L202" href="#L202">202</a>             File fileSpring = BaseTest.getResourceAsFile(<strong class="jxr_keyword">this</strong>, <span class="jxr_string">"spring-core-2.5.5.jar"</span>);
-<a class="jxr_linenumber" name="L203" href="#L203">203</a>             Dependency spring = <strong class="jxr_keyword">new</strong> Dependency(fileSpring);
-<a class="jxr_linenumber" name="L204" href="#L204">204</a>             jarAnalyzer.analyze(spring, engine);
-<a class="jxr_linenumber" name="L205" href="#L205">205</a>             hintAnalyzer.analyze(spring, engine);
-<a class="jxr_linenumber" name="L206" href="#L206">206</a> 
-<a class="jxr_linenumber" name="L207" href="#L207">207</a>             <em class="jxr_comment">//File fileSpring3 = new File(this.getClass().getClassLoader().getResource("spring-core-3.0.0.RELEASE.jar").getPath());</em>
-<a class="jxr_linenumber" name="L208" href="#L208">208</a>             File fileSpring3 = BaseTest.getResourceAsFile(<strong class="jxr_keyword">this</strong>, <span class="jxr_string">"spring-core-3.0.0.RELEASE.jar"</span>);
-<a class="jxr_linenumber" name="L209" href="#L209">209</a>             Dependency spring3 = <strong class="jxr_keyword">new</strong> Dependency(fileSpring3);
-<a class="jxr_linenumber" name="L210" href="#L210">210</a>             jarAnalyzer.analyze(spring3, engine);
-<a class="jxr_linenumber" name="L211" href="#L211">211</a>             hintAnalyzer.analyze(spring3, engine);
-<a class="jxr_linenumber" name="L212" href="#L212">212</a> 
-<a class="jxr_linenumber" name="L213" href="#L213">213</a>             CPEAnalyzer instance = <strong class="jxr_keyword">new</strong> CPEAnalyzer();
-<a class="jxr_linenumber" name="L214" href="#L214">214</a> 
-<a class="jxr_linenumber" name="L215" href="#L215">215</a>             engine.openDatabase(<strong class="jxr_keyword">true</strong>, <strong class="jxr_keyword">true</strong>);
-<a class="jxr_linenumber" name="L216" href="#L216">216</a>             instance.initialize(getSettings());
-<a class="jxr_linenumber" name="L217" href="#L217">217</a>             instance.prepare(engine);
-<a class="jxr_linenumber" name="L218" href="#L218">218</a>             instance.determineCPE(commonValidator);
-<a class="jxr_linenumber" name="L219" href="#L219">219</a>             instance.determineCPE(struts);
-<a class="jxr_linenumber" name="L220" href="#L220">220</a>             instance.determineCPE(spring);
-<a class="jxr_linenumber" name="L221" href="#L221">221</a>             instance.determineCPE(spring3);
-<a class="jxr_linenumber" name="L222" href="#L222">222</a>             instance.close();
-<a class="jxr_linenumber" name="L223" href="#L223">223</a> 
-<a class="jxr_linenumber" name="L224" href="#L224">224</a>             suppressionAnalyzer.analyze(commonValidator, engine);
-<a class="jxr_linenumber" name="L225" href="#L225">225</a>             commonValidator.getVulnerableSoftwareIdentifiers().forEach(i -&gt; fail(<span class="jxr_string">"Apache Common Validator found an unexpected CPE identifier - "</span> + i.getValue()));
-<a class="jxr_linenumber" name="L226" href="#L226">226</a> 
-<a class="jxr_linenumber" name="L227" href="#L227">227</a>             String expResult = <span class="jxr_string">"cpe:2.3:a:apache:struts:2.1.2:*:*:*:*:*:*:*"</span>;
-<a class="jxr_linenumber" name="L228" href="#L228">228</a>             assertFalse(struts.getVulnerableSoftwareIdentifiers().isEmpty(), <span class="jxr_string">"Incorrect match size - struts"</span>);
-<a class="jxr_linenumber" name="L229" href="#L229">229</a>             <strong class="jxr_keyword">boolean</strong> found = false;
-<a class="jxr_linenumber" name="L230" href="#L230">230</a>             <strong class="jxr_keyword">for</strong> (Identifier i : struts.getVulnerableSoftwareIdentifiers()) {
-<a class="jxr_linenumber" name="L231" href="#L231">231</a>                 <strong class="jxr_keyword">if</strong> (expResult.equals(i.getValue())) {
-<a class="jxr_linenumber" name="L232" href="#L232">232</a>                     found = <strong class="jxr_keyword">true</strong>;
-<a class="jxr_linenumber" name="L233" href="#L233">233</a>                     <strong class="jxr_keyword">break</strong>;
-<a class="jxr_linenumber" name="L234" href="#L234">234</a>                 }
-<a class="jxr_linenumber" name="L235" href="#L235">235</a>             }
-<a class="jxr_linenumber" name="L236" href="#L236">236</a>             assertTrue(found, <span class="jxr_string">"Incorrect match - struts"</span>);
-<a class="jxr_linenumber" name="L237" href="#L237">237</a>             assertFalse(spring3.getVulnerableSoftwareIdentifiers().isEmpty(), <span class="jxr_string">"Incorrect match size - spring3 - "</span> + spring3.getVulnerableSoftwareIdentifiers().size());
-<a class="jxr_linenumber" name="L238" href="#L238">238</a> 
-<a class="jxr_linenumber" name="L239" href="#L239">239</a>             jarAnalyzer.close();
-<a class="jxr_linenumber" name="L240" href="#L240">240</a>             suppressionAnalyzer.close();
-<a class="jxr_linenumber" name="L241" href="#L241">241</a>         }
-<a class="jxr_linenumber" name="L242" href="#L242">242</a>     }
-<a class="jxr_linenumber" name="L243" href="#L243">243</a> 
-<a class="jxr_linenumber" name="L244" href="#L244">244</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L245" href="#L245">245</a> <em class="jxr_javadoccomment">     * Test of determineIdentifiers method, of class CPEAnalyzer.</em>
-<a class="jxr_linenumber" name="L246" href="#L246">246</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L247" href="#L247">247</a> <em class="jxr_javadoccomment">     * @throws Exception is thrown when an exception occurs</em>
-<a class="jxr_linenumber" name="L248" href="#L248">248</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L249" href="#L249">249</a>     @Test
-<a class="jxr_linenumber" name="L250" href="#L250">250</a>     <strong class="jxr_keyword">void</strong> testDetermineIdentifiers() <strong class="jxr_keyword">throws</strong> Exception {
+<a class="jxr_linenumber" name="L201" href="#L201">201</a>             File fileSpring3 = BaseTest.getResourceAsFile(<strong class="jxr_keyword">this</strong>, <span class="jxr_string">"spring-core-3.0.0.RELEASE.jar"</span>);
+<a class="jxr_linenumber" name="L202" href="#L202">202</a>             Dependency spring3 = <strong class="jxr_keyword">new</strong> Dependency(fileSpring3);
+<a class="jxr_linenumber" name="L203" href="#L203">203</a>             jarAnalyzer.analyze(spring3, engine);
+<a class="jxr_linenumber" name="L204" href="#L204">204</a>             hintAnalyzer.analyze(spring3, engine);
+<a class="jxr_linenumber" name="L205" href="#L205">205</a> 
+<a class="jxr_linenumber" name="L206" href="#L206">206</a>             CPEAnalyzer instance = <strong class="jxr_keyword">new</strong> CPEAnalyzer();
+<a class="jxr_linenumber" name="L207" href="#L207">207</a> 
+<a class="jxr_linenumber" name="L208" href="#L208">208</a>             engine.openDatabase(<strong class="jxr_keyword">true</strong>, <strong class="jxr_keyword">true</strong>);
+<a class="jxr_linenumber" name="L209" href="#L209">209</a>             instance.initialize(getSettings());
+<a class="jxr_linenumber" name="L210" href="#L210">210</a>             instance.prepare(engine);
+<a class="jxr_linenumber" name="L211" href="#L211">211</a>             instance.determineCPE(commonValidator);
+<a class="jxr_linenumber" name="L212" href="#L212">212</a>             instance.determineCPE(struts);
+<a class="jxr_linenumber" name="L213" href="#L213">213</a>             instance.determineCPE(spring);
+<a class="jxr_linenumber" name="L214" href="#L214">214</a>             instance.determineCPE(spring3);
+<a class="jxr_linenumber" name="L215" href="#L215">215</a>             instance.close();
+<a class="jxr_linenumber" name="L216" href="#L216">216</a> 
+<a class="jxr_linenumber" name="L217" href="#L217">217</a>             suppressionAnalyzer.analyze(commonValidator, engine);
+<a class="jxr_linenumber" name="L218" href="#L218">218</a>             commonValidator.getVulnerableSoftwareIdentifiers().forEach(i -&gt; fail(<span class="jxr_string">"Apache Common Validator found an unexpected CPE identifier - "</span> + i.getValue()));
+<a class="jxr_linenumber" name="L219" href="#L219">219</a> 
+<a class="jxr_linenumber" name="L220" href="#L220">220</a>             String expResult = <span class="jxr_string">"cpe:2.3:a:apache:struts:2.1.2:*:*:*:*:*:*:*"</span>;
+<a class="jxr_linenumber" name="L221" href="#L221">221</a>             assertFalse(struts.getVulnerableSoftwareIdentifiers().isEmpty(), <span class="jxr_string">"Incorrect match size - struts"</span>);
+<a class="jxr_linenumber" name="L222" href="#L222">222</a>             <strong class="jxr_keyword">boolean</strong> found = false;
+<a class="jxr_linenumber" name="L223" href="#L223">223</a>             <strong class="jxr_keyword">for</strong> (Identifier i : struts.getVulnerableSoftwareIdentifiers()) {
+<a class="jxr_linenumber" name="L224" href="#L224">224</a>                 <strong class="jxr_keyword">if</strong> (expResult.equals(i.getValue())) {
+<a class="jxr_linenumber" name="L225" href="#L225">225</a>                     found = <strong class="jxr_keyword">true</strong>;
+<a class="jxr_linenumber" name="L226" href="#L226">226</a>                     <strong class="jxr_keyword">break</strong>;
+<a class="jxr_linenumber" name="L227" href="#L227">227</a>                 }
+<a class="jxr_linenumber" name="L228" href="#L228">228</a>             }
+<a class="jxr_linenumber" name="L229" href="#L229">229</a>             assertTrue(found, <span class="jxr_string">"Incorrect match - struts"</span>);
+<a class="jxr_linenumber" name="L230" href="#L230">230</a>             assertFalse(spring3.getVulnerableSoftwareIdentifiers().isEmpty(), <span class="jxr_string">"Incorrect match size - spring3 - "</span> + spring3.getVulnerableSoftwareIdentifiers().size());
+<a class="jxr_linenumber" name="L231" href="#L231">231</a> 
+<a class="jxr_linenumber" name="L232" href="#L232">232</a>             jarAnalyzer.close();
+<a class="jxr_linenumber" name="L233" href="#L233">233</a>             suppressionAnalyzer.close();
+<a class="jxr_linenumber" name="L234" href="#L234">234</a>         }
+<a class="jxr_linenumber" name="L235" href="#L235">235</a>     }
+<a class="jxr_linenumber" name="L236" href="#L236">236</a> 
+<a class="jxr_linenumber" name="L237" href="#L237">237</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L238" href="#L238">238</a> <em class="jxr_javadoccomment">     * Test of determineIdentifiers method, of class CPEAnalyzer.</em>
+<a class="jxr_linenumber" name="L239" href="#L239">239</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L240" href="#L240">240</a> <em class="jxr_javadoccomment">     * @throws Exception is thrown when an exception occurs</em>
+<a class="jxr_linenumber" name="L241" href="#L241">241</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L242" href="#L242">242</a>     @Test
+<a class="jxr_linenumber" name="L243" href="#L243">243</a>     <strong class="jxr_keyword">void</strong> testDetermineIdentifiers() <strong class="jxr_keyword">throws</strong> Exception {
+<a class="jxr_linenumber" name="L244" href="#L244">244</a> 
+<a class="jxr_linenumber" name="L245" href="#L245">245</a>         CPEAnalyzer instance = <strong class="jxr_keyword">new</strong> CPEAnalyzer();
+<a class="jxr_linenumber" name="L246" href="#L246">246</a>         <strong class="jxr_keyword">try</strong> (Engine engine = <strong class="jxr_keyword">new</strong> Engine(getSettings())) {
+<a class="jxr_linenumber" name="L247" href="#L247">247</a>             <em class="jxr_comment">// Opening the database in read-only mode always copies the whole database -&gt; open it only once</em>
+<a class="jxr_linenumber" name="L248" href="#L248">248</a>             engine.openDatabase(<strong class="jxr_keyword">true</strong>, <strong class="jxr_keyword">true</strong>);
+<a class="jxr_linenumber" name="L249" href="#L249">249</a>             instance.initialize(getSettings());
+<a class="jxr_linenumber" name="L250" href="#L250">250</a>             instance.prepare(engine);
 <a class="jxr_linenumber" name="L251" href="#L251">251</a> 
-<a class="jxr_linenumber" name="L252" href="#L252">252</a>         CPEAnalyzer instance = <strong class="jxr_keyword">new</strong> CPEAnalyzer();
-<a class="jxr_linenumber" name="L253" href="#L253">253</a>         <strong class="jxr_keyword">try</strong> (Engine engine = <strong class="jxr_keyword">new</strong> Engine(getSettings())) {
-<a class="jxr_linenumber" name="L254" href="#L254">254</a>             <em class="jxr_comment">// Opening the database in read-only mode always copies the whole database -&gt; open it only once</em>
-<a class="jxr_linenumber" name="L255" href="#L255">255</a>             engine.openDatabase(<strong class="jxr_keyword">true</strong>, <strong class="jxr_keyword">true</strong>);
-<a class="jxr_linenumber" name="L256" href="#L256">256</a>             instance.initialize(getSettings());
-<a class="jxr_linenumber" name="L257" href="#L257">257</a>             instance.prepare(engine);
-<a class="jxr_linenumber" name="L258" href="#L258">258</a> 
-<a class="jxr_linenumber" name="L259" href="#L259">259</a>             callDetermieIdentifiers(<span class="jxr_string">"pivotal_software"</span>, <span class="jxr_string">"spring_framework"</span>, <span class="jxr_string">"4.3.4.release"</span>, <span class="jxr_string">"cpe:2.3:a:pivotal_software:spring_framework:4.3.4:release:*:*:*:*:*:*"</span>, instance);
-<a class="jxr_linenumber" name="L260" href="#L260">260</a>             callDetermieIdentifiers(<span class="jxr_string">"eclipse"</span>, <span class="jxr_string">"jetty"</span>, <span class="jxr_string">"20.4.8.v20171121"</span>, <span class="jxr_string">"cpe:2.3:a:eclipse:jetty:20.4.8:20171121:*:*:*:*:*:*"</span>, instance);
-<a class="jxr_linenumber" name="L261" href="#L261">261</a>             callDetermieIdentifiers(<span class="jxr_string">"openssl"</span>, <span class="jxr_string">"openssl"</span>, <span class="jxr_string">"1.0.1c"</span>, <span class="jxr_string">"cpe:2.3:a:openssl:openssl:1.0.1c:*:*:*:*:*:*:*"</span>, instance);
-<a class="jxr_linenumber" name="L262" href="#L262">262</a>             <em class="jxr_comment">//requires 2018 NVD CVE data to identify this. Removing in order to speed build</em>
-<a class="jxr_linenumber" name="L263" href="#L263">263</a>             <em class="jxr_comment">//callDetermieIdentifiers("jrebel", "zt-zip", "1.0", "cpe:2.3:a:jrebel:zt-zip:1.0:*:*:*:*:*:*:*", instance);</em>
-<a class="jxr_linenumber" name="L264" href="#L264">264</a> 
-<a class="jxr_linenumber" name="L265" href="#L265">265</a>             instance.close();
-<a class="jxr_linenumber" name="L266" href="#L266">266</a>         }
-<a class="jxr_linenumber" name="L267" href="#L267">267</a>     }
-<a class="jxr_linenumber" name="L268" href="#L268">268</a> 
-<a class="jxr_linenumber" name="L269" href="#L269">269</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L270" href="#L270">270</a> <em class="jxr_javadoccomment">     * Executes the test call against DetermineIdentifiers.</em>
-<a class="jxr_linenumber" name="L271" href="#L271">271</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L272" href="#L272">272</a> <em class="jxr_javadoccomment">     * @param vendor</em>
-<a class="jxr_linenumber" name="L273" href="#L273">273</a> <em class="jxr_javadoccomment">     * @param product</em>
-<a class="jxr_linenumber" name="L274" href="#L274">274</a> <em class="jxr_javadoccomment">     * @param version</em>
-<a class="jxr_linenumber" name="L275" href="#L275">275</a> <em class="jxr_javadoccomment">     * @param expectedCpe</em>
-<a class="jxr_linenumber" name="L276" href="#L276">276</a> <em class="jxr_javadoccomment">     * @param cpeAnalyzer</em>
-<a class="jxr_linenumber" name="L277" href="#L277">277</a> <em class="jxr_javadoccomment">     * @throws Exception</em>
-<a class="jxr_linenumber" name="L278" href="#L278">278</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L279" href="#L279">279</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> callDetermieIdentifiers(String vendor, String product, String version, String expectedCpe, CPEAnalyzer cpeAnalyzer) <strong class="jxr_keyword">throws</strong> Exception {
-<a class="jxr_linenumber" name="L280" href="#L280">280</a>         Dependency dep = <strong class="jxr_keyword">new</strong> Dependency();
-<a class="jxr_linenumber" name="L281" href="#L281">281</a>         dep.addEvidence(EvidenceType.VENDOR, <span class="jxr_string">"test"</span>, <span class="jxr_string">"vendor"</span>, vendor, Confidence.HIGHEST);
-<a class="jxr_linenumber" name="L282" href="#L282">282</a>         dep.addEvidence(EvidenceType.PRODUCT, <span class="jxr_string">"test"</span>, <span class="jxr_string">"product"</span>, product, Confidence.HIGHEST);
-<a class="jxr_linenumber" name="L283" href="#L283">283</a>         dep.addEvidence(EvidenceType.VERSION, <span class="jxr_string">"test"</span>, <span class="jxr_string">"version"</span>, version, Confidence.HIGHEST);
-<a class="jxr_linenumber" name="L284" href="#L284">284</a> 
-<a class="jxr_linenumber" name="L285" href="#L285">285</a>         cpeAnalyzer.determineIdentifiers(dep, vendor, product, Confidence.HIGHEST);
+<a class="jxr_linenumber" name="L252" href="#L252">252</a>             callDetermieIdentifiers(<span class="jxr_string">"pivotal_software"</span>, <span class="jxr_string">"spring_framework"</span>, <span class="jxr_string">"4.3.4.release"</span>, <span class="jxr_string">"cpe:2.3:a:pivotal_software:spring_framework:4.3.4:release:*:*:*:*:*:*"</span>, instance);
+<a class="jxr_linenumber" name="L253" href="#L253">253</a>             callDetermieIdentifiers(<span class="jxr_string">"eclipse"</span>, <span class="jxr_string">"jetty"</span>, <span class="jxr_string">"20.4.8.v20171121"</span>, <span class="jxr_string">"cpe:2.3:a:eclipse:jetty:20.4.8:20171121:*:*:*:*:*:*"</span>, instance);
+<a class="jxr_linenumber" name="L254" href="#L254">254</a>             callDetermieIdentifiers(<span class="jxr_string">"openssl"</span>, <span class="jxr_string">"openssl"</span>, <span class="jxr_string">"1.0.1c"</span>, <span class="jxr_string">"cpe:2.3:a:openssl:openssl:1.0.1c:*:*:*:*:*:*:*"</span>, instance);
+<a class="jxr_linenumber" name="L255" href="#L255">255</a>             <em class="jxr_comment">//requires 2018 NVD CVE data to identify this. Removing in order to speed build</em>
+<a class="jxr_linenumber" name="L256" href="#L256">256</a>             <em class="jxr_comment">//callDetermieIdentifiers("jrebel", "zt-zip", "1.0", "cpe:2.3:a:jrebel:zt-zip:1.0:*:*:*:*:*:*:*", instance);</em>
+<a class="jxr_linenumber" name="L257" href="#L257">257</a> 
+<a class="jxr_linenumber" name="L258" href="#L258">258</a>             instance.close();
+<a class="jxr_linenumber" name="L259" href="#L259">259</a>         }
+<a class="jxr_linenumber" name="L260" href="#L260">260</a>     }
+<a class="jxr_linenumber" name="L261" href="#L261">261</a> 
+<a class="jxr_linenumber" name="L262" href="#L262">262</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L263" href="#L263">263</a> <em class="jxr_javadoccomment">     * Executes the test call against DetermineIdentifiers.</em>
+<a class="jxr_linenumber" name="L264" href="#L264">264</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L265" href="#L265">265</a> <em class="jxr_javadoccomment">     * @param vendor</em>
+<a class="jxr_linenumber" name="L266" href="#L266">266</a> <em class="jxr_javadoccomment">     * @param product</em>
+<a class="jxr_linenumber" name="L267" href="#L267">267</a> <em class="jxr_javadoccomment">     * @param version</em>
+<a class="jxr_linenumber" name="L268" href="#L268">268</a> <em class="jxr_javadoccomment">     * @param expectedCpe</em>
+<a class="jxr_linenumber" name="L269" href="#L269">269</a> <em class="jxr_javadoccomment">     * @param cpeAnalyzer</em>
+<a class="jxr_linenumber" name="L270" href="#L270">270</a> <em class="jxr_javadoccomment">     * @throws Exception</em>
+<a class="jxr_linenumber" name="L271" href="#L271">271</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L272" href="#L272">272</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> callDetermieIdentifiers(String vendor, String product, String version, String expectedCpe, CPEAnalyzer cpeAnalyzer) <strong class="jxr_keyword">throws</strong> Exception {
+<a class="jxr_linenumber" name="L273" href="#L273">273</a>         Dependency dep = <strong class="jxr_keyword">new</strong> Dependency();
+<a class="jxr_linenumber" name="L274" href="#L274">274</a>         dep.addEvidence(EvidenceType.VENDOR, <span class="jxr_string">"test"</span>, <span class="jxr_string">"vendor"</span>, vendor, Confidence.HIGHEST);
+<a class="jxr_linenumber" name="L275" href="#L275">275</a>         dep.addEvidence(EvidenceType.PRODUCT, <span class="jxr_string">"test"</span>, <span class="jxr_string">"product"</span>, product, Confidence.HIGHEST);
+<a class="jxr_linenumber" name="L276" href="#L276">276</a>         dep.addEvidence(EvidenceType.VERSION, <span class="jxr_string">"test"</span>, <span class="jxr_string">"version"</span>, version, Confidence.HIGHEST);
+<a class="jxr_linenumber" name="L277" href="#L277">277</a> 
+<a class="jxr_linenumber" name="L278" href="#L278">278</a>         cpeAnalyzer.determineIdentifiers(dep, vendor, product, Confidence.HIGHEST);
+<a class="jxr_linenumber" name="L279" href="#L279">279</a> 
+<a class="jxr_linenumber" name="L280" href="#L280">280</a>         <strong class="jxr_keyword">boolean</strong> found = dep.getVulnerableSoftwareIdentifiers().stream().anyMatch(id -&gt; {
+<a class="jxr_linenumber" name="L281" href="#L281">281</a>             System.out.println(id.getValue());
+<a class="jxr_linenumber" name="L282" href="#L282">282</a>             <strong class="jxr_keyword">return</strong> expectedCpe.equals(id.getValue());
+<a class="jxr_linenumber" name="L283" href="#L283">283</a>         });
+<a class="jxr_linenumber" name="L284" href="#L284">284</a>         assertTrue(found, String.format(<span class="jxr_string">"%s:%s:%s identifier not found"</span>, vendor, product, version));
+<a class="jxr_linenumber" name="L285" href="#L285">285</a>     }
 <a class="jxr_linenumber" name="L286" href="#L286">286</a> 
-<a class="jxr_linenumber" name="L287" href="#L287">287</a>         <strong class="jxr_keyword">boolean</strong> found = dep.getVulnerableSoftwareIdentifiers().stream().anyMatch(id -&gt; {
-<a class="jxr_linenumber" name="L288" href="#L288">288</a>             System.out.println(id.getValue());
-<a class="jxr_linenumber" name="L289" href="#L289">289</a>             <strong class="jxr_keyword">return</strong> expectedCpe.equals(id.getValue());
-<a class="jxr_linenumber" name="L290" href="#L290">290</a>         });
-<a class="jxr_linenumber" name="L291" href="#L291">291</a>         assertTrue(found, String.format(<span class="jxr_string">"%s:%s:%s identifier not found"</span>, vendor, product, version));
-<a class="jxr_linenumber" name="L292" href="#L292">292</a>     }
-<a class="jxr_linenumber" name="L293" href="#L293">293</a> 
-<a class="jxr_linenumber" name="L294" href="#L294">294</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L295" href="#L295">295</a> <em class="jxr_javadoccomment">     * Test of analyzeDependency method, of class CPEAnalyzer.</em>
-<a class="jxr_linenumber" name="L296" href="#L296">296</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L297" href="#L297">297</a> <em class="jxr_javadoccomment">     * @throws Exception is thrown when an exception occurs</em>
-<a class="jxr_linenumber" name="L298" href="#L298">298</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L299" href="#L299">299</a>     @Test
-<a class="jxr_linenumber" name="L300" href="#L300">300</a>     <strong class="jxr_keyword">void</strong> testAnalyzeDependency() <strong class="jxr_keyword">throws</strong> Exception {
+<a class="jxr_linenumber" name="L287" href="#L287">287</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L288" href="#L288">288</a> <em class="jxr_javadoccomment">     * Test of analyzeDependency method, of class CPEAnalyzer.</em>
+<a class="jxr_linenumber" name="L289" href="#L289">289</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L290" href="#L290">290</a> <em class="jxr_javadoccomment">     * @throws Exception is thrown when an exception occurs</em>
+<a class="jxr_linenumber" name="L291" href="#L291">291</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L292" href="#L292">292</a>     @Test
+<a class="jxr_linenumber" name="L293" href="#L293">293</a>     <strong class="jxr_keyword">void</strong> testAnalyzeDependency() <strong class="jxr_keyword">throws</strong> Exception {
+<a class="jxr_linenumber" name="L294" href="#L294">294</a> 
+<a class="jxr_linenumber" name="L295" href="#L295">295</a>         CPEAnalyzer instance = <strong class="jxr_keyword">new</strong> CPEAnalyzer();
+<a class="jxr_linenumber" name="L296" href="#L296">296</a>         <strong class="jxr_keyword">try</strong> (Engine engine = <strong class="jxr_keyword">new</strong> Engine(getSettings())) {
+<a class="jxr_linenumber" name="L297" href="#L297">297</a>             <em class="jxr_comment">// Opening the database in read-only mode always copies the whole database -&gt; open it only once</em>
+<a class="jxr_linenumber" name="L298" href="#L298">298</a>             engine.openDatabase(<strong class="jxr_keyword">true</strong>, <strong class="jxr_keyword">true</strong>);
+<a class="jxr_linenumber" name="L299" href="#L299">299</a>             instance.initialize(getSettings());
+<a class="jxr_linenumber" name="L300" href="#L300">300</a>             instance.prepare(engine);
 <a class="jxr_linenumber" name="L301" href="#L301">301</a> 
-<a class="jxr_linenumber" name="L302" href="#L302">302</a>         CPEAnalyzer instance = <strong class="jxr_keyword">new</strong> CPEAnalyzer();
-<a class="jxr_linenumber" name="L303" href="#L303">303</a>         <strong class="jxr_keyword">try</strong> (Engine engine = <strong class="jxr_keyword">new</strong> Engine(getSettings())) {
-<a class="jxr_linenumber" name="L304" href="#L304">304</a>             <em class="jxr_comment">// Opening the database in read-only mode always copies the whole database -&gt; open it only once</em>
-<a class="jxr_linenumber" name="L305" href="#L305">305</a>             engine.openDatabase(<strong class="jxr_keyword">true</strong>, <strong class="jxr_keyword">true</strong>);
-<a class="jxr_linenumber" name="L306" href="#L306">306</a>             instance.initialize(getSettings());
-<a class="jxr_linenumber" name="L307" href="#L307">307</a>             instance.prepare(engine);
-<a class="jxr_linenumber" name="L308" href="#L308">308</a> 
-<a class="jxr_linenumber" name="L309" href="#L309">309</a>             callAnalyzeDependency(<span class="jxr_string">"eclipse"</span>, <span class="jxr_string">"jetty"</span>, <span class="jxr_string">"20.4.8.v20171121"</span>, <span class="jxr_string">"cpe:2.3:a:eclipse:jetty:20.4.8:20171121:*:*:*:*:*:*"</span>, instance, engine);
-<a class="jxr_linenumber" name="L310" href="#L310">310</a>             callAnalyzeDependency(<span class="jxr_string">"openssl"</span>, <span class="jxr_string">"openssl"</span>, <span class="jxr_string">"1.0.1c"</span>, <span class="jxr_string">"cpe:2.3:a:openssl:openssl:1.0.1c:*:*:*:*:*:*:*"</span>, instance, engine);
-<a class="jxr_linenumber" name="L311" href="#L311">311</a>             callAnalyzeDependency(<span class="jxr_string">"apache"</span>, <span class="jxr_string">"commons-httpclient"</span>, <span class="jxr_string">"3.0"</span>, <span class="jxr_string">"cpe:2.3:a:apache:httpclient:3.0:*:*:*:*:*:*:*"</span>, instance, engine);
-<a class="jxr_linenumber" name="L312" href="#L312">312</a>             <em class="jxr_comment">//requires 2018 NVD CVE data to identify this. Removing in order to speed build</em>
-<a class="jxr_linenumber" name="L313" href="#L313">313</a>             <em class="jxr_comment">//callAnalyzeDependency("jrebel", "zt-zip", "1.0", "cpe:2.3:a:jrebel:zt-zip:1.0:*:*:*:*:*:*:*", instance, engine);</em>
-<a class="jxr_linenumber" name="L314" href="#L314">314</a> 
-<a class="jxr_linenumber" name="L315" href="#L315">315</a>             <em class="jxr_comment">// Non-exact matches</em>
-<a class="jxr_linenumber" name="L316" href="#L316">316</a>             callAnalyzeDependency(<span class="jxr_string">"org.apache"</span>, <span class="jxr_string">"commons-httpclient"</span>, <span class="jxr_string">"3.0"</span>, <span class="jxr_string">"cpe:2.3:a:apache:httpclient:3.0:*:*:*:*:*:*:*"</span>, instance, engine);
-<a class="jxr_linenumber" name="L317" href="#L317">317</a>             callAnalyzeDependency(<span class="jxr_string">"org.apache"</span>, <span class="jxr_string">"httpclient"</span>, <span class="jxr_string">"3.0"</span>, <span class="jxr_string">"cpe:2.3:a:apache:httpclient:3.0:*:*:*:*:*:*:*"</span>, instance, engine);
-<a class="jxr_linenumber" name="L318" href="#L318">318</a>             <em class="jxr_comment">//requires 2018 NVD CVE data to identify this. Removing in order to speed build</em>
-<a class="jxr_linenumber" name="L319" href="#L319">319</a>             <em class="jxr_comment">//callAnalyzeDependency("org.jrebel", "zt-zip", "1.0", "cpe:2.3:a:jrebel:zt-zip:1.0:*:*:*:*:*:*:*", instance, engine);</em>
-<a class="jxr_linenumber" name="L320" href="#L320">320</a> 
-<a class="jxr_linenumber" name="L321" href="#L321">321</a>             instance.close();
-<a class="jxr_linenumber" name="L322" href="#L322">322</a>         }
-<a class="jxr_linenumber" name="L323" href="#L323">323</a>     }
-<a class="jxr_linenumber" name="L324" href="#L324">324</a> 
-<a class="jxr_linenumber" name="L325" href="#L325">325</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L326" href="#L326">326</a> <em class="jxr_javadoccomment">     * Executes the test call against AnalyzeDependency.</em>
-<a class="jxr_linenumber" name="L327" href="#L327">327</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L328" href="#L328">328</a> <em class="jxr_javadoccomment">     * @param vendor</em>
-<a class="jxr_linenumber" name="L329" href="#L329">329</a> <em class="jxr_javadoccomment">     * @param product</em>
-<a class="jxr_linenumber" name="L330" href="#L330">330</a> <em class="jxr_javadoccomment">     * @param version</em>
-<a class="jxr_linenumber" name="L331" href="#L331">331</a> <em class="jxr_javadoccomment">     * @param expectedCpe</em>
-<a class="jxr_linenumber" name="L332" href="#L332">332</a> <em class="jxr_javadoccomment">     * @param cpeAnalyzer</em>
-<a class="jxr_linenumber" name="L333" href="#L333">333</a> <em class="jxr_javadoccomment">     * @param engine</em>
-<a class="jxr_linenumber" name="L334" href="#L334">334</a> <em class="jxr_javadoccomment">     * @throws Exception</em>
-<a class="jxr_linenumber" name="L335" href="#L335">335</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L336" href="#L336">336</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> callAnalyzeDependency(String vendor, String product, String version, String expectedCpe, CPEAnalyzer cpeAnalyzer, Engine engine) <strong class="jxr_keyword">throws</strong> Exception {
-<a class="jxr_linenumber" name="L337" href="#L337">337</a>         Dependency dep = <strong class="jxr_keyword">new</strong> Dependency(<strong class="jxr_keyword">true</strong>);
-<a class="jxr_linenumber" name="L338" href="#L338">338</a>         dep.addEvidence(EvidenceType.VENDOR, <span class="jxr_string">"test"</span>, <span class="jxr_string">"vendor"</span>, vendor, Confidence.HIGHEST);
-<a class="jxr_linenumber" name="L339" href="#L339">339</a>         dep.addEvidence(EvidenceType.PRODUCT, <span class="jxr_string">"test"</span>, <span class="jxr_string">"product"</span>, product, Confidence.HIGHEST);
-<a class="jxr_linenumber" name="L340" href="#L340">340</a>         dep.addEvidence(EvidenceType.VERSION, <span class="jxr_string">"test"</span>, <span class="jxr_string">"version"</span>, version, Confidence.HIGHEST);
-<a class="jxr_linenumber" name="L341" href="#L341">341</a>         dep.setMd5sum(<span class="jxr_string">""</span>);
-<a class="jxr_linenumber" name="L342" href="#L342">342</a>         dep.setSha1sum(<span class="jxr_string">""</span>);
-<a class="jxr_linenumber" name="L343" href="#L343">343</a>         dep.setSha256sum(<span class="jxr_string">""</span>);
-<a class="jxr_linenumber" name="L344" href="#L344">344</a> 
-<a class="jxr_linenumber" name="L345" href="#L345">345</a>         cpeAnalyzer.analyzeDependency(dep, engine);
+<a class="jxr_linenumber" name="L302" href="#L302">302</a>             callAnalyzeDependency(<span class="jxr_string">"eclipse"</span>, <span class="jxr_string">"jetty"</span>, <span class="jxr_string">"20.4.8.v20171121"</span>, <span class="jxr_string">"cpe:2.3:a:eclipse:jetty:20.4.8:20171121:*:*:*:*:*:*"</span>, instance, engine);
+<a class="jxr_linenumber" name="L303" href="#L303">303</a>             callAnalyzeDependency(<span class="jxr_string">"openssl"</span>, <span class="jxr_string">"openssl"</span>, <span class="jxr_string">"1.0.1c"</span>, <span class="jxr_string">"cpe:2.3:a:openssl:openssl:1.0.1c:*:*:*:*:*:*:*"</span>, instance, engine);
+<a class="jxr_linenumber" name="L304" href="#L304">304</a>             callAnalyzeDependency(<span class="jxr_string">"apache"</span>, <span class="jxr_string">"commons-httpclient"</span>, <span class="jxr_string">"3.0"</span>, <span class="jxr_string">"cpe:2.3:a:apache:httpclient:3.0:*:*:*:*:*:*:*"</span>, instance, engine);
+<a class="jxr_linenumber" name="L305" href="#L305">305</a>             <em class="jxr_comment">//requires 2018 NVD CVE data to identify this. Removing in order to speed build</em>
+<a class="jxr_linenumber" name="L306" href="#L306">306</a>             <em class="jxr_comment">//callAnalyzeDependency("jrebel", "zt-zip", "1.0", "cpe:2.3:a:jrebel:zt-zip:1.0:*:*:*:*:*:*:*", instance, engine);</em>
+<a class="jxr_linenumber" name="L307" href="#L307">307</a> 
+<a class="jxr_linenumber" name="L308" href="#L308">308</a>             <em class="jxr_comment">// Non-exact matches</em>
+<a class="jxr_linenumber" name="L309" href="#L309">309</a>             callAnalyzeDependency(<span class="jxr_string">"org.apache"</span>, <span class="jxr_string">"commons-httpclient"</span>, <span class="jxr_string">"3.0"</span>, <span class="jxr_string">"cpe:2.3:a:apache:httpclient:3.0:*:*:*:*:*:*:*"</span>, instance, engine);
+<a class="jxr_linenumber" name="L310" href="#L310">310</a>             callAnalyzeDependency(<span class="jxr_string">"org.apache"</span>, <span class="jxr_string">"httpclient"</span>, <span class="jxr_string">"3.0"</span>, <span class="jxr_string">"cpe:2.3:a:apache:httpclient:3.0:*:*:*:*:*:*:*"</span>, instance, engine);
+<a class="jxr_linenumber" name="L311" href="#L311">311</a>             <em class="jxr_comment">//requires 2018 NVD CVE data to identify this. Removing in order to speed build</em>
+<a class="jxr_linenumber" name="L312" href="#L312">312</a>             <em class="jxr_comment">//callAnalyzeDependency("org.jrebel", "zt-zip", "1.0", "cpe:2.3:a:jrebel:zt-zip:1.0:*:*:*:*:*:*:*", instance, engine);</em>
+<a class="jxr_linenumber" name="L313" href="#L313">313</a> 
+<a class="jxr_linenumber" name="L314" href="#L314">314</a>             instance.close();
+<a class="jxr_linenumber" name="L315" href="#L315">315</a>         }
+<a class="jxr_linenumber" name="L316" href="#L316">316</a>     }
+<a class="jxr_linenumber" name="L317" href="#L317">317</a> 
+<a class="jxr_linenumber" name="L318" href="#L318">318</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L319" href="#L319">319</a> <em class="jxr_javadoccomment">     * Executes the test call against AnalyzeDependency.</em>
+<a class="jxr_linenumber" name="L320" href="#L320">320</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L321" href="#L321">321</a> <em class="jxr_javadoccomment">     * @param vendor</em>
+<a class="jxr_linenumber" name="L322" href="#L322">322</a> <em class="jxr_javadoccomment">     * @param product</em>
+<a class="jxr_linenumber" name="L323" href="#L323">323</a> <em class="jxr_javadoccomment">     * @param version</em>
+<a class="jxr_linenumber" name="L324" href="#L324">324</a> <em class="jxr_javadoccomment">     * @param expectedCpe</em>
+<a class="jxr_linenumber" name="L325" href="#L325">325</a> <em class="jxr_javadoccomment">     * @param cpeAnalyzer</em>
+<a class="jxr_linenumber" name="L326" href="#L326">326</a> <em class="jxr_javadoccomment">     * @param engine</em>
+<a class="jxr_linenumber" name="L327" href="#L327">327</a> <em class="jxr_javadoccomment">     * @throws Exception</em>
+<a class="jxr_linenumber" name="L328" href="#L328">328</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L329" href="#L329">329</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> callAnalyzeDependency(String vendor, String product, String version, String expectedCpe, CPEAnalyzer cpeAnalyzer, Engine engine) <strong class="jxr_keyword">throws</strong> Exception {
+<a class="jxr_linenumber" name="L330" href="#L330">330</a>         Dependency dep = <strong class="jxr_keyword">new</strong> Dependency(<strong class="jxr_keyword">true</strong>);
+<a class="jxr_linenumber" name="L331" href="#L331">331</a>         dep.addEvidence(EvidenceType.VENDOR, <span class="jxr_string">"test"</span>, <span class="jxr_string">"vendor"</span>, vendor, Confidence.HIGHEST);
+<a class="jxr_linenumber" name="L332" href="#L332">332</a>         dep.addEvidence(EvidenceType.PRODUCT, <span class="jxr_string">"test"</span>, <span class="jxr_string">"product"</span>, product, Confidence.HIGHEST);
+<a class="jxr_linenumber" name="L333" href="#L333">333</a>         dep.addEvidence(EvidenceType.VERSION, <span class="jxr_string">"test"</span>, <span class="jxr_string">"version"</span>, version, Confidence.HIGHEST);
+<a class="jxr_linenumber" name="L334" href="#L334">334</a>         dep.setMd5sum(<span class="jxr_string">""</span>);
+<a class="jxr_linenumber" name="L335" href="#L335">335</a>         dep.setSha1sum(<span class="jxr_string">""</span>);
+<a class="jxr_linenumber" name="L336" href="#L336">336</a>         dep.setSha256sum(<span class="jxr_string">""</span>);
+<a class="jxr_linenumber" name="L337" href="#L337">337</a> 
+<a class="jxr_linenumber" name="L338" href="#L338">338</a>         cpeAnalyzer.analyzeDependency(dep, engine);
+<a class="jxr_linenumber" name="L339" href="#L339">339</a> 
+<a class="jxr_linenumber" name="L340" href="#L340">340</a>         <strong class="jxr_keyword">boolean</strong> found = dep.getVulnerableSoftwareIdentifiers().stream().anyMatch(id -&gt; {
+<a class="jxr_linenumber" name="L341" href="#L341">341</a>             System.out.println(id.getValue());
+<a class="jxr_linenumber" name="L342" href="#L342">342</a>             <strong class="jxr_keyword">return</strong> expectedCpe.equals(id.getValue());
+<a class="jxr_linenumber" name="L343" href="#L343">343</a>         });
+<a class="jxr_linenumber" name="L344" href="#L344">344</a>         assertTrue(found, String.format(<span class="jxr_string">"%s:%s:%s identifier not found"</span>, vendor, product, version));
+<a class="jxr_linenumber" name="L345" href="#L345">345</a>     }
 <a class="jxr_linenumber" name="L346" href="#L346">346</a> 
-<a class="jxr_linenumber" name="L347" href="#L347">347</a>         <strong class="jxr_keyword">boolean</strong> found = dep.getVulnerableSoftwareIdentifiers().stream().anyMatch(id -&gt; {
-<a class="jxr_linenumber" name="L348" href="#L348">348</a>             System.out.println(id.getValue());
-<a class="jxr_linenumber" name="L349" href="#L349">349</a>             <strong class="jxr_keyword">return</strong> expectedCpe.equals(id.getValue());
-<a class="jxr_linenumber" name="L350" href="#L350">350</a>         });
-<a class="jxr_linenumber" name="L351" href="#L351">351</a>         assertTrue(found, String.format(<span class="jxr_string">"%s:%s:%s identifier not found"</span>, vendor, product, version));
-<a class="jxr_linenumber" name="L352" href="#L352">352</a>     }
-<a class="jxr_linenumber" name="L353" href="#L353">353</a> 
-<a class="jxr_linenumber" name="L354" href="#L354">354</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L355" href="#L355">355</a> <em class="jxr_javadoccomment">     * Test of searchCPE method, of class CPEAnalyzer.</em>
-<a class="jxr_linenumber" name="L356" href="#L356">356</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L357" href="#L357">357</a> <em class="jxr_javadoccomment">     * @throws Exception is thrown when an exception occurs</em>
-<a class="jxr_linenumber" name="L358" href="#L358">358</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L359" href="#L359">359</a>     @Test
-<a class="jxr_linenumber" name="L360" href="#L360">360</a>     <strong class="jxr_keyword">void</strong> testSearchCPE() <strong class="jxr_keyword">throws</strong> Exception {
-<a class="jxr_linenumber" name="L361" href="#L361">361</a>         Map&lt;String, MutableInt&gt; vendor = <strong class="jxr_keyword">new</strong> HashMap&lt;&gt;();
-<a class="jxr_linenumber" name="L362" href="#L362">362</a>         Map&lt;String, MutableInt&gt; product = <strong class="jxr_keyword">new</strong> HashMap&lt;&gt;();
-<a class="jxr_linenumber" name="L363" href="#L363">363</a>         vendor.put(<span class="jxr_string">"apache software foundation"</span>, <strong class="jxr_keyword">new</strong> MutableInt(1));
-<a class="jxr_linenumber" name="L364" href="#L364">364</a>         product.put(<span class="jxr_string">"struts 2 core"</span>, <strong class="jxr_keyword">new</strong> MutableInt(1));
-<a class="jxr_linenumber" name="L365" href="#L365">365</a> 
-<a class="jxr_linenumber" name="L366" href="#L366">366</a>         String expVendor = <span class="jxr_string">"apache"</span>;
-<a class="jxr_linenumber" name="L367" href="#L367">367</a>         String expProduct = <span class="jxr_string">"struts"</span>;
-<a class="jxr_linenumber" name="L368" href="#L368">368</a> 
-<a class="jxr_linenumber" name="L369" href="#L369">369</a>         CPEAnalyzer instance = <strong class="jxr_keyword">new</strong> CPEAnalyzer();
-<a class="jxr_linenumber" name="L370" href="#L370">370</a>         <strong class="jxr_keyword">try</strong> (Engine engine = <strong class="jxr_keyword">new</strong> Engine(getSettings())) {
-<a class="jxr_linenumber" name="L371" href="#L371">371</a>             engine.openDatabase(<strong class="jxr_keyword">true</strong>, <strong class="jxr_keyword">true</strong>);
-<a class="jxr_linenumber" name="L372" href="#L372">372</a>             instance.initialize(getSettings());
-<a class="jxr_linenumber" name="L373" href="#L373">373</a>             instance.prepare(engine);
-<a class="jxr_linenumber" name="L374" href="#L374">374</a> 
-<a class="jxr_linenumber" name="L375" href="#L375">375</a>             Set&lt;String&gt; productWeightings = Collections.singleton(<span class="jxr_string">"struts2"</span>);
-<a class="jxr_linenumber" name="L376" href="#L376">376</a>             Set&lt;String&gt; vendorWeightings = Collections.singleton(<span class="jxr_string">"apache"</span>);
-<a class="jxr_linenumber" name="L377" href="#L377">377</a>             List&lt;IndexEntry&gt; result = instance.searchCPE(vendor, product, vendorWeightings, productWeightings, Ecosystem.JAVA);
-<a class="jxr_linenumber" name="L378" href="#L378">378</a> 
-<a class="jxr_linenumber" name="L379" href="#L379">379</a>             <strong class="jxr_keyword">boolean</strong> found = false;
-<a class="jxr_linenumber" name="L380" href="#L380">380</a>             <strong class="jxr_keyword">for</strong> (IndexEntry entry : result) {
-<a class="jxr_linenumber" name="L381" href="#L381">381</a>                 <strong class="jxr_keyword">if</strong> (expVendor.equals(entry.getVendor()) &amp;&amp; expProduct.equals(entry.getProduct())) {
-<a class="jxr_linenumber" name="L382" href="#L382">382</a>                     found = <strong class="jxr_keyword">true</strong>;
-<a class="jxr_linenumber" name="L383" href="#L383">383</a>                     <strong class="jxr_keyword">break</strong>;
-<a class="jxr_linenumber" name="L384" href="#L384">384</a>                 }
-<a class="jxr_linenumber" name="L385" href="#L385">385</a>             }
-<a class="jxr_linenumber" name="L386" href="#L386">386</a>             assertTrue(found, <span class="jxr_string">"apache:struts was not identified"</span>);
-<a class="jxr_linenumber" name="L387" href="#L387">387</a>         }
-<a class="jxr_linenumber" name="L388" href="#L388">388</a>         instance.close();
-<a class="jxr_linenumber" name="L389" href="#L389">389</a>     }
-<a class="jxr_linenumber" name="L390" href="#L390">390</a> }
+<a class="jxr_linenumber" name="L347" href="#L347">347</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L348" href="#L348">348</a> <em class="jxr_javadoccomment">     * Test of searchCPE method, of class CPEAnalyzer.</em>
+<a class="jxr_linenumber" name="L349" href="#L349">349</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L350" href="#L350">350</a> <em class="jxr_javadoccomment">     * @throws Exception is thrown when an exception occurs</em>
+<a class="jxr_linenumber" name="L351" href="#L351">351</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L352" href="#L352">352</a>     @Test
+<a class="jxr_linenumber" name="L353" href="#L353">353</a>     <strong class="jxr_keyword">void</strong> testSearchCPE() <strong class="jxr_keyword">throws</strong> Exception {
+<a class="jxr_linenumber" name="L354" href="#L354">354</a>         Map&lt;String, MutableInt&gt; vendor = <strong class="jxr_keyword">new</strong> HashMap&lt;&gt;();
+<a class="jxr_linenumber" name="L355" href="#L355">355</a>         Map&lt;String, MutableInt&gt; product = <strong class="jxr_keyword">new</strong> HashMap&lt;&gt;();
+<a class="jxr_linenumber" name="L356" href="#L356">356</a>         vendor.put(<span class="jxr_string">"apache software foundation"</span>, <strong class="jxr_keyword">new</strong> MutableInt(1));
+<a class="jxr_linenumber" name="L357" href="#L357">357</a>         product.put(<span class="jxr_string">"struts 2 core"</span>, <strong class="jxr_keyword">new</strong> MutableInt(1));
+<a class="jxr_linenumber" name="L358" href="#L358">358</a> 
+<a class="jxr_linenumber" name="L359" href="#L359">359</a>         String expVendor = <span class="jxr_string">"apache"</span>;
+<a class="jxr_linenumber" name="L360" href="#L360">360</a>         String expProduct = <span class="jxr_string">"struts"</span>;
+<a class="jxr_linenumber" name="L361" href="#L361">361</a> 
+<a class="jxr_linenumber" name="L362" href="#L362">362</a>         CPEAnalyzer instance = <strong class="jxr_keyword">new</strong> CPEAnalyzer();
+<a class="jxr_linenumber" name="L363" href="#L363">363</a>         <strong class="jxr_keyword">try</strong> (Engine engine = <strong class="jxr_keyword">new</strong> Engine(getSettings())) {
+<a class="jxr_linenumber" name="L364" href="#L364">364</a>             engine.openDatabase(<strong class="jxr_keyword">true</strong>, <strong class="jxr_keyword">true</strong>);
+<a class="jxr_linenumber" name="L365" href="#L365">365</a>             instance.initialize(getSettings());
+<a class="jxr_linenumber" name="L366" href="#L366">366</a>             instance.prepare(engine);
+<a class="jxr_linenumber" name="L367" href="#L367">367</a> 
+<a class="jxr_linenumber" name="L368" href="#L368">368</a>             Set&lt;String&gt; productWeightings = Collections.singleton(<span class="jxr_string">"struts2"</span>);
+<a class="jxr_linenumber" name="L369" href="#L369">369</a>             Set&lt;String&gt; vendorWeightings = Collections.singleton(<span class="jxr_string">"apache"</span>);
+<a class="jxr_linenumber" name="L370" href="#L370">370</a>             List&lt;IndexEntry&gt; result = instance.searchCPE(vendor, product, vendorWeightings, productWeightings, Ecosystem.JAVA);
+<a class="jxr_linenumber" name="L371" href="#L371">371</a> 
+<a class="jxr_linenumber" name="L372" href="#L372">372</a>             <strong class="jxr_keyword">boolean</strong> found = false;
+<a class="jxr_linenumber" name="L373" href="#L373">373</a>             <strong class="jxr_keyword">for</strong> (IndexEntry entry : result) {
+<a class="jxr_linenumber" name="L374" href="#L374">374</a>                 <strong class="jxr_keyword">if</strong> (expVendor.equals(entry.getVendor()) &amp;&amp; expProduct.equals(entry.getProduct())) {
+<a class="jxr_linenumber" name="L375" href="#L375">375</a>                     found = <strong class="jxr_keyword">true</strong>;
+<a class="jxr_linenumber" name="L376" href="#L376">376</a>                     <strong class="jxr_keyword">break</strong>;
+<a class="jxr_linenumber" name="L377" href="#L377">377</a>                 }
+<a class="jxr_linenumber" name="L378" href="#L378">378</a>             }
+<a class="jxr_linenumber" name="L379" href="#L379">379</a>             assertTrue(found, <span class="jxr_string">"apache:struts was not identified"</span>);
+<a class="jxr_linenumber" name="L380" href="#L380">380</a>         }
+<a class="jxr_linenumber" name="L381" href="#L381">381</a>         instance.close();
+<a class="jxr_linenumber" name="L382" href="#L382">382</a>     }
+<a class="jxr_linenumber" name="L383" href="#L383">383</a> }
 </pre>
 <hr/>
 <div id="footer">Copyright &#169; 2012&#x2013;2026 <a href="https://www.owasp.org">OWASP</a>. All rights reserved.</div>

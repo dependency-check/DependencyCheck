@@ -23,7 +23,9 @@ package org.owasp.dependencycheck.taskdefs;
  *
  * @author Jeremy Long
  */
-<span class="fc" id="L26">public class RetirejsFilter {</span>
+// Poorly named class that doesn't match RetireJsFilter,
+// see https://github.com/dependency-check/DependencyCheck/pull/8355#discussion_r2901538854
+<span class="fc" id="L28">public class RetirejsFilter {</span>
 
     /**
      * The regular expression for the Retire JS Content Filter.
@@ -36,7 +38,7 @@ package org.owasp.dependencycheck.taskdefs;
      * @return the regex of regex
      */
     public String getRegex() {
-<span class="fc" id="L39">        return regex;</span>
+<span class="fc" id="L41">        return regex;</span>
     }
 
     /**
@@ -45,8 +47,8 @@ package org.owasp.dependencycheck.taskdefs;
      * @param regex new regex of regex
      */
     public void setRegex(String regex) {
-<span class="fc" id="L48">        this.regex = regex;</span>
-<span class="fc" id="L49">    }</span>
+<span class="fc" id="L50">        this.regex = regex;</span>
+<span class="fc" id="L51">    }</span>
 
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.14.202510111229</span></div></body></html>

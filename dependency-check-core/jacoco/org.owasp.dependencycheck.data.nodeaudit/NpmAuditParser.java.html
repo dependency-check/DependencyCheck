@@ -132,8 +132,8 @@ import org.owasp.dependencycheck.utils.CvssUtil;
             }
 <span class="pc bpc" id="L133" title="1 of 2 branches missed.">            if (baseScore &gt;= 0.0) {</span>
 <span class="fc" id="L134">                final String vector = jsonCvss.optString(&quot;vectorString&quot;);</span>
-<span class="pc bpc" id="L135" title="1 of 4 branches missed.">                if (vector != null &amp;&amp; !&quot;null&quot;.equals(vector)) {</span>
-<span class="pc bpc" id="L136" title="2 of 4 branches missed.">                    if (vector.startsWith(&quot;CVSS:3&quot;) &amp;&amp; baseScore &gt;= 0.0) {</span>
+<span class="pc bpc" id="L135" title="2 of 4 branches missed.">                if (vector != null &amp;&amp; !&quot;null&quot;.equals(vector)) {</span>
+<span class="pc bpc" id="L136" title="1 of 4 branches missed.">                    if (vector.startsWith(&quot;CVSS:3&quot;) &amp;&amp; baseScore &gt;= 0.0) {</span>
                         try {
 <span class="fc" id="L138">                            final CvssV3 cvss = CvssUtil.vectorToCvssV3(vector, baseScore);</span>
 <span class="fc" id="L139">                            advisory.setCvssV3(cvss);</span>
@@ -141,7 +141,7 @@ import org.owasp.dependencycheck.utils.CvssUtil;
 <span class="nc" id="L141">                            LOGGER.warn(&quot;Invalid CVSS vector format encountered in NPM Audit results '{}': {} &quot;, vector, iae.getMessage());</span>
 <span class="pc" id="L142">                        }</span>
                     } else {
-<span class="nc" id="L144">                        LOGGER.warn(&quot;Unsupported CVSS vector format in NPM Audit results, please file a feature &quot;</span>
+<span class="fc" id="L144">                        LOGGER.warn(&quot;Unsupported CVSS vector format in NPM Audit results, please file a feature &quot;</span>
                                 + &quot;request at https://github.com/dependency-check/DependencyCheck/issues/new/choose to &quot;
                                 + &quot;support vector format '{}' &quot;, vector);
                     }

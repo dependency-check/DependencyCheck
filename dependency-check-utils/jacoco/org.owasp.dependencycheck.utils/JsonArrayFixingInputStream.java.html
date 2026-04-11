@@ -234,13 +234,10 @@ public class JsonArrayFixingInputStream extends InputStream {
 
     @Override
     public void close() throws IOException {
-<span class="fc" id="L237">        in.close();</span>
-<span class="fc" id="L238">    }</span>
-
-    @Override
-    public boolean markSupported() {
-<span class="fc" id="L242">        return false;</span>
-    }
+<span class="fc bfc" id="L237" title="All 2 branches covered.">        if (in != null) {</span>
+<span class="fc" id="L238">            in.close();</span>
+        }
+<span class="fc" id="L240">    }</span>
 
     /**
      * Tests if the buffer has a trailing comma after having just output a
@@ -251,8 +248,8 @@ public class JsonArrayFixingInputStream extends InputStream {
      * &lt;code&gt;false&lt;/code&gt;
      */
     private boolean hasTrailingComma(int start) {
-<span class="pc bpc" id="L254" title="2 of 6 branches missed.">        return (bufferAvailable &gt;= 1 &amp;&amp; buffer[start + 1] == ',')</span>
-<span class="pc bpc" id="L255" title="1 of 4 branches missed.">                || bufferAvailable &gt;= 2 &amp;&amp; isWhiteSpace(buffer[start + 1]) &amp;&amp; buffer[start + 2] == ',';</span>
+<span class="pc bpc" id="L251" title="2 of 6 branches missed.">        return (bufferAvailable &gt;= 1 &amp;&amp; buffer[start + 1] == ',')</span>
+<span class="pc bpc" id="L252" title="1 of 4 branches missed.">                || bufferAvailable &gt;= 2 &amp;&amp; isWhiteSpace(buffer[start + 1]) &amp;&amp; buffer[start + 2] == ',';</span>
     }
 
     /**
@@ -263,14 +260,14 @@ public class JsonArrayFixingInputStream extends InputStream {
      * &lt;code&gt;false&lt;/code&gt;
      */
     protected boolean isWhiteSpace(byte c) {
-<span class="fc bfc" id="L266" title="All 2 branches covered.">        switch (c) {</span>
+<span class="fc bfc" id="L263" title="All 2 branches covered.">        switch (c) {</span>
             case '\n':
             case '\r':
             case '\t':
             case ' ':
-<span class="fc" id="L271">                return true;</span>
+<span class="fc" id="L268">                return true;</span>
             default:
-<span class="fc" id="L273">                return false;</span>
+<span class="fc" id="L270">                return false;</span>
         }
     }
 }

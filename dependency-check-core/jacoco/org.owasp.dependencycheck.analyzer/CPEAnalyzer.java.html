@@ -46,8 +46,8 @@ import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.TopDocs;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import org.owasp.dependencycheck.Engine;
 import org.owasp.dependencycheck.analyzer.exception.AnalysisException;
 import org.owasp.dependencycheck.data.cpe.CpeMemoryIndex;
@@ -1102,7 +1102,7 @@ import us.springett.parsers.cpe.values.Part;
      */
     private void addVersionAndUpdate(DependencyVersion depVersion, final CpeBuilder cpeBuilder) {
 <span class="fc" id="L1104">        final int idx = depVersion.getVersionParts().size() - 1;</span>
-<span class="fc bfc" id="L1105" title="All 2 branches covered.">        if (idx &gt; 0 &amp;&amp; depVersion.getVersionParts().get(idx)</span>
+<span class="pc bpc" id="L1105" title="1 of 2 branches missed.">        if (idx &gt; 0 &amp;&amp; depVersion.getVersionParts().get(idx)</span>
 <span class="fc bfc" id="L1106" title="All 2 branches covered.">                .matches(&quot;^(v|final|release|snapshot|r|b|beta|a|alpha|u|rc|sp|dev|revision|service|build|pre|p|patch|update|m|20\\d\\d).*$&quot;)) {</span>
 <span class="fc" id="L1107">            cpeBuilder.version(StringUtils.join(depVersion.getVersionParts().subList(0, idx), &quot;.&quot;));</span>
             //when written - no update versions in the NVD start with v### - they all strip the v off
@@ -1277,7 +1277,7 @@ import us.springett.parsers.cpe.values.Part;
          * @return the natural ordering of IdentifierMatch
          */
         @Override
-        public int compareTo(@NotNull IdentifierMatch o) {
+        public int compareTo(@NonNull IdentifierMatch o) {
 <span class="fc" id="L1281">            return new CompareToBuilder()</span>
 <span class="fc" id="L1282">                    .append(identifierConfidence, o.identifierConfidence)</span>
 <span class="fc" id="L1283">                    .append(identifier, o.identifier)</span>

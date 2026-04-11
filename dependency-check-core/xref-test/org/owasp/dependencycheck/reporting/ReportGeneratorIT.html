@@ -169,105 +169,103 @@
 <a class="jxr_linenumber" name="L161" href="#L161">161</a>             createParentFolder(writeCsvTo);
 <a class="jxr_linenumber" name="L162" href="#L162">162</a>             createParentFolder(writeSarifTo);
 <a class="jxr_linenumber" name="L163" href="#L163">163</a> 
-<a class="jxr_linenumber" name="L164" href="#L164">164</a>             File struts = <strong class="jxr_keyword">new</strong> File(<strong class="jxr_keyword">this</strong>.getClass().getClassLoader().getResource(<span class="jxr_string">"struts2-core-2.1.2.jar"</span>).getPath());
-<a class="jxr_linenumber" name="L165" href="#L165">165</a>             File war = BaseTest.getResourceAsFile(<strong class="jxr_keyword">this</strong>, <span class="jxr_string">"war-4.0.war"</span>);
-<a class="jxr_linenumber" name="L166" href="#L166">166</a>             File cfu = BaseTest.getResourceAsFile(<strong class="jxr_keyword">this</strong>, <span class="jxr_string">"commons-fileupload-1.2.1.jar"</span>);
+<a class="jxr_linenumber" name="L164" href="#L164">164</a>             File struts = BaseTest.getResourceAsFile(<strong class="jxr_keyword">this</strong>, <span class="jxr_string">"maven-lib/struts2-core-2.1.2.jar"</span>);
+<a class="jxr_linenumber" name="L165" href="#L165">165</a>             File war = BaseTest.getResourceAsFile(<strong class="jxr_keyword">this</strong>, <span class="jxr_string">"maven-lib/war-4.0.war"</span>);
+<a class="jxr_linenumber" name="L166" href="#L166">166</a>             File cfu = BaseTest.getResourceAsFile(<strong class="jxr_keyword">this</strong>, <span class="jxr_string">"maven-lib/commons-fileupload-1.2.1.jar"</span>);
 <a class="jxr_linenumber" name="L167" href="#L167">167</a> 
-<a class="jxr_linenumber" name="L168" href="#L168">168</a>             <em class="jxr_comment">//File axis = new File(this.getClass().getClassLoader().getResource("axis2-adb-1.4.1.jar").getPath());</em>
-<a class="jxr_linenumber" name="L169" href="#L169">169</a>             File axis = BaseTest.getResourceAsFile(<strong class="jxr_keyword">this</strong>, <span class="jxr_string">"axis2-adb-1.4.1.jar"</span>);
-<a class="jxr_linenumber" name="L170" href="#L170">170</a>             <em class="jxr_comment">//File jetty = new File(this.getClass().getClassLoader().getResource("org.mortbay.jetty.jar").getPath());</em>
-<a class="jxr_linenumber" name="L171" href="#L171">171</a>             File jetty = BaseTest.getResourceAsFile(<strong class="jxr_keyword">this</strong>, <span class="jxr_string">"org.mortbay.jetty.jar"</span>);
-<a class="jxr_linenumber" name="L172" href="#L172">172</a> 
-<a class="jxr_linenumber" name="L173" href="#L173">173</a>             File nodeTest = BaseTest.getResourceAsFile(<strong class="jxr_keyword">this</strong>, <span class="jxr_string">"nodejs"</span>);
-<a class="jxr_linenumber" name="L174" href="#L174">174</a>             <strong class="jxr_keyword">int</strong> vulnCount;
-<a class="jxr_linenumber" name="L175" href="#L175">175</a>             <strong class="jxr_keyword">try</strong> (Engine engine = <strong class="jxr_keyword">new</strong> Engine(settings)) {
-<a class="jxr_linenumber" name="L176" href="#L176">176</a>                 engine.scan(struts);
-<a class="jxr_linenumber" name="L177" href="#L177">177</a>                 engine.scan(war);
-<a class="jxr_linenumber" name="L178" href="#L178">178</a>                 engine.scan(cfu);
-<a class="jxr_linenumber" name="L179" href="#L179">179</a>                 engine.scan(axis);
-<a class="jxr_linenumber" name="L180" href="#L180">180</a>                 engine.scan(jetty);
-<a class="jxr_linenumber" name="L181" href="#L181">181</a>                 engine.scan(nodeTest);
-<a class="jxr_linenumber" name="L182" href="#L182">182</a>                 engine.analyzeDependencies();
-<a class="jxr_linenumber" name="L183" href="#L183">183</a> 
-<a class="jxr_linenumber" name="L184" href="#L184">184</a>                 vulnCount = countVulns(engine.getDependencies());
-<a class="jxr_linenumber" name="L185" href="#L185">185</a>                 ExceptionCollection exceptions = <strong class="jxr_keyword">new</strong> ExceptionCollection();
-<a class="jxr_linenumber" name="L186" href="#L186">186</a>                 exceptions.addException(<strong class="jxr_keyword">new</strong> DownloadFailedException(<span class="jxr_string">"test exception 1"</span>));
-<a class="jxr_linenumber" name="L187" href="#L187">187</a>                 DownloadFailedException sub = <strong class="jxr_keyword">new</strong> DownloadFailedException(<span class="jxr_string">"test cause exception - nested"</span>);
-<a class="jxr_linenumber" name="L188" href="#L188">188</a>                 DownloadFailedException <strong class="jxr_keyword">inner</strong> = <strong class="jxr_keyword">new</strong> DownloadFailedException(<span class="jxr_string">"Unable to download test file"</span>, sub.fillInStackTrace());
-<a class="jxr_linenumber" name="L189" href="#L189">189</a>                 UpdateException ex = <strong class="jxr_keyword">new</strong> UpdateException(<span class="jxr_string">"Test Exception 2"</span>, <strong class="jxr_keyword">inner</strong>.fillInStackTrace());
-<a class="jxr_linenumber" name="L190" href="#L190">190</a>                 exceptions.addException(ex);
-<a class="jxr_linenumber" name="L191" href="#L191">191</a>                 engine.writeReports(<span class="jxr_string">"Test Report"</span>, <span class="jxr_string">"org.owasp"</span>, <span class="jxr_string">"dependency-check-core"</span>, <span class="jxr_string">"1.4.8"</span>, writeTo, <span class="jxr_string">"XML"</span>, exceptions);
-<a class="jxr_linenumber" name="L192" href="#L192">192</a>                 engine.writeReports(<span class="jxr_string">"Test Report"</span>, <span class="jxr_string">"org.owasp"</span>, <span class="jxr_string">"dependency-check-core"</span>, <span class="jxr_string">"1.4.8"</span>, writeJsonTo, <span class="jxr_string">"JSON"</span>, exceptions);
-<a class="jxr_linenumber" name="L193" href="#L193">193</a>                 engine.writeReports(<span class="jxr_string">"Test Report"</span>, <span class="jxr_string">"org.owasp"</span>, <span class="jxr_string">"dependency-check-core"</span>, <span class="jxr_string">"1.4.8"</span>, writeHtmlTo, <span class="jxr_string">"HTML"</span>, exceptions);
-<a class="jxr_linenumber" name="L194" href="#L194">194</a>                 engine.writeReports(<span class="jxr_string">"Test Report"</span>, <span class="jxr_string">"org.owasp"</span>, <span class="jxr_string">"dependency-check-core"</span>, <span class="jxr_string">"1.4.8"</span>, writeCsvTo, <span class="jxr_string">"CSV"</span>, exceptions);
-<a class="jxr_linenumber" name="L195" href="#L195">195</a>                 engine.writeReports(<span class="jxr_string">"Test Report"</span>, <span class="jxr_string">"org.owasp"</span>, <span class="jxr_string">"dependency-check-core"</span>, <span class="jxr_string">"1.4.8"</span>, writeJunitTo, <span class="jxr_string">"JUNIT"</span>, exceptions);
-<a class="jxr_linenumber" name="L196" href="#L196">196</a>                 engine.writeReports(<span class="jxr_string">"Test Report"</span>, <span class="jxr_string">"org.owasp"</span>, <span class="jxr_string">"dependency-check-core"</span>, <span class="jxr_string">"1.4.8"</span>, writeSarifTo, <span class="jxr_string">"SARIF"</span>, exceptions);
-<a class="jxr_linenumber" name="L197" href="#L197">197</a>             }
-<a class="jxr_linenumber" name="L198" href="#L198">198</a>             <em class="jxr_comment">//Test XML</em>
-<a class="jxr_linenumber" name="L199" href="#L199">199</a>             InputStream xsdStream = ReportGenerator.<strong class="jxr_keyword">class</strong>.getClassLoader().getResourceAsStream(<span class="jxr_string">"schema/dependency-check.4.1.xsd"</span>);
-<a class="jxr_linenumber" name="L200" href="#L200">200</a>             StreamSource xsdSource = <strong class="jxr_keyword">new</strong> StreamSource(xsdStream);
-<a class="jxr_linenumber" name="L201" href="#L201">201</a>             StreamSource xmlSource = <strong class="jxr_keyword">new</strong> StreamSource(writeTo);
-<a class="jxr_linenumber" name="L202" href="#L202">202</a>             SchemaFactory sf = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-<a class="jxr_linenumber" name="L203" href="#L203">203</a>             Schema schema = sf.newSchema(xsdSource);
-<a class="jxr_linenumber" name="L204" href="#L204">204</a>             Validator validator = schema.newValidator();
-<a class="jxr_linenumber" name="L205" href="#L205">205</a>             validator.validate(xmlSource);
-<a class="jxr_linenumber" name="L206" href="#L206">206</a> 
-<a class="jxr_linenumber" name="L207" href="#L207">207</a>             <em class="jxr_comment">//Test CSV</em>
-<a class="jxr_linenumber" name="L208" href="#L208">208</a>             <strong class="jxr_keyword">int</strong> linesWritten = countLines(writeCsvTo);
-<a class="jxr_linenumber" name="L209" href="#L209">209</a>             assertEquals(vulnCount + 1, linesWritten);
-<a class="jxr_linenumber" name="L210" href="#L210">210</a>         });
-<a class="jxr_linenumber" name="L211" href="#L211">211</a>     }
-<a class="jxr_linenumber" name="L212" href="#L212">212</a> 
-<a class="jxr_linenumber" name="L213" href="#L213">213</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L214" href="#L214">214</a> <em class="jxr_javadoccomment">     * create the parent folder if doesn't exist</em>
-<a class="jxr_linenumber" name="L215" href="#L215">215</a> <em class="jxr_javadoccomment">     * @param file the file</em>
-<a class="jxr_linenumber" name="L216" href="#L216">216</a> <em class="jxr_javadoccomment">     * @return true if all fine ?</em>
-<a class="jxr_linenumber" name="L217" href="#L217">217</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L218" href="#L218">218</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">boolean</strong> createParentFolder(File file){
-<a class="jxr_linenumber" name="L219" href="#L219">219</a>         <strong class="jxr_keyword">if</strong> (!file.getParentFile().exists()) {
-<a class="jxr_linenumber" name="L220" href="#L220">220</a>             <strong class="jxr_keyword">return</strong> file.getParentFile().mkdir();
-<a class="jxr_linenumber" name="L221" href="#L221">221</a>         }
-<a class="jxr_linenumber" name="L222" href="#L222">222</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">true</strong>;
-<a class="jxr_linenumber" name="L223" href="#L223">223</a>     }
+<a class="jxr_linenumber" name="L168" href="#L168">168</a>             File axis = BaseTest.getResourceAsFile(<strong class="jxr_keyword">this</strong>, <span class="jxr_string">"maven-lib/axis2-adb-1.4.1.jar"</span>);
+<a class="jxr_linenumber" name="L169" href="#L169">169</a>             File jetty = BaseTest.getResourceAsFile(<strong class="jxr_keyword">this</strong>, <span class="jxr_string">"org.mortbay.jetty.jar"</span>);
+<a class="jxr_linenumber" name="L170" href="#L170">170</a> 
+<a class="jxr_linenumber" name="L171" href="#L171">171</a>             File nodeTest = BaseTest.getResourceAsFile(<strong class="jxr_keyword">this</strong>, <span class="jxr_string">"nodejs"</span>);
+<a class="jxr_linenumber" name="L172" href="#L172">172</a>             <strong class="jxr_keyword">int</strong> vulnCount;
+<a class="jxr_linenumber" name="L173" href="#L173">173</a>             <strong class="jxr_keyword">try</strong> (Engine engine = <strong class="jxr_keyword">new</strong> Engine(settings)) {
+<a class="jxr_linenumber" name="L174" href="#L174">174</a>                 engine.scan(struts);
+<a class="jxr_linenumber" name="L175" href="#L175">175</a>                 engine.scan(war);
+<a class="jxr_linenumber" name="L176" href="#L176">176</a>                 engine.scan(cfu);
+<a class="jxr_linenumber" name="L177" href="#L177">177</a>                 engine.scan(axis);
+<a class="jxr_linenumber" name="L178" href="#L178">178</a>                 engine.scan(jetty);
+<a class="jxr_linenumber" name="L179" href="#L179">179</a>                 engine.scan(nodeTest);
+<a class="jxr_linenumber" name="L180" href="#L180">180</a>                 engine.analyzeDependencies();
+<a class="jxr_linenumber" name="L181" href="#L181">181</a> 
+<a class="jxr_linenumber" name="L182" href="#L182">182</a>                 vulnCount = countVulns(engine.getDependencies());
+<a class="jxr_linenumber" name="L183" href="#L183">183</a>                 ExceptionCollection exceptions = <strong class="jxr_keyword">new</strong> ExceptionCollection();
+<a class="jxr_linenumber" name="L184" href="#L184">184</a>                 exceptions.addException(<strong class="jxr_keyword">new</strong> DownloadFailedException(<span class="jxr_string">"test exception 1"</span>));
+<a class="jxr_linenumber" name="L185" href="#L185">185</a>                 DownloadFailedException sub = <strong class="jxr_keyword">new</strong> DownloadFailedException(<span class="jxr_string">"test cause exception - nested"</span>);
+<a class="jxr_linenumber" name="L186" href="#L186">186</a>                 DownloadFailedException <strong class="jxr_keyword">inner</strong> = <strong class="jxr_keyword">new</strong> DownloadFailedException(<span class="jxr_string">"Unable to download test file"</span>, sub.fillInStackTrace());
+<a class="jxr_linenumber" name="L187" href="#L187">187</a>                 UpdateException ex = <strong class="jxr_keyword">new</strong> UpdateException(<span class="jxr_string">"Test Exception 2"</span>, <strong class="jxr_keyword">inner</strong>.fillInStackTrace());
+<a class="jxr_linenumber" name="L188" href="#L188">188</a>                 exceptions.addException(ex);
+<a class="jxr_linenumber" name="L189" href="#L189">189</a>                 engine.writeReports(<span class="jxr_string">"Test Report"</span>, <span class="jxr_string">"org.owasp"</span>, <span class="jxr_string">"dependency-check-core"</span>, <span class="jxr_string">"1.4.8"</span>, writeTo, <span class="jxr_string">"XML"</span>, exceptions);
+<a class="jxr_linenumber" name="L190" href="#L190">190</a>                 engine.writeReports(<span class="jxr_string">"Test Report"</span>, <span class="jxr_string">"org.owasp"</span>, <span class="jxr_string">"dependency-check-core"</span>, <span class="jxr_string">"1.4.8"</span>, writeJsonTo, <span class="jxr_string">"JSON"</span>, exceptions);
+<a class="jxr_linenumber" name="L191" href="#L191">191</a>                 engine.writeReports(<span class="jxr_string">"Test Report"</span>, <span class="jxr_string">"org.owasp"</span>, <span class="jxr_string">"dependency-check-core"</span>, <span class="jxr_string">"1.4.8"</span>, writeHtmlTo, <span class="jxr_string">"HTML"</span>, exceptions);
+<a class="jxr_linenumber" name="L192" href="#L192">192</a>                 engine.writeReports(<span class="jxr_string">"Test Report"</span>, <span class="jxr_string">"org.owasp"</span>, <span class="jxr_string">"dependency-check-core"</span>, <span class="jxr_string">"1.4.8"</span>, writeCsvTo, <span class="jxr_string">"CSV"</span>, exceptions);
+<a class="jxr_linenumber" name="L193" href="#L193">193</a>                 engine.writeReports(<span class="jxr_string">"Test Report"</span>, <span class="jxr_string">"org.owasp"</span>, <span class="jxr_string">"dependency-check-core"</span>, <span class="jxr_string">"1.4.8"</span>, writeJunitTo, <span class="jxr_string">"JUNIT"</span>, exceptions);
+<a class="jxr_linenumber" name="L194" href="#L194">194</a>                 engine.writeReports(<span class="jxr_string">"Test Report"</span>, <span class="jxr_string">"org.owasp"</span>, <span class="jxr_string">"dependency-check-core"</span>, <span class="jxr_string">"1.4.8"</span>, writeSarifTo, <span class="jxr_string">"SARIF"</span>, exceptions);
+<a class="jxr_linenumber" name="L195" href="#L195">195</a>             }
+<a class="jxr_linenumber" name="L196" href="#L196">196</a>             <em class="jxr_comment">//Test XML</em>
+<a class="jxr_linenumber" name="L197" href="#L197">197</a>             InputStream xsdStream = ReportGenerator.<strong class="jxr_keyword">class</strong>.getClassLoader().getResourceAsStream(<span class="jxr_string">"schema/dependency-check.4.1.xsd"</span>);
+<a class="jxr_linenumber" name="L198" href="#L198">198</a>             StreamSource xsdSource = <strong class="jxr_keyword">new</strong> StreamSource(xsdStream);
+<a class="jxr_linenumber" name="L199" href="#L199">199</a>             StreamSource xmlSource = <strong class="jxr_keyword">new</strong> StreamSource(writeTo);
+<a class="jxr_linenumber" name="L200" href="#L200">200</a>             SchemaFactory sf = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+<a class="jxr_linenumber" name="L201" href="#L201">201</a>             Schema schema = sf.newSchema(xsdSource);
+<a class="jxr_linenumber" name="L202" href="#L202">202</a>             Validator validator = schema.newValidator();
+<a class="jxr_linenumber" name="L203" href="#L203">203</a>             validator.validate(xmlSource);
+<a class="jxr_linenumber" name="L204" href="#L204">204</a> 
+<a class="jxr_linenumber" name="L205" href="#L205">205</a>             <em class="jxr_comment">//Test CSV</em>
+<a class="jxr_linenumber" name="L206" href="#L206">206</a>             <strong class="jxr_keyword">int</strong> linesWritten = countLines(writeCsvTo);
+<a class="jxr_linenumber" name="L207" href="#L207">207</a>             assertEquals(vulnCount + 1, linesWritten);
+<a class="jxr_linenumber" name="L208" href="#L208">208</a>         });
+<a class="jxr_linenumber" name="L209" href="#L209">209</a>     }
+<a class="jxr_linenumber" name="L210" href="#L210">210</a> 
+<a class="jxr_linenumber" name="L211" href="#L211">211</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L212" href="#L212">212</a> <em class="jxr_javadoccomment">     * create the parent folder if doesn't exist</em>
+<a class="jxr_linenumber" name="L213" href="#L213">213</a> <em class="jxr_javadoccomment">     * @param file the file</em>
+<a class="jxr_linenumber" name="L214" href="#L214">214</a> <em class="jxr_javadoccomment">     * @return true if all fine ?</em>
+<a class="jxr_linenumber" name="L215" href="#L215">215</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L216" href="#L216">216</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">boolean</strong> createParentFolder(File file){
+<a class="jxr_linenumber" name="L217" href="#L217">217</a>         <strong class="jxr_keyword">if</strong> (!file.getParentFile().exists()) {
+<a class="jxr_linenumber" name="L218" href="#L218">218</a>             <strong class="jxr_keyword">return</strong> file.getParentFile().mkdir();
+<a class="jxr_linenumber" name="L219" href="#L219">219</a>         }
+<a class="jxr_linenumber" name="L220" href="#L220">220</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">true</strong>;
+<a class="jxr_linenumber" name="L221" href="#L221">221</a>     }
+<a class="jxr_linenumber" name="L222" href="#L222">222</a> 
+<a class="jxr_linenumber" name="L223" href="#L223">223</a> 
 <a class="jxr_linenumber" name="L224" href="#L224">224</a> 
-<a class="jxr_linenumber" name="L225" href="#L225">225</a> 
-<a class="jxr_linenumber" name="L226" href="#L226">226</a> 
-<a class="jxr_linenumber" name="L227" href="#L227">227</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L228" href="#L228">228</a> <em class="jxr_javadoccomment">     * Counts the lines in a file. Copied from</em>
-<a class="jxr_linenumber" name="L229" href="#L229">229</a> <em class="jxr_javadoccomment">     * https://stackoverflow.com/a/14411695.</em>
-<a class="jxr_linenumber" name="L230" href="#L230">230</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L231" href="#L231">231</a> <em class="jxr_javadoccomment">     * @param file the file path</em>
-<a class="jxr_linenumber" name="L232" href="#L232">232</a> <em class="jxr_javadoccomment">     * @return the count of the lines in the file</em>
-<a class="jxr_linenumber" name="L233" href="#L233">233</a> <em class="jxr_javadoccomment">     * @throws IOException thrown if the file can't be read</em>
-<a class="jxr_linenumber" name="L234" href="#L234">234</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L235" href="#L235">235</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">int</strong> countLines(File file) <strong class="jxr_keyword">throws</strong> IOException {
-<a class="jxr_linenumber" name="L236" href="#L236">236</a>         <strong class="jxr_keyword">try</strong> (InputStream is = <strong class="jxr_keyword">new</strong> BufferedInputStream(<strong class="jxr_keyword">new</strong> FileInputStream(file))) {
-<a class="jxr_linenumber" name="L237" href="#L237">237</a>             byte[] c = <strong class="jxr_keyword">new</strong> byte[1024];
-<a class="jxr_linenumber" name="L238" href="#L238">238</a>             <strong class="jxr_keyword">int</strong> count = 0;
-<a class="jxr_linenumber" name="L239" href="#L239">239</a>             <strong class="jxr_keyword">int</strong> readChars = 0;
-<a class="jxr_linenumber" name="L240" href="#L240">240</a>             <strong class="jxr_keyword">boolean</strong> endsWithoutNewLine = false;
-<a class="jxr_linenumber" name="L241" href="#L241">241</a>             <strong class="jxr_keyword">while</strong> ((readChars = is.read(c)) != -1) {
-<a class="jxr_linenumber" name="L242" href="#L242">242</a>                 <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> i = 0; i &lt; readChars; ++i) {
-<a class="jxr_linenumber" name="L243" href="#L243">243</a>                     <strong class="jxr_keyword">if</strong> (c[i] == '\n') {
-<a class="jxr_linenumber" name="L244" href="#L244">244</a>                         ++count;
-<a class="jxr_linenumber" name="L245" href="#L245">245</a>                     }
-<a class="jxr_linenumber" name="L246" href="#L246">246</a>                 }
-<a class="jxr_linenumber" name="L247" href="#L247">247</a>                 endsWithoutNewLine = (c[readChars - 1] != '\n');
-<a class="jxr_linenumber" name="L248" href="#L248">248</a>             }
-<a class="jxr_linenumber" name="L249" href="#L249">249</a>             <strong class="jxr_keyword">if</strong> (endsWithoutNewLine) {
-<a class="jxr_linenumber" name="L250" href="#L250">250</a>                 ++count;
-<a class="jxr_linenumber" name="L251" href="#L251">251</a>             }
-<a class="jxr_linenumber" name="L252" href="#L252">252</a>             <strong class="jxr_keyword">return</strong> count;
-<a class="jxr_linenumber" name="L253" href="#L253">253</a>         }
-<a class="jxr_linenumber" name="L254" href="#L254">254</a>     }
-<a class="jxr_linenumber" name="L255" href="#L255">255</a> 
-<a class="jxr_linenumber" name="L256" href="#L256">256</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">int</strong> countVulns(Dependency[] dependencies) {
-<a class="jxr_linenumber" name="L257" href="#L257">257</a>         <strong class="jxr_keyword">return</strong> Arrays.stream(dependencies)
-<a class="jxr_linenumber" name="L258" href="#L258">258</a>                 .mapToInt(d -&gt; d.getVulnerabilities().size())
-<a class="jxr_linenumber" name="L259" href="#L259">259</a>                 .sum();
-<a class="jxr_linenumber" name="L260" href="#L260">260</a>     }
-<a class="jxr_linenumber" name="L261" href="#L261">261</a> 
-<a class="jxr_linenumber" name="L262" href="#L262">262</a> }
+<a class="jxr_linenumber" name="L225" href="#L225">225</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L226" href="#L226">226</a> <em class="jxr_javadoccomment">     * Counts the lines in a file. Copied from</em>
+<a class="jxr_linenumber" name="L227" href="#L227">227</a> <em class="jxr_javadoccomment">     * https://stackoverflow.com/a/14411695.</em>
+<a class="jxr_linenumber" name="L228" href="#L228">228</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L229" href="#L229">229</a> <em class="jxr_javadoccomment">     * @param file the file path</em>
+<a class="jxr_linenumber" name="L230" href="#L230">230</a> <em class="jxr_javadoccomment">     * @return the count of the lines in the file</em>
+<a class="jxr_linenumber" name="L231" href="#L231">231</a> <em class="jxr_javadoccomment">     * @throws IOException thrown if the file can't be read</em>
+<a class="jxr_linenumber" name="L232" href="#L232">232</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L233" href="#L233">233</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">int</strong> countLines(File file) <strong class="jxr_keyword">throws</strong> IOException {
+<a class="jxr_linenumber" name="L234" href="#L234">234</a>         <strong class="jxr_keyword">try</strong> (InputStream is = <strong class="jxr_keyword">new</strong> BufferedInputStream(<strong class="jxr_keyword">new</strong> FileInputStream(file))) {
+<a class="jxr_linenumber" name="L235" href="#L235">235</a>             byte[] c = <strong class="jxr_keyword">new</strong> byte[1024];
+<a class="jxr_linenumber" name="L236" href="#L236">236</a>             <strong class="jxr_keyword">int</strong> count = 0;
+<a class="jxr_linenumber" name="L237" href="#L237">237</a>             <strong class="jxr_keyword">int</strong> readChars = 0;
+<a class="jxr_linenumber" name="L238" href="#L238">238</a>             <strong class="jxr_keyword">boolean</strong> endsWithoutNewLine = false;
+<a class="jxr_linenumber" name="L239" href="#L239">239</a>             <strong class="jxr_keyword">while</strong> ((readChars = is.read(c)) != -1) {
+<a class="jxr_linenumber" name="L240" href="#L240">240</a>                 <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> i = 0; i &lt; readChars; ++i) {
+<a class="jxr_linenumber" name="L241" href="#L241">241</a>                     <strong class="jxr_keyword">if</strong> (c[i] == '\n') {
+<a class="jxr_linenumber" name="L242" href="#L242">242</a>                         ++count;
+<a class="jxr_linenumber" name="L243" href="#L243">243</a>                     }
+<a class="jxr_linenumber" name="L244" href="#L244">244</a>                 }
+<a class="jxr_linenumber" name="L245" href="#L245">245</a>                 endsWithoutNewLine = (c[readChars - 1] != '\n');
+<a class="jxr_linenumber" name="L246" href="#L246">246</a>             }
+<a class="jxr_linenumber" name="L247" href="#L247">247</a>             <strong class="jxr_keyword">if</strong> (endsWithoutNewLine) {
+<a class="jxr_linenumber" name="L248" href="#L248">248</a>                 ++count;
+<a class="jxr_linenumber" name="L249" href="#L249">249</a>             }
+<a class="jxr_linenumber" name="L250" href="#L250">250</a>             <strong class="jxr_keyword">return</strong> count;
+<a class="jxr_linenumber" name="L251" href="#L251">251</a>         }
+<a class="jxr_linenumber" name="L252" href="#L252">252</a>     }
+<a class="jxr_linenumber" name="L253" href="#L253">253</a> 
+<a class="jxr_linenumber" name="L254" href="#L254">254</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">int</strong> countVulns(Dependency[] dependencies) {
+<a class="jxr_linenumber" name="L255" href="#L255">255</a>         <strong class="jxr_keyword">return</strong> Arrays.stream(dependencies)
+<a class="jxr_linenumber" name="L256" href="#L256">256</a>                 .mapToInt(d -&gt; d.getVulnerabilities().size())
+<a class="jxr_linenumber" name="L257" href="#L257">257</a>                 .sum();
+<a class="jxr_linenumber" name="L258" href="#L258">258</a>     }
+<a class="jxr_linenumber" name="L259" href="#L259">259</a> 
+<a class="jxr_linenumber" name="L260" href="#L260">260</a> }
 </pre>
 <hr/>
 <div id="footer">Copyright &#169; 2012&#x2013;2026 <a href="https://www.owasp.org">OWASP</a>. All rights reserved.</div>

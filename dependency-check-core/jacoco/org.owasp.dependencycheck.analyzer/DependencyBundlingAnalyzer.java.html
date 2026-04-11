@@ -123,10 +123,10 @@ import org.slf4j.LoggerFactory;
                 }
             }
 <span class="fc bfc" id="L125" title="All 2 branches covered.">        } else if (isShadedJar(dependency, nextDependency)) {</span>
-<span class="fc bfc" id="L126" title="All 2 branches covered.">            if (dependency.getFileName().toLowerCase().endsWith(&quot;pom.xml&quot;)) {</span>
-<span class="fc" id="L127">                mergeDependencies(nextDependency, dependency, dependenciesToRemove);</span>
-<span class="fc" id="L128">                nextDependency.removeRelatedDependencies(dependency);</span>
-<span class="fc" id="L129">                return true;</span>
+<span class="pc bpc" id="L126" title="1 of 2 branches missed.">            if (dependency.getFileName().toLowerCase().endsWith(&quot;pom.xml&quot;)) {</span>
+<span class="nc" id="L127">                mergeDependencies(nextDependency, dependency, dependenciesToRemove);</span>
+<span class="nc" id="L128">                nextDependency.removeRelatedDependencies(dependency);</span>
+<span class="nc" id="L129">                return true;</span>
             } else {
 <span class="fc" id="L131">                mergeDependencies(dependency, nextDependency, dependenciesToRemove);</span>
 <span class="fc" id="L132">                dependency.removeRelatedDependencies(nextDependency);</span>
@@ -143,7 +143,7 @@ import org.slf4j.LoggerFactory;
 <span class="fc bfc" id="L143" title="All 2 branches covered.">        } else if (cpeIdentifiersMatch(dependency, nextDependency)</span>
 <span class="fc bfc" id="L144" title="All 2 branches covered.">                &amp;&amp; hasSameBasePath(dependency, nextDependency)</span>
 <span class="pc bpc" id="L145" title="1 of 2 branches missed.">                &amp;&amp; vulnerabilitiesMatch(dependency, nextDependency)</span>
-<span class="fc bfc" id="L146" title="All 2 branches covered.">                &amp;&amp; fileNameMatch(dependency, nextDependency)) {</span>
+<span class="pc bpc" id="L146" title="1 of 2 branches missed.">                &amp;&amp; fileNameMatch(dependency, nextDependency)) {</span>
 <span class="fc bfc" id="L147" title="All 2 branches covered.">            if (isCore(dependency, nextDependency)) {</span>
 <span class="fc" id="L148">                mergeDependencies(dependency, nextDependency, dependenciesToRemove);</span>
             } else {
@@ -263,7 +263,7 @@ import org.slf4j.LoggerFactory;
         //version check
 <span class="fc" id="L264">        final DependencyVersion version1 = DependencyVersionUtil.parseVersion(fileName1);</span>
 <span class="fc" id="L265">        final DependencyVersion version2 = DependencyVersionUtil.parseVersion(fileName2);</span>
-<span class="pc bpc" id="L266" title="3 of 6 branches missed.">        if (version1 != null &amp;&amp; version2 != null &amp;&amp; !version1.equals(version2)) {</span>
+<span class="pc bpc" id="L266" title="2 of 6 branches missed.">        if (version1 != null &amp;&amp; version2 != null &amp;&amp; !version1.equals(version2)) {</span>
 <span class="nc" id="L267">            return false;</span>
         }
 
@@ -608,8 +608,8 @@ import org.slf4j.LoggerFactory;
     public static boolean npmVersionsMatch(String current, String next) {
 <span class="fc" id="L609">        String left = current;</span>
 <span class="fc" id="L610">        String right = next;</span>
-<span class="pc bpc" id="L611" title="1 of 4 branches missed.">        if (left == null || right == null) {</span>
-<span class="fc" id="L612">            return false;</span>
+<span class="pc bpc" id="L611" title="2 of 4 branches missed.">        if (left == null || right == null) {</span>
+<span class="nc" id="L612">            return false;</span>
         }
 <span class="pc bpc" id="L614" title="2 of 6 branches missed.">        if (left.equals(right) || &quot;*&quot;.equals(left) || &quot;*&quot;.equals(right)) {</span>
 <span class="fc" id="L615">            return true;</span>

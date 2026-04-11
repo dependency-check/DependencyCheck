@@ -45,7 +45,7 @@ import org.apache.hc.core5.http.io.entity.BasicHttpEntity;
 import org.apache.hc.core5.http.io.entity.StringEntity;
 import org.apache.hc.core5.http.message.BasicClassicHttpRequest;
 import org.apache.hc.core5.http.message.BasicClassicHttpResponse;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -507,7 +507,7 @@ public final class Downloader {
      * @param credentialsProvider The credentialStore to configure the credentials in
      * @param authCache The AuthCache to cache the pre-empted credentials in
      */
-    private void tryConfigureProxyCredentials(@NotNull CredentialsStore credentialsProvider, @NotNull AuthCache authCache) {
+    private void tryConfigureProxyCredentials(@NonNull CredentialsStore credentialsProvider, @NonNull AuthCache authCache) {
 <span class="nc bnc" id="L511" title="All 2 branches missed.">        if (proxyPreEmptAuth != null) {</span>
 <span class="nc" id="L512">            credentialsProvider.setCredentials(proxyAuthScope, proxyCreds);</span>
 <span class="nc" id="L513">            authCache.put(proxyHttpHost, proxyPreEmptAuth);</span>
@@ -648,7 +648,7 @@ public final class Downloader {
      * @throws TooManyRequestsException  When HTTP status 429 is encountered
      * @throws ResourceNotFoundException When HTTP status 404 is encountered
      */
-    public &lt;T&gt; T fetchAndHandle(@NotNull URL url, @NotNull HttpClientResponseHandler&lt;T&gt; handler)
+    public &lt;T&gt; T fetchAndHandle(@NonNull URL url, @NonNull HttpClientResponseHandler&lt;T&gt; handler)
             throws IOException, TooManyRequestsException, ResourceNotFoundException, URISyntaxException, ForbiddenException {
 <span class="fc" id="L653">        return fetchAndHandle(url, handler, Collections.emptyList(), true);</span>
     }
@@ -665,7 +665,7 @@ public final class Downloader {
      * @throws TooManyRequestsException  When HTTP status 429 is encountered
      * @throws ResourceNotFoundException When HTTP status 404 is encountered
      */
-    public &lt;T&gt; T fetchAndHandle(@NotNull URL url, @NotNull HttpClientResponseHandler&lt;T&gt; handler, @NotNull List&lt;Header&gt; hdr)
+    public &lt;T&gt; T fetchAndHandle(@NonNull URL url, @NonNull HttpClientResponseHandler&lt;T&gt; handler, @NonNull List&lt;Header&gt; hdr)
             throws IOException, TooManyRequestsException, ResourceNotFoundException, URISyntaxException, ForbiddenException {
 <span class="nc" id="L670">        return fetchAndHandle(url, handler, hdr, true);</span>
     }
@@ -683,7 +683,7 @@ public final class Downloader {
      * @throws TooManyRequestsException  When HTTP status 429 is encountered
      * @throws ResourceNotFoundException When HTTP status 404 is encountered
      */
-    public &lt;T&gt; T fetchAndHandle(@NotNull URL url, @NotNull HttpClientResponseHandler&lt;T&gt; handler, @NotNull List&lt;Header&gt; hdr, boolean useProxy)
+    public &lt;T&gt; T fetchAndHandle(@NonNull URL url, @NonNull HttpClientResponseHandler&lt;T&gt; handler, @NonNull List&lt;Header&gt; hdr, boolean useProxy)
             throws IOException, TooManyRequestsException, ResourceNotFoundException, URISyntaxException, ForbiddenException {
         final T data;
 <span class="pc bpc" id="L689" title="1 of 2 branches missed.">        if (&quot;file&quot;.equals(url.getProtocol())) {</span>
@@ -716,8 +716,8 @@ public final class Downloader {
      * @throws TooManyRequestsException  When HTTP status 429 is encountered
      * @throws ResourceNotFoundException When HTTP status 404 is encountered
      */
-    public &lt;T&gt; T fetchAndHandle(@NotNull CloseableHttpClient client, @NotNull URL url, @NotNull HttpClientResponseHandler&lt;T&gt; handler,
-                                @NotNull List&lt;Header&gt; hdr) throws IOException, TooManyRequestsException,
+    public &lt;T&gt; T fetchAndHandle(@NonNull CloseableHttpClient client, @NonNull URL url, @NonNull HttpClientResponseHandler&lt;T&gt; handler,
+                                @NonNull List&lt;Header&gt; hdr) throws IOException, TooManyRequestsException,
             ResourceNotFoundException, ForbiddenException {
         try {
 <span class="fc" id="L723">            final String theProtocol = url.getProtocol();</span>

@@ -90,9 +90,13 @@ public abstract class AbstractTokenizingFilter extends TokenFilter {
 <span class="fc bfc" id="L90" title="All 2 branches covered.">        if (termAdded) {</span>
 <span class="fc" id="L91">            final String term = tokens.pop();</span>
 <span class="fc" id="L92">            clearAttributes();</span>
-<span class="fc" id="L93">            termAtt.append(term);</span>
+<span class="fc" id="L93">            appendTerm(term);</span>
         }
 <span class="fc" id="L95">        return termAdded;</span>
     }
+
+    protected void appendTerm(String term) {
+<span class="fc" id="L99">        termAtt.append(term);</span>
+<span class="fc" id="L100">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.14.202510111229</span></div></body></html>

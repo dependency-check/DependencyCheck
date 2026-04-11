@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang=""><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>AntTaskHolder.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Dependency-Check Ant Task</a> &gt; <a href="index.source.html" class="el_package">org.owasp.dependencycheck.ant.logging</a> &gt; <span class="el_source">AntTaskHolder.java</span></div><h1>AntTaskHolder.java</h1><pre class="source lang-java linenums">/*
+ * This file is part of dependency-check-ant.
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * Copyright (c) 2015 The OWASP Foundation. All Rights Reserved.
+ */
+package org.owasp.dependencycheck.ant.logging;
+
+import org.apache.tools.ant.Task;
+
+/**
+ * Holds a reference to the current Ant Task for logging. Replaces the old
+ * StaticLoggerBinder singleton pattern used with SLF4J 1.x.
+ * &lt;p&gt;
+ * Uses ThreadLocal to ensure thread-safety when Ant runs tasks in parallel.
+ * &lt;/p&gt;
+ */
+public final class AntTaskHolder {
+
+<span class="fc" id="L31">    private static final ThreadLocal&lt;Task&gt; task = new ThreadLocal&lt;&gt;();</span>
+
+    private AntTaskHolder() {
+    }
+
+    /**
+     * Sets the current Ant task to use for logging.
+     *
+     * @param t the Ant task
+     */
+    public static void setTask(Task t) {
+<span class="fc" id="L42">        task.set(t);</span>
+<span class="fc" id="L43">    }</span>
+
+    /**
+     * Returns the current Ant task.
+     *
+     * @return the Ant task, or null if not set
+     */
+    public static Task getTask() {
+<span class="fc" id="L51">        return task.get();</span>
+    }
+
+    /**
+     * Removes the current Ant task from the thread-local storage.
+     * This should be called when the task completes to prevent memory leaks
+     * in environments with thread pooling.
+     */
+    public static void remove() {
+<span class="fc" id="L60">        task.remove();</span>
+<span class="fc" id="L61">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.14.202510111229</span></div></body></html>

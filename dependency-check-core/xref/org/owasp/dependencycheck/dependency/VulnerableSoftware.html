@@ -34,7 +34,7 @@
 <a class="jxr_linenumber" name="L26" href="#L26">26</a>  <strong class="jxr_keyword">import</strong> org.apache.commons.lang3.builder.CompareToBuilder;
 <a class="jxr_linenumber" name="L27" href="#L27">27</a>  <strong class="jxr_keyword">import</strong> org.apache.commons.lang3.builder.EqualsBuilder;
 <a class="jxr_linenumber" name="L28" href="#L28">28</a>  <strong class="jxr_keyword">import</strong> org.apache.commons.lang3.builder.HashCodeBuilder;
-<a class="jxr_linenumber" name="L29" href="#L29">29</a>  <strong class="jxr_keyword">import</strong> org.jetbrains.annotations.NotNull;
+<a class="jxr_linenumber" name="L29" href="#L29">29</a>  <strong class="jxr_keyword">import</strong> org.jspecify.annotations.NonNull;
 <a class="jxr_linenumber" name="L30" href="#L30">30</a>  <strong class="jxr_keyword">import</strong> org.owasp.dependencycheck.analyzer.exception.UnexpectedAnalysisException;
 <a class="jxr_linenumber" name="L31" href="#L31">31</a>  <strong class="jxr_keyword">import</strong> org.owasp.dependencycheck.dependency.naming.CpeIdentifier;
 <a class="jxr_linenumber" name="L32" href="#L32">32</a>  <strong class="jxr_keyword">import</strong> org.owasp.dependencycheck.utils.DependencyVersion;
@@ -142,7 +142,7 @@
 <a class="jxr_linenumber" name="L134" href="#L134">134</a>     }
 <a class="jxr_linenumber" name="L135" href="#L135">135</a> 
 <a class="jxr_linenumber" name="L136" href="#L136">136</a>     @Override
-<a class="jxr_linenumber" name="L137" href="#L137">137</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">int</strong> compareTo(@NotNull ICpe o) {
+<a class="jxr_linenumber" name="L137" href="#L137">137</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">int</strong> compareTo(@NonNull ICpe o) {
 <a class="jxr_linenumber" name="L138" href="#L138">138</a>         <strong class="jxr_keyword">if</strong> (o instanceof VulnerableSoftware) {
 <a class="jxr_linenumber" name="L139" href="#L139">139</a>             <strong class="jxr_keyword">final</strong> <a href="../../../../org/owasp/dependencycheck/dependency/VulnerableSoftware.html">VulnerableSoftware</a> other = (VulnerableSoftware) o;
 <a class="jxr_linenumber" name="L140" href="#L140">140</a>             <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> CompareToBuilder()

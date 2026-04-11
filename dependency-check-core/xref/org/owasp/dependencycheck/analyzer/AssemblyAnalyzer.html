@@ -202,7 +202,7 @@
 <a class="jxr_linenumber" name="L194" href="#L194">194</a> <em class="jxr_javadoccomment">     * @param data the assembly data</em>
 <a class="jxr_linenumber" name="L195" href="#L195">195</a> <em class="jxr_javadoccomment">     * @param dependency the dependency to update</em>
 <a class="jxr_linenumber" name="L196" href="#L196">196</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L197" href="#L197">197</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> updateDependency(<strong class="jxr_keyword">final</strong> <a href="../../../../org/owasp/dependencycheck/xml/assembly/AssemblyData.html">AssemblyData</a> data, <a href="../../../../org/owasp/dependencycheck/dependency/Dependency.html">Dependency</a> dependency) {
+<a class="jxr_linenumber" name="L197" href="#L197">197</a>     <strong class="jxr_keyword">void</strong> updateDependency(<strong class="jxr_keyword">final</strong> <a href="../../../../org/owasp/dependencycheck/xml/assembly/AssemblyData.html">AssemblyData</a> data, <a href="../../../../org/owasp/dependencycheck/dependency/Dependency.html">Dependency</a> dependency) {
 <a class="jxr_linenumber" name="L198" href="#L198">198</a>         <strong class="jxr_keyword">final</strong> StringBuilder sb = <strong class="jxr_keyword">new</strong> StringBuilder();
 <a class="jxr_linenumber" name="L199" href="#L199">199</a>         <strong class="jxr_keyword">if</strong> (!StringUtils.isBlank(data.getFileDescription())) {
 <a class="jxr_linenumber" name="L200" href="#L200">200</a>             sb.append(data.getFileDescription());
@@ -261,292 +261,282 @@
 <a class="jxr_linenumber" name="L253" href="#L253">253</a>                 }
 <a class="jxr_linenumber" name="L254" href="#L254">254</a>             }
 <a class="jxr_linenumber" name="L255" href="#L255">255</a>             <strong class="jxr_keyword">if</strong> (dependency.getVersion() == <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="L256" href="#L256">256</a>                 <strong class="jxr_keyword">if</strong> (data.getFileVersion() != <strong class="jxr_keyword">null</strong> &amp;&amp; data.getProductVersion() != <strong class="jxr_keyword">null</strong>
-<a class="jxr_linenumber" name="L257" href="#L257">257</a>                         &amp;&amp; data.getFileVersion().length() &gt;= data.getProductVersion().length()) {
-<a class="jxr_linenumber" name="L258" href="#L258">258</a>                     <strong class="jxr_keyword">if</strong> (fileVersion != <strong class="jxr_keyword">null</strong> &amp;&amp; fileVersion.toString().length() == data.getFileVersion().length()) {
-<a class="jxr_linenumber" name="L259" href="#L259">259</a>                         dependency.setVersion(fileVersion.toString());
-<a class="jxr_linenumber" name="L260" href="#L260">260</a>                     } <strong class="jxr_keyword">else</strong> <strong class="jxr_keyword">if</strong> (productVersion != <strong class="jxr_keyword">null</strong> &amp;&amp; productVersion.toString().length() == data.getProductVersion().length()) {
-<a class="jxr_linenumber" name="L261" href="#L261">261</a>                         dependency.setVersion(productVersion.toString());
-<a class="jxr_linenumber" name="L262" href="#L262">262</a>                     }
-<a class="jxr_linenumber" name="L263" href="#L263">263</a>                 } <strong class="jxr_keyword">else</strong> {
-<a class="jxr_linenumber" name="L264" href="#L264">264</a>                     <strong class="jxr_keyword">if</strong> (productVersion != <strong class="jxr_keyword">null</strong> &amp;&amp; productVersion.toString().length() == data.getProductVersion().length()) {
-<a class="jxr_linenumber" name="L265" href="#L265">265</a>                         dependency.setVersion(productVersion.toString());
-<a class="jxr_linenumber" name="L266" href="#L266">266</a>                     } <strong class="jxr_keyword">else</strong> <strong class="jxr_keyword">if</strong> (fileVersion != <strong class="jxr_keyword">null</strong> &amp;&amp; fileVersion.toString().length() == data.getFileVersion().length()) {
-<a class="jxr_linenumber" name="L267" href="#L267">267</a>                         dependency.setVersion(fileVersion.toString());
-<a class="jxr_linenumber" name="L268" href="#L268">268</a>                     }
-<a class="jxr_linenumber" name="L269" href="#L269">269</a>                 }
-<a class="jxr_linenumber" name="L270" href="#L270">270</a>             }
-<a class="jxr_linenumber" name="L271" href="#L271">271</a>         }
-<a class="jxr_linenumber" name="L272" href="#L272">272</a>         <strong class="jxr_keyword">if</strong> (dependency.getVersion() == <strong class="jxr_keyword">null</strong> &amp;&amp; data.getFileVersion() != <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="L273" href="#L273">273</a>             <strong class="jxr_keyword">final</strong> <a href="../../../../org/owasp/dependencycheck/utils/DependencyVersion.html">DependencyVersion</a> version = DependencyVersionUtil.parseVersion(data.getFileVersion(), <strong class="jxr_keyword">true</strong>);
-<a class="jxr_linenumber" name="L274" href="#L274">274</a>             <strong class="jxr_keyword">if</strong> (version != <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="L275" href="#L275">275</a>                 dependency.setVersion(version.toString());
-<a class="jxr_linenumber" name="L276" href="#L276">276</a>             }
-<a class="jxr_linenumber" name="L277" href="#L277">277</a>         }
-<a class="jxr_linenumber" name="L278" href="#L278">278</a>         <strong class="jxr_keyword">if</strong> (dependency.getVersion() == <strong class="jxr_keyword">null</strong> &amp;&amp; data.getProductVersion() != <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="L279" href="#L279">279</a>             <strong class="jxr_keyword">final</strong> <a href="../../../../org/owasp/dependencycheck/utils/DependencyVersion.html">DependencyVersion</a> version = DependencyVersionUtil.parseVersion(data.getProductVersion(), <strong class="jxr_keyword">true</strong>);
-<a class="jxr_linenumber" name="L280" href="#L280">280</a>             <strong class="jxr_keyword">if</strong> (version != <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="L281" href="#L281">281</a>                 dependency.setVersion(version.toString());
-<a class="jxr_linenumber" name="L282" href="#L282">282</a>             }
-<a class="jxr_linenumber" name="L283" href="#L283">283</a>         }
-<a class="jxr_linenumber" name="L284" href="#L284">284</a> 
-<a class="jxr_linenumber" name="L285" href="#L285">285</a>         <strong class="jxr_keyword">if</strong> (!StringUtils.isBlank(data.getCompanyName())) {
-<a class="jxr_linenumber" name="L286" href="#L286">286</a>             dependency.addEvidence(EvidenceType.VENDOR, <span class="jxr_string">"grokassembly"</span>, <span class="jxr_string">"CompanyName"</span>, data.getCompanyName(), Confidence.HIGHEST);
-<a class="jxr_linenumber" name="L287" href="#L287">287</a>             dependency.addEvidence(EvidenceType.PRODUCT, <span class="jxr_string">"grokassembly"</span>, <span class="jxr_string">"CompanyName"</span>, data.getCompanyName(), Confidence.LOW);
-<a class="jxr_linenumber" name="L288" href="#L288">288</a>             addMatchingValues(data.getNamespaces(), data.getCompanyName(), dependency, EvidenceType.VENDOR);
-<a class="jxr_linenumber" name="L289" href="#L289">289</a>         }
-<a class="jxr_linenumber" name="L290" href="#L290">290</a>         <strong class="jxr_keyword">if</strong> (!StringUtils.isBlank(data.getProductName())) {
-<a class="jxr_linenumber" name="L291" href="#L291">291</a>             dependency.addEvidence(EvidenceType.PRODUCT, <span class="jxr_string">"grokassembly"</span>, <span class="jxr_string">"ProductName"</span>, data.getProductName(), Confidence.HIGHEST);
-<a class="jxr_linenumber" name="L292" href="#L292">292</a>             dependency.addEvidence(EvidenceType.VENDOR, <span class="jxr_string">"grokassembly"</span>, <span class="jxr_string">"ProductName"</span>, data.getProductName(), Confidence.MEDIUM);
-<a class="jxr_linenumber" name="L293" href="#L293">293</a>             addMatchingValues(data.getNamespaces(), data.getProductName(), dependency, EvidenceType.PRODUCT);
-<a class="jxr_linenumber" name="L294" href="#L294">294</a>         }
-<a class="jxr_linenumber" name="L295" href="#L295">295</a>         <strong class="jxr_keyword">if</strong> (!StringUtils.isBlank(data.getFileDescription())) {
-<a class="jxr_linenumber" name="L296" href="#L296">296</a>             dependency.addEvidence(EvidenceType.PRODUCT, <span class="jxr_string">"grokassembly"</span>, <span class="jxr_string">"FileDescription"</span>, data.getFileDescription(), Confidence.HIGH);
-<a class="jxr_linenumber" name="L297" href="#L297">297</a>             dependency.addEvidence(EvidenceType.VENDOR, <span class="jxr_string">"grokassembly"</span>, <span class="jxr_string">"FileDescription"</span>, data.getFileDescription(), Confidence.LOW);
-<a class="jxr_linenumber" name="L298" href="#L298">298</a>             addMatchingValues(data.getNamespaces(), data.getFileDescription(), dependency, EvidenceType.PRODUCT);
-<a class="jxr_linenumber" name="L299" href="#L299">299</a>         }
-<a class="jxr_linenumber" name="L300" href="#L300">300</a> 
-<a class="jxr_linenumber" name="L301" href="#L301">301</a>         <strong class="jxr_keyword">final</strong> String internalName = data.getInternalName();
-<a class="jxr_linenumber" name="L302" href="#L302">302</a>         <strong class="jxr_keyword">if</strong> (!StringUtils.isBlank(internalName)) {
-<a class="jxr_linenumber" name="L303" href="#L303">303</a>             dependency.addEvidence(EvidenceType.PRODUCT, <span class="jxr_string">"grokassembly"</span>, <span class="jxr_string">"InternalName"</span>, internalName, Confidence.MEDIUM);
-<a class="jxr_linenumber" name="L304" href="#L304">304</a>             dependency.addEvidence(EvidenceType.VENDOR, <span class="jxr_string">"grokassembly"</span>, <span class="jxr_string">"InternalName"</span>, internalName, Confidence.LOW);
-<a class="jxr_linenumber" name="L305" href="#L305">305</a>             addMatchingValues(data.getNamespaces(), internalName, dependency, EvidenceType.PRODUCT);
-<a class="jxr_linenumber" name="L306" href="#L306">306</a>             addMatchingValues(data.getNamespaces(), internalName, dependency, EvidenceType.VENDOR);
-<a class="jxr_linenumber" name="L307" href="#L307">307</a>             <strong class="jxr_keyword">if</strong> (dependency.getName() == <strong class="jxr_keyword">null</strong> &amp;&amp; StringUtils.containsIgnoreCase(dependency.getActualFile().getName(), internalName)) {
-<a class="jxr_linenumber" name="L308" href="#L308">308</a>                 <strong class="jxr_keyword">final</strong> String ext = FileUtils.getFileExtension(internalName);
-<a class="jxr_linenumber" name="L309" href="#L309">309</a>                 <strong class="jxr_keyword">if</strong> (ext != <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="L310" href="#L310">310</a>                     dependency.setName(internalName.substring(0, internalName.length() - ext.length() - 1));
-<a class="jxr_linenumber" name="L311" href="#L311">311</a>                 } <strong class="jxr_keyword">else</strong> {
-<a class="jxr_linenumber" name="L312" href="#L312">312</a>                     dependency.setName(internalName);
-<a class="jxr_linenumber" name="L313" href="#L313">313</a>                 }
-<a class="jxr_linenumber" name="L314" href="#L314">314</a>             }
-<a class="jxr_linenumber" name="L315" href="#L315">315</a>         }
-<a class="jxr_linenumber" name="L316" href="#L316">316</a> 
-<a class="jxr_linenumber" name="L317" href="#L317">317</a>         <strong class="jxr_keyword">final</strong> String originalFilename = data.getOriginalFilename();
-<a class="jxr_linenumber" name="L318" href="#L318">318</a>         <strong class="jxr_keyword">if</strong> (!StringUtils.isBlank(originalFilename)) {
-<a class="jxr_linenumber" name="L319" href="#L319">319</a>             dependency.addEvidence(EvidenceType.PRODUCT, <span class="jxr_string">"grokassembly"</span>, <span class="jxr_string">"OriginalFilename"</span>, originalFilename, Confidence.MEDIUM);
-<a class="jxr_linenumber" name="L320" href="#L320">320</a>             dependency.addEvidence(EvidenceType.VENDOR, <span class="jxr_string">"grokassembly"</span>, <span class="jxr_string">"OriginalFilename"</span>, originalFilename, Confidence.LOW);
-<a class="jxr_linenumber" name="L321" href="#L321">321</a>             addMatchingValues(data.getNamespaces(), originalFilename, dependency, EvidenceType.PRODUCT);
-<a class="jxr_linenumber" name="L322" href="#L322">322</a>             <strong class="jxr_keyword">if</strong> (dependency.getName() == <strong class="jxr_keyword">null</strong> &amp;&amp; StringUtils.containsIgnoreCase(dependency.getActualFile().getName(), originalFilename)) {
-<a class="jxr_linenumber" name="L323" href="#L323">323</a>                 <strong class="jxr_keyword">final</strong> String ext = FileUtils.getFileExtension(originalFilename);
-<a class="jxr_linenumber" name="L324" href="#L324">324</a>                 <strong class="jxr_keyword">if</strong> (ext != <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="L325" href="#L325">325</a>                     dependency.setName(originalFilename.substring(0, originalFilename.length() - ext.length() - 1));
-<a class="jxr_linenumber" name="L326" href="#L326">326</a>                 } <strong class="jxr_keyword">else</strong> {
-<a class="jxr_linenumber" name="L327" href="#L327">327</a>                     dependency.setName(originalFilename);
-<a class="jxr_linenumber" name="L328" href="#L328">328</a>                 }
-<a class="jxr_linenumber" name="L329" href="#L329">329</a>             }
-<a class="jxr_linenumber" name="L330" href="#L330">330</a>         }
-<a class="jxr_linenumber" name="L331" href="#L331">331</a>         <strong class="jxr_keyword">if</strong> (dependency.getName() != <strong class="jxr_keyword">null</strong> &amp;&amp; dependency.getVersion() != <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="L332" href="#L332">332</a>             <strong class="jxr_keyword">try</strong> {
-<a class="jxr_linenumber" name="L333" href="#L333">333</a>                 dependency.addSoftwareIdentifier(<strong class="jxr_keyword">new</strong> <a href="../../../../org/owasp/dependencycheck/dependency/naming/PurlIdentifier.html">PurlIdentifier</a>(<span class="jxr_string">"generic"</span>, dependency.getName(), dependency.getVersion(), Confidence.MEDIUM));
-<a class="jxr_linenumber" name="L334" href="#L334">334</a>             } <strong class="jxr_keyword">catch</strong> (MalformedPackageURLException ex) {
-<a class="jxr_linenumber" name="L335" href="#L335">335</a>                 LOGGER.debug(<span class="jxr_string">"Unable to create Package URL Identifier for "</span> + dependency.getName(), ex);
-<a class="jxr_linenumber" name="L336" href="#L336">336</a>                 dependency.addSoftwareIdentifier(<strong class="jxr_keyword">new</strong> <a href="../../../../org/owasp/dependencycheck/dependency/naming/GenericIdentifier.html">GenericIdentifier</a>(
-<a class="jxr_linenumber" name="L337" href="#L337">337</a>                         String.format(<span class="jxr_string">"%s@%s"</span>, dependency.getName(), dependency.getVersion()),
-<a class="jxr_linenumber" name="L338" href="#L338">338</a>                         Confidence.MEDIUM));
-<a class="jxr_linenumber" name="L339" href="#L339">339</a>             }
-<a class="jxr_linenumber" name="L340" href="#L340">340</a>         }
-<a class="jxr_linenumber" name="L341" href="#L341">341</a>         dependency.setEcosystem(DEPENDENCY_ECOSYSTEM);
-<a class="jxr_linenumber" name="L342" href="#L342">342</a>     }
-<a class="jxr_linenumber" name="L343" href="#L343">343</a> 
-<a class="jxr_linenumber" name="L344" href="#L344">344</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L345" href="#L345">345</a> <em class="jxr_javadoccomment">     * Initialize the analyzer. In this case, extract GrokAssembly.dll to a</em>
-<a class="jxr_linenumber" name="L346" href="#L346">346</a> <em class="jxr_javadoccomment">     * temporary location.</em>
-<a class="jxr_linenumber" name="L347" href="#L347">347</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L348" href="#L348">348</a> <em class="jxr_javadoccomment">     * @param engine a reference to the dependency-check engine</em>
-<a class="jxr_linenumber" name="L349" href="#L349">349</a> <em class="jxr_javadoccomment">     * @throws InitializationException thrown if anything goes wrong</em>
-<a class="jxr_linenumber" name="L350" href="#L350">350</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L351" href="#L351">351</a>     @Override
-<a class="jxr_linenumber" name="L352" href="#L352">352</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> prepareFileTypeAnalyzer(<a href="../../../../org/owasp/dependencycheck/Engine.html">Engine</a> engine) <strong class="jxr_keyword">throws</strong> InitializationException {
-<a class="jxr_linenumber" name="L353" href="#L353">353</a>         grokAssembly = extractGrokAssembly();
-<a class="jxr_linenumber" name="L354" href="#L354">354</a> 
-<a class="jxr_linenumber" name="L355" href="#L355">355</a>         baseArgumentList = buildArgumentList();
-<a class="jxr_linenumber" name="L356" href="#L356">356</a>         <strong class="jxr_keyword">if</strong> (baseArgumentList == <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="L357" href="#L357">357</a>             setEnabled(false);
-<a class="jxr_linenumber" name="L358" href="#L358">358</a>             LOGGER.error(<span class="jxr_string">"----------------------------------------------------"</span>);
-<a class="jxr_linenumber" name="L359" href="#L359">359</a>             LOGGER.error(<span class="jxr_string">".NET Assembly Analyzer could not be initialized and at least one "</span>
-<a class="jxr_linenumber" name="L360" href="#L360">360</a>                     + <span class="jxr_string">"'exe' or 'dll' was scanned. The 'dotnet' executable could not be found on "</span>
-<a class="jxr_linenumber" name="L361" href="#L361">361</a>                     + <span class="jxr_string">"the path; either disable the Assembly Analyzer or add the path to dotnet "</span>
-<a class="jxr_linenumber" name="L362" href="#L362">362</a>                     + <span class="jxr_string">"core in the configuration."</span>);
-<a class="jxr_linenumber" name="L363" href="#L363">363</a>             LOGGER.error(<span class="jxr_string">"The dotnet 8.0 core runtime or SDK is required to analyze assemblies"</span>);
-<a class="jxr_linenumber" name="L364" href="#L364">364</a>             LOGGER.error(<span class="jxr_string">"----------------------------------------------------"</span>);
-<a class="jxr_linenumber" name="L365" href="#L365">365</a>             <strong class="jxr_keyword">return</strong>;
-<a class="jxr_linenumber" name="L366" href="#L366">366</a>         }
-<a class="jxr_linenumber" name="L367" href="#L367">367</a>         <strong class="jxr_keyword">try</strong> {
-<a class="jxr_linenumber" name="L368" href="#L368">368</a>             <strong class="jxr_keyword">final</strong> ProcessBuilder pb = <strong class="jxr_keyword">new</strong> ProcessBuilder(baseArgumentList);
-<a class="jxr_linenumber" name="L369" href="#L369">369</a>             <strong class="jxr_keyword">final</strong> Process p = pb.start();
-<a class="jxr_linenumber" name="L370" href="#L370">370</a>             <strong class="jxr_keyword">try</strong> (ProcessReader processReader = <strong class="jxr_keyword">new</strong> ProcessReader(p)) {
-<a class="jxr_linenumber" name="L371" href="#L371">371</a>                 processReader.readAll();
-<a class="jxr_linenumber" name="L372" href="#L372">372</a>                 <strong class="jxr_keyword">final</strong> String error = processReader.getError();
-<a class="jxr_linenumber" name="L373" href="#L373">373</a>                 <strong class="jxr_keyword">if</strong> (p.exitValue() != 1 || !StringUtils.isBlank(error)) {
-<a class="jxr_linenumber" name="L374" href="#L374">374</a>                     LOGGER.warn(<span class="jxr_string">"An error occurred with the .NET AssemblyAnalyzer, please see the log for more details.\n"</span>
-<a class="jxr_linenumber" name="L375" href="#L375">375</a>                     + <span class="jxr_string">"dependency-check requires dotnet 8.0 core runtime or sdk to be installed to analyze assemblies."</span>);
-<a class="jxr_linenumber" name="L376" href="#L376">376</a>                     LOGGER.debug(<span class="jxr_string">"GrokAssembly.dll is not working properly: {}"</span>, error);
-<a class="jxr_linenumber" name="L377" href="#L377">377</a>                     grokAssembly = <strong class="jxr_keyword">null</strong>;
-<a class="jxr_linenumber" name="L378" href="#L378">378</a>                     setEnabled(false);
-<a class="jxr_linenumber" name="L379" href="#L379">379</a>                     <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a href="../../../../org/owasp/dependencycheck/exception/InitializationException.html">InitializationException</a>(<span class="jxr_string">"Could not execute .NET AssemblyAnalyzer, is the dotnet 8.0 runtime or sdk installed?"</span>);
-<a class="jxr_linenumber" name="L380" href="#L380">380</a>                 }
-<a class="jxr_linenumber" name="L381" href="#L381">381</a>             }
-<a class="jxr_linenumber" name="L382" href="#L382">382</a>         } <strong class="jxr_keyword">catch</strong> (InterruptedException e) {
-<a class="jxr_linenumber" name="L383" href="#L383">383</a>             Thread.currentThread().interrupt();
+<a class="jxr_linenumber" name="L256" href="#L256">256</a>                 <strong class="jxr_keyword">if</strong> (fileVersion != <strong class="jxr_keyword">null</strong> &amp;&amp; productVersion != <strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="L257" href="#L257">257</a>                     <strong class="jxr_keyword">if</strong> (fileVersion.toString().startsWith(productVersion.toString())) {
+<a class="jxr_linenumber" name="L258" href="#L258">258</a>                         dependency.setVersion(fileVersion.toString());
+<a class="jxr_linenumber" name="L259" href="#L259">259</a>                     } <strong class="jxr_keyword">else</strong> <strong class="jxr_keyword">if</strong> (productVersion.toString().startsWith(fileVersion.toString())) {
+<a class="jxr_linenumber" name="L260" href="#L260">260</a>                         dependency.setVersion(productVersion.toString());
+<a class="jxr_linenumber" name="L261" href="#L261">261</a>                     }
+<a class="jxr_linenumber" name="L262" href="#L262">262</a>                 }
+<a class="jxr_linenumber" name="L263" href="#L263">263</a>             }
+<a class="jxr_linenumber" name="L264" href="#L264">264</a>         }
+<a class="jxr_linenumber" name="L265" href="#L265">265</a>         <strong class="jxr_keyword">if</strong> (dependency.getVersion() == <strong class="jxr_keyword">null</strong> &amp;&amp; data.getProductVersion() != <strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="L266" href="#L266">266</a>             <strong class="jxr_keyword">final</strong> <a href="../../../../org/owasp/dependencycheck/utils/DependencyVersion.html">DependencyVersion</a> version = DependencyVersionUtil.parseVersion(data.getProductVersion(), <strong class="jxr_keyword">true</strong>);
+<a class="jxr_linenumber" name="L267" href="#L267">267</a>             <strong class="jxr_keyword">if</strong> (version != <strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="L268" href="#L268">268</a>                 dependency.setVersion(version.toString());
+<a class="jxr_linenumber" name="L269" href="#L269">269</a>             }
+<a class="jxr_linenumber" name="L270" href="#L270">270</a>         }
+<a class="jxr_linenumber" name="L271" href="#L271">271</a>         <strong class="jxr_keyword">if</strong> (dependency.getVersion() == <strong class="jxr_keyword">null</strong> &amp;&amp; data.getFileVersion() != <strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="L272" href="#L272">272</a>             <strong class="jxr_keyword">final</strong> <a href="../../../../org/owasp/dependencycheck/utils/DependencyVersion.html">DependencyVersion</a> version = DependencyVersionUtil.parseVersion(data.getFileVersion(), <strong class="jxr_keyword">true</strong>);
+<a class="jxr_linenumber" name="L273" href="#L273">273</a>             <strong class="jxr_keyword">if</strong> (version != <strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="L274" href="#L274">274</a>                 dependency.setVersion(version.toString());
+<a class="jxr_linenumber" name="L275" href="#L275">275</a>             }
+<a class="jxr_linenumber" name="L276" href="#L276">276</a>         }
+<a class="jxr_linenumber" name="L277" href="#L277">277</a> 
+<a class="jxr_linenumber" name="L278" href="#L278">278</a>         <strong class="jxr_keyword">if</strong> (!StringUtils.isBlank(data.getCompanyName())) {
+<a class="jxr_linenumber" name="L279" href="#L279">279</a>             dependency.addEvidence(EvidenceType.VENDOR, <span class="jxr_string">"grokassembly"</span>, <span class="jxr_string">"CompanyName"</span>, data.getCompanyName(), Confidence.HIGHEST);
+<a class="jxr_linenumber" name="L280" href="#L280">280</a>             dependency.addEvidence(EvidenceType.PRODUCT, <span class="jxr_string">"grokassembly"</span>, <span class="jxr_string">"CompanyName"</span>, data.getCompanyName(), Confidence.LOW);
+<a class="jxr_linenumber" name="L281" href="#L281">281</a>             addMatchingValues(data.getNamespaces(), data.getCompanyName(), dependency, EvidenceType.VENDOR);
+<a class="jxr_linenumber" name="L282" href="#L282">282</a>         }
+<a class="jxr_linenumber" name="L283" href="#L283">283</a>         <strong class="jxr_keyword">if</strong> (!StringUtils.isBlank(data.getProductName())) {
+<a class="jxr_linenumber" name="L284" href="#L284">284</a>             dependency.addEvidence(EvidenceType.PRODUCT, <span class="jxr_string">"grokassembly"</span>, <span class="jxr_string">"ProductName"</span>, data.getProductName(), Confidence.HIGHEST);
+<a class="jxr_linenumber" name="L285" href="#L285">285</a>             dependency.addEvidence(EvidenceType.VENDOR, <span class="jxr_string">"grokassembly"</span>, <span class="jxr_string">"ProductName"</span>, data.getProductName(), Confidence.MEDIUM);
+<a class="jxr_linenumber" name="L286" href="#L286">286</a>             addMatchingValues(data.getNamespaces(), data.getProductName(), dependency, EvidenceType.PRODUCT);
+<a class="jxr_linenumber" name="L287" href="#L287">287</a>         }
+<a class="jxr_linenumber" name="L288" href="#L288">288</a>         <strong class="jxr_keyword">if</strong> (!StringUtils.isBlank(data.getFileDescription())) {
+<a class="jxr_linenumber" name="L289" href="#L289">289</a>             dependency.addEvidence(EvidenceType.PRODUCT, <span class="jxr_string">"grokassembly"</span>, <span class="jxr_string">"FileDescription"</span>, data.getFileDescription(), Confidence.HIGH);
+<a class="jxr_linenumber" name="L290" href="#L290">290</a>             dependency.addEvidence(EvidenceType.VENDOR, <span class="jxr_string">"grokassembly"</span>, <span class="jxr_string">"FileDescription"</span>, data.getFileDescription(), Confidence.LOW);
+<a class="jxr_linenumber" name="L291" href="#L291">291</a>             addMatchingValues(data.getNamespaces(), data.getFileDescription(), dependency, EvidenceType.PRODUCT);
+<a class="jxr_linenumber" name="L292" href="#L292">292</a>         }
+<a class="jxr_linenumber" name="L293" href="#L293">293</a> 
+<a class="jxr_linenumber" name="L294" href="#L294">294</a>         <strong class="jxr_keyword">final</strong> String internalName = data.getInternalName();
+<a class="jxr_linenumber" name="L295" href="#L295">295</a>         <strong class="jxr_keyword">if</strong> (!StringUtils.isBlank(internalName)) {
+<a class="jxr_linenumber" name="L296" href="#L296">296</a>             dependency.addEvidence(EvidenceType.PRODUCT, <span class="jxr_string">"grokassembly"</span>, <span class="jxr_string">"InternalName"</span>, internalName, Confidence.MEDIUM);
+<a class="jxr_linenumber" name="L297" href="#L297">297</a>             dependency.addEvidence(EvidenceType.VENDOR, <span class="jxr_string">"grokassembly"</span>, <span class="jxr_string">"InternalName"</span>, internalName, Confidence.LOW);
+<a class="jxr_linenumber" name="L298" href="#L298">298</a>             addMatchingValues(data.getNamespaces(), internalName, dependency, EvidenceType.PRODUCT);
+<a class="jxr_linenumber" name="L299" href="#L299">299</a>             addMatchingValues(data.getNamespaces(), internalName, dependency, EvidenceType.VENDOR);
+<a class="jxr_linenumber" name="L300" href="#L300">300</a>             <strong class="jxr_keyword">if</strong> (dependency.getName() == <strong class="jxr_keyword">null</strong> &amp;&amp; StringUtils.containsIgnoreCase(dependency.getActualFile().getName(), internalName)) {
+<a class="jxr_linenumber" name="L301" href="#L301">301</a>                 <strong class="jxr_keyword">final</strong> String ext = FileUtils.getFileExtension(internalName);
+<a class="jxr_linenumber" name="L302" href="#L302">302</a>                 <strong class="jxr_keyword">if</strong> (ext != <strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="L303" href="#L303">303</a>                     dependency.setName(internalName.substring(0, internalName.length() - ext.length() - 1));
+<a class="jxr_linenumber" name="L304" href="#L304">304</a>                 } <strong class="jxr_keyword">else</strong> {
+<a class="jxr_linenumber" name="L305" href="#L305">305</a>                     dependency.setName(internalName);
+<a class="jxr_linenumber" name="L306" href="#L306">306</a>                 }
+<a class="jxr_linenumber" name="L307" href="#L307">307</a>             }
+<a class="jxr_linenumber" name="L308" href="#L308">308</a>         }
+<a class="jxr_linenumber" name="L309" href="#L309">309</a> 
+<a class="jxr_linenumber" name="L310" href="#L310">310</a>         <strong class="jxr_keyword">final</strong> String originalFilename = data.getOriginalFilename();
+<a class="jxr_linenumber" name="L311" href="#L311">311</a>         <strong class="jxr_keyword">if</strong> (!StringUtils.isBlank(originalFilename)) {
+<a class="jxr_linenumber" name="L312" href="#L312">312</a>             dependency.addEvidence(EvidenceType.PRODUCT, <span class="jxr_string">"grokassembly"</span>, <span class="jxr_string">"OriginalFilename"</span>, originalFilename, Confidence.MEDIUM);
+<a class="jxr_linenumber" name="L313" href="#L313">313</a>             dependency.addEvidence(EvidenceType.VENDOR, <span class="jxr_string">"grokassembly"</span>, <span class="jxr_string">"OriginalFilename"</span>, originalFilename, Confidence.LOW);
+<a class="jxr_linenumber" name="L314" href="#L314">314</a>             addMatchingValues(data.getNamespaces(), originalFilename, dependency, EvidenceType.PRODUCT);
+<a class="jxr_linenumber" name="L315" href="#L315">315</a>             <strong class="jxr_keyword">if</strong> (dependency.getName() == <strong class="jxr_keyword">null</strong> &amp;&amp; StringUtils.containsIgnoreCase(dependency.getActualFile().getName(), originalFilename)) {
+<a class="jxr_linenumber" name="L316" href="#L316">316</a>                 <strong class="jxr_keyword">final</strong> String ext = FileUtils.getFileExtension(originalFilename);
+<a class="jxr_linenumber" name="L317" href="#L317">317</a>                 <strong class="jxr_keyword">if</strong> (ext != <strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="L318" href="#L318">318</a>                     dependency.setName(originalFilename.substring(0, originalFilename.length() - ext.length() - 1));
+<a class="jxr_linenumber" name="L319" href="#L319">319</a>                 } <strong class="jxr_keyword">else</strong> {
+<a class="jxr_linenumber" name="L320" href="#L320">320</a>                     dependency.setName(originalFilename);
+<a class="jxr_linenumber" name="L321" href="#L321">321</a>                 }
+<a class="jxr_linenumber" name="L322" href="#L322">322</a>             }
+<a class="jxr_linenumber" name="L323" href="#L323">323</a>         }
+<a class="jxr_linenumber" name="L324" href="#L324">324</a>         <strong class="jxr_keyword">if</strong> (dependency.getName() != <strong class="jxr_keyword">null</strong> &amp;&amp; dependency.getVersion() != <strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="L325" href="#L325">325</a>             <strong class="jxr_keyword">try</strong> {
+<a class="jxr_linenumber" name="L326" href="#L326">326</a>                 dependency.addSoftwareIdentifier(<strong class="jxr_keyword">new</strong> <a href="../../../../org/owasp/dependencycheck/dependency/naming/PurlIdentifier.html">PurlIdentifier</a>(<span class="jxr_string">"generic"</span>, dependency.getName(), dependency.getVersion(), Confidence.MEDIUM));
+<a class="jxr_linenumber" name="L327" href="#L327">327</a>             } <strong class="jxr_keyword">catch</strong> (MalformedPackageURLException ex) {
+<a class="jxr_linenumber" name="L328" href="#L328">328</a>                 LOGGER.debug(<span class="jxr_string">"Unable to create Package URL Identifier for "</span> + dependency.getName(), ex);
+<a class="jxr_linenumber" name="L329" href="#L329">329</a>                 dependency.addSoftwareIdentifier(<strong class="jxr_keyword">new</strong> <a href="../../../../org/owasp/dependencycheck/dependency/naming/GenericIdentifier.html">GenericIdentifier</a>(
+<a class="jxr_linenumber" name="L330" href="#L330">330</a>                         String.format(<span class="jxr_string">"%s@%s"</span>, dependency.getName(), dependency.getVersion()),
+<a class="jxr_linenumber" name="L331" href="#L331">331</a>                         Confidence.MEDIUM));
+<a class="jxr_linenumber" name="L332" href="#L332">332</a>             }
+<a class="jxr_linenumber" name="L333" href="#L333">333</a>         }
+<a class="jxr_linenumber" name="L334" href="#L334">334</a>         dependency.setEcosystem(DEPENDENCY_ECOSYSTEM);
+<a class="jxr_linenumber" name="L335" href="#L335">335</a>     }
+<a class="jxr_linenumber" name="L336" href="#L336">336</a> 
+<a class="jxr_linenumber" name="L337" href="#L337">337</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L338" href="#L338">338</a> <em class="jxr_javadoccomment">     * Initialize the analyzer. In this case, extract GrokAssembly.dll to a</em>
+<a class="jxr_linenumber" name="L339" href="#L339">339</a> <em class="jxr_javadoccomment">     * temporary location.</em>
+<a class="jxr_linenumber" name="L340" href="#L340">340</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L341" href="#L341">341</a> <em class="jxr_javadoccomment">     * @param engine a reference to the dependency-check engine</em>
+<a class="jxr_linenumber" name="L342" href="#L342">342</a> <em class="jxr_javadoccomment">     * @throws InitializationException thrown if anything goes wrong</em>
+<a class="jxr_linenumber" name="L343" href="#L343">343</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L344" href="#L344">344</a>     @Override
+<a class="jxr_linenumber" name="L345" href="#L345">345</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> prepareFileTypeAnalyzer(<a href="../../../../org/owasp/dependencycheck/Engine.html">Engine</a> engine) <strong class="jxr_keyword">throws</strong> InitializationException {
+<a class="jxr_linenumber" name="L346" href="#L346">346</a>         grokAssembly = extractGrokAssembly();
+<a class="jxr_linenumber" name="L347" href="#L347">347</a> 
+<a class="jxr_linenumber" name="L348" href="#L348">348</a>         baseArgumentList = buildArgumentList();
+<a class="jxr_linenumber" name="L349" href="#L349">349</a>         <strong class="jxr_keyword">if</strong> (baseArgumentList == <strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="L350" href="#L350">350</a>             setEnabled(false);
+<a class="jxr_linenumber" name="L351" href="#L351">351</a>             LOGGER.error(<span class="jxr_string">"----------------------------------------------------"</span>);
+<a class="jxr_linenumber" name="L352" href="#L352">352</a>             LOGGER.error(<span class="jxr_string">".NET Assembly Analyzer could not be initialized and at least one "</span>
+<a class="jxr_linenumber" name="L353" href="#L353">353</a>                     + <span class="jxr_string">"'exe' or 'dll' was scanned. The 'dotnet' executable could not be found on "</span>
+<a class="jxr_linenumber" name="L354" href="#L354">354</a>                     + <span class="jxr_string">"the path; either disable the Assembly Analyzer or add the path to dotnet "</span>
+<a class="jxr_linenumber" name="L355" href="#L355">355</a>                     + <span class="jxr_string">"core in the configuration."</span>);
+<a class="jxr_linenumber" name="L356" href="#L356">356</a>             LOGGER.error(<span class="jxr_string">"The dotnet 8.0 core runtime or SDK is required to analyze assemblies"</span>);
+<a class="jxr_linenumber" name="L357" href="#L357">357</a>             LOGGER.error(<span class="jxr_string">"----------------------------------------------------"</span>);
+<a class="jxr_linenumber" name="L358" href="#L358">358</a>             <strong class="jxr_keyword">return</strong>;
+<a class="jxr_linenumber" name="L359" href="#L359">359</a>         }
+<a class="jxr_linenumber" name="L360" href="#L360">360</a>         <strong class="jxr_keyword">try</strong> {
+<a class="jxr_linenumber" name="L361" href="#L361">361</a>             <strong class="jxr_keyword">final</strong> ProcessBuilder pb = <strong class="jxr_keyword">new</strong> ProcessBuilder(baseArgumentList);
+<a class="jxr_linenumber" name="L362" href="#L362">362</a>             <strong class="jxr_keyword">final</strong> Process p = pb.start();
+<a class="jxr_linenumber" name="L363" href="#L363">363</a>             <strong class="jxr_keyword">try</strong> (ProcessReader processReader = <strong class="jxr_keyword">new</strong> ProcessReader(p)) {
+<a class="jxr_linenumber" name="L364" href="#L364">364</a>                 processReader.readAll();
+<a class="jxr_linenumber" name="L365" href="#L365">365</a>                 <strong class="jxr_keyword">final</strong> String error = processReader.getError();
+<a class="jxr_linenumber" name="L366" href="#L366">366</a>                 <strong class="jxr_keyword">if</strong> (p.exitValue() != 1 || !StringUtils.isBlank(error)) {
+<a class="jxr_linenumber" name="L367" href="#L367">367</a>                     LOGGER.warn(<span class="jxr_string">"An error occurred with the .NET AssemblyAnalyzer, please see the log for more details.\n"</span>
+<a class="jxr_linenumber" name="L368" href="#L368">368</a>                     + <span class="jxr_string">"dependency-check requires dotnet 8.0 core runtime or sdk to be installed to analyze assemblies."</span>);
+<a class="jxr_linenumber" name="L369" href="#L369">369</a>                     LOGGER.debug(<span class="jxr_string">"GrokAssembly.dll is not working properly: {}"</span>, error);
+<a class="jxr_linenumber" name="L370" href="#L370">370</a>                     grokAssembly = <strong class="jxr_keyword">null</strong>;
+<a class="jxr_linenumber" name="L371" href="#L371">371</a>                     setEnabled(false);
+<a class="jxr_linenumber" name="L372" href="#L372">372</a>                     <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a href="../../../../org/owasp/dependencycheck/exception/InitializationException.html">InitializationException</a>(<span class="jxr_string">"Could not execute .NET AssemblyAnalyzer, is the dotnet 8.0 runtime or sdk installed?"</span>);
+<a class="jxr_linenumber" name="L373" href="#L373">373</a>                 }
+<a class="jxr_linenumber" name="L374" href="#L374">374</a>             }
+<a class="jxr_linenumber" name="L375" href="#L375">375</a>         } <strong class="jxr_keyword">catch</strong> (InterruptedException e) {
+<a class="jxr_linenumber" name="L376" href="#L376">376</a>             Thread.currentThread().interrupt();
+<a class="jxr_linenumber" name="L377" href="#L377">377</a>             LOGGER.warn(<span class="jxr_string">"An error occurred with the .NET AssemblyAnalyzer;\n"</span>
+<a class="jxr_linenumber" name="L378" href="#L378">378</a>                     + <span class="jxr_string">"dependency-check requires dotnet 8.0 core runtime or sdk to be installed to analyze assemblies;\n"</span>
+<a class="jxr_linenumber" name="L379" href="#L379">379</a>                     + <span class="jxr_string">"this can be ignored unless you are scanning .NET DLLs. Please see the log for more details."</span>);
+<a class="jxr_linenumber" name="L380" href="#L380">380</a>             LOGGER.debug(<span class="jxr_string">"Could not execute GrokAssembly {}"</span>, e.getMessage());
+<a class="jxr_linenumber" name="L381" href="#L381">381</a>             setEnabled(false);
+<a class="jxr_linenumber" name="L382" href="#L382">382</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a href="../../../../org/owasp/dependencycheck/exception/InitializationException.html">InitializationException</a>(<span class="jxr_string">"An error occurred with the .NET AssemblyAnalyzer"</span>, e);
+<a class="jxr_linenumber" name="L383" href="#L383">383</a>         } <strong class="jxr_keyword">catch</strong> (IOException e) {
 <a class="jxr_linenumber" name="L384" href="#L384">384</a>             LOGGER.warn(<span class="jxr_string">"An error occurred with the .NET AssemblyAnalyzer;\n"</span>
-<a class="jxr_linenumber" name="L385" href="#L385">385</a>                     + <span class="jxr_string">"dependency-check requires dotnet 8.0 core runtime or sdk to be installed to analyze assemblies;\n"</span>
+<a class="jxr_linenumber" name="L385" href="#L385">385</a>                     + <span class="jxr_string">"dependency-check requires dotnet 8.0 core to be installed to analyze assemblies;\n"</span>
 <a class="jxr_linenumber" name="L386" href="#L386">386</a>                     + <span class="jxr_string">"this can be ignored unless you are scanning .NET DLLs. Please see the log for more details."</span>);
 <a class="jxr_linenumber" name="L387" href="#L387">387</a>             LOGGER.debug(<span class="jxr_string">"Could not execute GrokAssembly {}"</span>, e.getMessage());
 <a class="jxr_linenumber" name="L388" href="#L388">388</a>             setEnabled(false);
-<a class="jxr_linenumber" name="L389" href="#L389">389</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a href="../../../../org/owasp/dependencycheck/exception/InitializationException.html">InitializationException</a>(<span class="jxr_string">"An error occurred with the .NET AssemblyAnalyzer"</span>, e);
-<a class="jxr_linenumber" name="L390" href="#L390">390</a>         } <strong class="jxr_keyword">catch</strong> (IOException e) {
-<a class="jxr_linenumber" name="L391" href="#L391">391</a>             LOGGER.warn(<span class="jxr_string">"An error occurred with the .NET AssemblyAnalyzer;\n"</span>
-<a class="jxr_linenumber" name="L392" href="#L392">392</a>                     + <span class="jxr_string">"dependency-check requires dotnet 8.0 core to be installed to analyze assemblies;\n"</span>
-<a class="jxr_linenumber" name="L393" href="#L393">393</a>                     + <span class="jxr_string">"this can be ignored unless you are scanning .NET DLLs. Please see the log for more details."</span>);
-<a class="jxr_linenumber" name="L394" href="#L394">394</a>             LOGGER.debug(<span class="jxr_string">"Could not execute GrokAssembly {}"</span>, e.getMessage());
-<a class="jxr_linenumber" name="L395" href="#L395">395</a>             setEnabled(false);
-<a class="jxr_linenumber" name="L396" href="#L396">396</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a href="../../../../org/owasp/dependencycheck/exception/InitializationException.html">InitializationException</a>(<span class="jxr_string">"An error occurred with the .NET AssemblyAnalyzer, is the dotnet 8.0 runtime or sdk installed?"</span>, e);
-<a class="jxr_linenumber" name="L397" href="#L397">397</a>         }
-<a class="jxr_linenumber" name="L398" href="#L398">398</a>     }
-<a class="jxr_linenumber" name="L399" href="#L399">399</a> 
-<a class="jxr_linenumber" name="L400" href="#L400">400</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L401" href="#L401">401</a> <em class="jxr_javadoccomment">     * Extracts the GrokAssembly executable.</em>
-<a class="jxr_linenumber" name="L402" href="#L402">402</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L403" href="#L403">403</a> <em class="jxr_javadoccomment">     * @return the path to the extracted executable</em>
-<a class="jxr_linenumber" name="L404" href="#L404">404</a> <em class="jxr_javadoccomment">     * @throws InitializationException thrown if the executable could not be</em>
-<a class="jxr_linenumber" name="L405" href="#L405">405</a> <em class="jxr_javadoccomment">     * extracted</em>
-<a class="jxr_linenumber" name="L406" href="#L406">406</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L407" href="#L407">407</a>     <strong class="jxr_keyword">private</strong> File extractGrokAssembly() <strong class="jxr_keyword">throws</strong> InitializationException {
-<a class="jxr_linenumber" name="L408" href="#L408">408</a>         <strong class="jxr_keyword">final</strong> File location;
-<a class="jxr_linenumber" name="L409" href="#L409">409</a>         <strong class="jxr_keyword">try</strong> (InputStream in = FileUtils.getResourceAsStream(<span class="jxr_string">"GrokAssembly.zip"</span>)) {
-<a class="jxr_linenumber" name="L410" href="#L410">410</a>             <strong class="jxr_keyword">if</strong> (in == <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="L411" href="#L411">411</a>                 <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a href="../../../../org/owasp/dependencycheck/exception/InitializationException.html">InitializationException</a>(<span class="jxr_string">"Unable to extract GrokAssembly.dll - file not found"</span>);
-<a class="jxr_linenumber" name="L412" href="#L412">412</a>             }
-<a class="jxr_linenumber" name="L413" href="#L413">413</a>             location = FileUtils.createTempDirectory(getSettings().getTempDirectory());
-<a class="jxr_linenumber" name="L414" href="#L414">414</a>             ExtractionUtil.extractFiles(in, location);
-<a class="jxr_linenumber" name="L415" href="#L415">415</a>         } <strong class="jxr_keyword">catch</strong> (ExtractionException ex) {
-<a class="jxr_linenumber" name="L416" href="#L416">416</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a href="../../../../org/owasp/dependencycheck/exception/InitializationException.html">InitializationException</a>(<span class="jxr_string">"Unable to extract GrokAssembly.dll"</span>, ex);
-<a class="jxr_linenumber" name="L417" href="#L417">417</a>         } <strong class="jxr_keyword">catch</strong> (IOException ex) {
-<a class="jxr_linenumber" name="L418" href="#L418">418</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a href="../../../../org/owasp/dependencycheck/exception/InitializationException.html">InitializationException</a>(<span class="jxr_string">"Unable to create temp directory for GrokAssembly"</span>, ex);
-<a class="jxr_linenumber" name="L419" href="#L419">419</a>         }
-<a class="jxr_linenumber" name="L420" href="#L420">420</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> File(location, <span class="jxr_string">"GrokAssembly.dll"</span>);
-<a class="jxr_linenumber" name="L421" href="#L421">421</a>     }
-<a class="jxr_linenumber" name="L422" href="#L422">422</a> 
-<a class="jxr_linenumber" name="L423" href="#L423">423</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L424" href="#L424">424</a> <em class="jxr_javadoccomment">     * Removes resources used from the local file system.</em>
-<a class="jxr_linenumber" name="L425" href="#L425">425</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L426" href="#L426">426</a> <em class="jxr_javadoccomment">     * @throws Exception thrown if there is a problem closing the analyzer</em>
-<a class="jxr_linenumber" name="L427" href="#L427">427</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L428" href="#L428">428</a>     @Override
-<a class="jxr_linenumber" name="L429" href="#L429">429</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> closeAnalyzer() <strong class="jxr_keyword">throws</strong> Exception {
-<a class="jxr_linenumber" name="L430" href="#L430">430</a>         <strong class="jxr_keyword">if</strong> (grokAssembly != <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="L431" href="#L431">431</a>             FileUtils.delete(grokAssembly.getParentFile());
-<a class="jxr_linenumber" name="L432" href="#L432">432</a>         }
-<a class="jxr_linenumber" name="L433" href="#L433">433</a>     }
-<a class="jxr_linenumber" name="L434" href="#L434">434</a> 
+<a class="jxr_linenumber" name="L389" href="#L389">389</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a href="../../../../org/owasp/dependencycheck/exception/InitializationException.html">InitializationException</a>(<span class="jxr_string">"An error occurred with the .NET AssemblyAnalyzer, is the dotnet 8.0 runtime or sdk installed?"</span>, e);
+<a class="jxr_linenumber" name="L390" href="#L390">390</a>         }
+<a class="jxr_linenumber" name="L391" href="#L391">391</a>     }
+<a class="jxr_linenumber" name="L392" href="#L392">392</a> 
+<a class="jxr_linenumber" name="L393" href="#L393">393</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L394" href="#L394">394</a> <em class="jxr_javadoccomment">     * Extracts the GrokAssembly executable.</em>
+<a class="jxr_linenumber" name="L395" href="#L395">395</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L396" href="#L396">396</a> <em class="jxr_javadoccomment">     * @return the path to the extracted executable</em>
+<a class="jxr_linenumber" name="L397" href="#L397">397</a> <em class="jxr_javadoccomment">     * @throws InitializationException thrown if the executable could not be</em>
+<a class="jxr_linenumber" name="L398" href="#L398">398</a> <em class="jxr_javadoccomment">     * extracted</em>
+<a class="jxr_linenumber" name="L399" href="#L399">399</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L400" href="#L400">400</a>     <strong class="jxr_keyword">private</strong> File extractGrokAssembly() <strong class="jxr_keyword">throws</strong> InitializationException {
+<a class="jxr_linenumber" name="L401" href="#L401">401</a>         <strong class="jxr_keyword">final</strong> File location;
+<a class="jxr_linenumber" name="L402" href="#L402">402</a>         <strong class="jxr_keyword">try</strong> (InputStream in = FileUtils.getResourceAsStream(<span class="jxr_string">"GrokAssembly.zip"</span>)) {
+<a class="jxr_linenumber" name="L403" href="#L403">403</a>             location = FileUtils.createTempDirectory(getSettings().getTempDirectory());
+<a class="jxr_linenumber" name="L404" href="#L404">404</a>             ExtractionUtil.extractFiles(in, location);
+<a class="jxr_linenumber" name="L405" href="#L405">405</a>         } <strong class="jxr_keyword">catch</strong> (ExtractionException ex) {
+<a class="jxr_linenumber" name="L406" href="#L406">406</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a href="../../../../org/owasp/dependencycheck/exception/InitializationException.html">InitializationException</a>(<span class="jxr_string">"Unable to extract GrokAssembly.dll"</span>, ex);
+<a class="jxr_linenumber" name="L407" href="#L407">407</a>         } <strong class="jxr_keyword">catch</strong> (IOException ex) {
+<a class="jxr_linenumber" name="L408" href="#L408">408</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a href="../../../../org/owasp/dependencycheck/exception/InitializationException.html">InitializationException</a>(<span class="jxr_string">"Unable to create temp directory for GrokAssembly"</span>, ex);
+<a class="jxr_linenumber" name="L409" href="#L409">409</a>         }
+<a class="jxr_linenumber" name="L410" href="#L410">410</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> File(location, <span class="jxr_string">"GrokAssembly.dll"</span>);
+<a class="jxr_linenumber" name="L411" href="#L411">411</a>     }
+<a class="jxr_linenumber" name="L412" href="#L412">412</a> 
+<a class="jxr_linenumber" name="L413" href="#L413">413</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L414" href="#L414">414</a> <em class="jxr_javadoccomment">     * Removes resources used from the local file system.</em>
+<a class="jxr_linenumber" name="L415" href="#L415">415</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L416" href="#L416">416</a> <em class="jxr_javadoccomment">     * @throws Exception thrown if there is a problem closing the analyzer</em>
+<a class="jxr_linenumber" name="L417" href="#L417">417</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L418" href="#L418">418</a>     @Override
+<a class="jxr_linenumber" name="L419" href="#L419">419</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> closeAnalyzer() <strong class="jxr_keyword">throws</strong> Exception {
+<a class="jxr_linenumber" name="L420" href="#L420">420</a>         <strong class="jxr_keyword">if</strong> (grokAssembly != <strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="L421" href="#L421">421</a>             FileUtils.delete(grokAssembly.getParentFile());
+<a class="jxr_linenumber" name="L422" href="#L422">422</a>         }
+<a class="jxr_linenumber" name="L423" href="#L423">423</a>     }
+<a class="jxr_linenumber" name="L424" href="#L424">424</a> 
+<a class="jxr_linenumber" name="L425" href="#L425">425</a>     @Override
+<a class="jxr_linenumber" name="L426" href="#L426">426</a>     <strong class="jxr_keyword">protected</strong> FileFilter getFileFilter() {
+<a class="jxr_linenumber" name="L427" href="#L427">427</a>         <strong class="jxr_keyword">return</strong> FILTER;
+<a class="jxr_linenumber" name="L428" href="#L428">428</a>     }
+<a class="jxr_linenumber" name="L429" href="#L429">429</a> 
+<a class="jxr_linenumber" name="L430" href="#L430">430</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L431" href="#L431">431</a> <em class="jxr_javadoccomment">     * Gets this analyzer's name.</em>
+<a class="jxr_linenumber" name="L432" href="#L432">432</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L433" href="#L433">433</a> <em class="jxr_javadoccomment">     * @return the analyzer name</em>
+<a class="jxr_linenumber" name="L434" href="#L434">434</a> <em class="jxr_javadoccomment">     */</em>
 <a class="jxr_linenumber" name="L435" href="#L435">435</a>     @Override
-<a class="jxr_linenumber" name="L436" href="#L436">436</a>     <strong class="jxr_keyword">protected</strong> FileFilter getFileFilter() {
-<a class="jxr_linenumber" name="L437" href="#L437">437</a>         <strong class="jxr_keyword">return</strong> FILTER;
+<a class="jxr_linenumber" name="L436" href="#L436">436</a>     <strong class="jxr_keyword">public</strong> String getName() {
+<a class="jxr_linenumber" name="L437" href="#L437">437</a>         <strong class="jxr_keyword">return</strong> ANALYZER_NAME;
 <a class="jxr_linenumber" name="L438" href="#L438">438</a>     }
 <a class="jxr_linenumber" name="L439" href="#L439">439</a> 
 <a class="jxr_linenumber" name="L440" href="#L440">440</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L441" href="#L441">441</a> <em class="jxr_javadoccomment">     * Gets this analyzer's name.</em>
+<a class="jxr_linenumber" name="L441" href="#L441">441</a> <em class="jxr_javadoccomment">     * Returns the phase this analyzer runs under.</em>
 <a class="jxr_linenumber" name="L442" href="#L442">442</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L443" href="#L443">443</a> <em class="jxr_javadoccomment">     * @return the analyzer name</em>
+<a class="jxr_linenumber" name="L443" href="#L443">443</a> <em class="jxr_javadoccomment">     * @return the phase this runs under</em>
 <a class="jxr_linenumber" name="L444" href="#L444">444</a> <em class="jxr_javadoccomment">     */</em>
 <a class="jxr_linenumber" name="L445" href="#L445">445</a>     @Override
-<a class="jxr_linenumber" name="L446" href="#L446">446</a>     <strong class="jxr_keyword">public</strong> String getName() {
-<a class="jxr_linenumber" name="L447" href="#L447">447</a>         <strong class="jxr_keyword">return</strong> ANALYZER_NAME;
+<a class="jxr_linenumber" name="L446" href="#L446">446</a>     <strong class="jxr_keyword">public</strong> <a href="../../../../org/owasp/dependencycheck/analyzer/AnalysisPhase.html">AnalysisPhase</a> getAnalysisPhase() {
+<a class="jxr_linenumber" name="L447" href="#L447">447</a>         <strong class="jxr_keyword">return</strong> ANALYSIS_PHASE;
 <a class="jxr_linenumber" name="L448" href="#L448">448</a>     }
 <a class="jxr_linenumber" name="L449" href="#L449">449</a> 
 <a class="jxr_linenumber" name="L450" href="#L450">450</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L451" href="#L451">451</a> <em class="jxr_javadoccomment">     * Returns the phase this analyzer runs under.</em>
-<a class="jxr_linenumber" name="L452" href="#L452">452</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L453" href="#L453">453</a> <em class="jxr_javadoccomment">     * @return the phase this runs under</em>
-<a class="jxr_linenumber" name="L454" href="#L454">454</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L455" href="#L455">455</a>     @Override
-<a class="jxr_linenumber" name="L456" href="#L456">456</a>     <strong class="jxr_keyword">public</strong> <a href="../../../../org/owasp/dependencycheck/analyzer/AnalysisPhase.html">AnalysisPhase</a> getAnalysisPhase() {
-<a class="jxr_linenumber" name="L457" href="#L457">457</a>         <strong class="jxr_keyword">return</strong> ANALYSIS_PHASE;
-<a class="jxr_linenumber" name="L458" href="#L458">458</a>     }
-<a class="jxr_linenumber" name="L459" href="#L459">459</a> 
-<a class="jxr_linenumber" name="L460" href="#L460">460</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L461" href="#L461">461</a> <em class="jxr_javadoccomment">     * Returns the key used in the properties file to reference the analyzer's</em>
-<a class="jxr_linenumber" name="L462" href="#L462">462</a> <em class="jxr_javadoccomment">     * enabled property.</em>
+<a class="jxr_linenumber" name="L451" href="#L451">451</a> <em class="jxr_javadoccomment">     * Returns the key used in the properties file to reference the analyzer's</em>
+<a class="jxr_linenumber" name="L452" href="#L452">452</a> <em class="jxr_javadoccomment">     * enabled property.</em>
+<a class="jxr_linenumber" name="L453" href="#L453">453</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L454" href="#L454">454</a> <em class="jxr_javadoccomment">     * @return the analyzer's enabled property setting key</em>
+<a class="jxr_linenumber" name="L455" href="#L455">455</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L456" href="#L456">456</a>     @Override
+<a class="jxr_linenumber" name="L457" href="#L457">457</a>     <strong class="jxr_keyword">protected</strong> String getAnalyzerEnabledSettingKey() {
+<a class="jxr_linenumber" name="L458" href="#L458">458</a>         <strong class="jxr_keyword">return</strong> Settings.KEYS.ANALYZER_ASSEMBLY_ENABLED;
+<a class="jxr_linenumber" name="L459" href="#L459">459</a>     }
+<a class="jxr_linenumber" name="L460" href="#L460">460</a> 
+<a class="jxr_linenumber" name="L461" href="#L461">461</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L462" href="#L462">462</a> <em class="jxr_javadoccomment">     * Tests to see if a file is in the system path.</em>
 <a class="jxr_linenumber" name="L463" href="#L463">463</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L464" href="#L464">464</a> <em class="jxr_javadoccomment">     * @return the analyzer's enabled property setting key</em>
-<a class="jxr_linenumber" name="L465" href="#L465">465</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L466" href="#L466">466</a>     @Override
-<a class="jxr_linenumber" name="L467" href="#L467">467</a>     <strong class="jxr_keyword">protected</strong> String getAnalyzerEnabledSettingKey() {
-<a class="jxr_linenumber" name="L468" href="#L468">468</a>         <strong class="jxr_keyword">return</strong> Settings.KEYS.ANALYZER_ASSEMBLY_ENABLED;
-<a class="jxr_linenumber" name="L469" href="#L469">469</a>     }
-<a class="jxr_linenumber" name="L470" href="#L470">470</a> 
-<a class="jxr_linenumber" name="L471" href="#L471">471</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L472" href="#L472">472</a> <em class="jxr_javadoccomment">     * Tests to see if a file is in the system path.</em>
-<a class="jxr_linenumber" name="L473" href="#L473">473</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L474" href="#L474">474</a> <em class="jxr_javadoccomment">     * @return &lt;code&gt;true&lt;/code&gt; if dotnet could be found in the path; otherwise</em>
-<a class="jxr_linenumber" name="L475" href="#L475">475</a> <em class="jxr_javadoccomment">     * &lt;code&gt;false&lt;/code&gt;</em>
-<a class="jxr_linenumber" name="L476" href="#L476">476</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L477" href="#L477">477</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">boolean</strong> isDotnetPath() {
-<a class="jxr_linenumber" name="L478" href="#L478">478</a>         <strong class="jxr_keyword">final</strong> String[] args = <strong class="jxr_keyword">new</strong> String[2];
-<a class="jxr_linenumber" name="L479" href="#L479">479</a>         args[0] = <span class="jxr_string">"dotnet"</span>;
-<a class="jxr_linenumber" name="L480" href="#L480">480</a>         args[1] = <span class="jxr_string">"--info"</span>;
-<a class="jxr_linenumber" name="L481" href="#L481">481</a>         <strong class="jxr_keyword">final</strong> ProcessBuilder pb = <strong class="jxr_keyword">new</strong> ProcessBuilder(args);
-<a class="jxr_linenumber" name="L482" href="#L482">482</a>         <strong class="jxr_keyword">try</strong> {
-<a class="jxr_linenumber" name="L483" href="#L483">483</a>             <strong class="jxr_keyword">final</strong> Process proc = pb.start();
-<a class="jxr_linenumber" name="L484" href="#L484">484</a>             <strong class="jxr_keyword">try</strong> (ProcessReader processReader = <strong class="jxr_keyword">new</strong> ProcessReader(proc)) {
-<a class="jxr_linenumber" name="L485" href="#L485">485</a>                 processReader.readAll();
-<a class="jxr_linenumber" name="L486" href="#L486">486</a>                 <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> exitValue = proc.exitValue();
-<a class="jxr_linenumber" name="L487" href="#L487">487</a>                 <strong class="jxr_keyword">if</strong> (exitValue == 0) {
-<a class="jxr_linenumber" name="L488" href="#L488">488</a>                     <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">true</strong>;
-<a class="jxr_linenumber" name="L489" href="#L489">489</a>                 }
-<a class="jxr_linenumber" name="L490" href="#L490">490</a>                 <strong class="jxr_keyword">final</strong> String output = processReader.getOutput();
-<a class="jxr_linenumber" name="L491" href="#L491">491</a>                 <strong class="jxr_keyword">if</strong> (output.length() &gt; 0) {
-<a class="jxr_linenumber" name="L492" href="#L492">492</a>                     <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">true</strong>;
-<a class="jxr_linenumber" name="L493" href="#L493">493</a>                 }
-<a class="jxr_linenumber" name="L494" href="#L494">494</a>             }
-<a class="jxr_linenumber" name="L495" href="#L495">495</a>         } <strong class="jxr_keyword">catch</strong> (InterruptedException ex) {
-<a class="jxr_linenumber" name="L496" href="#L496">496</a>             Thread.currentThread().interrupt();
-<a class="jxr_linenumber" name="L497" href="#L497">497</a>             LOGGER.debug(<span class="jxr_string">"Path search failed for dotnet"</span>, ex);
-<a class="jxr_linenumber" name="L498" href="#L498">498</a>         } <strong class="jxr_keyword">catch</strong> (IOException ex) {
-<a class="jxr_linenumber" name="L499" href="#L499">499</a>             LOGGER.debug(<span class="jxr_string">"Path search failed for dotnet"</span>, ex);
-<a class="jxr_linenumber" name="L500" href="#L500">500</a>         }
-<a class="jxr_linenumber" name="L501" href="#L501">501</a>         <strong class="jxr_keyword">return</strong> false;
-<a class="jxr_linenumber" name="L502" href="#L502">502</a>     }
-<a class="jxr_linenumber" name="L503" href="#L503">503</a> 
-<a class="jxr_linenumber" name="L504" href="#L504">504</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L505" href="#L505">505</a> <em class="jxr_javadoccomment">     * Cycles through the collection of class name information to see if parts</em>
-<a class="jxr_linenumber" name="L506" href="#L506">506</a> <em class="jxr_javadoccomment">     * of the package names are contained in the provided value. If found, it</em>
-<a class="jxr_linenumber" name="L507" href="#L507">507</a> <em class="jxr_javadoccomment">     * will be added as the HIGHEST confidence evidence because we have more</em>
-<a class="jxr_linenumber" name="L508" href="#L508">508</a> <em class="jxr_javadoccomment">     * then one source corroborating the value.</em>
-<a class="jxr_linenumber" name="L509" href="#L509">509</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L510" href="#L510">510</a> <em class="jxr_javadoccomment">     * @param packages a collection of class name information</em>
-<a class="jxr_linenumber" name="L511" href="#L511">511</a> <em class="jxr_javadoccomment">     * @param value the value to check to see if it contains a package name</em>
-<a class="jxr_linenumber" name="L512" href="#L512">512</a> <em class="jxr_javadoccomment">     * @param dep the dependency to add new entries too</em>
-<a class="jxr_linenumber" name="L513" href="#L513">513</a> <em class="jxr_javadoccomment">     * @param type the type of evidence (vendor, product, or version)</em>
-<a class="jxr_linenumber" name="L514" href="#L514">514</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L515" href="#L515">515</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">void</strong> addMatchingValues(List&lt;String&gt; packages, String value, <a href="../../../../org/owasp/dependencycheck/dependency/Dependency.html">Dependency</a> dep, <a href="../../../../org/owasp/dependencycheck/dependency/EvidenceType.html">EvidenceType</a> type) {
-<a class="jxr_linenumber" name="L516" href="#L516">516</a>         <strong class="jxr_keyword">if</strong> (value == <strong class="jxr_keyword">null</strong> || value.isEmpty() || packages == <strong class="jxr_keyword">null</strong> || packages.isEmpty()) {
-<a class="jxr_linenumber" name="L517" href="#L517">517</a>             <strong class="jxr_keyword">return</strong>;
-<a class="jxr_linenumber" name="L518" href="#L518">518</a>         }
-<a class="jxr_linenumber" name="L519" href="#L519">519</a>         <strong class="jxr_keyword">for</strong> (String key : packages) {
-<a class="jxr_linenumber" name="L520" href="#L520">520</a>             <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> pos = StringUtils.indexOfIgnoreCase(value, key);
-<a class="jxr_linenumber" name="L521" href="#L521">521</a>             <strong class="jxr_keyword">if</strong> ((pos == 0 &amp;&amp; (key.length() == value.length() || (key.length() &lt; value.length()
-<a class="jxr_linenumber" name="L522" href="#L522">522</a>                     &amp;&amp; !Character.isLetterOrDigit(value.charAt(key.length())))))
-<a class="jxr_linenumber" name="L523" href="#L523">523</a>                     || (pos &gt; 0 &amp;&amp; !Character.isLetterOrDigit(value.charAt(pos - 1))
-<a class="jxr_linenumber" name="L524" href="#L524">524</a>                     &amp;&amp; (pos + key.length() == value.length() || (key.length() &lt; value.length()
-<a class="jxr_linenumber" name="L525" href="#L525">525</a>                     &amp;&amp; !Character.isLetterOrDigit(value.charAt(pos + key.length())))))) {
-<a class="jxr_linenumber" name="L526" href="#L526">526</a>                 dep.addEvidence(type, <span class="jxr_string">"dll"</span>, <span class="jxr_string">"namespace"</span>, key, Confidence.HIGHEST);
-<a class="jxr_linenumber" name="L527" href="#L527">527</a>             }
-<a class="jxr_linenumber" name="L528" href="#L528">528</a> 
-<a class="jxr_linenumber" name="L529" href="#L529">529</a>         }
+<a class="jxr_linenumber" name="L464" href="#L464">464</a> <em class="jxr_javadoccomment">     * @return &lt;code&gt;true&lt;/code&gt; if dotnet could be found in the path; otherwise</em>
+<a class="jxr_linenumber" name="L465" href="#L465">465</a> <em class="jxr_javadoccomment">     * &lt;code&gt;false&lt;/code&gt;</em>
+<a class="jxr_linenumber" name="L466" href="#L466">466</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L467" href="#L467">467</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">boolean</strong> isDotnetPath() {
+<a class="jxr_linenumber" name="L468" href="#L468">468</a>         <strong class="jxr_keyword">final</strong> String[] args = <strong class="jxr_keyword">new</strong> String[2];
+<a class="jxr_linenumber" name="L469" href="#L469">469</a>         args[0] = <span class="jxr_string">"dotnet"</span>;
+<a class="jxr_linenumber" name="L470" href="#L470">470</a>         args[1] = <span class="jxr_string">"--info"</span>;
+<a class="jxr_linenumber" name="L471" href="#L471">471</a>         <strong class="jxr_keyword">final</strong> ProcessBuilder pb = <strong class="jxr_keyword">new</strong> ProcessBuilder(args);
+<a class="jxr_linenumber" name="L472" href="#L472">472</a>         <strong class="jxr_keyword">try</strong> {
+<a class="jxr_linenumber" name="L473" href="#L473">473</a>             <strong class="jxr_keyword">final</strong> Process proc = pb.start();
+<a class="jxr_linenumber" name="L474" href="#L474">474</a>             <strong class="jxr_keyword">try</strong> (ProcessReader processReader = <strong class="jxr_keyword">new</strong> ProcessReader(proc)) {
+<a class="jxr_linenumber" name="L475" href="#L475">475</a>                 processReader.readAll();
+<a class="jxr_linenumber" name="L476" href="#L476">476</a>                 <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> exitValue = proc.exitValue();
+<a class="jxr_linenumber" name="L477" href="#L477">477</a>                 <strong class="jxr_keyword">if</strong> (exitValue == 0) {
+<a class="jxr_linenumber" name="L478" href="#L478">478</a>                     <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">true</strong>;
+<a class="jxr_linenumber" name="L479" href="#L479">479</a>                 }
+<a class="jxr_linenumber" name="L480" href="#L480">480</a>                 <strong class="jxr_keyword">final</strong> String output = processReader.getOutput();
+<a class="jxr_linenumber" name="L481" href="#L481">481</a>                 <strong class="jxr_keyword">if</strong> (output.length() &gt; 0) {
+<a class="jxr_linenumber" name="L482" href="#L482">482</a>                     <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">true</strong>;
+<a class="jxr_linenumber" name="L483" href="#L483">483</a>                 }
+<a class="jxr_linenumber" name="L484" href="#L484">484</a>             }
+<a class="jxr_linenumber" name="L485" href="#L485">485</a>         } <strong class="jxr_keyword">catch</strong> (InterruptedException ex) {
+<a class="jxr_linenumber" name="L486" href="#L486">486</a>             Thread.currentThread().interrupt();
+<a class="jxr_linenumber" name="L487" href="#L487">487</a>             LOGGER.debug(<span class="jxr_string">"Path search failed for dotnet"</span>, ex);
+<a class="jxr_linenumber" name="L488" href="#L488">488</a>         } <strong class="jxr_keyword">catch</strong> (IOException ex) {
+<a class="jxr_linenumber" name="L489" href="#L489">489</a>             LOGGER.debug(<span class="jxr_string">"Path search failed for dotnet"</span>, ex);
+<a class="jxr_linenumber" name="L490" href="#L490">490</a>         }
+<a class="jxr_linenumber" name="L491" href="#L491">491</a>         <strong class="jxr_keyword">return</strong> false;
+<a class="jxr_linenumber" name="L492" href="#L492">492</a>     }
+<a class="jxr_linenumber" name="L493" href="#L493">493</a> 
+<a class="jxr_linenumber" name="L494" href="#L494">494</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L495" href="#L495">495</a> <em class="jxr_javadoccomment">     * Cycles through the collection of class name information to see if parts</em>
+<a class="jxr_linenumber" name="L496" href="#L496">496</a> <em class="jxr_javadoccomment">     * of the package names are contained in the provided value. If found, it</em>
+<a class="jxr_linenumber" name="L497" href="#L497">497</a> <em class="jxr_javadoccomment">     * will be added as the HIGHEST confidence evidence because we have more</em>
+<a class="jxr_linenumber" name="L498" href="#L498">498</a> <em class="jxr_javadoccomment">     * then one source corroborating the value.</em>
+<a class="jxr_linenumber" name="L499" href="#L499">499</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L500" href="#L500">500</a> <em class="jxr_javadoccomment">     * @param packages a collection of class name information</em>
+<a class="jxr_linenumber" name="L501" href="#L501">501</a> <em class="jxr_javadoccomment">     * @param value the value to check to see if it contains a package name</em>
+<a class="jxr_linenumber" name="L502" href="#L502">502</a> <em class="jxr_javadoccomment">     * @param dep the dependency to add new entries too</em>
+<a class="jxr_linenumber" name="L503" href="#L503">503</a> <em class="jxr_javadoccomment">     * @param type the type of evidence (vendor, product, or version)</em>
+<a class="jxr_linenumber" name="L504" href="#L504">504</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L505" href="#L505">505</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">void</strong> addMatchingValues(List&lt;String&gt; packages, String value, <a href="../../../../org/owasp/dependencycheck/dependency/Dependency.html">Dependency</a> dep, <a href="../../../../org/owasp/dependencycheck/dependency/EvidenceType.html">EvidenceType</a> type) {
+<a class="jxr_linenumber" name="L506" href="#L506">506</a>         <strong class="jxr_keyword">if</strong> (value == <strong class="jxr_keyword">null</strong> || value.isEmpty() || packages == <strong class="jxr_keyword">null</strong> || packages.isEmpty()) {
+<a class="jxr_linenumber" name="L507" href="#L507">507</a>             <strong class="jxr_keyword">return</strong>;
+<a class="jxr_linenumber" name="L508" href="#L508">508</a>         }
+<a class="jxr_linenumber" name="L509" href="#L509">509</a>         <strong class="jxr_keyword">for</strong> (String key : packages) {
+<a class="jxr_linenumber" name="L510" href="#L510">510</a>             <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> pos = StringUtils.indexOfIgnoreCase(value, key);
+<a class="jxr_linenumber" name="L511" href="#L511">511</a>             <strong class="jxr_keyword">if</strong> ((pos == 0 &amp;&amp; (key.length() == value.length() || (key.length() &lt; value.length()
+<a class="jxr_linenumber" name="L512" href="#L512">512</a>                     &amp;&amp; !Character.isLetterOrDigit(value.charAt(key.length())))))
+<a class="jxr_linenumber" name="L513" href="#L513">513</a>                     || (pos &gt; 0 &amp;&amp; !Character.isLetterOrDigit(value.charAt(pos - 1))
+<a class="jxr_linenumber" name="L514" href="#L514">514</a>                     &amp;&amp; (pos + key.length() == value.length() || (key.length() &lt; value.length()
+<a class="jxr_linenumber" name="L515" href="#L515">515</a>                     &amp;&amp; !Character.isLetterOrDigit(value.charAt(pos + key.length())))))) {
+<a class="jxr_linenumber" name="L516" href="#L516">516</a>                 dep.addEvidence(type, <span class="jxr_string">"dll"</span>, <span class="jxr_string">"namespace"</span>, key, Confidence.HIGHEST);
+<a class="jxr_linenumber" name="L517" href="#L517">517</a>             }
+<a class="jxr_linenumber" name="L518" href="#L518">518</a> 
+<a class="jxr_linenumber" name="L519" href="#L519">519</a>         }
+<a class="jxr_linenumber" name="L520" href="#L520">520</a>     }
+<a class="jxr_linenumber" name="L521" href="#L521">521</a> 
+<a class="jxr_linenumber" name="L522" href="#L522">522</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L523" href="#L523">523</a> <em class="jxr_javadoccomment">     * Used in testing only - this simply returns the path to the extracted</em>
+<a class="jxr_linenumber" name="L524" href="#L524">524</a> <em class="jxr_javadoccomment">     * GrokAssembly.dll.</em>
+<a class="jxr_linenumber" name="L525" href="#L525">525</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L526" href="#L526">526</a> <em class="jxr_javadoccomment">     * @return the path to the extracted GrokAssembly.dll</em>
+<a class="jxr_linenumber" name="L527" href="#L527">527</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L528" href="#L528">528</a>     File getGrokAssemblyPath() {
+<a class="jxr_linenumber" name="L529" href="#L529">529</a>         <strong class="jxr_keyword">return</strong> grokAssembly;
 <a class="jxr_linenumber" name="L530" href="#L530">530</a>     }
-<a class="jxr_linenumber" name="L531" href="#L531">531</a> 
-<a class="jxr_linenumber" name="L532" href="#L532">532</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L533" href="#L533">533</a> <em class="jxr_javadoccomment">     * Used in testing only - this simply returns the path to the extracted</em>
-<a class="jxr_linenumber" name="L534" href="#L534">534</a> <em class="jxr_javadoccomment">     * GrokAssembly.dll.</em>
-<a class="jxr_linenumber" name="L535" href="#L535">535</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L536" href="#L536">536</a> <em class="jxr_javadoccomment">     * @return the path to the extracted GrokAssembly.dll</em>
-<a class="jxr_linenumber" name="L537" href="#L537">537</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L538" href="#L538">538</a>     File getGrokAssemblyPath() {
-<a class="jxr_linenumber" name="L539" href="#L539">539</a>         <strong class="jxr_keyword">return</strong> grokAssembly;
-<a class="jxr_linenumber" name="L540" href="#L540">540</a>     }
-<a class="jxr_linenumber" name="L541" href="#L541">541</a> }
+<a class="jxr_linenumber" name="L531" href="#L531">531</a> }
 </pre>
 <hr/>
 <div id="footer">Copyright &#169; 2012&#x2013;2026 <a href="https://www.owasp.org">OWASP</a>. All rights reserved.</div>

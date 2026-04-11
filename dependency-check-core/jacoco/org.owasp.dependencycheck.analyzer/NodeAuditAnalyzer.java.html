@@ -131,9 +131,9 @@ import java.util.List;
         }
 <span class="fc" id="L132">        final File packageLock = dependency.getActualFile();</span>
 <span class="fc" id="L133">        final File shrinkwrap = new File(packageLock.getParentFile(), SHRINKWRAP_JSON);</span>
-<span class="fc bfc" id="L134" title="All 4 branches covered.">        if (PACKAGE_LOCK_JSON.equals(dependency.getFileName()) &amp;&amp; shrinkwrap.isFile()) {</span>
-<span class="fc" id="L135">            LOGGER.debug(&quot;Skipping {} because shrinkwrap lock file exists&quot;, dependency.getFilePath());</span>
-<span class="fc" id="L136">            return;</span>
+<span class="pc bpc" id="L134" title="1 of 4 branches missed.">        if (PACKAGE_LOCK_JSON.equals(dependency.getFileName()) &amp;&amp; shrinkwrap.isFile()) {</span>
+<span class="nc" id="L135">            LOGGER.debug(&quot;Skipping {} because shrinkwrap lock file exists&quot;, dependency.getFilePath());</span>
+<span class="nc" id="L136">            return;</span>
         }
 <span class="pc bpc" id="L138" title="1 of 6 branches missed.">        if (!packageLock.isFile() || packageLock.length() == 0 || !shouldProcess(packageLock)) {</span>
 <span class="fc" id="L139">            return;</span>

@@ -186,8 +186,8 @@ import org.xml.sax.helpers.DefaultHandler;
 <span class="fc" id="L186">                                model.setProjectURL(currentText.toString());</span>
 <span class="fc" id="L187">                                break;</span>
                             default:
-<span class="fc" id="L189">                                break;</span>
-                        }
+                                break;
+<span class="fc" id="L190">                        }</span>
                     }
                     break;
                 case ORGANIZATION:
@@ -210,8 +210,8 @@ import org.xml.sax.helpers.DefaultHandler;
 <span class="fc" id="L210">                                model.setParentVersion(currentText.toString());</span>
 <span class="fc" id="L211">                                break;</span>
                             default:
-<span class="fc" id="L213">                                break;</span>
-                        }
+                                break;
+<span class="fc" id="L214">                        }</span>
                     }
                     break;
                 case LICENSE_NODE:
@@ -231,7 +231,7 @@ import org.xml.sax.helpers.DefaultHandler;
                     break;
                 case DEVELOPER_NODE:
 <span class="pc bpc" id="L233" title="2 of 4 branches missed.">                    if (developer != null &amp;&amp; qName != null) {</span>
-<span class="fc bfc" id="L234" title="All 6 branches covered.">                        switch (qName) {</span>
+<span class="pc bpc" id="L234" title="1 of 6 branches missed.">                        switch (qName) {</span>
                             case DEVELOPER_ID:
 <span class="fc" id="L236">                                developer.setId(currentText.toString());</span>
 <span class="fc" id="L237">                                break;</span>
@@ -245,11 +245,11 @@ import org.xml.sax.helpers.DefaultHandler;
 <span class="fc" id="L245">                                developer.setOrganization(currentText.toString());</span>
 <span class="fc" id="L246">                                break;</span>
                             case DEVELOPER_ORGANIZATION_URL:
-<span class="fc" id="L248">                                developer.setOrganizationUrl(currentText.toString());</span>
-<span class="fc" id="L249">                                break;</span>
+<span class="nc" id="L248">                                developer.setOrganizationUrl(currentText.toString());</span>
+<span class="nc" id="L249">                                break;</span>
                             default:
-<span class="fc" id="L251">                                break;</span>
-                        }
+                                break;
+<span class="fc" id="L252">                        }</span>
                     }
                     break;
                 case DEVELOPERS:

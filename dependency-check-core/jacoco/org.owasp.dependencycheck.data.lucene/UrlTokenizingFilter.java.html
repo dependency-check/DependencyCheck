@@ -35,7 +35,7 @@ import org.slf4j.LoggerFactory;
  * @author Jeremy Long
  */
 @NotThreadSafe
-public final class UrlTokenizingFilter extends AbstractTokenizingFilter {
+public class UrlTokenizingFilter extends AbstractTokenizingFilter {
 
     /**
      * The logger.
@@ -60,32 +60,31 @@ public final class UrlTokenizingFilter extends AbstractTokenizingFilter {
      * @throws IOException is thrown when an IOException occurs
      */
     @Override
-    @SuppressWarnings(&quot;StringSplitter&quot;)
-    public boolean incrementToken() throws IOException {
-<span class="fc" id="L65">        final ArrayDeque&lt;String&gt; tokens = getTokens();</span>
-<span class="fc" id="L66">        final CharTermAttribute termAtt = getTermAtt();</span>
-<span class="fc bfc" id="L67" title="All 4 branches covered.">        if (tokens.isEmpty() &amp;&amp; input.incrementToken()) {</span>
-<span class="fc" id="L68">            final String text = new String(termAtt.buffer(), 0, termAtt.length());</span>
-<span class="fc bfc" id="L69" title="All 2 branches covered.">            if (UrlStringUtils.containsUrl(text)) {</span>
-<span class="fc" id="L70">                final String[] parts = text.split(&quot;\\s&quot;);</span>
-<span class="fc bfc" id="L71" title="All 2 branches covered.">                for (String part : parts) {</span>
-<span class="pc bpc" id="L72" title="1 of 2 branches missed.">                    if (UrlStringUtils.isUrl(part)) {</span>
+    public final boolean incrementToken() throws IOException {
+<span class="fc" id="L64">        final ArrayDeque&lt;String&gt; tokens = getTokens();</span>
+<span class="fc" id="L65">        final CharTermAttribute termAtt = getTermAtt();</span>
+<span class="fc bfc" id="L66" title="All 4 branches covered.">        if (tokens.isEmpty() &amp;&amp; input.incrementToken()) {</span>
+<span class="fc" id="L67">            final String text = new String(termAtt.buffer(), 0, termAtt.length());</span>
+<span class="fc bfc" id="L68" title="All 2 branches covered.">            if (UrlStringUtils.containsUrl(text)) {</span>
+<span class="fc" id="L69">                final String[] parts = text.split(&quot;\\s&quot;);</span>
+<span class="fc bfc" id="L70" title="All 2 branches covered.">                for (String part : parts) {</span>
+<span class="pc bpc" id="L71" title="1 of 2 branches missed.">                    if (UrlStringUtils.isUrl(part)) {</span>
                         try {
-<span class="fc" id="L74">                            final List&lt;String&gt; data = UrlStringUtils.extractImportantUrlData(part);</span>
-<span class="fc" id="L75">                            tokens.addAll(data);</span>
-<span class="nc" id="L76">                        } catch (MalformedURLException ex) {</span>
-<span class="nc" id="L77">                            LOGGER.debug(&quot;error parsing {}&quot;, part, ex);</span>
-<span class="nc" id="L78">                            tokens.add(part);</span>
-<span class="pc" id="L79">                        }</span>
+<span class="fc" id="L73">                            final List&lt;String&gt; data = UrlStringUtils.extractImportantUrlData(part);</span>
+<span class="fc" id="L74">                            tokens.addAll(data);</span>
+<span class="nc" id="L75">                        } catch (MalformedURLException ex) {</span>
+<span class="nc" id="L76">                            LOGGER.debug(&quot;error parsing {}&quot;, part, ex);</span>
+<span class="nc" id="L77">                            tokens.add(part);</span>
+<span class="pc" id="L78">                        }</span>
                     } else {
-<span class="nc" id="L81">                        tokens.add(part);</span>
+<span class="nc" id="L80">                        tokens.add(part);</span>
                     }
                 }
-<span class="fc" id="L84">            } else {</span>
-<span class="fc" id="L85">                tokens.add(text);</span>
+<span class="fc" id="L83">            } else {</span>
+<span class="fc" id="L84">                tokens.add(text);</span>
             }
         }
-<span class="fc" id="L88">        return addTerm();</span>
+<span class="fc" id="L87">        return addTerm();</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.14.202510111229</span></div></body></html>

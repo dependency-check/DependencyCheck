@@ -20,7 +20,6 @@ package org.owasp.dependencycheck.analyzer;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -49,12 +48,12 @@ import us.springett.parsers.cpe.exceptions.CpeValidationException;
  * @author Dale Visser
  */
 @ThreadSafe
-<span class="fc" id="L52">public class RubyBundleAuditAnalyzer extends AbstractFileTypeAnalyzer {</span>
+<span class="fc" id="L51">public class RubyBundleAuditAnalyzer extends AbstractFileTypeAnalyzer {</span>
 
     /**
      * The logger.
      */
-<span class="fc" id="L57">    private static final Logger LOGGER = LoggerFactory.getLogger(RubyBundleAuditAnalyzer.class);</span>
+<span class="fc" id="L56">    private static final Logger LOGGER = LoggerFactory.getLogger(RubyBundleAuditAnalyzer.class);</span>
 
     /**
      * A descriptor for the type of dependencies processed or added by this
@@ -70,11 +69,11 @@ import us.springett.parsers.cpe.exceptions.CpeValidationException;
     /**
      * The phase that this analyzer is intended to run in.
      */
-<span class="fc" id="L73">    private static final AnalysisPhase ANALYSIS_PHASE = AnalysisPhase.PRE_INFORMATION_COLLECTION;</span>
+<span class="fc" id="L72">    private static final AnalysisPhase ANALYSIS_PHASE = AnalysisPhase.PRE_INFORMATION_COLLECTION;</span>
     /**
      * The filter defining which files will be analyzed.
      */
-<span class="fc" id="L77">    private static final FileFilter FILTER = FileFilterBuilder.newInstance().addFilenames(&quot;Gemfile.lock&quot;).build();</span>
+<span class="fc" id="L76">    private static final FileFilter FILTER = FileFilterBuilder.newInstance().addFilenames(&quot;Gemfile.lock&quot;).build();</span>
     /**
      * Name.
      */
@@ -99,21 +98,21 @@ import us.springett.parsers.cpe.exceptions.CpeValidationException;
     /**
      * The DAL.
      */
-<span class="fc" id="L102">    private CveDB cvedb = null;</span>
+<span class="fc" id="L101">    private CveDB cvedb = null;</span>
 
     /**
      * If {@link #analyzeDependency(Dependency, Engine)} is called, then we have
      * successfully initialized, and it will be necessary to disable
      * {@link RubyGemspecAnalyzer}.
      */
-<span class="fc" id="L109">    private boolean needToDisableGemspecAnalyzer = true;</span>
+<span class="fc" id="L108">    private boolean needToDisableGemspecAnalyzer = true;</span>
 
     /**
      * @return a filter that accepts files named Gemfile.lock
      */
     @Override
     protected FileFilter getFileFilter() {
-<span class="fc" id="L116">        return FILTER;</span>
+<span class="fc" id="L115">        return FILTER;</span>
     }
 
     /**
@@ -123,7 +122,7 @@ import us.springett.parsers.cpe.exceptions.CpeValidationException;
      */
     @Override
     public String getName() {
-<span class="fc" id="L126">        return ANALYZER_NAME;</span>
+<span class="fc" id="L125">        return ANALYZER_NAME;</span>
     }
 
     /**
@@ -133,7 +132,7 @@ import us.springett.parsers.cpe.exceptions.CpeValidationException;
      */
     @Override
     public AnalysisPhase getAnalysisPhase() {
-<span class="fc" id="L136">        return ANALYSIS_PHASE;</span>
+<span class="fc" id="L135">        return ANALYSIS_PHASE;</span>
     }
 
     /**
@@ -144,7 +143,7 @@ import us.springett.parsers.cpe.exceptions.CpeValidationException;
      */
     @Override
     protected String getAnalyzerEnabledSettingKey() {
-<span class="fc" id="L147">        return Settings.KEYS.ANALYZER_BUNDLE_AUDIT_ENABLED;</span>
+<span class="fc" id="L146">        return Settings.KEYS.ANALYZER_BUNDLE_AUDIT_ENABLED;</span>
     }
 
     /**
@@ -157,40 +156,40 @@ import us.springett.parsers.cpe.exceptions.CpeValidationException;
      * audit
      */
     private Process launchBundleAudit(File folder, List&lt;String&gt; bundleAuditArgs) throws AnalysisException {
-<span class="pc bpc" id="L160" title="1 of 2 branches missed.">        if (!folder.isDirectory()) {</span>
-<span class="nc" id="L161">            throw new AnalysisException(String.format(&quot;%s should have been a directory.&quot;, folder.getAbsolutePath()));</span>
+<span class="pc bpc" id="L159" title="1 of 2 branches missed.">        if (!folder.isDirectory()) {</span>
+<span class="nc" id="L160">            throw new AnalysisException(String.format(&quot;%s should have been a directory.&quot;, folder.getAbsolutePath()));</span>
         }
-<span class="fc" id="L163">        final List&lt;String&gt; args = new ArrayList&lt;&gt;();</span>
-<span class="fc" id="L164">        final String bundleAuditPath = getSettings().getString(Settings.KEYS.ANALYZER_BUNDLE_AUDIT_PATH);</span>
-<span class="fc" id="L165">        File bundleAudit = null;</span>
-<span class="pc bpc" id="L166" title="1 of 2 branches missed.">        if (bundleAuditPath != null) {</span>
-<span class="fc" id="L167">            bundleAudit = new File(bundleAuditPath);</span>
-<span class="fc bfc" id="L168" title="All 2 branches covered.">            if (!bundleAudit.isFile()) {</span>
-<span class="fc" id="L169">                LOGGER.warn(&quot;Supplied `bundleAudit` path is incorrect: {}&quot;, bundleAuditPath);</span>
-<span class="fc" id="L170">                bundleAudit = null;</span>
+<span class="fc" id="L162">        final List&lt;String&gt; args = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L163">        final String bundleAuditPath = getSettings().getString(Settings.KEYS.ANALYZER_BUNDLE_AUDIT_PATH);</span>
+<span class="fc" id="L164">        File bundleAudit = null;</span>
+<span class="pc bpc" id="L165" title="1 of 2 branches missed.">        if (bundleAuditPath != null) {</span>
+<span class="fc" id="L166">            bundleAudit = new File(bundleAuditPath);</span>
+<span class="fc bfc" id="L167" title="All 2 branches covered.">            if (!bundleAudit.isFile()) {</span>
+<span class="fc" id="L168">                LOGGER.warn(&quot;Supplied `bundleAudit` path is incorrect: {}&quot;, bundleAuditPath);</span>
+<span class="fc" id="L169">                bundleAudit = null;</span>
             }
         }
-<span class="fc bfc" id="L173" title="All 2 branches covered.">        args.add(bundleAudit != null ? bundleAudit.getAbsolutePath() : &quot;bundle-audit&quot;);</span>
-<span class="fc" id="L174">        args.addAll(bundleAuditArgs);</span>
-<span class="fc" id="L175">        final ProcessBuilder builder = new ProcessBuilder(args);</span>
+<span class="fc bfc" id="L172" title="All 2 branches covered.">        args.add(bundleAudit != null ? bundleAudit.getAbsolutePath() : &quot;bundle-audit&quot;);</span>
+<span class="fc" id="L173">        args.addAll(bundleAuditArgs);</span>
+<span class="fc" id="L174">        final ProcessBuilder builder = new ProcessBuilder(args);</span>
 
-<span class="fc" id="L177">        final String bundleAuditWorkingDirectoryPath = getSettings().getString(Settings.KEYS.ANALYZER_BUNDLE_AUDIT_WORKING_DIRECTORY);</span>
-<span class="fc" id="L178">        File bundleAuditWorkingDirectory = null;</span>
-<span class="pc bpc" id="L179" title="1 of 2 branches missed.">        if (bundleAuditWorkingDirectoryPath != null) {</span>
-<span class="nc" id="L180">            bundleAuditWorkingDirectory = new File(bundleAuditWorkingDirectoryPath);</span>
-<span class="nc bnc" id="L181" title="All 2 branches missed.">            if (!bundleAuditWorkingDirectory.isDirectory()) {</span>
-<span class="nc" id="L182">                LOGGER.warn(&quot;Supplied `bundleAuditWorkingDirectory` path is incorrect: {}&quot;,</span>
+<span class="fc" id="L176">        final String bundleAuditWorkingDirectoryPath = getSettings().getString(Settings.KEYS.ANALYZER_BUNDLE_AUDIT_WORKING_DIRECTORY);</span>
+<span class="fc" id="L177">        File bundleAuditWorkingDirectory = null;</span>
+<span class="pc bpc" id="L178" title="1 of 2 branches missed.">        if (bundleAuditWorkingDirectoryPath != null) {</span>
+<span class="nc" id="L179">            bundleAuditWorkingDirectory = new File(bundleAuditWorkingDirectoryPath);</span>
+<span class="nc bnc" id="L180" title="All 2 branches missed.">            if (!bundleAuditWorkingDirectory.isDirectory()) {</span>
+<span class="nc" id="L181">                LOGGER.warn(&quot;Supplied `bundleAuditWorkingDirectory` path is incorrect: {}&quot;,</span>
                         bundleAuditWorkingDirectoryPath);
-<span class="nc" id="L184">                bundleAuditWorkingDirectory = null;</span>
+<span class="nc" id="L183">                bundleAuditWorkingDirectory = null;</span>
             }
         }
-<span class="pc bpc" id="L187" title="1 of 2 branches missed.">        final File launchBundleAuditFromDirectory = bundleAuditWorkingDirectory != null ? bundleAuditWorkingDirectory : folder;</span>
-<span class="fc" id="L188">        builder.directory(launchBundleAuditFromDirectory);</span>
+<span class="pc bpc" id="L186" title="1 of 2 branches missed.">        final File launchBundleAuditFromDirectory = bundleAuditWorkingDirectory != null ? bundleAuditWorkingDirectory : folder;</span>
+<span class="fc" id="L187">        builder.directory(launchBundleAuditFromDirectory);</span>
         try {
-<span class="fc" id="L190">            LOGGER.info(&quot;Launching: {} from {}&quot;, args, launchBundleAuditFromDirectory);</span>
-<span class="nc" id="L191">            return builder.start();</span>
-<span class="fc" id="L192">        } catch (IOException ioe) {</span>
-<span class="fc" id="L193">            throw new AnalysisException(&quot;bundle-audit initialization failure; this error &quot;</span>
+<span class="fc" id="L189">            LOGGER.info(&quot;Launching: {} from {}&quot;, args, launchBundleAuditFromDirectory);</span>
+<span class="nc" id="L190">            return builder.start();</span>
+<span class="fc" id="L191">        } catch (IOException ioe) {</span>
+<span class="fc" id="L192">            throw new AnalysisException(&quot;bundle-audit initialization failure; this error &quot;</span>
                     + &quot;can be ignored if you are not analyzing Ruby. Otherwise ensure that &quot;
                     + &quot;bundle-audit is installed and the path to bundle audit is correctly &quot;
                     + &quot;specified&quot;, ioe);
@@ -205,52 +204,48 @@ import us.springett.parsers.cpe.exceptions.CpeValidationException;
      */
     @Override
     public void prepareFileTypeAnalyzer(Engine engine) throws InitializationException {
-<span class="fc bfc" id="L208" title="All 2 branches covered.">        if (engine != null) {</span>
-<span class="fc" id="L209">            this.cvedb = engine.getDatabase();</span>
+<span class="fc bfc" id="L207" title="All 2 branches covered.">        if (engine != null) {</span>
+<span class="fc" id="L208">            this.cvedb = engine.getDatabase();</span>
         }
-<span class="fc" id="L211">        String bundleAuditVersionDetails = null;</span>
+        String bundleAuditVersionDetails;
         try {
-<span class="fc" id="L213">            final List&lt;String&gt; bundleAuditArgs = Collections.singletonList(&quot;version&quot;);</span>
-<span class="nc" id="L214">            final Process process = launchBundleAudit(getSettings().getTempDirectory(), bundleAuditArgs);</span>
-<span class="nc" id="L215">            try (ProcessReader processReader = new ProcessReader(process)) {</span>
-<span class="nc" id="L216">                processReader.readAll();</span>
-<span class="nc" id="L217">                final String error = processReader.getError();</span>
-<span class="nc bnc" id="L218" title="All 2 branches missed.">                if (error != null) {</span>
-<span class="nc" id="L219">                    LOGGER.warn(&quot;Warnings from bundle-audit {}&quot;, error);</span>
+<span class="fc" id="L212">            final List&lt;String&gt; bundleAuditArgs = Collections.singletonList(&quot;version&quot;);</span>
+<span class="nc" id="L213">            final Process process = launchBundleAudit(getSettings().getTempDirectory(), bundleAuditArgs);</span>
+<span class="nc" id="L214">            try (ProcessReader processReader = new ProcessReader(process)) {</span>
+<span class="nc" id="L215">                processReader.readAll();</span>
+<span class="nc" id="L216">                final String error = processReader.getError();</span>
+<span class="nc bnc" id="L217" title="All 2 branches missed.">                if (error != null) {</span>
+<span class="nc" id="L218">                    LOGGER.warn(&quot;Warnings from bundle-audit {}&quot;, error);</span>
                 }
-<span class="nc" id="L221">                bundleAuditVersionDetails = processReader.getOutput();</span>
-<span class="nc" id="L222">                final int exitValue = process.exitValue();</span>
-<span class="nc bnc" id="L223" title="All 2 branches missed.">                if (exitValue != 0) {</span>
-<span class="nc" id="L224">                    setEnabled(false);</span>
-<span class="nc" id="L225">                    final String msg = String.format(&quot;bundle-audit execution failed - &quot;</span>
-<span class="nc" id="L226">                            + &quot;exit code: %d; error: %s &quot;, exitValue, error);</span>
-<span class="nc" id="L227">                    throw new InitializationException(msg);</span>
+<span class="nc" id="L220">                bundleAuditVersionDetails = processReader.getOutput();</span>
+<span class="nc" id="L221">                final int exitValue = process.exitValue();</span>
+<span class="nc bnc" id="L222" title="All 2 branches missed.">                if (exitValue != 0) {</span>
+<span class="nc" id="L223">                    setEnabled(false);</span>
+<span class="nc" id="L224">                    final String msg = String.format(&quot;bundle-audit execution failed - &quot;</span>
+<span class="nc" id="L225">                            + &quot;exit code: %d; error: %s &quot;, exitValue, error);</span>
+<span class="nc" id="L226">                    throw new InitializationException(msg);</span>
                 }
             }
-<span class="fc" id="L230">        } catch (AnalysisException ae) {</span>
-<span class="fc" id="L231">            setEnabled(false);</span>
-<span class="fc" id="L232">            final String msg = String.format(&quot;Exception from bundle-audit process: %s. &quot;</span>
-<span class="fc" id="L233">                    + &quot;Disabling %s&quot;, ae.getCause(), ANALYZER_NAME);</span>
-<span class="fc" id="L234">            throw new InitializationException(msg, ae);</span>
-<span class="nc" id="L235">        } catch (UnsupportedEncodingException ex) {</span>
-<span class="nc" id="L236">            setEnabled(false);</span>
-<span class="nc" id="L237">            throw new InitializationException(&quot;Unexpected bundle-audit encoding when &quot;</span>
-                    + &quot;reading input stream.&quot;, ex);
-<span class="nc" id="L239">        } catch (IOException ex) {</span>
-<span class="nc" id="L240">            setEnabled(false);</span>
-<span class="nc" id="L241">            throw new InitializationException(&quot;Unable to read bundle-audit output.&quot;, ex);</span>
-<span class="nc" id="L242">        } catch (InterruptedException ex) {</span>
-<span class="nc" id="L243">            setEnabled(false);</span>
-<span class="nc" id="L244">            final String msg = String.format(&quot;Bundle-audit process was interrupted. &quot;</span>
+<span class="fc" id="L229">        } catch (AnalysisException ae) {</span>
+<span class="fc" id="L230">            setEnabled(false);</span>
+<span class="fc" id="L231">            final String msg = String.format(&quot;Exception from bundle-audit process: %s. &quot;</span>
+<span class="fc" id="L232">                    + &quot;Disabling %s&quot;, ae.getCause(), ANALYZER_NAME);</span>
+<span class="fc" id="L233">            throw new InitializationException(msg, ae);</span>
+<span class="nc" id="L234">        } catch (IOException ex) {</span>
+<span class="nc" id="L235">            setEnabled(false);</span>
+<span class="nc" id="L236">            throw new InitializationException(&quot;Unable to read bundle-audit output.&quot;, ex);</span>
+<span class="nc" id="L237">        } catch (InterruptedException ex) {</span>
+<span class="nc" id="L238">            setEnabled(false);</span>
+<span class="nc" id="L239">            final String msg = String.format(&quot;Bundle-audit process was interrupted. &quot;</span>
                     + &quot;Disabling %s&quot;, ANALYZER_NAME);
-<span class="nc" id="L246">            Thread.currentThread().interrupt();</span>
-<span class="nc" id="L247">            throw new InitializationException(msg);</span>
-<span class="nc" id="L248">        }</span>
-<span class="nc" id="L249">        LOGGER.info(&quot;{} is enabled and is using bundle-audit with version details: {}. &quot;</span>
+<span class="nc" id="L241">            Thread.currentThread().interrupt();</span>
+<span class="nc" id="L242">            throw new InitializationException(msg);</span>
+<span class="nc" id="L243">        }</span>
+<span class="nc" id="L244">        LOGGER.info(&quot;{} is enabled and is using bundle-audit with version details: {}. &quot;</span>
                 + &quot;Note: It is necessary to manually run \&quot;bundle-audit update\&quot; &quot;
                 + &quot;occasionally to keep its database up to date.&quot;, ANALYZER_NAME,
                 bundleAuditVersionDetails);
-<span class="nc" id="L253">    }</span>
+<span class="nc" id="L248">    }</span>
 
     /**
      * Determines if the analyzer can analyze the given file type.
@@ -261,47 +256,47 @@ import us.springett.parsers.cpe.exceptions.CpeValidationException;
      */
     @Override
     protected void analyzeDependency(Dependency dependency, Engine engine) throws AnalysisException {
-<span class="nc bnc" id="L264" title="All 2 branches missed.">        if (needToDisableGemspecAnalyzer) {</span>
-<span class="nc" id="L265">            boolean failed = true;</span>
-<span class="nc" id="L266">            final String className = RubyGemspecAnalyzer.class.getName();</span>
-<span class="nc bnc" id="L267" title="All 2 branches missed.">            for (FileTypeAnalyzer analyzer : engine.getFileTypeAnalyzers()) {</span>
-<span class="nc bnc" id="L268" title="All 2 branches missed.">                if (analyzer instanceof RubyBundlerAnalyzer) {</span>
-<span class="nc" id="L269">                    ((RubyBundlerAnalyzer) analyzer).setEnabled(false);</span>
-<span class="nc" id="L270">                    LOGGER.info(&quot;Disabled {} to avoid noisy duplicate results.&quot;,</span>
-<span class="nc" id="L271">                            RubyBundlerAnalyzer.class.getName());</span>
-<span class="nc bnc" id="L272" title="All 2 branches missed.">                } else if (analyzer instanceof RubyGemspecAnalyzer) {</span>
-<span class="nc" id="L273">                    ((RubyGemspecAnalyzer) analyzer).setEnabled(false);</span>
-<span class="nc" id="L274">                    LOGGER.info(&quot;Disabled {} to avoid noisy duplicate results.&quot;, className);</span>
-<span class="nc" id="L275">                    failed = false;</span>
+<span class="nc bnc" id="L259" title="All 2 branches missed.">        if (needToDisableGemspecAnalyzer) {</span>
+<span class="nc" id="L260">            boolean failed = true;</span>
+<span class="nc" id="L261">            final String className = RubyGemspecAnalyzer.class.getName();</span>
+<span class="nc bnc" id="L262" title="All 2 branches missed.">            for (FileTypeAnalyzer analyzer : engine.getFileTypeAnalyzers()) {</span>
+<span class="nc bnc" id="L263" title="All 2 branches missed.">                if (analyzer instanceof RubyBundlerAnalyzer) {</span>
+<span class="nc" id="L264">                    ((RubyBundlerAnalyzer) analyzer).setEnabled(false);</span>
+<span class="nc" id="L265">                    LOGGER.info(&quot;Disabled {} to avoid noisy duplicate results.&quot;,</span>
+<span class="nc" id="L266">                            RubyBundlerAnalyzer.class.getName());</span>
+<span class="nc bnc" id="L267" title="All 2 branches missed.">                } else if (analyzer instanceof RubyGemspecAnalyzer) {</span>
+<span class="nc" id="L268">                    ((RubyGemspecAnalyzer) analyzer).setEnabled(false);</span>
+<span class="nc" id="L269">                    LOGGER.info(&quot;Disabled {} to avoid noisy duplicate results.&quot;, className);</span>
+<span class="nc" id="L270">                    failed = false;</span>
                 }
-<span class="nc" id="L277">            }</span>
-<span class="nc" id="L278">            needToDisableGemspecAnalyzer = false;</span>
+<span class="nc" id="L272">            }</span>
+<span class="nc" id="L273">            needToDisableGemspecAnalyzer = false;</span>
         }
-<span class="nc" id="L280">        final File parentFile = dependency.getActualFile().getParentFile();</span>
-<span class="nc" id="L281">        final List&lt;String&gt; bundleAuditArgs = Arrays.asList(&quot;check&quot;, &quot;--verbose&quot;);</span>
+<span class="nc" id="L275">        final File parentFile = dependency.getActualFile().getParentFile();</span>
+<span class="nc" id="L276">        final List&lt;String&gt; bundleAuditArgs = Arrays.asList(&quot;check&quot;, &quot;--verbose&quot;);</span>
 
-<span class="nc" id="L283">        final Process process = launchBundleAudit(parentFile, bundleAuditArgs);</span>
-<span class="nc" id="L284">        try (BundlerAuditProcessor processor = new BundlerAuditProcessor(dependency, engine);</span>
-<span class="nc" id="L285">                ProcessReader processReader = new ProcessReader(process, processor)) {</span>
+<span class="nc" id="L278">        final Process process = launchBundleAudit(parentFile, bundleAuditArgs);</span>
+<span class="nc" id="L279">        try (BundlerAuditProcessor processor = new BundlerAuditProcessor(dependency, engine);</span>
+<span class="nc" id="L280">                ProcessReader processReader = new ProcessReader(process, processor)) {</span>
 
-<span class="nc" id="L287">            processReader.readAll();</span>
-<span class="nc" id="L288">            final String error = processReader.getError();</span>
-<span class="nc bnc" id="L289" title="All 2 branches missed.">            if (StringUtils.isNoneBlank(error)) {</span>
-<span class="nc" id="L290">                LOGGER.warn(&quot;Warnings from bundle-audit {}&quot;, error);</span>
+<span class="nc" id="L282">            processReader.readAll();</span>
+<span class="nc" id="L283">            final String error = processReader.getError();</span>
+<span class="nc bnc" id="L284" title="All 2 branches missed.">            if (StringUtils.isNoneBlank(error)) {</span>
+<span class="nc" id="L285">                LOGGER.warn(&quot;Warnings from bundle-audit {}&quot;, error);</span>
             }
-<span class="nc" id="L292">            final int exitValue = process.exitValue();</span>
-<span class="nc bnc" id="L293" title="All 4 branches missed.">            if (exitValue &lt; 0 || exitValue &gt; 1) {</span>
-<span class="nc" id="L294">                final String msg = String.format(&quot;Unexpected exit code from bundle-audit &quot;</span>
-<span class="nc" id="L295">                        + &quot;process; exit code: %s&quot;, exitValue);</span>
-<span class="nc" id="L296">                throw new AnalysisException(msg);</span>
+<span class="nc" id="L287">            final int exitValue = process.exitValue();</span>
+<span class="nc bnc" id="L288" title="All 4 branches missed.">            if (exitValue &lt; 0 || exitValue &gt; 1) {</span>
+<span class="nc" id="L289">                final String msg = String.format(&quot;Unexpected exit code from bundle-audit &quot;</span>
+<span class="nc" id="L290">                        + &quot;process; exit code: %s&quot;, exitValue);</span>
+<span class="nc" id="L291">                throw new AnalysisException(msg);</span>
             }
-<span class="nc" id="L298">        } catch (InterruptedException ie) {</span>
-<span class="nc" id="L299">            Thread.currentThread().interrupt();</span>
-<span class="nc" id="L300">            throw new AnalysisException(&quot;bundle-audit process interrupted&quot;, ie);</span>
-<span class="nc" id="L301">        } catch (IOException | CpeValidationException ioe) {</span>
-<span class="nc" id="L302">            LOGGER.warn(&quot;bundle-audit failure&quot;, ioe);</span>
-<span class="nc" id="L303">            throw new AnalysisException(&quot;bunder-audit error: &quot; + ioe.getMessage(), ioe);</span>
-<span class="nc" id="L304">        }</span>
-<span class="nc" id="L305">    }</span>
+<span class="nc" id="L293">        } catch (InterruptedException ie) {</span>
+<span class="nc" id="L294">            Thread.currentThread().interrupt();</span>
+<span class="nc" id="L295">            throw new AnalysisException(&quot;bundle-audit process interrupted&quot;, ie);</span>
+<span class="nc" id="L296">        } catch (IOException | CpeValidationException ioe) {</span>
+<span class="nc" id="L297">            LOGGER.warn(&quot;bundle-audit failure&quot;, ioe);</span>
+<span class="nc" id="L298">            throw new AnalysisException(&quot;bunder-audit error: &quot; + ioe.getMessage(), ioe);</span>
+<span class="nc" id="L299">        }</span>
+<span class="nc" id="L300">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.14.202510111229</span></div></body></html>

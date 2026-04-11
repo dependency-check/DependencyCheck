@@ -53,7 +53,7 @@
 <a class="jxr_linenumber" name="L45" href="#L45">45</a>  <strong class="jxr_keyword">import</strong> org.apache.hc.core5.http.io.entity.StringEntity;
 <a class="jxr_linenumber" name="L46" href="#L46">46</a>  <strong class="jxr_keyword">import</strong> org.apache.hc.core5.http.message.BasicClassicHttpRequest;
 <a class="jxr_linenumber" name="L47" href="#L47">47</a>  <strong class="jxr_keyword">import</strong> org.apache.hc.core5.http.message.BasicClassicHttpResponse;
-<a class="jxr_linenumber" name="L48" href="#L48">48</a>  <strong class="jxr_keyword">import</strong> org.jetbrains.annotations.NotNull;
+<a class="jxr_linenumber" name="L48" href="#L48">48</a>  <strong class="jxr_keyword">import</strong> org.jspecify.annotations.NonNull;
 <a class="jxr_linenumber" name="L49" href="#L49">49</a>  <strong class="jxr_keyword">import</strong> org.slf4j.Logger;
 <a class="jxr_linenumber" name="L50" href="#L50">50</a>  <strong class="jxr_keyword">import</strong> org.slf4j.LoggerFactory;
 <a class="jxr_linenumber" name="L51" href="#L51">51</a>  
@@ -515,7 +515,7 @@
 <a class="jxr_linenumber" name="L507" href="#L507">507</a> <em class="jxr_javadoccomment">     * @param credentialsProvider The credentialStore to configure the credentials in</em>
 <a class="jxr_linenumber" name="L508" href="#L508">508</a> <em class="jxr_javadoccomment">     * @param authCache The AuthCache to cache the pre-empted credentials in</em>
 <a class="jxr_linenumber" name="L509" href="#L509">509</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L510" href="#L510">510</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> tryConfigureProxyCredentials(@NotNull CredentialsStore credentialsProvider, @NotNull AuthCache authCache) {
+<a class="jxr_linenumber" name="L510" href="#L510">510</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> tryConfigureProxyCredentials(@NonNull CredentialsStore credentialsProvider, @NonNull AuthCache authCache) {
 <a class="jxr_linenumber" name="L511" href="#L511">511</a>         <strong class="jxr_keyword">if</strong> (proxyPreEmptAuth != <strong class="jxr_keyword">null</strong>) {
 <a class="jxr_linenumber" name="L512" href="#L512">512</a>             credentialsProvider.setCredentials(proxyAuthScope, proxyCreds);
 <a class="jxr_linenumber" name="L513" href="#L513">513</a>             authCache.put(proxyHttpHost, proxyPreEmptAuth);
@@ -656,7 +656,7 @@
 <a class="jxr_linenumber" name="L648" href="#L648">648</a> <em class="jxr_javadoccomment">     * @throws TooManyRequestsException  When HTTP status 429 is encountered</em>
 <a class="jxr_linenumber" name="L649" href="#L649">649</a> <em class="jxr_javadoccomment">     * @throws ResourceNotFoundException When HTTP status 404 is encountered</em>
 <a class="jxr_linenumber" name="L650" href="#L650">650</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L651" href="#L651">651</a>     <strong class="jxr_keyword">public</strong> &lt;T&gt; T fetchAndHandle(@NotNull URL url, @NotNull HttpClientResponseHandler&lt;T&gt; handler)
+<a class="jxr_linenumber" name="L651" href="#L651">651</a>     <strong class="jxr_keyword">public</strong> &lt;T&gt; T fetchAndHandle(@NonNull URL url, @NonNull HttpClientResponseHandler&lt;T&gt; handler)
 <a class="jxr_linenumber" name="L652" href="#L652">652</a>             <strong class="jxr_keyword">throws</strong> IOException, TooManyRequestsException, ResourceNotFoundException, URISyntaxException, <a href="../../../../org/owasp/dependencycheck/utils/ForbiddenException.html">ForbiddenException</a> {
 <a class="jxr_linenumber" name="L653" href="#L653">653</a>         <strong class="jxr_keyword">return</strong> fetchAndHandle(url, handler, Collections.emptyList(), <strong class="jxr_keyword">true</strong>);
 <a class="jxr_linenumber" name="L654" href="#L654">654</a>     }
@@ -673,7 +673,7 @@
 <a class="jxr_linenumber" name="L665" href="#L665">665</a> <em class="jxr_javadoccomment">     * @throws TooManyRequestsException  When HTTP status 429 is encountered</em>
 <a class="jxr_linenumber" name="L666" href="#L666">666</a> <em class="jxr_javadoccomment">     * @throws ResourceNotFoundException When HTTP status 404 is encountered</em>
 <a class="jxr_linenumber" name="L667" href="#L667">667</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L668" href="#L668">668</a>     <strong class="jxr_keyword">public</strong> &lt;T&gt; T fetchAndHandle(@NotNull URL url, @NotNull HttpClientResponseHandler&lt;T&gt; handler, @NotNull List&lt;Header&gt; hdr)
+<a class="jxr_linenumber" name="L668" href="#L668">668</a>     <strong class="jxr_keyword">public</strong> &lt;T&gt; T fetchAndHandle(@NonNull URL url, @NonNull HttpClientResponseHandler&lt;T&gt; handler, @NonNull List&lt;Header&gt; hdr)
 <a class="jxr_linenumber" name="L669" href="#L669">669</a>             <strong class="jxr_keyword">throws</strong> IOException, TooManyRequestsException, ResourceNotFoundException, URISyntaxException, <a href="../../../../org/owasp/dependencycheck/utils/ForbiddenException.html">ForbiddenException</a> {
 <a class="jxr_linenumber" name="L670" href="#L670">670</a>         <strong class="jxr_keyword">return</strong> fetchAndHandle(url, handler, hdr, <strong class="jxr_keyword">true</strong>);
 <a class="jxr_linenumber" name="L671" href="#L671">671</a>     }
@@ -691,7 +691,7 @@
 <a class="jxr_linenumber" name="L683" href="#L683">683</a> <em class="jxr_javadoccomment">     * @throws TooManyRequestsException  When HTTP status 429 is encountered</em>
 <a class="jxr_linenumber" name="L684" href="#L684">684</a> <em class="jxr_javadoccomment">     * @throws ResourceNotFoundException When HTTP status 404 is encountered</em>
 <a class="jxr_linenumber" name="L685" href="#L685">685</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L686" href="#L686">686</a>     <strong class="jxr_keyword">public</strong> &lt;T&gt; T fetchAndHandle(@NotNull URL url, @NotNull HttpClientResponseHandler&lt;T&gt; handler, @NotNull List&lt;Header&gt; hdr, <strong class="jxr_keyword">boolean</strong> useProxy)
+<a class="jxr_linenumber" name="L686" href="#L686">686</a>     <strong class="jxr_keyword">public</strong> &lt;T&gt; T fetchAndHandle(@NonNull URL url, @NonNull HttpClientResponseHandler&lt;T&gt; handler, @NonNull List&lt;Header&gt; hdr, <strong class="jxr_keyword">boolean</strong> useProxy)
 <a class="jxr_linenumber" name="L687" href="#L687">687</a>             <strong class="jxr_keyword">throws</strong> IOException, TooManyRequestsException, ResourceNotFoundException, URISyntaxException, <a href="../../../../org/owasp/dependencycheck/utils/ForbiddenException.html">ForbiddenException</a> {
 <a class="jxr_linenumber" name="L688" href="#L688">688</a>         <strong class="jxr_keyword">final</strong> T data;
 <a class="jxr_linenumber" name="L689" href="#L689">689</a>         <strong class="jxr_keyword">if</strong> (<span class="jxr_string">"file"</span>.equals(url.getProtocol())) {
@@ -724,8 +724,8 @@
 <a class="jxr_linenumber" name="L716" href="#L716">716</a> <em class="jxr_javadoccomment">     * @throws TooManyRequestsException  When HTTP status 429 is encountered</em>
 <a class="jxr_linenumber" name="L717" href="#L717">717</a> <em class="jxr_javadoccomment">     * @throws ResourceNotFoundException When HTTP status 404 is encountered</em>
 <a class="jxr_linenumber" name="L718" href="#L718">718</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L719" href="#L719">719</a>     <strong class="jxr_keyword">public</strong> &lt;T&gt; T fetchAndHandle(@NotNull CloseableHttpClient client, @NotNull URL url, @NotNull HttpClientResponseHandler&lt;T&gt; handler,
-<a class="jxr_linenumber" name="L720" href="#L720">720</a>                                 @NotNull List&lt;Header&gt; hdr) <strong class="jxr_keyword">throws</strong> IOException, TooManyRequestsException,
+<a class="jxr_linenumber" name="L719" href="#L719">719</a>     <strong class="jxr_keyword">public</strong> &lt;T&gt; T fetchAndHandle(@NonNull CloseableHttpClient client, @NonNull URL url, @NonNull HttpClientResponseHandler&lt;T&gt; handler,
+<a class="jxr_linenumber" name="L720" href="#L720">720</a>                                 @NonNull List&lt;Header&gt; hdr) <strong class="jxr_keyword">throws</strong> IOException, TooManyRequestsException,
 <a class="jxr_linenumber" name="L721" href="#L721">721</a>             ResourceNotFoundException, <a href="../../../../org/owasp/dependencycheck/utils/ForbiddenException.html">ForbiddenException</a> {
 <a class="jxr_linenumber" name="L722" href="#L722">722</a>         <strong class="jxr_keyword">try</strong> {
 <a class="jxr_linenumber" name="L723" href="#L723">723</a>             <strong class="jxr_keyword">final</strong> String theProtocol = url.getProtocol();

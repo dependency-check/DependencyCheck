@@ -33,7 +33,7 @@
 <a class="jxr_linenumber" name="L25" href="#L25">25</a>  <strong class="jxr_keyword">import</strong> org.owasp.dependencycheck.utils.Downloader;
 <a class="jxr_linenumber" name="L26" href="#L26">26</a>  <strong class="jxr_keyword">import</strong> org.owasp.dependencycheck.utils.InvalidSettingException;
 <a class="jxr_linenumber" name="L27" href="#L27">27</a>  <strong class="jxr_keyword">import</strong> org.owasp.dependencycheck.utils.Settings;
-<a class="jxr_linenumber" name="L28" href="#L28">28</a>  <strong class="jxr_keyword">import</strong> org.slf4j.impl.StaticLoggerBinder;
+<a class="jxr_linenumber" name="L28" href="#L28">28</a>  <strong class="jxr_keyword">import</strong> org.owasp.dependencycheck.ant.logging.AntTaskHolder;
 <a class="jxr_linenumber" name="L29" href="#L29">29</a>  
 <a class="jxr_linenumber" name="L30" href="#L30">30</a>  <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L31" href="#L31">31</a>  <em class="jxr_javadoccomment"> * An Ant task definition to execute dependency-check update. This will download</em>
@@ -230,7 +230,7 @@
 <a class="jxr_linenumber" name="L222" href="#L222">222</a>         <strong class="jxr_keyword">super</strong>();
 <a class="jxr_linenumber" name="L223" href="#L223">223</a>         <em class="jxr_comment">// Call this before Dependency Check Core starts logging anything - this way, all SLF4J messages from</em>
 <a class="jxr_linenumber" name="L224" href="#L224">224</a>         <em class="jxr_comment">// core end up coming through this tasks logger</em>
-<a class="jxr_linenumber" name="L225" href="#L225">225</a>         StaticLoggerBinder.getSingleton().setTask(<strong class="jxr_keyword">this</strong>);
+<a class="jxr_linenumber" name="L225" href="#L225">225</a>         AntTaskHolder.setTask(<strong class="jxr_keyword">this</strong>);
 <a class="jxr_linenumber" name="L226" href="#L226">226</a>     }
 <a class="jxr_linenumber" name="L227" href="#L227">227</a> 
 <a class="jxr_linenumber" name="L228" href="#L228">228</a>     <em class="jxr_javadoccomment">/**</em>

@@ -90,11 +90,11 @@ public class AnalysisTask implements Callable&lt;Void&gt; {
 <span class="fc" id="L90">                LOGGER.warn(&quot;An error occurred while analyzing '{}' ({}): {}&quot;, dependency.getActualFilePath(), analyzer.getName(), ex.getMessage());</span>
 <span class="fc" id="L91">                LOGGER.debug(&quot;&quot;, ex);</span>
 <span class="fc" id="L92">                exceptions.add(ex);</span>
-<span class="fc" id="L93">            } catch (Throwable ex) {</span>
-<span class="fc" id="L94">                LOGGER.warn(&quot;An unexpected error occurred during analysis of '{}' ({}): {}&quot;,</span>
-<span class="fc" id="L95">                        dependency.getActualFilePath(), analyzer.getName(), ex.getMessage());</span>
-<span class="fc" id="L96">                LOGGER.error(&quot;&quot;, ex);</span>
-<span class="fc" id="L97">                exceptions.add(ex);</span>
+<span class="nc" id="L93">            } catch (Throwable ex) {</span>
+<span class="nc" id="L94">                LOGGER.warn(&quot;An unexpected error occurred during analysis of '{}' ({}): {}&quot;,</span>
+<span class="nc" id="L95">                        dependency.getActualFilePath(), analyzer.getName(), ex.getMessage());</span>
+<span class="nc" id="L96">                LOGGER.error(&quot;&quot;, ex);</span>
+<span class="nc" id="L97">                exceptions.add(ex);</span>
 <span class="fc" id="L98">            }</span>
         }
 <span class="fc" id="L100">        return null;</span>

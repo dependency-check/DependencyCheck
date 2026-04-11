@@ -242,8 +242,8 @@ import java.util.Objects;
             }
 <span class="fc bfc" id="L243" title="All 2 branches covered.">        } else if (PACKAGE_LOCK_JSON.equals(dependency.getFileName())) {</span>
 <span class="fc" id="L244">            final File shrinkwrap = new File(baseDir, SHRINKWRAP_JSON);</span>
-<span class="fc bfc" id="L245" title="All 2 branches covered.">            if (shrinkwrap.exists()) {</span>
-<span class="fc" id="L246">                return;</span>
+<span class="pc bpc" id="L245" title="1 of 2 branches missed.">            if (shrinkwrap.exists()) {</span>
+<span class="nc" id="L246">                return;</span>
             }
         }
 <span class="fc" id="L249">        final File nodeModules = new File(baseDir, &quot;node_modules&quot;);</span>

@@ -13,7 +13,7 @@
 <a class="jxr_linenumber" name="L5" href="#L5">5</a>   <strong class="jxr_keyword">import</strong> java.io.InputStream;
 <a class="jxr_linenumber" name="L6" href="#L6">6</a>   <strong class="jxr_keyword">import</strong> javax.annotation.concurrent.NotThreadSafe;
 <a class="jxr_linenumber" name="L7" href="#L7">7</a>   
-<a class="jxr_linenumber" name="L8" href="#L8">8</a>   <strong class="jxr_keyword">import</strong> org.jetbrains.annotations.NotNull;
+<a class="jxr_linenumber" name="L8" href="#L8">8</a>   <strong class="jxr_keyword">import</strong> org.jspecify.annotations.NonNull;
 <a class="jxr_linenumber" name="L9" href="#L9">9</a>   <strong class="jxr_keyword">import</strong> org.slf4j.Logger;
 <a class="jxr_linenumber" name="L10" href="#L10">10</a>  <strong class="jxr_keyword">import</strong> org.slf4j.LoggerFactory;
 <a class="jxr_linenumber" name="L11" href="#L11">11</a>  
@@ -220,7 +220,7 @@
 <a class="jxr_linenumber" name="L212" href="#L212">212</a> <em class="jxr_javadoccomment">     * stream</em>
 <a class="jxr_linenumber" name="L213" href="#L213">213</a> <em class="jxr_javadoccomment">     */</em>
 <a class="jxr_linenumber" name="L214" href="#L214">214</a>     @Override
-<a class="jxr_linenumber" name="L215" href="#L215">215</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">int</strong> read(@NotNull byte[] data, <strong class="jxr_keyword">int</strong> offset, <strong class="jxr_keyword">int</strong> length) <strong class="jxr_keyword">throws</strong> IOException {
+<a class="jxr_linenumber" name="L215" href="#L215">215</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">int</strong> read(@NonNull byte[] data, <strong class="jxr_keyword">int</strong> offset, <strong class="jxr_keyword">int</strong> length) <strong class="jxr_keyword">throws</strong> IOException {
 <a class="jxr_linenumber" name="L216" href="#L216">216</a>         <strong class="jxr_keyword">final</strong> StringBuilder s = read(length);
 <a class="jxr_linenumber" name="L217" href="#L217">217</a>         <strong class="jxr_keyword">int</strong> n = 0;
 <a class="jxr_linenumber" name="L218" href="#L218">218</a>         <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> i = 0; i &lt; Math.min(length, s.length()); i++) {

@@ -17,6 +17,7 @@
  */
 package org.owasp.dependencycheck.analyzer;
 
+import java.io.FileFilter;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
@@ -27,8 +28,10 @@ import org.owasp.dependencycheck.analyzer.exception.AnalysisException;
 import org.owasp.dependencycheck.dependency.Dependency;
 import org.owasp.dependencycheck.dependency.Evidence;
 import org.owasp.dependencycheck.dependency.EvidenceType;
+import org.owasp.dependencycheck.exception.InitializationException;
 import org.owasp.dependencycheck.utils.DependencyVersion;
 import org.owasp.dependencycheck.utils.DependencyVersionUtil;
+import org.owasp.dependencycheck.utils.FileFilterBuilder;
 import org.owasp.dependencycheck.utils.Settings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,12 +45,12 @@ import org.slf4j.LoggerFactory;
  * @author Jeremy Long
  */
 @ThreadSafe
-<span class="fc" id="L45">public class VersionFilterAnalyzer extends AbstractAnalyzer {</span>
+<span class="fc" id="L48">public class VersionFilterAnalyzer extends AbstractFileTypeAnalyzer {</span>
 
     /**
      * The Logger for use throughout the class
      */
-<span class="fc" id="L50">    private static final Logger LOGGER = LoggerFactory.getLogger(VersionFilterAnalyzer.class);</span>
+<span class="fc" id="L53">    private static final Logger LOGGER = LoggerFactory.getLogger(VersionFilterAnalyzer.class);</span>
 
     //&lt;editor-fold defaultstate=&quot;collapsed&quot; desc=&quot;Constants&quot;&gt;
     /**
@@ -86,7 +89,11 @@ import org.slf4j.LoggerFactory;
     /**
      * The phase that this analyzer is intended to run in.
      */
-<span class="fc" id="L89">    private static final AnalysisPhase ANALYSIS_PHASE = AnalysisPhase.POST_INFORMATION_COLLECTION3;</span>
+<span class="fc" id="L92">    private static final AnalysisPhase ANALYSIS_PHASE = AnalysisPhase.POST_INFORMATION_COLLECTION3;</span>
+    /**
+     * The file filter used to determine which files this analyzer supports.
+     */
+<span class="fc" id="L96">    private static final FileFilter FILTER = FileFilterBuilder.newInstance().addExtensions(&quot;jar&quot;).build();</span>
 
     //&lt;/editor-fold&gt;
     //&lt;editor-fold defaultstate=&quot;collapsed&quot; desc=&quot;Standard implementation of Analyzer&quot;&gt;
@@ -97,7 +104,7 @@ import org.slf4j.LoggerFactory;
      */
     @Override
     public String getName() {
-<span class="fc" id="L100">        return ANALYZER_NAME;</span>
+<span class="fc" id="L107">        return ANALYZER_NAME;</span>
     }
 
     /**
@@ -107,7 +114,7 @@ import org.slf4j.LoggerFactory;
      */
     @Override
     public AnalysisPhase getAnalysisPhase() {
-<span class="fc" id="L110">        return ANALYSIS_PHASE;</span>
+<span class="fc" id="L117">        return ANALYSIS_PHASE;</span>
     }
 
     /**
@@ -117,8 +124,31 @@ import org.slf4j.LoggerFactory;
      */
     @Override
     protected String getAnalyzerEnabledSettingKey() {
-<span class="fc" id="L120">        return Settings.KEYS.ANALYZER_VERSION_FILTER_ENABLED;</span>
+<span class="fc" id="L127">        return Settings.KEYS.ANALYZER_VERSION_FILTER_ENABLED;</span>
     }
+
+    /**
+     * Returns the FileFilter used to determine which files this analyzer
+     * supports (JAR files only).
+     *
+     * @return the file filter for JAR files
+     */
+    @Override
+    protected FileFilter getFileFilter() {
+<span class="fc" id="L138">        return FILTER;</span>
+    }
+
+    /**
+     * No initialization required for this analyzer.
+     *
+     * @param engine a reference to the dependency-check engine
+     * @throws InitializationException thrown if there is an exception during
+     * initialization
+     */
+    @Override
+    public void prepareFileTypeAnalyzer(Engine engine) throws InitializationException {
+        //nothing to initialize
+<span class="fc" id="L151">    }</span>
     //&lt;/editor-fold&gt;
 
     /**
@@ -134,63 +164,63 @@ import org.slf4j.LoggerFactory;
     protected void analyzeDependency(Dependency dependency, Engine engine) throws AnalysisException {
 
         final Set&lt;Evidence&gt; remove;
-<span class="fc bfc" id="L137" title="All 2 branches covered.">        if (dependency.getVersion() != null) {</span>
-<span class="fc" id="L138">            remove = dependency.getEvidence(EvidenceType.VERSION).stream()</span>
-<span class="pc bpc" id="L139" title="1 of 4 branches missed.">                    .filter(e -&gt; !e.isFromHint() &amp;&amp; !dependency.getVersion().equals(e.getValue()))</span>
-<span class="fc" id="L140">                    .collect(Collectors.toSet());</span>
+<span class="fc bfc" id="L167" title="All 2 branches covered.">        if (dependency.getVersion() != null) {</span>
+<span class="fc" id="L168">            remove = dependency.getEvidence(EvidenceType.VERSION).stream()</span>
+<span class="pc bpc" id="L169" title="1 of 4 branches missed.">                    .filter(e -&gt; !e.isFromHint() &amp;&amp; !dependency.getVersion().equals(e.getValue()))</span>
+<span class="fc" id="L170">                    .collect(Collectors.toSet());</span>
         } else {
-<span class="fc" id="L142">            remove = new HashSet&lt;&gt;();</span>
-<span class="fc" id="L143">            String fileVersion = null;</span>
-<span class="fc" id="L144">            String pomVersion = null;</span>
-<span class="fc" id="L145">            String manifestVersion = null;</span>
-<span class="fc bfc" id="L146" title="All 2 branches covered.">            for (Evidence e : dependency.getEvidence(EvidenceType.VERSION)) {</span>
-<span class="fc bfc" id="L147" title="All 4 branches covered.">                if (FILE.equals(e.getSource()) &amp;&amp; VERSION.equals(e.getName())) {</span>
-<span class="fc" id="L148">                    fileVersion = e.getValue();</span>
-<span class="pc bpc" id="L149" title="2 of 4 branches missed.">                } else if ((NEXUS.equals(e.getSource()) || CENTRAL.equals(e.getSource())</span>
-<span class="pc bpc" id="L150" title="1 of 4 branches missed.">                        || POM.equals(e.getSource())) &amp;&amp; VERSION.equals(e.getName())) {</span>
-<span class="fc" id="L151">                    pomVersion = e.getValue();</span>
-<span class="fc bfc" id="L152" title="All 4 branches covered.">                } else if (MANIFEST.equals(e.getSource()) &amp;&amp; IMPLEMENTATION_VERSION.equals(e.getName())) {</span>
-<span class="fc" id="L153">                    manifestVersion = e.getValue();</span>
+<span class="fc" id="L172">            remove = new HashSet&lt;&gt;();</span>
+<span class="fc" id="L173">            String fileVersion = null;</span>
+<span class="fc" id="L174">            String pomVersion = null;</span>
+<span class="fc" id="L175">            String manifestVersion = null;</span>
+<span class="fc bfc" id="L176" title="All 2 branches covered.">            for (Evidence e : dependency.getEvidence(EvidenceType.VERSION)) {</span>
+<span class="fc bfc" id="L177" title="All 4 branches covered.">                if (FILE.equals(e.getSource()) &amp;&amp; VERSION.equals(e.getName())) {</span>
+<span class="fc" id="L178">                    fileVersion = e.getValue();</span>
+<span class="pc bpc" id="L179" title="2 of 4 branches missed.">                } else if ((NEXUS.equals(e.getSource()) || CENTRAL.equals(e.getSource())</span>
+<span class="pc bpc" id="L180" title="1 of 4 branches missed.">                        || POM.equals(e.getSource())) &amp;&amp; VERSION.equals(e.getName())) {</span>
+<span class="fc" id="L181">                    pomVersion = e.getValue();</span>
+<span class="fc bfc" id="L182" title="All 4 branches covered.">                } else if (MANIFEST.equals(e.getSource()) &amp;&amp; IMPLEMENTATION_VERSION.equals(e.getName())) {</span>
+<span class="fc" id="L183">                    manifestVersion = e.getValue();</span>
                 }
-<span class="fc" id="L155">            }</span>
+<span class="fc" id="L185">            }</span>
             //ensure we have at least two not null
-<span class="fc bfc" id="L157" title="All 8 branches covered.">            if (((fileVersion == null ? 0 : 1) + (pomVersion == null ? 0 : 1) + (manifestVersion == null ? 0 : 1)) &gt; 1) {</span>
-<span class="fc" id="L158">                final DependencyVersion dvFile = new DependencyVersion(fileVersion);</span>
-<span class="fc" id="L159">                final DependencyVersion dvPom = new DependencyVersion(pomVersion);</span>
-<span class="fc" id="L160">                final DependencyVersion dvManifest = new DependencyVersion(manifestVersion);</span>
-<span class="fc bfc" id="L161" title="All 4 branches covered.">                final boolean fileMatch = Objects.equals(dvFile, dvPom) || Objects.equals(dvFile, dvManifest);</span>
-<span class="fc bfc" id="L162" title="All 4 branches covered.">                final boolean manifestMatch = Objects.equals(dvManifest, dvPom) || Objects.equals(dvManifest, dvFile);</span>
-<span class="fc bfc" id="L163" title="All 4 branches covered.">                final boolean pomMatch = Objects.equals(dvPom, dvFile) || Objects.equals(dvPom, dvManifest);</span>
-<span class="pc bpc" id="L164" title="1 of 6 branches missed.">                if (fileMatch || manifestMatch || pomMatch) {</span>
-<span class="fc" id="L165">                    LOGGER.debug(&quot;filtering evidence from {}&quot;, dependency.getFileName());</span>
+<span class="fc bfc" id="L187" title="All 8 branches covered.">            if (((fileVersion == null ? 0 : 1) + (pomVersion == null ? 0 : 1) + (manifestVersion == null ? 0 : 1)) &gt; 1) {</span>
+<span class="fc" id="L188">                final DependencyVersion dvFile = new DependencyVersion(fileVersion);</span>
+<span class="fc" id="L189">                final DependencyVersion dvPom = new DependencyVersion(pomVersion);</span>
+<span class="fc" id="L190">                final DependencyVersion dvManifest = new DependencyVersion(manifestVersion);</span>
+<span class="fc bfc" id="L191" title="All 4 branches covered.">                final boolean fileMatch = Objects.equals(dvFile, dvPom) || Objects.equals(dvFile, dvManifest);</span>
+<span class="fc bfc" id="L192" title="All 4 branches covered.">                final boolean manifestMatch = Objects.equals(dvManifest, dvPom) || Objects.equals(dvManifest, dvFile);</span>
+<span class="fc bfc" id="L193" title="All 4 branches covered.">                final boolean pomMatch = Objects.equals(dvPom, dvFile) || Objects.equals(dvPom, dvManifest);</span>
+<span class="pc bpc" id="L194" title="1 of 6 branches missed.">                if (fileMatch || manifestMatch || pomMatch) {</span>
+<span class="fc" id="L195">                    LOGGER.debug(&quot;filtering evidence from {}&quot;, dependency.getFileName());</span>
 
-<span class="fc bfc" id="L167" title="All 2 branches covered.">                    for (Evidence e : dependency.getEvidence(EvidenceType.VERSION)) {</span>
-<span class="pc bpc" id="L168" title="1 of 4 branches missed.">                        if (!e.isFromHint()</span>
-<span class="fc bfc" id="L169" title="All 2 branches covered.">                                &amp;&amp; !(pomMatch &amp;&amp; VERSION.equals(e.getName())</span>
-<span class="pc bpc" id="L170" title="2 of 8 branches missed.">                                &amp;&amp; (NEXUS.equals(e.getSource()) || CENTRAL.equals(e.getSource()) || POM.equals(e.getSource())))</span>
-<span class="fc bfc" id="L171" title="All 6 branches covered.">                                &amp;&amp; !(fileMatch &amp;&amp; VERSION.equals(e.getName()) &amp;&amp; FILE.equals(e.getSource()))</span>
-<span class="fc bfc" id="L172" title="All 4 branches covered.">                                &amp;&amp; !(manifestMatch &amp;&amp; MANIFEST.equals(e.getSource()) &amp;&amp; IMPLEMENTATION_VERSION.equals(e.getName()))) {</span>
-<span class="fc" id="L173">                            remove.add(e);</span>
+<span class="fc bfc" id="L197" title="All 2 branches covered.">                    for (Evidence e : dependency.getEvidence(EvidenceType.VERSION)) {</span>
+<span class="pc bpc" id="L198" title="1 of 4 branches missed.">                        if (!e.isFromHint()</span>
+<span class="fc bfc" id="L199" title="All 2 branches covered.">                                &amp;&amp; !(pomMatch &amp;&amp; VERSION.equals(e.getName())</span>
+<span class="pc bpc" id="L200" title="2 of 8 branches missed.">                                &amp;&amp; (NEXUS.equals(e.getSource()) || CENTRAL.equals(e.getSource()) || POM.equals(e.getSource())))</span>
+<span class="fc bfc" id="L201" title="All 6 branches covered.">                                &amp;&amp; !(fileMatch &amp;&amp; VERSION.equals(e.getName()) &amp;&amp; FILE.equals(e.getSource()))</span>
+<span class="fc bfc" id="L202" title="All 4 branches covered.">                                &amp;&amp; !(manifestMatch &amp;&amp; MANIFEST.equals(e.getSource()) &amp;&amp; IMPLEMENTATION_VERSION.equals(e.getName()))) {</span>
+<span class="fc" id="L203">                            remove.add(e);</span>
                         }
-<span class="fc" id="L175">                    }</span>
+<span class="fc" id="L205">                    }</span>
                 }
             }
         }
-<span class="fc" id="L179">        remove.forEach((e) -&gt; dependency.removeEvidence(EvidenceType.VERSION, e));</span>
+<span class="fc" id="L209">        remove.forEach((e) -&gt; dependency.removeEvidence(EvidenceType.VERSION, e));</span>
 
-<span class="fc bfc" id="L181" title="All 2 branches covered.">        if (dependency.getVersion() == null) {</span>
-<span class="fc" id="L182">            final Set&lt;Evidence&gt; evidence = dependency.getEvidence(EvidenceType.VERSION);</span>
+<span class="fc bfc" id="L211" title="All 2 branches covered.">        if (dependency.getVersion() == null) {</span>
+<span class="fc" id="L212">            final Set&lt;Evidence&gt; evidence = dependency.getEvidence(EvidenceType.VERSION);</span>
             final DependencyVersion version;
-<span class="fc" id="L184">            final Evidence e = evidence.stream().findFirst().orElse(null);</span>
-<span class="fc bfc" id="L185" title="All 2 branches covered.">            if (e != null) {</span>
-<span class="fc" id="L186">                version = DependencyVersionUtil.parseVersion(e.getValue(), true);</span>
-<span class="fc bfc" id="L187" title="All 2 branches covered.">                if (version != null &amp;&amp; evidence.stream()</span>
-<span class="fc" id="L188">                        .map(ev -&gt; DependencyVersionUtil.parseVersion(ev.getValue(), true))</span>
-<span class="fc bfc" id="L189" title="All 2 branches covered.">                        .allMatch(version::equals)) {</span>
-<span class="fc" id="L190">                    dependency.setVersion(version.toString());</span>
+<span class="fc" id="L214">            final Evidence e = evidence.stream().findFirst().orElse(null);</span>
+<span class="fc bfc" id="L215" title="All 2 branches covered.">            if (e != null) {</span>
+<span class="fc" id="L216">                version = DependencyVersionUtil.parseVersion(e.getValue(), true);</span>
+<span class="fc bfc" id="L217" title="All 2 branches covered.">                if (version != null &amp;&amp; evidence.stream()</span>
+<span class="fc" id="L218">                        .map(ev -&gt; DependencyVersionUtil.parseVersion(ev.getValue(), true))</span>
+<span class="fc bfc" id="L219" title="All 2 branches covered.">                        .allMatch(version::equals)) {</span>
+<span class="fc" id="L220">                    dependency.setVersion(version.toString());</span>
                 }
             }
         }
-<span class="fc" id="L194">    }</span>
+<span class="fc" id="L224">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.14.202510111229</span></div></body></html>

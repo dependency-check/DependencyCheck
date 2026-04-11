@@ -50,7 +50,7 @@ public final class FileContentSearch {
      * @throws java.io.IOException thrown if there is an error reading the file
      */
     public static boolean contains(File file, String pattern) throws IOException {
-<span class="fc" id="L53">        try (Scanner fileScanner = new Scanner(file, UTF_8.name())) {</span>
+<span class="fc" id="L53">        try (Scanner fileScanner = new Scanner(file, UTF_8)) {</span>
 <span class="fc" id="L54">            final Pattern regex = Pattern.compile(pattern);</span>
 <span class="fc bfc" id="L55" title="All 2 branches covered.">            if (fileScanner.findWithinHorizon(regex, 0) != null) {</span>
 <span class="fc" id="L56">                return true;</span>
@@ -73,7 +73,7 @@ public final class FileContentSearch {
 <span class="fc bfc" id="L73" title="All 2 branches covered.">        for (String pattern : patterns) {</span>
 <span class="fc" id="L74">            regexes.add(Pattern.compile(pattern));</span>
         }
-<span class="fc" id="L76">        try (Scanner fileScanner = new Scanner(file, UTF_8.name())) {</span>
+<span class="fc" id="L76">        try (Scanner fileScanner = new Scanner(file, UTF_8)) {</span>
 <span class="fc bfc" id="L77" title="All 2 branches covered.">            return regexes.stream().anyMatch((regex) -&gt; (fileScanner.findWithinHorizon(regex, 0) != null));</span>
         }
     }

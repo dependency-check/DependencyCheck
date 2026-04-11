@@ -156,7 +156,7 @@ import us.springett.parsers.cpe.values.Part;
 <span class="fc" id="L156">        nodeModule.setMd5sum(Checksum.getMD5Checksum(String.format(&quot;%s:%s&quot;, name, version)));</span>
 <span class="fc" id="L157">        nodeModule.addEvidence(EvidenceType.PRODUCT, &quot;package.json&quot;, &quot;name&quot;, name, Confidence.HIGHEST);</span>
 <span class="fc" id="L158">        nodeModule.addEvidence(EvidenceType.VENDOR, &quot;package.json&quot;, &quot;name&quot;, name, Confidence.HIGH);</span>
-<span class="fc bfc" id="L159" title="All 2 branches covered.">        if (!StringUtils.isBlank(version)) {</span>
+<span class="pc bpc" id="L159" title="1 of 2 branches missed.">        if (!StringUtils.isBlank(version)) {</span>
 <span class="fc" id="L160">            nodeModule.addEvidence(EvidenceType.VERSION, &quot;package.json&quot;, &quot;version&quot;, version, Confidence.HIGHEST);</span>
 <span class="fc" id="L161">            nodeModule.setVersion(version);</span>
         }
@@ -291,7 +291,7 @@ import us.springett.parsers.cpe.values.Part;
      */
     protected Dependency findDependency(Engine engine, String name, String version) {
 <span class="fc bfc" id="L293" title="All 2 branches covered.">        for (Dependency d : engine.getDependencies()) {</span>
-<span class="pc bpc" id="L294" title="1 of 8 branches missed.">            if (NPM_DEPENDENCY_ECOSYSTEM.equals(d.getEcosystem()) &amp;&amp; name.equals(d.getName()) &amp;&amp; version != null &amp;&amp; d.getVersion() != null) {</span>
+<span class="pc bpc" id="L294" title="2 of 8 branches missed.">            if (NPM_DEPENDENCY_ECOSYSTEM.equals(d.getEcosystem()) &amp;&amp; name.equals(d.getName()) &amp;&amp; version != null &amp;&amp; d.getVersion() != null) {</span>
 <span class="fc" id="L295">                final String dependencyVersion = d.getVersion();</span>
 <span class="fc bfc" id="L296" title="All 2 branches covered.">                if (DependencyBundlingAnalyzer.npmVersionsMatch(version, dependencyVersion)) {</span>
 <span class="fc" id="L297">                    return d;</span>
@@ -485,7 +485,7 @@ import us.springett.parsers.cpe.values.Part;
 <span class="fc" id="L485">            vuln.addVulnerableSoftware(vs);</span>
 
 <span class="fc" id="L487">            String version = advisory.getVersion();</span>
-<span class="fc bfc" id="L488" title="All 4 branches covered.">            if (version == null &amp;&amp; dependencyMap.containsKey(advisory.getModuleName())) {</span>
+<span class="pc bpc" id="L488" title="1 of 4 branches missed.">            if (version == null &amp;&amp; dependencyMap.containsKey(advisory.getModuleName())) {</span>
 <span class="fc" id="L489">                version = determineVersionFromMap(advisory.getVulnerableVersions(), dependencyMap.get(advisory.getModuleName()));</span>
             }
 <span class="fc" id="L491">            final Dependency existing = findDependency(engine, advisory.getModuleName(), version);</span>

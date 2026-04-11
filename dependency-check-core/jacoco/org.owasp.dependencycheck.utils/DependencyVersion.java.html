@@ -25,7 +25,7 @@ import java.util.regex.Pattern;
 import javax.annotation.concurrent.NotThreadSafe;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 /**
  * &lt;p&gt;
@@ -113,7 +113,7 @@ public class DependencyVersion implements Iterable&lt;String&gt;, Comparable&lt;
      *
      * @return an iterator for the version parts
      */
-    @NotNull
+    @NonNull
     @Override
     public Iterator&lt;String&gt; iterator() {
 <span class="fc" id="L119">        return versionParts.iterator();</span>
@@ -168,7 +168,7 @@ public class DependencyVersion implements Iterable&lt;String&gt;, Comparable&lt;
         }
 
 <span class="fc bfc" id="L170" title="All 2 branches covered.">        if (other.versionParts.size() &gt; minVersionMatchLength) {</span>
-<span class="pc bpc" id="L171" title="1 of 2 branches missed.">            for (int i = minVersionMatchLength; i &lt; other.versionParts.size(); i++) {</span>
+<span class="fc bfc" id="L171" title="All 2 branches covered.">            for (int i = minVersionMatchLength; i &lt; other.versionParts.size(); i++) {</span>
 <span class="fc bfc" id="L172" title="All 2 branches covered.">                if (!&quot;0&quot;.equals(other.versionParts.get(i))) {</span>
 <span class="fc" id="L173">                    return false;</span>
                 }
@@ -232,38 +232,35 @@ public class DependencyVersion implements Iterable&lt;String&gt;, Comparable&lt;
     }
 
     @Override
-    public int compareTo(@NotNull DependencyVersion version) {
-<span class="pc bpc" id="L236" title="1 of 2 branches missed.">        if (version == null) {</span>
-<span class="nc" id="L237">            return 1;</span>
-        }
-<span class="fc" id="L239">        final List&lt;String&gt; left = this.getVersionParts();</span>
-<span class="fc" id="L240">        final List&lt;String&gt; right = version.getVersionParts();</span>
-<span class="fc" id="L241">        final int max = Math.min(left.size(), right.size());</span>
+    public int compareTo(@NonNull DependencyVersion version) {
+<span class="fc" id="L236">        final List&lt;String&gt; left = this.getVersionParts();</span>
+<span class="fc" id="L237">        final List&lt;String&gt; right = version.getVersionParts();</span>
+<span class="fc" id="L238">        final int max = Math.min(left.size(), right.size());</span>
 
-<span class="fc bfc" id="L243" title="All 2 branches covered.">        for (int i = 0; i &lt; max; i++) {</span>
-<span class="fc" id="L244">            final String lStr = left.get(i);</span>
-<span class="fc" id="L245">            final String rStr = right.get(i);</span>
-<span class="fc bfc" id="L246" title="All 2 branches covered.">            if (lStr.equals(rStr)) {</span>
-<span class="fc" id="L247">                continue;</span>
+<span class="fc bfc" id="L240" title="All 2 branches covered.">        for (int i = 0; i &lt; max; i++) {</span>
+<span class="fc" id="L241">            final String lStr = left.get(i);</span>
+<span class="fc" id="L242">            final String rStr = right.get(i);</span>
+<span class="fc bfc" id="L243" title="All 2 branches covered.">            if (lStr.equals(rStr)) {</span>
+<span class="fc" id="L244">                continue;</span>
             }
             try {
-<span class="fc" id="L250">                final int l = Integer.parseInt(lStr);</span>
-<span class="fc" id="L251">                final int r = Integer.parseInt(rStr);</span>
-<span class="fc bfc" id="L252" title="All 2 branches covered.">                if (l &lt; r) {</span>
-<span class="fc" id="L253">                    return -1;</span>
-<span class="pc bpc" id="L254" title="1 of 2 branches missed.">                } else if (l &gt; r) {</span>
-<span class="fc" id="L255">                    return 1;</span>
+<span class="fc" id="L247">                final int l = Integer.parseInt(lStr);</span>
+<span class="fc" id="L248">                final int r = Integer.parseInt(rStr);</span>
+<span class="fc bfc" id="L249" title="All 2 branches covered.">                if (l &lt; r) {</span>
+<span class="fc" id="L250">                    return -1;</span>
+<span class="pc bpc" id="L251" title="1 of 2 branches missed.">                } else if (l &gt; r) {</span>
+<span class="fc" id="L252">                    return 1;</span>
                 }
-<span class="fc" id="L257">            } catch (NumberFormatException ex) {</span>
-<span class="fc" id="L258">                final int comp = left.get(i).compareTo(right.get(i));</span>
-<span class="fc bfc" id="L259" title="All 2 branches covered.">                if (comp &lt; 0) {</span>
-<span class="fc" id="L260">                    return -1;</span>
-<span class="pc bpc" id="L261" title="1 of 2 branches missed.">                } else if (comp &gt; 0) {</span>
-<span class="fc" id="L262">                    return 1;</span>
+<span class="fc" id="L254">            } catch (NumberFormatException ex) {</span>
+<span class="fc" id="L255">                final int comp = left.get(i).compareTo(right.get(i));</span>
+<span class="fc bfc" id="L256" title="All 2 branches covered.">                if (comp &lt; 0) {</span>
+<span class="fc" id="L257">                    return -1;</span>
+<span class="pc bpc" id="L258" title="1 of 2 branches missed.">                } else if (comp &gt; 0) {</span>
+<span class="fc" id="L259">                    return 1;</span>
                 }
-<span class="nc" id="L264">            }</span>
+<span class="nc" id="L261">            }</span>
         }
-<span class="fc" id="L266">        return Integer.compare(left.size(), right.size());</span>
+<span class="fc" id="L263">        return Integer.compare(left.size(), right.size());</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.14.202510111229</span></div></body></html>

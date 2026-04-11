@@ -19,7 +19,7 @@ package org.owasp.dependencycheck.dependency.naming;
 
 import com.github.packageurl.MalformedPackageURLException;
 import org.apache.commons.lang3.builder.CompareToBuilder;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 import org.owasp.dependencycheck.dependency.Confidence;
 import com.github.packageurl.PackageURL;
 import com.github.packageurl.PackageURLBuilder;
@@ -212,7 +212,7 @@ public class PurlIdentifier implements Identifier {
     }
 
     @Override
-    public int compareTo(@NotNull Identifier o) {
+    public int compareTo(@NonNull Identifier o) {
 <span class="pc bpc" id="L216" title="1 of 2 branches missed.">        if (o instanceof PurlIdentifier) {</span>
 <span class="fc" id="L217">            final PurlIdentifier other = (PurlIdentifier) o;</span>
 <span class="fc" id="L218">            return new CompareToBuilder()</span>
@@ -242,18 +242,18 @@ public class PurlIdentifier implements Identifier {
 
     @Override
     public boolean equals(Object obj) {
-<span class="nc bnc" id="L245" title="All 4 branches missed.">        if (obj == null || !(obj instanceof PurlIdentifier)) {</span>
+<span class="pc bpc" id="L245" title="2 of 4 branches missed.">        if (obj == null || !(obj instanceof PurlIdentifier)) {</span>
 <span class="nc" id="L246">            return false;</span>
         }
-<span class="nc bnc" id="L248" title="All 2 branches missed.">        if (this == obj) {</span>
+<span class="pc bpc" id="L248" title="1 of 2 branches missed.">        if (this == obj) {</span>
 <span class="nc" id="L249">            return true;</span>
         }
-<span class="nc" id="L251">        final PurlIdentifier other = (PurlIdentifier) obj;</span>
-<span class="nc" id="L252">        return new EqualsBuilder().append(purl, other.purl)</span>
-<span class="nc" id="L253">                .append(this.confidence, other.confidence)</span>
-<span class="nc" id="L254">                .append(this.url, other.url)</span>
-<span class="nc" id="L255">                .append(this.notes, other.notes)</span>
-<span class="nc" id="L256">                .isEquals();</span>
+<span class="fc" id="L251">        final PurlIdentifier other = (PurlIdentifier) obj;</span>
+<span class="fc" id="L252">        return new EqualsBuilder().append(purl, other.purl)</span>
+<span class="fc" id="L253">                .append(this.confidence, other.confidence)</span>
+<span class="fc" id="L254">                .append(this.url, other.url)</span>
+<span class="fc" id="L255">                .append(this.notes, other.notes)</span>
+<span class="fc" id="L256">                .isEquals();</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.14.202510111229</span></div></body></html>

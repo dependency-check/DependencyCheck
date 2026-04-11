@@ -29,7 +29,7 @@
 <a class="jxr_linenumber" name="L21" href="#L21">21</a>  <strong class="jxr_keyword">import</strong> org.apache.commons.lang3.builder.CompareToBuilder;
 <a class="jxr_linenumber" name="L22" href="#L22">22</a>  <strong class="jxr_keyword">import</strong> org.apache.commons.lang3.builder.EqualsBuilder;
 <a class="jxr_linenumber" name="L23" href="#L23">23</a>  <strong class="jxr_keyword">import</strong> org.apache.commons.lang3.builder.HashCodeBuilder;
-<a class="jxr_linenumber" name="L24" href="#L24">24</a>  <strong class="jxr_keyword">import</strong> org.jetbrains.annotations.NotNull;
+<a class="jxr_linenumber" name="L24" href="#L24">24</a>  <strong class="jxr_keyword">import</strong> org.jspecify.annotations.NonNull;
 <a class="jxr_linenumber" name="L25" href="#L25">25</a>  
 <a class="jxr_linenumber" name="L26" href="#L26">26</a>  <strong class="jxr_keyword">import</strong> java.io.Serializable;
 <a class="jxr_linenumber" name="L27" href="#L27">27</a>  <strong class="jxr_keyword">import</strong> javax.annotation.concurrent.ThreadSafe;
@@ -243,7 +243,7 @@
 <a class="jxr_linenumber" name="L235" href="#L235">235</a> <em class="jxr_javadoccomment">     * @return an integer indicating the ordering of the two objects</em>
 <a class="jxr_linenumber" name="L236" href="#L236">236</a> <em class="jxr_javadoccomment">     */</em>
 <a class="jxr_linenumber" name="L237" href="#L237">237</a>     @Override
-<a class="jxr_linenumber" name="L238" href="#L238">238</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">int</strong> compareTo(@NotNull <a href="../../../../org/owasp/dependencycheck/dependency/Evidence.html">Evidence</a> o) {
+<a class="jxr_linenumber" name="L238" href="#L238">238</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">int</strong> compareTo(@NonNull <a href="../../../../org/owasp/dependencycheck/dependency/Evidence.html">Evidence</a> o) {
 <a class="jxr_linenumber" name="L239" href="#L239">239</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> CompareToBuilder()
 <a class="jxr_linenumber" name="L240" href="#L240">240</a>                 .append(<strong class="jxr_keyword">this</strong>.source == <strong class="jxr_keyword">null</strong> ? <strong class="jxr_keyword">null</strong> : <strong class="jxr_keyword">this</strong>.source.toLowerCase(), o.source == <strong class="jxr_keyword">null</strong> ? <strong class="jxr_keyword">null</strong> : o.source.toLowerCase())
 <a class="jxr_linenumber" name="L241" href="#L241">241</a>                 .append(<strong class="jxr_keyword">this</strong>.name == <strong class="jxr_keyword">null</strong> ? <strong class="jxr_keyword">null</strong> : <strong class="jxr_keyword">this</strong>.name.toLowerCase(), o.name == <strong class="jxr_keyword">null</strong> ? <strong class="jxr_keyword">null</strong> : o.name.toLowerCase())

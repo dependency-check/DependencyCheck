@@ -63,7 +63,7 @@
 <a class="jxr_linenumber" name="L55" href="#L55">55</a>  <strong class="jxr_keyword">import</strong> java.util.function.Function;
 <a class="jxr_linenumber" name="L56" href="#L56">56</a>  <strong class="jxr_keyword">import</strong> java.util.zip.GZIPOutputStream;
 <a class="jxr_linenumber" name="L57" href="#L57">57</a>  
-<a class="jxr_linenumber" name="L58" href="#L58">58</a>  <strong class="jxr_keyword">import</strong> org.jetbrains.annotations.NotNull;
+<a class="jxr_linenumber" name="L58" href="#L58">58</a>  <strong class="jxr_keyword">import</strong> org.jspecify.annotations.NonNull;
 <a class="jxr_linenumber" name="L59" href="#L59">59</a>  <strong class="jxr_keyword">import</strong> org.owasp.dependencycheck.Engine;
 <a class="jxr_linenumber" name="L60" href="#L60">60</a>  <strong class="jxr_keyword">import</strong> org.owasp.dependencycheck.data.nvdcve.CveDB;
 <a class="jxr_linenumber" name="L61" href="#L61">61</a>  <strong class="jxr_keyword">import</strong> org.owasp.dependencycheck.data.nvdcve.DatabaseException;
@@ -674,20 +674,20 @@
 <a class="jxr_linenumber" name="L666" href="#L666">666</a>             <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> <a href="../../../../../org/owasp/dependencycheck/data/update/NvdApiDataSource.html">FeedUrl</a>(url, patternTransformer.apply(Optional.ofNullable(pattern)));
 <a class="jxr_linenumber" name="L667" href="#L667">667</a>         }
 <a class="jxr_linenumber" name="L668" href="#L668">668</a> 
-<a class="jxr_linenumber" name="L669" href="#L669">669</a>         @NotNull String toFormattedUrlString(String formatArg) {
+<a class="jxr_linenumber" name="L669" href="#L669">669</a>         @NonNull String toFormattedUrlString(String formatArg) {
 <a class="jxr_linenumber" name="L670" href="#L670">670</a>             <strong class="jxr_keyword">return</strong> url + MessageFormat.format(Optional.ofNullable(pattern).orElseThrow(), formatArg);
 <a class="jxr_linenumber" name="L671" href="#L671">671</a>         }
 <a class="jxr_linenumber" name="L672" href="#L672">672</a> 
-<a class="jxr_linenumber" name="L673" href="#L673">673</a>         @NotNull String toFormattedUrlString(<strong class="jxr_keyword">int</strong> formatArg) {
+<a class="jxr_linenumber" name="L673" href="#L673">673</a>         @NonNull String toFormattedUrlString(<strong class="jxr_keyword">int</strong> formatArg) {
 <a class="jxr_linenumber" name="L674" href="#L674">674</a>             <strong class="jxr_keyword">return</strong> toFormattedUrlString(String.valueOf(formatArg));
 <a class="jxr_linenumber" name="L675" href="#L675">675</a>         }
 <a class="jxr_linenumber" name="L676" href="#L676">676</a> 
-<a class="jxr_linenumber" name="L677" href="#L677">677</a>         @NotNull URL toFormattedUrl(@NotNull String formatArg) <strong class="jxr_keyword">throws</strong> MalformedURLException, URISyntaxException {
+<a class="jxr_linenumber" name="L677" href="#L677">677</a>         @NonNull URL toFormattedUrl(@NonNull String formatArg) <strong class="jxr_keyword">throws</strong> MalformedURLException, URISyntaxException {
 <a class="jxr_linenumber" name="L678" href="#L678">678</a>             <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> URI(toFormattedUrlString(formatArg)).toURL();
 <a class="jxr_linenumber" name="L679" href="#L679">679</a>         }
 <a class="jxr_linenumber" name="L680" href="#L680">680</a> 
 <a class="jxr_linenumber" name="L681" href="#L681">681</a>         @SuppressWarnings(<span class="jxr_string">"SameParameterValue"</span>)
-<a class="jxr_linenumber" name="L682" href="#L682">682</a>         @NotNull URL toSuffixedUrl(String suffix) <strong class="jxr_keyword">throws</strong> MalformedURLException, URISyntaxException {
+<a class="jxr_linenumber" name="L682" href="#L682">682</a>         @NonNull URL toSuffixedUrl(String suffix) <strong class="jxr_keyword">throws</strong> MalformedURLException, URISyntaxException {
 <a class="jxr_linenumber" name="L683" href="#L683">683</a>             <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> URI(url + suffix).toURL();
 <a class="jxr_linenumber" name="L684" href="#L684">684</a>         }
 <a class="jxr_linenumber" name="L685" href="#L685">685</a> 
@@ -713,7 +713,7 @@
 <a class="jxr_linenumber" name="L705" href="#L705">705</a>             <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> <a href="../../../../../org/owasp/dependencycheck/data/update/NvdApiDataSource.html">FeedUrl</a>(baseUrl, pattern);
 <a class="jxr_linenumber" name="L706" href="#L706">706</a>         }
 <a class="jxr_linenumber" name="L707" href="#L707">707</a> 
-<a class="jxr_linenumber" name="L708" href="#L708">708</a>         <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> @NotNull Pair&lt;Integer, Integer&gt; toYearRange(Settings settings, ZonedDateTime now) {
+<a class="jxr_linenumber" name="L708" href="#L708">708</a>         <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> @NonNull Pair&lt;Integer, Integer&gt; toYearRange(Settings settings, ZonedDateTime now) {
 <a class="jxr_linenumber" name="L709" href="#L709">709</a>             <em class="jxr_comment">// for establishing the current year use the timezone where the new year starts first</em>
 <a class="jxr_linenumber" name="L710" href="#L710">710</a>             <em class="jxr_comment">// as from that moment on CNAs might start assigning CVEs with the new year depending</em>
 <a class="jxr_linenumber" name="L711" href="#L711">711</a>             <em class="jxr_comment">// on the CNA's timezone</em>
@@ -722,11 +722,11 @@
 <a class="jxr_linenumber" name="L714" href="#L714">714</a>             <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> Pair&lt;&gt;(startYear, endYear);
 <a class="jxr_linenumber" name="L715" href="#L715">715</a>         }
 <a class="jxr_linenumber" name="L716" href="#L716">716</a> 
-<a class="jxr_linenumber" name="L717" href="#L717">717</a>         <strong class="jxr_keyword">private</strong> @NotNull ZonedDateTime getLastModifiedFor(<strong class="jxr_keyword">int</strong> year) <strong class="jxr_keyword">throws</strong> UpdateException {
+<a class="jxr_linenumber" name="L717" href="#L717">717</a>         <strong class="jxr_keyword">private</strong> @NonNull ZonedDateTime getLastModifiedFor(<strong class="jxr_keyword">int</strong> year) <strong class="jxr_keyword">throws</strong> UpdateException {
 <a class="jxr_linenumber" name="L718" href="#L718">718</a>             <strong class="jxr_keyword">return</strong> getLastModifiedFor(String.valueOf(year));
 <a class="jxr_linenumber" name="L719" href="#L719">719</a>         }
 <a class="jxr_linenumber" name="L720" href="#L720">720</a> 
-<a class="jxr_linenumber" name="L721" href="#L721">721</a>         <strong class="jxr_keyword">private</strong> @NotNull ZonedDateTime getLastModifiedFor(String fileVersion) <strong class="jxr_keyword">throws</strong> UpdateException {
+<a class="jxr_linenumber" name="L721" href="#L721">721</a>         <strong class="jxr_keyword">private</strong> @NonNull ZonedDateTime getLastModifiedFor(String fileVersion) <strong class="jxr_keyword">throws</strong> UpdateException {
 <a class="jxr_linenumber" name="L722" href="#L722">722</a>             <strong class="jxr_keyword">try</strong> {
 <a class="jxr_linenumber" name="L723" href="#L723">723</a>                 String content = Downloader.getInstance().fetchContent(toFormattedUrl(fileVersion), UTF_8);
 <a class="jxr_linenumber" name="L724" href="#L724">724</a>                 Properties props = <strong class="jxr_keyword">new</strong> Properties();

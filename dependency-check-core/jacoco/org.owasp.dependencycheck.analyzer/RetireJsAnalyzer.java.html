@@ -320,9 +320,9 @@ import org.apache.commons.io.IOUtils;
 <span class="nc" id="L320">                        dependency.addSoftwareIdentifier(id);</span>
 <span class="fc" id="L321">                    }</span>
 
-<span class="fc" id="L323">                    dependency.addEvidence(EvidenceType.VERSION, &quot;file&quot;, &quot;version&quot;, libraryResult.getDetectedVersion(), Confidence.HIGH);</span>
-<span class="fc" id="L324">                    dependency.addEvidence(EvidenceType.PRODUCT, &quot;file&quot;, &quot;name&quot;, libraryResult.getLibrary().getName(), Confidence.HIGH);</span>
-<span class="fc" id="L325">                    dependency.addEvidence(EvidenceType.VENDOR, &quot;file&quot;, &quot;name&quot;, libraryResult.getLibrary().getName(), Confidence.HIGH);</span>
+<span class="fc" id="L323">                    dependency.addEvidence(EvidenceType.VERSION, &quot;RetireJS&quot;, &quot;version&quot;, libraryResult.getDetectedVersion(), Confidence.HIGH);</span>
+<span class="fc" id="L324">                    dependency.addEvidence(EvidenceType.PRODUCT, &quot;RetireJS&quot;, &quot;name&quot;, libraryResult.getLibrary().getName(), Confidence.HIGH);</span>
+<span class="fc" id="L325">                    dependency.addEvidence(EvidenceType.VENDOR, &quot;RetireJS&quot;, &quot;name&quot;, libraryResult.getLibrary().getName(), Confidence.HIGH);</span>
 
 <span class="fc" id="L327">                    final List&lt;Vulnerability&gt; vulns = new ArrayList&lt;&gt;();</span>
 <span class="fc" id="L328">                    final JsVulnerability jsVuln = libraryResult.getVuln();</span>

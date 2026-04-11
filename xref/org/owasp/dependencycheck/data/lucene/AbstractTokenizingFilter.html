@@ -98,11 +98,15 @@
 <a class="jxr_linenumber" name="L90" href="#L90">90</a>          <strong class="jxr_keyword">if</strong> (termAdded) {
 <a class="jxr_linenumber" name="L91" href="#L91">91</a>              <strong class="jxr_keyword">final</strong> String term = tokens.pop();
 <a class="jxr_linenumber" name="L92" href="#L92">92</a>              clearAttributes();
-<a class="jxr_linenumber" name="L93" href="#L93">93</a>              termAtt.append(term);
+<a class="jxr_linenumber" name="L93" href="#L93">93</a>              appendTerm(term);
 <a class="jxr_linenumber" name="L94" href="#L94">94</a>          }
 <a class="jxr_linenumber" name="L95" href="#L95">95</a>          <strong class="jxr_keyword">return</strong> termAdded;
 <a class="jxr_linenumber" name="L96" href="#L96">96</a>      }
-<a class="jxr_linenumber" name="L97" href="#L97">97</a>  }
+<a class="jxr_linenumber" name="L97" href="#L97">97</a>  
+<a class="jxr_linenumber" name="L98" href="#L98">98</a>      <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">void</strong> appendTerm(String term) {
+<a class="jxr_linenumber" name="L99" href="#L99">99</a>          termAtt.append(term);
+<a class="jxr_linenumber" name="L100" href="#L100">100</a>     }
+<a class="jxr_linenumber" name="L101" href="#L101">101</a> }
 </pre>
 <hr/>
 <div id="footer">Copyright &#169; 2012&#x2013;2026 <a href="https://www.owasp.org">OWASP</a>. All rights reserved.</div>

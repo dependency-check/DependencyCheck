@@ -278,7 +278,7 @@ import org.slf4j.LoggerFactory;
 <span class="fc" id="L278">            final String name1 = dependency1.getActualFile().getName();</span>
 <span class="fc" id="L279">            final String name2 = dependency2.getActualFile().getName();</span>
 <span class="fc bfc" id="L280" title="All 2 branches covered.">            if (&quot;classes.jar&quot;.equals(name2)</span>
-<span class="fc bfc" id="L281" title="All 2 branches covered.">                    &amp;&amp; &quot;aar&quot;.equals(FileUtils.getFileExtension(name1))</span>
+<span class="pc bpc" id="L281" title="1 of 2 branches missed.">                    &amp;&amp; &quot;aar&quot;.equals(FileUtils.getFileExtension(name1))</span>
 <span class="pc bpc" id="L282" title="1 of 2 branches missed.">                    &amp;&amp; dependency2.getFileName().contains(name1)) {</span>
 <span class="fc" id="L283">                return dependency1;</span>
             }

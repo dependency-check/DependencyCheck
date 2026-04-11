@@ -284,10 +284,10 @@ import org.slf4j.bridge.SLF4JBridgeHandler;
 <span class="nc" id="L284">        } catch (IndexSearcher.TooManyClauses ex) {</span>
 <span class="nc" id="L285">            IndexSearcher.setMaxClauseCount(Integer.MAX_VALUE);</span>
 <span class="nc" id="L286">            query = queryParser.parse(searchString);</span>
-<span class="fc" id="L287">        } catch (ParseException ex) {</span>
-<span class="pc bpc" id="L288" title="2 of 4 branches missed.">            if (ex.getMessage() != null &amp;&amp; ex.getMessage().contains(&quot;too many boolean clauses&quot;)) {</span>
-<span class="fc" id="L289">                IndexSearcher.setMaxClauseCount(Integer.MAX_VALUE);</span>
-<span class="fc" id="L290">                query = queryParser.parse(searchString);</span>
+<span class="nc" id="L287">        } catch (ParseException ex) {</span>
+<span class="nc bnc" id="L288" title="All 4 branches missed.">            if (ex.getMessage() != null &amp;&amp; ex.getMessage().contains(&quot;too many boolean clauses&quot;)) {</span>
+<span class="nc" id="L289">                IndexSearcher.setMaxClauseCount(Integer.MAX_VALUE);</span>
+<span class="nc" id="L290">                query = queryParser.parse(searchString);</span>
             } else {
 <span class="nc" id="L292">                LOGGER.debug(&quot;Parse Exception&quot;, ex);</span>
 <span class="nc" id="L293">                throw ex;</span>
