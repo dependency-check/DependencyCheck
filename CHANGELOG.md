@@ -37,7 +37,7 @@
 - test: [#8140](https://github.com/dependency-check/DependencyCheck/pull/8140) reproduce current behavior
 - test: avoid polluting test classpaths with sample dependencies to be scanned ([#8267](https://github.com/dependency-check/DependencyCheck/pull/8267))
 
-- See the full listing of [changes](https://github.com/dependency-check/DependencyCheck/milestone/104?closed=1)
+See the full listing of [changes](https://github.com/dependency-check/DependencyCheck/milestone/104?closed=1)
 
 ## [Version 12.2.0](https://github.com/dependency-check/DependencyCheck/releases/tag/v12.2.0) (2026-01-09)
 
@@ -60,7 +60,7 @@
 - chore: remove suppression rules that were deleted from the generatedSuppression branch ([#8119](https://github.com/dependency-check/DependencyCheck/pull/8119))
 - build: transition dependency to `org.eclipse.parsson` groupId ([#8128](https://github.com/dependency-check/DependencyCheck/pull/8128))
 
-- See the full listing of [changes](https://github.com/dependency-check/DependencyCheck/milestone/103?closed=1)
+See the full listing of [changes](https://github.com/dependency-check/DependencyCheck/milestone/103?closed=1)
 
 ## [Version 12.1.9](https://github.com/dependency-check/DependencyCheck/releases/tag/v12.1.9) (2025-11-11)
 
