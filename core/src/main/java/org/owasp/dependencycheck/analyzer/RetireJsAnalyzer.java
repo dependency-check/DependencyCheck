@@ -421,7 +421,7 @@ class RetireJsLibrary {
                 discoveredVulnerabilities.add(retireJsVulnFor(vulnerabilityName()));
             }
 
-            // For vulnerabilities not referenced externally; popular description and references from identifiers
+            // For vulnerabilities not referenced externally; populate description and references from identifiers
             discoveredVulnerabilities.stream()
                     .filter(vuln -> Vulnerability.Source.RETIREJS.equals(vuln.getSource()))
                     .forEach(vuln -> {
