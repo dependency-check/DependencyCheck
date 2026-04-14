@@ -24,12 +24,11 @@ COPY --from=go /usr/local/go/ /usr/local/go/
 
 ADD cli/target/dependency-check-${VERSION}-release.zip /
 
-RUN apk update                                                                                       && \
-    apk add --no-cache --virtual .build-deps curl tar                                                && \
-    apk add --no-cache git ruby ruby-rdoc npm                                                        && \
-    gem install bundler-audit                                                                        && \
-    bundle audit update                                                                              && \
-    npm install -g corepack                                                                          && \
+RUN apk upgrade --no-cache                                                                           && \
+    apk add --no-cache --virtual .build-deps curl                                                    && \
+    apk add --no-cache git ruby npm                                                                  && \
+    gem install --no-document bundler-audit                                                          && \
+    npm install --global --ignore-scripts corepack                                                   && \
     unzip dependency-check-${VERSION}-release.zip -d /usr/share/                                     && \
     rm dependency-check-${VERSION}-release.zip                                                       && \
     cd /usr/share/dependency-check/plugins                                                           && \
@@ -42,16 +41,18 @@ RUN apk update                                                                  
     mkdir /report                                                                                    && \
     chown -R ${user}:0 /report                                                                       && \
     chmod -R g=u /report                                                                             && \
-    apk del .build-deps
+    apk del .build-deps                                                                              && \
+    rm -rf /tmp/* /root/.cache /root/.npm
 
 ### remove any suid sgid - we don't need them
 RUN find / -path /proc -prune -perm +6000 -type f -exec chmod a-s {} \;
 USER ${UID}
 
-### preload pnpm and yarn
-RUN corepack enable                                                                                  && \
-    corepack prepare pnpm@latest --activate                                                          && \
-    corepack prepare yarn@1.22.22 --activate
+### Cache pieces needed for the specific run user
+RUN bundle audit update                                                                              && \
+    corepack prepare pnpm@latest yarn@latest yarn@1 --activate                                       && \
+    printf "enableTelemetry: false\nenableScripts: false\n" >> ${HOME}/.yarnrc.yml                   && \
+    rm -rf /tmp/*
 
 VOLUME ["/src", "/report"]
 
