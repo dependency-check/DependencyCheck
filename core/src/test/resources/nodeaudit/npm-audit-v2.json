@@ -1,0 +1,52 @@
+{
+  "auditReportVersion": 2,
+  "vulnerabilities": {
+    "uglify-js": {
+      "name": "uglify-js",
+      "severity": "high",
+      "isDirect": true,
+      "via": [
+        {
+          "source": 39,
+          "name": "uglify-js",
+          "dependency": "uglify-js",
+          "title": "Prototype Pollution in uglify-js",
+          "url": "https://github.com/advisories/GHSA-34r7-q49f-h37c",
+          "severity": "high",
+          "cwe": [
+            "CWE-1321"
+          ],
+          "cvss": {
+            "score": 8.3,
+            "vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:C/C:L/I:L/A:L"
+          },
+          "range": ">=2.2.0 <3.4.10"
+        }
+      ],
+      "effects": [],
+      "range": ">=2.2.0 <3.4.10",
+      "nodes": [
+        "node_modules/uglify-js"
+      ],
+      "fixAvailable": true
+    }
+  },
+  "metadata": {
+    "vulnerabilities": {
+      "info": 0,
+      "low": 0,
+      "moderate": 0,
+      "high": 1,
+      "critical": 0,
+      "total": 1
+    },
+    "dependencies": {
+      "prod": 1,
+      "dev": 0,
+      "optional": 0,
+      "peer": 0,
+      "peerOptional": 0,
+      "total": 1
+    }
+  }
+}

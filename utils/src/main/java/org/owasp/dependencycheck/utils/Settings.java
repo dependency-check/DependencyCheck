@@ -544,6 +544,10 @@ public final class Settings {
          */
         public static final String ANALYZER_PNPM_PATH = "analyzer.pnpm.path";
         /**
+         * The path to npm, if available.
+         */
+        public static final String ANALYZER_NPM_PATH = "analyzer.npm.path";
+        /**
          * The properties key for whether the Golang Dep analyzer is enabled.
          */
         public static final String ANALYZER_GOLANG_DEP_ENABLED = "analyzer.golang.dep.enabled";

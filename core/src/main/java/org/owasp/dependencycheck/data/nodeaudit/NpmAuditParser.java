@@ -42,6 +42,17 @@ public class NpmAuditParser {
      */
     private static final Logger LOGGER = LoggerFactory.getLogger(NpmAuditParser.class);
 
+    static void addCwesFromJsonToAdvisory(Advisory advisory, JSONObject jsonObject) {
+        final JSONArray cweArray = jsonObject.optJSONArray("cwe");
+        final List<String> cwes = new ArrayList<>();
+        if (cweArray != null) {
+            for (int j = 0; j < cweArray.length(); j++) {
+                cwes.add(cweArray.getString(j));
+            }
+        }
+        advisory.setCwes(cwes);
+    }
+
     /**
      * Parses the JSON response from the NPM Audit API.
      *
@@ -88,14 +99,7 @@ public class NpmAuditParser {
         advisory.setAccess(object.optString("access", null));
         advisory.setSeverity(object.optString("severity", null));
 
-        final JSONArray jsonCwes = object.optJSONArray("cwe");
-        final List<String> stringCwes = new ArrayList<>();
-        if (jsonCwes != null) {
-            for (int j = 0; j < jsonCwes.length(); j++) {
-                stringCwes.add(jsonCwes.getString(j));
-            }
-        }
-        advisory.setCwes(stringCwes);
+        addCwesFromJsonToAdvisory(advisory, object);
 
         final JSONArray findings = object.optJSONArray("findings");
         for (int i = 0; i < findings.length(); i++) {

@@ -19,21 +19,21 @@ package org.owasp.dependencycheck.analyzer;
 
 import org.apache.commons.collections4.MultiValuedMap;
 import org.apache.commons.collections4.multimap.HashSetValuedHashMap;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.jspecify.annotations.NonNull;
 import org.owasp.dependencycheck.Engine;
 import org.owasp.dependencycheck.analyzer.exception.AnalysisException;
 import org.owasp.dependencycheck.analyzer.exception.SearchException;
 import org.owasp.dependencycheck.analyzer.exception.UnexpectedAnalysisException;
 import org.owasp.dependencycheck.data.nodeaudit.Advisory;
-import org.owasp.dependencycheck.data.nodeaudit.NpmPayloadBuilder;
+import org.owasp.dependencycheck.data.nodeaudit.NpmAuditParser;
+import org.owasp.dependencycheck.data.nodeaudit.NpmAuditV2Parser;
 import org.owasp.dependencycheck.dependency.Dependency;
 import org.owasp.dependencycheck.exception.InitializationException;
 import org.owasp.dependencycheck.utils.FileFilterBuilder;
 import org.owasp.dependencycheck.utils.Settings;
-import org.owasp.dependencycheck.utils.URLConnectionFailureException;
 import org.owasp.dependencycheck.utils.processing.ProcessReader;
 import org.semver4j.Semver;
 import org.semver4j.SemverException;
@@ -41,19 +41,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import us.springett.parsers.cpe.exceptions.CpeValidationException;
 
-import jakarta.json.Json;
-import jakarta.json.JsonException;
-import jakarta.json.JsonObject;
-import jakarta.json.JsonReader;
-
 import javax.annotation.concurrent.ThreadSafe;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -82,16 +75,14 @@ public class YarnAuditAnalyzer extends AbstractNpmAnalyzer {
             .addFilenames(YARN_PACKAGE_LOCK).build();
 
     /**
-     * An expected error from `yarn audit --offline --verbose --json` that will
-     * be ignored.
-     */
-    private static final String EXPECTED_ERROR = "{\"type\":\"error\",\"data\":\"Can't make a request in "
-            + "offline mode (\\\"https://registry.yarnpkg.com/-/npm/v1/security/audits\\\")\"}\n";
-
-    /**
      * The path to the `yarn` executable.
      */
     private String yarnPath;
+
+    /**
+     * The path to the `npm` executable.
+     */
+    private String npmPath;
 
     @Override
     protected String getAnalyzerEnabledSettingKey() {
@@ -160,6 +151,7 @@ public class YarnAuditAnalyzer extends AbstractNpmAnalyzer {
         }
         try {
             cacheYarnCommandPath();
+            cacheNpmCommandPath();
             getYarnVersion(new File("."));
         } catch (Exception ex){
             this.setEnabled(false);
@@ -190,6 +182,25 @@ public class YarnAuditAnalyzer extends AbstractNpmAnalyzer {
     }
 
     /**
+     * Attempts to determine and cache the path to `npm`.
+     */
+    private void cacheNpmCommandPath() {
+        String value = getSettings().getString(Settings.KEYS.ANALYZER_NPM_PATH);
+        if (value == null || value.isBlank()) {
+            value = "npm";
+        } else {
+            File fileValue = new File(value);
+            if (fileValue.isFile()) {
+                value = fileValue.getAbsolutePath();
+            } else {
+                LOGGER.warn("Provided path to `npm` executable is invalid; defaulting to `npm`.");
+                value = "npm";
+            }
+        }
+        npmPath = value;
+    }
+
+    /**
      * Workaround 64k limitation of InputStream, redirect stdout to a file that we will read later
      * instead of reading directly stdout from Process's InputStream which is topped at 64k
      *
@@ -205,9 +216,8 @@ public class YarnAuditAnalyzer extends AbstractNpmAnalyzer {
                 processReader.readAll();
                 final String errOutput = processReader.getError();
 
-                if (!StringUtils.isBlank(errOutput) && !EXPECTED_ERROR.equals(errOutput)) {
-                    LOGGER.debug("Process Error Out: {}", errOutput);
-                    LOGGER.debug("Process Out: {}", processReader.getOutput());
+                if (!StringUtils.isBlank(errOutput)) {
+                    LOGGER.debug("Process error output: {}", errOutput);
                 }
                 return Files.readString(tmpFile.toPath());
             } catch (InterruptedException ex) {
@@ -245,7 +255,7 @@ public class YarnAuditAnalyzer extends AbstractNpmAnalyzer {
             advisories = analyzePackageWithYarnBerry(dependency);
         } else {
             LOGGER.info("Analyzing using Yarn Classic ({}) audit for {}", yarnVersion, dependency.getActualFilePath());
-            advisories = analyzePackageWithYarnClassic(packageLock, dependency, dependencyMap);
+            advisories = analyzePackageWithYarnClassic(packageLock, dependency);
         }
         try {
             processResults(advisories, engine, dependency, dependencyMap);
@@ -254,36 +264,46 @@ public class YarnAuditAnalyzer extends AbstractNpmAnalyzer {
         }
     }
 
-    private JsonObject fetchYarnAuditJson(File dependencyDirectory, boolean skipDevDependencies) throws AnalysisException {
-        final List<String> args = new ArrayList<>();
-        args.add(yarnPath);
-        args.add("audit");
-        //offline audit is not supported - but the audit request is generated in the verbose output
-        args.add("--offline");
-        if (skipDevDependencies) {
-            args.add("--groups");
-            args.add("dependencies");
+    private JSONObject fetchNpmAuditJson(File dependencyDirectory, boolean skipDevDependencies)
+            throws AnalysisException {
+        try {
+            final List<String> args = new ArrayList<>();
+            args.add(npmPath);
+            args.add("audit");
+            if (skipDevDependencies) {
+                args.add("--omit=dev");
+            }
+            args.add("--json");
+            final ProcessBuilder builder = new ProcessBuilder(args);
+            builder.directory(dependencyDirectory);
+            final File tmpFile = getSettings().getTempFile("npm_audit_yarn", "json");
+            builder.redirectOutput(tmpFile);
+            LOGGER.debug("Launching: {}", args);
+            return getJsonObject(builder.start(), tmpFile);
+        } catch (IOException ioe) {
+            throw new AnalysisException("npm audit failure; this error can be ignored if you are not analyzing "
+                    + "projects with a yarn lockfile.", ioe);
         }
-        args.add("--json");
-        args.add("--verbose");
-        final ProcessBuilder builder = new ProcessBuilder(args);
-        builder.directory(dependencyDirectory);
-        LOGGER.debug("Launching: {}", args);
+    }
 
-        final String verboseJson = startAndReadStdoutToString(builder);
-        final String auditRequestJson = Arrays.stream(verboseJson.split("\n"))
-                .filter(line -> line.contains("Audit Request"))
-                .findFirst()
-                .orElseThrow(() -> new AnalysisException("No results from Yarn Classic (offline step) - possibly trying to use classic analyzer on Yarn Berry lockfile"));
-        String auditRequest;
-        try (JsonReader reader = Json.createReader(IOUtils.toInputStream(auditRequestJson, StandardCharsets.UTF_8))) {
-            final JsonObject jsonObject = reader.readObject();
-            auditRequest = jsonObject.getString("data");
-            auditRequest = auditRequest.substring(15);
+    private static @NonNull JSONObject getJsonObject(Process process, File tmpFile) throws IOException, AnalysisException {
+        try (ProcessReader processReader = new ProcessReader(process)) {
+            processReader.readAll();
+            final String errOutput = processReader.getError();
+            if (!StringUtils.isBlank(errOutput)) {
+                LOGGER.debug("Process {} produced an error output: {}", process.info().command(), errOutput);
+            }
+            final String verboseJson = Files.readString(tmpFile.toPath());
+            LOGGER.debug("Audit report: {}", verboseJson);
+            return new JSONObject(verboseJson);
+        } catch (InterruptedException ex) {
+            Thread.currentThread().interrupt();
+            throw new AnalysisException("npm audit process was interrupted.", ex);
+        } catch (JSONException e) {
+            throw new AnalysisException("npm audit returned an invalid response.", e);
+        } finally {
+            Files.delete(tmpFile.toPath());
         }
-        LOGGER.debug("Audit Request: {}", auditRequest);
-
-        return Json.createReader(IOUtils.toInputStream(auditRequest, StandardCharsets.UTF_8)).readObject();
     }
 
     private static File getDependencyDirectory(File lockFile) {
@@ -294,49 +314,18 @@ public class YarnAuditAnalyzer extends AbstractNpmAnalyzer {
         return folder;
     }
 
-    /**
-     * Analyzes the package and yarn lock files by extracting dependency
-     * information, creating a payload to submit to the npm audit API,
-     * submitting the payload, and returning the identified advisories.
-     *
-     * @param lockFile a reference to the package-lock.json
-     * @param dependency a reference to the dependency-object for the yarn.lock
-     * @param dependencyMap a collection of module/version pairs; during
-     * creation of the payload the dependency map is populated with the
-     * module/version information.
-     * @return a list of advisories
-     * @throws AnalysisException thrown when there is an error creating or
-     * submitting the npm audit API payload
-     */
-    private List<Advisory> analyzePackageWithYarnClassic(final File lockFile, Dependency dependency,
-                                                         MultiValuedMap<String, String> dependencyMap)
+    private List<Advisory> analyzePackageWithYarnClassic(final File lockFile, Dependency dependency)
             throws AnalysisException {
         try {
-            final boolean skipDevDependencies = getSettings().getBoolean(Settings.KEYS.ANALYZER_NODE_AUDIT_SKIPDEV, false);
-            // Retrieves the contents of package-lock.json from the Dependency
-            final JsonObject lockJson = fetchYarnAuditJson(getDependencyDirectory(lockFile), skipDevDependencies);
-            // Retrieves the contents of package-lock.json from the Dependency
-            final JsonObject packageJson;
-            try (JsonReader packageReader = Json.createReader(Files.newInputStream(lockFile.getParentFile().toPath().resolve("package.json")))) {
-                packageJson = packageReader.readObject();
+            final boolean skipDevDependencies =
+                getSettings().getBoolean(Settings.KEYS.ANALYZER_NODE_AUDIT_SKIPDEV, false);
+            final JSONObject auditJson = fetchNpmAuditJson(getDependencyDirectory(lockFile), skipDevDependencies);
+            if (auditJson.optInt("auditReportVersion", 1) >= 2) {
+                return new NpmAuditV2Parser().parse(auditJson, getDependencyDirectory(lockFile));
             }
-            // Modify the payload to meet the NPM Audit API requirements
-            final JsonObject payload = NpmPayloadBuilder.build(lockJson, packageJson, dependencyMap, skipDevDependencies);
-
-            // Submits the package payload to the nsp check service
-            return getSearcher().submitPackage(payload);
-
-        } catch (URLConnectionFailureException e) {
-            this.setEnabled(false);
-            throw new AnalysisException("Failed to connect to the NPM Audit API (YarnAuditAnalyzer); the analyzer "
-                    + "is being disabled and may result in false negatives.", e);
-        } catch (IOException e) {
-            LOGGER.debug("Error reading dependency or connecting to NPM Audit API", e);
-            this.setEnabled(false);
-            throw new AnalysisException("Failed to read results from the NPM Audit API (YarnAuditAnalyzer); "
-                    + "the analyzer is being disabled and may result in false negatives.", e);
-        } catch (JsonException e) {
-            throw new AnalysisException(String.format("Failed to parse %s file from the NPM Audit API "
+            return new NpmAuditParser().parse(auditJson);
+        } catch (JSONException e) {
+            throw new AnalysisException(String.format("Failed to parse npm audit output for %s "
                     + "(YarnAuditAnalyzer).", lockFile.getPath()), e);
         } catch (SearchException ex) {
             LOGGER.error("YarnAuditAnalyzer failed on {}", dependency.getActualFilePath());
@@ -408,7 +397,7 @@ public class YarnAuditAnalyzer extends AbstractNpmAnalyzer {
             final var moduleName = advisoryJson.optString("value", null);
             final var id = object.get("ID");
             final var url = object.optString("URL", null);
-            final var ghsaId = extractGhsaId(url);
+            final var ghsaId = NpmAuditV2Parser.extractGhsaId(url);
             final var issue = object.optString("Issue", null);
             final var severity = object.optString("Severity", null);
             final var vulnerableVersions = object.optString("Vulnerable Versions", null);
@@ -436,14 +425,4 @@ public class YarnAuditAnalyzer extends AbstractNpmAnalyzer {
         return advisories;
     }
 
-    private static String extractGhsaId(String url) {
-        if (url == null || url.isEmpty()) {
-            return null;
-        }
-        final int lastSlashIndex = url.lastIndexOf('/');
-        if (lastSlashIndex == -1 || lastSlashIndex == url.length() - 1) {
-            return null;
-        }
-        return url.substring(lastSlashIndex + 1);
-    }
 }
