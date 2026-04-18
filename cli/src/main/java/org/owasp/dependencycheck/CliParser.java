@@ -535,7 +535,7 @@ public final class CliParser {
                 .addOption(newOption(ARGUMENT.DISABLE_SWIFT, "Disable the swift package Analyzer."))
                 .addOption(newOption(ARGUMENT.DISABLE_SWIFT_RESOLVED, "Disable the swift package resolved Analyzer."))
                 .addOption(newOption(ARGUMENT.DISABLE_GO_DEP, "Disable the Golang Package Analyzer."))
-                .addOption(newOption(ARGUMENT.DISABLE_NODE_JS, "Disable the Node.js Package Analyzer."))
+                .addOption(newOption(ARGUMENT.DISABLE_NODE_JS, "Disable the Node Package Analyzer."))
                 .addOption(newOption(ARGUMENT.NODE_PACKAGE_SKIP_DEV_DEPENDENCIES, "Configures the Node Package Analyzer to skip devDependencies"))
                 .addOption(newOption(ARGUMENT.DISABLE_NODE_AUDIT, "Disable the Node Audit Analyzer."))
                 .addOption(newOption(ARGUMENT.DISABLE_PNPM_AUDIT, "Disable the Pnpm Audit Analyzer."))
@@ -1475,7 +1475,7 @@ public final class CliParser {
          */
         public static final String DISABLE_OPENSSL = "disableOpenSSL";
         /**
-         * Disables the Node.js Package Analyzer.
+         * Disables the Node Package Analyzer.
          */
         public static final String DISABLE_NODE_JS = "disableNodeJS";
         /**

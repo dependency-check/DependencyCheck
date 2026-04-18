@@ -67,7 +67,7 @@ public class Check extends Update {
      */
     private Boolean rubygemsAnalyzerEnabled;
     /**
-     * Whether or not the Node.js Analyzer is enabled.
+     * Whether or not the Node Package Analyzer is enabled.
      */
     private Boolean nodeAnalyzerEnabled;
     /**

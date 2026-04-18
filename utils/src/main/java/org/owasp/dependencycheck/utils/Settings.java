@@ -411,7 +411,7 @@ public final class Settings {
          */
         public static final String ANALYZER_ARCHIVE_ENABLED = "analyzer.archive.enabled";
         /**
-         * The properties key for whether the node.js package analyzer is
+         * The properties key for whether the node package analyzer is
          * enabled.
          */
         public static final String ANALYZER_NODE_PACKAGE_ENABLED = "analyzer.node.package.enabled";

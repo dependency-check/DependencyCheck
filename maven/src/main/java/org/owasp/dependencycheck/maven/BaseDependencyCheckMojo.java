@@ -553,7 +553,7 @@ public abstract class BaseDependencyCheckMojo extends AbstractMojo implements Ma
     @Parameter(property = "cpanfileAnalyzerEnabled")
     private Boolean cpanfileAnalyzerEnabled;
     /**
-     * Sets whether or not the Node.js Analyzer should be used.
+     * Sets whether or not the Node Package Analyzer should be used.
      */
     @SuppressWarnings("CanBeFinal")
     @Parameter(property = "nodeAnalyzerEnabled")
@@ -599,7 +599,7 @@ public abstract class BaseDependencyCheckMojo extends AbstractMojo implements Ma
     @Parameter(property = "nodeAuditSkipDevDependencies")
     private Boolean nodeAuditSkipDevDependencies;
     /**
-     * Sets whether or not the Node.js Analyzer should skip devDependencies.
+     * Sets whether or not the Node Package Analyzer should skip devDependencies.
      */
     @SuppressWarnings("CanBeFinal")
     @Parameter(property = "nodePackageSkipDevDependencies")

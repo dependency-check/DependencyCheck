@@ -75,7 +75,7 @@ public class NodePackageAnalyzer extends AbstractNpmAnalyzer {
     /**
      * The name of the analyzer.
      */
-    private static final String ANALYZER_NAME = "Node.js Package Analyzer";
+    private static final String ANALYZER_NAME = "Node Package Analyzer";
     /**
      * The phase that this analyzer is intended to run in.
      */
