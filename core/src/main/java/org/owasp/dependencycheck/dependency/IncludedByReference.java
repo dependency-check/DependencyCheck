@@ -18,6 +18,7 @@
 package org.owasp.dependencycheck.dependency;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 /**
  * POJO to store a reference to the "included by" node in a dependency tree;
@@ -70,4 +71,15 @@ public class IncludedByReference implements Serializable {
         return type;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof IncludedByReference)) return false;
+        IncludedByReference that = (IncludedByReference) o;
+        return Objects.equals(reference, that.reference) && Objects.equals(type, that.type);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(reference, type);
+    }
 }

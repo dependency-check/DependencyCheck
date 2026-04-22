@@ -104,9 +104,7 @@ public class Dependency extends EvidenceCollection implements Serializable {
     private final SortedSet<Dependency> relatedDependencies = new TreeSet<>(Dependency.NAME_COMPARATOR);
     /**
      * The set of dependencies that included this dependency (i.e., this is a
-     * transitive dependency because it was included by X). This is a pair where
-     * the left element is the includedBy and the right element is the type
-     * (e.g. buildEnv, plugins).
+     * transitive dependency because it was included by X).
      */
     private final Set<IncludedByReference> includedBy = new HashSet<>();
     /**
