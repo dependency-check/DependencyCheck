@@ -30,6 +30,8 @@ import java.io.File;
 import java.util.HashSet;
 import java.util.Set;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.contains;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -287,5 +289,24 @@ class DependencyTest extends BaseTest {
         assertFalse(instance.getSoftwareIdentifiers().isEmpty());
 
         instance.getSoftwareIdentifiers().forEach((i) -> assertNotNull(i.getUrl()));
+    }
+
+    @Test
+    void sortsProjectReferences() {
+        Dependency instance = new Dependency();
+        instance.addAllProjectReferences(Set.of("c", "b", "a"));
+        assertThat(instance.getProjectReferencesSorted(), contains("a", "b", "c"));
+    }
+
+    @Test
+    void sortsIncludedByReferences() {
+        Dependency instance = new Dependency();
+        IncludedByReference ref1 = new IncludedByReference("ref1", null);
+        IncludedByReference ref1Typed = new IncludedByReference("ref1", "type1");
+        IncludedByReference ref2 = new IncludedByReference("ref2", null);
+        IncludedByReference ref2Typed = new IncludedByReference("ref2", "type1");
+        IncludedByReference ref1OtherType = new IncludedByReference("ref1", "type2");
+        instance.addAllIncludedBy(Set.of(ref1, ref1Typed, ref1OtherType, ref2, ref2Typed));
+        assertThat(instance.getIncludedBySorted(), contains(ref1, ref2, ref1Typed, ref2Typed, ref1OtherType));
     }
 }

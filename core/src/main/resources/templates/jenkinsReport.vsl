@@ -521,23 +521,24 @@ Getting Help: <a href="https://github.com/dependency-check/DependencyCheck/issue
                             <b>SHA1:</b>&nbsp;$enc.html($dependency.Sha1sum)<br/>
                             <b>SHA256:</b>$enc.html($dependency.Sha256sum)
                             #end
-                            #if ($dependency.projectReferences.size()==1)
-                                <br/><b>Referenced In Project/Scope:</b> $enc.html($dependency.projectReferences.iterator().next())
+                            #set($projectReferences = $dependency.projectReferencesSorted)
+                            #if ($projectReferences.size()==1)
+                                <br/><b>Referenced In Project/Scope:</b> $enc.html($projectReferences.first())
                             #end
-                            #if ($dependency.projectReferences.size()>1)
+                            #if ($projectReferences.size()>1)
                                 <br/><b>Referenced In Projects/Scopes:</b><ul>
-                                #foreach($ref in $dependency.projectReferences)
+                                #foreach($ref in $projectReferences)
                                     <li>$enc.html($ref)</li>
                                 #end
                                 </ul>
                             #end
-                            #if ($dependency.includedBy && $dependency.includedBy.size()==1)
-                                #set($incBy=$dependency.includedBy.iterator().next())
-                                <br/><span class="tooltip"><span class="tooltiptext">$enc.html($dependency.DisplayFileName) is in the transitive dependency tree of the listed items.</span><b>Included by:</b></span> $enc.html($incBy.getReference())#if($incBy.getType()) ($enc.html($incBy.getType()))#end
+                            #set($includedBy = $dependency.includedBySorted)
+                            #if ($includedBy.size()==1)
+                                <br/><span class="tooltip"><span class="tooltiptext">$enc.html($dependency.DisplayFileName) is in the transitive dependency tree of the listed items.</span><b>Included by:</b></span> $enc.html($includedBy.first().getReference())#if($includedBy.first().getType()) ($enc.html($includedBy.first().getType()))#end
                             #end
-                            #if ($dependency.includedBy && $dependency.includedBy.size()>1)
+                            #if ($includedBy.size()>1)
                                 <br/><span class="tooltip"><span class="tooltiptext">$enc.html($dependency.DisplayFileName) is in the transitive dependency tree of the listed items.</span><b>Included by:</b></span><ul>
-                                #foreach($parent in $dependency.includedBy)
+                                #foreach($parent in $includedBy)
                                     <li>$enc.html($parent.getReference())#if($parent.getType()) ($enc.html($parent.getType()))#end</li>
                                 #end
                                 </ul>

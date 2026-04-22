@@ -19,6 +19,7 @@ package org.owasp.dependencycheck.dependency;
 
 import com.github.packageurl.MalformedPackageURLException;
 import com.github.packageurl.PackageURL;
+import com.google.common.collect.ImmutableSortedSet;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.owasp.dependencycheck.data.nexus.MavenArtifact;
@@ -796,7 +797,17 @@ public class Dependency extends EvidenceCollection implements Serializable {
      * @return the unmodifiable set of includedBy
      */
     public synchronized Set<IncludedByReference> getIncludedBy() {
-        return Collections.unmodifiableSet(new HashSet<>(includedBy));
+        return Set.copyOf(includedBy);
+    }
+
+    /**
+     * Get the unmodifiable set of includedBy (the list of parents of this
+     * transitive dependency), sorted by natural comparator.
+     *
+     * @return the unmodifiable set of includedBy, sorted
+     */
+    public synchronized SortedSet<IncludedByReference> getIncludedBySorted() {
+        return ImmutableSortedSet.copyOf(includedBy);
     }
 
     /**
@@ -835,7 +846,16 @@ public class Dependency extends EvidenceCollection implements Serializable {
      * @return the unmodifiable set of projectReferences
      */
     public synchronized Set<String> getProjectReferences() {
-        return Collections.unmodifiableSet(new HashSet<>(projectReferences));
+        return Set.copyOf(projectReferences);
+    }
+
+    /**
+     * Get the unmodifiable set of projectReferences, sorted by natural comparator.
+     *
+     * @return the unmodifiable set of projectReferences, sorted
+     */
+    public synchronized SortedSet<String> getProjectReferencesSorted() {
+        return ImmutableSortedSet.copyOf(projectReferences);
     }
 
     /**
@@ -895,7 +915,7 @@ public class Dependency extends EvidenceCollection implements Serializable {
      * @return the value of availableVersions
      */
     public synchronized List<String> getAvailableVersions() {
-        return Collections.unmodifiableList(new ArrayList<>(availableVersions));
+        return List.copyOf(availableVersions);
     }
 
     /**

@@ -88,16 +88,18 @@ Copyright (c) 2018 Jeremy Long. All Rights Reserved.
 #if ($dependency.license)
             <license>$enc.xml($dependency.license)</license>
 #end
-#if ($dependency.projectReferences.size()>0)
+#set($projectReferences = $dependency.projectReferencesSorted)
+#if ($projectReferences.size()>0)
             <projectReferences>
-#foreach($ref in $dependency.projectReferences)
+#foreach($ref in $projectReferences)
                 <projectReference>$enc.xml($ref)</projectReference>
 #end
             </projectReferences>
 #end
-#if ($dependency.includedBy.size()>0)
+#set($includedBy = $dependency.includedBySorted)
+#if ($includedBy.size()>0)
             <includedBy>
-#foreach($ref in $dependency.includedBy)
+#foreach($ref in $includedBy)
                 <reference#if($ref.getType()) type="$enc.xml($ref.getType())"#end>$enc.xml($ref.getReference())</reference>
 #end
             </includedBy>
