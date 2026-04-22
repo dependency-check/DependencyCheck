@@ -2112,4 +2112,11 @@ only pkg:maven/org.clojure:clojure@.* is the CPE cpe:/a:clojure:clojure
     <packageUrl regex="true">^pkg:maven/org\.eclipse\.platform/org\.eclipse\.equinox\.cm@.*$</packageUrl>
     <cpe>cpe:/a:eclipse:platform</cpe>
 </suppress>
+<suppress base="true">
+    <notes><![CDATA[
+    FP per issue #8441
+    ]]></notes>
+    <packageUrl regex="true">^pkg:maven/org\.eclipse\.angus/angus-activation@.*$</packageUrl>
+    <cpe>cpe:/a:eclipse:jakarta_mail</cpe>
+</suppress>
 </suppressions>
