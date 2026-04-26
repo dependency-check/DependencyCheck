@@ -57,6 +57,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -99,16 +100,6 @@ public class OssIndexAnalyzer extends AbstractAnalyzer {
      * Lock to protect fetching state.
      */
     private static final Object FETCH_MUTEX = new Object();
-
-    /**
-     * Known mappings of HTTP error codes to user messages
-     */
-    static final Map<Integer, String> OSSINDEX_KNOWN_USER_ERRORS = Map.of(
-            SC_UNAUTHORIZED, "has invalid credentials",
-            SC_FORBIDDEN, "access forbidden",
-            SC_TOO_MANY_REQUESTS, "rate limit exceeded",
-            SC_PAYMENT_REQUIRED, "credits insufficient / payment required"
-    );
 
     @Override
     public String getName() {
@@ -181,25 +172,24 @@ public class OssIndexAnalyzer extends AbstractAnalyzer {
     protected void analyzeDependency(final Dependency dependency, final Engine engine) throws AnalysisException {
         // batch request component-reports for all dependencies
         synchronized (FETCH_MUTEX) {
-            if (reports == null) {
+            if (reports == null && isEnabled()) {
                 try {
                     requestDelay();
                     reports = requestReports(engine.getDependencies());
                 } catch (SocketTimeoutException e) {
-                    this.setEnabled(false);
                     if (getSettings().getBoolean(KEYS.ANALYZER_OSSINDEX_WARN_ONLY_ON_REMOTE_ERRORS, false)) {
-                        LOG.warn("Sonatype OSS Index / Guide socket timeout, disabling the analyzer", e);
+                        LOG.warn("Sonatype OSS Index / Guide socket timeout", e);
                     } else {
                         throw new AnalysisException("Failed to establish socket to Sonatype OSS Index / Guide", e);
                     }
                 } catch (Exception ex) {
-                    this.setEnabled(false);
-
-                    String logMessage = OSSINDEX_KNOWN_USER_ERRORS.keySet().stream()
-                            .filter(statusCode -> ex.toString().contains(Integer.toString(statusCode)))
-                            .map(statusCode -> String.format("Sonatype OSS Index / Guide %s, disabling the analyzer.", OSSINDEX_KNOWN_USER_ERRORS.get(statusCode)))
+                    OssIndexKnownError error = Arrays.stream(OssIndexKnownError.values())
+                            .filter(e -> e.matches(ex))
                             .findFirst()
-                            .orElseGet(() -> String.format("Sonatype OSS Index / Guide request had unknown fatal error, disabling the analyzer. %s", ex.getMessage()));
+                            .orElse(OssIndexKnownError.Unknown);
+
+                    this.setEnabled(!error.fatal);
+                    String logMessage = error.errorMessage(ex);
 
                     if (getSettings().getBoolean(KEYS.ANALYZER_OSSINDEX_WARN_ONLY_ON_REMOTE_ERRORS, false)) {
                         LOG.warn(logMessage);
@@ -214,7 +204,6 @@ public class OssIndexAnalyzer extends AbstractAnalyzer {
                 enrich(dependency);
             }
         }
-
     }
 
     /**
@@ -225,8 +214,12 @@ public class OssIndexAnalyzer extends AbstractAnalyzer {
         final int delay = getSettings().getInt(Settings.KEYS.ANALYZER_OSSINDEX_REQUEST_DELAY, 0);
         if (delay > 0) {
             LOG.debug("Request delay: {}", delay);
-            TimeUnit.SECONDS.sleep(delay);
+            sleepSeconds(delay);
         }
+    }
+
+    void sleepSeconds(int delay) throws InterruptedException {
+        TimeUnit.SECONDS.sleep(delay);
     }
 
     /**
@@ -272,6 +265,45 @@ public class OssIndexAnalyzer extends AbstractAnalyzer {
         }
         LOG.warn("Unable to determine Package-URL identifiers for {} dependencies", dependencies.length);
         return Collections.emptyMap();
+    }
+
+    /**
+     * Known mappings of HTTP error codes to user messages
+     */
+    enum OssIndexKnownError {
+        Unauthorized(SC_UNAUTHORIZED, "has invalid credentials", true),
+        Forbidden(SC_FORBIDDEN, "access forbidden", true),
+        TooManyRequests(SC_TOO_MANY_REQUESTS, "rate limit exceeded", false),
+        InsufficientCredits(SC_PAYMENT_REQUIRED, "credits insufficient / payment required", true),
+        Unknown(999, "had unknown error", false, Exception::getMessage);
+
+        final int statusCode;
+        final String userMessage;
+        final boolean fatal;
+        final Function<Exception, String> messageSuffix;
+
+        OssIndexKnownError(int statusCode, String userMessage, boolean fatal) {
+            this(statusCode, userMessage, fatal, ex -> "");
+        }
+
+        OssIndexKnownError(int statusCode, String userMessage, boolean fatal, Function<Exception, String> messageSuffix) {
+            this.statusCode = statusCode;
+            this.userMessage = userMessage;
+            this.fatal = fatal;
+            this.messageSuffix = messageSuffix;
+        }
+
+        private String errorMessage(Exception ex) {
+            return String.format("Sonatype OSS Index / Guide %s%s. %s",
+                    userMessage,
+                    fatal ? ", disabling the analyzer" : "",
+                    messageSuffix.apply(ex)
+            ).trim();
+        }
+
+        private boolean matches(Exception ex) {
+            return ex.toString().contains(Integer.toString(statusCode));
+        }
     }
 
     /**

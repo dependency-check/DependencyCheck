@@ -1,22 +1,21 @@
 package org.owasp.dependencycheck.analyzer;
 
-import org.apache.hc.core5.http.HttpStatus;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.owasp.dependencycheck.BaseTest;
 import org.owasp.dependencycheck.Engine;
 import org.owasp.dependencycheck.analyzer.exception.AnalysisException;
+import org.owasp.dependencycheck.data.ossindex.OssIndexClientProvider;
 import org.owasp.dependencycheck.dependency.Confidence;
 import org.owasp.dependencycheck.dependency.Dependency;
 import org.owasp.dependencycheck.dependency.naming.Identifier;
 import org.owasp.dependencycheck.dependency.naming.PurlIdentifier;
 import org.owasp.dependencycheck.utils.Settings;
 import org.owasp.dependencycheck.utils.Settings.KEYS;
-
 import org.sonatype.goodies.packageurl.PackageUrl;
 import org.sonatype.ossindex.service.api.componentreport.ComponentReport;
 import org.sonatype.ossindex.service.client.OssindexClient;
@@ -32,7 +31,6 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
@@ -43,7 +41,12 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.owasp.dependencycheck.data.ossindex.OssIndexHelper.setLegacyOssIndexCredentials;
 import static org.owasp.dependencycheck.data.ossindex.OssIndexHelper.setSonatypeGuideCredentials;
@@ -89,8 +92,8 @@ class OssIndexAnalyzerTest extends BaseTest {
         }
 
         @ParameterizedTest
-        @MethodSource("org.owasp.dependencycheck.analyzer.OssIndexAnalyzerTest#handledErrorsPlusAnother")
-        void should_return_a_dedicated_error_messages_for_responses_where_possible(Map.Entry<Integer, String> statusCodeToDedicatedMessage) throws Exception {
+        @EnumSource(value = OssIndexAnalyzer.OssIndexKnownError.class)
+        void should_return_a_dedicated_error_messages_for_responses_where_possible(OssIndexAnalyzer.OssIndexKnownError knownError) throws Exception {
             // Given
             Settings settings = getSettings();
             setSonatypeGuideCredentials(settings);
@@ -102,17 +105,26 @@ class OssIndexAnalyzerTest extends BaseTest {
             Dependency dependency = addTestDependencyTo(engine);
 
             // When
-            try (engine; var ignored = withClientCreation(throwingOssIndex(new Transport.TransportException("Unexpected response; status: " + statusCodeToDedicatedMessage.getKey())))) {
+            try (engine; var clientProvider = withClientCreation(throwingOssIndex(new Transport.TransportException("Unexpected response; status: " + knownError.statusCode)))) {
                 Throwable e = assertThrows(AnalysisException.class, () -> analyzer.analyzeDependency(dependency, engine));
-                assertThat(e.getMessage(), containsString("Sonatype OSS Index / Guide " + statusCodeToDedicatedMessage.getValue()));
-                assertFalse(analyzer.isEnabled());
+                assertThat(e.getMessage(), containsString("Sonatype OSS Index / Guide " + knownError.userMessage));
+
+                if (!knownError.fatal) {
+                    assertTrue(analyzer.isEnabled());
+                } else {
+                    clientProvider.clearInvocations();
+                    assertDoesNotThrow(() -> analyzer.analyzeDependency(dependency, engine),
+                            "Analysis exception thrown but should have been a no-op from earlier fatal error");
+                    clientProvider.verifyNoInteractions();
+                    assertFalse(analyzer.isEnabled());
+                }
 
                 analyzer.setEnabled(true);
                 settings.setBoolean(Settings.KEYS.ANALYZER_OSSINDEX_WARN_ONLY_ON_REMOTE_ERRORS, true);
                 analyzer.initialize(settings);
                 assertDoesNotThrow(() -> analyzer.analyzeDependency(dependency, engine),
                         "Analysis exception thrown upon remote error although only a warning should have been logged");
-                assertFalse(analyzer.isEnabled());
+                assertThat(analyzer.isEnabled(), is(!knownError.fatal));
             }
         }
 
@@ -121,7 +133,6 @@ class OssIndexAnalyzerTest extends BaseTest {
             // Given
             Settings settings = getSettings();
             setSonatypeGuideCredentials(settings);
-            settings.setBoolean(Settings.KEYS.ANALYZER_OSSINDEX_WARN_ONLY_ON_REMOTE_ERRORS, false);
             Engine engine = new Engine(settings);
 
             analyzer.initialize(settings);
@@ -133,14 +144,52 @@ class OssIndexAnalyzerTest extends BaseTest {
             try (engine; var ignored = withClientCreation(throwingOssIndex(new SocketTimeoutException("Read timed out")))) {
                 Throwable e = assertThrows(AnalysisException.class, () -> analyzer.analyzeDependency(dependency, engine));
                 assertThat(e.getMessage(), is("Failed to establish socket to Sonatype OSS Index / Guide"));
-                assertFalse(analyzer.isEnabled());
+                assertTrue(analyzer.isEnabled());
 
                 analyzer.setEnabled(true);
                 settings.setBoolean(Settings.KEYS.ANALYZER_OSSINDEX_WARN_ONLY_ON_REMOTE_ERRORS, true);
                 analyzer.initialize(settings);
                 assertDoesNotThrow(() -> analyzer.analyzeDependency(dependency, engine),
                         "Analysis exception thrown upon remote error although only a warning should have been logged");
-                assertFalse(analyzer.isEnabled());
+                assertTrue(analyzer.isEnabled());
+            }
+        }
+
+        @Test
+        @SuppressWarnings("resource")
+        void should_retry_with_delay_non_fatal_errors() throws Exception {
+            // Given
+            analyzer = spy(new OssIndexAnalyzer());
+
+            Settings settings = getSettings();
+            setSonatypeGuideCredentials(settings);
+            Engine engine = new Engine(settings);
+
+            analyzer.initialize(settings);
+            analyzer.prepareAnalyzer(engine);
+
+            Dependency dependency = addTestDependencyTo(engine);
+
+            // When
+            SocketTimeoutException nonFatalError = new SocketTimeoutException("Read timed out");
+            try (engine; var clientProvider = withClientCreation(throwingOssIndex(nonFatalError))) {
+                assertThrows(AnalysisException.class, () -> analyzer.analyzeDependency(dependency, engine));
+                clientProvider.verify(() -> OssIndexClientProvider.create(settings));
+                assertTrue(analyzer.isEnabled());
+
+                // Retry with no delay
+                clientProvider.clearInvocations();
+                assertThrows(AnalysisException.class, () -> analyzer.analyzeDependency(dependency, engine));
+                assertTrue(analyzer.isEnabled());
+                clientProvider.verify(() -> OssIndexClientProvider.create(settings));
+                verify(analyzer, never()).sleepSeconds(anyInt());
+
+                // Except failure on delay due to bad value
+                clientProvider.clearInvocations();
+                settings.setInt(KEYS.ANALYZER_OSSINDEX_REQUEST_DELAY, 10);
+                doNothing().when(analyzer).sleepSeconds(anyInt());
+                assertThrows(AnalysisException.class, () -> analyzer.analyzeDependency(dependency, engine));
+                verify(analyzer).sleepSeconds(10);
             }
         }
     }
@@ -294,12 +343,5 @@ class OssIndexAnalyzerTest extends BaseTest {
         when(client.requestComponentReport(any())).thenThrow(exception1);
         when(client.requestComponentReports(any())).thenThrow(exception1);
         return client;
-    }
-
-    static Stream<Map.Entry<Integer, String>> handledErrorsPlusAnother() {
-        return Stream.concat(
-                OssIndexAnalyzer.OSSINDEX_KNOWN_USER_ERRORS.entrySet().stream(),
-                Stream.of(Map.entry(HttpStatus.SC_INTERNAL_SERVER_ERROR, "request had unknown fatal error"))
-        );
     }
 }
