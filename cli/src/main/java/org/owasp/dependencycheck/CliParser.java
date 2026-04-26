@@ -18,10 +18,6 @@
 package org.owasp.dependencycheck;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-
-import java.io.File;
-import java.io.FileNotFoundException;
-
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
@@ -35,6 +31,9 @@ import org.owasp.dependencycheck.utils.InvalidSettingException;
 import org.owasp.dependencycheck.utils.Settings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.File;
+import java.io.FileNotFoundException;
 
 /**
  * A utility to parse command line arguments for the DependencyCheck.
@@ -430,6 +429,8 @@ public final class CliParser {
                         "Credentials for basic auth towards the --centralUrl"))
                 .addOption(newOptionWithArg(ARGUMENT.CENTRAL_BEARER_TOKEN, "token",
                         "Token for bearer auth towards the --centralUrl"))
+                .addOption(newOptionWithArg(ARGUMENT.OSSINDEX_CACHE_VALID_FOR_HOURS, "hours",
+                        "The number of hours to wait before checking for new updates on individual packages/components from Sonatype OSS Index. The default is 24 hours."))
                 .addOption(newOptionWithArg(ARGUMENT.OSSINDEX_URL, "url",
                         "Alternative base URL for the OSS Index API. If not set the public Sonatype OSS Index API on Sonatype Guide will be used."))
                 .addOption(newOptionWithArg(ARGUMENT.OSSINDEX_USERNAME, "username",
@@ -1454,6 +1455,10 @@ public final class CliParser {
          * locally.
          */
         public static final String DISABLE_OSSINDEX_CACHE = "disableOssIndexCache";
+        /**
+         * The number of hours to wait before checking for new updates on individual packages/components from Sonatype OSS Index
+         */
+        public static final String OSSINDEX_CACHE_VALID_FOR_HOURS = "ossIndexCacheValidForHours";
         /**
          * The alternative URL for the Sonatype OSS Index.
          */

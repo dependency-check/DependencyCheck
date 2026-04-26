@@ -7,11 +7,9 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.mockito.MockedStatic;
 import org.owasp.dependencycheck.BaseTest;
 import org.owasp.dependencycheck.Engine;
 import org.owasp.dependencycheck.analyzer.exception.AnalysisException;
-import org.owasp.dependencycheck.data.ossindex.OssindexClientFactory;
 import org.owasp.dependencycheck.dependency.Confidence;
 import org.owasp.dependencycheck.dependency.Dependency;
 import org.owasp.dependencycheck.dependency.naming.Identifier;
@@ -46,8 +44,10 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
+import static org.owasp.dependencycheck.data.ossindex.OssIndexHelper.setLegacyOssIndexCredentials;
+import static org.owasp.dependencycheck.data.ossindex.OssIndexHelper.setSonatypeGuideCredentials;
+import static org.owasp.dependencycheck.data.ossindex.OssIndexHelper.withClientCreation;
 
 class OssIndexAnalyzerTest extends BaseTest {
 
@@ -145,13 +145,6 @@ class OssIndexAnalyzerTest extends BaseTest {
         }
     }
 
-    @SuppressWarnings("resource")
-    private static MockedStatic<OssindexClientFactory> withClientCreation(OssindexClient client) {
-        MockedStatic<OssindexClientFactory> mockedClient = mockStatic(OssindexClientFactory.class);
-        mockedClient.when(() -> OssindexClientFactory.create(any())).thenReturn(client);
-        return mockedClient;
-    }
-
     private static Dependency addTestDependencyTo(Engine engine) throws Exception {
         Dependency dependency = new Dependency();
         dependency.addSoftwareIdentifier(new PurlIdentifier("maven", "test", "test", "1.0", Confidence.HIGHEST));
@@ -235,17 +228,6 @@ class OssIndexAnalyzerTest extends BaseTest {
             engine.close();
             assertTrue(enabled);
         }
-    }
-
-    private static void setSonatypeGuideCredentials(final Settings settings) {
-        settings.setBoolean(KEYS.ANALYZER_OSSINDEX_ENABLED, true);
-        settings.setString(KEYS.ANALYZER_OSSINDEX_PASSWORD, "sonatype_pat_abcdef");
-    }
-
-    private static void setLegacyOssIndexCredentials(final Settings settings) {
-        settings.setBoolean(KEYS.ANALYZER_OSSINDEX_ENABLED, true);
-        settings.setString(KEYS.ANALYZER_OSSINDEX_USER, "user");
-        settings.setString(KEYS.ANALYZER_OSSINDEX_PASSWORD, "api-token");
     }
 
     /*

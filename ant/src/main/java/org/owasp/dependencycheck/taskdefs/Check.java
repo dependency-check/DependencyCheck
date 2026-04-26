@@ -17,13 +17,6 @@
  */
 package org.owasp.dependencycheck.taskdefs;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-import javax.annotation.concurrent.NotThreadSafe;
-
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.types.EnumeratedAttribute;
@@ -34,6 +27,7 @@ import org.apache.tools.ant.types.resources.FileProvider;
 import org.apache.tools.ant.types.resources.Resources;
 import org.owasp.dependencycheck.Engine;
 import org.owasp.dependencycheck.agent.DependencyCheckScanAgent;
+import org.owasp.dependencycheck.ant.logging.AntTaskHolder;
 import org.owasp.dependencycheck.data.nvdcve.DatabaseException;
 import org.owasp.dependencycheck.dependency.Dependency;
 import org.owasp.dependencycheck.dependency.Vulnerability;
@@ -46,7 +40,13 @@ import org.owasp.dependencycheck.utils.InvalidSettingException;
 import org.owasp.dependencycheck.utils.Settings;
 import org.owasp.dependencycheck.utils.SeverityUtil;
 import org.owasp.dependencycheck.utils.scarf.TelemetryCollector;
-import org.owasp.dependencycheck.ant.logging.AntTaskHolder;
+
+import javax.annotation.concurrent.NotThreadSafe;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 //CSOFF: MethodCount
 /**
@@ -358,7 +358,11 @@ public class Check extends Update {
     /**
      * Whether or not the Sonatype OSS Index analyzer should cache results.
      */
-    private Boolean ossindexAnalyzerUseCache;
+    private Boolean ossIndexAnalyzerUseCache;
+    /**
+     * The number of hours to wait before checking for new updates on individual packages/components from Sonatype OSS Index.
+     */
+    private Integer ossIndexAnalyzerCacheValidForHours;
     /**
      * URL of the Sonatype OSS Index service.
      */
@@ -1267,6 +1271,15 @@ public class Check extends Update {
      */
     public void setOssIndexAnalyzerUseCache(Boolean ossIndexAnalyzerUseCache) {
         this.ossIndexAnalyzerUseCache = ossIndexAnalyzerUseCache;
+    }
+
+    /**
+     * Set value of {@link #ossIndexAnalyzerCacheValidForHours}.
+     *
+     * @param ossIndexAnalyzerCacheValidForHours new value of ossIndexAnalyzerCacheValidForHours
+     */
+    public void setOssIndexAnalyzerCacheValidForHours(Integer ossIndexAnalyzerCacheValidForHours) {
+        this.ossIndexAnalyzerCacheValidForHours = ossIndexAnalyzerCacheValidForHours;
     }
 
     /**

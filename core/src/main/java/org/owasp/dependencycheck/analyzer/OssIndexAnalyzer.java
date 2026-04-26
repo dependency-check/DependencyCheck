@@ -20,18 +20,11 @@ package org.owasp.dependencycheck.analyzer;
 import io.github.jeremylong.openvulnerability.client.nvd.CvssV2;
 import io.github.jeremylong.openvulnerability.client.nvd.CvssV2Data;
 import io.github.jeremylong.openvulnerability.client.nvd.CvssV4;
+import org.apache.commons.lang3.StringUtils;
 import org.jspecify.annotations.NonNull;
-import org.sonatype.ossindex.service.api.componentreport.ComponentReport;
-import org.sonatype.ossindex.service.api.componentreport.ComponentReportVulnerability;
-import org.sonatype.ossindex.service.api.cvss.Cvss2Severity;
-import org.sonatype.ossindex.service.api.cvss.Cvss2Vector;
-import org.sonatype.ossindex.service.api.cvss.CvssVector;
-import org.sonatype.ossindex.service.api.cvss.CvssVectorFactory;
-import org.sonatype.ossindex.service.client.OssindexClient;
 import org.owasp.dependencycheck.Engine;
 import org.owasp.dependencycheck.analyzer.exception.AnalysisException;
-import org.owasp.dependencycheck.data.ossindex.OssindexClientFactory;
-
+import org.owasp.dependencycheck.data.ossindex.OssIndexClientProvider;
 import org.owasp.dependencycheck.dependency.Dependency;
 import org.owasp.dependencycheck.dependency.Vulnerability;
 import org.owasp.dependencycheck.dependency.VulnerableSoftware;
@@ -39,15 +32,25 @@ import org.owasp.dependencycheck.dependency.VulnerableSoftwareBuilder;
 import org.owasp.dependencycheck.dependency.naming.Identifier;
 import org.owasp.dependencycheck.dependency.naming.PurlIdentifier;
 import org.owasp.dependencycheck.exception.InitializationException;
+import org.owasp.dependencycheck.utils.CvssUtil;
 import org.owasp.dependencycheck.utils.Settings;
 import org.owasp.dependencycheck.utils.Settings.KEYS;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.sonatype.goodies.packageurl.InvalidException;
+import org.sonatype.goodies.packageurl.PackageUrl;
+import org.sonatype.ossindex.service.api.componentreport.ComponentReport;
+import org.sonatype.ossindex.service.api.componentreport.ComponentReportVulnerability;
+import org.sonatype.ossindex.service.api.cvss.Cvss2Severity;
+import org.sonatype.ossindex.service.api.cvss.Cvss2Vector;
+import org.sonatype.ossindex.service.api.cvss.CvssVector;
+import org.sonatype.ossindex.service.api.cvss.CvssVectorFactory;
+import org.sonatype.ossindex.service.client.OssindexClient;
 import us.springett.parsers.cpe.exceptions.CpeValidationException;
 import us.springett.parsers.cpe.values.Part;
 
-import org.sonatype.goodies.packageurl.PackageUrl;
-
+import javax.annotation.Nullable;
+import java.net.SocketTimeoutException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -55,14 +58,6 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import java.net.SocketTimeoutException;
-
-import javax.annotation.Nullable;
-
-import org.apache.commons.lang3.StringUtils;
-import org.owasp.dependencycheck.utils.CvssUtil;
-import org.sonatype.goodies.packageurl.InvalidException;
 
 import static java.util.stream.Collectors.toList;
 import static org.apache.hc.core5.http.HttpStatus.SC_FORBIDDEN;
@@ -189,9 +184,8 @@ public class OssIndexAnalyzer extends AbstractAnalyzer {
                     requestDelay();
                     reports = requestReports(engine.getDependencies());
                 } catch (SocketTimeoutException e) {
-                    final boolean warnOnly = getSettings().getBoolean(Settings.KEYS.ANALYZER_OSSINDEX_WARN_ONLY_ON_REMOTE_ERRORS, false);
                     this.setEnabled(false);
-                    if (warnOnly) {
+                    if (getSettings().getBoolean(KEYS.ANALYZER_OSSINDEX_WARN_ONLY_ON_REMOTE_ERRORS, false)) {
                         LOG.warn("Sonatype OSS Index / Guide socket timeout, disabling the analyzer", e);
                     } else {
                         throw new AnalysisException("Failed to establish socket to Sonatype OSS Index / Guide", e);
@@ -269,7 +263,7 @@ public class OssIndexAnalyzer extends AbstractAnalyzer {
         LOG.debug("Requesting component-reports for {} dependencies with {} unique Package-URL identifiers", dependencies.length, packages.size());
         // only attempt if we have been able to collect some packages
         if (!packages.isEmpty()) {
-            try (OssindexClient client = OssindexClientFactory.create(getSettings())) {
+            try (OssindexClient client = OssIndexClientProvider.create(getSettings())) {
                 LOG.debug("OSS Index Analyzer submitting: {}", packages);
                 return client.requestComponentReports(packages);
             }
