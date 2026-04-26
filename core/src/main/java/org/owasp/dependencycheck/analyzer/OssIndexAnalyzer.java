@@ -55,10 +55,12 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.toList;
 import static org.apache.hc.core5.http.HttpStatus.SC_FORBIDDEN;
 import static org.apache.hc.core5.http.HttpStatus.SC_PAYMENT_REQUIRED;
@@ -149,7 +151,7 @@ public class OssIndexAnalyzer extends AbstractAnalyzer {
                         "https://dependency-check.github.io/DependencyCheck/analyzers/oss-index-analyzer.html " +
                         "for more information on migration to Sonatype Guide.", getName());
             }
-            if (StringUtils.isEmpty(password()) || (StringUtils.isEmpty(user()) && passwordNotSonatypeGuideToken())) {
+            if (password().isEmpty() || (user().isEmpty() && passwordNotSonatypeGuideToken())) {
                 LOG.warn("{} disabled due to missing credentials. Authentication with token is now required, and OSS Index " +
                         "is migrating to Sonatype Guide. See https://dependency-check.github.io/DependencyCheck/analyzers/oss-index-analyzer.html " +
                         "for more information on authentication with Sonatype Guide OSS Index.", getName());
@@ -168,11 +170,11 @@ public class OssIndexAnalyzer extends AbstractAnalyzer {
     }
 
     private @NonNull String user() {
-        return getSettings().getString(KEYS.ANALYZER_OSSINDEX_USER, StringUtils.EMPTY);
+        return getSettings().getString(KEYS.ANALYZER_OSSINDEX_USER, "");
     }
 
     private @NonNull String password() {
-        return getSettings().getString(KEYS.ANALYZER_OSSINDEX_PASSWORD, StringUtils.EMPTY).trim();
+        return getSettings().getString(KEYS.ANALYZER_OSSINDEX_PASSWORD, "").trim();
     }
 
     @Override
@@ -222,7 +224,7 @@ public class OssIndexAnalyzer extends AbstractAnalyzer {
     private void requestDelay() throws InterruptedException {
         final int delay = getSettings().getInt(Settings.KEYS.ANALYZER_OSSINDEX_REQUEST_DELAY, 0);
         if (delay > 0) {
-            LOG.debug("Request delay: " + delay);
+            LOG.debug("Request delay: {}", delay);
             TimeUnit.SECONDS.sleep(delay);
         }
     }
@@ -290,7 +292,7 @@ public class OssIndexAnalyzer extends AbstractAnalyzer {
                     try {
                         final ComponentReport report = reports.get(purl);
                         if (report == null) {
-                            LOG.debug("Missing component-report for: " + purl);
+                            LOG.debug("Missing component-report for: {}", purl);
                             continue;
                         }
 
@@ -328,27 +330,7 @@ public class OssIndexAnalyzer extends AbstractAnalyzer {
     private Vulnerability transform(final ComponentReport report, final ComponentReportVulnerability source) {
         final Vulnerability result = new Vulnerability();
         result.setSource(Vulnerability.Source.OSSINDEX);
-
-        if (source.getCve() != null) {
-            result.setName(source.getCve());
-        } else {
-            String cve = null;
-            if (source.getTitle() != null) {
-                final Matcher matcher = CVE_PATTERN.matcher(source.getTitle());
-                if (matcher.find()) {
-                    cve = matcher.group();
-                } else {
-                    cve = source.getTitle();
-                }
-            }
-            if (cve == null && source.getReference() != null) {
-                final Matcher matcher = CVE_PATTERN.matcher(source.getReference().toString());
-                if (matcher.find()) {
-                    cve = matcher.group();
-                }
-            }
-            result.setName(cve != null ? cve : source.getId());
-        }
+        result.setName(nameFrom(source));
         result.setDescription(source.getDescription());
         result.addCwe(source.getCwe());
 
@@ -435,5 +417,21 @@ public class OssIndexAnalyzer extends AbstractAnalyzer {
         }
 
         return result;
+    }
+
+    private static String nameFrom(ComponentReportVulnerability vuln) {
+        return ofNullable(vuln.getCve())
+                .or(() -> ofNullable(vuln.getTitle()).map(title -> matchesCveRegex(title)
+                                .or(() -> ofNullable(vuln.getReference()).flatMap(reference -> matchesCveRegex(reference.toString())))
+                                .orElse(title)))
+                .orElse(vuln.getId());
+    }
+
+    private static Optional<String> matchesCveRegex(String value) {
+        final Matcher matcher = CVE_PATTERN.matcher(value);
+        if (matcher.find()) {
+            return Optional.of(matcher.group());
+        }
+        return Optional.empty();
     }
 }
