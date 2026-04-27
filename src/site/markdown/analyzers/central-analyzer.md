@@ -11,8 +11,8 @@ evidence, and the Version is collected as Version evidence.
 By default, this analyzer is disabled in the Maven Plugin and Gradle Task. However,
 if your Gradle build relies on scanning non-Gradle artifacts or archives from other
 ecosystems that contain jars, consider re-enabling the Central Analyzer using 
-`analyzers.centralEnabled=true`, or use the Nexus/Artifactory analyzers as an
-alternative to improve identification of JARs utilized outside the normal gradle
-Java plugin.
+`analyzers.centralEnabled=true`, or use the [Nexus](./nexus-analyzer.html)/[Artifactory](./artifactory-analyzer.html) 
+analyzers as an alternative to improve identification of JARs utilized outside the 
+normal Gradle Java plugin.
 
 [1]: http://search.maven.org/            "Maven Central"
