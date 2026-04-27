@@ -96,16 +96,11 @@ public class RubyBundleAuditAnalyzer extends AbstractFileTypeAnalyzer {
     public static final String CRITICALITY = "Criticality: ";
 
     /**
-     * The DAL.
-     */
-    private CveDB cvedb = null;
-
-    /**
      * If {@link #analyzeDependency(Dependency, Engine)} is called, then we have
      * successfully initialized, and it will be necessary to disable
      * {@link RubyGemspecAnalyzer}.
      */
-    private boolean needToDisableGemspecAnalyzer = true;
+    private volatile boolean needToDisableGemspecAnalyzer = true;
 
     /**
      * @return a filter that accepts files named Gemfile.lock
@@ -204,13 +199,9 @@ public class RubyBundleAuditAnalyzer extends AbstractFileTypeAnalyzer {
      */
     @Override
     public void prepareFileTypeAnalyzer(Engine engine) throws InitializationException {
-        if (engine != null) {
-            this.cvedb = engine.getDatabase();
-        }
         String bundleAuditVersionDetails;
         try {
-            final List<String> bundleAuditArgs = Collections.singletonList("version");
-            final Process process = launchBundleAudit(getSettings().getTempDirectory(), bundleAuditArgs);
+            final Process process = launchBundleAudit(getSettings().getTempDirectory(), List.of("version"));
             try (ProcessReader processReader = new ProcessReader(process)) {
                 processReader.readAll();
                 final String error = processReader.getError();
@@ -257,17 +248,10 @@ public class RubyBundleAuditAnalyzer extends AbstractFileTypeAnalyzer {
     @Override
     protected void analyzeDependency(Dependency dependency, Engine engine) throws AnalysisException {
         if (needToDisableGemspecAnalyzer) {
-            boolean failed = true;
-            final String className = RubyGemspecAnalyzer.class.getName();
             for (FileTypeAnalyzer analyzer : engine.getFileTypeAnalyzers()) {
-                if (analyzer instanceof RubyBundlerAnalyzer) {
-                    ((RubyBundlerAnalyzer) analyzer).setEnabled(false);
-                    LOGGER.info("Disabled {} to avoid noisy duplicate results.",
-                            RubyBundlerAnalyzer.class.getName());
-                } else if (analyzer instanceof RubyGemspecAnalyzer) {
+                if (analyzer instanceof RubyGemspecAnalyzer) {
                     ((RubyGemspecAnalyzer) analyzer).setEnabled(false);
-                    LOGGER.info("Disabled {} to avoid noisy duplicate results.", className);
-                    failed = false;
+                    LOGGER.info("Disabled {} to avoid noisy duplicate results.", analyzer.getName());
                 }
             }
             needToDisableGemspecAnalyzer = false;
