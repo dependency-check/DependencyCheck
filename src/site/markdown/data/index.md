@@ -23,6 +23,7 @@ Dependency-Check may contact the following external hosts depending on the enabl
 #### Methodology
 
 **Configurable / Proxyable** - can be configured directly within ODC to use an alternate URL, e.g some kind of caching/forwarding proxy (*️⃣ - may be possible via third-party tool configuration)
+
 **Mirrorable** - data source can be mirrored somewhere locally to completely avoid direct access (*️⃣ - requires alternate data source/analyzer)
 
 Some entries (such as NPM audit data) are accessed indirectly via ecosystem-specific analyzers or external CLI tools rather
