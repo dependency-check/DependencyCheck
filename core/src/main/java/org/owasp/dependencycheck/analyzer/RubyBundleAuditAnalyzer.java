@@ -17,16 +17,7 @@
  */
 package org.owasp.dependencycheck.analyzer;
 
-import java.io.File;
-import java.io.FileFilter;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import javax.annotation.concurrent.ThreadSafe;
 import org.apache.commons.lang3.StringUtils;
-
 import org.owasp.dependencycheck.Engine;
 import org.owasp.dependencycheck.analyzer.exception.AnalysisException;
 import org.owasp.dependencycheck.data.nvd.ecosystem.Ecosystem;
@@ -35,11 +26,20 @@ import org.owasp.dependencycheck.dependency.Dependency;
 import org.owasp.dependencycheck.exception.InitializationException;
 import org.owasp.dependencycheck.processing.BundlerAuditProcessor;
 import org.owasp.dependencycheck.utils.FileFilterBuilder;
-import org.owasp.dependencycheck.utils.processing.ProcessReader;
 import org.owasp.dependencycheck.utils.Settings;
+import org.owasp.dependencycheck.utils.processing.ProcessReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import us.springett.parsers.cpe.exceptions.CpeValidationException;
+
+import javax.annotation.concurrent.ThreadSafe;
+import java.io.File;
+import java.io.FileFilter;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Used to analyze Ruby Bundler Gemspec.lock files utilizing the 3rd party
@@ -214,7 +214,7 @@ public class RubyBundleAuditAnalyzer extends AbstractFileTypeAnalyzer {
             try (ProcessReader processReader = new ProcessReader(process)) {
                 processReader.readAll();
                 final String error = processReader.getError();
-                if (error != null) {
+                if (!StringUtils.isBlank(error)) {
                     LOGGER.warn("Warnings from bundle-audit {}", error);
                 }
                 bundleAuditVersionDetails = processReader.getOutput();
@@ -281,7 +281,7 @@ public class RubyBundleAuditAnalyzer extends AbstractFileTypeAnalyzer {
 
             processReader.readAll();
             final String error = processReader.getError();
-            if (StringUtils.isNoneBlank(error)) {
+            if (StringUtils.isNotBlank(error)) {
                 LOGGER.warn("Warnings from bundle-audit {}", error);
             }
             final int exitValue = process.exitValue();
