@@ -76,23 +76,6 @@
     </suppress>
     <suppress base="true">
         <notes><![CDATA[
-            only log4j-core is vulnerable
-            ]]></notes>
-        <packageUrl regex="true">^pkg:maven/org\.apache\.logging\.log4j/log4j\-slf4j\-impl@.*$</packageUrl>
-        <cpe>cpe:/a:apache:log4j</cpe>
-    </suppress>
-    <suppress base="true">
-        <notes><![CDATA[
-            only log4j-core is vulnerable
-            ]]></notes>
-        <packageUrl regex="true">^pkg:maven/org\.apache\.logging\.log4j/log4j\-(api|web)@.*$</packageUrl>
-        <cve>CVE-2021-44228</cve>
-        <cve>CVE-2021-44832</cve>
-        <cve>CVE-2021-45046</cve>
-        <cve>CVE-2021-45105</cve>
-    </suppress>
-    <suppress base="true">
-        <notes><![CDATA[
 	    FP per #3778
 	    ]]></notes>
         <packageUrl regex="true">.*unicode.*$</packageUrl>
@@ -1042,13 +1025,6 @@
         ]]></notes>
         <packageUrl regex="true">^pkg:maven/com\.typesafe\.play/shaded\-oauth@.*$</packageUrl>
         <cpe>cpe:/a:playframework:play_framework</cpe>
-    </suppress>
-    <suppress base="true">
-        <notes><![CDATA[
-        FP per #2703
-        ]]></notes>
-        <packageUrl regex="true">^pkg:maven/org\.slf4j/log4j\-over\-slf4j@.*$</packageUrl>
-        <cpe>cpe:/a:apache:log4j</cpe>
     </suppress>
     <suppress base="true">
         <notes><![CDATA[
@@ -4045,13 +4021,6 @@
         ]]></notes>
         <packageUrl regex="true">^pkg:maven/nginx\-clojure/nginx\-clojure@.*$</packageUrl>
         <cpe>cpe:/a:nginx:nginx</cpe>
-    </suppress>
-    <suppress base="true">
-        <notes><![CDATA[
-        False positive as per #3868
-        ]]></notes>
-        <packageUrl regex="true">^pkg:maven/org\.apache\.logging\.log4j/log4j\-to\-slf4j@.*$</packageUrl>
-        <cpe>cpe:/a:apache:log4j</cpe>
     </suppress>
     <suppress base="true">
         <notes><![CDATA[
