@@ -20,19 +20,11 @@ package org.owasp.dependencycheck.analyzer;
 import io.github.jeremylong.openvulnerability.client.nvd.CvssV2;
 import io.github.jeremylong.openvulnerability.client.nvd.CvssV2Data;
 import io.github.jeremylong.openvulnerability.client.nvd.CvssV4;
-import org.apache.commons.lang3.Strings;
+import org.apache.commons.lang3.StringUtils;
 import org.jspecify.annotations.NonNull;
-import org.sonatype.ossindex.service.api.componentreport.ComponentReport;
-import org.sonatype.ossindex.service.api.componentreport.ComponentReportVulnerability;
-import org.sonatype.ossindex.service.api.cvss.Cvss2Severity;
-import org.sonatype.ossindex.service.api.cvss.Cvss2Vector;
-import org.sonatype.ossindex.service.api.cvss.CvssVector;
-import org.sonatype.ossindex.service.api.cvss.CvssVectorFactory;
-import org.sonatype.ossindex.service.client.OssindexClient;
 import org.owasp.dependencycheck.Engine;
 import org.owasp.dependencycheck.analyzer.exception.AnalysisException;
-import org.owasp.dependencycheck.data.ossindex.OssindexClientFactory;
-
+import org.owasp.dependencycheck.data.ossindex.OssIndexClientProvider;
 import org.owasp.dependencycheck.dependency.Dependency;
 import org.owasp.dependencycheck.dependency.Vulnerability;
 import org.owasp.dependencycheck.dependency.VulnerableSoftware;
@@ -40,31 +32,41 @@ import org.owasp.dependencycheck.dependency.VulnerableSoftwareBuilder;
 import org.owasp.dependencycheck.dependency.naming.Identifier;
 import org.owasp.dependencycheck.dependency.naming.PurlIdentifier;
 import org.owasp.dependencycheck.exception.InitializationException;
+import org.owasp.dependencycheck.utils.CvssUtil;
 import org.owasp.dependencycheck.utils.Settings;
 import org.owasp.dependencycheck.utils.Settings.KEYS;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.sonatype.goodies.packageurl.InvalidException;
+import org.sonatype.goodies.packageurl.PackageUrl;
+import org.sonatype.ossindex.service.api.componentreport.ComponentReport;
+import org.sonatype.ossindex.service.api.componentreport.ComponentReportVulnerability;
+import org.sonatype.ossindex.service.api.cvss.Cvss2Severity;
+import org.sonatype.ossindex.service.api.cvss.Cvss2Vector;
+import org.sonatype.ossindex.service.api.cvss.CvssVector;
+import org.sonatype.ossindex.service.api.cvss.CvssVectorFactory;
+import org.sonatype.ossindex.service.client.OssindexClient;
 import us.springett.parsers.cpe.exceptions.CpeValidationException;
 import us.springett.parsers.cpe.values.Part;
 
-import org.sonatype.goodies.packageurl.PackageUrl;
-
-import java.util.ArrayList;
+import javax.annotation.Nullable;
+import java.net.SocketTimeoutException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import java.net.SocketTimeoutException;
-
-import javax.annotation.Nullable;
-
-import org.apache.commons.lang3.StringUtils;
-import org.owasp.dependencycheck.utils.CvssUtil;
-import org.sonatype.goodies.packageurl.InvalidException;
+import static java.util.Optional.ofNullable;
+import static java.util.stream.Collectors.toList;
+import static org.apache.hc.core5.http.HttpStatus.SC_FORBIDDEN;
+import static org.apache.hc.core5.http.HttpStatus.SC_PAYMENT_REQUIRED;
+import static org.apache.hc.core5.http.HttpStatus.SC_TOO_MANY_REQUESTS;
+import static org.apache.hc.core5.http.HttpStatus.SC_UNAUTHORIZED;
 
 /**
  * Enrich dependency information from Sonatype OSS index.
@@ -97,7 +99,7 @@ public class OssIndexAnalyzer extends AbstractAnalyzer {
     /**
      * Lock to protect fetching state.
      */
-    private static final Object FETCH_MUTIX = new Object();
+    private static final Object FETCH_MUTEX = new Object();
 
     @Override
     public String getName() {
@@ -126,21 +128,21 @@ public class OssIndexAnalyzer extends AbstractAnalyzer {
 
     @Override
     protected void closeAnalyzer() throws Exception {
-        synchronized (FETCH_MUTIX) {
+        synchronized (FETCH_MUTEX) {
             reports = null;
         }
     }
 
     @Override
     protected void prepareAnalyzer(Engine engine) throws InitializationException {
-        synchronized (FETCH_MUTIX) {
+        synchronized (FETCH_MUTEX) {
             if (getSettings().getString(KEYS.ANALYZER_OSSINDEX_URL, "").contains("ossindex.sonatype.org")) {
                 LOG.warn("{} capabilities are being migrated to Sonatype Guide. All integrations must migrate to using " +
                         "a Sonatype Guide base URL or proxy. See " +
                         "https://dependency-check.github.io/DependencyCheck/analyzers/oss-index-analyzer.html " +
                         "for more information on migration to Sonatype Guide.", getName());
             }
-            if (StringUtils.isEmpty(password()) || (StringUtils.isEmpty(user()) && passwordNotSonatypeGuideToken())) {
+            if (password().isEmpty() || (user().isEmpty() && passwordNotSonatypeGuideToken())) {
                 LOG.warn("{} disabled due to missing credentials. Authentication with token is now required, and OSS Index " +
                         "is migrating to Sonatype Guide. See https://dependency-check.github.io/DependencyCheck/analyzers/oss-index-analyzer.html " +
                         "for more information on authentication with Sonatype Guide OSS Index.", getName());
@@ -159,59 +161,40 @@ public class OssIndexAnalyzer extends AbstractAnalyzer {
     }
 
     private @NonNull String user() {
-        return getSettings().getString(KEYS.ANALYZER_OSSINDEX_USER, StringUtils.EMPTY);
+        return getSettings().getString(KEYS.ANALYZER_OSSINDEX_USER, "");
     }
 
     private @NonNull String password() {
-        return getSettings().getString(KEYS.ANALYZER_OSSINDEX_PASSWORD, StringUtils.EMPTY).trim();
+        return getSettings().getString(KEYS.ANALYZER_OSSINDEX_PASSWORD, "").trim();
     }
 
     @Override
     protected void analyzeDependency(final Dependency dependency, final Engine engine) throws AnalysisException {
         // batch request component-reports for all dependencies
-        synchronized (FETCH_MUTIX) {
-            if (reports == null) {
+        synchronized (FETCH_MUTEX) {
+            if (reports == null && isEnabled()) {
                 try {
                     requestDelay();
                     reports = requestReports(engine.getDependencies());
                 } catch (SocketTimeoutException e) {
-                    final boolean warnOnly = getSettings().getBoolean(Settings.KEYS.ANALYZER_OSSINDEX_WARN_ONLY_ON_REMOTE_ERRORS, false);
-                    this.setEnabled(false);
-                    if (warnOnly) {
-                        LOG.warn("Sonatype OSS Index / Guide socket timeout, disabling the analyzer", e);
+                    if (getSettings().getBoolean(KEYS.ANALYZER_OSSINDEX_WARN_ONLY_ON_REMOTE_ERRORS, false)) {
+                        LOG.warn("Sonatype OSS Index / Guide socket timeout", e);
                     } else {
-                        LOG.debug("Sonatype OSS Index / Guide socket timeout", e);
                         throw new AnalysisException("Failed to establish socket to Sonatype OSS Index / Guide", e);
                     }
                 } catch (Exception ex) {
-                    final String message = ex.getMessage();
-                    final boolean warnOnly = getSettings().getBoolean(Settings.KEYS.ANALYZER_OSSINDEX_WARN_ONLY_ON_REMOTE_ERRORS, false);
-                    this.setEnabled(false);
-                    if (Strings.CS.contains(message, "401")) {
-                        if (warnOnly) {
-                            LOG.warn("Invalid credentials for Sonatype OSS Index / Guide, disabling the analyzer");
-                        } else {
-                            LOG.error("Invalid credentials for Sonatype OSS Index / Guide, disabling the analyzer");
-                            throw new AnalysisException("Invalid credentials provided for Sonatype OSS Index / Guide", ex);
-                        }
-                    } else if (Strings.CS.contains(message, "403")) {
-                        if (warnOnly) {
-                            LOG.warn("Sonatype OSS Index / Guide access forbidden, disabling the analyzer");
-                        } else {
-                            LOG.error("Sonatype OSS Index / Guide access forbidden, disabling the analyzer");
-                            throw new AnalysisException("Sonatype OSS Index / Guide access forbidden", ex);
-                        }
-                    } else if (Strings.CS.contains(message, "429")) {
-                        if (warnOnly) {
-                            LOG.warn("Sonatype OSS Index / Guide rate limit exceeded, disabling the analyzer", ex);
-                        } else {
-                            throw new AnalysisException("Sonatype OSS Index / Guide rate limit exceeded, disabling the analyzer", ex);
-                        }
-                    } else if (warnOnly) {
-                        LOG.warn("Error requesting Sonatype OSS Index / Guide component reports, disabling the analyzer. {}", ex.getMessage(), ex);
+                    OssIndexKnownError error = Arrays.stream(OssIndexKnownError.values())
+                            .filter(e -> e.matches(ex))
+                            .findFirst()
+                            .orElse(OssIndexKnownError.Unknown);
+
+                    this.setEnabled(!error.fatal);
+                    String logMessage = error.errorMessage(ex);
+
+                    if (getSettings().getBoolean(KEYS.ANALYZER_OSSINDEX_WARN_ONLY_ON_REMOTE_ERRORS, false)) {
+                        LOG.warn(logMessage);
                     } else {
-                        LOG.debug("Error requesting Sonatype OSS Index / Guide component reports, disabling the analyzer", ex);
-                        throw new AnalysisException("Failed to request Sonatype OSS Index / Guide component reports. " + ex.getMessage(), ex);
+                        throw new AnalysisException(logMessage, ex);
                     }
                 }
             }
@@ -221,7 +204,6 @@ public class OssIndexAnalyzer extends AbstractAnalyzer {
                 enrich(dependency);
             }
         }
-
     }
 
     /**
@@ -231,9 +213,13 @@ public class OssIndexAnalyzer extends AbstractAnalyzer {
     private void requestDelay() throws InterruptedException {
         final int delay = getSettings().getInt(Settings.KEYS.ANALYZER_OSSINDEX_REQUEST_DELAY, 0);
         if (delay > 0) {
-            LOG.debug("Request delay: " + delay);
-            TimeUnit.SECONDS.sleep(delay);
+            LOG.debug("Request delay: {}", delay);
+            sleepSeconds(delay);
         }
+    }
+
+    void sleepSeconds(int delay) throws InterruptedException {
+        TimeUnit.SECONDS.sleep(delay);
     }
 
     /**
@@ -260,18 +246,20 @@ public class OssIndexAnalyzer extends AbstractAnalyzer {
      * @throws Exception thrown if there is an exception requesting the report
      */
     private Map<PackageUrl, ComponentReport> requestReports(final Dependency[] dependencies) throws Exception {
-        LOG.debug("Requesting component-reports for {} dependencies", dependencies.length);
         // create requests for each dependency which has a PURL identifier
-        final List<PackageUrl> packages = new ArrayList<>();
-        Arrays.stream(dependencies).forEach(dependency -> dependency.getSoftwareIdentifiers().stream()
+        final List<PackageUrl> packages = Arrays.stream(dependencies)
+                .flatMap(dependency -> dependency.getSoftwareIdentifiers().stream())
                 .filter(id -> id instanceof PurlIdentifier)
                 .map(id -> parsePackageUrl(id.getValue()))
                 .filter(id -> id != null && StringUtils.isNotBlank(id.getVersion()))
-                .forEach(packages::add));
+                .distinct()
+                .collect(toList());
+
+        LOG.debug("Requesting component-reports for {} dependencies with {} unique Package-URL identifiers", dependencies.length, packages.size());
         // only attempt if we have been able to collect some packages
         if (!packages.isEmpty()) {
-            try (OssindexClient client = newOssIndexClient()) {
-                LOG.debug("OSS Index Analyzer submitting: " + packages);
+            try (OssindexClient client = OssIndexClientProvider.create(getSettings())) {
+                LOG.debug("OSS Index Analyzer submitting: {}", packages);
                 return client.requestComponentReports(packages);
             }
         }
@@ -279,8 +267,43 @@ public class OssIndexAnalyzer extends AbstractAnalyzer {
         return Collections.emptyMap();
     }
 
-    OssindexClient newOssIndexClient() {
-        return OssindexClientFactory.create(getSettings());
+    /**
+     * Known mappings of HTTP error codes to user messages
+     */
+    enum OssIndexKnownError {
+        Unauthorized(SC_UNAUTHORIZED, "has invalid credentials", true),
+        Forbidden(SC_FORBIDDEN, "access forbidden", true),
+        TooManyRequests(SC_TOO_MANY_REQUESTS, "rate limit exceeded", false),
+        InsufficientCredits(SC_PAYMENT_REQUIRED, "credits insufficient / payment required", true),
+        Unknown(999, "had unknown error", false, Exception::getMessage);
+
+        final int statusCode;
+        final String userMessage;
+        final boolean fatal;
+        final Function<Exception, String> messageSuffix;
+
+        OssIndexKnownError(int statusCode, String userMessage, boolean fatal) {
+            this(statusCode, userMessage, fatal, ex -> "");
+        }
+
+        OssIndexKnownError(int statusCode, String userMessage, boolean fatal, Function<Exception, String> messageSuffix) {
+            this.statusCode = statusCode;
+            this.userMessage = userMessage;
+            this.fatal = fatal;
+            this.messageSuffix = messageSuffix;
+        }
+
+        private String errorMessage(Exception ex) {
+            return String.format("Sonatype OSS Index / Guide %s%s. %s",
+                    userMessage,
+                    fatal ? ", disabling the analyzer" : "",
+                    messageSuffix.apply(ex)
+            ).trim();
+        }
+
+        private boolean matches(Exception ex) {
+            return ex.toString().contains(Integer.toString(statusCode));
+        }
     }
 
     /**
@@ -301,7 +324,7 @@ public class OssIndexAnalyzer extends AbstractAnalyzer {
                     try {
                         final ComponentReport report = reports.get(purl);
                         if (report == null) {
-                            LOG.debug("Missing component-report for: " + purl);
+                            LOG.debug("Missing component-report for: {}", purl);
                             continue;
                         }
 
@@ -339,27 +362,7 @@ public class OssIndexAnalyzer extends AbstractAnalyzer {
     private Vulnerability transform(final ComponentReport report, final ComponentReportVulnerability source) {
         final Vulnerability result = new Vulnerability();
         result.setSource(Vulnerability.Source.OSSINDEX);
-
-        if (source.getCve() != null) {
-            result.setName(source.getCve());
-        } else {
-            String cve = null;
-            if (source.getTitle() != null) {
-                final Matcher matcher = CVE_PATTERN.matcher(source.getTitle());
-                if (matcher.find()) {
-                    cve = matcher.group();
-                } else {
-                    cve = source.getTitle();
-                }
-            }
-            if (cve == null && source.getReference() != null) {
-                final Matcher matcher = CVE_PATTERN.matcher(source.getReference().toString());
-                if (matcher.find()) {
-                    cve = matcher.group();
-                }
-            }
-            result.setName(cve != null ? cve : source.getId());
-        }
+        result.setName(nameFrom(source));
         result.setDescription(source.getDescription());
         result.addCwe(source.getCwe());
 
@@ -446,5 +449,21 @@ public class OssIndexAnalyzer extends AbstractAnalyzer {
         }
 
         return result;
+    }
+
+    private static String nameFrom(ComponentReportVulnerability vuln) {
+        return ofNullable(vuln.getCve())
+                .or(() -> ofNullable(vuln.getTitle()).map(title -> matchesCveRegex(title)
+                                .or(() -> ofNullable(vuln.getReference()).flatMap(reference -> matchesCveRegex(reference.toString())))
+                                .orElse(title)))
+                .orElse(vuln.getId());
+    }
+
+    private static Optional<String> matchesCveRegex(String value) {
+        final Matcher matcher = CVE_PATTERN.matcher(value);
+        if (matcher.find()) {
+            return Optional.of(matcher.group());
+        }
+        return Optional.empty();
     }
 }

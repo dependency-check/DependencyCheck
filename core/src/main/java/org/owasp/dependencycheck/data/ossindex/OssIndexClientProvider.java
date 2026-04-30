@@ -17,23 +17,24 @@
  */
 package org.owasp.dependencycheck.data.ossindex;
 
-import java.io.File;
-import org.sonatype.goodies.packageurl.RenderFlavor;
-import org.sonatype.ossindex.service.client.OssindexClient;
-import org.sonatype.ossindex.service.client.OssindexClientConfiguration;
-import org.sonatype.ossindex.service.client.marshal.Marshaller;
-import org.sonatype.ossindex.service.client.marshal.GsonMarshaller;
-import org.sonatype.ossindex.service.client.internal.OssindexClientImpl;
-import org.sonatype.ossindex.service.client.transport.Transport;
-import org.sonatype.ossindex.service.client.transport.UserAgentSupplier;
-import org.owasp.dependencycheck.utils.Settings;
-
-import java.io.IOException;
+import com.google.common.annotations.VisibleForTesting;
 import org.joda.time.Duration;
+import org.jspecify.annotations.NonNull;
+import org.owasp.dependencycheck.utils.Settings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.sonatype.ossindex.service.client.OssindexClient;
+import org.sonatype.ossindex.service.client.OssindexClientConfiguration;
 import org.sonatype.ossindex.service.client.cache.DirectoryCache;
+import org.sonatype.ossindex.service.client.internal.OssindexClientImpl;
+import org.sonatype.ossindex.service.client.marshal.GsonMarshaller;
+import org.sonatype.ossindex.service.client.marshal.Marshaller;
 import org.sonatype.ossindex.service.client.transport.AuthConfiguration;
+import org.sonatype.ossindex.service.client.transport.Transport;
+import org.sonatype.ossindex.service.client.transport.UserAgentSupplier;
+
+import java.io.File;
+import java.io.IOException;
 
 /**
  * Produces {@link OssindexClient} instances.
@@ -41,7 +42,7 @@ import org.sonatype.ossindex.service.client.transport.AuthConfiguration;
  * @author Jason Dillon
  * @since 5.0.0
  */
-public final class OssindexClientFactory {
+public final class OssIndexClientProvider {
     /**
      * Default base URL for Sonatype OSS Index after its migration to part of Sonatype Guide. This overrides the default
      * from {@link OssindexClientConfiguration#DEFAULT_BASE_URL} which is now outdated.
@@ -56,17 +57,12 @@ public final class OssindexClientFactory {
     /**
      * Static logger.
      */
-    private static final Logger LOGGER = LoggerFactory.getLogger(OssindexClientFactory.class);
-
-    static {
-        // prefer pkg scheme vs scheme-less variant
-        RenderFlavor.setDefault(RenderFlavor.SCHEME);
-    }
+    private static final Logger LOGGER = LoggerFactory.getLogger(OssIndexClientProvider.class);
 
     /**
      * Private constructor for utility class.
      */
-    private OssindexClientFactory() {
+    private OssIndexClientProvider() {
         //private constructor for utility class
     }
 
@@ -96,7 +92,7 @@ public final class OssindexClientFactory {
                 final File cacheDir = new File(data, "oss_cache");
                 if (cacheDir.isDirectory() || cacheDir.mkdirs()) {
                     cache.setBaseDir(cacheDir.toPath());
-                    cache.setExpireAfter(Duration.standardHours(DEFAULT_CACHE_VALID_FOR_HOURS));
+                    cache.setExpireAfter(Duration.standardHours(settings.getInt(Settings.KEYS.ANALYZER_OSSINDEX_CACHE_VALID_FOR_HOURS, DEFAULT_CACHE_VALID_FOR_HOURS)));
                     config.setCacheConfiguration(cache);
                     LOGGER.debug("OSS Index Cache: {}", cache);
                 } else {
@@ -116,6 +112,11 @@ public final class OssindexClientFactory {
 
         final Marshaller marshaller = new GsonMarshaller();
 
+        return newClientFor(config, transport, marshaller);
+    }
+
+    @VisibleForTesting
+    static @NonNull OssindexClientImpl newClientFor(OssindexClientConfiguration config, Transport transport, Marshaller marshaller) {
         return new OssindexClientImpl(config, transport, marshaller);
     }
 }

@@ -1,4 +1,4 @@
-Modules
+Components & Integrations
 ====================
 OWASP dependency-check's core analysis engine was designed to fit into an applications normal
 build and reporting process:
