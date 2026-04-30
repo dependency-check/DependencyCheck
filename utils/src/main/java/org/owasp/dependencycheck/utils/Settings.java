@@ -17,14 +17,13 @@
  */
 package org.owasp.dependencycheck.utils;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -882,6 +881,11 @@ public final class Settings {
          * local cache.
          */
         public static final String ANALYZER_OSSINDEX_USE_CACHE = "analyzer.ossindex.use.cache";
+        /**
+         * The properties key for how long results from the Sonatype OSS Index
+         * should be cached.
+         */
+        public static final String ANALYZER_OSSINDEX_CACHE_VALID_FOR_HOURS = "analyzer.ossindex.cache.validforhours";
         /**
          * The properties key for the Sonatype OSS Index URL.
          */

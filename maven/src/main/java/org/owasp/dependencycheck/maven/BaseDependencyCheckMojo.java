@@ -760,12 +760,21 @@ public abstract class BaseDependencyCheckMojo extends AbstractMojo implements Ma
     @SuppressWarnings("CanBeFinal")
     @Parameter(property = "ossIndexAnalyzerEnabled", alias = "ossindexAnalyzerEnabled")
     private Boolean ossIndexAnalyzerEnabled;
+
     /**
      * Whether or not the Sonatype OSS Index analyzer should cache results.
      */
     @SuppressWarnings("CanBeFinal")
     @Parameter(property = "ossIndexAnalyzerUseCache", alias = "ossindexAnalyzerUseCache")
     private Boolean ossIndexAnalyzerUseCache;
+
+    /**
+     * The number of hours to wait before checking for new updates on individual packages/components from Sonatype OSS Index
+     */
+    @SuppressWarnings("CanBeFinal")
+    @Parameter(property = "ossIndexAnalyzerCacheValidForHours")
+    private Integer ossIndexAnalyzerCacheValidForHours;
+
     /**
      * URL of the Sonatype OSS Index service.
      */
@@ -2474,6 +2483,7 @@ public abstract class BaseDependencyCheckMojo extends AbstractMojo implements Ma
             settings.setStringIfNotEmpty(Settings.KEYS.ANALYZER_OSSINDEX_PASSWORD, ossIndexPassword);
         }
         settings.setBooleanIfNotNull(Settings.KEYS.ANALYZER_OSSINDEX_USE_CACHE, ossIndexAnalyzerUseCache);
+        settings.setIntIfNotNull(Settings.KEYS.ANALYZER_OSSINDEX_CACHE_VALID_FOR_HOURS, ossIndexAnalyzerCacheValidForHours);
         settings.setBooleanIfNotNull(Settings.KEYS.ANALYZER_OSSINDEX_WARN_ONLY_ON_REMOTE_ERRORS, ossIndexWarnOnlyOnRemoteErrors);
         if (retirejs != null) {
             settings.setBooleanIfNotNull(Settings.KEYS.ANALYZER_RETIREJS_FILTER_NON_VULNERABLE, retirejs.getFilterNonVulnerable());

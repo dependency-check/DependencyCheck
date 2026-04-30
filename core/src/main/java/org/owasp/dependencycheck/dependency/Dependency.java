@@ -19,8 +19,11 @@ package org.owasp.dependencycheck.dependency;
 
 import com.github.packageurl.MalformedPackageURLException;
 import com.github.packageurl.PackageURL;
+import com.google.common.collect.ImmutableSortedSet;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import org.owasp.dependencycheck.data.nexus.MavenArtifact;
 import org.owasp.dependencycheck.utils.Checksum;
 import org.slf4j.Logger;
@@ -104,9 +107,7 @@ public class Dependency extends EvidenceCollection implements Serializable {
     private final SortedSet<Dependency> relatedDependencies = new TreeSet<>(Dependency.NAME_COMPARATOR);
     /**
      * The set of dependencies that included this dependency (i.e., this is a
-     * transitive dependency because it was included by X). This is a pair where
-     * the left element is the includedBy and the right element is the type
-     * (e.g. buildEnv, plugins).
+     * transitive dependency because it was included by X).
      */
     private final Set<IncludedByReference> includedBy = new HashSet<>();
     /**
@@ -798,7 +799,17 @@ public class Dependency extends EvidenceCollection implements Serializable {
      * @return the unmodifiable set of includedBy
      */
     public synchronized Set<IncludedByReference> getIncludedBy() {
-        return Collections.unmodifiableSet(new HashSet<>(includedBy));
+        return Set.copyOf(includedBy);
+    }
+
+    /**
+     * Get the unmodifiable set of includedBy (the list of parents of this
+     * transitive dependency), sorted by natural comparator.
+     *
+     * @return the unmodifiable set of includedBy, sorted
+     */
+    public synchronized SortedSet<IncludedByReference> getIncludedBySorted() {
+        return ImmutableSortedSet.copyOf(includedBy);
     }
 
     /**
@@ -807,7 +818,7 @@ public class Dependency extends EvidenceCollection implements Serializable {
      *
      * @param includedBy a project reference
      */
-    public synchronized void addIncludedBy(String includedBy) {
+    public synchronized void addIncludedBy(@NonNull String includedBy) {
         this.includedBy.add(new IncludedByReference(includedBy, null));
     }
 
@@ -818,7 +829,7 @@ public class Dependency extends EvidenceCollection implements Serializable {
      * @param includedBy a project reference
      * @param type the type of project reference (i.e. 'plugins', 'buildEnv')
      */
-    public synchronized void addIncludedBy(String includedBy, String type) {
+    public synchronized void addIncludedBy(@NonNull String includedBy, @Nullable String type) {
         this.includedBy.add(new IncludedByReference(includedBy, type));
     }
 
@@ -827,7 +838,7 @@ public class Dependency extends EvidenceCollection implements Serializable {
      *
      * @param includedBy a set of project references
      */
-    public synchronized void addAllIncludedBy(Set<IncludedByReference> includedBy) {
+    public synchronized void addAllIncludedBy(@NonNull Set<IncludedByReference> includedBy) {
         this.includedBy.addAll(includedBy);
     }
 
@@ -837,7 +848,16 @@ public class Dependency extends EvidenceCollection implements Serializable {
      * @return the unmodifiable set of projectReferences
      */
     public synchronized Set<String> getProjectReferences() {
-        return Collections.unmodifiableSet(new HashSet<>(projectReferences));
+        return Set.copyOf(projectReferences);
+    }
+
+    /**
+     * Get the unmodifiable set of projectReferences, sorted by natural comparator.
+     *
+     * @return the unmodifiable set of projectReferences, sorted
+     */
+    public synchronized SortedSet<String> getProjectReferencesSorted() {
+        return ImmutableSortedSet.copyOf(projectReferences);
     }
 
     /**
@@ -845,7 +865,7 @@ public class Dependency extends EvidenceCollection implements Serializable {
      *
      * @param projectReference a project reference
      */
-    public synchronized void addProjectReference(String projectReference) {
+    public synchronized void addProjectReference(@NonNull String projectReference) {
         this.projectReferences.add(projectReference);
     }
 
@@ -854,7 +874,7 @@ public class Dependency extends EvidenceCollection implements Serializable {
      *
      * @param projectReferences a set of project references
      */
-    public synchronized void addAllProjectReferences(Set<String> projectReferences) {
+    public synchronized void addAllProjectReferences(@NonNull Set<String> projectReferences) {
         this.projectReferences.addAll(projectReferences);
     }
 
@@ -897,7 +917,7 @@ public class Dependency extends EvidenceCollection implements Serializable {
      * @return the value of availableVersions
      */
     public synchronized List<String> getAvailableVersions() {
-        return Collections.unmodifiableList(new ArrayList<>(availableVersions));
+        return List.copyOf(availableVersions);
     }
 
     /**
@@ -905,7 +925,7 @@ public class Dependency extends EvidenceCollection implements Serializable {
      *
      * @param version the version to add to the list
      */
-    public synchronized void addAvailableVersion(String version) {
+    public synchronized void addAvailableVersion(@NonNull String version) {
         this.availableVersions.add(version);
     }
 
@@ -927,7 +947,7 @@ public class Dependency extends EvidenceCollection implements Serializable {
      */
     @Override
     public boolean equals(Object obj) {
-        if (obj == null || !(obj instanceof Dependency)) {
+        if (!(obj instanceof Dependency)) {
             return false;
         }
         if (this == obj) {

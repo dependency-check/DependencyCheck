@@ -53,6 +53,10 @@ _odc_completions()
             --disableOpenSSL
             --disableOssIndex
             --disableOssIndexCache
+            --ossIndexCacheValidForHours <hours>
+            --ossIndexUrl <url>
+            --ossIndexUsername <username>
+            --ossIndexPassword <password>
             --ossIndexRemoteErrorWarnOnly
             --disableKnownExploited
             --kevURL <url>
@@ -96,8 +100,6 @@ _odc_completions()
             --nvdApiDelay <ms>
             --nvdValidForHours <hours>
         -o --out
-            --ossIndexPassword <password>
-            --ossIndexUsername <username>
         -P --propertyfile
             --prettyPrint
             --project <name>

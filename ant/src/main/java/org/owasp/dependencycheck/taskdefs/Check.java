@@ -17,13 +17,6 @@
  */
 package org.owasp.dependencycheck.taskdefs;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-import javax.annotation.concurrent.NotThreadSafe;
-
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.types.EnumeratedAttribute;
@@ -34,6 +27,7 @@ import org.apache.tools.ant.types.resources.FileProvider;
 import org.apache.tools.ant.types.resources.Resources;
 import org.owasp.dependencycheck.Engine;
 import org.owasp.dependencycheck.agent.DependencyCheckScanAgent;
+import org.owasp.dependencycheck.ant.logging.AntTaskHolder;
 import org.owasp.dependencycheck.data.nvdcve.DatabaseException;
 import org.owasp.dependencycheck.dependency.Dependency;
 import org.owasp.dependencycheck.dependency.Vulnerability;
@@ -46,7 +40,13 @@ import org.owasp.dependencycheck.utils.InvalidSettingException;
 import org.owasp.dependencycheck.utils.Settings;
 import org.owasp.dependencycheck.utils.SeverityUtil;
 import org.owasp.dependencycheck.utils.scarf.TelemetryCollector;
-import org.owasp.dependencycheck.ant.logging.AntTaskHolder;
+
+import javax.annotation.concurrent.NotThreadSafe;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 //CSOFF: MethodCount
 /**
@@ -354,23 +354,27 @@ public class Check extends Update {
     /**
      * Whether or not the Sonatype OSS Index analyzer is enabled.
      */
-    private Boolean ossindexAnalyzerEnabled;
+    private Boolean ossIndexAnalyzerEnabled;
     /**
      * Whether or not the Sonatype OSS Index analyzer should cache results.
      */
-    private Boolean ossindexAnalyzerUseCache;
+    private Boolean ossIndexAnalyzerUseCache;
+    /**
+     * The number of hours to wait before checking for new updates on individual packages/components from Sonatype OSS Index.
+     */
+    private Integer ossIndexAnalyzerCacheValidForHours;
     /**
      * URL of the Sonatype OSS Index service.
      */
-    private String ossindexAnalyzerUrl;
+    private String ossIndexAnalyzerUrl;
     /**
      * The username to use for the Sonatype OSS Index service.
      */
-    private String ossindexAnalyzerUsername;
+    private String ossIndexAnalyzerUsername;
     /**
      * The password to use for the Sonatype OSS Index service.
      */
-    private String ossindexAnalyzerPassword;
+    private String ossIndexAnalyzerPassword;
     /**
      * Whether we should only warn about Sonatype OSS Index remote errors
      * instead of failing completely.
@@ -1226,16 +1230,16 @@ public class Check extends Update {
     }
 
     /**
-     * Set value of {@link #ossindexAnalyzerEnabled}.
+     * Set value of {@link #ossIndexAnalyzerEnabled}.
      *
-     * @param ossindexAnalyzerEnabled new value of ossindexAnalyzerEnabled
+     * @param ossIndexAnalyzerEnabled new value of ossIndexAnalyzerEnabled
      * @deprecated Use {@link #setOssIndexAnalyzerEnabled(Boolean)} instead.
      */
     @Deprecated
-    public void setOssindexAnalyzerEnabled(Boolean ossindexAnalyzerEnabled) {
+    public void setOssindexAnalyzerEnabled(Boolean ossIndexAnalyzerEnabled) {
         log("'ossindexAnalyzerEnabled' is deprecated and may be removed in the next major release, please migrate to 'ossIndexAnalyzerEnabled'",
                 Project.MSG_WARN);
-        this.ossindexAnalyzerEnabled = ossindexAnalyzerEnabled;
+        this.ossIndexAnalyzerEnabled = ossIndexAnalyzerEnabled;
     }
 
     /**
@@ -1244,20 +1248,20 @@ public class Check extends Update {
      * @param ossIndexAnalyzerEnabled new value of ossIndexAnalyzerEnabled
      */
     public void setOssIndexAnalyzerEnabled(Boolean ossIndexAnalyzerEnabled) {
-        this.ossindexAnalyzerEnabled = ossIndexAnalyzerEnabled;
+        this.ossIndexAnalyzerEnabled = ossIndexAnalyzerEnabled;
     }
 
     /**
-     * Set value of {@link #ossindexAnalyzerUseCache}.
+     * Set value of {@link #ossIndexAnalyzerUseCache}.
      *
-     * @param ossindexAnalyzerUseCache new value of ossindexAnalyzerUseCache
+     * @param ossIndexAnalyzerUseCache new value of ossIndexAnalyzerUseCache
      * @deprecated Use {@link #setOssIndexAnalyzerUseCache(Boolean)} instead.
      */
     @Deprecated
-    public void setOssindexAnalyzerUseCache(Boolean ossindexAnalyzerUseCache) {
+    public void setOssindexAnalyzerUseCache(Boolean ossIndexAnalyzerUseCache) {
         log("'ossindexAnalyzerUseCache' is deprecated and may be removed in the next major release, please migrate to 'ossIndexAnalyzerUseCache'",
                 Project.MSG_WARN);
-        this.ossindexAnalyzerUseCache = ossindexAnalyzerUseCache;
+        this.ossIndexAnalyzerUseCache = ossIndexAnalyzerUseCache;
     }
 
     /**
@@ -1266,20 +1270,29 @@ public class Check extends Update {
      * @param ossIndexAnalyzerUseCache new value of ossIndexAnalyzerUseCache
      */
     public void setOssIndexAnalyzerUseCache(Boolean ossIndexAnalyzerUseCache) {
-        this.ossindexAnalyzerUseCache = ossIndexAnalyzerUseCache;
+        this.ossIndexAnalyzerUseCache = ossIndexAnalyzerUseCache;
     }
 
     /**
-     * Set value of {@link #ossindexAnalyzerUrl}.
+     * Set value of {@link #ossIndexAnalyzerCacheValidForHours}.
      *
-     * @param ossindexAnalyzerUrl new value of ossindexAnalyzerUrl
+     * @param ossIndexAnalyzerCacheValidForHours new value of ossIndexAnalyzerCacheValidForHours
+     */
+    public void setOssIndexAnalyzerCacheValidForHours(Integer ossIndexAnalyzerCacheValidForHours) {
+        this.ossIndexAnalyzerCacheValidForHours = ossIndexAnalyzerCacheValidForHours;
+    }
+
+    /**
+     * Set value of {@link #ossIndexAnalyzerUrl}.
+     *
+     * @param ossIndexAnalyzerUrl new value of ossIndexAnalyzerUrl
      * @deprecated Use {@link #setOssIndexAnalyzerUrl(String)} instead.
      */
     @Deprecated
-    public void setOssindexAnalyzerUrl(String ossindexAnalyzerUrl) {
+    public void setOssindexAnalyzerUrl(String ossIndexAnalyzerUrl) {
         log("'ossindexAnalyzerUrl' is deprecated and may be removed in the next major release, please migrate to 'ossIndexAnalyzerUrl'",
                 Project.MSG_WARN);
-        this.ossindexAnalyzerUrl = ossindexAnalyzerUrl;
+        this.ossIndexAnalyzerUrl = ossIndexAnalyzerUrl;
     }
 
     /**
@@ -1288,20 +1301,20 @@ public class Check extends Update {
      * @param ossIndexAnalyzerUrl new value of ossIndexAnalyzerUrl
      */
     public void setOssIndexAnalyzerUrl(String ossIndexAnalyzerUrl) {
-        this.ossindexAnalyzerUrl = ossIndexAnalyzerUrl;
+        this.ossIndexAnalyzerUrl = ossIndexAnalyzerUrl;
     }
 
     /**
-     * Set value of {@link #ossindexAnalyzerUsername}.
+     * Set value of {@link #ossIndexAnalyzerUsername}.
      *
-     * @param ossindexAnalyzerUsername new value of ossindexAnalyzerUsername
+     * @param ossIndexAnalyzerUsername new value of ossIndexAnalyzerUsername
      * @deprecated Use {@link #setOssIndexAnalyzerUsername(String)} instead.
      */
     @Deprecated
-    public void setOssindexAnalyzerUsername(String ossindexAnalyzerUsername) {
+    public void setOssindexAnalyzerUsername(String ossIndexAnalyzerUsername) {
         log("'ossindexAnalyzerUsername' is deprecated and may be removed in the next major release, please migrate to 'ossIndexAnalyzerUsername'",
                 Project.MSG_WARN);
-        this.ossindexAnalyzerUsername = ossindexAnalyzerUsername;
+        this.ossIndexAnalyzerUsername = ossIndexAnalyzerUsername;
     }
 
     /**
@@ -1310,20 +1323,20 @@ public class Check extends Update {
      * @param ossIndexAnalyzerUsername new value of ossIndexAnalyzerUsername
      */
     public void setOssIndexAnalyzerUsername(String ossIndexAnalyzerUsername) {
-        this.ossindexAnalyzerUsername = ossIndexAnalyzerUsername;
+        this.ossIndexAnalyzerUsername = ossIndexAnalyzerUsername;
     }
 
     /**
-     * Set value of {@link #ossindexAnalyzerPassword}.
+     * Set value of {@link #ossIndexAnalyzerPassword}.
      *
-     * @param ossindexAnalyzerPassword new value of ossindexAnalyzerPassword
+     * @param ossIndexAnalyzerPassword new value of ossIndexAnalyzerPassword
      * @deprecated Use {@link #setOssIndexAnalyzerPassword(String)} instead.
      */
     @Deprecated
-    public void setOssindexAnalyzerPassword(String ossindexAnalyzerPassword) {
+    public void setOssindexAnalyzerPassword(String ossIndexAnalyzerPassword) {
         log("'ossindexAnalyzerPassword' is deprecated and may be removed in the next major release, please migrate to 'ossIndexAnalyzerPassword'",
                 Project.MSG_WARN);
-        this.ossindexAnalyzerPassword = ossindexAnalyzerPassword;
+        this.ossIndexAnalyzerPassword = ossIndexAnalyzerPassword;
     }
 
     /**
@@ -1332,7 +1345,7 @@ public class Check extends Update {
      * @param ossIndexAnalyzerPassword new value of ossIndexAnalyzerPassword
      */
     public void setOssIndexAnalyzerPassword(String ossIndexAnalyzerPassword) {
-        this.ossindexAnalyzerPassword = ossIndexAnalyzerPassword;
+        this.ossIndexAnalyzerPassword = ossIndexAnalyzerPassword;
     }
 
     /**
@@ -1609,11 +1622,12 @@ public class Check extends Update {
         getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_NEXUS_USES_PROXY, nexusUsesProxy);
         getSettings().setStringIfNotEmpty(Settings.KEYS.ADDITIONAL_ZIP_EXTENSIONS, zipExtensions);
         getSettings().setStringIfNotEmpty(Settings.KEYS.ANALYZER_ASSEMBLY_DOTNET_PATH, pathToCore);
-        getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_OSSINDEX_ENABLED, ossindexAnalyzerEnabled);
-        getSettings().setStringIfNotEmpty(Settings.KEYS.ANALYZER_OSSINDEX_URL, ossindexAnalyzerUrl);
-        getSettings().setStringIfNotEmpty(Settings.KEYS.ANALYZER_OSSINDEX_USER, ossindexAnalyzerUsername);
-        getSettings().setStringIfNotEmpty(Settings.KEYS.ANALYZER_OSSINDEX_PASSWORD, ossindexAnalyzerPassword);
-        getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_OSSINDEX_USE_CACHE, ossindexAnalyzerUseCache);
+        getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_OSSINDEX_ENABLED, ossIndexAnalyzerEnabled);
+        getSettings().setStringIfNotEmpty(Settings.KEYS.ANALYZER_OSSINDEX_URL, ossIndexAnalyzerUrl);
+        getSettings().setStringIfNotEmpty(Settings.KEYS.ANALYZER_OSSINDEX_USER, ossIndexAnalyzerUsername);
+        getSettings().setStringIfNotEmpty(Settings.KEYS.ANALYZER_OSSINDEX_PASSWORD, ossIndexAnalyzerPassword);
+        getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_OSSINDEX_USE_CACHE, ossIndexAnalyzerUseCache);
+        getSettings().setIntIfNotNull(Settings.KEYS.ANALYZER_OSSINDEX_CACHE_VALID_FOR_HOURS, ossIndexAnalyzerCacheValidForHours);
         getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_OSSINDEX_WARN_ONLY_ON_REMOTE_ERRORS, ossIndexAnalyzerWarnOnlyOnRemoteErrors);
         getSettings().setFloat(Settings.KEYS.JUNIT_FAIL_ON_CVSS, junitFailOnCVSS);
         getSettings().setBooleanIfNotNull(Settings.KEYS.FAIL_ON_UNUSED_SUPPRESSION_RULE, failBuildOnUnusedSuppressionRule);

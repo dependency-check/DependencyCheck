@@ -65,17 +65,19 @@
             "sha256": "$enc.json($dependency.Sha256sum)"#end
             #if($dependency.description),"description": "$enc.json($dependency.description)"#end
             #if($dependency.license),"license": "$enc.json($dependency.license)"#end
-            #if ($dependency.projectReferences.size()>0)
+            #set($projectReferences = $dependency.projectReferencesSorted)
+            #if ($projectReferences.size()>0)
             ,"projectReferences": [
-            #foreach($ref in $dependency.projectReferences)
+            #foreach($ref in $projectReferences)
                 #if($foreach.count > 1),#end
                 "$enc.json($ref)"
             #end
             ]
             #end
-            #if ($dependency.includedBy.size()>0)
+            #set($includedBy = $dependency.includedBySorted)
+            #if ($includedBy.size()>0)
             ,"includedBy": [
-            #foreach($ref in $dependency.includedBy)
+            #foreach($ref in $includedBy)
                 #if($foreach.count > 1),#end
                 { "reference":"$enc.json($ref.getReference())"#if($ref.getType()),"type":"$enc.json($ref.getType())"#end }
             #end

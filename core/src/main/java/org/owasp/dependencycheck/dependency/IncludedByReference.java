@@ -17,7 +17,11 @@
  */
 package org.owasp.dependencycheck.dependency;
 
+import org.apache.commons.lang3.builder.CompareToBuilder;
+import org.jspecify.annotations.NonNull;
+
 import java.io.Serializable;
+import java.util.Objects;
 
 /**
  * POJO to store a reference to the "included by" node in a dependency tree;
@@ -25,7 +29,7 @@ import java.io.Serializable;
  *
  * @author Jeremy Long
  */
-public class IncludedByReference implements Serializable {
+public class IncludedByReference implements Serializable, Comparable<IncludedByReference> {
 
     /**
      * The serial version UID for serialization.
@@ -70,4 +74,28 @@ public class IncludedByReference implements Serializable {
         return type;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof IncludedByReference)) return false;
+        IncludedByReference that = (IncludedByReference) o;
+        return Objects.equals(type, that.type) && Objects.equals(reference, that.reference);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(type, reference);
+    }
+
+    @Override
+    public int compareTo(@NonNull IncludedByReference o) {
+        return new CompareToBuilder()
+                .append(type, o.type) // Group by type (nulls-first)
+                .append(reference, o.reference) // then the actual reference
+                .toComparison();
+    }
+
+    @Override
+    public String toString() {
+        return "IncludedByReference{reference='" + reference + "', type='" + type + "'}";
+    }
 }

@@ -17,43 +17,39 @@
  */
 package org.owasp.dependencycheck;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
+import ch.qos.logback.classic.Level;
+import ch.qos.logback.classic.LoggerContext;
+import ch.qos.logback.classic.encoder.PatternLayoutEncoder;
+import ch.qos.logback.classic.filter.ThresholdFilter;
+import ch.qos.logback.classic.spi.ILoggingEvent;
+import ch.qos.logback.core.FileAppender;
 import org.apache.commons.cli.ParseException;
 import org.apache.tools.ant.DirectoryScanner;
+import org.apache.tools.ant.types.LogLevel;
 import org.owasp.dependencycheck.data.nvdcve.DatabaseException;
+import org.owasp.dependencycheck.data.update.exception.UpdateException;
 import org.owasp.dependencycheck.dependency.Dependency;
 import org.owasp.dependencycheck.dependency.Vulnerability;
-import org.apache.tools.ant.types.LogLevel;
-import org.owasp.dependencycheck.data.update.exception.UpdateException;
 import org.owasp.dependencycheck.dependency.naming.Identifier;
 import org.owasp.dependencycheck.exception.ExceptionCollection;
 import org.owasp.dependencycheck.exception.ReportException;
 import org.owasp.dependencycheck.utils.Downloader;
 import org.owasp.dependencycheck.utils.InvalidSettingException;
 import org.owasp.dependencycheck.utils.Settings;
+import org.owasp.dependencycheck.utils.SeverityUtil;
 import org.owasp.dependencycheck.utils.scarf.TelemetryCollector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ch.qos.logback.core.FileAppender;
-import ch.qos.logback.classic.encoder.PatternLayoutEncoder;
-import ch.qos.logback.classic.filter.ThresholdFilter;
-import ch.qos.logback.classic.spi.ILoggingEvent;
-import ch.qos.logback.classic.Level;
-import ch.qos.logback.classic.LoggerContext;
-
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 import java.util.TreeSet;
-
-import org.owasp.dependencycheck.utils.SeverityUtil;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * The command line interface for the DependencyCheck application.
@@ -671,6 +667,8 @@ public class App {
                 cli.getStringArgument(CliParser.ARGUMENT.CENTRAL_PASSWORD));
         settings.setStringIfNotEmpty(Settings.KEYS.ANALYZER_CENTRAL_BEARER_TOKEN,
                 cli.getStringArgument(CliParser.ARGUMENT.CENTRAL_BEARER_TOKEN));
+        settings.setIntIfNotNull(Settings.KEYS.ANALYZER_OSSINDEX_CACHE_VALID_FOR_HOURS,
+                cli.getIntegerValue(CliParser.ARGUMENT.OSSINDEX_CACHE_VALID_FOR_HOURS));
         settings.setStringIfNotEmpty(Settings.KEYS.ANALYZER_OSSINDEX_URL,
                 cli.getStringArgument(CliParser.ARGUMENT.OSSINDEX_URL));
         settings.setStringIfNotEmpty(Settings.KEYS.ANALYZER_OSSINDEX_USER,
