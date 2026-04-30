@@ -33,10 +33,10 @@ import org.owasp.dependencycheck.exception.InitializationException;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.containsString;
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 class YarnAuditAnalyzerIT extends BaseTest {
 
@@ -46,7 +46,11 @@ class YarnAuditAnalyzerIT extends BaseTest {
     @BeforeEach
     void prepareAnalyzer() {
         engine = new Engine(getSettings());
-        analyzer = assertDoesNotThrow(() -> prepareAnalyzer(engine),  "Yarn Analyzer could not be initialized - yarn possibly not available on path for tests");
+        try {
+            analyzer = createAndPrepareYarnAnalyzer(engine);
+        } catch (InitializationException e) {
+            assumeTrue(false, "Yarn not on PATH or Yarn Audit analyzer failed to initialize (install yarn to run this IT): " + e.getMessage());
+        }
     }
 
     @AfterEach
@@ -130,11 +134,11 @@ class YarnAuditAnalyzerIT extends BaseTest {
         assertTrue(found, "Uglify was not found");
     }
 
-    private @NonNull YarnAuditAnalyzer prepareAnalyzer(Engine engine) throws InitializationException {
-        var analyzer = new YarnAuditAnalyzer();
-        analyzer.setFilesMatched(true);
-        analyzer.initialize(getSettings());
-        analyzer.prepare(engine);
-        return analyzer;
+    private @NonNull YarnAuditAnalyzer createAndPrepareYarnAnalyzer(Engine engine) throws InitializationException {
+        var yarnAnalyzer = new YarnAuditAnalyzer();
+        yarnAnalyzer.setFilesMatched(true);
+        yarnAnalyzer.initialize(getSettings());
+        yarnAnalyzer.prepare(engine);
+        return yarnAnalyzer;
     }
 }

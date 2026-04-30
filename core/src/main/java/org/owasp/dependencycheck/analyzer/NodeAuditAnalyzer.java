@@ -59,9 +59,9 @@ public class NodeAuditAnalyzer extends AbstractNpmAnalyzer {
      */
     private static final Logger LOGGER = LoggerFactory.getLogger(NodeAuditAnalyzer.class);
     /**
-     * The default URL to the NPM Audit API.
+     * The default URL to the NPM bulk advisory API.
      */
-    public static final String DEFAULT_URL = "https://registry.npmjs.org/-/npm/v1/security/audits";
+    public static final String DEFAULT_URL = "https://registry.npmjs.org/-/npm/v1/security/advisories/bulk";
     /**
      * A descriptor for the type of dependencies processed or added by this
      * analyzer.
@@ -181,12 +181,12 @@ public class NodeAuditAnalyzer extends AbstractNpmAnalyzer {
             // Retrieves the contents of package-lock.json from the Dependency
             final JsonObject packageJson = packageReader.readObject();
 
-            // Modify the payload to meet the NPM Audit API requirements
-            final JsonObject payload = NpmPayloadBuilder.build(lockJson, packageJson, dependencyMap,
+            // Walk the lockfile to populate dependencyMap (used for the bulk advisory request body and response mapping)
+            NpmPayloadBuilder.build(lockJson, packageJson, dependencyMap,
                     getSettings().getBoolean(Settings.KEYS.ANALYZER_NODE_AUDIT_SKIPDEV, false));
 
-            // Submits the package payload to the nsp check service
-            return getSearcher().submitPackage(payload);
+            // Submits package versions to the npm bulk advisory API
+            return getSearcher().submitPackage(dependencyMap);
 
         } catch (URLConnectionFailureException e) {
             this.setEnabled(false);
@@ -245,12 +245,11 @@ public class NodeAuditAnalyzer extends AbstractNpmAnalyzer {
                 dependency.setVersion(projectVersion);
             }
 
-            // Modify the payload to meet the NPM Audit API requirements
-            final JsonObject payload = NpmPayloadBuilder.build(packageJson, dependencyMap,
+            NpmPayloadBuilder.build(packageJson, dependencyMap,
                     getSettings().getBoolean(Settings.KEYS.ANALYZER_NODE_AUDIT_SKIPDEV, false));
 
-            // Submits the package payload to the nsp check service
-            return getSearcher().submitPackage(payload);
+            // Submits package versions to the npm bulk advisory API
+            return getSearcher().submitPackage(dependencyMap);
 
         } catch (URLConnectionFailureException e) {
             this.setEnabled(false);

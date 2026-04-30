@@ -22,9 +22,12 @@ import org.owasp.dependencycheck.analyzer.NodePackageAnalyzer;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.TreeMap;
+import java.util.TreeSet;
 import java.util.stream.Collectors;
 import jakarta.json.Json;
+import jakarta.json.JsonArrayBuilder;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonObjectBuilder;
 import jakarta.json.JsonString;
@@ -46,6 +49,53 @@ public final class NpmPayloadBuilder {
      */
     private NpmPayloadBuilder() {
         //empty
+    }
+
+    /**
+     * Builds the JSON body for {@code POST /-/npm/v1/security/advisories/bulk} from
+     * collected package versions (one entry per unique version per package).
+     *
+     * @param dependencyMap module/version pairs from the lockfile walk
+     * @return payload shaped as {@code { "pkg": ["1.0.0"], "@scope/a": ["2.0.0"] }}
+     */
+    public static JsonObject buildBulkPayload(MultiValuedMap<String, String> dependencyMap) {
+        final JsonObjectBuilder root = Json.createObjectBuilder();
+        for (String name : new TreeSet<>(dependencyMap.keySet())) {
+            final Set<String> versions = new TreeSet<>();
+            for (String raw : dependencyMap.get(name)) {
+                final String v = normalizeVersion(raw);
+                if (v == null || v.isEmpty()) {
+                    continue;
+                }
+                if (NodePackageAnalyzer.shouldSkipDependency(name, v)) {
+                    continue;
+                }
+                versions.add(v);
+            }
+            if (versions.isEmpty()) {
+                continue;
+            }
+            final JsonArrayBuilder arr = Json.createArrayBuilder();
+            for (String v : versions) {
+                arr.add(v);
+            }
+            root.add(name, arr.build());
+        }
+        return root.build();
+    }
+
+    /**
+     * Trims and strips JSON-string-style surrounding quotes from lockfile-derived versions.
+     */
+    static String normalizeVersion(String raw) {
+        if (raw == null) {
+            return null;
+        }
+        String v = raw.trim();
+        if (v.length() >= 2 && v.charAt(0) == '"' && v.charAt(v.length() - 1) == '"') {
+            v = v.substring(1, v.length() - 1);
+        }
+        return v;
     }
 
     /**

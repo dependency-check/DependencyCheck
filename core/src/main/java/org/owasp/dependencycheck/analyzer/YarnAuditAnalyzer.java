@@ -320,11 +320,10 @@ public class YarnAuditAnalyzer extends AbstractNpmAnalyzer {
             try (JsonReader packageReader = Json.createReader(Files.newInputStream(lockFile.getParentFile().toPath().resolve("package.json")))) {
                 packageJson = packageReader.readObject();
             }
-            // Modify the payload to meet the NPM Audit API requirements
-            final JsonObject payload = NpmPayloadBuilder.build(lockJson, packageJson, dependencyMap, skipDevDependencies);
+            NpmPayloadBuilder.build(lockJson, packageJson, dependencyMap, skipDevDependencies);
 
-            // Submits the package payload to the nsp check service
-            return getSearcher().submitPackage(payload);
+            // Submits package versions to the npm bulk advisory API
+            return getSearcher().submitPackage(dependencyMap);
 
         } catch (URLConnectionFailureException e) {
             this.setEnabled(false);

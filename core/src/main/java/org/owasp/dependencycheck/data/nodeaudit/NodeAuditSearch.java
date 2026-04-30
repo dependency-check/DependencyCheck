@@ -23,6 +23,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.security.SecureRandom;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import javax.annotation.concurrent.ThreadSafe;
 
@@ -31,6 +32,7 @@ import org.apache.hc.core5.http.ContentType;
 import org.apache.hc.core5.http.Header;
 import org.apache.hc.core5.http.HttpHeaders;
 import org.apache.hc.core5.http.message.BasicHeader;
+import org.apache.commons.collections4.MultiValuedMap;
 import org.json.JSONObject;
 import org.owasp.dependencycheck.utils.DownloadFailedException;
 import org.owasp.dependencycheck.utils.Downloader;
@@ -112,33 +114,37 @@ public class NodeAuditSearch {
     }
 
     /**
-     * Submits the package.json file to the Node Audit API and returns a list of
-     * zero or more Advisories.
+     * Submits collected package versions to the NPM bulk advisory API and returns advisories.
      *
-     * @param packageJson the package.json file retrieved from the Dependency
+     * @param dependencyMap module/version pairs from the lockfile walk
      * @return a List of zero or more Advisory object
      * @throws SearchException if Node Audit API is unable to analyze the
      * package
      * @throws IOException if it's unable to connect to Node Audit API
      */
-    public List<Advisory> submitPackage(JsonObject packageJson) throws SearchException, IOException {
+    public List<Advisory> submitPackage(MultiValuedMap<String, String> dependencyMap) throws SearchException, IOException {
+        final JsonObject bulkPayload = NpmPayloadBuilder.buildBulkPayload(dependencyMap);
+        if (bulkPayload.size() == 0) {
+            LOGGER.debug("No packages with resolvable versions for bulk advisory request; skipping HTTP call.");
+            return Collections.emptyList();
+        }
         String key = null;
         if (cache != null) {
-            key = Checksum.getSHA256Checksum(packageJson.toString());
+            key = Checksum.getSHA256Checksum(bulkPayload.toString());
             final List<Advisory> cached = cache.get(key);
             if (cached != null) {
                 LOGGER.debug("cache hit for node audit: " + key);
                 return cached;
             }
         }
-        return submitPackage(packageJson, key, 0);
+        return submitPackage(dependencyMap, bulkPayload, key, 0);
     }
 
     /**
-     * Submits the package.json file to the Node Audit API and returns a list of
-     * zero or more Advisories.
+     * Submits collected package versions to the NPM bulk advisory API and returns advisories.
      *
-     * @param packageJson the package.json file retrieved from the Dependency
+     * @param dependencyMap module/version pairs (used for parsing the response)
+     * @param bulkPayload serialized bulk request body
      * @param key the key for the cache entry
      * @param count the current retry count
      * @return a List of zero or more Advisory object
@@ -146,27 +152,27 @@ public class NodeAuditSearch {
      * package
      * @throws IOException if it's unable to connect to Node Audit API
      */
-    private List<Advisory> submitPackage(JsonObject packageJson, String key, int count) throws SearchException, IOException {
+    private List<Advisory> submitPackage(MultiValuedMap<String, String> dependencyMap, JsonObject bulkPayload,
+            String key, int count) throws SearchException, IOException {
         if (LOGGER.isTraceEnabled()) {
             LOGGER.trace("----------------------------------------");
-            LOGGER.trace("Node Audit Payload:");
-            LOGGER.trace(packageJson.toString());
-            LOGGER.trace("----------------------------------------");
+            LOGGER.trace("Node Audit bulk payload:");
+            LOGGER.trace(bulkPayload.toString());
             LOGGER.trace("----------------------------------------");
         }
         final List<Header> additionalHeaders = new ArrayList<>();
-        additionalHeaders.add(new BasicHeader(HttpHeaders.USER_AGENT, "npm/6.1.0 node/v10.5.0 linux x64"));
+        additionalHeaders.add(new BasicHeader(HttpHeaders.USER_AGENT, "npm/10.0.0 node/v20.0.0 linux x64"));
         additionalHeaders.add(new BasicHeader("npm-in-ci", "false"));
         additionalHeaders.add(new BasicHeader("npm-scope", ""));
         additionalHeaders.add(new BasicHeader("npm-session", generateRandomSession()));
 
         try {
             final String response = Downloader.getInstance().postBasedFetchContent(nodeAuditUrl.toURI(),
-                    packageJson.toString(), ContentType.APPLICATION_JSON, additionalHeaders);
+                    bulkPayload.toString(), ContentType.APPLICATION_JSON, additionalHeaders);
             final JSONObject jsonResponse = new JSONObject(response);
-            final NpmAuditParser parser = new NpmAuditParser();
-            final List<Advisory> advisories = parser.parse(jsonResponse);
-            if (cache != null) {
+            final NpmBulkAuditParser parser = new NpmBulkAuditParser();
+            final List<Advisory> advisories = parser.parse(jsonResponse, dependencyMap);
+            if (cache != null && key != null) {
                 cache.put(key, advisories);
             }
             return advisories;
@@ -189,13 +195,19 @@ public class NodeAuditSearch {
                                 Thread.currentThread().interrupt();
                                 throw new UnexpectedAnalysisException(ex);
                             }
-                            return submitPackage(packageJson, key, next);
+                            return submitPackage(dependencyMap, bulkPayload, key, next);
                         }
                         throw new SearchException("Could not perform Node Audit analysis - service returned a 503.", e);
                     case 400:
                         LOGGER.debug("Invalid payload submitted to Node Audit API. Received response code: {} {}",
                                 hre.getStatusCode(), hre.getReasonPhrase());
                         throw new SearchException("Could not perform Node Audit analysis. Invalid payload submitted to Node Audit API.", e);
+                    case 410:
+                        LOGGER.warn("Node Audit API returned 410 Gone. The legacy audit endpoints are retired; "
+                                + "configure analyzer.node.audit.url to point to the bulk advisory endpoint "
+                                + "(/-/npm/v1/security/advisories/bulk).");
+                        throw new SearchException("Node Audit API returned 410 Gone; the configured audit URL is no "
+                                + "longer supported. Use the bulk advisory endpoint.", e);
                     default:
                         LOGGER.debug("Could not connect to Node Audit API. Received response code: {} {}",
                                 hre.getStatusCode(), hre.getReasonPhrase());

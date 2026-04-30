@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.anyOf;
 import static org.hamcrest.Matchers.containsString;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -92,7 +93,8 @@ class XmlUtilsTest {
 
             Throwable t = assertThrows(SAXException.class, () -> withDefaultReader().parse(toValidate));
             assertThat(t.getMessage(), containsString("cvc-elt.1.a"));
-            assertThat(t.getMessage(), containsString("'items'"));
+            // XSD error text is localized; element name may be quoted with ' or " depending on JVM locale
+            assertThat(t.getMessage(), anyOf(containsString("'items'"), containsString("\"items\"")));
         }
     }
 
@@ -103,7 +105,7 @@ class XmlUtilsTest {
 
             Throwable t = assertThrows(SAXException.class, () -> withDefaultReader(irrelevant).parse(toValidate));
             assertThat(t.getMessage(), containsString("cvc-elt.1.a"));
-            assertThat(t.getMessage(), containsString("'items'"));
+            assertThat(t.getMessage(), anyOf(containsString("'items'"), containsString("\"items\"")));
         }
     }
 

@@ -18,6 +18,7 @@
 package org.owasp.dependencycheck.data.nodeaudit;
 
 import jakarta.json.Json;
+import jakarta.json.JsonArray;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonObjectBuilder;
 import jakarta.json.JsonReader;
@@ -181,5 +182,21 @@ class NpmPayloadBuilderTest {
             assertFalse(requires.containsKey("react-dom"));
             assertFalse(requires.containsKey("fake_submodule"));
         }
+    }
+
+    @Test
+    void testBuildBulkPayloadDedupesAndSorts() {
+        final MultiValuedMap<String, String> dependencyMap = new HashSetValuedHashMap<>();
+        dependencyMap.put("lodash", "4.17.20");
+        dependencyMap.put("lodash", "4.17.20");
+        dependencyMap.put("a", "1.0.0");
+        dependencyMap.put("b", "2.0.0");
+
+        final JsonObject bulk = NpmPayloadBuilder.buildBulkPayload(dependencyMap);
+        assertEquals("[\"1.0.0\"]", bulk.getJsonArray("a").toString());
+        assertEquals("[\"2.0.0\"]", bulk.getJsonArray("b").toString());
+        final JsonArray lodashVersions = bulk.getJsonArray("lodash");
+        assertEquals(1, lodashVersions.size());
+        assertEquals("4.17.20", lodashVersions.getString(0));
     }
 }
