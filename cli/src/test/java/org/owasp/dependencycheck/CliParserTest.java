@@ -23,7 +23,6 @@ import org.junit.jupiter.api.Test;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.io.PrintStream;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
@@ -51,7 +50,7 @@ class CliParserTest extends BaseTest {
         String[] args = {};
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        System.setOut(new PrintStream(baos));
+        System.setOut(new PrintStream(baos, true, UTF_8));
 
         CliParser instance = new CliParser(getSettings());
         instance.parse(args);
@@ -165,8 +164,8 @@ class CliParserTest extends BaseTest {
 
         ByteArrayOutputStream baos_out = new ByteArrayOutputStream();
         ByteArrayOutputStream baos_err = new ByteArrayOutputStream();
-        System.setOut(new PrintStream(baos_out));
-        System.setErr(new PrintStream(baos_err));
+        System.setOut(new PrintStream(baos_out, true, UTF_8));
+        System.setErr(new PrintStream(baos_err, true, UTF_8));
 
         CliParser instance = new CliParser(getSettings());
 
@@ -249,20 +248,16 @@ class CliParserTest extends BaseTest {
 
         PrintStream out = System.out;
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        System.setOut(new PrintStream(baos));
+        System.setOut(new PrintStream(baos, true, UTF_8));
 
         CliParser instance = new CliParser(getSettings());
         instance.printVersionInfo();
         try {
-            baos.flush();
             String text = baos.toString(UTF_8).toLowerCase();
             String[] lines = text.split(System.lineSeparator());
             assertTrue(lines.length >= 1);
             assertTrue(text.contains("version"));
             assertFalse(text.contains("unknown"));
-        } catch (IOException ex) {
-            System.setOut(out);
-            fail("CliParser.printVersionInfo did not write anything to system.out.", ex);
         } finally {
             System.setOut(out);
         }
@@ -279,7 +274,7 @@ class CliParserTest extends BaseTest {
 
         PrintStream out = System.out;
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        System.setOut(new PrintStream(baos));
+        System.setOut(new PrintStream(baos, true, UTF_8));
 
         CliParser instance = new CliParser(getSettings());
         String[] args = {"-h"};
@@ -289,14 +284,10 @@ class CliParserTest extends BaseTest {
         instance.parse(args);
         instance.printHelp();
         try {
-            baos.flush();
             String text = (baos.toString(UTF_8));
             String[] lines = text.split(System.lineSeparator());
             assertTrue(lines[0].startsWith("usage: "));
             assertTrue((lines.length > 2));
-        } catch (IOException ex) {
-            System.setOut(out);
-            fail("CliParser.printVersionInfo did not write anything to system.out.");
         } finally {
             System.setOut(out);
         }

@@ -161,13 +161,11 @@ class ReportGeneratorIT extends BaseDBTestCase {
             createParentFolder(writeCsvTo);
             createParentFolder(writeSarifTo);
 
-            File struts = new File(this.getClass().getClassLoader().getResource("struts2-core-2.1.2.jar").getPath());
-            File war = BaseTest.getResourceAsFile(this, "war-4.0.war");
-            File cfu = BaseTest.getResourceAsFile(this, "commons-fileupload-1.2.1.jar");
+            File struts = BaseTest.getResourceAsFile(this, "maven-lib/struts2-core-2.1.2.jar");
+            File war = BaseTest.getResourceAsFile(this, "maven-lib/war-4.0.war");
+            File cfu = BaseTest.getResourceAsFile(this, "maven-lib/commons-fileupload-1.2.1.jar");
 
-            //File axis = new File(this.getClass().getClassLoader().getResource("axis2-adb-1.4.1.jar").getPath());
-            File axis = BaseTest.getResourceAsFile(this, "axis2-adb-1.4.1.jar");
-            //File jetty = new File(this.getClass().getClassLoader().getResource("org.mortbay.jetty.jar").getPath());
+            File axis = BaseTest.getResourceAsFile(this, "maven-lib/axis2-adb-1.4.1.jar");
             File jetty = BaseTest.getResourceAsFile(this, "org.mortbay.jetty.jar");
 
             File nodeTest = BaseTest.getResourceAsFile(this, "nodejs");

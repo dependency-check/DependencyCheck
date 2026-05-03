@@ -31,9 +31,11 @@ import org.owasp.dependencycheck.dependency.Vulnerability;
 import org.owasp.dependencycheck.utils.Settings;
 
 import java.io.File;
+import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsInRelativeOrder;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -101,14 +103,9 @@ class RetireJsAnalyzerIT extends BaseDBTestCase {
         assertEquals(expResult, result);
     }
 
-    /**
-     * Test of inspect method.
-     *
-     * @throws Exception is thrown when an exception occurs.
-     */
     @Test
     void testJquery() throws Exception {
-        File file = BaseTest.getResourceAsFile(this, "javascript/jquery-1.6.2.js");
+        File file = BaseTest.getResourceAsFile(this, "javascript/jquery.safe.js");
         Dependency dependency = new Dependency(file);
         analyzer.analyze(dependency, engine);
 
@@ -125,17 +122,10 @@ class RetireJsAnalyzerIT extends BaseDBTestCase {
         assertEquals("version", version.getName());
         assertEquals("1.6.2", version.getValue());
 
-        assertTrue(dependency.getVulnerabilities().size() >= 3);
-        assertTrue(dependency.getVulnerabilities().contains(new Vulnerability("CVE-2015-9251")));
-        assertTrue(dependency.getVulnerabilities().contains(new Vulnerability("CVE-2011-4969")));
-        assertTrue(dependency.getVulnerabilities().contains(new Vulnerability("CVE-2012-6708")));
+        assertThat(dependency.getVulnerabilities().stream().map(Vulnerability::getName).sorted().collect(Collectors.toList()),
+                containsInRelativeOrder("CVE-2011-4969", "CVE-2012-6708", "CVE-2015-9251"));
     }
 
-    /**
-     * Test of inspect method.
-     *
-     * @throws Exception is thrown when an exception occurs.
-     */
     @Test
     void testAngular() throws Exception {
         File file = BaseTest.getResourceAsFile(this, "javascript/angular.safe.js");
@@ -155,22 +145,25 @@ class RetireJsAnalyzerIT extends BaseDBTestCase {
         assertEquals("version", version.getName());
         assertEquals("1.2.27", version.getValue());
 
-        assertTrue(dependency.getVulnerabilities().size() >= 6,
-                "At leats 6 vulnerabilities should be detected");
-        assertTrue(dependency.getVulnerabilities().contains(new Vulnerability("Universal CSP bypass via add-on in Firefox")));
-        assertTrue(dependency.getVulnerabilities().contains(new Vulnerability("XSS in $sanitize in Safari/Firefox")));
-        assertTrue(dependency.getVulnerabilities().contains(new Vulnerability("DOS in $sanitize")));
-        assertTrue(dependency.getVulnerabilities().contains(new Vulnerability("The attribute usemap can be used as a security exploit")));
+        assertThat(dependency.getVulnerabilities().stream().map(Vulnerability::getName).sorted().collect(Collectors.toList()),
+                containsInRelativeOrder(
+                        "CVE-2019-14863",
+                        "CVE-2022-25869",
+                        "CVE-2024-8373",
+                        "CVE-2025-0716",
+                        "CVE-2025-2336",
+                        "DOS in $sanitize",
+                        "GHSA-28hp-fgcr-2r4h",
+                        "GHSA-5cp4-xmrw-59wf",
+                        "The attribute usemap can be used as a security exploit",
+                        "Universal CSP bypass via add-on in Firefox",
+                        "XSS in $sanitize in Safari/Firefox"
+                ));
     }
 
-    /**
-     * Test of inspect method.
-     *
-     * @throws Exception is thrown when an exception occurs.
-     */
     @Test
     void testEmber() throws Exception {
-        File file = BaseTest.getResourceAsFile(this, "javascript/ember.js");
+        File file = BaseTest.getResourceAsFile(this, "javascript/ember.safe.js");
         Dependency dependency = new Dependency(file);
         analyzer.analyze(dependency, engine);
 
@@ -187,9 +180,35 @@ class RetireJsAnalyzerIT extends BaseDBTestCase {
         assertEquals("version", version.getName());
         assertEquals("1.3.0", version.getValue());
 
-        assertTrue(dependency.getVulnerabilities().size() >= 3);
-        assertTrue(dependency.getVulnerabilities().contains(new Vulnerability("CVE-2014-0013")));
-        assertTrue(dependency.getVulnerabilities().contains(new Vulnerability("CVE-2014-0014")));
-        assertTrue(dependency.getVulnerabilities().contains(new Vulnerability("CVE-2014-0046")));
+        assertThat(dependency.getVulnerabilities().stream().map(Vulnerability::getName).sorted().collect(Collectors.toList()),
+                containsInRelativeOrder("CVE-2014-0013", "CVE-2014-0014", "CVE-2014-0046"));
+    }
+
+    @Test
+    void testDOMPurify() throws Exception {
+        File file = BaseTest.getResourceAsFile(this, "javascript/dompurify.safe.js");
+        Dependency dependency = new Dependency(file);
+        analyzer.analyze(dependency, engine);
+
+        assertEquals("DOMPurify", dependency.getName());
+        assertEquals("3.3.1", dependency.getVersion());
+
+        assertEquals(1, dependency.getEvidence(EvidenceType.PRODUCT).size());
+        Evidence product = dependency.getEvidence(EvidenceType.PRODUCT).iterator().next();
+        assertEquals("name", product.getName());
+        assertEquals("DOMPurify", product.getValue());
+
+        assertEquals(1, dependency.getEvidence(EvidenceType.VERSION).size());
+        Evidence version = dependency.getEvidence(EvidenceType.VERSION).iterator().next();
+        assertEquals("version", version.getName());
+        assertEquals("3.3.1", version.getValue());
+
+        assertThat(dependency.getVulnerabilities().stream().map(Vulnerability::getName).sorted().collect(Collectors.toList()),
+                containsInRelativeOrder(
+                        "CVE-2026-0540",
+                        "GHSA-cj63-jhhr-wcxv",
+                        "GHSA-cjmm-f4jc-qw8r",
+                        "GHSA-h8r8-wccr-v5f2"
+                ));
     }
 }

@@ -18,10 +18,6 @@
 package org.owasp.dependencycheck;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-
-import java.io.File;
-import java.io.FileNotFoundException;
-
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
@@ -35,6 +31,9 @@ import org.owasp.dependencycheck.utils.InvalidSettingException;
 import org.owasp.dependencycheck.utils.Settings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.File;
+import java.io.FileNotFoundException;
 
 /**
  * A utility to parse command line arguments for the DependencyCheck.
@@ -430,16 +429,17 @@ public final class CliParser {
                         "Credentials for basic auth towards the --centralUrl"))
                 .addOption(newOptionWithArg(ARGUMENT.CENTRAL_BEARER_TOKEN, "token",
                         "Token for bearer auth towards the --centralUrl"))
+                .addOption(newOptionWithArg(ARGUMENT.OSSINDEX_CACHE_VALID_FOR_HOURS, "hours",
+                        "The number of hours to wait before checking for new updates on individual packages/components from Sonatype OSS Index. The default is 24 hours."))
                 .addOption(newOptionWithArg(ARGUMENT.OSSINDEX_URL, "url",
-                        "Alternative URL for the OSS Index. If not set the public Sonatype OSS Index will be used."))
+                        "Alternative base URL for the OSS Index API. If not set the public Sonatype OSS Index API on Sonatype Guide will be used."))
                 .addOption(newOptionWithArg(ARGUMENT.OSSINDEX_USERNAME, "username",
-                        "The username to authenticate to Sonatype's OSS Index. If not set the Sonatype OSS Index "
-                                + "Analyzer will use an unauthenticated connection."))
-                .addOption(newOptionWithArg(ARGUMENT.OSSINDEX_PASSWORD, "password", ""
-                        + "The password to authenticate to Sonatype's OSS Index. If not set the Sonatype OSS "
-                        + "Index Analyzer will use an unauthenticated connection."))
-                .addOption(newOptionWithArg(ARGUMENT.OSSINDEX_WARN_ONLY_ON_REMOTE_ERRORS, "true/false", ""
-                        + "Whether a Sonatype OSS Index remote error should result in a warning only or a failure."))
+                        "(deprecated) Sets the OSS Index API username for use with legacy OSS Index API tokens. " +
+                                "Username is not required after migration to using Sonatype Guide personal access token as password."))
+                .addOption(newOptionWithArg(ARGUMENT.OSSINDEX_PASSWORD, "password", "Sets the Sonatype Guide personal " +
+                        "access token or (deprecated) legacy OSS Index API token to authenticate with."))
+                .addOption(newOptionWithArg(ARGUMENT.OSSINDEX_WARN_ONLY_ON_REMOTE_ERRORS, "true/false",
+                        "Whether a Sonatype OSS Index remote error should result in a warning only or a failure."))
                 .addOption(newOption(ARGUMENT.RETIRE_JS_FORCEUPDATE, "Force the RetireJS Analyzer to update "
                         + "even if autoupdate is disabled"))
                 .addOption(newOptionWithArg(ARGUMENT.RETIREJS_URL, "url",
@@ -450,7 +450,7 @@ public final class CliParser {
                         "The password to authenticate to Retire JS Repository URL"))
                 .addOption(newOptionWithArg(ARGUMENT.RETIREJS_URL_BEARER_TOKEN, "token",
                         "The password to authenticate to Retire JS Repository URL"))
-                .addOption(newOption(ARGUMENT.RETIREJS_FILTER_NON_VULNERABLE, "Specifies that the Retire JS "
+                .addOption(newOption(ARGUMENT.RETIRE_JS_FILTER_NON_VULNERABLE, "Specifies that the Retire JS "
                         + "Analyzer should filter out non-vulnerable JS files from the report."))
                 .addOption(newOptionWithArg(ARGUMENT.ARTIFACTORY_PARALLEL_ANALYSIS, "true/false",
                         "Whether the Artifactory Analyzer should use parallel analysis."))
@@ -470,7 +470,7 @@ public final class CliParser {
                         "The path to the `yarn` executable."))
                 .addOption(newOptionWithArg(ARGUMENT.PATH_TO_PNPM, "path",
                         "The path to the `pnpm` executable."))
-                .addOption(newOptionWithArg(ARGUMENT.RETIREJS_FILTERS, "pattern",
+                .addOption(newOptionWithArg(ARGUMENT.RETIRE_JS_FILTERS, "pattern",
                         "Specify Retire JS content filter used to exclude files from analysis based on their content; "
                                 + "most commonly used to exclude based on your applications own copyright line. This "
                                 + "option can be specified multiple times."))
@@ -514,6 +514,7 @@ public final class CliParser {
                 .addOption(newOption(ARGUMENT.DISABLE_FILENAME, "Disable the File Name Analyzer."))
                 .addOption(newOption(ARGUMENT.DISABLE_AUTOCONF, "Disable the Autoconf Analyzer."))
                 .addOption(newOption(ARGUMENT.DISABLE_MAVEN_INSTALL, "Disable the Maven install Analyzer."))
+                .addOption(newOption(ARGUMENT.DISABLE_PE, "Disable the PE Analyzer."))
                 .addOption(newOption(ARGUMENT.DISABLE_PIP, "Disable the pip Analyzer."))
                 .addOption(newOption(ARGUMENT.DISABLE_PIPFILE, "Disable the Pipfile Analyzer."))
                 .addOption(newOption(ARGUMENT.DISABLE_COMPOSER, "Disable the PHP Composer Analyzer."))
@@ -535,7 +536,7 @@ public final class CliParser {
                 .addOption(newOption(ARGUMENT.DISABLE_SWIFT, "Disable the swift package Analyzer."))
                 .addOption(newOption(ARGUMENT.DISABLE_SWIFT_RESOLVED, "Disable the swift package resolved Analyzer."))
                 .addOption(newOption(ARGUMENT.DISABLE_GO_DEP, "Disable the Golang Package Analyzer."))
-                .addOption(newOption(ARGUMENT.DISABLE_NODE_JS, "Disable the Node.js Package Analyzer."))
+                .addOption(newOption(ARGUMENT.DISABLE_NODE_JS, "Disable the Node Package Analyzer."))
                 .addOption(newOption(ARGUMENT.NODE_PACKAGE_SKIP_DEV_DEPENDENCIES, "Configures the Node Package Analyzer to skip devDependencies"))
                 .addOption(newOption(ARGUMENT.DISABLE_NODE_AUDIT, "Disable the Node Audit Analyzer."))
                 .addOption(newOption(ARGUMENT.DISABLE_PNPM_AUDIT, "Disable the Pnpm Audit Analyzer."))
@@ -575,6 +576,13 @@ public final class CliParser {
         //not a real option - but enables java debugging via the shell script
         options.addOption(newOption("debug",
                 "Used to enable java debugging of the cli via dependency-check.sh."));
+        options.addOption(newOption(ARGUMENT.DISABLE_RETIREJS_DEPRECATED, "Disable the RetireJS Analyzer."));
+        options.addOption(newOption(ARGUMENT.RETIREJS_FILTER_NON_VULNERABLE_DEPRECATED, "Specifies that the Retire JS "
+                + "Analyzer should filter out non-vulnerable JS files from the report."));
+        options.addOption(newOptionWithArg(ARGUMENT.RETIREJS_FILTERS_DEPRECATED, "pattern",
+                "Specify Retire JS content filter used to exclude files from analysis based on their content; "
+                        + "most commonly used to exclude based on your applications own copyright line. This "
+                        + "option can be specified multiple times."));
     }
 
     /**
@@ -825,7 +833,8 @@ public final class CliParser {
      * @return the retireJS filters
      */
     public String[] getRetireJsFilters() {
-        return line.getOptionValues(ARGUMENT.RETIREJS_FILTERS);
+        final String[] values = line.getOptionValues(ARGUMENT.RETIRE_JS_FILTERS);
+        return values != null ? values : line.getOptionValues(ARGUMENT.RETIREJS_FILTERS_DEPRECATED);
     }
 
     /**
@@ -838,7 +847,8 @@ public final class CliParser {
     @SuppressFBWarnings(justification = "Accepting that this is a bad practice - but made more sense in this use case",
             value = {"NP_BOOLEAN_RETURN_NULL"})
     public Boolean isRetireJsFilterNonVulnerable() {
-        return (line != null && line.hasOption(ARGUMENT.RETIREJS_FILTER_NON_VULNERABLE)) ? true : null;
+        return (line != null && (line.hasOption(ARGUMENT.RETIRE_JS_FILTER_NON_VULNERABLE)
+                || line.hasOption(ARGUMENT.RETIREJS_FILTER_NON_VULNERABLE_DEPRECATED))) ? true : null;
     }
 
     /**
@@ -1389,6 +1399,10 @@ public final class CliParser {
          */
         public static final String DISABLE_ASSEMBLY = "disableAssembly";
         /**
+         * Disables the PE Analyzer.
+         */
+        public static final String DISABLE_PE = "disablePE";
+        /**
          * Disables the Ruby Bundler Audit Analyzer.
          */
         public static final String DISABLE_BUNDLE_AUDIT = "disableBundleAudit";
@@ -1442,6 +1456,10 @@ public final class CliParser {
          */
         public static final String DISABLE_OSSINDEX_CACHE = "disableOssIndexCache";
         /**
+         * The number of hours to wait before checking for new updates on individual packages/components from Sonatype OSS Index
+         */
+        public static final String OSSINDEX_CACHE_VALID_FOR_HOURS = "ossIndexCacheValidForHours";
+        /**
          * The alternative URL for the Sonatype OSS Index.
          */
         public static final String OSSINDEX_URL = "ossIndexUrl";
@@ -1462,7 +1480,7 @@ public final class CliParser {
          */
         public static final String DISABLE_OPENSSL = "disableOpenSSL";
         /**
-         * Disables the Node.js Package Analyzer.
+         * Disables the Node Package Analyzer.
          */
         public static final String DISABLE_NODE_JS = "disableNodeJS";
         /**
@@ -1491,8 +1509,14 @@ public final class CliParser {
         public static final String DISABLE_NODE_AUDIT_SKIPDEV = "nodeAuditSkipDevDependencies";
         /**
          * Disables the RetireJS Analyzer.
+         * @deprecated Use {@link #DISABLE_RETIRE_JS} instead.
          */
-        public static final String DISABLE_RETIRE_JS = "disableRetireJS";
+        @Deprecated
+        public static final String DISABLE_RETIREJS_DEPRECATED = "disableRetireJS";
+        /**
+         * Disables the RetireJS Analyzer.
+         */
+        public static final String DISABLE_RETIRE_JS = "disableRetireJs";
         /**
          * Whether the RetireJS Analyzer will update regardless of the
          * `autoupdate` setting.
@@ -1591,12 +1615,24 @@ public final class CliParser {
         public static final String RETIRED = "enableRetired";
         /**
          * The CLI argument for the retire js content filters.
+         * @deprecated Use {@link #RETIRE_JS_FILTERS} instead.
          */
-        public static final String RETIREJS_FILTERS = "retirejsFilter";
+        @Deprecated
+        public static final String RETIREJS_FILTERS_DEPRECATED = "retirejsFilter";
+        /**
+         * The CLI argument for the retire JS content filters.
+         */
+        public static final String RETIRE_JS_FILTERS = "retireJsFilter";
         /**
          * The CLI argument for the retire js content filters.
+         * @deprecated Use {@link #RETIRE_JS_FILTER_NON_VULNERABLE} instead.
          */
-        public static final String RETIREJS_FILTER_NON_VULNERABLE = "retirejsFilterNonVulnerable";
+        @Deprecated
+        public static final String RETIREJS_FILTER_NON_VULNERABLE_DEPRECATED = "retirejsFilterNonVulnerable";
+        /**
+         * The CLI argument for the retire JS content filter for non-vulnerable.
+         */
+        public static final String RETIRE_JS_FILTER_NON_VULNERABLE = "retireJsFilterNonVulnerable";
         /**
          * The CLI argument for indicating if the Artifactory analyzer should be
          * enabled.

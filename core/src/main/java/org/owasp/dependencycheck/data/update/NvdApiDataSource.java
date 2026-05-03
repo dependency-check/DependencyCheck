@@ -55,7 +55,7 @@ import java.util.concurrent.Future;
 import java.util.function.Function;
 import java.util.zip.GZIPOutputStream;
 
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 import org.owasp.dependencycheck.Engine;
 import org.owasp.dependencycheck.data.nvdcve.CveDB;
 import org.owasp.dependencycheck.data.nvdcve.DatabaseException;
@@ -666,20 +666,20 @@ public class NvdApiDataSource implements CachedWebDataSource {
             return new FeedUrl(url, patternTransformer.apply(Optional.ofNullable(pattern)));
         }
 
-        @NotNull String toFormattedUrlString(String formatArg) {
+        @NonNull String toFormattedUrlString(String formatArg) {
             return url + MessageFormat.format(Optional.ofNullable(pattern).orElseThrow(), formatArg);
         }
 
-        @NotNull String toFormattedUrlString(int formatArg) {
+        @NonNull String toFormattedUrlString(int formatArg) {
             return toFormattedUrlString(String.valueOf(formatArg));
         }
 
-        @NotNull URL toFormattedUrl(@NotNull String formatArg) throws MalformedURLException, URISyntaxException {
+        @NonNull URL toFormattedUrl(@NonNull String formatArg) throws MalformedURLException, URISyntaxException {
             return new URI(toFormattedUrlString(formatArg)).toURL();
         }
 
         @SuppressWarnings("SameParameterValue")
-        @NotNull URL toSuffixedUrl(String suffix) throws MalformedURLException, URISyntaxException {
+        @NonNull URL toSuffixedUrl(String suffix) throws MalformedURLException, URISyntaxException {
             return new URI(url + suffix).toURL();
         }
 
@@ -705,7 +705,7 @@ public class NvdApiDataSource implements CachedWebDataSource {
             return new FeedUrl(baseUrl, pattern);
         }
 
-        private static @NotNull Pair<Integer, Integer> toYearRange(Settings settings, ZonedDateTime now) {
+        private static @NonNull Pair<Integer, Integer> toYearRange(Settings settings, ZonedDateTime now) {
             // for establishing the current year use the timezone where the new year starts first
             // as from that moment on CNAs might start assigning CVEs with the new year depending
             // on the CNA's timezone
@@ -714,11 +714,11 @@ public class NvdApiDataSource implements CachedWebDataSource {
             return new Pair<>(startYear, endYear);
         }
 
-        private @NotNull ZonedDateTime getLastModifiedFor(int year) throws UpdateException {
+        private @NonNull ZonedDateTime getLastModifiedFor(int year) throws UpdateException {
             return getLastModifiedFor(String.valueOf(year));
         }
 
-        private @NotNull ZonedDateTime getLastModifiedFor(String fileVersion) throws UpdateException {
+        private @NonNull ZonedDateTime getLastModifiedFor(String fileVersion) throws UpdateException {
             try {
                 String content = Downloader.getInstance().fetchContent(toFormattedUrl(fileVersion), UTF_8);
                 Properties props = new Properties();

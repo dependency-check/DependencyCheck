@@ -30,7 +30,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
-import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -520,8 +519,6 @@ public class JarAnalyzer extends AbstractFileTypeAnalyzer {
             try (Reader reader = new InputStreamReader(jar.getInputStream(propEntry), StandardCharsets.UTF_8)) {
                 pomProperties.load(reader);
                 LOGGER.debug("Read pom.properties: {}", propPath);
-            } catch (UnsupportedEncodingException ex) {
-                LOGGER.trace("UTF-8 is not supported", ex);
             } catch (IOException ex) {
                 LOGGER.trace("Unable to read the POM properties", ex);
             }

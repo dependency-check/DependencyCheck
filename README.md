@@ -1,4 +1,4 @@
-[![Maven Central](https://img.shields.io/maven-central/v/org.owasp/dependency-check-maven.svg)](https://mvnrepository.com/artifact/org.owasp/dependency-check-maven) [![Build and Deploy Snapshot](https://github.com/dependency-check/DependencyCheck/actions/workflows/build.yml/badge.svg)](https://github.com/dependency-check/DependencyCheck/actions/workflows/build.yml) [![Codacy Badge](https://api.codacy.com/project/badge/Grade/6b6021d481dc41a888c5da0d9ecf9494)](https://www.codacy.com/app/jeremylong/DependencyCheck?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=jeremylong/DependencyCheck&amp;utm_campaign=Badge_Grade) [![CII Best Practices](https://bestpractices.coreinfrastructure.org/projects/843/badge)](https://bestpractices.coreinfrastructure.org/projects/843) [![Apache 2.0 License](https://img.shields.io/badge/license-Apache%202-blue.svg)](https://www.apache.org/licenses/LICENSE-2.0.txt)
+[![Maven Central](https://img.shields.io/maven-central/v/org.owasp/dependency-check-maven.svg)](https://mvnrepository.com/artifact/org.owasp/dependency-check-maven) [![Build and Deploy Snapshot](https://github.com/dependency-check/DependencyCheck/actions/workflows/build.yml/badge.svg)](https://github.com/dependency-check/DependencyCheck/actions/workflows/build.yml) [![CII Best Practices](https://bestpractices.coreinfrastructure.org/projects/843/badge)](https://bestpractices.coreinfrastructure.org/projects/843) [![Apache 2.0 License](https://img.shields.io/badge/license-Apache%202-blue.svg)](https://www.apache.org/licenses/LICENSE-2.0.txt)
 
 [![Black Hat Arsenal](https://raw.githubusercontent.com/toolswatch/badges/master/arsenal/usa/2018.svg?sanitize=true)](https://www.blackhat.com/us-18/arsenal.html#jeremy-long) [![Black Hat Arsenal](https://raw.githubusercontent.com/toolswatch/badges/master/arsenal/usa/2015.svg?sanitize=true)](https://www.blackhat.com/us-15/arsenal.html#jeremy-long) [![Black Hat Arsenal](https://raw.githubusercontent.com/toolswatch/badges/master/arsenal/usa/2014.svg?sanitize=true)](https://www.blackhat.com/us-14/arsenal.html#Long) [![Black Hat Arsenal](https://raw.githubusercontent.com/toolswatch/badges/master/arsenal/usa/2013.svg?sanitize=true)](https://www.blackhat.com/us-13/arsenal.html#Long)
 
@@ -14,7 +14,7 @@ This product uses the NVD API but is not endorsed or certified by the NVD.
 
 ## Mandatory Upgrade to 12.1.0+
 
-Due to NVD API compatiiblity changes, an upgrade is mandatory. See [#7463](https://github.com/dependency-check/DependencyCheck/issues/7463) for more information.
+Due to NVD API compatibility changes, an upgrade is mandatory. See [#7463](https://github.com/dependency-check/DependencyCheck/issues/7463) for more information.
 
 ## Breaking Changes in 11.0.0
 
@@ -46,14 +46,17 @@ The NVD API has enforced rate limits. If you are using a single API KEY and
 multiple builds occur you could hit the rate limit and receive 403 errors. In
 a CI environment one must use a caching strategy.
 
-### OSSIndex API Token Now Required for usage
+### Sonatype OSS Index API Token Now Required for usage
 
-In September 2025 Sonatype OSSIndex started enforcing use of API tokens. If you 
-wish to use Sonatype OSSIndex you must configure Dependency-Check
-to use a username and API token/password; see https://ossindex.sonatype.org/doc/api-token.
-Without OSSIndex credentials, Dependency Check will **automatically disable the OSSIndex analyzer**.
-Please see the documentation for the cli, maven, gradle, or ant integrations on
-how to set the OSSIndex credentials.
+Since September 2025 Sonatype OSS Index started enforcing use of API tokens for authentication. In April 2026 a
+subsequent migration to Sonatype Guide began.
+
+If you wish to use Sonatype OSS Index you must configure Dependency-Check and consider implications for migration to 
+Sonatype Guide. See the [analyzer documentation](https://dependency-check.github.io/DependencyCheck/analyzers/oss-index-analyzer.html)
+for more information.
+
+Without credentials, Dependency Check will **automatically disable the OSS Index analyzer**. Please see the documentation 
+for the cli, maven, gradle, or ant integrations on how to set the OSS Index credentials.
 
 ### Gradle build Environment
 
@@ -66,11 +69,11 @@ the transitive dependencies of dependency-check to specific versions. For exampl
 dependencies {
     constraints {
         // org.owasp.dependencycheck needs at least this version of jackson. Other plugins pull in older versions..
-        add("implementation", "com.fasterxml.jackson:jackson-bom:2.16.1")
+        add("implementation", "com.fasterxml.jackson:jackson-bom:2.21.2")
 
         // org.owasp.dependencycheck needs these versions. Other plugins pull in older versions..
-        add("implementation", "org.apache.commons:commons-lang3:3.14.0")
-        add("implementation", "org.apache.commons:commons-text:1.11.0")
+        add("implementation", "org.apache.commons:commons-lang3:3.20.0")
+        add("implementation", "org.apache.commons:commons-text:1.15.0")
     }
 }
 ```
@@ -179,7 +182,7 @@ For instructions on the use of the Ant Task, please see the [dependency-check-an
 ## Development Prerequisites
 
 For installation to pass, you must have the following components installed:
-* Java: `java -version` 11.0
+* Java: `java -version` 25.0
 * Maven: `mvn -version` 3.6.3 and higher
 
 Tests cases require:
@@ -356,7 +359,7 @@ To build dependency-check docker image run the command:
 
 ```
 mvn -s settings.xml install
-./build-docker.sh
+./docker-build.sh
 ```
 
 License

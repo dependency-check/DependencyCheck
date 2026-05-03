@@ -15,7 +15,6 @@
  */
 package org.owasp.dependencycheck;
 
-import io.github.jeremylong.jcs3.slf4j.Slf4jAdapter;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -24,8 +23,7 @@ import org.owasp.dependencycheck.utils.Settings;
 import java.io.File;
 import java.io.InputStream;
 import java.net.URISyntaxException;
-
-import static org.junit.jupiter.api.Assumptions.assumeTrue;
+import java.util.Objects;
 
 /**
  *
@@ -43,8 +41,6 @@ public abstract class BaseTest {
      */
     @BeforeEach
     public void setUp() throws Exception {
-        System.setProperty("jcs.logSystem", "slf4j");
-        Slf4jAdapter.muteLogging(true);
         settings = new Settings();
     }
 
@@ -69,23 +65,18 @@ public abstract class BaseTest {
     }
 
     /**
-     * Returns the given resource as an InputStream using the object's class
-     * loader. The org.junit.Assume API is used so that test cases are skipped
-     * if the resource is not available.
+     * Returns the given resource as an InputStream using the object's class loader.
      *
      * @param o the object used to obtain a reference to the class loader
      * @param resource the name of the resource to load
      * @return the resource as an InputStream
      */
     public static InputStream getResourceAsStream(Object o, String resource) {
-        getResourceAsFile(o, resource);
-        return o.getClass().getClassLoader().getResourceAsStream(resource);
+        return Objects.requireNonNull(o.getClass().getClassLoader().getResourceAsStream(resource), resource + " not found on classpath");
     }
 
     /**
-     * Returns the given resource as a File using the object's class loader. The
-     * org.junit.Assume API is used so that test cases are skipped if the
-     * resource is not available.
+     * Returns the given resource as a File using the object's class loader.
      *
      * @param o the object used to obtain a reference to the class loader
      * @param resource the name of the resource to load
@@ -93,18 +84,14 @@ public abstract class BaseTest {
      */
     public static File getResourceAsFile(Object o, String resource) {
         try {
-            File f = new File(o.getClass().getClassLoader().getResource(resource).toURI().getPath());
-            assumeTrue(f.exists(), String.format("%n%n[SEVERE] Unable to load resource for test case: %s%n%n", resource));
-            return f;
+            return new File(Objects.requireNonNull(o.getClass().getClassLoader().getResource(resource), resource + " not found on classpath").toURI().getPath());
         } catch (URISyntaxException e) {
             throw new UnsupportedOperationException(e);
         }
     }
 
     /**
-     * Returns the settings for the test cases.
-     *
-     * @return
+     * @return the settings for the test cases.
      */
     protected Settings getSettings() {
         return settings;

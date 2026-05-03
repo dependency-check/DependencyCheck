@@ -20,6 +20,7 @@ package org.owasp.dependencycheck.taskdefs;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
@@ -28,7 +29,7 @@ import org.owasp.dependencycheck.Engine;
 import org.owasp.dependencycheck.utils.Downloader;
 import org.owasp.dependencycheck.utils.InvalidSettingException;
 import org.owasp.dependencycheck.utils.Settings;
-import org.slf4j.impl.StaticLoggerBinder;
+import org.owasp.dependencycheck.ant.logging.AntTaskHolder;
 
 /**
  * An Ant task definition to execute dependency-check during an Ant build.
@@ -64,7 +65,7 @@ public class Purge extends Task {
 
         // Call this before Dependency Check Core starts logging anything - this way, all SLF4J messages from
         // core end up coming through this tasks logger
-        StaticLoggerBinder.getSingleton().setTask(this);
+        AntTaskHolder.setTask(this);
     }
 
     public Settings getSettings() {
@@ -120,16 +121,20 @@ public class Purge extends Task {
             executeWithContextClassloader();
         } finally {
             Thread.currentThread().setContextClassLoader(current);
+            AntTaskHolder.remove();
         }
     }
 
     /**
-     * Hacky method of muting the noisy logging from JCS.
+     * Hacky method of muting the noisy logging from certain libraries.
      */
     private void muteNoisyLoggers() {
-        final String[] noisyLoggers = {
+        // Mirrors the configuration within cli/src/main/resources/logback.xml
+        final List<String> noisyLoggers = List.of(
+            "org.apache.lucene",
+            "org.apache.commons.jcs3",
             "org.apache.hc"
-        };
+        );
         for (String loggerName : noisyLoggers) {
             System.setProperty("org.slf4j.simpleLogger.log." + loggerName, "error");
         }

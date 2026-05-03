@@ -3,13 +3,14 @@ Nexus Analyzer
 
 The Nexus Analyzer will check for the Maven GAV (Group/Artifact/Version) information
 for artifacts in the scanned area. This is done by determining if an artifact exists
-in a Sonatype Nexus installation using the SHA-1 hash of the artifact scanned. If the
+in a [Sonatype Nexus][2] installation using the SHA-1 hash of the artifact scanned. If the
 artifact's hash is found in the configured Nexus repository, its GAV is recorded as
 an Identifier and the Group is collected as Vendor evidence, the Artifact is
 collected as Product evidence, and the Version is collected as Version evidence.
 
-The Nexus Analyzer is an alternative to the Central or Artifactory Analyzers and can 
-be used to limit dependencies on an external resource such as Maven Central, as well 
+The Nexus Analyzer is an alternative to the [Central](./central-analyzer.html) or 
+[Artifactory](./artifactory-analyzer.html) Analyzers and can be used to limit dependencies 
+on an external resource such as [Maven Central][1], as well 
 as providing POM information for artifacts not available in Maven Central. Use by ODC
 is thus similar to how users may choose to run their own Nexus instance to proxy 
 artifact retrieval from Maven Central to limit internet usage and/or dependence on 
@@ -32,5 +33,5 @@ analyzer will be disabled. If you see this message, you can use the configuratio
 settings described in either the CLI, Ant, Maven, or Jenkins plugins to resolve
 the issue, or disable the analyzer altogether.
 
-[1]: http://search.maven.org/            "Maven Central"
-[2]: https://repository.sonatype.org/    "Sonatype Nexus Repository"
+[1]: http://search.maven.org/                                       "Maven Central"
+[2]: https://www.sonatype.com/products/sonatype-nexus-repository    "Sonatype Nexus Repository"

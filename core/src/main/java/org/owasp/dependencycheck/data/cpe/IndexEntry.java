@@ -18,7 +18,6 @@
 package org.owasp.dependencycheck.data.cpe;
 
 import java.io.Serializable;
-import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import javax.annotation.concurrent.ThreadSafe;
@@ -143,16 +142,15 @@ public class IndexEntry implements Serializable {
      * version and revision) then you should use the `cpe-parser`.
      *
      * @param cpeName the CPE name
-     * @throws UnsupportedEncodingException should never be thrown...
      */
-    public void parseName(String cpeName) throws UnsupportedEncodingException {
+    public void parseName(String cpeName) {
         if (cpeName != null && cpeName.length() > 7) {
             final String cpeNameWithoutPrefix = cpeName.substring(7);
             final String[] data = StringUtils.split(cpeNameWithoutPrefix, ':');
             if (data.length >= 1) {
-                vendor = URLDecoder.decode(data[0].replace("+", "%2B"), StandardCharsets.UTF_8.name());
+                vendor = URLDecoder.decode(data[0].replace("+", "%2B"), StandardCharsets.UTF_8);
                 if (data.length >= 2) {
-                    product = URLDecoder.decode(data[1].replace("+", "%2B"), StandardCharsets.UTF_8.name());
+                    product = URLDecoder.decode(data[1].replace("+", "%2B"), StandardCharsets.UTF_8);
                 }
             }
         }

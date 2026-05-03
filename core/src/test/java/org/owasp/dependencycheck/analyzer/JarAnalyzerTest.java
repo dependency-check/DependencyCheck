@@ -48,8 +48,7 @@ class JarAnalyzerTest extends BaseTest {
      */
     @Test
     void testAnalyze() throws Exception {
-        //File file = new File(this.getClass().getClassLoader().getResource("struts2-core-2.1.2.jar").getPath());
-        File file = BaseTest.getResourceAsFile(this, "struts2-core-2.1.2.jar");
+        File file = BaseTest.getResourceAsFile(this, "maven-lib/struts2-core-2.1.2.jar");
         Dependency result = new Dependency(file);
         JarAnalyzer instance = new JarAnalyzer();
         instance.initialize(getSettings());
@@ -115,7 +114,7 @@ class JarAnalyzerTest extends BaseTest {
 
     @Test
     void testAddMatchingValues() throws Exception {
-        File file = BaseTest.getResourceAsFile(this, "struts2-core-2.1.2.jar");
+        File file = BaseTest.getResourceAsFile(this, "maven-lib/struts2-core-2.1.2.jar");
         Dependency dependency = new Dependency(file);
         JarAnalyzer instance = new JarAnalyzer();
         instance.initialize(getSettings());
@@ -172,7 +171,7 @@ class JarAnalyzerTest extends BaseTest {
 
     @Test
     void testParseManifest() throws Exception {
-        File file = BaseTest.getResourceAsFile(this, "xalan-2.7.0.jar");
+        File file = BaseTest.getResourceAsFile(this, "maven-lib/xalan-2.7.0.jar");
         Dependency result = new Dependency(file);
         JarAnalyzer instance = new JarAnalyzer();
         List<JarAnalyzer.ClassNameInformation> cni = new ArrayList<>();

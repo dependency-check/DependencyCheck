@@ -17,8 +17,7 @@ The following are sources of vulnerability information. Dependency-check only us
 Database (NVD)](https://nvd.nist.gov/). The other sources listed below contain vulnerability information that may not be included in the NVD.
 
 * [vFeed](http://www.toolswatch.org/vfeed)
-* [OSVDB](http://osvdb.org/)
-* [Sonatype OSS Index](https://ossindex.sonatype.org/)
+* [Sonatype Guide OSS Index](https://www.sonatype.com/products/sonatype-guide/oss-index-users)
 
 Related Commercial Products
 ------------------------

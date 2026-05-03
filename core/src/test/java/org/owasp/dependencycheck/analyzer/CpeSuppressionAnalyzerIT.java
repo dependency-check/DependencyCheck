@@ -66,7 +66,7 @@ class CpeSuppressionAnalyzerIT extends BaseDBTestCase {
     @Test
     void testAnalyze() throws Exception {
 
-        File file = BaseTest.getResourceAsFile(this, "commons-fileupload-1.2.1.jar");
+        File file = BaseTest.getResourceAsFile(this, "maven-lib/commons-fileupload-1.2.1.jar");
         File suppression = BaseTest.getResourceAsFile(this, "commons-fileupload-1.2.1.suppression.xml");
         getSettings().setBoolean(Settings.KEYS.AUTO_UPDATE, false);
         getSettings().setBoolean(Settings.KEYS.ANALYZER_NEXUS_ENABLED, false);

@@ -17,12 +17,6 @@
  */
 package org.owasp.dependencycheck.data.ossindex;
 
-import java.io.IOException;
-import java.net.URI;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.List;
-
 import org.apache.hc.core5.http.ContentType;
 import org.apache.hc.core5.http.Header;
 import org.apache.hc.core5.http.HttpHeaders;
@@ -34,6 +28,12 @@ import org.sonatype.ossindex.service.client.OssindexClientConfiguration;
 import org.sonatype.ossindex.service.client.transport.BasicAuthHelper;
 import org.sonatype.ossindex.service.client.transport.Transport;
 import org.sonatype.ossindex.service.client.transport.UserAgentSupplier;
+
+import java.io.IOException;
+import java.net.URI;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * ODC connection transport is used instead of HttpUrlConnectionTransport
@@ -90,5 +90,9 @@ public class ODCConnectionTransport implements Transport {
     @Override
     public void close() throws Exception {
         // no resource closure needed; fully delegated to HTTPClient
+    }
+
+    UserAgentSupplier getUserAgent() {
+        return userAgent;
     }
 }

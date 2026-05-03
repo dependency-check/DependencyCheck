@@ -104,10 +104,6 @@ public class DataCacheFactory {
                     throw new CacheException("Unable to create disk cache: " + cacheDirectory);
                 }
                 try (InputStream in = FileUtils.getResourceAsStream(CACHE_PROPERTIES)) {
-                    if (in == null) {
-                        throw new RuntimeException("Cache properties `" + CACHE_PROPERTIES + "` could not be found");
-                    }
-
                     final Properties properties = new Properties();
                     properties.load(in);
                     properties.put("jcs.auxiliary.ODC.attributes.DiskPath", cacheDirectory.getCanonicalPath());

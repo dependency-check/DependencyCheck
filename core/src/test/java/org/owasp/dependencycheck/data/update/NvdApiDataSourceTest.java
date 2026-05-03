@@ -18,7 +18,6 @@
 package org.owasp.dependencycheck.data.update;
 
 import org.hamcrest.Matchers;
-import org.jspecify.annotations.NonNull;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
@@ -208,7 +207,7 @@ class NvdApiDataSourceTest {
             }
         }
 
-        private @NonNull Map<String, ZonedDateTime> retrieveUntil(ZonedDateTime until) throws UpdateException {
+        private Map<String, ZonedDateTime> retrieveUntil(ZonedDateTime until) throws UpdateException {
             Map<String, ZonedDateTime> lastModifieds;
             NvdApiDataSource.FeedUrl feedUrl = extractFromUrlOptionalPattern("https://internal.server/nist/nvdcve-{0}.json.gz");
 

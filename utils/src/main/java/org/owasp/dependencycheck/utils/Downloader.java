@@ -45,7 +45,7 @@ import org.apache.hc.core5.http.io.entity.BasicHttpEntity;
 import org.apache.hc.core5.http.io.entity.StringEntity;
 import org.apache.hc.core5.http.message.BasicClassicHttpRequest;
 import org.apache.hc.core5.http.message.BasicClassicHttpResponse;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -507,7 +507,7 @@ public final class Downloader {
      * @param credentialsProvider The credentialStore to configure the credentials in
      * @param authCache The AuthCache to cache the pre-empted credentials in
      */
-    private void tryConfigureProxyCredentials(@NotNull CredentialsStore credentialsProvider, @NotNull AuthCache authCache) {
+    private void tryConfigureProxyCredentials(@NonNull CredentialsStore credentialsProvider, @NonNull AuthCache authCache) {
         if (proxyPreEmptAuth != null) {
             credentialsProvider.setCredentials(proxyAuthScope, proxyCreds);
             authCache.put(proxyHttpHost, proxyPreEmptAuth);
@@ -648,7 +648,7 @@ public final class Downloader {
      * @throws TooManyRequestsException  When HTTP status 429 is encountered
      * @throws ResourceNotFoundException When HTTP status 404 is encountered
      */
-    public <T> T fetchAndHandle(@NotNull URL url, @NotNull HttpClientResponseHandler<T> handler)
+    public <T> T fetchAndHandle(@NonNull URL url, @NonNull HttpClientResponseHandler<T> handler)
             throws IOException, TooManyRequestsException, ResourceNotFoundException, URISyntaxException, ForbiddenException {
         return fetchAndHandle(url, handler, Collections.emptyList(), true);
     }
@@ -665,7 +665,7 @@ public final class Downloader {
      * @throws TooManyRequestsException  When HTTP status 429 is encountered
      * @throws ResourceNotFoundException When HTTP status 404 is encountered
      */
-    public <T> T fetchAndHandle(@NotNull URL url, @NotNull HttpClientResponseHandler<T> handler, @NotNull List<Header> hdr)
+    public <T> T fetchAndHandle(@NonNull URL url, @NonNull HttpClientResponseHandler<T> handler, @NonNull List<Header> hdr)
             throws IOException, TooManyRequestsException, ResourceNotFoundException, URISyntaxException, ForbiddenException {
         return fetchAndHandle(url, handler, hdr, true);
     }
@@ -683,7 +683,7 @@ public final class Downloader {
      * @throws TooManyRequestsException  When HTTP status 429 is encountered
      * @throws ResourceNotFoundException When HTTP status 404 is encountered
      */
-    public <T> T fetchAndHandle(@NotNull URL url, @NotNull HttpClientResponseHandler<T> handler, @NotNull List<Header> hdr, boolean useProxy)
+    public <T> T fetchAndHandle(@NonNull URL url, @NonNull HttpClientResponseHandler<T> handler, @NonNull List<Header> hdr, boolean useProxy)
             throws IOException, TooManyRequestsException, ResourceNotFoundException, URISyntaxException, ForbiddenException {
         final T data;
         if ("file".equals(url.getProtocol())) {
@@ -716,8 +716,8 @@ public final class Downloader {
      * @throws TooManyRequestsException  When HTTP status 429 is encountered
      * @throws ResourceNotFoundException When HTTP status 404 is encountered
      */
-    public <T> T fetchAndHandle(@NotNull CloseableHttpClient client, @NotNull URL url, @NotNull HttpClientResponseHandler<T> handler,
-                                @NotNull List<Header> hdr) throws IOException, TooManyRequestsException,
+    public <T> T fetchAndHandle(@NonNull CloseableHttpClient client, @NonNull URL url, @NonNull HttpClientResponseHandler<T> handler,
+                                @NonNull List<Header> hdr) throws IOException, TooManyRequestsException,
             ResourceNotFoundException, ForbiddenException {
         try {
             final String theProtocol = url.getProtocol();

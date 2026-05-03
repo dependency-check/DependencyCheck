@@ -3,7 +3,7 @@ How to Mount ISO Files for Scanning
 
 Dependency-Check can be used as one of your tools for vetting software
 distributed via an [ISO image](https://en.wikipedia.org/wiki/ISO_image). (See
-[File Type Analyzers](../analyzers/) for a list of what types of artifacts
+[Analyzers](../analyzers/) for a list of what types of artifacts
 Dependency-Check is capable of scanning.) These disk image files are not a standard archive format, however. Tools must be used that can interpret the contained file system. As will be shown below, Linux, Mac OS X, and recent versions of Windows can be used to mount the image's file system, which can
 then be scanned by Dependency-Check.
 

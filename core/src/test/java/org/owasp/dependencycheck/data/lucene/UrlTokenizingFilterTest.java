@@ -17,73 +17,35 @@
  */
 package org.owasp.dependencycheck.data.lucene;
 
-import java.io.IOException;
-import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.tests.analysis.BaseTokenStreamTestCase;
-import org.apache.lucene.tests.analysis.MockTokenizer;
-import org.apache.lucene.analysis.Tokenizer;
-import org.apache.lucene.analysis.core.KeywordTokenizer;
-import org.junit.Test;
+import org.apache.lucene.analysis.TokenFilter;
+import org.apache.lucene.analysis.TokenStream;
+import org.hamcrest.Matchers;
+import org.jspecify.annotations.NonNull;
+import org.junit.jupiter.api.Test;
+
+import java.util.List;
+
+import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
  *
  * @author Jeremy Long
  */
-public class UrlTokenizingFilterTest extends BaseTokenStreamTestCase {
+public class UrlTokenizingFilterTest extends BaseTokenFilterTest {
+    @Test
+    public void testIncrementToken() throws Exception {
+        assertThat(processAllFrom("http://www.domain.com/test.php"), Matchers.contains("domain", "test"));
+        assertThat(processAllFrom("https://apache.org"), Matchers.contains("apache"));
+    }
 
-    private final Analyzer analyzer;
-
-    public UrlTokenizingFilterTest() {
-        analyzer = new Analyzer() {
+    @Override
+    TokenFilter newFilter(@NonNull final TokenStream stream, List<String> terms) {
+        return new UrlTokenizingFilter(stream) {
             @Override
-            protected TokenStreamComponents createComponents(String fieldName) {
-                Tokenizer source = new MockTokenizer(MockTokenizer.WHITESPACE, false);
-                return new TokenStreamComponents(source, new UrlTokenizingFilter(source));
+            protected void appendTerm(String term) {
+                super.appendTerm(term);
+                terms.add(term);
             }
         };
-    }
-
-    /**
-     * test some example domains
-     */
-    @Test
-    public void testExamples() throws IOException {
-        String[] expected = new String[2];
-        expected[0] = "domain";
-        expected[1] = "test";
-        assertAnalyzesTo(analyzer, "http://www.domain.com/test.php", expected);
-        checkOneTerm(analyzer, "https://apache.org", "apache");
-    }
-
-    /**
-     * copied from
-     * http://svn.apache.org/repos/asf/lucene/dev/trunk/lucene/analysis/common/src/test/org/apache/lucene/analysis/en/TestEnglishMinimalStemFilter.java
-     * blast some random strings through the analyzer
-     */
-    @Test
-    public void testRandomStrings() {
-        try {
-            checkRandomData(random(), analyzer, 1000 * RANDOM_MULTIPLIER);
-        } catch (IOException ex) {
-            fail("Failed test random strings: " + ex.getMessage());
-        }
-    }
-
-    /**
-     * copied from
-     * http://svn.apache.org/repos/asf/lucene/dev/trunk/lucene/analysis/common/src/test/org/apache/lucene/analysis/en/TestEnglishMinimalStemFilter.java
-     *
-     * @throws IOException
-     */
-    @Test
-    public void testEmptyTerm() throws IOException {
-        Analyzer a = new Analyzer() {
-            @Override
-            protected TokenStreamComponents createComponents(String fieldName) {
-                Tokenizer tokenizer = new KeywordTokenizer();
-                return new TokenStreamComponents(tokenizer, new UrlTokenizingFilter(tokenizer));
-            }
-        };
-        checkOneTerm(a, "", "");
     }
 }

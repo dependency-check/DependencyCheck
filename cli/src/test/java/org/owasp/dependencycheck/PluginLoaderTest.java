@@ -13,6 +13,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.regex.Pattern;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.matchesPattern;
 import static org.mockito.ArgumentMatchers.assertArg;
@@ -52,11 +53,11 @@ class PluginLoaderTest {
     void shouldStopLoadingPluginsOnBadJarButSucceed() throws Exception {
         PrintStream originalErr = System.err;
         ByteArrayOutputStream errContent = new ByteArrayOutputStream();
-        System.setErr(new PrintStream(errContent));
+        System.setErr(new PrintStream(errContent, true, UTF_8));
         try {
             createEmptyBadJar();
             PluginLoader.premain(tempDir.toString(), instrumentation);
-            assertThat(errContent.toString(), matchesPattern(Pattern.compile("\\[WARN\\] Failed to read plugin jar file at .*/dummy.*\\.jar\\. Jar will not be available on classpath.*zip file is empty.*", Pattern.DOTALL)));
+            assertThat(errContent.toString(), matchesPattern(Pattern.compile("\\[WARN] Failed to read plugin jar file at .*/dummy.*\\.jar\\. Jar will not be available on classpath.*zip file is empty.*", Pattern.DOTALL)));
         } finally {
             System.setErr(originalErr);
         }

@@ -40,7 +40,7 @@ import org.apache.lucene.analysis.tokenattributes.PositionIncrementAttribute;
  *
  * @author jeremy long
  */
-public final class AlphaNumericFilter extends AbstractTokenizingFilter {
+public class AlphaNumericFilter extends AbstractTokenizingFilter {
 
     /**
      * The position increment attribute.
@@ -65,7 +65,7 @@ public final class AlphaNumericFilter extends AbstractTokenizingFilter {
      * {@inheritDoc}
      */
     @Override
-    public boolean incrementToken() throws IOException {
+    public final boolean incrementToken() throws IOException {
         final ArrayDeque<String> tokens = getTokens();
         final CharTermAttribute termAtt = getTermAtt();
         if (tokens.isEmpty()) {

@@ -17,44 +17,39 @@
  */
 package org.owasp.dependencycheck;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
+import ch.qos.logback.classic.Level;
+import ch.qos.logback.classic.LoggerContext;
+import ch.qos.logback.classic.encoder.PatternLayoutEncoder;
+import ch.qos.logback.classic.filter.ThresholdFilter;
+import ch.qos.logback.classic.spi.ILoggingEvent;
+import ch.qos.logback.core.FileAppender;
 import org.apache.commons.cli.ParseException;
 import org.apache.tools.ant.DirectoryScanner;
+import org.apache.tools.ant.types.LogLevel;
 import org.owasp.dependencycheck.data.nvdcve.DatabaseException;
+import org.owasp.dependencycheck.data.update.exception.UpdateException;
 import org.owasp.dependencycheck.dependency.Dependency;
 import org.owasp.dependencycheck.dependency.Vulnerability;
-import org.apache.tools.ant.types.LogLevel;
-import org.owasp.dependencycheck.data.update.exception.UpdateException;
 import org.owasp.dependencycheck.dependency.naming.Identifier;
 import org.owasp.dependencycheck.exception.ExceptionCollection;
 import org.owasp.dependencycheck.exception.ReportException;
 import org.owasp.dependencycheck.utils.Downloader;
 import org.owasp.dependencycheck.utils.InvalidSettingException;
 import org.owasp.dependencycheck.utils.Settings;
+import org.owasp.dependencycheck.utils.SeverityUtil;
 import org.owasp.dependencycheck.utils.scarf.TelemetryCollector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ch.qos.logback.core.FileAppender;
-import ch.qos.logback.classic.encoder.PatternLayoutEncoder;
-import ch.qos.logback.classic.filter.ThresholdFilter;
-import ch.qos.logback.classic.spi.ILoggingEvent;
-import ch.qos.logback.classic.Level;
-import ch.qos.logback.classic.LoggerContext;
-import io.github.jeremylong.jcs3.slf4j.Slf4jAdapter;
-
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 import java.util.TreeSet;
-
-import org.owasp.dependencycheck.utils.SeverityUtil;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * The command line interface for the DependencyCheck application.
@@ -540,10 +535,24 @@ public class App {
                 cli.getStringArgument(CliParser.ARGUMENT.RETIREJS_URL_BEARER_TOKEN));
         settings.setBooleanIfNotNull(Settings.KEYS.ANALYZER_RETIREJS_FORCEUPDATE,
                 cli.hasOption(CliParser.ARGUMENT.RETIRE_JS_FORCEUPDATE));
-        settings.setStringIfNotNull(Settings.KEYS.ANALYZER_RETIREJS_FILTERS,
-                cli.getStringArgument(CliParser.ARGUMENT.RETIREJS_FILTERS));
-        settings.setBooleanIfNotNull(Settings.KEYS.ANALYZER_RETIREJS_FILTER_NON_VULNERABLE,
-                cli.hasOption(CliParser.ARGUMENT.RETIREJS_FILTER_NON_VULNERABLE));
+        String retireJsFilters = cli.getStringArgument(CliParser.ARGUMENT.RETIRE_JS_FILTERS);
+        if (retireJsFilters == null) {
+            retireJsFilters = cli.getStringArgument(CliParser.ARGUMENT.RETIREJS_FILTERS_DEPRECATED);
+            if (retireJsFilters != null) {
+                LOGGER.warn("'--{}' is deprecated and may be removed in the next major release, please migrate to '--{}'",
+                        CliParser.ARGUMENT.RETIREJS_FILTERS_DEPRECATED, CliParser.ARGUMENT.RETIRE_JS_FILTERS);
+            }
+        }
+        settings.setStringIfNotNull(Settings.KEYS.ANALYZER_RETIREJS_FILTERS, retireJsFilters);
+        Boolean retireJsFilterNonVuln = cli.hasOption(CliParser.ARGUMENT.RETIRE_JS_FILTER_NON_VULNERABLE);
+        if (retireJsFilterNonVuln == null) {
+            retireJsFilterNonVuln = cli.hasOption(CliParser.ARGUMENT.RETIREJS_FILTER_NON_VULNERABLE_DEPRECATED);
+            if (retireJsFilterNonVuln != null) {
+                LOGGER.warn("'--{}' is deprecated and may be removed in the next major release, please migrate to '--{}'",
+                        CliParser.ARGUMENT.RETIREJS_FILTER_NON_VULNERABLE_DEPRECATED, CliParser.ARGUMENT.RETIRE_JS_FILTER_NON_VULNERABLE);
+            }
+        }
+        settings.setBooleanIfNotNull(Settings.KEYS.ANALYZER_RETIREJS_FILTER_NON_VULNERABLE, retireJsFilterNonVuln);
         settings.setBoolean(Settings.KEYS.ANALYZER_JAR_ENABLED,
                 !cli.isDisabled(CliParser.ARGUMENT.DISABLE_JAR, Settings.KEYS.ANALYZER_JAR_ENABLED));
         settings.setBoolean(Settings.KEYS.UPDATE_VERSION_CHECK_ENABLED,
@@ -570,6 +579,8 @@ public class App {
                 !cli.isDisabled(CliParser.ARGUMENT.DISABLE_AUTOCONF, Settings.KEYS.ANALYZER_AUTOCONF_ENABLED));
         settings.setBoolean(Settings.KEYS.ANALYZER_MAVEN_INSTALL_ENABLED,
                 !cli.isDisabled(CliParser.ARGUMENT.DISABLE_MAVEN_INSTALL, Settings.KEYS.ANALYZER_MAVEN_INSTALL_ENABLED));
+        settings.setBoolean(Settings.KEYS.ANALYZER_PE_ENABLED,
+                !cli.isDisabled(CliParser.ARGUMENT.DISABLE_PE, Settings.KEYS.ANALYZER_PE_ENABLED));
         settings.setBoolean(Settings.KEYS.ANALYZER_PIP_ENABLED,
                 !cli.isDisabled(CliParser.ARGUMENT.DISABLE_PIP, Settings.KEYS.ANALYZER_PIP_ENABLED));
         settings.setBoolean(Settings.KEYS.ANALYZER_PIPFILE_ENABLED,
@@ -614,8 +625,15 @@ public class App {
                 !cli.isPnpmAuditDisabled());
         settings.setBoolean(Settings.KEYS.ANALYZER_NODE_AUDIT_USE_CACHE,
                 !cli.isDisabled(CliParser.ARGUMENT.DISABLE_NODE_AUDIT_CACHE, Settings.KEYS.ANALYZER_NODE_AUDIT_USE_CACHE));
-        settings.setBoolean(Settings.KEYS.ANALYZER_RETIREJS_ENABLED,
-                !cli.isDisabled(CliParser.ARGUMENT.DISABLE_RETIRE_JS, Settings.KEYS.ANALYZER_RETIREJS_ENABLED));
+        boolean retireJsDisabled = cli.isDisabled(CliParser.ARGUMENT.DISABLE_RETIRE_JS, Settings.KEYS.ANALYZER_RETIREJS_ENABLED);
+        if (!retireJsDisabled) {
+            retireJsDisabled = cli.isDisabled(CliParser.ARGUMENT.DISABLE_RETIREJS_DEPRECATED, Settings.KEYS.ANALYZER_RETIREJS_ENABLED);
+            if (retireJsDisabled) {
+                LOGGER.warn("'--{}' is deprecated and may be removed in the next major release, please migrate to '--{}'",
+                        CliParser.ARGUMENT.DISABLE_RETIREJS_DEPRECATED, CliParser.ARGUMENT.DISABLE_RETIRE_JS);
+            }
+        }
+        settings.setBoolean(Settings.KEYS.ANALYZER_RETIREJS_ENABLED, !retireJsDisabled);
         settings.setBoolean(Settings.KEYS.ANALYZER_SWIFT_PACKAGE_MANAGER_ENABLED,
                 !cli.isDisabled(CliParser.ARGUMENT.DISABLE_SWIFT, Settings.KEYS.ANALYZER_SWIFT_PACKAGE_MANAGER_ENABLED));
         settings.setBoolean(Settings.KEYS.ANALYZER_SWIFT_PACKAGE_RESOLVED_ENABLED,
@@ -649,6 +667,8 @@ public class App {
                 cli.getStringArgument(CliParser.ARGUMENT.CENTRAL_PASSWORD));
         settings.setStringIfNotEmpty(Settings.KEYS.ANALYZER_CENTRAL_BEARER_TOKEN,
                 cli.getStringArgument(CliParser.ARGUMENT.CENTRAL_BEARER_TOKEN));
+        settings.setIntIfNotNull(Settings.KEYS.ANALYZER_OSSINDEX_CACHE_VALID_FOR_HOURS,
+                cli.getIntegerValue(CliParser.ARGUMENT.OSSINDEX_CACHE_VALID_FOR_HOURS));
         settings.setStringIfNotEmpty(Settings.KEYS.ANALYZER_OSSINDEX_URL,
                 cli.getStringArgument(CliParser.ARGUMENT.OSSINDEX_URL));
         settings.setStringIfNotEmpty(Settings.KEYS.ANALYZER_OSSINDEX_USER,

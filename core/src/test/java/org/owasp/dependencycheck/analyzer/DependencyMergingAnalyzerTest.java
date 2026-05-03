@@ -233,7 +233,7 @@ class DependencyMergingAnalyzerTest extends BaseTest {
     void testGetMainAndroidDependency() throws Exception {
         ArchiveAnalyzer aa = null;
         try (Engine engine = new Engine(Engine.Mode.EVIDENCE_COLLECTION, getSettings())) {
-            Dependency dependency1 = new Dependency(BaseTest.getResourceAsFile(this, "aar-1.0.0.aar"));
+            Dependency dependency1 = new Dependency(BaseTest.getResourceAsFile(this, "maven-lib/aar-1.0.0.aar"));
             dependency1.setEcosystem(Ecosystem.JAVA);
             aa = new ArchiveAnalyzer();
 

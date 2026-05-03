@@ -419,8 +419,7 @@ class SuppressionRuleTest extends BaseTest {
      */
     @Test
     void testProcess() throws CpeValidationException {
-        //File struts = new File(this.getClass().getClassLoader().getResource("struts2-core-2.1.2.jar").getPath());
-        File struts = BaseTest.getResourceAsFile(this, "struts2-core-2.1.2.jar");
+        File struts = BaseTest.getResourceAsFile(this, "maven-lib/struts2-core-2.1.2.jar");
         Dependency dependency = new Dependency(struts);
         CpeIdentifier cpeId = new CpeIdentifier("microsoft", ".net_framework", "4.5", Confidence.HIGH);
         dependency.addVulnerableSoftwareIdentifier(cpeId);
@@ -501,8 +500,7 @@ class SuppressionRuleTest extends BaseTest {
      */
     @Test
     void testProcessGAV() throws CpeValidationException, MalformedPackageURLException {
-        //File spring = new File(this.getClass().getClassLoader().getResource("spring-security-web-3.0.0.RELEASE.jar").getPath());
-        File spring = BaseTest.getResourceAsFile(this, "spring-security-web-3.0.0.RELEASE.jar");
+        File spring = BaseTest.getResourceAsFile(this, "maven-lib/spring-security-web-3.0.0.RELEASE.jar");
         Dependency dependency = new Dependency(spring);
         dependency.addVulnerableSoftwareIdentifier(new CpeIdentifier("vmware", "springsource_spring_framework", "3.0.0", Confidence.HIGH));
         dependency.addVulnerableSoftwareIdentifier(new CpeIdentifier("springsource", "spring_framework", "3.0.0", Confidence.HIGH));
@@ -536,7 +534,7 @@ class SuppressionRuleTest extends BaseTest {
 
     @Test
     void testProcessVulnerabilityNames() throws CpeValidationException, MalformedPackageURLException {
-        File spring = BaseTest.getResourceAsFile(this, "spring-security-web-3.0.0.RELEASE.jar");
+        File spring = BaseTest.getResourceAsFile(this, "maven-lib/spring-security-web-3.0.0.RELEASE.jar");
         Dependency dependency = new Dependency(spring);
         dependency.addVulnerableSoftwareIdentifier(new CpeIdentifier("vmware", "springsource_spring_security", "3.0.0", Confidence.HIGH));
         dependency.addSoftwareIdentifier(new PurlIdentifier("maven", "org.springframework.security", "spring-security-web", "3.0.0.RELEASE", Confidence.HIGH));
@@ -611,7 +609,7 @@ class SuppressionRuleTest extends BaseTest {
     @Test
     void testMismatchOfThresholdAndAvailableCVEVersion() {
         // vuln with only a cvss v2 score
-        File spring = BaseTest.getResourceAsFile(this, "spring-security-web-3.0.0.RELEASE.jar");
+        File spring = BaseTest.getResourceAsFile(this, "maven-lib/spring-security-web-3.0.0.RELEASE.jar");
         Dependency dependency = new Dependency(spring);
         Vulnerability v = new Vulnerability();
         CvssV2 cvss = CvssUtil.vectorToCvssV2("/AV:N/AC:L/Au:N/C:P/I:P/A:P", 6.0);
@@ -665,7 +663,7 @@ class SuppressionRuleTest extends BaseTest {
     }
 
     private Dependency createDependencyWithDifferentScores() {
-        File spring = BaseTest.getResourceAsFile(this, "spring-security-web-3.0.0.RELEASE.jar");
+        File spring = BaseTest.getResourceAsFile(this, "maven-lib/spring-security-web-3.0.0.RELEASE.jar");
         Dependency dependency = new Dependency(spring);
         Vulnerability v = new Vulnerability();
         CvssV2 cvss = CvssUtil.vectorToCvssV2("/AV:N/AC:L/Au:N/C:P/I:P/A:P", 6.0);

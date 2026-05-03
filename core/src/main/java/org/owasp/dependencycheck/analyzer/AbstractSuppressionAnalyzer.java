@@ -31,11 +31,10 @@ import java.util.Set;
 import java.util.regex.Pattern;
 import javax.annotation.concurrent.ThreadSafe;
 
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 import org.owasp.dependencycheck.Engine;
 import org.owasp.dependencycheck.analyzer.exception.AnalysisException;
 import org.owasp.dependencycheck.data.update.HostedSuppressionsDataSource;
-import org.owasp.dependencycheck.data.update.exception.UpdateException;
 import org.owasp.dependencycheck.dependency.Dependency;
 import org.owasp.dependencycheck.exception.InitializationException;
 import org.owasp.dependencycheck.exception.WriteLockException;
@@ -219,7 +218,7 @@ public abstract class AbstractSuppressionAnalyzer extends AbstractAnalyzer {
         }
     }
 
-    private static @NotNull URL getPackagedFile(String packagedFileName) throws SuppressionParseException {
+    private static @NonNull URL getPackagedFile(String packagedFileName) throws SuppressionParseException {
         final URL jarLocation = AbstractSuppressionAnalyzer.class.getProtectionDomain().getCodeSource().getLocation();
         String suppressionFileLocation = jarLocation.getFile();
         if (suppressionFileLocation.endsWith(".jar")) {
@@ -263,6 +262,9 @@ public abstract class AbstractSuppressionAnalyzer extends AbstractAnalyzer {
                     HostedSuppressionsDataSource.DEFAULT_SUPPRESSIONS_URL);
             final URL url = new URL(configuredUrl);
             final String fileName = new File(url.getPath()).getName();
+            if (fileName.isBlank()) {
+                throw new IOException("Hosted Suppression URL must imply a filename");
+            }
             final File repoFile = new File(getSettings().getDataDirectory(), fileName);
             boolean repoEmpty = !repoFile.isFile() || repoFile.length() <= 1L;
             if (repoEmpty) {
@@ -333,18 +335,6 @@ public abstract class AbstractSuppressionAnalyzer extends AbstractAnalyzer {
         }
     }
 
-    private static boolean forceUpdateHostedSuppressions(final Engine engine, final File repoFile) {
-        final HostedSuppressionsDataSource ds = new HostedSuppressionsDataSource();
-        boolean repoEmpty = true;
-        try {
-            ds.update(engine);
-            repoEmpty = !repoFile.isFile() || repoFile.length() <= 1L;
-        } catch (UpdateException ex) {
-            LOGGER.warn("Failed to update the Hosted Suppression file", ex);
-        }
-        return repoEmpty;
-    }
-
     /**
      * Load a single suppression rules file from the path provided using the
      * parser provided.
@@ -407,19 +397,17 @@ public abstract class AbstractSuppressionAnalyzer extends AbstractAnalyzer {
                     }
                 }
             }
-            if (file != null) {
-                if (!file.exists()) {
-                    final String msg = String.format("Suppression file '%s' does not exist", file.getPath());
-                    LOGGER.warn(msg);
-                    throw new SuppressionParseException(msg);
-                }
-                try {
-                    list.addAll(parser.parseSuppressionRules(file));
-                } catch (SuppressionParseException ex) {
-                    LOGGER.warn("Unable to parse suppression xml file '{}'", file.getPath());
-                    LOGGER.warn(ex.getMessage());
-                    throw ex;
-                }
+            if (!file.exists()) {
+                final String msg = String.format("Suppression file '%s' does not exist", file.getPath());
+                LOGGER.warn(msg);
+                throw new SuppressionParseException(msg);
+            }
+            try {
+                list.addAll(parser.parseSuppressionRules(file));
+            } catch (SuppressionParseException ex) {
+                LOGGER.warn("Unable to parse suppression xml file '{}'", file.getPath());
+                LOGGER.warn(ex.getMessage());
+                throw ex;
             }
         } catch (DownloadFailedException ex) {
             throwSuppressionParseException("Unable to fetch the configured suppression file", ex, suppressionFilePath);

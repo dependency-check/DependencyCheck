@@ -32,6 +32,47 @@ Installation
     * [dependency-check-purge](config-purge.html) - deletes the local copy of the NVD; this should rarely be used (if ever).
     * [dependency-check-update](config-update.html) - downloads and updates the local copy of the NVD.
 
+Installation Using Apache Ivy
+====================
+
+Instead of manually downloading and managing the Dependency-Check Ant JARs,
+Apache Ivy can be used to automatically provision the required dependencies.
+This approach helps ensure consistent versions across multiple environments
+and simplifies setup.
+
+Below is an example `build.xml` configuration using Apache Ivy.
+
+#[[
+```xml
+<project name="dependency-check-ivy" default="check"
+         xmlns:ivy="antlib:org.apache.ivy.ant">
+
+    <!-- Load Ivy -->
+    <taskdef resource="org/apache/ivy/ant/antlib.xml"/>
+
+    <!-- Resolve Dependency-Check Ant dependencies -->
+    <ivy:settings/>
+    <ivy:retrieve pattern="lib/[artifact]-[revision].[ext]"/>
+
+    <!-- Register Dependency-Check Ant task -->
+    <taskdef
+        resource="dependency-check-taskdefs.properties">
+        <classpath>
+            <fileset dir="lib">
+                <include name="*.jar"/>
+            </fileset>
+        </classpath>
+    </taskdef>
+
+    <target name="check">
+        <dependency-check
+            projectName="Example Project"
+            scanSet="src"
+            format="HTML"/>
+    </target>
+</project>
+```
+]]#
 
 It is important to understand that the first time this task is executed it may
 take 10 minutes or more as it downloads and processes the data from the National

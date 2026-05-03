@@ -42,7 +42,6 @@ class SuppressionParserTest extends BaseTest {
      */
     @Test
     void testParseSuppressionRulesV1dot0() throws Exception {
-        //File file = new File(this.getClass().getClassLoader().getResource("suppressions.xml").getPath());
         File file = BaseTest.getResourceAsFile(this, "suppressions.xml");
         SuppressionParser instance = new SuppressionParser();
         List<SuppressionRule> result = instance.parseSuppressionRules(file);
@@ -55,7 +54,6 @@ class SuppressionParserTest extends BaseTest {
      */
     @Test
     void testParseSuppressionRulesV1dot1() throws Exception {
-        //File file = new File(this.getClass().getClassLoader().getResource("suppressions.xml").getPath());
         File file = BaseTest.getResourceAsFile(this, "suppressions_1_1.xml");
         SuppressionParser instance = new SuppressionParser();
         List<SuppressionRule> result = instance.parseSuppressionRules(file);
@@ -68,7 +66,6 @@ class SuppressionParserTest extends BaseTest {
      */
     @Test
     void testParseSuppressionRulesV1dot2() throws Exception {
-        //File file = new File(this.getClass().getClassLoader().getResource("suppressions.xml").getPath());
         File file = BaseTest.getResourceAsFile(this, "suppressions_1_2.xml");
         SuppressionParser instance = new SuppressionParser();
         List<SuppressionRule> result = instance.parseSuppressionRules(file);
@@ -81,7 +78,6 @@ class SuppressionParserTest extends BaseTest {
      */
     @Test
     void testParseSuppressionRulesV1dot3() throws Exception {
-        //File file = new File(this.getClass().getClassLoader().getResource("suppressions.xml").getPath());
         File file = BaseTest.getResourceAsFile(this, "suppressions_1_3.xml");
         SuppressionParser instance = new SuppressionParser();
         List<SuppressionRule> result = instance.parseSuppressionRules(file);

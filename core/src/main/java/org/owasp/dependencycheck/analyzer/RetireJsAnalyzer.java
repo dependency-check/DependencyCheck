@@ -19,17 +19,16 @@ package org.owasp.dependencycheck.analyzer;
 
 import com.esotericsoftware.minlog.Log;
 import com.github.packageurl.MalformedPackageURLException;
-import com.github.packageurl.PackageURL;
 import com.github.packageurl.PackageURLBuilder;
-import com.h3xstream.retirejs.repo.JsLibrary;
 import com.h3xstream.retirejs.repo.JsLibraryResult;
-import com.h3xstream.retirejs.repo.JsVulnerability;
 import com.h3xstream.retirejs.repo.ScannerFacade;
 import com.h3xstream.retirejs.repo.VulnerabilitiesRepository;
 import com.h3xstream.retirejs.repo.VulnerabilitiesRepositoryLoader;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.validator.routines.UrlValidator;
 import org.json.JSONException;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import org.owasp.dependencycheck.Engine;
 import org.owasp.dependencycheck.analyzer.exception.AnalysisException;
 import org.owasp.dependencycheck.data.nvd.ecosystem.Ecosystem;
@@ -42,6 +41,7 @@ import org.owasp.dependencycheck.dependency.EvidenceType;
 import org.owasp.dependencycheck.dependency.Reference;
 import org.owasp.dependencycheck.dependency.Vulnerability;
 import org.owasp.dependencycheck.dependency.naming.GenericIdentifier;
+import org.owasp.dependencycheck.dependency.naming.Identifier;
 import org.owasp.dependencycheck.dependency.naming.PurlIdentifier;
 import org.owasp.dependencycheck.exception.InitializationException;
 import org.owasp.dependencycheck.exception.WriteLockException;
@@ -56,21 +56,33 @@ import javax.annotation.concurrent.ThreadSafe;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.nio.file.Files;
-import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 import org.apache.commons.io.IOUtils;
+
+import static org.owasp.dependencycheck.analyzer.RetireJsLibrary.KnownIdentifierTypes.CVE;
+import static org.owasp.dependencycheck.analyzer.RetireJsLibrary.KnownIdentifierTypes.GITHUB_SECURITY_ADVISORY;
+import static org.owasp.dependencycheck.analyzer.RetireJsLibrary.KnownIdentifierTypes.SECONDARY_NAME_TYPES;
+import static org.owasp.dependencycheck.analyzer.RetireJsLibrary.KnownIdentifierTypes.SUMMARY;
+import static org.owasp.dependencycheck.analyzer.RetireJsLibrary.KnownIdentifierTypes.singleEntry;
+import static org.owasp.dependencycheck.analyzer.RetireJsLibrary.KnownIdentifierTypes.singleItem;
 
 /**
  * The RetireJS analyzer uses the manually curated list of vulnerabilities from
  * the RetireJS community along with the necessary information to assist in
  * identifying vulnerable components. Vulnerabilities documented by the RetireJS
- * community usually originate from other sources such as the NVD, OSVDB, NSP,
+ * community usually originate from other sources such as the NVD, GHSA,
  * and various issue trackers.
  *
  * @author Steve Springett
@@ -115,14 +127,6 @@ public class RetireJsAnalyzer extends AbstractFileTypeAnalyzer {
     private String[] filters = null;
 
     /**
-     * Flag indicating whether non-vulnerable JS should be excluded if they are
-     * contained in a JAR.
-     */
-    //TODO implement this
-    @SuppressWarnings("FieldMayBeFinal")
-    private boolean skipNonVulnerableInJAR = true;
-
-    /**
      * Returns the FileFilter.
      *
      * @return the FileFilter
@@ -153,7 +157,7 @@ public class RetireJsAnalyzer extends AbstractFileTypeAnalyzer {
             }
             return accepted;
         } catch (IOException ex) {
-            LOGGER.warn(String.format("Error testing file %s", pathname), ex);
+            LOGGER.warn("Error testing file {}", pathname, ex);
         }
         return false;
     }
@@ -201,9 +205,6 @@ public class RetireJsAnalyzer extends AbstractFileTypeAnalyzer {
                 repoEmpty = true;
                 getSettings().setBoolean(Settings.KEYS.ANALYZER_RETIREJS_FORCEUPDATE, true);
             }
-        } catch (FileNotFoundException ex) {
-            this.setEnabled(false);
-            throw new InitializationException(String.format("RetireJS repo does not exist locally (%s)", repoFile), ex);
         } catch (IOException ex) {
             this.setEnabled(false);
             throw new InitializationException("Failed to initialize the RetireJS", ex);
@@ -221,7 +222,7 @@ public class RetireJsAnalyzer extends AbstractFileTypeAnalyzer {
         }
 
         //several users are reporting that the retire js repository is getting corrupted.
-        try (WriteLock lock = new WriteLock(getSettings(), true, repoFile.getName() + ".lock")) {
+        try (WriteLock ignored = new WriteLock(getSettings(), true, repoFile.getName() + ".lock")) {
             final File temp = getSettings().getTempDirectory();
             final File tempRepo = new File(temp, repoFile.getName());
             LOGGER.debug("copying retireJs repo {} to {}", repoFile.toPath(), tempRepo.toPath());
@@ -279,9 +280,8 @@ public class RetireJsAnalyzer extends AbstractFileTypeAnalyzer {
      * Analyzes the specified JavaScript file.
      *
      * @param dependency the dependency to analyze.
-     * @param engine the engine that is scanning the dependencies
+     * @param engine     the engine that is scanning the dependencies
      * @throws AnalysisException is thrown if there is an error reading the file
-     * file.
      */
     @Override
     public void analyzeDependency(Dependency dependency, Engine engine) throws AnalysisException {
@@ -289,163 +289,32 @@ public class RetireJsAnalyzer extends AbstractFileTypeAnalyzer {
             return;
         }
         try (InputStream fis = new FileInputStream(dependency.getActualFile())) {
-            final byte[] fileContent = IOUtils.toByteArray(fis);
-            final ScannerFacade scanner = new ScannerFacade(jsRepository);
-            final List<JsLibraryResult> results;
-            try {
-                results = scanner.scanScript(dependency.getActualFile().getAbsolutePath(), fileContent, 0);
-            } catch (StackOverflowError ex) {
-                final String msg = String.format("An error occured trying to analyze %s. "
-                        + "To resolve this error please try increasing the Java stack size to "
-                        + "8mb and re-run dependency-check:%n%n"
-                        + "(win) : set JAVA_OPTS=\"-Xss8192k\"%n"
-                        + "(*nix): export JAVA_OPTS=\"-Xss8192k\"%n%n",
-                        dependency.getDisplayFileName());
-                throw new AnalysisException(msg, ex);
-            }
-            if (results.size() > 0) {
-                for (JsLibraryResult libraryResult : results) {
+            final List<RetireJsLibrary> vulnerableLibraries = new ScannerFacade(jsRepository)
+                    .scanScript(dependency.getActualFile().getAbsolutePath(), IOUtils.toByteArray(fis), 0)
+                    .stream().map(RetireJsLibrary::adapt).collect(Collectors.toList());
 
-                    final JsLibrary lib = libraryResult.getLibrary();
-                    dependency.setName(lib.getName());
-                    dependency.setVersion(libraryResult.getDetectedVersion());
-                    try {
-                        final PackageURL purl = PackageURLBuilder.aPackageURL().withType("javascript")
-                                .withName(lib.getName()).withVersion(libraryResult.getDetectedVersion()).build();
-                        dependency.addSoftwareIdentifier(new PurlIdentifier(purl, Confidence.HIGHEST));
-                    } catch (MalformedPackageURLException ex) {
-                        LOGGER.debug("Unable to build package url for retireJS", ex);
-                        final GenericIdentifier id = new GenericIdentifier("javascript:" + lib.getName() + "@"
-                                + libraryResult.getDetectedVersion(), Confidence.HIGHEST);
-                        dependency.addSoftwareIdentifier(id);
-                    }
-
-                    dependency.addEvidence(EvidenceType.VERSION, "file", "version", libraryResult.getDetectedVersion(), Confidence.HIGH);
-                    dependency.addEvidence(EvidenceType.PRODUCT, "file", "name", libraryResult.getLibrary().getName(), Confidence.HIGH);
-                    dependency.addEvidence(EvidenceType.VENDOR, "file", "name", libraryResult.getLibrary().getName(), Confidence.HIGH);
-
-                    final List<Vulnerability> vulns = new ArrayList<>();
-                    final JsVulnerability jsVuln = libraryResult.getVuln();
-
-                    if (jsVuln.getIdentifiers().containsKey("CVE") || jsVuln.getIdentifiers().containsKey("osvdb")) {
-                        /* CVEs and OSVDB are an array of Strings - each one a unique vulnerability.
-                         * So the JsVulnerability we are operating on may actually be representing
-                         * multiple vulnerabilities. */
-
-                        //TODO - can we refactor this to avoid russian doll syndrome (i.e. nesting)?
-                        //CSOFF: NestedForDepth
-                        for (Map.Entry<String, List<String>> entry : jsVuln.getIdentifiers().entrySet()) {
-                            final String key = entry.getKey();
-                            final List<String> value = entry.getValue();
-                            if ("CVE".equals(key)) {
-                                for (String cve : value) {
-                                    Vulnerability vuln = engine.getDatabase().getVulnerability(StringUtils.trim(cve));
-                                    if (vuln == null) {
-                                        /* The CVE does not exist in the database and is likely in a
-                                         * reserved state. Create a new one without adding it to the
-                                         * database and populate it as best as possible. */
-                                        vuln = new Vulnerability();
-                                        vuln.setName(cve);
-                                        vuln.setUnscoredSeverity(jsVuln.getSeverity());
-                                        vuln.setSource(Vulnerability.Source.RETIREJS);
-                                    }
-                                    jsVuln.getInfo().stream().map((info) -> {
-                                        if (UrlValidator.getInstance().isValid(info)) {
-                                            return new Reference(info, "info", info);
-                                        }
-                                        return new Reference(info, "info", null);
-                                    }).forEach(vuln::addReference);
-                                    vulns.add(vuln);
-                                }
-                            } else if ("osvdb".equals(key)) {
-                                //todo - convert to map/collect
-                                value.forEach((osvdb) -> {
-                                    final Vulnerability vuln = new Vulnerability();
-                                    vuln.setName(osvdb);
-                                    vuln.setSource(Vulnerability.Source.RETIREJS);
-                                    vuln.setUnscoredSeverity(jsVuln.getSeverity());
-                                    jsVuln.getInfo().stream().map((info) -> {
-                                        if (UrlValidator.getInstance().isValid(info)) {
-                                            return new Reference(info, "info", info);
-                                        }
-                                        return new Reference(info, "info", null);
-                                    }).forEach(vuln::addReference);
-                                    vulns.add(vuln);
-                                });
-                            }
-                            dependency.addVulnerabilities(vulns);
-                        }
-                        //CSON: NestedForDepth
-                    } else {
-                        final Vulnerability individualVuln = new Vulnerability();
-                        /* ISSUE, BUG, etc are all individual vulnerabilities. The result of this
-                         * iteration will be one vulnerability. */
-                        for (Map.Entry<String, List<String>> entry : jsVuln.getIdentifiers().entrySet()) {
-                            final String key = entry.getKey();
-                            final List<String> value = entry.getValue();
-                            // CSOFF: NeedBraces
-                            if (null != key) {
-                                switch (key) {
-                                    case "summary":
-                                        if (null == individualVuln.getName()) {
-                                            individualVuln.setName(value.get(0));
-                                        }
-                                        individualVuln.setDescription(value.get(0));
-                                        break;
-                                    case "issue":
-                                        individualVuln.setName(libraryResult.getLibrary().getName() + " issue: " + value.get(0));
-                                        if (UrlValidator.getInstance().isValid(value.get(0))) {
-                                            individualVuln.addReference(key, key, value.get(0));
-                                        } else {
-                                            individualVuln.addReference(key, value.get(0), null);
-                                        }
-                                        break;
-                                    case "bug":
-                                        individualVuln.setName(libraryResult.getLibrary().getName() + " bug: " + value.get(0));
-                                        if (UrlValidator.getInstance().isValid(value.get(0))) {
-                                            individualVuln.addReference(key, key, value.get(0));
-                                        } else {
-                                            individualVuln.addReference(key, value.get(0), null);
-                                        }
-                                        break;
-                                    case "pr":
-                                        individualVuln.setName(libraryResult.getLibrary().getName() + " pr: " + value.get(0));
-                                        if (UrlValidator.getInstance().isValid(value.get(0))) {
-                                            individualVuln.addReference(key, key, value.get(0));
-                                        } else {
-                                            individualVuln.addReference(key, value.get(0), null);
-                                        }
-                                        break;
-                                    //case "release":
-                                    default:
-                                        if (UrlValidator.getInstance().isValid(value.get(0))) {
-                                            individualVuln.addReference(key, key, value.get(0));
-                                        } else {
-                                            individualVuln.addReference(key, value.get(0), null);
-                                        }
-                                        break;
-                                }
-                            }
-                            // CSON: NeedBraces
-                        }
-                        if (StringUtils.isBlank(individualVuln.getName())) {
-                            individualVuln.setName("Vulnerability in " + libraryResult.getLibrary().getName());
-                        }
-                        individualVuln.setSource(Vulnerability.Source.RETIREJS);
-                        individualVuln.setUnscoredSeverity(jsVuln.getSeverity());
-                        jsVuln.getInfo().stream().map((info) -> {
-                            if (UrlValidator.getInstance().isValid(info)) {
-                                return new Reference(info, "info", info);
-                            }
-                            return new Reference(info, "info", null);
-                        }).forEach(individualVuln::addReference);
-
-                        dependency.addVulnerability(individualVuln);
-                    }
-                }
-            } else if (getSettings().getBoolean(Settings.KEYS.ANALYZER_RETIREJS_FILTER_NON_VULNERABLE, false)) {
+            if (vulnerableLibraries.isEmpty() && getSettings().getBoolean(Settings.KEYS.ANALYZER_RETIREJS_FILTER_NON_VULNERABLE, false)) {
                 engine.removeDependency(dependency);
+                return;
             }
+
+            for (RetireJsLibrary lib : vulnerableLibraries) {
+                dependency.setName(lib.libraryName());
+                dependency.setVersion(lib.version());
+                dependency.addSoftwareIdentifier(lib.identifier());
+                dependency.addEvidence(EvidenceType.VERSION, "RetireJS", "version", lib.version(), Confidence.HIGH);
+                dependency.addEvidence(EvidenceType.PRODUCT, "RetireJS", "name", lib.libraryName(), Confidence.HIGH);
+                dependency.addEvidence(EvidenceType.VENDOR, "RetireJS", "name", lib.libraryName(), Confidence.HIGH);
+                dependency.addVulnerabilities(lib.vulnerabilities(cve -> engine.getDatabase().getVulnerability(cve)));
+            }
+        } catch (StackOverflowError ex) {
+            final String msg = String.format("An error occurred trying to analyze %s. "
+                            + "To resolve this error please try increasing the Java stack size to "
+                            + "8mb and re-run dependency-check:%n%n"
+                            + "(win) : set JAVA_OPTS=\"-Xss8m\"%n"
+                            + "(*nix): export JAVA_OPTS=\"-Xss8m\"%n%n",
+                    dependency.getDisplayFileName());
+            throw new AnalysisException(msg, ex);
         } catch (IOException | DatabaseException e) {
             throw new AnalysisException(e);
         }
@@ -454,5 +323,183 @@ public class RetireJsAnalyzer extends AbstractFileTypeAnalyzer {
     @Override
     protected void closeAnalyzer() throws Exception {
         Log.set(Log.LEVEL_INFO);
+    }
+}
+
+class RetireJsLibrary {
+    private static final Logger LOGGER = LoggerFactory.getLogger(RetireJsLibrary.class);
+
+    private final JsLibraryResult result;
+
+    private RetireJsLibrary(JsLibraryResult result) {
+        this.result = result;
+    }
+
+    static RetireJsLibrary adapt(JsLibraryResult result) {
+        return new RetireJsLibrary(result);
+    }
+
+    String libraryName() {
+        return result.getLibrary().getName();
+    }
+
+    String version() {
+        return result.getDetectedVersion();
+    }
+
+    Identifier identifier() {
+        try {
+            return new PurlIdentifier(
+                    PackageURLBuilder.aPackageURL()
+                            .withType("javascript")
+                            .withName(libraryName())
+                            .withVersion(version())
+                            .build(),
+                    Confidence.HIGHEST);
+        } catch (MalformedPackageURLException ex) {
+            LOGGER.debug("Unable to build package url for retireJS; using generic identifier", ex);
+            return new GenericIdentifier(String.format("javascript:%s@%s", libraryName(), version()), Confidence.HIGHEST);
+        }
+    }
+
+    List<Vulnerability> vulnerabilities(KnownCveProvider knownCveProvider) {
+        List<Vulnerability> vulns = new RetireJsVulnerabilityIdentifiers(result.getVuln().getIdentifiers())
+                .toVulnerabilities(knownCveProvider, result.getVuln().getSeverity());
+
+        for (Vulnerability vuln : vulns) {
+            vuln.addReferences(infoReferences());
+        }
+        return vulns;
+    }
+
+    private @NonNull Set<Reference> infoReferences() {
+        return result.getVuln().getInfo().stream()
+                .map(info -> new Reference(info, "info", UrlValidator.getInstance().isValid(info) ? info : null))
+                .collect(Collectors.toSet());
+    }
+
+    @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
+    private class RetireJsVulnerabilityIdentifiers {
+
+        public static final int MAX_NAME_LENGTH = 100;
+
+        // Preferred global identifiers
+        private final List<String> cveIds;
+        private final Optional<String> ghsaId;
+
+        // Fallback identifiers that can be used as vuln names
+        private final Map<String, String> secondaryNameIds;
+        private final Optional<String> summary;
+
+        RetireJsVulnerabilityIdentifiers(Map<String, List<String>> rawIdentifiers) {
+            // CVE identifiers can be a list
+            this.cveIds = Optional.ofNullable(rawIdentifiers.get(CVE)).orElse(List.of()).stream()
+                    .map(StringUtils::trimToNull)
+                    .filter(StringUtils::isNotEmpty)
+                    .collect(Collectors.toList());
+
+            // Other identifiers are only supported by the underlying schema as single items, so we get the first
+            this.ghsaId = singleItem(rawIdentifiers.get(GITHUB_SECURITY_ADVISORY));
+            this.secondaryNameIds = SECONDARY_NAME_TYPES.stream()
+                    .flatMap(type -> singleEntry(type, rawIdentifiers.get(type)).stream())
+                    .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (a, b) -> a, LinkedHashMap::new));
+
+            // Summary is sometimes present; and can be a fallback vulnerability name as well as description
+            this.summary = singleItem(rawIdentifiers.get(SUMMARY));
+        }
+
+        List<Vulnerability> toVulnerabilities(KnownCveProvider cveProvider, String severity) {
+            // Prefer CVEs; and see if we already know about them from the NVD.
+            // RetireJS can map multiple CVEs, so create 'N' vulns
+            List<Vulnerability> discoveredVulnerabilities = cveIds.stream()
+                    .map(cveId -> cveProvider.optional(cveId).orElseGet(() -> retireJsVulnFor(cveId)))
+                    .collect(Collectors.toList());
+
+            // We try and index off CVEs that we can find existing from NVD; else create a single new one
+            // with the best canonical name we can determine from identifiers
+            if (discoveredVulnerabilities.isEmpty()) {
+                discoveredVulnerabilities.add(retireJsVulnFor(vulnerabilityName()));
+            }
+
+            // For vulnerabilities not referenced externally; populate description and references from identifiers
+            discoveredVulnerabilities.stream()
+                    .filter(vuln -> Vulnerability.Source.RETIREJS.equals(vuln.getSource()))
+                    .forEach(vuln -> {
+                        vuln.setUnscoredSeverity(severity);
+                        summary.ifPresent(vuln::setDescription);
+                        vuln.addReferences(references());
+                    });
+            return discoveredVulnerabilities;
+        }
+
+        private Vulnerability retireJsVulnFor(String name) {
+            final Vulnerability vuln = new Vulnerability(name);
+            vuln.setSource(Vulnerability.Source.RETIREJS);
+            return vuln;
+        }
+
+
+        private @NonNull String vulnerabilityName() {
+            if (!cveIds.isEmpty()) {
+                throw new IllegalStateException("vulnerability names for RetireJS vulnerabilities should be taken from the CVE ID");
+            }
+
+            // Use the GHSA as a universal identifier if present; otherwise create a vuln name that is library
+            // contextual, as we don't know we have a globally unique ID.
+            return ghsaId
+                    .or(() -> secondaryNameIds.entrySet().stream().findFirst().map(e -> libraryContextualName(e.getKey(), e.getValue())))
+                    .or(() -> summary.filter(this::isSmallSingleLine))
+                    .orElseGet(() -> "Vulnerability in " + libraryName());
+        }
+
+        private String libraryContextualName(String type, String id) {
+            return String.format("%s %s: %s", libraryName(), type, id);
+        }
+
+        private boolean isSmallSingleLine(String value) {
+            return value.length() <= MAX_NAME_LENGTH && value.lines().limit(2).count() == 1;
+        }
+
+        private Set<Reference> references() {
+            Set<Reference> references = new HashSet<>();
+            // RetireJS identifiers are never URLs
+            ghsaId.ifPresent(id -> references.add(new Reference(id, "ghsaId", null)));
+            secondaryNameIds.forEach((type, id) -> references.add(new Reference(id, type, null)));
+            return references;
+        }
+    }
+
+    @FunctionalInterface
+    interface KnownCveProvider {
+        @Nullable Vulnerability lookup(String cve);
+
+        default @NonNull Optional<Vulnerability> optional(String cve) {
+            return Optional.ofNullable(lookup(cve));
+        }
+    }
+
+    /**
+     * Types of identifiers within the RetireJS repo. Note that there are some legacy/deprecated types which we do not
+     * attempt to handle (e.g osvdb, retid, tenable, gist, PR. blog)
+     * <br/>
+     * Resources:
+     *  - <a href="https://raw.githubusercontent.com/Retirejs/retire.js/master/repository/jsrepository.json">Latest raw data </a>
+     *  - <a href="https://github.com/RetireJS/retire.js/blob/700590ffc92f993dfe15af1b89e364b443bd9bfa/node/src/types.ts#L23-L37">TypeScript types for the identifiers</a>
+     *  - <a href="https://github.com/RetireJS/retire.js/blob/700590ffc92f993dfe15af1b89e364b443bd9bfa/node/src/repo.ts#L29-L57">Repo validation</a>
+     */
+    interface KnownIdentifierTypes {
+        String CVE = "CVE";
+        String GITHUB_SECURITY_ADVISORY = "githubID";
+        List<String> SECONDARY_NAME_TYPES = List.of("issue", "bug", "PR");
+        String SUMMARY = "summary";
+
+        static @NonNull Optional<String> singleItem(@Nullable List<String> identifiers) {
+            return Optional.ofNullable(identifiers)
+                    .flatMap(s -> s.stream().map(StringUtils::trimToNull).filter(Objects::nonNull).findFirst());
+        }
+
+        static @NonNull Optional<Map.Entry<String, String>> singleEntry(@NonNull String type, @Nullable List<String> identifiers) {
+            return singleItem(identifiers).map(id -> Map.entry(type, id));
+        }
     }
 }

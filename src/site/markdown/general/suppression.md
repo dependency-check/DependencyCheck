@@ -6,7 +6,10 @@ A sample suppression file would look like:
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
-<suppressions xmlns="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.4.xsd">
+<suppressions xmlns="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.4.xsd"
+              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:schemaLocation="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.4.xsd
+                                  https://dependency-check.github.io/DependencyCheck/dependency-suppression.1.4.xsd">
    <suppress>
       <notes><![CDATA[
       file name: some.jar
@@ -26,7 +29,10 @@ HTML version of the report. The other common scenario would be to ignore all CVE
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
-<suppressions xmlns="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.4.xsd">
+<suppressions xmlns="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.4.xsd"
+              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:schemaLocation="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.4.xsd
+                                  https://dependency-check.github.io/DependencyCheck/dependency-suppression.1.4.xsd">
     <suppress>
         <notes><![CDATA[
         This suppresses a CVE identified by OSS Index using the vulnerability name and packageUrl.
@@ -98,7 +104,10 @@ It is also possible to set an expiration date for a suppression rule:
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
-<suppressions xmlns="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.4.xsd">
+<suppressions xmlns="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.4.xsd"
+              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:schemaLocation="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.4.xsd
+                                  https://dependency-check.github.io/DependencyCheck/dependency-suppression.1.4.xsd">
     <suppress until="2020-01-01Z">
         <notes><![CDATA[
         Suppresses a given CVE for a dependency with the given sha1 until the current date is 1 Jan 2020 or beyond.
@@ -113,7 +122,10 @@ Suppressions can also be configured based on CVSS scores.  The element cvssScore
 a score threshold.  Vulnerabilities that have any score below this threshold will be suppressed.
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
-<suppressions xmlns="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.4.xsd">
+<suppressions xmlns="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.4.xsd"
+              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:schemaLocation="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.4.xsd
+                                  https://dependency-check.github.io/DependencyCheck/dependency-suppression.1.4.xsd">
     <suppress until="2020-01-01Z">
         <notes><![CDATA[
         Suppress any vulnerability with a score below 7
@@ -130,7 +142,10 @@ version the threshold not be applied to the suppression decision.  If you specif
 element and cvssVnScore elements, the later will be ignored.
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
-<suppressions xmlns="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.4.xsd">
+<suppressions xmlns="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.4.xsd"
+              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:schemaLocation="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.4.xsd
+                                  https://dependency-check.github.io/DependencyCheck/dependency-suppression.1.4.xsd">
     <suppress until="2020-01-01Z">
         <notes><![CDATA[
         Suppress any vulnerability with different threshold per CVSS version

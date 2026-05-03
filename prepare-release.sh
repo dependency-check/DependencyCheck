@@ -1,9 +1,10 @@
-#!/bin/bash -e
+#!/usr/bin/env bash
+set -euo pipefail
 
 git checkout main
 git pull --rebase
 
-SNAPSHOT=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
+SNAPSHOT=$(mvn help:evaluate -q --non-recursive -DforceStdout -Dexpression=project.version)
 RELEASE=${SNAPSHOT/-SNAPSHOT/}
 
 git checkout -b "release-$RELEASE"

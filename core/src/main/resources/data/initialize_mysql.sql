@@ -54,7 +54,7 @@ CREATE TABLE vulnerability (id int auto_increment PRIMARY KEY, cve VARCHAR(20) U
         v4baseScore DECIMAL(3,1), v4baseSeverity VARCHAR(15), v4threatScore DECIMAL(3,1), v4threatSeverity VARCHAR(15),
         v4environmentalScore DECIMAL(3,1), v4environmentalSeverity VARCHAR(15), v4source VARCHAR(50), v4type VARCHAR(15));
 
-CREATE TABLE `reference` (cveid INT, name VARCHAR(1000), url VARCHAR(1000), source VARCHAR(255),
+CREATE TABLE `reference` (cveid INT, name VARCHAR(1000), url VARCHAR(8000), source VARCHAR(255),
 	CONSTRAINT fkReference FOREIGN KEY (cveid) REFERENCES vulnerability(id) ON DELETE CASCADE);
 
 CREATE TABLE cpeEntry (id INT auto_increment PRIMARY KEY, part CHAR(1), vendor VARCHAR(255), product VARCHAR(255),
@@ -379,4 +379,4 @@ GRANT EXECUTE ON PROCEDURE dependencycheck.merge_knownexploited TO 'dcuser';
 
 GRANT SELECT, INSERT, UPDATE, DELETE ON dependencycheck.* TO 'dcuser';
 
-INSERT INTO properties(id, value) VALUES ('version', '5.5');
+INSERT INTO properties(id, value) VALUES ('version', '5.6');
