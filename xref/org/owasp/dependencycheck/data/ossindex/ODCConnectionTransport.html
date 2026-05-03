@@ -25,23 +25,23 @@
 <a class="jxr_linenumber" name="L17" href="#L17">17</a>  <em class="jxr_comment"> */</em>
 <a class="jxr_linenumber" name="L18" href="#L18">18</a>  <strong class="jxr_keyword">package</strong> org.owasp.dependencycheck.data.ossindex;
 <a class="jxr_linenumber" name="L19" href="#L19">19</a>  
-<a class="jxr_linenumber" name="L20" href="#L20">20</a>  <strong class="jxr_keyword">import</strong> java.io.IOException;
-<a class="jxr_linenumber" name="L21" href="#L21">21</a>  <strong class="jxr_keyword">import</strong> java.net.URI;
-<a class="jxr_linenumber" name="L22" href="#L22">22</a>  <strong class="jxr_keyword">import</strong> java.nio.charset.StandardCharsets;
-<a class="jxr_linenumber" name="L23" href="#L23">23</a>  <strong class="jxr_keyword">import</strong> java.util.ArrayList;
-<a class="jxr_linenumber" name="L24" href="#L24">24</a>  <strong class="jxr_keyword">import</strong> java.util.List;
-<a class="jxr_linenumber" name="L25" href="#L25">25</a>  
-<a class="jxr_linenumber" name="L26" href="#L26">26</a>  <strong class="jxr_keyword">import</strong> org.apache.hc.core5.http.ContentType;
-<a class="jxr_linenumber" name="L27" href="#L27">27</a>  <strong class="jxr_keyword">import</strong> org.apache.hc.core5.http.Header;
-<a class="jxr_linenumber" name="L28" href="#L28">28</a>  <strong class="jxr_keyword">import</strong> org.apache.hc.core5.http.HttpHeaders;
-<a class="jxr_linenumber" name="L29" href="#L29">29</a>  <strong class="jxr_keyword">import</strong> org.apache.hc.core5.http.message.BasicHeader;
-<a class="jxr_linenumber" name="L30" href="#L30">30</a>  <strong class="jxr_keyword">import</strong> org.owasp.dependencycheck.utils.Downloader;
-<a class="jxr_linenumber" name="L31" href="#L31">31</a>  <strong class="jxr_keyword">import</strong> org.owasp.dependencycheck.utils.ResourceNotFoundException;
-<a class="jxr_linenumber" name="L32" href="#L32">32</a>  <strong class="jxr_keyword">import</strong> org.owasp.dependencycheck.utils.TooManyRequestsException;
-<a class="jxr_linenumber" name="L33" href="#L33">33</a>  <strong class="jxr_keyword">import</strong> org.sonatype.ossindex.service.client.OssindexClientConfiguration;
-<a class="jxr_linenumber" name="L34" href="#L34">34</a>  <strong class="jxr_keyword">import</strong> org.sonatype.ossindex.service.client.transport.BasicAuthHelper;
-<a class="jxr_linenumber" name="L35" href="#L35">35</a>  <strong class="jxr_keyword">import</strong> org.sonatype.ossindex.service.client.transport.Transport;
-<a class="jxr_linenumber" name="L36" href="#L36">36</a>  <strong class="jxr_keyword">import</strong> org.sonatype.ossindex.service.client.transport.UserAgentSupplier;
+<a class="jxr_linenumber" name="L20" href="#L20">20</a>  <strong class="jxr_keyword">import</strong> org.apache.hc.core5.http.ContentType;
+<a class="jxr_linenumber" name="L21" href="#L21">21</a>  <strong class="jxr_keyword">import</strong> org.apache.hc.core5.http.Header;
+<a class="jxr_linenumber" name="L22" href="#L22">22</a>  <strong class="jxr_keyword">import</strong> org.apache.hc.core5.http.HttpHeaders;
+<a class="jxr_linenumber" name="L23" href="#L23">23</a>  <strong class="jxr_keyword">import</strong> org.apache.hc.core5.http.message.BasicHeader;
+<a class="jxr_linenumber" name="L24" href="#L24">24</a>  <strong class="jxr_keyword">import</strong> org.owasp.dependencycheck.utils.Downloader;
+<a class="jxr_linenumber" name="L25" href="#L25">25</a>  <strong class="jxr_keyword">import</strong> org.owasp.dependencycheck.utils.ResourceNotFoundException;
+<a class="jxr_linenumber" name="L26" href="#L26">26</a>  <strong class="jxr_keyword">import</strong> org.owasp.dependencycheck.utils.TooManyRequestsException;
+<a class="jxr_linenumber" name="L27" href="#L27">27</a>  <strong class="jxr_keyword">import</strong> org.sonatype.ossindex.service.client.OssindexClientConfiguration;
+<a class="jxr_linenumber" name="L28" href="#L28">28</a>  <strong class="jxr_keyword">import</strong> org.sonatype.ossindex.service.client.transport.BasicAuthHelper;
+<a class="jxr_linenumber" name="L29" href="#L29">29</a>  <strong class="jxr_keyword">import</strong> org.sonatype.ossindex.service.client.transport.Transport;
+<a class="jxr_linenumber" name="L30" href="#L30">30</a>  <strong class="jxr_keyword">import</strong> org.sonatype.ossindex.service.client.transport.UserAgentSupplier;
+<a class="jxr_linenumber" name="L31" href="#L31">31</a>  
+<a class="jxr_linenumber" name="L32" href="#L32">32</a>  <strong class="jxr_keyword">import</strong> java.io.IOException;
+<a class="jxr_linenumber" name="L33" href="#L33">33</a>  <strong class="jxr_keyword">import</strong> java.net.URI;
+<a class="jxr_linenumber" name="L34" href="#L34">34</a>  <strong class="jxr_keyword">import</strong> java.nio.charset.StandardCharsets;
+<a class="jxr_linenumber" name="L35" href="#L35">35</a>  <strong class="jxr_keyword">import</strong> java.util.ArrayList;
+<a class="jxr_linenumber" name="L36" href="#L36">36</a>  <strong class="jxr_keyword">import</strong> java.util.List;
 <a class="jxr_linenumber" name="L37" href="#L37">37</a>  
 <a class="jxr_linenumber" name="L38" href="#L38">38</a>  <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L39" href="#L39">39</a>  <em class="jxr_javadoccomment"> * ODC connection transport is used instead of HttpUrlConnectionTransport</em>
@@ -99,7 +99,11 @@
 <a class="jxr_linenumber" name="L91" href="#L91">91</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> close() <strong class="jxr_keyword">throws</strong> Exception {
 <a class="jxr_linenumber" name="L92" href="#L92">92</a>          <em class="jxr_comment">// no resource closure needed; fully delegated to HTTPClient</em>
 <a class="jxr_linenumber" name="L93" href="#L93">93</a>      }
-<a class="jxr_linenumber" name="L94" href="#L94">94</a>  }
+<a class="jxr_linenumber" name="L94" href="#L94">94</a>  
+<a class="jxr_linenumber" name="L95" href="#L95">95</a>      UserAgentSupplier getUserAgent() {
+<a class="jxr_linenumber" name="L96" href="#L96">96</a>          <strong class="jxr_keyword">return</strong> userAgent;
+<a class="jxr_linenumber" name="L97" href="#L97">97</a>      }
+<a class="jxr_linenumber" name="L98" href="#L98">98</a>  }
 </pre>
 <hr/>
 <div id="footer">Copyright &#169; 2012&#x2013;2026 <a href="https://www.owasp.org">OWASP</a>. All rights reserved.</div>

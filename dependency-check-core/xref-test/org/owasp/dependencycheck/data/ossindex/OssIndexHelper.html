@@ -1,0 +1,51 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="" lang="">
+<head><meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<title>OssIndexHelper xref</title>
+<link type="text/css" rel="stylesheet" href="../../../../../stylesheet.css" />
+</head>
+<body>
+<div id="overview"><a href="../../../../../../testapidocs/org/owasp/dependencycheck/data/ossindex/OssIndexHelper.html">View Javadoc</a></div><pre>
+<a class="jxr_linenumber" name="L1" href="#L1">1</a>   <strong class="jxr_keyword">package</strong> org.owasp.dependencycheck.data.ossindex;
+<a class="jxr_linenumber" name="L2" href="#L2">2</a>   
+<a class="jxr_linenumber" name="L3" href="#L3">3</a>   <strong class="jxr_keyword">import</strong> org.mockito.MockedStatic;
+<a class="jxr_linenumber" name="L4" href="#L4">4</a>   <strong class="jxr_keyword">import</strong> org.owasp.dependencycheck.utils.Settings;
+<a class="jxr_linenumber" name="L5" href="#L5">5</a>   <strong class="jxr_keyword">import</strong> org.sonatype.ossindex.service.client.OssindexClient;
+<a class="jxr_linenumber" name="L6" href="#L6">6</a>   
+<a class="jxr_linenumber" name="L7" href="#L7">7</a>   <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> org.mockito.ArgumentMatchers.any;
+<a class="jxr_linenumber" name="L8" href="#L8">8</a>   <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> org.mockito.Mockito.mockStatic;
+<a class="jxr_linenumber" name="L9" href="#L9">9</a>   
+<a class="jxr_linenumber" name="L10" href="#L10">10</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">class</strong> <a href="../../../../../org/owasp/dependencycheck/data/ossindex/OssIndexHelper.html">OssIndexHelper</a> {
+<a class="jxr_linenumber" name="L11" href="#L11">11</a>      <strong class="jxr_keyword">private</strong> <a href="../../../../../org/owasp/dependencycheck/data/ossindex/OssIndexHelper.html">OssIndexHelper</a>() {}
+<a class="jxr_linenumber" name="L12" href="#L12">12</a>  
+<a class="jxr_linenumber" name="L13" href="#L13">13</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">void</strong> setSonatypeGuideCredentials(<strong class="jxr_keyword">final</strong> Settings settings) {
+<a class="jxr_linenumber" name="L14" href="#L14">14</a>          settings.setBoolean(Settings.KEYS.ANALYZER_OSSINDEX_ENABLED, <strong class="jxr_keyword">true</strong>);
+<a class="jxr_linenumber" name="L15" href="#L15">15</a>          settings.setString(Settings.KEYS.ANALYZER_OSSINDEX_PASSWORD, <span class="jxr_string">"sonatype_pat_abcdef"</span>);
+<a class="jxr_linenumber" name="L16" href="#L16">16</a>      }
+<a class="jxr_linenumber" name="L17" href="#L17">17</a>  
+<a class="jxr_linenumber" name="L18" href="#L18">18</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">void</strong> setLegacyOssIndexCredentials(<strong class="jxr_keyword">final</strong> Settings settings) {
+<a class="jxr_linenumber" name="L19" href="#L19">19</a>          settings.setBoolean(Settings.KEYS.ANALYZER_OSSINDEX_ENABLED, <strong class="jxr_keyword">true</strong>);
+<a class="jxr_linenumber" name="L20" href="#L20">20</a>          settings.setString(Settings.KEYS.ANALYZER_OSSINDEX_USER, <span class="jxr_string">"user"</span>);
+<a class="jxr_linenumber" name="L21" href="#L21">21</a>          settings.setString(Settings.KEYS.ANALYZER_OSSINDEX_PASSWORD, <span class="jxr_string">"api-token"</span>);
+<a class="jxr_linenumber" name="L22" href="#L22">22</a>      }
+<a class="jxr_linenumber" name="L23" href="#L23">23</a>  
+<a class="jxr_linenumber" name="L24" href="#L24">24</a>      @SuppressWarnings(<span class="jxr_string">"resource"</span>)
+<a class="jxr_linenumber" name="L25" href="#L25">25</a>      <strong class="jxr_keyword">static</strong> MockedStatic&lt;OssIndexClientProvider&gt; stubClientCreation() {
+<a class="jxr_linenumber" name="L26" href="#L26">26</a>          MockedStatic&lt;OssIndexClientProvider&gt; mockedClient = mockStatic(OssIndexClientProvider.<strong class="jxr_keyword">class</strong>);
+<a class="jxr_linenumber" name="L27" href="#L27">27</a>          mockedClient.when(() -&gt; OssIndexClientProvider.create(any())).thenCallRealMethod();
+<a class="jxr_linenumber" name="L28" href="#L28">28</a>          mockedClient.when(() -&gt; OssIndexClientProvider.newClientFor(any(), any(), any())).thenReturn(<strong class="jxr_keyword">null</strong>);
+<a class="jxr_linenumber" name="L29" href="#L29">29</a>          <strong class="jxr_keyword">return</strong> mockedClient;
+<a class="jxr_linenumber" name="L30" href="#L30">30</a>      }
+<a class="jxr_linenumber" name="L31" href="#L31">31</a>  
+<a class="jxr_linenumber" name="L32" href="#L32">32</a>      @SuppressWarnings(<span class="jxr_string">"resource"</span>)
+<a class="jxr_linenumber" name="L33" href="#L33">33</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> MockedStatic&lt;OssIndexClientProvider&gt; withClientCreation(OssindexClient client) {
+<a class="jxr_linenumber" name="L34" href="#L34">34</a>          MockedStatic&lt;OssIndexClientProvider&gt; mockedClient = mockStatic(OssIndexClientProvider.<strong class="jxr_keyword">class</strong>);
+<a class="jxr_linenumber" name="L35" href="#L35">35</a>          mockedClient.when(() -&gt; OssIndexClientProvider.create(any())).thenReturn(client);
+<a class="jxr_linenumber" name="L36" href="#L36">36</a>          <strong class="jxr_keyword">return</strong> mockedClient;
+<a class="jxr_linenumber" name="L37" href="#L37">37</a>      }
+<a class="jxr_linenumber" name="L38" href="#L38">38</a>  }
+</pre>
+<hr/>
+<div id="footer">Copyright &#169; 2012&#x2013;2026 <a href="https://www.owasp.org">OWASP</a>. All rights reserved.</div>
+</body>
+</html>

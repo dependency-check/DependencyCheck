@@ -17,12 +17,6 @@
  */
 package org.owasp.dependencycheck.data.ossindex;
 
-import java.io.IOException;
-import java.net.URI;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.List;
-
 import org.apache.hc.core5.http.ContentType;
 import org.apache.hc.core5.http.Header;
 import org.apache.hc.core5.http.HttpHeaders;
@@ -34,6 +28,12 @@ import org.sonatype.ossindex.service.client.OssindexClientConfiguration;
 import org.sonatype.ossindex.service.client.transport.BasicAuthHelper;
 import org.sonatype.ossindex.service.client.transport.Transport;
 import org.sonatype.ossindex.service.client.transport.UserAgentSupplier;
+
+import java.io.IOException;
+import java.net.URI;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * ODC connection transport is used instead of HttpUrlConnectionTransport
@@ -66,18 +66,18 @@ public class ODCConnectionTransport implements Transport {
     @Override
     public void init(OssindexClientConfiguration configuration) {
         // no initialisation needed
-<span class="fc" id="L69">    }</span>
+<span class="nc" id="L69">    }</span>
 
     @Override
     public String post(URI url, String payloadType, String payload, String acceptType) throws TransportException, IOException {
         try {
-<span class="fc" id="L74">            final List&lt;Header&gt; headers = new ArrayList&lt;&gt;(3);</span>
-<span class="fc" id="L75">            headers.add(new BasicHeader(HttpHeaders.ACCEPT, acceptType));</span>
-<span class="fc" id="L76">            headers.add(new BasicHeader(HttpHeaders.USER_AGENT, userAgent.get()));</span>
+<span class="nc" id="L74">            final List&lt;Header&gt; headers = new ArrayList&lt;&gt;(3);</span>
+<span class="nc" id="L75">            headers.add(new BasicHeader(HttpHeaders.ACCEPT, acceptType));</span>
+<span class="nc" id="L76">            headers.add(new BasicHeader(HttpHeaders.USER_AGENT, userAgent.get()));</span>
             // TODO consider to promote pre-emptive authentication by default to the Downloader and also load the OSSIndex credentials there.
-<span class="fc" id="L78">            final String authorization = BasicAuthHelper.authorizationHeader(configuration.getAuthConfiguration());</span>
-<span class="pc bpc" id="L79" title="1 of 2 branches missed.">            if (authorization != null) {</span>
-<span class="fc" id="L80">                headers.add(new BasicHeader(HttpHeaders.AUTHORIZATION, authorization));</span>
+<span class="nc" id="L78">            final String authorization = BasicAuthHelper.authorizationHeader(configuration.getAuthConfiguration());</span>
+<span class="nc bnc" id="L79" title="All 2 branches missed.">            if (authorization != null) {</span>
+<span class="nc" id="L80">                headers.add(new BasicHeader(HttpHeaders.AUTHORIZATION, authorization));</span>
             }
 <span class="nc" id="L82">            return Downloader.getInstance().postBasedFetchContent(url, payload, ContentType.create(payloadType, StandardCharsets.UTF_8), headers);</span>
 <span class="nc" id="L83">        } catch (TooManyRequestsException e) {</span>
@@ -90,6 +90,10 @@ public class ODCConnectionTransport implements Transport {
     @Override
     public void close() throws Exception {
         // no resource closure needed; fully delegated to HTTPClient
-<span class="fc" id="L93">    }</span>
+<span class="nc" id="L93">    }</span>
+
+    UserAgentSupplier getUserAgent() {
+<span class="fc" id="L96">        return userAgent;</span>
+    }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.14.202510111229</span></div></body></html>

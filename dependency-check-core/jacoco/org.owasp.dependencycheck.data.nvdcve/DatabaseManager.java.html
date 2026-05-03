@@ -394,15 +394,15 @@ public final class DatabaseManager {
     private String getResource(String resource) throws IOException {
         String dbStructure;
         try {
-<span class="nc" id="L397">            final URL url = Resources.getResource(resource);</span>
-<span class="nc" id="L398">            dbStructure = Resources.toString(url, StandardCharsets.UTF_8);</span>
+<span class="fc" id="L397">            final URL url = Resources.getResource(resource);</span>
+<span class="fc" id="L398">            dbStructure = Resources.toString(url, StandardCharsets.UTF_8);</span>
 <span class="nc" id="L399">        } catch (IllegalArgumentException ex) {</span>
 <span class="nc" id="L400">            LOGGER.debug(&quot;Resources.getResource(String) failed to find the DB Structure Resource&quot;, ex);</span>
 <span class="nc" id="L401">            try (InputStream is = FileUtils.getResourceAsStream(resource)) {</span>
 <span class="nc" id="L402">                dbStructure = IOUtils.toString(is, StandardCharsets.UTF_8);</span>
             }
-<span class="nc" id="L404">        }</span>
-<span class="nc" id="L405">        return dbStructure;</span>
+<span class="fc" id="L404">        }</span>
+<span class="fc" id="L405">        return dbStructure;</span>
     }
 
     /**
@@ -421,30 +421,30 @@ public final class DatabaseManager {
     private void updateSchema(Connection conn, DependencyVersion appExpectedVersion, DependencyVersion currentDbVersion)
             throws DatabaseException {
 
-<span class="nc bnc" id="L424" title="All 2 branches missed.">        if (connectionString.startsWith(&quot;jdbc:h2:file:&quot;)) {</span>
-<span class="nc" id="L425">            LOGGER.debug(&quot;Updating database structure&quot;);</span>
-<span class="nc" id="L426">            final String updateFile = String.format(DB_STRUCTURE_UPDATE_RESOURCE, currentDbVersion.toString());</span>
-<span class="nc bnc" id="L427" title="All 4 branches missed.">            if (&quot;data/upgrade_4.2.sql&quot;.equals(updateFile) &amp;&amp; !FileUtils.getResourceAsFile(updateFile).exists()) {</span>
+<span class="pc bpc" id="L424" title="1 of 2 branches missed.">        if (connectionString.startsWith(&quot;jdbc:h2:file:&quot;)) {</span>
+<span class="fc" id="L425">            LOGGER.debug(&quot;Updating database structure&quot;);</span>
+<span class="fc" id="L426">            final String updateFile = String.format(DB_STRUCTURE_UPDATE_RESOURCE, currentDbVersion.toString());</span>
+<span class="pc bpc" id="L427" title="3 of 4 branches missed.">            if (&quot;data/upgrade_4.2.sql&quot;.equals(updateFile) &amp;&amp; !FileUtils.getResourceAsFile(updateFile).exists()) {</span>
 <span class="nc" id="L428">                throw new DatabaseException(&quot;unable to upgrade the database schema - please run the dependency-check &quot;</span>
                         + &quot;purge command to remove the existing database&quot;);
             }
             try {
-<span class="nc" id="L432">                final String dbStructureUpdate = getResource(updateFile);</span>
-<span class="nc" id="L433">                Statement statement = null;</span>
+<span class="fc" id="L432">                final String dbStructureUpdate = getResource(updateFile);</span>
+<span class="fc" id="L433">                Statement statement = null;</span>
                 try {
-<span class="nc" id="L435">                    statement = conn.createStatement();</span>
-<span class="nc" id="L436">                    statement.execute(dbStructureUpdate);</span>
+<span class="fc" id="L435">                    statement = conn.createStatement();</span>
+<span class="fc" id="L436">                    statement.execute(dbStructureUpdate);</span>
 <span class="nc" id="L437">                } catch (SQLException ex) {</span>
 <span class="nc" id="L438">                    throw new DatabaseException(String.format(&quot;Unable to upgrade the database schema from %s to %s&quot;,</span>
 <span class="nc" id="L439">                            currentDbVersion, appExpectedVersion.toString()), ex);</span>
                 } finally {
-<span class="nc" id="L441">                    DBUtils.closeStatement(statement);</span>
+<span class="fc" id="L441">                    DBUtils.closeStatement(statement);</span>
                 }
 <span class="nc" id="L443">            } catch (IllegalArgumentException | IOException ex) {</span>
 <span class="nc" id="L444">                final String msg = String.format(&quot;Upgrade SQL file does not exist: %s&quot;, updateFile);</span>
 <span class="nc" id="L445">                throw new DatabaseException(msg, ex);</span>
-<span class="nc" id="L446">            }</span>
-<span class="nc" id="L447">        } else {</span>
+<span class="fc" id="L446">            }</span>
+<span class="fc" id="L447">        } else {</span>
 <span class="nc" id="L448">            final int e0 = Integer.parseInt(appExpectedVersion.getVersionParts().get(0));</span>
 <span class="nc" id="L449">            final int c0 = Integer.parseInt(currentDbVersion.getVersionParts().get(0));</span>
 <span class="nc" id="L450">            final int e1 = Integer.parseInt(appExpectedVersion.getVersionParts().get(1));</span>
@@ -462,7 +462,7 @@ public final class DatabaseManager {
             }
             //CSON: EmptyBlock
         }
-<span class="nc" id="L465">    }</span>
+<span class="fc" id="L465">    }</span>
 
     /**
      * Returns a resource bundle containing the SQL Statements needed for the
@@ -505,12 +505,12 @@ public final class DatabaseManager {
                 }
 <span class="fc" id="L506">                LOGGER.debug(&quot;DC Schema: {}&quot;, appDbVersion);</span>
 <span class="fc" id="L507">                LOGGER.debug(&quot;DB Schema: {}&quot;, db);</span>
-<span class="pc bpc" id="L508" title="1 of 2 branches missed.">                if (appDbVersion.compareTo(db) &gt; 0) {</span>
-<span class="nc" id="L509">                    final boolean autoUpdate = settings.getBoolean(Settings.KEYS.AUTO_UPDATE, true);</span>
-<span class="nc bnc" id="L510" title="All 2 branches missed.">                    if (autoUpdate) {</span>
-<span class="nc" id="L511">                        updateSchema(conn, appDbVersion, db);</span>
-<span class="nc bnc" id="L512" title="All 2 branches missed.">                        if (++callDepth &lt; 10) {</span>
-<span class="nc" id="L513">                            ensureSchemaVersion(conn);</span>
+<span class="fc bfc" id="L508" title="All 2 branches covered.">                if (appDbVersion.compareTo(db) &gt; 0) {</span>
+<span class="fc" id="L509">                    final boolean autoUpdate = settings.getBoolean(Settings.KEYS.AUTO_UPDATE, true);</span>
+<span class="pc bpc" id="L510" title="1 of 2 branches missed.">                    if (autoUpdate) {</span>
+<span class="fc" id="L511">                        updateSchema(conn, appDbVersion, db);</span>
+<span class="pc bpc" id="L512" title="1 of 2 branches missed.">                        if (++callDepth &lt; 10) {</span>
+<span class="fc" id="L513">                            ensureSchemaVersion(conn);</span>
                         }
                     } else {
 <span class="nc" id="L516">                        throw new DatabaseException(&quot;Old database schema identified - please execute &quot;</span>

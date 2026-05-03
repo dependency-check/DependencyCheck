@@ -11,7 +11,7 @@ Dependency-Check Core,org.owasp.dependencycheck.dependency,VulnerableSoftware,20
 Dependency-Check Core,org.owasp.dependencycheck.dependency,Vulnerability.Source,0,39,0,0,0,7,0,1,0,1
 Dependency-Check Core,org.owasp.dependencycheck.dependency,CweSet,0,61,1,3,0,14,1,9,0,8
 Dependency-Check Core,org.owasp.dependencycheck.dependency,Vulnerability,114,285,11,15,29,85,15,38,6,34
-Dependency-Check Core,org.owasp.dependencycheck.dependency,IncludedByReference,15,0,0,0,6,0,3,0,3,0
+Dependency-Check Core,org.owasp.dependencycheck.dependency,IncludedByReference,14,60,2,4,3,12,5,5,3,4
 Dependency-Check Core,org.owasp.dependencycheck.dependency,EvidenceCollection.new Filter() {...},0,11,0,2,0,2,0,3,0,2
 Dependency-Check Core,org.owasp.dependencycheck.dependency,EvidenceCollection.new Filter() {...},0,11,0,2,0,2,0,3,0,2
 Dependency-Check Core,org.owasp.dependencycheck.dependency,EvidenceCollection.new Filter() {...},0,11,0,2,0,2,0,3,0,2
@@ -21,8 +21,8 @@ Dependency-Check Core,org.owasp.dependencycheck.dependency,VulnerableSoftwareBui
 Dependency-Check Core,org.owasp.dependencycheck.dependency,Evidence,47,200,13,17,14,38,19,13,6,11
 Dependency-Check Core,org.owasp.dependencycheck.dependency,EvidenceCollection,113,371,26,32,29,89,24,30,1,17
 Dependency-Check Core,org.owasp.dependencycheck.dependency,EvidenceType,0,21,0,0,0,4,0,1,0,1
-Dependency-Check Core,org.owasp.dependencycheck.dependency,Dependency,139,903,21,65,34,248,26,92,6,69
-Dependency-Check Core,org.owasp.dependencycheck.dependency,Reference,43,72,6,0,11,26,5,10,2,10
+Dependency-Check Core,org.owasp.dependencycheck.dependency,Dependency,136,903,20,64,34,250,25,94,6,71
+Dependency-Check Core,org.owasp.dependencycheck.dependency,Reference,12,103,3,3,3,34,4,11,1,11
 Dependency-Check Core,org.owasp.dependencycheck.data.composer,ComposerException,7,5,0,0,4,2,2,1,2,1
 Dependency-Check Core,org.owasp.dependencycheck.data.composer,ComposerDependency,20,53,3,3,7,16,4,5,1,5
 Dependency-Check Core,org.owasp.dependencycheck.data.composer,ComposerLockParser,22,185,6,14,6,41,6,9,0,5
@@ -58,11 +58,11 @@ Dependency-Check Core,org.owasp.dependencycheck.reporting,SarifRule,153,328,25,2
 Dependency-Check Core,org.owasp.dependencycheck.reporting,ReportGenerator,175,616,14,68,40,136,16,41,3,13
 Dependency-Check Core,org.owasp.dependencycheck.reporting,EscapeTool,16,180,7,45,6,45,6,32,1,11
 Dependency-Check Core,org.owasp.dependencycheck.reporting,ReportTool,144,280,34,35,29,59,24,22,0,10
+Dependency-Check Core,org.owasp.dependencycheck.data.ossindex,OssIndexClientProvider,15,103,1,5,4,23,2,4,1,2
+Dependency-Check Core,org.owasp.dependencycheck.data.ossindex,ODCConnectionTransport,67,12,2,0,13,5,4,2,3,2
 Dependency-Check Core,org.owasp.dependencycheck.data.cwe,CweHandler,35,0,4,0,8,0,5,0,3,0
 Dependency-Check Core,org.owasp.dependencycheck.data.cwe,App,165,0,10,0,36,0,8,0,3,0
 Dependency-Check Core,org.owasp.dependencycheck.data.cwe,CweDB,21,40,1,3,9,12,1,5,0,4
-Dependency-Check Core,org.owasp.dependencycheck.data.ossindex,ODCConnectionTransport,27,49,1,1,5,12,1,4,0,4
-Dependency-Check Core,org.owasp.dependencycheck.data.ossindex,OssindexClientFactory,47,77,8,4,13,19,6,2,0,2
 Dependency-Check Core,org.owasp.dependencycheck.data.update,NvdApiDataSource.FeedUrl,5,230,0,14,1,43,1,21,1,14
 Dependency-Check Core,org.owasp.dependencycheck.data.update,UpdateService,0,12,0,0,0,4,0,2,0,2
 Dependency-Check Core,org.owasp.dependencycheck.data.update,EngineVersionCheck,118,157,12,12,32,43,12,9,2,7
@@ -87,7 +87,7 @@ Dependency-Check Core,org.owasp.dependencycheck.data.nvdcve,DriverLoader,61,157,
 Dependency-Check Core,org.owasp.dependencycheck.data.nvdcve,CveItemOperator,369,55,163,5,59,14,93,6,5,5
 Dependency-Check Core,org.owasp.dependencycheck.data.nvdcve,DatabaseProperties,97,99,11,9,21,26,14,10,6,8
 Dependency-Check Core,org.owasp.dependencycheck.data.nvdcve,H2Functions,729,0,36,0,194,0,24,0,6,0
-Dependency-Check Core,org.owasp.dependencycheck.data.nvdcve,DatabaseManager,451,357,41,19,111,104,31,21,3,19
+Dependency-Check Core,org.owasp.dependencycheck.data.nvdcve,DatabaseManager,375,433,36,24,90,125,28,24,1,21
 Dependency-Check Core,org.owasp.dependencycheck.data.nvdcve,CorruptDatabaseException,9,0,0,0,4,0,2,0,2,0
 Dependency-Check Core,org.owasp.dependencycheck.data.nvdcve,DriverLoadException,8,5,0,0,4,2,2,1,2,1
 Dependency-Check Core,org.owasp.dependencycheck.data.update.exception,InvalidDataException,9,0,0,0,4,0,2,0,2,0
@@ -116,6 +116,7 @@ Dependency-Check Core,org.owasp.dependencycheck.analyzer,NpmCPEAnalyzer,31,52,0,
 Dependency-Check Core,org.owasp.dependencycheck.analyzer,ComposerLockAnalyzer,32,212,0,0,8,41,0,10,0,10
 Dependency-Check Core,org.owasp.dependencycheck.analyzer,PinnedMavenInstallAnalyzer.Artifactv2,0,3,0,0,0,1,0,1,0,1
 Dependency-Check Core,org.owasp.dependencycheck.analyzer,AbstractFileTypeAnalyzer,6,65,2,8,1,21,2,10,0,7
+Dependency-Check Core,org.owasp.dependencycheck.analyzer,RetireJsLibrary.KnownCveProvider,0,5,0,0,0,1,0,1,0,1
 Dependency-Check Core,org.owasp.dependencycheck.analyzer,SwiftPackageManagerAnalyzer,72,174,14,10,13,47,12,11,0,11
 Dependency-Check Core,org.owasp.dependencycheck.analyzer,AutoconfAnalyzer,11,299,6,28,3,62,5,23,0,11
 Dependency-Check Core,org.owasp.dependencycheck.analyzer,CPEAnalyzer.IdentifierMatch,25,79,3,3,9,22,7,7,4,7
@@ -123,15 +124,17 @@ Dependency-Check Core,org.owasp.dependencycheck.analyzer,NvdCveAnalyzer,86,152,1
 Dependency-Check Core,org.owasp.dependencycheck.analyzer,PinnedMavenInstallAnalyzer.MavenDependency,0,12,0,0,0,6,0,3,0,3
 Dependency-Check Core,org.owasp.dependencycheck.analyzer,GolangModAnalyzer,247,214,17,9,46,66,13,12,0,11
 Dependency-Check Core,org.owasp.dependencycheck.analyzer,PythonDistributionAnalyzer,130,401,25,31,31,93,22,21,1,14
+Dependency-Check Core,org.owasp.dependencycheck.analyzer,RetireJsLibrary,24,95,0,4,3,22,0,11,0,9
 Dependency-Check Core,org.owasp.dependencycheck.analyzer,DependencyMergingAnalyzer,43,435,29,107,13,102,27,58,0,17
 Dependency-Check Core,org.owasp.dependencycheck.analyzer,MSBuildProjectAnalyzer,57,567,20,42,19,118,20,24,0,13
-Dependency-Check Core,org.owasp.dependencycheck.analyzer,RubyBundleAuditAnalyzer,268,143,24,10,66,38,15,11,1,8
+Dependency-Check Core,org.owasp.dependencycheck.analyzer,RubyBundleAuditAnalyzer,246,131,22,8,59,34,14,10,1,8
 Dependency-Check Core,org.owasp.dependencycheck.analyzer,AbstractDependencyComparingAnalyzer,0,79,0,12,0,20,0,10,0,4
 Dependency-Check Core,org.owasp.dependencycheck.analyzer,PinnedMavenInstallAnalyzer.InstallFile,0,3,0,0,0,1,0,1,0,1
 Dependency-Check Core,org.owasp.dependencycheck.analyzer,RubyBundlerAnalyzer,50,92,16,14,10,20,12,8,0,5
 Dependency-Check Core,org.owasp.dependencycheck.analyzer,VulnerabilitySuppressionAnalyzer,0,45,5,11,0,9,5,10,0,7
 Dependency-Check Core,org.owasp.dependencycheck.analyzer,PinnedMavenInstallAnalyzer,57,326,14,23,20,78,14,15,0,10
 Dependency-Check Core,org.owasp.dependencycheck.analyzer,UnusedSuppressionRuleAnalyzer,0,126,0,16,0,36,0,21,0,13
+Dependency-Check Core,org.owasp.dependencycheck.analyzer,RetireJsLibrary.RetireJsVulnerabilityIdentifiers,7,252,1,7,1,38,2,21,1,18
 Dependency-Check Core,org.owasp.dependencycheck.analyzer,AbstractAnalyzer,0,64,0,6,0,24,0,15,0,12
 Dependency-Check Core,org.owasp.dependencycheck.analyzer,NexusAnalyzer,243,66,26,4,70,20,18,10,4,9
 Dependency-Check Core,org.owasp.dependencycheck.analyzer,JarAnalyzer.ClassNameInformation,4,74,0,8,2,18,1,7,1,3
@@ -140,6 +143,7 @@ Dependency-Check Core,org.owasp.dependencycheck.analyzer,AssemblyAnalyzer,262,78
 Dependency-Check Core,org.owasp.dependencycheck.analyzer,PoetryAnalyzer,24,293,6,12,8,68,6,16,0,13
 Dependency-Check Core,org.owasp.dependencycheck.analyzer,KnownExploitedVulnerabilityAnalyzer,14,49,1,3,4,16,1,8,0,7
 Dependency-Check Core,org.owasp.dependencycheck.analyzer,PerlCpanfileAnalyzer,57,228,5,7,14,60,6,15,3,12
+Dependency-Check Core,org.owasp.dependencycheck.analyzer,RetireJsLibrary.KnownIdentifierTypes,0,29,0,0,0,4,0,5,0,5
 Dependency-Check Core,org.owasp.dependencycheck.analyzer,AbstractSuppressionAnalyzer,213,529,17,45,59,135,16,29,0,14
 Dependency-Check Core,org.owasp.dependencycheck.analyzer,PipfileAnalyzer,22,222,3,7,6,50,3,11,0,9
 Dependency-Check Core,org.owasp.dependencycheck.analyzer,CentralAnalyzer,368,107,39,5,106,35,23,12,3,10
@@ -147,7 +151,7 @@ Dependency-Check Core,org.owasp.dependencycheck.analyzer,PinnedMavenInstallAnaly
 Dependency-Check Core,org.owasp.dependencycheck.analyzer,NodeAuditAnalyzer,183,133,10,10,47,29,8,11,1,8
 Dependency-Check Core,org.owasp.dependencycheck.analyzer,AnalysisPhase,0,93,0,0,0,16,0,1,0,1
 Dependency-Check Core,org.owasp.dependencycheck.analyzer,CMakeAnalyzer,82,602,9,51,14,144,9,34,0,13
-Dependency-Check Core,org.owasp.dependencycheck.analyzer,RetireJsAnalyzer,285,558,23,50,59,124,21,32,2,13
+Dependency-Check Core,org.owasp.dependencycheck.analyzer,RetireJsAnalyzer,83,309,6,26,23,72,5,23,0,12
 Dependency-Check Core,org.owasp.dependencycheck.analyzer,YarnAuditAnalyzer,191,640,21,33,51,145,20,29,1,21
 Dependency-Check Core,org.owasp.dependencycheck.analyzer,CarthageAnalyzer,55,245,10,14,16,63,9,13,1,9
 Dependency-Check Core,org.owasp.dependencycheck.analyzer,CPEAnalyzer,489,1884,66,246,99,422,59,149,5,47
@@ -158,10 +162,11 @@ Dependency-Check Core,org.owasp.dependencycheck.analyzer,DartAnalyzer,30,457,8,2
 Dependency-Check Core,org.owasp.dependencycheck.analyzer,AnalyzerService,1,84,1,11,1,22,1,10,0,5
 Dependency-Check Core,org.owasp.dependencycheck.analyzer,CocoaPodsAnalyzer,81,460,16,24,19,105,14,18,0,12
 Dependency-Check Core,org.owasp.dependencycheck.analyzer,PythonPackageAnalyzer,37,327,5,19,8,73,4,21,0,13
-Dependency-Check Core,org.owasp.dependencycheck.analyzer,OssIndexAnalyzer,422,308,54,26,103,80,40,23,6,17
+Dependency-Check Core,org.owasp.dependencycheck.analyzer,OssIndexAnalyzer,391,325,35,33,95,80,35,32,13,20
 Dependency-Check Core,org.owasp.dependencycheck.analyzer,CPEAnalyzer.IdentifierConfidence,0,21,0,0,0,4,0,1,0,1
 Dependency-Check Core,org.owasp.dependencycheck.analyzer,LibmanAnalyzer,40,247,8,10,11,61,7,11,0,9
 Dependency-Check Core,org.owasp.dependencycheck.analyzer,NugetconfAnalyzer,28,254,0,6,8,46,0,11,0,8
+Dependency-Check Core,org.owasp.dependencycheck.analyzer,OssIndexAnalyzer.OssIndexKnownError,0,111,0,2,0,19,0,7,0,6
 Dependency-Check Core,org.owasp.dependencycheck.analyzer,JarAnalyzer,474,2681,152,326,98,512,137,136,0,34
 Dependency-Check Core,org.owasp.dependencycheck.analyzer,ArtifactoryAnalyzer,208,40,20,0,56,12,14,8,4,8
 Dependency-Check Core,org.owasp.dependencycheck.analyzer,CpeSuppressionAnalyzer,0,23,0,2,0,9,0,8,0,7
@@ -173,7 +178,7 @@ Dependency-Check Core,org.owasp.dependencycheck.analyzer.exception,LambdaExcepti
 Dependency-Check Core,org.owasp.dependencycheck.analyzer.exception,ArchiveExtractionException,8,8,0,0,4,4,2,2,2,2
 Dependency-Check Core,org.owasp.dependencycheck.analyzer.exception,UnexpectedAnalysisException,13,0,0,0,6,0,3,0,3,0
 Dependency-Check Core,org.owasp.dependencycheck.analyzer.exception,SearchException,16,0,0,0,8,0,4,0,4,0
-Dependency-Check Core,org.owasp.dependencycheck.analyzer.exception,AnalysisException,4,12,0,0,2,6,1,3,1,3
+Dependency-Check Core,org.owasp.dependencycheck.analyzer.exception,AnalysisException,7,9,0,0,4,4,2,2,2,2
 Dependency-Check Core,org.owasp.dependencycheck.dependency.naming,PurlIdentifier,28,211,5,7,9,56,6,19,1,18
 Dependency-Check Core,org.owasp.dependencycheck.dependency.naming,CpeIdentifier,38,192,4,4,12,48,6,16,2,16
 Dependency-Check Core,org.owasp.dependencycheck.dependency.naming,GenericIdentifier,88,34,6,0,29,12,12,4,9,4

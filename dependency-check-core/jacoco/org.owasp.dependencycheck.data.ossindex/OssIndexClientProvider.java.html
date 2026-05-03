@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang=""><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>OssIndexClientProvider.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Dependency-Check Core</a> &gt; <a href="index.source.html" class="el_package">org.owasp.dependencycheck.data.ossindex</a> &gt; <span class="el_source">OssIndexClientProvider.java</span></div><h1>OssIndexClientProvider.java</h1><pre class="source lang-java linenums">/*
+ * This file is part of dependency-check-core.
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * Copyright (c) 2019 Jason Dillon. All Rights Reserved.
+ */
+package org.owasp.dependencycheck.data.ossindex;
+
+import com.google.common.annotations.VisibleForTesting;
+import org.joda.time.Duration;
+import org.jspecify.annotations.NonNull;
+import org.owasp.dependencycheck.utils.Settings;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.sonatype.ossindex.service.client.OssindexClient;
+import org.sonatype.ossindex.service.client.OssindexClientConfiguration;
+import org.sonatype.ossindex.service.client.cache.DirectoryCache;
+import org.sonatype.ossindex.service.client.internal.OssindexClientImpl;
+import org.sonatype.ossindex.service.client.marshal.GsonMarshaller;
+import org.sonatype.ossindex.service.client.marshal.Marshaller;
+import org.sonatype.ossindex.service.client.transport.AuthConfiguration;
+import org.sonatype.ossindex.service.client.transport.Transport;
+import org.sonatype.ossindex.service.client.transport.UserAgentSupplier;
+
+import java.io.File;
+import java.io.IOException;
+
+/**
+ * Produces {@link OssindexClient} instances.
+ *
+ * @author Jason Dillon
+ * @since 5.0.0
+ */
+public final class OssIndexClientProvider {
+    /**
+     * Default base URL for Sonatype OSS Index after its migration to part of Sonatype Guide. This overrides the default
+     * from {@link OssindexClientConfiguration#DEFAULT_BASE_URL} which is now outdated.
+     */
+    public static final String DEFAULT_BASE_URL = &quot;https://api.guide.sonatype.com&quot;;
+
+    /**
+     * Default number of hours to cache entries from OSS Index when the cache is enabled.
+     */
+    public static final int DEFAULT_CACHE_VALID_FOR_HOURS = 24;
+
+    /**
+     * Static logger.
+     */
+<span class="fc" id="L60">    private static final Logger LOGGER = LoggerFactory.getLogger(OssIndexClientProvider.class);</span>
+
+    /**
+     * Private constructor for utility class.
+     */
+    private OssIndexClientProvider() {
+        //private constructor for utility class
+    }
+
+    /**
+     * Constructs a new OSS Index Client.
+     *
+     * @param settings the configured settings
+     * @return a new OSS Index Client
+     */
+    public static OssindexClient create(final Settings settings) {
+<span class="fc" id="L76">        final OssindexClientConfiguration config = new OssindexClientConfiguration();</span>
+
+<span class="fc" id="L78">        config.setBaseUrl(settings.getString(Settings.KEYS.ANALYZER_OSSINDEX_URL, DEFAULT_BASE_URL));</span>
+<span class="fc" id="L79">        config.setAuthConfiguration(new AuthConfiguration(</span>
+<span class="fc" id="L80">                settings.getString(Settings.KEYS.ANALYZER_OSSINDEX_USER, &quot;&quot;),</span>
+<span class="fc" id="L81">                settings.getString(Settings.KEYS.ANALYZER_OSSINDEX_PASSWORD))</span>
+        );
+
+<span class="fc" id="L84">        final int batchSize = settings.getInt(Settings.KEYS.ANALYZER_OSSINDEX_BATCH_SIZE, OssindexClientConfiguration.DEFAULT_BATCH_SIZE);</span>
+<span class="fc" id="L85">        config.setBatchSize(batchSize);</span>
+
+<span class="fc bfc" id="L87" title="All 2 branches covered.">        if (settings.getBoolean(Settings.KEYS.ANALYZER_OSSINDEX_USE_CACHE, true)) {</span>
+<span class="fc" id="L88">            final DirectoryCache.Configuration cache = new DirectoryCache.Configuration();</span>
+            final File data;
+            try {
+<span class="fc" id="L91">                data = settings.getDataDirectory();</span>
+<span class="fc" id="L92">                final File cacheDir = new File(data, &quot;oss_cache&quot;);</span>
+<span class="pc bpc" id="L93" title="1 of 4 branches missed.">                if (cacheDir.isDirectory() || cacheDir.mkdirs()) {</span>
+<span class="fc" id="L94">                    cache.setBaseDir(cacheDir.toPath());</span>
+<span class="fc" id="L95">                    cache.setExpireAfter(Duration.standardHours(settings.getInt(Settings.KEYS.ANALYZER_OSSINDEX_CACHE_VALID_FOR_HOURS, DEFAULT_CACHE_VALID_FOR_HOURS)));</span>
+<span class="fc" id="L96">                    config.setCacheConfiguration(cache);</span>
+<span class="fc" id="L97">                    LOGGER.debug(&quot;OSS Index Cache: {}&quot;, cache);</span>
+                } else {
+<span class="nc" id="L99">                    LOGGER.warn(&quot;Unable to use a cache for the OSS Index&quot;);</span>
+                }
+<span class="nc" id="L101">            } catch (IOException ex) {</span>
+<span class="nc" id="L102">                LOGGER.warn(&quot;Unable to use a cache for the OSS Index&quot;, ex);</span>
+<span class="fc" id="L103">            }</span>
+        }
+        // customize User-Agent for use with dependency-check
+<span class="fc" id="L106">        final UserAgentSupplier userAgent = new UserAgentSupplier(</span>
+                &quot;dependency-check&quot;,
+<span class="fc" id="L108">                settings.getString(Settings.KEYS.APPLICATION_VERSION, &quot;unknown&quot;)</span>
+        );
+
+<span class="fc" id="L111">        final Transport transport = new ODCConnectionTransport(config, userAgent);</span>
+
+<span class="fc" id="L113">        final Marshaller marshaller = new GsonMarshaller();</span>
+
+<span class="fc" id="L115">        return newClientFor(config, transport, marshaller);</span>
+    }
+
+    @VisibleForTesting
+    static @NonNull OssindexClientImpl newClientFor(OssindexClientConfiguration config, Transport transport, Marshaller marshaller) {
+<span class="nc" id="L120">        return new OssindexClientImpl(config, transport, marshaller);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.14.202510111229</span></div></body></html>

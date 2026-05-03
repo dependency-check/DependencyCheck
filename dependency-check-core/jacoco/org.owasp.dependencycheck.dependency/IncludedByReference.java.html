@@ -17,7 +17,11 @@
  */
 package org.owasp.dependencycheck.dependency;
 
+import org.apache.commons.lang3.builder.CompareToBuilder;
+import org.jspecify.annotations.NonNull;
+
 import java.io.Serializable;
+import java.util.Objects;
 
 /**
  * POJO to store a reference to the &quot;included by&quot; node in a dependency tree;
@@ -25,7 +29,7 @@ import java.io.Serializable;
  *
  * @author Jeremy Long
  */
-public class IncludedByReference implements Serializable {
+public class IncludedByReference implements Serializable, Comparable&lt;IncludedByReference&gt; {
 
     /**
      * The serial version UID for serialization.
@@ -47,10 +51,10 @@ public class IncludedByReference implements Serializable {
      * @param reference the reference
      * @param type the reference's type
      */
-<span class="nc" id="L50">    public IncludedByReference(String reference, String type) {</span>
-<span class="nc" id="L51">        this.reference = reference;</span>
-<span class="nc" id="L52">        this.type = type;</span>
-<span class="nc" id="L53">    }</span>
+<span class="fc" id="L54">    public IncludedByReference(String reference, String type) {</span>
+<span class="fc" id="L55">        this.reference = reference;</span>
+<span class="fc" id="L56">        this.type = type;</span>
+<span class="fc" id="L57">    }</span>
 
     /**
      * Get the value of reference.
@@ -58,7 +62,7 @@ public class IncludedByReference implements Serializable {
      * @return the value of reference
      */
     public String getReference() {
-<span class="nc" id="L61">        return reference;</span>
+<span class="nc" id="L65">        return reference;</span>
     }
 
     /**
@@ -67,8 +71,32 @@ public class IncludedByReference implements Serializable {
      * @return the value of type
      */
     public String getType() {
-<span class="nc" id="L70">        return type;</span>
+<span class="nc" id="L74">        return type;</span>
     }
 
+    @Override
+    public boolean equals(Object o) {
+<span class="pc bpc" id="L79" title="1 of 2 branches missed.">        if (!(o instanceof IncludedByReference)) return false;</span>
+<span class="fc" id="L80">        IncludedByReference that = (IncludedByReference) o;</span>
+<span class="pc bpc" id="L81" title="1 of 4 branches missed.">        return Objects.equals(type, that.type) &amp;&amp; Objects.equals(reference, that.reference);</span>
+    }
+
+    @Override
+    public int hashCode() {
+<span class="fc" id="L86">        return Objects.hash(type, reference);</span>
+    }
+
+    @Override
+    public int compareTo(@NonNull IncludedByReference o) {
+<span class="fc" id="L91">        return new CompareToBuilder()</span>
+<span class="fc" id="L92">                .append(type, o.type) // Group by type (nulls-first)</span>
+<span class="fc" id="L93">                .append(reference, o.reference) // then the actual reference</span>
+<span class="fc" id="L94">                .toComparison();</span>
+    }
+
+    @Override
+    public String toString() {
+<span class="nc" id="L99">        return &quot;IncludedByReference{reference='&quot; + reference + &quot;', type='&quot; + type + &quot;'}&quot;;</span>
+    }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.14.202510111229</span></div></body></html>

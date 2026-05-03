@@ -130,18 +130,18 @@ public class Reference implements Serializable, Comparable&lt;Reference&gt; {
 
     @Override
     public boolean equals(Object obj) {
-<span class="nc bnc" id="L133" title="All 4 branches missed.">        if (obj == null || !(obj instanceof Reference)) {</span>
+<span class="pc bpc" id="L133" title="2 of 4 branches missed.">        if (obj == null || !(obj instanceof Reference)) {</span>
 <span class="nc" id="L134">            return false;</span>
         }
-<span class="nc bnc" id="L136" title="All 2 branches missed.">        if (this == obj) {</span>
+<span class="pc bpc" id="L136" title="1 of 2 branches missed.">        if (this == obj) {</span>
 <span class="nc" id="L137">            return true;</span>
         }
-<span class="nc" id="L139">        final Reference rhs = (Reference) obj;</span>
-<span class="nc" id="L140">        return new EqualsBuilder()</span>
-<span class="nc" id="L141">                .append(source, rhs.source)</span>
-<span class="nc" id="L142">                .append(name, rhs.name)</span>
-<span class="nc" id="L143">                .append(url, rhs.url)</span>
-<span class="nc" id="L144">                .isEquals();</span>
+<span class="fc" id="L139">        final Reference rhs = (Reference) obj;</span>
+<span class="fc" id="L140">        return new EqualsBuilder()</span>
+<span class="fc" id="L141">                .append(source, rhs.source)</span>
+<span class="fc" id="L142">                .append(name, rhs.name)</span>
+<span class="fc" id="L143">                .append(url, rhs.url)</span>
+<span class="fc" id="L144">                .isEquals();</span>
     }
 
     @Override
