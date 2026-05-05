@@ -267,8 +267,8 @@ public abstract class AbstractSuppressionAnalyzer extends AbstractAnalyzer {
             }
             final File repoFile = new File(getSettings().getDataDirectory(), fileName);
             boolean repoEmpty = !repoFile.isFile() || repoFile.length() <= 1L;
-            if (repoEmpty) {
-                // utilize the snapshot hosted suppression file
+            if (repoEmpty && HostedSuppressionsDataSource.DEFAULT_SUPPRESSIONS_URL.equals(configuredUrl)) {
+                // utilize the snapshot hosted suppression file only for the default URL
                 URL hostedSuppressionSnapshotURL = getPackagedFile(HOSTED_SUPPRESSION_SNAPSHOT_FILE);
                 try (InputStream in = hostedSuppressionSnapshotURL.openStream()) {
                     Files.copy(in, repoFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
