@@ -190,7 +190,6 @@ class AbstractSuppressionAnalyzerTest extends BaseTest {
 
         private void assertAllHostedSnapshotSuppressionsAreMarkedAsBase(List<SuppressionRule> baseRules) throws InvalidSettingException, InitializationException {
             getSettings().setBoolean(KEYS.HOSTED_SUPPRESSIONS_ENABLED, true);
-            getSettings().setString(KEYS.HOSTED_SUPPRESSIONS_URL, "https://intentionally-bad-url/hosted-suppressions.xml");
             Engine engine = prepareSuppressions();
 
             @SuppressWarnings("unchecked") List<SuppressionRule> allRules = (List<SuppressionRule>) engine.getObject(SUPPRESSION_OBJECT_KEY);
