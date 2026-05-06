@@ -1036,9 +1036,13 @@ only pkg:maven/org.clojure:clojure@.* is the CPE cpe:/a:clojure:clojure
 </suppress>
 <suppress base="true">
     <notes><![CDATA[
-    FP per issue #6666, #6798, #6812
+    FP per issue #796, https://github.com/dependency-check/dependency-check-gradle/issues/61, #1515, #2554, #4442,
+    #6666, #6798, #6812, #8483
+    Jetty toolchain, orbit and alpn are not the same or part of the actual jetty server and versioned independently.
     ]]></notes>
-    <packageUrl regex="true">^pkg:maven/org\.eclipse\.jetty\.toolchain/.*@.*$</packageUrl>
+    <packageUrl regex="true">^pkg:maven/org\.eclipse\.jetty\.(toolchain|alpn|orbit).*$</packageUrl>
+    <cpe>cpe:/a:mortbay_jetty:jetty</cpe>
+    <cpe>cpe:/a:mortbay:jetty</cpe>
     <cpe>cpe:/a:jetty:jetty</cpe>
     <cpe>cpe:/a:eclipse:jetty</cpe>
 </suppress>
