@@ -17,6 +17,30 @@
  */
 package org.owasp.dependencycheck.analyzer;
 
+import com.google.common.annotations.VisibleForTesting;
+import org.jspecify.annotations.NonNull;
+import org.owasp.dependencycheck.Engine;
+import org.owasp.dependencycheck.analyzer.exception.AnalysisException;
+import org.owasp.dependencycheck.data.update.HostedSuppressionsDataSource;
+import org.owasp.dependencycheck.data.update.exception.UpdateException;
+import org.owasp.dependencycheck.dependency.Dependency;
+import org.owasp.dependencycheck.exception.InitializationException;
+import org.owasp.dependencycheck.exception.WriteLockException;
+import org.owasp.dependencycheck.utils.DownloadFailedException;
+import org.owasp.dependencycheck.utils.Downloader;
+import org.owasp.dependencycheck.utils.FileUtils;
+import org.owasp.dependencycheck.utils.ResourceNotFoundException;
+import org.owasp.dependencycheck.utils.Settings;
+import org.owasp.dependencycheck.utils.TooManyRequestsException;
+import org.owasp.dependencycheck.utils.WriteLock;
+import org.owasp.dependencycheck.xml.suppression.SuppressionParseException;
+import org.owasp.dependencycheck.xml.suppression.SuppressionParser;
+import org.owasp.dependencycheck.xml.suppression.SuppressionRule;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.xml.sax.SAXException;
+
+import javax.annotation.concurrent.ThreadSafe;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -27,30 +51,9 @@ import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 import java.util.regex.Pattern;
-import javax.annotation.concurrent.ThreadSafe;
 
-import org.jspecify.annotations.NonNull;
-import org.owasp.dependencycheck.Engine;
-import org.owasp.dependencycheck.analyzer.exception.AnalysisException;
-import org.owasp.dependencycheck.data.update.HostedSuppressionsDataSource;
-import org.owasp.dependencycheck.dependency.Dependency;
-import org.owasp.dependencycheck.exception.InitializationException;
-import org.owasp.dependencycheck.exception.WriteLockException;
-import org.owasp.dependencycheck.utils.WriteLock;
-import org.owasp.dependencycheck.xml.suppression.SuppressionParseException;
-import org.owasp.dependencycheck.xml.suppression.SuppressionParser;
-import org.owasp.dependencycheck.xml.suppression.SuppressionRule;
-import org.owasp.dependencycheck.utils.DownloadFailedException;
-import org.owasp.dependencycheck.utils.Downloader;
-import org.owasp.dependencycheck.utils.FileUtils;
-import org.owasp.dependencycheck.utils.ResourceNotFoundException;
-import org.owasp.dependencycheck.utils.Settings;
-import org.owasp.dependencycheck.utils.TooManyRequestsException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.xml.sax.SAXException;
+import static org.owasp.dependencycheck.data.update.HostedSuppressionsDataSource.falsePositivesDueTo;
 
 /**
  * Abstract base suppression analyzer that contains methods for parsing the
@@ -79,16 +82,6 @@ public abstract class AbstractSuppressionAnalyzer extends AbstractAnalyzer {
     public static final String SUPPRESSION_OBJECT_KEY = "suppression.rules";
 
     /**
-     * Returns a list of file EXTENSIONS supported by this analyzer.
-     *
-     * @return a list of file EXTENSIONS supported by this analyzer.
-     */
-    @SuppressWarnings("SameReturnValue")
-    public Set<String> getSupportedExtensions() {
-        return null;
-    }
-
-    /**
      * The prepare method loads the suppression XML file.
      *
      * @param engine a reference the dependency-check engine
@@ -102,13 +95,13 @@ public abstract class AbstractSuppressionAnalyzer extends AbstractAnalyzer {
         try {
             loadSuppressionBaseData(engine);
         } catch (SuppressionParseException ex) {
-            throw new InitializationException("Error initializing the suppression analyzer: " + ex.getLocalizedMessage(), ex, true);
+            throw new InitializationException("Error initializing the suppression analyzer base data: " + ex, ex, true);
         }
 
         try {
-            loadSuppressionData(engine);
+            loadSuppressionUserData(engine);
         } catch (SuppressionParseException ex) {
-            throw new InitializationException("Warn initializing the suppression analyzer: " + ex.getLocalizedMessage(), ex, false);
+            throw new InitializationException("Warn initializing the suppression analyzer user data: " + ex, ex, false);
         }
     }
 
@@ -145,12 +138,12 @@ public abstract class AbstractSuppressionAnalyzer extends AbstractAnalyzer {
      * @param engine a reference to the ODC engine.
      * @throws SuppressionParseException thrown if the XML cannot be parsed.
      */
-    private void loadSuppressionData(Engine engine) throws SuppressionParseException {
-        final List<SuppressionRule> ruleList = new ArrayList<>();
+    private void loadSuppressionUserData(Engine engine) throws SuppressionParseException {
         final SuppressionParser parser = new SuppressionParser();
         final String[] suppressionFilePaths = getSettings().getArray(Settings.KEYS.SUPPRESSION_FILE);
         final List<String> failedLoadingFiles = new ArrayList<>();
         if (suppressionFilePaths != null && suppressionFilePaths.length > 0) {
+            final List<SuppressionRule> ruleList = new ArrayList<>();
             // Load all the suppression file paths
             for (final String suppressionFilePath : suppressionFilePaths) {
                 try {
@@ -160,20 +153,12 @@ public abstract class AbstractSuppressionAnalyzer extends AbstractAnalyzer {
                     failedLoadingFiles.add(msg);
                 }
             }
+            LOGGER.debug("{} user suppression rules were loaded from {} sources.", ruleList.size(), suppressionFilePaths.length - failedLoadingFiles.size());
+            appendRules(engine, ruleList);
         }
 
-        LOGGER.debug("{} suppression rules were loaded.", ruleList.size());
-        if (!ruleList.isEmpty()) {
-            if (engine.hasObject(SUPPRESSION_OBJECT_KEY)) {
-                @SuppressWarnings("unchecked")
-                final List<SuppressionRule> rules = (List<SuppressionRule>) engine.getObject(SUPPRESSION_OBJECT_KEY);
-                rules.addAll(ruleList);
-            } else {
-                engine.putObject(SUPPRESSION_OBJECT_KEY, ruleList);
-            }
-        }
         if (!failedLoadingFiles.isEmpty()) {
-            LOGGER.debug("{} suppression files failed to load.", failedLoadingFiles.size());
+            LOGGER.debug("{} user suppression files failed to load.", failedLoadingFiles.size());
             final StringBuilder sb = new StringBuilder();
             failedLoadingFiles.forEach(sb::append);
             throw new SuppressionParseException(sb.toString());
@@ -187,34 +172,26 @@ public abstract class AbstractSuppressionAnalyzer extends AbstractAnalyzer {
      * @throws SuppressionParseException thrown if the XML cannot be parsed.
      */
     private void loadSuppressionBaseData(final Engine engine) throws SuppressionParseException {
-        final SuppressionParser parser = new SuppressionParser();
-        loadPackagedSuppressionBaseData(parser, engine);
-        loadHostedSuppressionBaseData(parser, engine);
+        loadPackagedBaseSuppressionData(engine);
+        loadHostedSuppressionBaseData(engine);
     }
 
     /**
      * Loads the suppression rules packaged with the application.
      *
-     * @param parser The suppression parser to use
      * @param engine a reference the dependency-check engine
      * @throws SuppressionParseException thrown if the XML cannot be parsed.
      */
-    private void loadPackagedSuppressionBaseData(final SuppressionParser parser, final Engine engine) throws SuppressionParseException {
-        List<SuppressionRule> ruleList = null;
+    @VisibleForTesting
+    void loadPackagedBaseSuppressionData(final Engine engine) throws SuppressionParseException {
+        List<SuppressionRule> ruleList;
         URL baseSuppressionURL = getPackagedFile(BASE_SUPPRESSION_FILE);
         try (InputStream in = baseSuppressionURL.openStream()) {
-            ruleList = parser.parseSuppressionRules(in);
+            ruleList = new SuppressionParser().parseSuppressionRules(in);
+            LOGGER.debug("{} base suppression rules were loaded.", ruleList.size());
+            appendRules(engine, ruleList);
         } catch (SAXException | IOException ex) {
             throw new SuppressionParseException("Unable to parse the base suppression data file", ex);
-        }
-        if (ruleList != null && !ruleList.isEmpty()) {
-            if (engine.hasObject(SUPPRESSION_OBJECT_KEY)) {
-                @SuppressWarnings("unchecked")
-                final List<SuppressionRule> rules = (List<SuppressionRule>) engine.getObject(SUPPRESSION_OBJECT_KEY);
-                rules.addAll(ruleList);
-            } else {
-                engine.putObject(SUPPRESSION_OBJECT_KEY, ruleList);
-            }
         }
     }
 
@@ -230,13 +207,11 @@ public abstract class AbstractSuppressionAnalyzer extends AbstractAnalyzer {
         } else {
             suppressionFileLocation = "file:" + suppressionFileLocation + packagedFileName;
         }
-        URL baseSuppressionURL = null;
         try {
-            baseSuppressionURL = new URL(suppressionFileLocation);
+            return new URL(suppressionFileLocation);
         } catch (MalformedURLException e) {
             throw new SuppressionParseException("Unable to load the packaged file: " + packagedFileName, e);
         }
-        return baseSuppressionURL;
     }
 
     /**
@@ -249,62 +224,66 @@ public abstract class AbstractSuppressionAnalyzer extends AbstractAnalyzer {
      * already been resolved by the dependency-check project.
      *
      * @param engine a reference the dependency-check engine
-     * @param parser The suppression parser to use
      */
-    private void loadHostedSuppressionBaseData(final SuppressionParser parser, final Engine engine) {
-        final boolean enabled = getSettings().getBoolean(Settings.KEYS.HOSTED_SUPPRESSIONS_ENABLED, true);
-        if (!enabled) {
-            return;
-        }
-
+    @VisibleForTesting
+    void loadHostedSuppressionBaseData(final Engine engine) {
         try {
-            final String configuredUrl = getSettings().getString(Settings.KEYS.HOSTED_SUPPRESSIONS_URL,
-                    HostedSuppressionsDataSource.DEFAULT_SUPPRESSIONS_URL);
-            final URL url = new URL(configuredUrl);
-            final String fileName = new File(url.getPath()).getName();
-            if (fileName.isBlank()) {
-                throw new IOException("Hosted Suppression URL must imply a filename");
-            }
-            final File repoFile = new File(getSettings().getDataDirectory(), fileName);
-            boolean repoEmpty = !repoFile.isFile() || repoFile.length() <= 1L;
-            if (repoEmpty) {
-                // utilize the snapshot hosted suppression file
+            // Try remote update if enabled and stale or forced by user
+            File repoFile = tryRemoteHostedSuppressionsFetchIfConfigured(engine);
+
+            // If still empty after update attempt; utilize the snapshot hosted suppression file
+            //
+            // Note that this local fallback will run regardless of whether hosted suppressions are "enabled" or the
+            // value of autoUpdate, forceupdate etc since this is an offline operation similar to regular "base" suppressions.
+            if (isRepoEmpty(repoFile)) {
+                LOGGER.debug("Hosted suppressions not found locally; attempting fallback to store packaged snapshot from this Dependency-Check release at {}...", repoFile.toPath());
                 URL hostedSuppressionSnapshotURL = getPackagedFile(HOSTED_SUPPRESSION_SNAPSHOT_FILE);
                 try (InputStream in = hostedSuppressionSnapshotURL.openStream()) {
                     Files.copy(in, repoFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
-                    repoEmpty = false;
-                    LOGGER.debug("Copied hosted suppression snapshot file to {}", repoFile.toPath());
-                } catch (IOException ex) {
-                    LOGGER.warn("Unable to copy the hosted suppression snapshot file to {}, results may contain false positives "
-                            + "already resolved by the DependencyCheck project", repoFile.toPath(), ex);
                 }
+                LOGGER.info(falsePositivesDueTo("Hosted suppressions using snapshot as of this Dependency-Check release"));
             }
-            if (!repoEmpty) {
-                loadCachedHostedSuppressionsRules(parser, repoFile, engine);
-            } else {
-                LOGGER.warn("Empty Hosted Suppression file after update, results may contain false positives "
-                        + "already resolved by the DependencyCheck project due to failed download of the hosted suppression file");
-            }
+
+            loadCachedHostedSuppressionsRules(repoFile, engine);
+
         } catch (IOException | InitializationException ex) {
-            LOGGER.warn("Unable to load hosted suppressions", ex);
+            LOGGER.warn(falsePositivesDueTo("Unable to load hosted suppressions from either remote source or packaged snapshot"), ex);
         }
+    }
+
+    private static boolean isRepoEmpty(File repoFile) {
+        return !repoFile.isFile() || repoFile.length() <= 1L;
+    }
+
+    /**
+     * If configured to do so, try fetching hosted suppressions from the configured remote source.
+     * @return The local cached repoFile the suppressions are to be loaded from. Note that on return this may still not be created.
+     * @throws IOException only if settings are invalid to handle hosted suppressions either remotely or locally
+     */
+    private File tryRemoteHostedSuppressionsFetchIfConfigured(Engine engine) throws IOException {
+        HostedSuppressionsDataSource ds = new HostedSuppressionsDataSource();
+        try {
+            ds.updateUnhandled(engine);
+        } catch (UpdateException ex) {
+            LOGGER.warn(falsePositivesDueTo("Failed to update hosted suppressions file from remote source"), ex);
+        }
+        return ds.validatedRepoFile();
     }
 
     /**
      * Load the hosted suppression file from the web resource
      *
-     * @param parser The suppressionParser to use for loading
      * @param repoFile The cached web resource
      * @param engine a reference the dependency-check engine
      *
      * @throws InitializationException When errors occur trying to create a
      * defensive copy of the web resource before loading
      */
-    private void loadCachedHostedSuppressionsRules(final SuppressionParser parser, final File repoFile, final Engine engine)
+    private void loadCachedHostedSuppressionsRules(final File repoFile, final Engine engine)
             throws InitializationException {
         // take a defensive copy to avoid a risk of corrupted file by a competing parallel new download.
         final Path defensiveCopy;
-        try (WriteLock lock = new WriteLock(getSettings(), true, repoFile.getName() + ".lock")) {
+        try (WriteLock ignored = new WriteLock(getSettings(), true, repoFile.getName() + ".lock")) {
             defensiveCopy = Files.createTempFile("dc-basesuppressions", ".xml");
             LOGGER.debug("copying hosted suppressions file {} to {}", repoFile.toPath(), defensiveCopy);
             Files.copy(repoFile.toPath(), defensiveCopy, StandardCopyOption.REPLACE_EXISTING);
@@ -314,24 +293,29 @@ public abstract class AbstractSuppressionAnalyzer extends AbstractAnalyzer {
 
         try (InputStream in = Files.newInputStream(defensiveCopy)) {
             final List<SuppressionRule> ruleList;
-            ruleList = parser.parseSuppressionRules(in);
-            if (!ruleList.isEmpty()) {
-                if (engine.hasObject(SUPPRESSION_OBJECT_KEY)) {
-                    @SuppressWarnings("unchecked")
-                    final List<SuppressionRule> rules = (List<SuppressionRule>) engine.getObject(SUPPRESSION_OBJECT_KEY);
-                    rules.addAll(ruleList);
-                } else {
-                    engine.putObject(SUPPRESSION_OBJECT_KEY, ruleList);
-                }
-            }
+            ruleList = new SuppressionParser().parseSuppressionRules(in);
+            LOGGER.debug("{} hosted suppression rules were loaded.", ruleList.size());
+            appendRules(engine, ruleList);
+
         } catch (SAXException | IOException ex) {
-            LOGGER.warn("Unable to parse the hosted suppressions data file, results may contain false positives already resolved "
-                    + "by the DependencyCheck project", ex);
+            LOGGER.warn(falsePositivesDueTo("Unable to parse the hosted suppressions data file at {}"), repoFile.getPath(), ex);
         }
         try {
             Files.delete(defensiveCopy);
         } catch (IOException ex) {
             LOGGER.warn("Could not delete defensive copy of hosted suppressions file {}", defensiveCopy, ex);
+        }
+    }
+
+    private void appendRules(Engine engine, List<SuppressionRule> ruleList) {
+        if (!ruleList.isEmpty()) {
+            if (engine.hasObject(SUPPRESSION_OBJECT_KEY)) {
+                @SuppressWarnings("unchecked")
+                final List<SuppressionRule> rules = (List<SuppressionRule>) engine.getObject(SUPPRESSION_OBJECT_KEY);
+                rules.addAll(ruleList);
+            } else {
+                engine.putObject(SUPPRESSION_OBJECT_KEY, ruleList);
+            }
         }
     }
 
@@ -367,20 +351,20 @@ public abstract class AbstractSuppressionAnalyzer extends AbstractAnalyzer {
                         Downloader.getInstance().fetchFile(url, file, true, Settings.KEYS.SUPPRESSION_FILE_USER,
                                 Settings.KEYS.SUPPRESSION_FILE_PASSWORD, Settings.KEYS.SUPPRESSION_FILE_BEARER_TOKEN);
                     } catch (TooManyRequestsException ex1) {
-                        throw new SuppressionParseException("Unable to download supression file `" + file
+                        throw new SuppressionParseException("Unable to download suppression file `" + file
                                 + "`; received 429 - too many requests", ex1);
                     } catch (ResourceNotFoundException ex1) {
-                        throw new SuppressionParseException("Unable to download supression file `" + file
+                        throw new SuppressionParseException("Unable to download suppression file `" + file
                                 + "`; received 404 - resource not found", ex1);
                     } catch (InterruptedException ex1) {
                         Thread.currentThread().interrupt();
-                        throw new SuppressionParseException("Unable to download supression file `" + file + "`", ex1);
+                        throw new SuppressionParseException("Unable to download suppression file `" + file + "`", ex1);
                     }
                 } catch (TooManyRequestsException ex) {
-                    throw new SuppressionParseException("Unable to download supression file `" + file
+                    throw new SuppressionParseException("Unable to download suppression file `" + file
                             + "`; received 429 - too many requests", ex);
                 } catch (ResourceNotFoundException ex) {
-                    throw new SuppressionParseException("Unable to download supression file `" + file + "`; received 404 - resource not found", ex);
+                    throw new SuppressionParseException("Unable to download suppression file `" + file + "`; received 404 - resource not found", ex);
                 }
             } else {
                 file = new File(suppressionFilePath);
@@ -435,7 +419,7 @@ public abstract class AbstractSuppressionAnalyzer extends AbstractAnalyzer {
      * SuppressionParseException
      */
     private void throwSuppressionParseException(String message, Exception exception, String suppressionFilePath) throws SuppressionParseException {
-        LOGGER.warn(String.format(message + " '%s'", suppressionFilePath));
+        LOGGER.warn("{} [{}]", message, suppressionFilePath);
         LOGGER.debug("", exception);
         throw new SuppressionParseException(message, exception);
     }

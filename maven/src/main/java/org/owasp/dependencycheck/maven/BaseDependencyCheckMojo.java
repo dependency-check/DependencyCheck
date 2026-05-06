@@ -1158,7 +1158,7 @@ public abstract class BaseDependencyCheckMojo extends AbstractMojo implements Ma
     @Parameter(property = "hostedSuppressionsForceUpdate")
     private Boolean hostedSuppressionsForceUpdate;
     /**
-     * Whether the hosted suppressions file will be used.
+     * Whether the hosted suppressions will be updated from the configured URL.
      */
     @SuppressWarnings("CanBeFinal")
     @Parameter(property = "hostedSuppressionsEnabled")

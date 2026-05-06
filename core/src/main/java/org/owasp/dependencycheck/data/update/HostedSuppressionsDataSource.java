@@ -17,10 +17,12 @@
  */
 package org.owasp.dependencycheck.data.update;
 
+import org.jspecify.annotations.NonNull;
 import org.owasp.dependencycheck.Engine;
 import org.owasp.dependencycheck.data.update.exception.UpdateException;
 import org.owasp.dependencycheck.exception.WriteLockException;
 import org.owasp.dependencycheck.utils.Downloader;
+import org.owasp.dependencycheck.utils.InvalidSettingException;
 import org.owasp.dependencycheck.utils.ResourceNotFoundException;
 import org.owasp.dependencycheck.utils.Settings;
 import org.owasp.dependencycheck.utils.TooManyRequestsException;
@@ -35,6 +37,10 @@ import java.net.URL;
 import java.nio.file.Files;
 
 public class HostedSuppressionsDataSource extends LocalDataSource {
+    /**
+     * The default URL to the Hosted Suppressions file.
+     */
+    public static final String DEFAULT_SUPPRESSIONS_URL = "https://dependency-check.github.io/DependencyCheck/suppressions/publishedSuppressions.xml";
 
     /**
      * Static logger.
@@ -45,49 +51,83 @@ public class HostedSuppressionsDataSource extends LocalDataSource {
      * The configured settings.
      */
     private Settings settings;
-    /**
-     * The default URL to the Hosted Suppressions file.
-     */
-    public static final String DEFAULT_SUPPRESSIONS_URL = "https://dependency-check.github.io/DependencyCheck/suppressions/publishedSuppressions.xml";
 
     /**
-     * Downloads the current Hosted suppressions file.
+     * Makes a best effort to download the current Hosted suppressions file if configured to do so.
      *
      * @param engine a reference to the ODC Engine
      * @return returns false as no updates are made to the database, just web
      * resources cached locally
-     * @throws UpdateException thrown if the update encountered fatal errors
+     * @throws UpdateException thrown only if the update encountered fatal configuration errors
      */
     @Override
     public boolean update(Engine engine) throws UpdateException {
-        this.settings = engine.getSettings();
-        final String configuredUrl = settings.getString(Settings.KEYS.HOSTED_SUPPRESSIONS_URL, DEFAULT_SUPPRESSIONS_URL);
-        final boolean autoupdate = settings.getBoolean(Settings.KEYS.AUTO_UPDATE, true);
-        final boolean forceupdate = settings.getBoolean(Settings.KEYS.HOSTED_SUPPRESSIONS_FORCEUPDATE, false);
-        final boolean cpeSuppressionEnabled = settings.getBoolean(Settings.KEYS.ANALYZER_CPE_SUPPRESSION_ENABLED, true);
-        final boolean vulnSuppressionEnabled = settings.getBoolean(Settings.KEYS.ANALYZER_VULNERABILITY_SUPPRESSION_ENABLED, true);
-        boolean enabled = settings.getBoolean(Settings.KEYS.HOSTED_SUPPRESSIONS_ENABLED, true);
-        enabled = enabled && (cpeSuppressionEnabled || vulnSuppressionEnabled);
         try {
-            final URL url = new URL(configuredUrl);
-            final File filepath = new File(url.getPath());
-            final File repoFile = new File(settings.getDataDirectory(), filepath.getName());
-            final boolean proceed = enabled && (forceupdate || (autoupdate && shouldUpdate(repoFile)));
-            if (proceed) {
-                LOGGER.debug("Begin Hosted Suppressions file update");
-                fetchHostedSuppressions(settings, url, repoFile);
-                saveLastUpdated(repoFile, System.currentTimeMillis() / 1000);
-            }
+            updateUnhandled(engine);
         } catch (UpdateException ex) {
             // only emit a warning, DependencyCheck will continue without taking the latest hosted suppressions into account.
-            LOGGER.warn("Failed to update hosted suppressions file, results may contain false positives already resolved by the "
-                    + "DependencyCheck project", ex);
-        } catch (MalformedURLException ex) {
-            throw new UpdateException(String.format("Invalid URL for Hosted Suppressions file (%s)", configuredUrl), ex);
+            LOGGER.warn(falsePositivesDueTo("Failed to update hosted suppressions file from remote source"), ex);
         } catch (IOException ex) {
-            throw new UpdateException("Unable to get the data directory", ex);
+            // Unhandled IOExceptions are fatal configuration errors of a sort
+            throw new UpdateException("Unable to determine the local location to cache hosted suppressions", ex);
         }
         return false;
+    }
+
+    public static @NonNull String falsePositivesDueTo(String reason) {
+        return reason + ", results may contain false positives already resolved by the DependencyCheck project";
+    }
+
+    /**
+     * Updates the current Hosted Suppressions file if configured to do so; failing if it cannot be done
+     *
+     * @param engine a reference to the ODC Engine
+     * @throws IOException if there is an error determining the local location to cache hosted suppressions
+     * @throws UpdateException if the remote update failed for any reason
+     */
+    public void updateUnhandled(Engine engine) throws IOException, UpdateException {
+        this.settings = engine.getSettings();
+        final URL url = validatedUrl();
+        final File repoFile = validatedRepoFileFrom(url);
+
+        if (isEnabled() && shouldUpdateFromRemote(repoFile)) {
+            LOGGER.debug("Begin Hosted Suppressions file update from remote source");
+            fetchHostedSuppressions(url, repoFile);
+            saveLastUpdated(repoFile, System.currentTimeMillis() / 1000);
+        }
+    }
+
+    private @NonNull URL validatedUrl() throws InvalidSettingException {
+        final String configuredUrl = settings.getString(Settings.KEYS.HOSTED_SUPPRESSIONS_URL, DEFAULT_SUPPRESSIONS_URL);
+        try {
+            return new URL(configuredUrl);
+        } catch (MalformedURLException ex) {
+            throw new InvalidSettingException(String.format("Invalid URL for Hosted Suppressions file (%s)", configuredUrl), ex);
+        }
+    }
+
+    public @NonNull File validatedRepoFile() throws IOException {
+        return validatedRepoFileFrom(validatedUrl());
+    }
+
+    private @NonNull File validatedRepoFileFrom(URL url) throws IOException {
+        String fileName = new File(url.getPath()).getName();
+        if (fileName.isBlank()) {
+            throw new InvalidSettingException("Hosted Suppression URL must imply a filename; even if disabled.");
+        }
+        return new File(settings.getDataDirectory(), fileName);
+    }
+
+    private boolean isEnabled() {
+        return settings.getBoolean(Settings.KEYS.HOSTED_SUPPRESSIONS_ENABLED, true) && (
+                settings.getBoolean(Settings.KEYS.ANALYZER_CPE_SUPPRESSION_ENABLED, true) ||
+                        settings.getBoolean(Settings.KEYS.ANALYZER_VULNERABILITY_SUPPRESSION_ENABLED, true));
+    }
+
+    private boolean shouldUpdateFromRemote(File repoFile) {
+        boolean forceupdate = settings.getBoolean(Settings.KEYS.HOSTED_SUPPRESSIONS_FORCEUPDATE, false);
+        boolean autoupdate = settings.getBoolean(Settings.KEYS.AUTO_UPDATE, true);
+        return forceupdate || (autoupdate && isStale(repoFile));
     }
 
     /**
@@ -99,8 +139,8 @@ public class HostedSuppressionsDataSource extends LocalDataSource {
      * @throws NumberFormatException thrown if an invalid value is contained in
      * the database properties
      */
-    protected boolean shouldUpdate(File repo) throws NumberFormatException {
-        boolean proceed = true;
+    protected boolean isStale(File repo) throws NumberFormatException {
+        boolean stale = true;
         if (repo != null && repo.isFile()) {
             final int validForHours = settings.getInt(Settings.KEYS.HOSTED_SUPPRESSIONS_VALID_FOR_HOURS, 2);
             final long lastUpdatedOn = getLastUpdated(repo);
@@ -108,18 +148,17 @@ public class HostedSuppressionsDataSource extends LocalDataSource {
             LOGGER.debug("Last updated: {}", lastUpdatedOn);
             LOGGER.debug("Now: {}", now);
             final long msValid = validForHours * 60L * 60L * 1000L;
-            proceed = (now - lastUpdatedOn) > msValid;
-            if (!proceed) {
+            stale = (now - lastUpdatedOn) > msValid;
+            if (!stale) {
                 LOGGER.info("Skipping Hosted Suppressions file update since last update was within {} hours.", validForHours);
             }
         }
-        return proceed;
+        return stale;
     }
 
     /**
      * Fetches the hosted suppressions file
      *
-     * @param settings a reference to the dependency-check settings
      * @param repoUrl the URL to the hosted suppressions file to use
      * @param repoFile the local file where the hosted suppressions file is to
      * be placed
@@ -127,7 +166,7 @@ public class HostedSuppressionsDataSource extends LocalDataSource {
      * initialization
      */
     @SuppressWarnings("try")
-    private void fetchHostedSuppressions(Settings settings, URL repoUrl, File repoFile) throws UpdateException {
+    private void fetchHostedSuppressions(URL repoUrl, File repoFile) throws UpdateException {
         try (WriteLock ignored = new WriteLock(settings, true, repoFile.getName() + ".lock")) {
             if (LOGGER.isDebugEnabled()) {
                 LOGGER.debug("Hosted Suppressions URL: {}", repoUrl.toExternalForm());
@@ -144,17 +183,14 @@ public class HostedSuppressionsDataSource extends LocalDataSource {
         this.settings = engine.getSettings();
         boolean result = true;
         try {
-            final URL repoUrl = new URL(settings.getString(Settings.KEYS.HOSTED_SUPPRESSIONS_URL,
-                    DEFAULT_SUPPRESSIONS_URL));
-            final String filename = new File(repoUrl.getPath()).getName();
-            final File repo = new File(settings.getDataDirectory(), filename);
+            final File repo = validatedRepoFile();
             if (repo.exists()) {
-                try (WriteLock ignored = new WriteLock(settings, true, filename + ".lock")) {
+                try (WriteLock ignored = new WriteLock(settings, true, repo.getName() + ".lock")) {
                     result = deleteCachedFile(repo);
                 }
             }
         } catch (WriteLockException | IOException ex) {
-            LOGGER.error("Unable to delete the Hosted suppression file - invalid configuration");
+            LOGGER.error("Unable to delete the Hosted suppression file - invalid configuration: {}", ex.toString());
             result = false;
         }
         return result;
@@ -163,8 +199,9 @@ public class HostedSuppressionsDataSource extends LocalDataSource {
     private boolean deleteCachedFile(final File repo) {
         boolean deleted = true;
         try {
-            Files.delete(repo.toPath());
-            LOGGER.info("Hosted suppression file removed successfully");
+            if (Files.deleteIfExists(repo.toPath())) {
+                LOGGER.info("Hosted suppression file removed successfully");
+            }
         } catch (IOException ex) {
             LOGGER.error("Unable to delete '{}'; please delete the file manually", repo.getAbsolutePath(), ex);
             deleted = false;

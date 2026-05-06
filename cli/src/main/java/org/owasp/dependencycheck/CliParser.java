@@ -547,7 +547,7 @@ public final class CliParser {
                 .addOption(newOption(ARGUMENT.ENABLE_NEXUS, "Enable the Nexus Analyzer."))
                 .addOption(newOption(ARGUMENT.ARTIFACTORY_ENABLED, "Whether the Artifactory Analyzer should be enabled."))
                 .addOption(newOption(ARGUMENT.PURGE_NVD, "Purges the local NVD data cache"))
-                .addOption(newOption(ARGUMENT.DISABLE_HOSTED_SUPPRESSIONS, "Disable the usage of the hosted suppressions file"))
+                .addOption(newOption(ARGUMENT.DISABLE_HOSTED_SUPPRESSIONS, "Disable retrieval of the hosted suppressions from the configured URL."))
                 .addOption(newOption(ARGUMENT.HOSTED_SUPPRESSIONS_FORCEUPDATE, "Force the hosted suppressions file to update even"
                         + " if autoupdate is disabled"))
                 .addOption(newOptionWithArg(ARGUMENT.HOSTED_SUPPRESSIONS_VALID_FOR_HOURS, "hours",
