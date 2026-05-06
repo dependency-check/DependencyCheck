@@ -115,4 +115,15 @@ class OpenSSLAnalyzerTest extends BaseTest {
         assertThat(result.getEvidence(EvidenceType.VENDOR).toString(), containsString("OpenSSL"));
         assertThat(result.getEvidence(EvidenceType.VERSION).toString(), containsString("1.0.2c"));
     }
+
+    @Test
+    void testOpenSSL3xVersionHeaderFile() throws AnalysisException {
+        final Dependency result = new Dependency(BaseTest.getResourceAsFile(
+                this,
+                "openssl-3x/opensslv.h"));
+        analyzer.analyze(result, null);
+        assertThat(result.getEvidence(EvidenceType.PRODUCT).toString(), containsString("OpenSSL"));
+        assertThat(result.getEvidence(EvidenceType.VENDOR).toString(), containsString("OpenSSL"));
+        assertThat(result.getEvidence(EvidenceType.VERSION).toString(), containsString("3.5.6"));
+    }
 }

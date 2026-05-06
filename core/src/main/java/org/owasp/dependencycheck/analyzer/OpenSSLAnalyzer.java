@@ -68,10 +68,19 @@ public class OpenSSLAnalyzer extends AbstractFileTypeAnalyzer {
      */
     private static final FileFilter OPENSSLV_FILTER = FileFilterBuilder.newInstance().addFilenames(OPENSSLV_H).build();
     /**
-     * Open SSL Version number pattern.
+     * Open SSL Version number pattern (OpenSSL 1.x and earlier — literal hex constant).
      */
     private static final Pattern VERSION_PATTERN = Pattern.compile(
             "define\\s+OPENSSL_VERSION_NUMBER\\s+0x([0-9a-zA-Z]{8})L", Pattern.DOTALL
+                    | Pattern.CASE_INSENSITIVE);
+    /**
+     * Open SSL version string pattern (OpenSSL 3.x — {@code OPENSSL_VERSION_STR "X.Y.Z"}).
+     * In 3.x, {@code OPENSSL_VERSION_NUMBER} is a macro expression that the
+     * legacy {@link #VERSION_PATTERN} cannot match, so this is the authoritative
+     * source of the version on 3.x headers.
+     */
+    private static final Pattern VERSION_STR_PATTERN = Pattern.compile(
+            "define\\s+OPENSSL_VERSION_STR\\s+\"([^\"]+)\"", Pattern.DOTALL
                     | Pattern.CASE_INSENSITIVE);
     /**
      * The offset of the major version number.
@@ -191,28 +200,31 @@ public class OpenSSLAnalyzer extends AbstractFileTypeAnalyzer {
             throws AnalysisException {
         final File file = dependency.getActualFile();
         final String parentName = file.getParentFile().getName();
-        boolean found = false;
         final String contents = getFileContents(file);
+        String version = null;
         if (!contents.isEmpty()) {
-            final Matcher matcher = VERSION_PATTERN.matcher(contents);
-            if (matcher.find()) {
-                found = true;
-                final String version = getOpenSSLVersion(Long.parseLong(matcher.group(1), HEXADECIMAL));
-                dependency.addEvidence(EvidenceType.VERSION, OPENSSLV_H, "Version Constant",
-                        version, Confidence.HIGH);
-                try {
-                    final PackageURL purl = PackageURLBuilder.aPackageURL().withType("generic")
-                            .withName("openssl").withVersion(version).build();
-                    dependency.addSoftwareIdentifier(new PurlIdentifier(purl, Confidence.HIGHEST));
-                } catch (MalformedPackageURLException ex) {
-                    LOGGER.debug("Unable to build package url for openssl", ex);
-                    final GenericIdentifier id = new GenericIdentifier("generic:openssl@" + version, Confidence.HIGHEST);
-                    dependency.addSoftwareIdentifier(id);
+            final Matcher strMatcher = VERSION_STR_PATTERN.matcher(contents);
+            if (strMatcher.find()) {
+                version = strMatcher.group(1);
+            } else {
+                final Matcher matcher = VERSION_PATTERN.matcher(contents);
+                if (matcher.find()) {
+                    version = getOpenSSLVersion(Long.parseLong(matcher.group(1), HEXADECIMAL));
                 }
-
             }
         }
-        if (found) {
+        if (version != null) {
+            dependency.addEvidence(EvidenceType.VERSION, OPENSSLV_H, "Version Constant",
+                    version, Confidence.HIGH);
+            try {
+                final PackageURL purl = PackageURLBuilder.aPackageURL().withType("generic")
+                        .withName("openssl").withVersion(version).build();
+                dependency.addSoftwareIdentifier(new PurlIdentifier(purl, Confidence.HIGHEST));
+            } catch (MalformedPackageURLException ex) {
+                LOGGER.debug("Unable to build package url for openssl", ex);
+                final GenericIdentifier id = new GenericIdentifier("generic:openssl@" + version, Confidence.HIGHEST);
+                dependency.addSoftwareIdentifier(id);
+            }
             dependency.setDisplayFileName(parentName + File.separatorChar + OPENSSLV_H);
             dependency.addEvidence(EvidenceType.VENDOR, OPENSSLV_H, "Vendor", "OpenSSL", Confidence.HIGHEST);
             dependency.addEvidence(EvidenceType.PRODUCT, OPENSSLV_H, "Product", "OpenSSL", Confidence.HIGHEST);
