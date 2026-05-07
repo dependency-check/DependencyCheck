@@ -72,16 +72,11 @@ public class RetireJSDataSource extends LocalDataSource {
     public boolean update(Engine engine) throws UpdateException {
         this.settings = engine.getSettings();
         final String configuredUrl = settings.getString(Settings.KEYS.ANALYZER_RETIREJS_REPO_JS_URL, DEFAULT_JS_URL);
-        final boolean autoupdate = settings.getBoolean(Settings.KEYS.AUTO_UPDATE, true);
-        final boolean forceupdate = settings.getBoolean(Settings.KEYS.ANALYZER_RETIREJS_FORCEUPDATE, false);
-        final boolean enabled = settings.getBoolean(Settings.KEYS.ANALYZER_RETIREJS_ENABLED, true);
-        Duration validFor = Duration.ofHours(settings.getInt(Settings.KEYS.ANALYZER_RETIREJS_REPO_VALID_FOR_HOURS, 24));
         try {
             final URL url = new URL(configuredUrl);
             final File filepath = new File(url.getPath());
             final File repoFile = new File(settings.getDataDirectory(), filepath.getName());
-            final boolean proceed = enabled && (forceupdate || (autoupdate && isStale(repoFile, validFor)));
-            if (proceed) {
+            if (isEnabled() && shouldUpdateFromRemote(repoFile)) {
                 LOGGER.debug("Begin RetireJS Update");
                 initializeRetireJsRepo(settings, url, repoFile);
                 saveLastUpdated(repoFile);
@@ -92,6 +87,17 @@ public class RetireJSDataSource extends LocalDataSource {
             throw new UpdateException("Unable to get the data directory", ex);
         }
         return false;
+    }
+
+    private boolean isEnabled() {
+        return settings.getBoolean(Settings.KEYS.ANALYZER_RETIREJS_ENABLED, true);
+    }
+
+    private boolean shouldUpdateFromRemote(File repoFile) {
+        boolean forceupdate = settings.getBoolean(Settings.KEYS.ANALYZER_RETIREJS_FORCEUPDATE, false);
+        boolean autoupdate = settings.getBoolean(Settings.KEYS.AUTO_UPDATE, true);
+        Duration validFor = Duration.ofHours(settings.getInt(Settings.KEYS.ANALYZER_RETIREJS_REPO_VALID_FOR_HOURS, 24));
+        return forceupdate || (autoupdate && isStale(repoFile, validFor));
     }
 
     /**
