@@ -521,7 +521,6 @@
     <suppress base="true">
         <notes><![CDATA[
         FP per #2453
-        TODO - there are likely several other testcontainer suppressions that should be added
         ]]></notes>
         <packageUrl regex="true">^pkg:maven/org\.testcontainers/postgresql@.*$</packageUrl>
         <cpe>cpe:/a:postgresql:postgresql</cpe>
@@ -562,13 +561,6 @@
         ]]></notes>
         <packageUrl regex="true">^pkg:maven/org\.bouncycastle.*$</packageUrl>
         <cpe>cpe:/a:oracle:jdk</cpe>
-    </suppress>
-    <suppress base="true">
-        <notes><![CDATA[
-            FP per #2247 CVE candidate was withdrawn by the CNA
-        ]]></notes>
-        <packageUrl regex="true">^pkg:maven/org\.owasp\.antisamy/antisamy@.*$</packageUrl>
-        <vulnerabilityName>CVE-2018-1000643</vulnerabilityName>
     </suppress>
     <suppress base="true">
         <notes><![CDATA[
@@ -1493,13 +1485,6 @@
     </suppress>
     <suppress base="true">
         <notes><![CDATA[
-        Supression to remove incorrect match from the OSS Index per #2281.
-        ]]></notes>
-        <packageUrl>pkg:maven/org.jsoup/jsoup@1.8.3</packageUrl>
-        <vulnerabilityName>CVE-2015-6748</vulnerabilityName>
-    </suppress>
-    <suppress base="true">
-        <notes><![CDATA[
         Hazelcast-AWS is not Hazelcast (see #2330)
         ]]></notes>
         <packageUrl regex="true">^pkg:maven/com\.hazelcast/hazelcast\-aws@.*$</packageUrl>
@@ -1890,13 +1875,6 @@
         ]]></notes>
         <packageUrl regex="true">^pkg:maven/org\.scala\-lang/scalap@.*$</packageUrl>
         <cpe>cpe:/a:scala-lang:scala</cpe>
-    </suppress>
-    <suppress base="true">
-        <notes><![CDATA[
-        Suppresses false positives per #1961. Scalap is not scala.
-        ]]></notes>
-        <packageUrl regex="true">^pkg:maven/org\.scala\-lang/scalap@.*$</packageUrl>
-        <vulnerabilityName>CVE-2017-15288</vulnerabilityName>
     </suppress>
     <suppress base="true">
         <notes><![CDATA[
