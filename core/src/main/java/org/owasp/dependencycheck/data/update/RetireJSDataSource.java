@@ -17,12 +17,6 @@
  */
 package org.owasp.dependencycheck.data.update;
 
-import java.io.File;
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import javax.annotation.concurrent.ThreadSafe;
-
 import org.owasp.dependencycheck.Engine;
 import org.owasp.dependencycheck.data.update.exception.UpdateException;
 import org.owasp.dependencycheck.exception.WriteLockException;
@@ -34,6 +28,13 @@ import org.owasp.dependencycheck.utils.WriteLock;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.concurrent.ThreadSafe;
+import java.io.File;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.time.Duration;
+
 /**
  * Downloads a local copy of the RetireJS repository.
  *
@@ -41,23 +42,18 @@ import org.slf4j.LoggerFactory;
  */
 @ThreadSafe
 public class RetireJSDataSource extends LocalDataSource {
-
+    /**
+     * The default URL to the RetireJS JavaScript repository.
+     */
+    public static final String DEFAULT_JS_URL = "https://raw.githubusercontent.com/Retirejs/retire.js/master/repository/jsrepository.json";
     /**
      * Static logger.
      */
     private static final Logger LOGGER = LoggerFactory.getLogger(RetireJSDataSource.class);
     /**
-     * The property key indicating when the last update occurred.
-     */
-    public static final String RETIREJS_UPDATED_ON = "RetireJSUpdatedOn";
-    /**
      * The configured settings.
      */
     private Settings settings;
-    /**
-     * The default URL to the RetireJS JavaScript repository.
-     */
-    public static final String DEFAULT_JS_URL = "https://raw.githubusercontent.com/Retirejs/retire.js/master/repository/jsrepository.json";
 
     /**
      * Constructs a new engine version check utility.
@@ -79,15 +75,16 @@ public class RetireJSDataSource extends LocalDataSource {
         final boolean autoupdate = settings.getBoolean(Settings.KEYS.AUTO_UPDATE, true);
         final boolean forceupdate = settings.getBoolean(Settings.KEYS.ANALYZER_RETIREJS_FORCEUPDATE, false);
         final boolean enabled = settings.getBoolean(Settings.KEYS.ANALYZER_RETIREJS_ENABLED, true);
+        Duration validFor = Duration.ofHours(settings.getInt(Settings.KEYS.ANALYZER_RETIREJS_REPO_VALID_FOR_HOURS, 24));
         try {
             final URL url = new URL(configuredUrl);
             final File filepath = new File(url.getPath());
             final File repoFile = new File(settings.getDataDirectory(), filepath.getName());
-            final boolean proceed = enabled && (forceupdate || (autoupdate && shouldUpdate(repoFile)));
+            final boolean proceed = enabled && (forceupdate || (autoupdate && isStale(repoFile, validFor)));
             if (proceed) {
                 LOGGER.debug("Begin RetireJS Update");
                 initializeRetireJsRepo(settings, url, repoFile);
-                saveLastUpdated(repoFile, System.currentTimeMillis() / 1000);
+                saveLastUpdated(repoFile);
             }
         } catch (MalformedURLException ex) {
             throw new UpdateException(String.format("Invalid URL for RetireJS repository (%s)", configuredUrl), ex);
@@ -96,33 +93,6 @@ public class RetireJSDataSource extends LocalDataSource {
         }
         return false;
     }
-
-    /**
-     * Determines if the we should update the RetireJS database.
-     *
-     * @param repo the retire JS repository.
-     * @return <code>true</code> if an updated to the RetireJS database should
-     * be performed; otherwise <code>false</code>
-     * @throws NumberFormatException thrown if an invalid value is contained in
-     * the database properties
-     */
-    protected boolean shouldUpdate(File repo) throws NumberFormatException {
-        boolean proceed = true;
-        if (repo != null && repo.isFile()) {
-            final int validForHours = settings.getInt(Settings.KEYS.ANALYZER_RETIREJS_REPO_VALID_FOR_HOURS, 0);
-            final long lastUpdatedOn = getLastUpdated(repo);
-            final long now = System.currentTimeMillis();
-            LOGGER.debug("Last updated: {}", lastUpdatedOn);
-            LOGGER.debug("Now: {}", now);
-            final long msValid = validForHours * 60L * 60L * 1000L;
-            proceed = (now - lastUpdatedOn) > msValid;
-            if (!proceed) {
-                LOGGER.info("Skipping RetireJS update since last update was within {} hours.", validForHours);
-            }
-        }
-        return proceed;
-    }
-
 
     /**
      * Initializes the local RetireJS repository

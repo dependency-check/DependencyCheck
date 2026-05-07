@@ -35,6 +35,7 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Files;
+import java.time.Duration;
 
 public class HostedSuppressionsDataSource extends LocalDataSource {
     /**
@@ -93,7 +94,7 @@ public class HostedSuppressionsDataSource extends LocalDataSource {
         if (isEnabled() && shouldUpdateFromRemote(repoFile)) {
             LOGGER.debug("Begin Hosted Suppressions file update from remote source");
             fetchHostedSuppressions(url, repoFile);
-            saveLastUpdated(repoFile, System.currentTimeMillis() / 1000);
+            saveLastUpdated(repoFile);
         }
     }
 
@@ -127,33 +128,8 @@ public class HostedSuppressionsDataSource extends LocalDataSource {
     private boolean shouldUpdateFromRemote(File repoFile) {
         boolean forceupdate = settings.getBoolean(Settings.KEYS.HOSTED_SUPPRESSIONS_FORCEUPDATE, false);
         boolean autoupdate = settings.getBoolean(Settings.KEYS.AUTO_UPDATE, true);
-        return forceupdate || (autoupdate && isStale(repoFile));
-    }
-
-    /**
-     * Determines if the we should update the Hosted Suppressions file.
-     *
-     * @param repo the Hosted Suppressions file.
-     * @return <code>true</code> if an update to the Hosted Suppressions file
-     * should be performed; otherwise <code>false</code>
-     * @throws NumberFormatException thrown if an invalid value is contained in
-     * the database properties
-     */
-    protected boolean isStale(File repo) throws NumberFormatException {
-        boolean stale = true;
-        if (repo != null && repo.isFile()) {
-            final int validForHours = settings.getInt(Settings.KEYS.HOSTED_SUPPRESSIONS_VALID_FOR_HOURS, 2);
-            final long lastUpdatedOn = getLastUpdated(repo);
-            final long now = System.currentTimeMillis();
-            LOGGER.debug("Last updated: {}", lastUpdatedOn);
-            LOGGER.debug("Now: {}", now);
-            final long msValid = validForHours * 60L * 60L * 1000L;
-            stale = (now - lastUpdatedOn) > msValid;
-            if (!stale) {
-                LOGGER.info("Skipping Hosted Suppressions file update since last update was within {} hours.", validForHours);
-            }
-        }
-        return stale;
+        Duration validFor = Duration.ofHours(settings.getInt(Settings.KEYS.HOSTED_SUPPRESSIONS_VALID_FOR_HOURS, 2));
+        return forceupdate || (autoupdate && isStale(repoFile, validFor));
     }
 
     /**

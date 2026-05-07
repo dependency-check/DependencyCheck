@@ -17,15 +17,18 @@
  */
 package org.owasp.dependencycheck.data.update;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.Properties;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -39,16 +42,15 @@ public abstract class LocalDataSource implements CachedWebDataSource {
     private static final Logger LOGGER = LoggerFactory.getLogger(LocalDataSource.class);
 
     /**
-     * Saves the timestamp in a properties file next to the provided repo file
+     * Saves the timestamp in a properties file adjacent to the provided repo file
      *
      * @param repo the local file data source
-     * @param timestamp the epoch timestamp to store
      */
-    protected void saveLastUpdated(File repo, long timestamp) {
+    protected void saveLastUpdated(@NonNull File repo) {
         final File timestampFile = new File(repo + ".properties");
         try (OutputStream out = new FileOutputStream(timestampFile)) {
             final Properties prop = new Properties();
-            prop.setProperty("LAST_UPDATED", String.valueOf(timestamp));
+            prop.setProperty("LAST_UPDATED", String.valueOf(System.currentTimeMillis()));
             prop.store(out, null);
         } catch (IOException ex) {
             throw new RuntimeException(ex);
@@ -60,24 +62,46 @@ public abstract class LocalDataSource implements CachedWebDataSource {
      * next to the repo file).
      *
      * @param repo the local file data source
-     * @return the epoch timestamp of the last updated date/time
+     * @return the instant of the last updated date/time
      */
-    protected long getLastUpdated(File repo) {
+    protected Instant getLastUpdated(@NonNull File repo) {
         long lastUpdatedOn = 0;
         final File timestampFile = new File(repo + ".properties");
         if (timestampFile.isFile()) {
             try (InputStream is = new FileInputStream(timestampFile)) {
                 final Properties props = new Properties();
                 props.load(is);
-                lastUpdatedOn = Integer.parseInt(props.getProperty("LAST_UPDATED", "0"));
+                lastUpdatedOn = Long.parseLong(props.getProperty("LAST_UPDATED", "0"));
             } catch (IOException | NumberFormatException ex) {
                 LOGGER.debug("error reading timestamp file", ex);
             }
             if (lastUpdatedOn <= 0) {
-                //fall back on conversion from file last modified to storing in the db.
+                //fall back on conversion from file last modified
                 lastUpdatedOn = repo.lastModified();
             }
         }
-        return lastUpdatedOn;
+        return Instant.ofEpochMilli(lastUpdatedOn);
+    }
+
+    /**
+     * Determines if we should update the local data source.
+     *
+     * @param repo the local file data source
+     * @param validFor the duration for which the local data source should be considered valid
+     * @return <code>true</code> if an update to the data source should be performed; otherwise <code>false</code>.
+     *         If the repo does not exist, or is an empty file, it is considered stale.
+     */
+    protected boolean isStale(File repo, Duration validFor) {
+        boolean stale = true;
+        if (repo != null && repo.isFile()) {
+            final Instant lastUpdatedOn = getLastUpdated(repo);
+            final Instant now = Instant.now();
+            LOGGER.debug("{} last updated: {}, now: {}", getClass().getSimpleName(), lastUpdatedOn, now);
+            stale = lastUpdatedOn.plus(validFor).isBefore(now);
+            if (!stale) {
+                LOGGER.info("Should skip {} update since last update was within period {}.", getClass().getSimpleName(), validFor);
+            }
+        }
+        return stale;
     }
 }
