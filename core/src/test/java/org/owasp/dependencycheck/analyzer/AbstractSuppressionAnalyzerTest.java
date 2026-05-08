@@ -82,7 +82,7 @@ class AbstractSuppressionAnalyzerTest extends BaseTest {
     class BasePackagedSuppressionsLoading {
         @Test
         void packagedBaseSuppressions() throws Exception {
-            engine = prepareBaseSuppressionsOnly();
+            prepareBaseSuppressionsOnly();
             @SuppressWarnings("unchecked") List<SuppressionRule> rules = (List<SuppressionRule>) engine.getObject(SUPPRESSION_OBJECT_KEY);
             assertThat(rules, not(empty()));
             assertThat("Expected all suppressions in base file to be marked as base", allRulesNotMarkedAsBase(rules), empty());
@@ -94,7 +94,7 @@ class AbstractSuppressionAnalyzerTest extends BaseTest {
         @Test
         void packagedSnapshotHostedSuppressionsLoadedEvenIfRemoteHostedSuppressionsDisabled() throws Exception {
             getSettings().setBoolean(KEYS.HOSTED_SUPPRESSIONS_ENABLED, false);
-            engine = prepareHostedSuppressionsOnly();
+            prepareHostedSuppressionsOnly();
             @SuppressWarnings("unchecked") List<SuppressionRule> rules = (List<SuppressionRule>) engine.getObject(SUPPRESSION_OBJECT_KEY);
             assertThat(rules, not(empty()));
             assertThat("Expected all suppressions in hosted suppressions snapshot file to be marked as base", allRulesNotMarkedAsBase(rules), empty());
@@ -104,7 +104,7 @@ class AbstractSuppressionAnalyzerTest extends BaseTest {
         void packagedSnapshotHostedSuppressionsLoadedIfAutoUpdateDisabled() throws Exception {
             getSettings().setBoolean(KEYS.HOSTED_SUPPRESSIONS_ENABLED, true);
             getSettings().setBoolean(KEYS.AUTO_UPDATE, false);
-            engine = prepareHostedSuppressionsOnly();
+            prepareHostedSuppressionsOnly();
             assertThat(AbstractSuppressionAnalyzer.getRuleCount(engine), greaterThan(0));
         }
         @Test
@@ -112,7 +112,7 @@ class AbstractSuppressionAnalyzerTest extends BaseTest {
             getSettings().setBoolean(KEYS.HOSTED_SUPPRESSIONS_ENABLED, true);
             getSettings().setBoolean(KEYS.AUTO_UPDATE, true);
             getSettings().setString(KEYS.HOSTED_SUPPRESSIONS_URL, "file:///does-not-exist.xml");
-            engine = prepareHostedSuppressionsOnly();
+            prepareHostedSuppressionsOnly();
             assertThat(AbstractSuppressionAnalyzer.getRuleCount(engine), greaterThan(0));
         }
 
@@ -121,7 +121,7 @@ class AbstractSuppressionAnalyzerTest extends BaseTest {
         void ignoresHostedSuppressionsIfUrlDoesntIncludeAFileNameRegardlessOfEnabledState(boolean hostedSuppressionsEnabled) throws Exception {
             getSettings().setBoolean(KEYS.HOSTED_SUPPRESSIONS_ENABLED, hostedSuppressionsEnabled);
             getSettings().setString(KEYS.HOSTED_SUPPRESSIONS_URL, "https://valid.url.but.no.file/");
-            engine = prepareHostedSuppressionsOnly();
+            prepareHostedSuppressionsOnly();
             assertThat(AbstractSuppressionAnalyzer.getRuleCount(engine), is(0));
         }
 
@@ -129,7 +129,7 @@ class AbstractSuppressionAnalyzerTest extends BaseTest {
         void ignoresHostedSuppressionsIfCannotBeParsedFromRemote() throws Exception {
             getSettings().setBoolean(KEYS.HOSTED_SUPPRESSIONS_ENABLED, true);
             getSettings().setString(KEYS.HOSTED_SUPPRESSIONS_URL, BaseTest.getResourceAsUrlString(this, "suppressions-invalid.xml"));
-            engine = prepareHostedSuppressionsOnly();
+            prepareHostedSuppressionsOnly();
             assertThat(AbstractSuppressionAnalyzer.getRuleCount(engine), is(0));
         }
 
@@ -138,7 +138,7 @@ class AbstractSuppressionAnalyzerTest extends BaseTest {
             getSettings().setBoolean(KEYS.HOSTED_SUPPRESSIONS_ENABLED, true);
             getSettings().setBoolean(KEYS.AUTO_UPDATE, true);
             getSettings().setString(KEYS.HOSTED_SUPPRESSIONS_URL, testSuppressionsFileUrl());
-            engine = prepareHostedSuppressionsOnly();
+            prepareHostedSuppressionsOnly();
             assertThat(AbstractSuppressionAnalyzer.getRuleCount(engine), is(TEST_SUPPRESSIONS_EXPECTED_COUNT));
         }
 
@@ -148,7 +148,7 @@ class AbstractSuppressionAnalyzerTest extends BaseTest {
             getSettings().setBoolean(KEYS.AUTO_UPDATE, false);
             getSettings().setBoolean(KEYS.HOSTED_SUPPRESSIONS_FORCEUPDATE, true);
             getSettings().setString(KEYS.HOSTED_SUPPRESSIONS_URL, testSuppressionsFileUrl());
-            engine = prepareHostedSuppressionsOnly();
+            prepareHostedSuppressionsOnly();
             assertThat(AbstractSuppressionAnalyzer.getRuleCount(engine), is(TEST_SUPPRESSIONS_EXPECTED_COUNT));
         }
     }
@@ -192,8 +192,7 @@ class AbstractSuppressionAnalyzerTest extends BaseTest {
             // WHEN initializing with both suppression files
             final String[] suppressionFiles = {TEST_SUPPRESSIONS_FILE, OTHER_TEST_SUPPRESSIONS_FILE};
             getSettings().setArrayIfNotEmpty(KEYS.SUPPRESSION_FILE, suppressionFiles);
-            engine = new Engine(getSettings());
-            newAnalyzer().prepare(engine);
+            prepareSuppressions();
 
             // THEN rules from both files were loaded
             final int expectedSize = rulesInFirstFile + rulesInSecondFile + rulesInCoreFile;
@@ -203,8 +202,7 @@ class AbstractSuppressionAnalyzerTest extends BaseTest {
         @Test
         void testFailureToLocateSuppressionFileAnywhere() {
             getSettings().setString(Settings.KEYS.SUPPRESSION_FILE, "doesnotexist.xml");
-            engine = new Engine(Mode.EVIDENCE_COLLECTION, getSettings());
-            assertThrows(InitializationException.class, () -> newAnalyzer().prepare(engine));
+            assertThrows(InitializationException.class, AbstractSuppressionAnalyzerTest.this::prepareSuppressions);
         }
     }
 
@@ -217,7 +215,7 @@ class AbstractSuppressionAnalyzerTest extends BaseTest {
      */
     private int getNumberOfRulesLoadedInCoreFile() throws Exception {
         getSettings().removeProperty(KEYS.SUPPRESSION_FILE);
-        engine = prepareSuppressions();
+        prepareSuppressions();
         return AbstractSuppressionAnalyzer.getRuleCount(engine);
     }
 
@@ -231,26 +229,23 @@ class AbstractSuppressionAnalyzerTest extends BaseTest {
      */
     private int getNumberOfRulesLoadedFromPath(final String path) throws Exception {
         getSettings().setString(KEYS.SUPPRESSION_FILE, path);
-        engine = prepareSuppressions();
+        prepareSuppressions();
         return AbstractSuppressionAnalyzer.getRuleCount(engine);
     }
 
-    private @NonNull Engine prepareSuppressions() throws InvalidSettingException, InitializationException {
+    private void prepareSuppressions() throws InvalidSettingException, InitializationException {
         engine = new Engine(Mode.EVIDENCE_COLLECTION, getSettings());
         newAnalyzer().prepare(engine);
-        return engine;
     }
 
-    private @NonNull Engine prepareBaseSuppressionsOnly() throws InvalidSettingException, SuppressionParseException {
+    private void prepareBaseSuppressionsOnly() throws InvalidSettingException, SuppressionParseException {
         engine = new Engine(Mode.EVIDENCE_COLLECTION, getSettings());
         newAnalyzer().loadPackagedBaseSuppressionData(engine);
-        return engine;
     }
 
-    private @NonNull Engine prepareHostedSuppressionsOnly() throws InvalidSettingException {
+    private void prepareHostedSuppressionsOnly() throws InvalidSettingException {
         engine = new Engine(Mode.EVIDENCE_COLLECTION, getSettings());
         newAnalyzer().loadHostedSuppressionBaseData(engine);
-        return engine;
     }
 
     private @NonNull AbstractSuppressionAnalyzerImpl newAnalyzer() throws InvalidSettingException {

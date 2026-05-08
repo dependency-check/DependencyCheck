@@ -17,6 +17,7 @@
  */
 package org.owasp.dependencycheck.data.update;
 
+import org.jspecify.annotations.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,6 +30,8 @@ import java.io.OutputStream;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Properties;
+
+import static org.owasp.dependencycheck.utils.FileUtils.existsWithContent;
 
 /**
  *
@@ -91,9 +94,9 @@ public abstract class LocalDataSource implements CachedWebDataSource {
      * @return <code>true</code> if an update to the data source should be performed; otherwise <code>false</code>.
      *         If the repo does not exist, or is an empty file, it is considered stale.
      */
-    protected boolean isStale(File repo, Duration validFor) {
+    protected boolean isStale(@NonNull File repo, @NonNull Duration validFor) {
         boolean stale = true;
-        if (repo != null && repo.isFile()) {
+        if (existsWithContent(repo)) {
             final Instant lastUpdatedOn = getLastUpdated(repo);
             final Instant now = Instant.now();
             LOGGER.debug("{} last updated: {}, now: {}", getClass().getSimpleName(), lastUpdatedOn, now);

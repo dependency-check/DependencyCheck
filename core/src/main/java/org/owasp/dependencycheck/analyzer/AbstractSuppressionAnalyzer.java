@@ -54,6 +54,7 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 import static org.owasp.dependencycheck.data.update.HostedSuppressionsDataSource.falsePositivesDueTo;
+import static org.owasp.dependencycheck.utils.FileUtils.existsWithContent;
 
 /**
  * Abstract base suppression analyzer that contains methods for parsing the
@@ -235,7 +236,7 @@ public abstract class AbstractSuppressionAnalyzer extends AbstractAnalyzer {
             //
             // Note that this local fallback will run regardless of whether hosted suppressions are "enabled" or the
             // value of autoUpdate, forceupdate etc since this is an offline operation similar to regular "base" suppressions.
-            if (isRepoEmpty(repoFile)) {
+            if (!existsWithContent(repoFile)) {
                 LOGGER.debug("Hosted suppressions not found locally; attempting fallback to store packaged snapshot from this Dependency-Check release at {}...", repoFile.toPath());
                 URL hostedSuppressionSnapshotURL = getPackagedFile(HOSTED_SUPPRESSION_SNAPSHOT_FILE);
                 try (InputStream in = hostedSuppressionSnapshotURL.openStream()) {
@@ -249,10 +250,6 @@ public abstract class AbstractSuppressionAnalyzer extends AbstractAnalyzer {
         } catch (IOException | InitializationException ex) {
             LOGGER.warn(falsePositivesDueTo("Unable to load hosted suppressions from either remote source or packaged snapshot"), ex);
         }
-    }
-
-    private static boolean isRepoEmpty(File repoFile) {
-        return !repoFile.isFile() || repoFile.length() <= 1L;
     }
 
     /**

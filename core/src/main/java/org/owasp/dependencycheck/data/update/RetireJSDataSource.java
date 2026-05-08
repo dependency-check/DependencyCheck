@@ -17,10 +17,12 @@
  */
 package org.owasp.dependencycheck.data.update;
 
+import org.jspecify.annotations.NonNull;
 import org.owasp.dependencycheck.Engine;
 import org.owasp.dependencycheck.data.update.exception.UpdateException;
 import org.owasp.dependencycheck.exception.WriteLockException;
 import org.owasp.dependencycheck.utils.Downloader;
+import org.owasp.dependencycheck.utils.InvalidSettingException;
 import org.owasp.dependencycheck.utils.ResourceNotFoundException;
 import org.owasp.dependencycheck.utils.Settings;
 import org.owasp.dependencycheck.utils.TooManyRequestsException;
@@ -34,6 +36,8 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.time.Duration;
+
+import static org.owasp.dependencycheck.utils.FileUtils.existsWithContent;
 
 /**
  * Downloads a local copy of the RetireJS repository.
@@ -71,22 +75,39 @@ public class RetireJSDataSource extends LocalDataSource {
     @Override
     public boolean update(Engine engine) throws UpdateException {
         this.settings = engine.getSettings();
-        final String configuredUrl = settings.getString(Settings.KEYS.ANALYZER_RETIREJS_REPO_JS_URL, DEFAULT_JS_URL);
-        try {
-            final URL url = new URL(configuredUrl);
-            final File filepath = new File(url.getPath());
-            final File repoFile = new File(settings.getDataDirectory(), filepath.getName());
-            if (isEnabled() && shouldUpdateFromRemote(repoFile)) {
-                LOGGER.debug("Begin RetireJS Update");
-                initializeRetireJsRepo(settings, url, repoFile);
-                saveLastUpdated(repoFile);
-            }
-        } catch (MalformedURLException ex) {
-            throw new UpdateException(String.format("Invalid URL for RetireJS repository (%s)", configuredUrl), ex);
-        } catch (IOException ex) {
-            throw new UpdateException("Unable to get the data directory", ex);
+        final URL url = validatedUrl();
+        final File repoFile = validatedRepoFileFrom(url);
+        if (isEnabled() && shouldUpdateFromRemote(repoFile)) {
+            LOGGER.debug("Begin RetireJS Update");
+            initializeRetireJsRepo(settings, url, repoFile);
+            saveLastUpdated(repoFile);
         }
         return false;
+    }
+
+    private @NonNull URL validatedUrl() throws UpdateException {
+        final String configuredUrl = settings.getString(Settings.KEYS.ANALYZER_RETIREJS_REPO_JS_URL, DEFAULT_JS_URL);
+        try {
+            return new URL(configuredUrl);
+        } catch (MalformedURLException ex) {
+            throw new UpdateException(String.format("Invalid URL for RetireJS repository (%s)", configuredUrl), ex);
+        }
+    }
+
+    public @NonNull File validatedRepoFile() throws UpdateException {
+        return validatedRepoFileFrom(validatedUrl());
+    }
+
+    private @NonNull File validatedRepoFileFrom(URL url) throws UpdateException {
+        try {
+            String fileName = new File(url.getPath()).getName();
+            if (fileName.isBlank()) {
+                throw new InvalidSettingException("RetireJS URL must imply a filename.");
+            }
+            return new File(settings.getDataDirectory(), fileName);
+        } catch (IOException ex) {
+            throw new UpdateException("Unable to determine RetireJS local repository location", ex);
+        }
     }
 
     private boolean isEnabled() {
@@ -97,7 +118,7 @@ public class RetireJSDataSource extends LocalDataSource {
         boolean forceupdate = settings.getBoolean(Settings.KEYS.ANALYZER_RETIREJS_FORCEUPDATE, false);
         boolean autoupdate = settings.getBoolean(Settings.KEYS.AUTO_UPDATE, true);
         Duration validFor = Duration.ofHours(settings.getInt(Settings.KEYS.ANALYZER_RETIREJS_REPO_VALID_FOR_HOURS, 24));
-        return forceupdate || (autoupdate && isStale(repoFile, validFor));
+        return forceupdate || !existsWithContent(repoFile) || (autoupdate && isStale(repoFile, validFor));
     }
 
     /**
@@ -106,8 +127,7 @@ public class RetireJSDataSource extends LocalDataSource {
      * @param settings a reference to the dependency-check settings
      * @param repoUrl the URL to the RetireJS repository to use
      * @param repoFile the filename to use for the RetireJS repository
-     * @throws UpdateException thrown if there is an exception during
-     * initialization
+     * @throws UpdateException thrown if there is an exception during initialization
      */
     @SuppressWarnings("try")
     private void initializeRetireJsRepo(Settings settings, URL repoUrl, File repoFile) throws UpdateException {

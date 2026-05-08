@@ -43,6 +43,8 @@ import java.nio.file.Files;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static org.owasp.dependencycheck.utils.FileUtils.existsWithContent;
+
 /**
  * Used to analyze dependencies defined in Pipfile. This analyzer works in
  * tandem with the `PipfilelockAnalyzer` - and both analyzers use the same key
@@ -141,7 +143,7 @@ public class PipfileAnalyzer extends AbstractFileTypeAnalyzer {
         }
 
         final File dependencyFile = dependency.getActualFile();
-        if (!dependencyFile.isFile() || dependencyFile.length() == 0) {
+        if (!existsWithContent(dependencyFile)) {
             return;
         }
 
