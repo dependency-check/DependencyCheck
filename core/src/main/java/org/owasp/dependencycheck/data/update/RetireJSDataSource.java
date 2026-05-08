@@ -49,7 +49,7 @@ public class RetireJSDataSource extends LocalDataSource {
     /**
      * The default URL to the RetireJS JavaScript repository.
      */
-    public static final String DEFAULT_JS_URL = "https://raw.githubusercontent.com/Retirejs/retire.js/master/repository/jsrepository.json";
+    private static final String DEFAULT_JS_URL = "https://raw.githubusercontent.com/Retirejs/retire.js/master/repository/jsrepository.json";
     /**
      * Static logger.
      */
@@ -106,7 +106,7 @@ public class RetireJSDataSource extends LocalDataSource {
             }
             return new File(settings.getDataDirectory(), fileName);
         } catch (IOException ex) {
-            throw new UpdateException("Unable to determine RetireJS local repository location", ex);
+            throw new UpdateException("Unable to determine the local location to cache RetireJS repo", ex);
         }
     }
 
