@@ -20,7 +20,7 @@ Extending dependency-check
 A [dependency-check-plugin maven archetype](dependency-check-plugin/index.html)
 has been created to assist with creating your own analyzers.
 
-Core Engine
+Engine
 --------------------------
 Information about the core engine and the utilities used can be found:
 

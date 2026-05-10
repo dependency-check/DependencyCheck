@@ -13,13 +13,6 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
-    <repositories>
-        <repository>
-            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
-            <name>staging</name>
-            <id>staging</id>
-        </repository>
-    </repositories>
     <build>
         <plugins>
             <plugin>
@@ -27,7 +20,7 @@
                 <artifactId>dependency-check-maven</artifactId>
                 <executions>
                     <execution>
-                        <goals>check</goals>
+                        <goals><goal>check</goal></goals>
                     </execution>
                 </executions>
                 <configuration>

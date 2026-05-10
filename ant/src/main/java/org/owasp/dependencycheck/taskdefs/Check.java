@@ -143,8 +143,7 @@ public class Check extends Update {
      */
     private Boolean nexusAnalyzerEnabled;
     /**
-     * The URL of a Nexus server's REST API end point
-     * (http://domain/nexus/service/local).
+     * Sets the Nexus Repository v3 API base URL (example <a href="https://domain.enterprise/nexus/">https://domain.enterprise/nexus/</a>).
      */
     private String nexusUrl;
     /**
