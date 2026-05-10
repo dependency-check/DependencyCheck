@@ -44,7 +44,7 @@ class NexusV2SearchTest extends BaseTest {
         Settings sett = getSettings();
 //        sett.setString(Settings.KEYS.ANALYZER_NEXUS_USER, "demo");
 //        sett.setString(Settings.KEYS.ANALYZER_NEXUS_PASSWORD, "demo");
-//        sett.setString(Settings.KEYS.ANALYZER_NEXUS_URL, "https://localhost/nexus/service/local/");
+//        sett.setString(Settings.KEYS.ANALYZER_NEXUS_URL, "https://localhost/nexus/");
         String nexusUrl = sett.getString(Settings.KEYS.ANALYZER_NEXUS_URL);
         LOGGER.debug(nexusUrl);
         searcher = new NexusV2Search(sett, false);

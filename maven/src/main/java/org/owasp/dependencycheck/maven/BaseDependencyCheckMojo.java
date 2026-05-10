@@ -879,9 +879,9 @@ public abstract class BaseDependencyCheckMojo extends AbstractMojo implements Ma
     @SuppressWarnings("CanBeFinal")
     @Parameter(property = "swiftPackageResolvedAnalyzerEnabled")
     private Boolean swiftPackageResolvedAnalyzerEnabled;
+
     /**
-     * The URL of a Nexus server's REST API end point
-     * (http://domain/nexus/service/local).
+     * The Nexus Repository v3 API base URL (example <a href="https://domain.enterprise/nexus/">https://domain.enterprise/nexus/</a>).
      */
     @SuppressWarnings("CanBeFinal")
     @Parameter(property = "nexusUrl")

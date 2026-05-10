@@ -475,7 +475,7 @@ public final class CliParser {
                                 + "most commonly used to exclude based on your applications own copyright line. This "
                                 + "option can be specified multiple times."))
                 .addOption(newOptionWithArg(ARGUMENT.NEXUS_URL, "url",
-                        "The url to the Nexus Server's REST API Endpoint (http://domain/nexus/service/local). If not "
+                        "Sets the Nexus Repository v3 API base URL (example https://domain.enterprise/nexus/). If not "
                                 + "set the Nexus Analyzer will be disabled."))
                 .addOption(newOptionWithArg(ARGUMENT.NEXUS_USERNAME, "username",
                         "The username to authenticate to the Nexus Server's REST API Endpoint. If not set the Nexus "
