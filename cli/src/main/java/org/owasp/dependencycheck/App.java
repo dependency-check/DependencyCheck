@@ -130,11 +130,11 @@ public class App {
             cli.parse(args);
         } catch (FileNotFoundException ex) {
             System.err.println(ex.getMessage());
-            cli.printHelp();
+            cli.printHelp(System.out);
             return 1;
         } catch (ParseException ex) {
             System.err.println(ex.getMessage());
-            cli.printHelp();
+            cli.printHelp(System.out);
             return 2;
         }
         final String verboseLog = cli.getStringArgument(CliParser.ARGUMENT.VERBOSE_LOG);
@@ -234,7 +234,7 @@ public class App {
                 settings.cleanup();
             }
         } else {
-            cli.printHelp();
+            cli.printHelp(System.out);
         }
         return exitCode;
     }

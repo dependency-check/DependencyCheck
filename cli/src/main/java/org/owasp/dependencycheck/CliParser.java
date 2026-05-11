@@ -21,11 +21,12 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
-import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.OptionGroup;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
+import org.apache.commons.cli.help.HelpFormatter;
+import org.apache.commons.cli.help.TextHelpAppendable;
 import org.owasp.dependencycheck.reporting.ReportGenerator.Format;
 import org.owasp.dependencycheck.utils.InvalidSettingException;
 import org.owasp.dependencycheck.utils.Settings;
@@ -34,6 +35,9 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.UncheckedIOException;
+import java.util.Comparator;
 
 /**
  * A utility to parse command line arguments for the DependencyCheck.
@@ -65,6 +69,12 @@ public final class CliParser {
      */
     private static final String SUPPORTED_FORMATS = "HTML, XML, CSV, JSON, JUNIT, SARIF, JENKINS, GITLAB or ALL";
 
+    private static final String HELP_MSG = String.format(
+            "Dependency-Check can be used to identify if there are any known CVE vulnerabilities in libraries " +
+                    "utilized by an application. Dependency-Check will automatically update required data from the " +
+                    "Internet, such as the CVE and CPE data files from nvd.nist.gov.%n"
+    );
+
     /**
      * Constructs a new CLI Parser object with the configured settings.
      *
@@ -82,7 +92,7 @@ public final class CliParser {
      * point to a file that exists.
      * @throws ParseException is thrown when a Parse Exception occurs.
      */
-    public void parse(String[] args) throws FileNotFoundException, ParseException {
+    public void parse(String... args) throws FileNotFoundException, ParseException {
         line = parseArgs(args);
 
         if (line != null) {
@@ -97,7 +107,7 @@ public final class CliParser {
      * @return the results of parsing the command line arguments
      * @throws ParseException if the arguments are invalid
      */
-    private CommandLine parseArgs(String[] args) throws ParseException {
+    private CommandLine parseArgs(String... args) throws ParseException {
         final CommandLineParser parser = new DefaultParser();
         final Options options = createCommandLineOptions();
         return parser.parse(options, args);
@@ -213,7 +223,7 @@ public final class CliParser {
      * @param argumentName the argument being validated (e.g. scan, out, etc.)
      * @return true, if path exists; false otherwise
      */
-    private boolean isValidFilePath(String path, String argumentName) {
+    private boolean isValidFilePath(String path, @SuppressWarnings("SameParameterValue") String argumentName) {
         try {
             validatePathExists(path, argumentName);
             return true;
@@ -232,7 +242,7 @@ public final class CliParser {
      * @throws FileNotFoundException is thrown if one of the paths being
      * validated does not exist.
      */
-    private void validatePathExists(String[] paths, String optType) throws FileNotFoundException {
+    private void validatePathExists(String[] paths, @SuppressWarnings("SameParameterValue") String optType) throws FileNotFoundException {
         for (String path : paths) {
             validatePathExists(path, optType);
         }
@@ -301,7 +311,6 @@ public final class CliParser {
      *
      * @return the command line options used for parsing the command line
      */
-    @SuppressWarnings("static-access")
     private Options createCommandLineOptions() {
         final Options options = new Options();
         addStandardOptions(options);
@@ -315,10 +324,8 @@ public final class CliParser {
      *
      * @param options a collection of command line arguments
      */
-    @SuppressWarnings("static-access")
     private void addStandardOptions(final Options options) {
-        //This is an option group because it can be specified more then once.
-
+        //This is an option group because it can be specified more than once.
         options.addOptionGroup(newOptionGroup(newOptionWithArg(ARGUMENT.SCAN_SHORT, ARGUMENT.SCAN, "path",
                         "The path to scan - this option can be specified multiple times. Ant style paths are supported (e.g. 'path/**/*.jar'); "
                                 + "if using Ant style paths it is highly recommended to quote the argument value.")))
@@ -357,7 +364,6 @@ public final class CliParser {
      *
      * @param options a collection of command line arguments
      */
-    @SuppressWarnings("static-access")
     private void addAdvancedOptions(final Options options) {
         options
                 .addOption(newOption(ARGUMENT.UPDATE_ONLY,
@@ -445,11 +451,11 @@ public final class CliParser {
                 .addOption(newOptionWithArg(ARGUMENT.RETIREJS_URL, "url",
                         "The Retire JS Repository URL"))
                 .addOption(newOptionWithArg(ARGUMENT.RETIREJS_URL_USER, "username",
-                        "The password to authenticate to Retire JS Repository URL"))
+                        "Credentials for basic auth towards the Retire JS Repository URL"))
                 .addOption(newOptionWithArg(ARGUMENT.RETIREJS_URL_PASSWORD, "password",
-                        "The password to authenticate to Retire JS Repository URL"))
+                        "Credentials for basic auth towards the Retire JS Repository URL"))
                 .addOption(newOptionWithArg(ARGUMENT.RETIREJS_URL_BEARER_TOKEN, "token",
-                        "The password to authenticate to Retire JS Repository URL"))
+                        "Token for bearer auth towards the Retire JS Repository URL"))
                 .addOption(newOption(ARGUMENT.RETIRE_JS_FILTER_NON_VULNERABLE, "Specifies that the Retire JS "
                         + "Analyzer should filter out non-vulnerable JS files from the report."))
                 .addOption(newOptionWithArg(ARGUMENT.ARTIFACTORY_PARALLEL_ANALYSIS, "true/false",
@@ -571,7 +577,6 @@ public final class CliParser {
      *
      * @param options a collection of command line arguments
      */
-    @SuppressWarnings({"static-access", "deprecation"})
     private void addDeprecatedOptions(final Options options) {
         //not a real option - but enables java debugging via the shell script
         options.addOption(newOption("debug",
@@ -784,26 +789,28 @@ public final class CliParser {
     }
 
     /**
-     * Displays the command line help message to the standard output.
+     * Appends the command line help message to the passed appendable
      */
-    public void printHelp() {
-        final HelpFormatter formatter = new HelpFormatter();
+    void printHelp(Appendable appendable) {
+        TextHelpAppendable helpAppendable = new TextHelpAppendable(appendable);
+        helpAppendable.setMaxWidth(100);
+        HelpFormatter formatter = HelpFormatter.builder()
+                .setShowSince(false)
+                .setComparator(Comparator.comparing(Option::getKey, String::compareToIgnoreCase))
+                .setHelpAppendable(helpAppendable)
+                .get();
+
         final Options options = new Options();
         addStandardOptions(options);
         if (line != null && line.hasOption(ARGUMENT.ADVANCED_HELP)) {
             addAdvancedOptions(options);
         }
-        final String helpMsg = String.format("%n%s"
-                        + " can be used to identify if there are any known CVE vulnerabilities in libraries utilized by an application. "
-                        + "%s will automatically update required data from the Internet, such as the CVE and CPE data files from nvd.nist.gov.%n%n",
-                settings.getString(Settings.KEYS.APPLICATION_NAME, "DependencyCheck"),
-                settings.getString(Settings.KEYS.APPLICATION_NAME, "DependencyCheck"));
 
-        formatter.printHelp(settings.getString(Settings.KEYS.APPLICATION_NAME, "DependencyCheck"),
-                helpMsg,
-                options,
-                "",
-                true);
+        try {
+            formatter.printHelp("dependency-check", HELP_MSG, formatter.sort(options), "", true);
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
     }
 
     /**
@@ -1005,7 +1012,7 @@ public final class CliParser {
      * @return a new option
      */
     private Option newOption(String name, String description) {
-        return Option.builder().longOpt(name).desc(description).build();
+        return Option.builder().longOpt(name).desc(description).get();
     }
 
     /**
@@ -1017,7 +1024,7 @@ public final class CliParser {
      * @return a new option
      */
     private Option newOption(String shortName, String name, String description) {
-        return Option.builder(shortName).longOpt(name).desc(description).build();
+        return Option.builder(shortName).longOpt(name).desc(description).get();
     }
 
     /**
@@ -1029,7 +1036,7 @@ public final class CliParser {
      * @return a new option
      */
     private Option newOptionWithArg(String name, String arg, String description) {
-        return Option.builder().longOpt(name).argName(arg).hasArg().desc(description).build();
+        return Option.builder().longOpt(name).argName(arg).hasArg().desc(description).get();
     }
 
     /**
@@ -1042,7 +1049,7 @@ public final class CliParser {
      * @return a new option
      */
     private Option newOptionWithArg(String shortName, String name, String arg, String description) {
-        return Option.builder(shortName).longOpt(name).argName(arg).hasArg().desc(description).build();
+        return Option.builder(shortName).longOpt(name).argName(arg).hasArg().desc(description).get();
     }
 
     /**

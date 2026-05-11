@@ -24,14 +24,21 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintStream;
+import java.io.StringWriter;
+import java.util.List;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static java.util.stream.Collectors.toList;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsInRelativeOrder;
+import static org.hamcrest.Matchers.greaterThan;
+import static org.hamcrest.Matchers.matchesPattern;
+import static org.hamcrest.Matchers.startsWith;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  *
@@ -47,13 +54,8 @@ class CliParserTest extends BaseTest {
     @Test
     void testParse() throws Exception {
 
-        String[] args = {};
-
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        System.setOut(new PrintStream(baos, true, UTF_8));
-
         CliParser instance = new CliParser(getSettings());
-        instance.parse(args);
+        instance.parse();
 
         assertFalse(instance.isGetVersion());
         assertFalse(instance.isGetHelp());
@@ -160,16 +162,9 @@ class CliParserTest extends BaseTest {
     @Test
     void testParse_unknown() {
 
-        String[] args = {"-unknown"};
-
-        ByteArrayOutputStream baos_out = new ByteArrayOutputStream();
-        ByteArrayOutputStream baos_err = new ByteArrayOutputStream();
-        System.setOut(new PrintStream(baos_out, true, UTF_8));
-        System.setErr(new PrintStream(baos_err, true, UTF_8));
-
         CliParser instance = new CliParser(getSettings());
 
-        ParseException ex = assertThrows(ParseException.class, () -> instance.parse(args) ,
+        ParseException ex = assertThrows(ParseException.class, () -> instance.parse("-unknown"),
                 "Unrecognized option should have caused an exception");
         assertTrue(ex.getMessage().contains("Unrecognized option"));
 
@@ -243,7 +238,6 @@ class CliParserTest extends BaseTest {
      *
      */
     @Test
-    @SuppressWarnings("StringSplitter")
     void testParse_printVersionInfo() {
 
         PrintStream out = System.out;
@@ -253,11 +247,7 @@ class CliParserTest extends BaseTest {
         CliParser instance = new CliParser(getSettings());
         instance.printVersionInfo();
         try {
-            String text = baos.toString(UTF_8).toLowerCase();
-            String[] lines = text.split(System.lineSeparator());
-            assertTrue(lines.length >= 1);
-            assertTrue(text.contains("version"));
-            assertFalse(text.contains("unknown"));
+            assertThat(baos.toString(UTF_8), matchesPattern("(?mi)dependency-check.*version [0-9]+.*\n"));
         } finally {
             System.setOut(out);
         }
@@ -269,28 +259,32 @@ class CliParserTest extends BaseTest {
      * @throws Exception thrown when an exception occurs.
      */
     @Test
-    @SuppressWarnings("StringSplitter")
     void testParse_printHelp() throws Exception {
-
-        PrintStream out = System.out;
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        System.setOut(new PrintStream(baos, true, UTF_8));
-
         CliParser instance = new CliParser(getSettings());
-        String[] args = {"-h"};
-        instance.parse(args);
-        instance.printHelp();
-        args[0] = "--advancedHelp";
-        instance.parse(args);
-        instance.printHelp();
-        try {
-            String text = (baos.toString(UTF_8));
-            String[] lines = text.split(System.lineSeparator());
-            assertTrue(lines[0].startsWith("usage: "));
-            assertTrue((lines.length > 2));
-        } finally {
-            System.setOut(out);
-        }
+        instance.parse("-h");
+        StringWriter text = new StringWriter();
+        instance.printHelp(text);
+
+        List<String> lines = text.toString().lines().collect(toList());
+        assertThat(lines, containsInRelativeOrder(startsWith(" usage:  dependency-check"), startsWith(" -v, --version")));
+        assertThat(lines.size(), greaterThan(10));
+    }
+
+    /**
+     * Test of printHelp, of class CliParser.
+     *
+     * @throws Exception thrown when an exception occurs.
+     */
+    @Test
+    void testParse_printHelpAdvanced() throws Exception {
+        CliParser instance = new CliParser(getSettings());
+        instance.parse("--advancedHelp");
+        StringWriter text = new StringWriter();
+        instance.printHelp(text);
+
+        List<String> lines = text.toString().lines().collect(toList());
+        assertThat(lines, containsInRelativeOrder(startsWith(" usage:  dependency-check"), startsWith(" -c, --connectiontimeout"), startsWith(" -v, --version")));
+        assertThat(lines.size(), greaterThan(60));
     }
 
     /**
