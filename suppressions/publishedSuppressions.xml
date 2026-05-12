@@ -2152,4 +2152,11 @@ only pkg:maven/org.clojure:clojure@.* is the CPE cpe:/a:clojure:clojure
     <packageUrl regex="true">^pkg:maven/org\.apache\.logging\.log4j/(?!log4j-layout-template-json@).*$</packageUrl>
     <cve>CVE-2026-34481</cve>
 </suppress>
+<suppress base="true">
+    <notes><![CDATA[
+    FP per issue #8497
+    ]]></notes>
+    <packageUrl regex="true">^pkg:maven/io\.micrometer/micrometer-registry-prometheus@.*$</packageUrl>
+    <cpe>cpe:/a:prometheus:prometheus</cpe>
+</suppress>
 </suppressions>
