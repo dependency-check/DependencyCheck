@@ -861,20 +861,6 @@
     </suppress>
     <suppress base="true">
         <notes><![CDATA[
-        False positive per #2628
-        ]]></notes>
-        <packageUrl regex="true">^pkg:maven/io\.prometheus\.jmx/.*$</packageUrl>
-        <cve>CVE-2019-3826</cve>
-    </suppress>
-    <suppress base="true">
-        <notes><![CDATA[
-        False positive per #2001 & #2109
-        ]]></notes>
-        <gav regex="true">^io\.prometheus:simple.*$</gav>
-        <cve>CVE-2019-3826</cve>
-    </suppress>
-    <suppress base="true">
-        <notes><![CDATA[
         False positive per  #2109
         ]]></notes>
         <packageUrl regex="true">^pkg:maven/io\.prometheus/simpleclient_logback@.*$</packageUrl>
@@ -1534,13 +1520,6 @@
     </suppress>
     <suppress base="true">
         <notes><![CDATA[
-        Library related to prometheus is being flagged as prometheus itself (#2341)
-        ]]></notes>
-        <packageUrl regex="true">^pkg:maven/io\.kamon/kamon\-prometheus_2\.12@.*$</packageUrl>
-        <cpe>cpe:/a:prometheus:prometheus</cpe>
-    </suppress>
-    <suppress base="true">
-        <notes><![CDATA[
         Joint FP CPE suppression for #2346, #2499, #2600, #3274, #4212 also covering future Kotlin extension libraries
         ]]></notes>
         <packageUrl regex="true">^pkg:maven/org\.jetbrains\.kotlinx/.*$</packageUrl>
@@ -2103,13 +2082,6 @@
     </suppress>
     <suppress base="true">
         <notes><![CDATA[
-        see https://github.com/dependency-check/DependencyCheck/issues/1927
-        ]]></notes>
-        <gav regex="true">^io\.micrometer:micrometer-registry-prometheus:.*$</gav>
-        <cve>CVE-2019-3826</cve>
-    </suppress>
-    <suppress base="true">
-        <notes><![CDATA[
         FP per #1755
         ]]></notes>
         <packageUrl regex="true">^pkg:maven/io\.micrometer/micrometer\-spring\-legacy@.*$</packageUrl>
@@ -2121,20 +2093,6 @@
         ]]></notes>
         <packageUrl regex="true">^pkg:maven/com\.squareup\.retrofit2?/(?!retrofit).*$</packageUrl>
         <cpe>cpe:/a:squareup:retrofit</cpe>
-    </suppress>
-    <suppress base="true">
-        <notes><![CDATA[
-        see https://github.com/dependency-check/DependencyCheck/issues/1927
-        ]]></notes>
-        <gav regex="true">^io\.prometheus:simpleclient_common:.*$</gav>
-        <cve>CVE-2019-3826</cve>
-    </suppress>
-    <suppress base="true">
-        <notes><![CDATA[
-        see https://github.com/dependency-check/DependencyCheck/issues/1927
-        ]]></notes>
-        <gav regex="true">^io\.prometheus:simpleclient:.*$</gav>
-        <cve>CVE-2019-3826</cve>
     </suppress>
     <suppress base="true">
         <notes><![CDATA[
@@ -3680,13 +3638,6 @@
     </suppress>
     <suppress base="true">
         <notes><![CDATA[
-        Library related to prometheus is being flagged as prometheus itself (#3470)
-        ]]></notes>
-        <packageUrl regex="true">^pkg:maven\/com\.github\.anti-social[.\/]prometheus-kt.*$</packageUrl>
-        <cpe>cpe:/a:prometheus:prometheus</cpe>
-    </suppress>
-    <suppress base="true">
-        <notes><![CDATA[
         Oracle JDBC drivers are not the database server
         ]]></notes>
         <packageUrl regex="true">^pkg:maven/com\.oracle\.database\.jdbc/.*@.*$</packageUrl>
@@ -4354,13 +4305,6 @@
     </suppress>
     <suppress base="true">
         <notes><![CDATA[
-            FP per issue #4205;
-        ]]></notes>
-        <packageUrl regex="true">^pkg:maven/io\.quarkus/quarkus-micrometer-registry-prometheus@.*$</packageUrl>
-        <cpe>cpe:/a:prometheus:prometheus</cpe>
-    </suppress>
-    <suppress base="true">
-        <notes><![CDATA[
             FP per issue #3888;
         ]]></notes>
         <packageUrl regex="true">^pkg:maven/org\.apache\.activemq/activemq\-artemis\-native@.*$</packageUrl>
@@ -5018,7 +4962,6 @@
         ]]></notes>
         <packageUrl regex="true">^pkg:maven/me\.dinowernli/java\-grpc\-prometheus@.*$</packageUrl>
         <cpe>cpe:/a:grpc:grpc</cpe>
-        <cpe>cpe:/a:prometheus:prometheus</cpe>
     </suppress>
     <suppress base="true">
         <notes><![CDATA[
