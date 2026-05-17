@@ -154,14 +154,6 @@
     </suppress>
     <suppress base="true">
         <notes><![CDATA[
-                FP in jetty as jetty-jakarta-servlet-api is identified as a low version jetty
-                ]]></notes>
-        <packageUrl regex="true">^pkg:maven/org\.eclipse\.jetty\.toolchain/jetty\-jakarta\-servlet\-api@.*$</packageUrl>
-        <cpe>cpe:/a:eclipse:jetty</cpe>
-        <cpe>cpe:/a:jetty:jetty</cpe>
-    </suppress>
-    <suppress base="true">
-        <notes><![CDATA[
 	    FP per #3331
 	    ]]></notes>
         <packageUrl regex="true">^pkg:npm/%40babel%2Fcli@.*$</packageUrl>
@@ -529,7 +521,6 @@
     <suppress base="true">
         <notes><![CDATA[
         FP per #2453
-        TODO - there are likely several other testcontainer suppressions that should be added
         ]]></notes>
         <packageUrl regex="true">^pkg:maven/org\.testcontainers/postgresql@.*$</packageUrl>
         <cpe>cpe:/a:postgresql:postgresql</cpe>
@@ -570,13 +561,6 @@
         ]]></notes>
         <packageUrl regex="true">^pkg:maven/org\.bouncycastle.*$</packageUrl>
         <cpe>cpe:/a:oracle:jdk</cpe>
-    </suppress>
-    <suppress base="true">
-        <notes><![CDATA[
-            FP per #2247 CVE candidate was withdrawn by the CNA
-        ]]></notes>
-        <packageUrl regex="true">^pkg:maven/org\.owasp\.antisamy/antisamy@.*$</packageUrl>
-        <vulnerabilityName>CVE-2018-1000643</vulnerabilityName>
     </suppress>
     <suppress base="true">
         <notes><![CDATA[
@@ -1467,47 +1451,23 @@
     </suppress>
     <suppress base="true">
         <notes><![CDATA[
-        FP per #2554
-        ]]></notes>
-        <packageUrl regex="true">^pkg:maven/org\.eclipse\.jetty\.alpn/alpn\-api@.*$</packageUrl>
-        <cpe>cpe:/a:jetty:jetty</cpe>
-        <cpe>cpe:/a:eclipse:jetty</cpe>
-        <cpe>cpe:/a:mortbay_jetty:jetty</cpe>
-        <cpe>cpe:/a:mortbay:jetty</cpe>
-    </suppress>
-    <suppress base="true">
-        <notes><![CDATA[
         FP per #2553
         ]]></notes>
         <packageUrl regex="true">^pkg:maven/org\.eclipse\.jetty/jetty\-reactive\-httpclient@.*$</packageUrl>
-        <cpe>cpe:/a:jetty:jetty</cpe>
-        <cpe>cpe:/a:eclipse:jetty</cpe>
         <cpe>cpe:/a:mortbay_jetty:jetty</cpe>
         <cpe>cpe:/a:mortbay:jetty</cpe>
-    </suppress>
-    <suppress base="true">
-        <notes><![CDATA[
-        FP per #1515
-        ]]></notes>
-        <gav regex="true">^org\.eclipse\.jetty\.alpn:alpn-api:.*$</gav>
-        <cpe>cpe:/a:eclipse:jetty</cpe>
-    </suppress>
-    <suppress base="true">
-        <notes><![CDATA[
-        Resolve FP that caused ant task IT to fail.
-        ]]></notes>
-        <gav regex="true">^jetty:org\.mortbay\.jetty:.*$</gav>
-        <cpe>cpe:/a:apache:http_server</cpe>
-        <cpe>cpe:/a:apache:apache_http_server</cpe>
-        <cpe>cpe:/a:free_java_web_server:free_java_web_server</cpe>
-    </suppress>
-    <suppress base="true">
-        <notes><![CDATA[
-        FP on jetty-proxy
-        ]]></notes>
-        <gav regex="true">^org\.eclipse\.jetty:jetty-proxy:.*$</gav>
-        <cpe>cpe:/a:eclipse:jetty</cpe>
         <cpe>cpe:/a:jetty:jetty</cpe>
+        <cpe>cpe:/a:eclipse:jetty</cpe>
+    </suppress>
+    <suppress base="true">
+        <notes><![CDATA[
+        general FP cleanup
+        ]]></notes>
+        <packageUrl regex="true">^pkg:maven/org\.eclipse\.jetty\.websocket/websocket-api@.*$</packageUrl>
+        <cpe>cpe:/a:mortbay_jetty:jetty</cpe>
+        <cpe>cpe:/a:mortbay:jetty</cpe>
+        <cpe>cpe:/a:jetty:jetty</cpe>
+        <cpe>cpe:/a:eclipse:jetty</cpe>
     </suppress>
     <suppress base="true">
         <notes><![CDATA[
@@ -1522,13 +1482,6 @@
         ]]></notes>
         <gav regex="true">^com\.amazonaws:aws-android-sdk-cognitoidentityprovider-asf:.*$</gav>
         <cpe>cpe:/a:android:android_sdk</cpe>
-    </suppress>
-    <suppress base="true">
-        <notes><![CDATA[
-        Supression to remove incorrect match from the OSS Index per #2281.
-        ]]></notes>
-        <packageUrl>pkg:maven/org.jsoup/jsoup@1.8.3</packageUrl>
-        <vulnerabilityName>CVE-2015-6748</vulnerabilityName>
     </suppress>
     <suppress base="true">
         <notes><![CDATA[
@@ -1887,15 +1840,11 @@
         <notes><![CDATA[
         drop wizard false positives
         ]]></notes>
-        <gav regex="true">io\.dropwizard:dropwizard-jetty:.*</gav>
+        <packageUrl regex="true">^pkg:maven/io\.dropwizard/dropwizard-jetty@.*$</packageUrl>
+        <cpe>cpe:/a:mortbay_jetty:jetty</cpe>
+        <cpe>cpe:/a:mortbay:jetty</cpe>
         <cpe>cpe:/a:jetty:jetty</cpe>
-    </suppress>
-    <suppress base="true">
-        <notes><![CDATA[
-        drop wizard false positives
-        ]]></notes>
-        <gav regex="true">io\.dropwizard\.metrics:metrics-jetty:.*</gav>
-        <cpe>cpe:/a:jetty:jetty</cpe>
+        <cpe>cpe:/a:eclipse:jetty</cpe>
     </suppress>
     <suppress base="true">
         <notes><![CDATA[
@@ -1929,13 +1878,6 @@
     </suppress>
     <suppress base="true">
         <notes><![CDATA[
-        Suppresses false positives per #1961. Scalap is not scala.
-        ]]></notes>
-        <packageUrl regex="true">^pkg:maven/org\.scala\-lang/scalap@.*$</packageUrl>
-        <vulnerabilityName>CVE-2017-15288</vulnerabilityName>
-    </suppress>
-    <suppress base="true">
-        <notes><![CDATA[
         Suppresses false positives per #1961. spark-sketch is not sketch - an vector drawing tool.
         ]]></notes>
         <packageUrl regex="true">^pkg:maven/org\.apache\.spark/spark\-sketch_2\.\d+@.*$</packageUrl>
@@ -1957,26 +1899,13 @@
     </suppress>
     <suppress base="true">
         <notes><![CDATA[
-        drop wizard false positives. Updated per issue #796.
-        ]]></notes>
-        <gav regex="true">org\.eclipse\.jetty\.toolchain\.setuid:jetty-setuid-java:.*</gav>
-        <cpe>cpe:/a:jetty:jetty</cpe>
-        <cpe>cpe:/a:eclipse:jetty</cpe>
-    </suppress>
-    <suppress base="true">
-        <notes><![CDATA[
-        drop wizard false positives
-        ]]></notes>
-        <gav regex="true">org\.eclipse\.jetty\.http2:http2-hpack:.*</gav>
-        <cpe>cpe:/a:jetty:jetty</cpe>
-        <cpe>cpe:/a:eclipse:jetty</cpe>
-    </suppress>
-    <suppress base="true">
-        <notes><![CDATA[
         FP on osgi bundle - the embedded jetty server is flagged instead of the bundle itself.
         ]]></notes>
         <packageUrl regex="true">^pkg:maven/org\.ops4j\.pax\.web/pax\-web\-jetty\-bundle@.*$</packageUrl>
+        <cpe>cpe:/a:mortbay_jetty:jetty</cpe>
+        <cpe>cpe:/a:mortbay:jetty</cpe>
         <cpe>cpe:/a:jetty:jetty</cpe>
+        <cpe>cpe:/a:eclipse:jetty</cpe>
     </suppress>
     <suppress base="true">
         <notes><![CDATA[
@@ -2012,16 +1941,6 @@
         ]]></notes>
         <gav regex="true">io\.dropwizard\.metrics:metrics-httpclient:.*</gav>
         <cpe>cpe:/a:apache:httpclient</cpe>
-    </suppress>
-    <suppress base="true">
-        <notes><![CDATA[
-        FP per issue https://github.com/dependency-check/dependency-check-gradle/issues/61
-        ]]></notes>
-        <gav regex="true">^org\.eclipse\.jetty\.toolchain:jetty-schemas:.*$</gav>
-        <cpe>cpe:/a:mortbay_jetty:jetty</cpe>
-        <cpe>cpe:/a:mortbay:jetty</cpe>
-        <cpe>cpe:/a:jetty:jetty</cpe>
-        <cpe>cpe:/a:eclipse:jetty</cpe>
     </suppress>
     <suppress base="true">
         <notes><![CDATA[
@@ -2393,7 +2312,10 @@
         file name: keycloak-jetty-core-4.8.3.Final.jar
         ]]></notes>
         <packageUrl regex="true">^pkg:maven/org\.keycloak/keycloak\-jetty\-core@.*$</packageUrl>
+        <cpe>cpe:/a:mortbay_jetty:jetty</cpe>
+        <cpe>cpe:/a:mortbay:jetty</cpe>
         <cpe>cpe:/a:jetty:jetty</cpe>
+        <cpe>cpe:/a:eclipse:jetty</cpe>
     </suppress>
     <suppress base="true">
         <notes><![CDATA[
@@ -3079,6 +3001,8 @@
         general FP cleanup
         ]]></notes>
         <filePath regex="true">.*winstone-?(\d*\.?){0,3}\.jar</filePath>
+        <cpe>cpe:/a:mortbay_jetty:jetty</cpe>
+        <cpe>cpe:/a:mortbay:jetty</cpe>
         <cpe>cpe:/a:jetty:jetty</cpe>
         <cpe>cpe:/a:eclipse:jetty</cpe>
     </suppress>
@@ -3102,22 +3026,6 @@
         ]]></notes>
         <packageUrl regex="true">^pkg:maven/org\.apache\.aries\.transaction/org\.apache\.aries\.transaction\.manager@.*$</packageUrl>
         <cpe>cpe:/a:apache:geronimo</cpe>
-    </suppress>
-    <suppress base="true">
-        <notes><![CDATA[
-        general FP cleanup
-        ]]></notes>
-        <gav regex="true">^org\.eclipse\.jetty\.orbit:javax\.annotation:.*$</gav>
-        <cpe>cpe:/a:eclipse:jetty</cpe>
-        <cpe>cpe:/a:jetty:jetty</cpe>
-    </suppress>
-    <suppress base="true">
-        <notes><![CDATA[
-        general FP cleanup
-        ]]></notes>
-        <gav regex="true">^org\.eclipse\.jetty\.websocket:websocket-api:.*$</gav>
-        <cpe>cpe:/a:eclipse:jetty</cpe>
-        <cpe>cpe:/a:jetty:jetty</cpe>
     </suppress>
     <suppress base="true">
         <notes><![CDATA[
@@ -3189,22 +3097,6 @@
         ]]></notes>
         <gav regex="true">^org\.apache\.maven\.scm:maven-scm-provider-git-commons:.*$</gav>
         <cpe>cpe:/a:git-scm:git</cpe>
-    </suppress>
-    <suppress base="true">
-        <notes><![CDATA[
-        general FP cleanup
-        ]]></notes>
-        <gav regex="true">^org\.eclipse\.jetty\.orbit:org\.apache\.taglibs\.standard\.glassfish:.*$</gav>
-        <cpe>cpe:/a:jetty:jetty</cpe>
-        <cpe>cpe:/a:eclipse:jetty</cpe>
-    </suppress>
-    <suppress base="true">
-        <notes><![CDATA[
-        general FP cleanup
-        ]]></notes>
-        <gav regex="true">^org\.eclipse\.jetty\.orbit:com\.sun\.el:.*$</gav>
-        <cpe>cpe:/a:jetty:jetty</cpe>
-        <cpe>cpe:/a:eclipse:jetty</cpe>
     </suppress>
     <suppress base="true">
         <notes><![CDATA[
@@ -4342,15 +4234,6 @@
         <packageUrl regex="true">^pkg:maven/com\.lightbend\.akka\.discovery/akka\-.*@.*$</packageUrl>
         <cpe>cpe:/a:akka:akka</cpe>
         <cpe>cpe:/a:lightbend:akka</cpe>
-    </suppress>
-    <suppress base="true">
-        <notes><![CDATA[
-        FP per issue #4442; Eclipse Orbit is bundling thirdparty libraries as OSGI bundle, so org.eclipse.jetty.orbit libs
-        should not be linked to Jetty
-        ]]></notes>
-        <packageUrl regex="true">^pkg:maven/org\.eclipse\.jetty\.orbit/.*$</packageUrl>
-        <cpe>cpe:/a:jetty:jetty</cpe>
-        <cpe>cpe:/a:eclipse:jetty</cpe>
     </suppress>
     <suppress base="true">
         <notes><![CDATA[
