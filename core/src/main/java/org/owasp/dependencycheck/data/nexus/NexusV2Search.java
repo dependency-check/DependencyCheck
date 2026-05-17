@@ -17,17 +17,6 @@
  */
 package org.owasp.dependencycheck.data.nexus;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.util.List;
-import javax.annotation.concurrent.ThreadSafe;
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathExpressionException;
-import javax.xml.xpath.XPathFactory;
-
 import org.apache.hc.client5.http.HttpResponseException;
 import org.apache.hc.core5.http.ContentType;
 import org.apache.hc.core5.http.HttpHeaders;
@@ -37,18 +26,31 @@ import org.owasp.dependencycheck.utils.Downloader;
 import org.owasp.dependencycheck.utils.ForbiddenException;
 import org.owasp.dependencycheck.utils.ResourceNotFoundException;
 import org.owasp.dependencycheck.utils.Settings;
-
 import org.owasp.dependencycheck.utils.ToXMLDocumentResponseHandler;
 import org.owasp.dependencycheck.utils.TooManyRequestsException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 
+import javax.annotation.concurrent.ThreadSafe;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathExpressionException;
+import javax.xml.xpath.XPathFactory;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.util.List;
+
 /**
  * Class of methods to search Nexus repositories.
  *
  * @author colezlaw
+ * @deprecated Nexus v2 was EOL on 30 June 2025. Migration to Nexus v3 is required.
  */
+@SuppressWarnings({"DeprecatedIsStillUsed", "unused"})
+@Deprecated(forRemoval = true, since = "v12.2.2")
 @ThreadSafe
 public class NexusV2Search implements NexusSearch {
 
@@ -57,14 +59,6 @@ public class NexusV2Search implements NexusSearch {
      */
     private final URL rootURL;
 
-    /**
-     * Whether to use the Proxy when making requests.
-     */
-    private final boolean useProxy;
-    /**
-     * The configured settings.
-     */
-    private final Settings settings;
     /**
      * Used for logging.
      */
@@ -79,13 +73,9 @@ public class NexusV2Search implements NexusSearch {
      * invalid
      */
     public NexusV2Search(Settings settings, boolean useProxy) throws MalformedURLException {
-        this.settings = settings;
-        this.useProxy = useProxy;
-
         final String searchUrl = settings.getString(Settings.KEYS.ANALYZER_NEXUS_URL);
         LOGGER.debug("Nexus Search URL: {}", searchUrl);
         this.rootURL = new URL(searchUrl);
-
     }
 
     @Override

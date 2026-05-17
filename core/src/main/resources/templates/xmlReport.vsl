@@ -617,7 +617,7 @@ Copyright (c) 2018 Jeremy Long. All Rights Reserved.
                     </references>
                     <vulnerableSoftware>
 #foreach($vs in $vuln.getVulnerableSoftware(true))
-                        <software#if($vs == $vuln.matchedVulnerableSoftware) matched="true"#end
+                        <software#if($vs == $vuln.matchedVulnerableSoftware) vulnerabilityIdMatched="true"#end
                             #if($vs.versionStartIncluding) versionStartIncluding="$enc.xml($vs.versionStartIncluding)"#end
                             #if($vs.versionStartExcluding) versionStartExcluding="$enc.xml($vs.versionStartExcluding)"#end
                             #if($vs.versionEndIncluding) versionEndIncluding="$enc.xml($vs.versionEndIncluding)"#end
