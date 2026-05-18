@@ -250,13 +250,6 @@
 </suppress>
 <suppress base="true">
     <notes><![CDATA[
-    FP per issue #4681
-    ]]></notes>
-    <packageUrl regex="true">^pkg:maven/com\.amazonaws/aws-java-sdk-prometheus@.*$</packageUrl>
-    <cpe>cpe:/a:prometheus:prometheus</cpe>
-</suppress>
-<suppress base="true">
-    <notes><![CDATA[
     FP per issue #4651
     ]]></notes>
     <packageUrl regex="true">^pkg:maven/org\.hibernate/hibernate-commons-annotations@.*$</packageUrl>
@@ -465,13 +458,6 @@
     ]]></notes>
     <packageUrl regex="true">^pkg:maven/com\.github\.luben/zstd-jni@.*$</packageUrl>
     <cpe>cpe:/a:freebsd:freebsd</cpe>
-</suppress>
-<suppress base="true">
-    <notes><![CDATA[
-    FP per issue #5506
-    ]]></notes>
-    <packageUrl regex="true">^pkg:maven/io\.kamon/kamon-prometheus_2\.13@.*$</packageUrl>
-    <cpe>cpe:/a:prometheus:prometheus</cpe>
 </suppress>
 <suppress base="true">
     <notes><![CDATA[
@@ -959,13 +945,6 @@
 </suppress>
 <suppress base="true">
     <notes><![CDATA[
-    FP per issue #6595
-    ]]></notes>
-    <packageUrl regex="true">^pkg:maven/io\.opentelemetry\.contrib/opentelemetry-prometheus-client-bridge@.*$</packageUrl>
-    <cpe>cpe:/a:prometheus:prometheus</cpe>
-</suppress>
-<suppress base="true">
-    <notes><![CDATA[
     FP per issue #6613
     ]]></notes>
     <packageUrl regex="true">^pkg:maven/org\.springframework\.batch\.extensions/spring-batch-excel@.*$</packageUrl>
@@ -1244,15 +1223,6 @@ only pkg:maven/org.clojure:clojure@.* is the CPE cpe:/a:clojure:clojure
 <cpe regex="true">^cpe:/a:apache:mina:.*</cpe>
 </suppress>
 <suppress base="true">
-<notes><![CDATA[
-    FP per issue #6981 - manual addition prometheus java_client libraries
-    seen as the prometheus server, but they would receive product client_java
-    (no CPE yet, but observed from the existing CPE for the go client client_go)
-    ]]></notes>
-<packageUrl regex="true">^pkg:maven/io\.prometheus/prometheus-.*$</packageUrl>
-<cpe>cpe:/a:prometheus:prometheus</cpe>
-</suppress>
-<suppress base="true">
     <notes><![CDATA[
     Original suppression as per #952 suppressed individual CVEs.
     As per false negative #7057 MySQL java connector has CPEs of its own, so it's proper to suppress the server CPE
@@ -1424,7 +1394,28 @@ only pkg:maven/org.clojure:clojure@.* is the CPE cpe:/a:clojure:clojure
       as suggested in #7250. If it's not in the io.grpc groupId it's not gRPC itself
       ]]></notes>
     <packageUrl regex="true">^pkg:maven/(?!io\.grpc/).*$</packageUrl>
-    <cpe>cpe:/a:grpc:grpc</cpe>
+    <cpe>cpe:/a:grpc:grpc:</cpe>
+</suppress>
+<suppress base="true">
+    <notes><![CDATA[
+    FP per #3002 and #5890 - CVE are for GRPC C/ruby/python etc. Suppressing individual CVEs because ODC cannot understand the target SW
+    field. NVD search to review in future (not that some are marked incorrectly as affecting all languages)
+    --> https://nvd.nist.gov/vuln/search#/nvd/home?sortOrder=1&sortDirection=1&cpeFilterMode=applicability&cpeName=cpe:2.3:a:grpc:grpc:*:*:*:*:*:*:*:*&resultType=records
+    ]]></notes>
+    <packageUrl regex="true">^pkg:maven/io\.grpc/grpc\-.*$</packageUrl>
+    <cve>CVE-2017-7860</cve>
+    <cve>CVE-2017-7861</cve>
+    <cve>CVE-2017-8359</cve>
+    <cve>CVE-2017-9431</cve>
+    <cve>CVE-2020-7768</cve>
+    <cve>CVE-2023-1428</cve>
+    <cve>CVE-2023-32731</cve>
+    <cve>CVE-2023-32732</cve>
+    <cve>CVE-2023-33953</cve>
+    <cve>CVE-2023-4785</cve>
+    <cve>CVE-2024-11407</cve>
+    <cve>CVE-2024-7246</cve>
+    <cve>CVE-2026-33186</cve>
 </suppress>
 <suppress base="true">
 <notes><![CDATA[
@@ -1697,13 +1688,6 @@ only pkg:maven/org.clojure:clojure@.* is the CPE cpe:/a:clojure:clojure
 </suppress>
 <suppress base="true">
     <notes><![CDATA[
-    FP per issue #7689
-    ]]></notes>
-    <packageUrl regex="true">^pkg:maven/io\.micrometer/micrometer-registry-prometheus-simpleclient@.*$</packageUrl>
-    <cpe>cpe:/a:prometheus:prometheus</cpe>
-</suppress>
-<suppress base="true">
-    <notes><![CDATA[
     FP per issue #7715
     ]]></notes>
     <packageUrl regex="true">^pkg:maven/opensymphony/oscache@.*$</packageUrl>
@@ -1961,13 +1945,6 @@ only pkg:maven/org.clojure:clojure@.* is the CPE cpe:/a:clojure:clojure
 </suppress>
 <suppress base="true">
     <notes><![CDATA[
-    FP per issue #8184
-    ]]></notes>
-    <packageUrl regex="true">^pkg:maven/io\.opentelemetry/opentelemetry-exporter-prometheus@.*$</packageUrl>
-    <cpe>cpe:/a:prometheus:prometheus</cpe>
-</suppress>
-<suppress base="true">
-    <notes><![CDATA[
     FP per issue #7869
     ]]></notes>
     <packageUrl regex="true">^pkg:maven/com\.solace/solace-messaging-client@.*$</packageUrl>
@@ -2154,9 +2131,22 @@ only pkg:maven/org.clojure:clojure@.* is the CPE cpe:/a:clojure:clojure
 </suppress>
 <suppress base="true">
     <notes><![CDATA[
-    FP per issue #8497
+    hand-curated better suppression FP per issue #1927, #2001, #2109, #2341, #2628, #3427, #4205, #4681, #5506, #6595,
+       #6981, #7689, #8184, #8497 (and others)
+    These CVEs are all for the golang based server; so exclude for all packages except the golang/github.com/prometheus/prometheus server module.
+    Other prometheus CVEs in other components have their own CPE. The ones being suppressed here can be reviewed at
+    - https://github.com/prometheus/prometheus/security
+    - https://nvd.nist.gov/vuln/search#/nvd/home?cpeFilterMode=applicability&cpeName=cpe:2.3:a:prometheus:prometheus:*:*:*:*:*:*:*:*&resultType=records
     ]]></notes>
-    <packageUrl regex="true">^pkg:maven/io\.micrometer/micrometer-registry-prometheus@.*$</packageUrl>
-    <cpe>cpe:/a:prometheus:prometheus</cpe>
+    <packageUrl regex="true">^pkg:(?!golang/github\.com/prometheus/prometheus).*$</packageUrl>
+    <cpe>cpe:/a:prometheus:prometheus:</cpe>
+</suppress>
+
+<suppress base="true">
+    <notes><![CDATA[
+    FP per issue #8508
+    ]]></notes>
+    <packageUrl regex="true">^pkg:maven/net\.sf\.saxon/Saxon-HE@.*$</packageUrl>
+    <cpe>cpe:/a:kay_framework_project:kay_framework</cpe>
 </suppress>
 </suppressions>
