@@ -171,11 +171,11 @@ jobs:
             }
             purl += '@.*$';
             var cpe = process.env.CPE.trim().replaceAll(/^`|`$/g,'').split(':');
-            var matchCpe;
+            var cpe22UriPrefix;
             if (cpe[1] == '2.3') {
-               matchcpe = 'cpe:/a:' + cpe[3] + ':' + cpe[4];
+               cpe22UriPrefix = 'cpe:/a:' + cpe[3] + ':' + cpe[4] + ':';
             } else {
-               matchcpe = 'cpe:/a:' + cpe[2] + ':' + cpe[3];
+               cpe22UriPrefix = 'cpe:/a:' + cpe[2] + ':' + cpe[3] + ':';
             }
             
             await github.rest.issues.createComment({
@@ -189,7 +189,7 @@ jobs:
                     '    FP per issue #' + context.issue.number + '\n' +
                     '    ]]></notes>\n' +
                     '    <packageUrl regex="true">' + purl + '</packageUrl>\n' +
-                    '    <cpe>' + matchcpe + '</cpe>\n' +
+                    '    <cpe>' + cpe22UriPrefix + '</cpe>\n' +
                     '</suppress>\n```\n\n' +
                     'Link to test results: ' + context.serverUrl + '/' + context.repo.owner + '/' + context.repo.repo + '/actions/runs/' + context.runId
             })
@@ -218,11 +218,11 @@ jobs:
             purl += '@.*$';
             var cpe = process.env.CPE.trim().replaceAll(/^`|`$/g,'').split(':');
             console.log(cpe);
-            var matchCpe;
+            var cpe22UriPrefix;
             if (cpe[1] == '2.3') {
-               matchcpe = 'cpe:/a:' + cpe[3] + ':' + cpe[4];
+               cpe22UriPrefix = 'cpe:/a:' + cpe[3] + ':' + cpe[4] + ':';
             } else {
-               matchcpe = 'cpe:/a:' + cpe[2] + ':' + cpe[3];
+               cpe22UriPrefix = 'cpe:/a:' + cpe[2] + ':' + cpe[3] + ':';
             }
             
             await github.rest.issues.createComment({
@@ -236,7 +236,7 @@ jobs:
                     '    FP per issue #' + context.issue.number + '\n' +
                     '    ]]></notes>\n' +
                     '    <packageUrl regex="true">' + purl + '</packageUrl>\n' +
-                    '    <cpe>' + matchcpe + '</cpe>\n' +
+                    '    <cpe>' + cpe22UriPrefix + '</cpe>\n' +
                     '</suppress>\n```\n\n' +
                     'Link to test results: ' + context.serverUrl + '/' + context.repo.owner + '/' + context.repo.repo + '/actions/runs/' + context.runId
             })
@@ -264,11 +264,11 @@ jobs:
             }
             purl += '@.*$';
             var cpe = process.env.CPE.trim().replaceAll(/^`|`$/g,'').split(':');
-            var matchCpe;
+            var cpe22UriPrefix;
             if (cpe[1] == '2.3') {
-               matchcpe = 'cpe:/a:' + cpe[3] + ':' + cpe[4];
+               cpe22UriPrefix = 'cpe:/a:' + cpe[3] + ':' + cpe[4] + ':';
             } else {
-               matchcpe = 'cpe:/a:' + cpe[2] + ':' + cpe[3];
+               cpe22UriPrefix = 'cpe:/a:' + cpe[2] + ':' + cpe[3] + ':';
             }
             
             await github.rest.issues.createComment({
@@ -282,7 +282,7 @@ jobs:
                     '    FP per issue #' + context.issue.number + '\n' +
                     '    ]]></notes>\n' +
                     '    <packageUrl regex="true">' + purl + '</packageUrl>\n' +
-                    '    <cpe>' + matchcpe + '</cpe>\n' +
+                    '    <cpe>' + cpe22UriPrefix + '</cpe>\n' +
                     '</suppress>\n```\n\n' +
                     'Link to test results: ' + context.serverUrl + '/' + context.repo.owner + '/' + context.repo.repo + '/actions/runs/' + context.runId
             })
