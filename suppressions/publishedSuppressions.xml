@@ -2054,4 +2054,11 @@
     <packageUrl regex="true">^pkg:maven/io\.prometheus/simpleclient_tracer_otel@.*$</packageUrl>
     <cpe>cpe:/a:opentelemetry:opentelemetry:</cpe>
 </suppress>
+<suppress base="true">
+    <notes><![CDATA[
+    FP per issue #8520
+    ]]></notes>
+    <packageUrl regex="true">^pkg:maven/org\.testcontainers/testcontainers-mysql@.*$</packageUrl>
+    <cpe>cpe:/a:mysql:mysql:</cpe>
+</suppress>
 </suppressions>
