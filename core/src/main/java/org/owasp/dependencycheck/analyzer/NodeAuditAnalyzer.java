@@ -45,6 +45,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.util.List;
 
+import static org.owasp.dependencycheck.utils.FileUtils.existsWithContent;
+
 /**
  * Used to analyze Node Package Manager (npm) package-lock.json and
  * npm-shrinkwrap.json files via NPM Audit API.
@@ -135,7 +137,7 @@ public class NodeAuditAnalyzer extends AbstractNpmAnalyzer {
             LOGGER.debug("Skipping {} because shrinkwrap lock file exists", dependency.getFilePath());
             return;
         }
-        if (!packageLock.isFile() || packageLock.length() == 0 || !shouldProcess(packageLock)) {
+        if (!existsWithContent(packageLock) || !shouldProcess(packageLock)) {
             return;
         }
         final File packageJson = new File(packageLock.getParentFile(), "package.json");
