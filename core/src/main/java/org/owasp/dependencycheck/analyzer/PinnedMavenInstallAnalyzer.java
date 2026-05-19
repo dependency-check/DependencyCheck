@@ -25,8 +25,6 @@ import com.fasterxml.jackson.databind.ObjectReader;
 import com.github.packageurl.MalformedPackageURLException;
 import com.github.packageurl.PackageURL;
 import com.github.packageurl.PackageURLBuilder;
-import java.util.Map;
-import java.util.stream.Collectors;
 import org.owasp.dependencycheck.Engine;
 import org.owasp.dependencycheck.analyzer.exception.AnalysisException;
 import org.owasp.dependencycheck.data.nvd.ecosystem.Ecosystem;
@@ -45,8 +43,12 @@ import java.io.FileFilter;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+
+import static org.owasp.dependencycheck.utils.FileUtils.existsWithContent;
 
 /**
  * Used to analyze Maven pinned dependency files named {@code *install*.json}, a
@@ -116,7 +118,7 @@ public class PinnedMavenInstallAnalyzer extends AbstractFileTypeAnalyzer {
         LOGGER.debug("Checking file {}", dependency.getActualFilePath());
 
         final File dependencyFile = dependency.getActualFile();
-        if (!dependencyFile.isFile() || dependencyFile.length() == 0) {
+        if (!existsWithContent(dependencyFile)) {
             return;
         }
 

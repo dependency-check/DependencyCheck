@@ -151,7 +151,6 @@ class RetireJsAnalyzerIT extends BaseDBTestCase {
                         "CVE-2022-25869",
                         "CVE-2024-8373",
                         "CVE-2025-0716",
-                        "CVE-2025-2336",
                         "DOS in $sanitize",
                         "GHSA-28hp-fgcr-2r4h",
                         "GHSA-5cp4-xmrw-59wf",

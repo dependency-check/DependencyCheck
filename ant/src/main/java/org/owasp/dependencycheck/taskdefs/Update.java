@@ -20,12 +20,12 @@ package org.owasp.dependencycheck.taskdefs;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
 import org.owasp.dependencycheck.Engine;
+import org.owasp.dependencycheck.ant.logging.AntTaskHolder;
 import org.owasp.dependencycheck.data.nvdcve.DatabaseException;
 import org.owasp.dependencycheck.data.update.exception.UpdateException;
 import org.owasp.dependencycheck.utils.Downloader;
 import org.owasp.dependencycheck.utils.InvalidSettingException;
 import org.owasp.dependencycheck.utils.Settings;
-import org.owasp.dependencycheck.ant.logging.AntTaskHolder;
 
 /**
  * An Ant task definition to execute dependency-check update. This will download
@@ -203,7 +203,7 @@ public class Update extends Purge {
      */
     private Boolean hostedSuppressionsForceUpdate;
     /**
-     * Whether the hosted suppressions file will be used. Defaults to true.
+     * Whether the hosted suppressions will be updated from the configured URL. Defaults to true.
      */
     private Boolean hostedSuppressionsEnabled;
     /**

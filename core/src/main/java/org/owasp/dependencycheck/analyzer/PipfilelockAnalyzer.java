@@ -50,6 +50,8 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.Set;
 
+import static org.owasp.dependencycheck.utils.FileUtils.existsWithContent;
+
 /**
  * Used to analyze dependencies defined in Pipfile.lock. This analyzer works in
  * tandem with the `PipfileAnalyzer` - and both analyzers use the same key to
@@ -134,7 +136,7 @@ public class PipfilelockAnalyzer extends AbstractFileTypeAnalyzer {
         engine.removeDependency(dependency);
 
         final File dependencyFile = dependency.getActualFile();
-        if (!dependencyFile.isFile() || dependencyFile.length() == 0) {
+        if (!existsWithContent(dependencyFile)) {
             return;
         }
 

@@ -861,20 +861,6 @@
     </suppress>
     <suppress base="true">
         <notes><![CDATA[
-        False positive per #2628
-        ]]></notes>
-        <packageUrl regex="true">^pkg:maven/io\.prometheus\.jmx/.*$</packageUrl>
-        <cve>CVE-2019-3826</cve>
-    </suppress>
-    <suppress base="true">
-        <notes><![CDATA[
-        False positive per #2001 & #2109
-        ]]></notes>
-        <gav regex="true">^io\.prometheus:simple.*$</gav>
-        <cve>CVE-2019-3826</cve>
-    </suppress>
-    <suppress base="true">
-        <notes><![CDATA[
         False positive per  #2109
         ]]></notes>
         <packageUrl regex="true">^pkg:maven/io\.prometheus/simpleclient_logback@.*$</packageUrl>
@@ -2102,13 +2088,6 @@
     </suppress>
     <suppress base="true">
         <notes><![CDATA[
-        see https://github.com/dependency-check/DependencyCheck/issues/1927
-        ]]></notes>
-        <gav regex="true">^io\.micrometer:micrometer-registry-prometheus:.*$</gav>
-        <cve>CVE-2019-3826</cve>
-    </suppress>
-    <suppress base="true">
-        <notes><![CDATA[
         FP per #1755
         ]]></notes>
         <packageUrl regex="true">^pkg:maven/io\.micrometer/micrometer\-spring\-legacy@.*$</packageUrl>
@@ -2120,20 +2099,6 @@
         ]]></notes>
         <packageUrl regex="true">^pkg:maven/com\.squareup\.retrofit2?/(?!retrofit).*$</packageUrl>
         <cpe>cpe:/a:squareup:retrofit:</cpe>
-    </suppress>
-    <suppress base="true">
-        <notes><![CDATA[
-        see https://github.com/dependency-check/DependencyCheck/issues/1927
-        ]]></notes>
-        <gav regex="true">^io\.prometheus:simpleclient_common:.*$</gav>
-        <cve>CVE-2019-3826</cve>
-    </suppress>
-    <suppress base="true">
-        <notes><![CDATA[
-        see https://github.com/dependency-check/DependencyCheck/issues/1927
-        ]]></notes>
-        <gav regex="true">^io\.prometheus:simpleclient:.*$</gav>
-        <cve>CVE-2019-3826</cve>
     </suppress>
     <suppress base="true">
         <notes><![CDATA[

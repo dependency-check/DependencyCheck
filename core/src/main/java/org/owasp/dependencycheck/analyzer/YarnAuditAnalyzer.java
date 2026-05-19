@@ -41,12 +41,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import us.springett.parsers.cpe.exceptions.CpeValidationException;
 
+import javax.annotation.concurrent.ThreadSafe;
 import jakarta.json.Json;
 import jakarta.json.JsonException;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonReader;
-
-import javax.annotation.concurrent.ThreadSafe;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
@@ -56,6 +55,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
+
+import static org.owasp.dependencycheck.utils.FileUtils.existsWithContent;
 
 @ThreadSafe
 public class YarnAuditAnalyzer extends AbstractNpmAnalyzer {
@@ -233,7 +234,7 @@ public class YarnAuditAnalyzer extends AbstractNpmAnalyzer {
             engine.removeDependency(dependency);
         }
         final File packageLock = dependency.getActualFile();
-        if (!packageLock.isFile() || packageLock.length() == 0 || !shouldProcess(packageLock)) {
+        if (!existsWithContent(packageLock) || !shouldProcess(packageLock)) {
             return;
         }
         File dependencyDirectory = getDependencyDirectory(packageLock);

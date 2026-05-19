@@ -15,14 +15,19 @@
  */
 package org.owasp.dependencycheck;
 
+import org.jspecify.annotations.NonNull;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.owasp.dependencycheck.utils.Settings;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 
 /**
@@ -67,25 +72,66 @@ public abstract class BaseTest {
     /**
      * Returns the given resource as an InputStream using the object's class loader.
      *
-     * @param o the object used to obtain a reference to the class loader
+     * @param o        the object used to obtain a reference to the class loader
      * @param resource the name of the resource to load
      * @return the resource as an InputStream
      */
-    public static InputStream getResourceAsStream(Object o, String resource) {
+    public static @NonNull InputStream getResourceAsStream(Object o, String resource) {
         return Objects.requireNonNull(o.getClass().getClassLoader().getResourceAsStream(resource), resource + " not found on classpath");
     }
 
     /**
      * Returns the given resource as a File using the object's class loader.
      *
-     * @param o the object used to obtain a reference to the class loader
+     * @param o        the object used to obtain a reference to the class loader
      * @param resource the name of the resource to load
-     * @return the resource as an File
+     * @return the resource as a File
      */
-    public static File getResourceAsFile(Object o, String resource) {
+    public static @NonNull File getResourceAsFile(Object o, String resource) {
+        return new File(getResourceAsURI(o, resource).getPath());
+    }
+
+    /**
+     * Returns the given resource as a URI using the object's class loader.
+     *
+     * @param o        the object used to obtain a reference to the class loader
+     * @param resource the name of the resource to load
+     * @return the resource as a URI
+     */
+    public static @NonNull URI getResourceAsURI(Object o, String resource) {
         try {
-            return new File(Objects.requireNonNull(o.getClass().getClassLoader().getResource(resource), resource + " not found on classpath").toURI().getPath());
+            return Objects.requireNonNull(o.getClass().getClassLoader().getResource(resource), resource + " not found on classpath").toURI();
         } catch (URISyntaxException e) {
+            throw new UnsupportedOperationException(e);
+        }
+    }
+
+    /**
+     * Returns the given resource as a URL string using the object's class loader.
+     *
+     * @param o        the object used to obtain a reference to the class loader
+     * @param resource the name of the resource to load
+     * @return the resource as a URL string
+     */
+    public static @NonNull String getResourceAsUrlString(Object o, String resource) {
+        try {
+            return getResourceAsURI(o, resource).toURL().toString();
+        } catch (MalformedURLException e) {
+            throw new UnsupportedOperationException(e);
+        }
+    }
+
+    /**
+     * Returns the given resource content using the object's class loader.
+     *
+     * @param o        the object used to obtain a reference to the class loader
+     * @param resource the name of the resource to load
+     * @return the resource as a String
+     */
+    public static @NonNull String getResourceAsContentString(Object o, String resource) {
+        try (InputStream is = getResourceAsStream(o, resource)) {
+            return new String(is.readAllBytes(), StandardCharsets.UTF_8);
+        } catch (IOException e) {
             throw new UnsupportedOperationException(e);
         }
     }

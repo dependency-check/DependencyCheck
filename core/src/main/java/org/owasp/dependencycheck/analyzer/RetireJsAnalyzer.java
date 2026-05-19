@@ -20,10 +20,12 @@ package org.owasp.dependencycheck.analyzer;
 import com.esotericsoftware.minlog.Log;
 import com.github.packageurl.MalformedPackageURLException;
 import com.github.packageurl.PackageURLBuilder;
+import com.google.common.annotations.VisibleForTesting;
 import com.h3xstream.retirejs.repo.JsLibraryResult;
 import com.h3xstream.retirejs.repo.ScannerFacade;
 import com.h3xstream.retirejs.repo.VulnerabilitiesRepository;
 import com.h3xstream.retirejs.repo.VulnerabilitiesRepositoryLoader;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.validator.routines.UrlValidator;
 import org.json.JSONException;
@@ -58,18 +60,17 @@ import java.io.FileFilter;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
 import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.OptionalInt;
 import java.util.Set;
 import java.util.stream.Collectors;
-
-import org.apache.commons.io.IOUtils;
 
 import static org.owasp.dependencycheck.analyzer.RetireJsLibrary.KnownIdentifierTypes.CVE;
 import static org.owasp.dependencycheck.analyzer.RetireJsLibrary.KnownIdentifierTypes.GITHUB_SECURITY_ADVISORY;
@@ -193,40 +194,13 @@ public class RetireJsAnalyzer extends AbstractFileTypeAnalyzer {
         // it aligns with other analyzers that don't log such information.
         Log.set(Log.LEVEL_WARN);
 
-        File repoFile = null;
-        boolean repoEmpty = false;
-        try {
-            final String configuredUrl = getSettings().getString(Settings.KEYS.ANALYZER_RETIREJS_REPO_JS_URL, RetireJSDataSource.DEFAULT_JS_URL);
-            final URL url = new URL(configuredUrl);
-            final File filepath = new File(url.getPath());
-            repoFile = new File(getSettings().getDataDirectory(), filepath.getName());
-            if (!repoFile.isFile() || repoFile.length() <= 1L) {
-                LOGGER.warn("Retire JS repository is empty or missing - attempting to force the update");
-                repoEmpty = true;
-                getSettings().setBoolean(Settings.KEYS.ANALYZER_RETIREJS_FORCEUPDATE, true);
-            }
-        } catch (IOException ex) {
-            this.setEnabled(false);
-            throw new InitializationException("Failed to initialize the RetireJS", ex);
-        }
+        File repoFile = tryRemoteFetchIfConfigured(engine);
 
-        final boolean autoupdate = getSettings().getBoolean(Settings.KEYS.AUTO_UPDATE, true);
-        final boolean forceupdate = getSettings().getBoolean(Settings.KEYS.ANALYZER_RETIREJS_FORCEUPDATE, false);
-        if ((!autoupdate && forceupdate) || (autoupdate && repoEmpty)) {
-            final RetireJSDataSource ds = new RetireJSDataSource();
-            try {
-                ds.update(engine);
-            } catch (UpdateException ex) {
-                throw new InitializationException("Unable to initialize the Retire JS repository", ex);
-            }
-        }
-
-        //several users are reporting that the retire js repository is getting corrupted.
         try (WriteLock ignored = new WriteLock(getSettings(), true, repoFile.getName() + ".lock")) {
             final File temp = getSettings().getTempDirectory();
             final File tempRepo = new File(temp, repoFile.getName());
-            LOGGER.debug("copying retireJs repo {} to {}", repoFile.toPath(), tempRepo.toPath());
-            Files.copy(repoFile.toPath(), tempRepo.toPath());
+            LOGGER.debug("copying RetireJS repo {} to {}", repoFile.toPath(), tempRepo.toPath());
+            Files.copy(repoFile.toPath(), tempRepo.toPath(), StandardCopyOption.REPLACE_EXISTING);
             repoFile = tempRepo;
         } catch (WriteLockException | IOException ex) {
             this.setEnabled(false);
@@ -240,6 +214,17 @@ public class RetireJsAnalyzer extends AbstractFileTypeAnalyzer {
                     + "` appears to be malformed. Please delete the file or run the dependency-check purge "
                     + "command and re-try running dependency-check.", ex);
         } catch (IOException ex) {
+            this.setEnabled(false);
+            throw new InitializationException("Failed to initialize the RetireJS repo", ex);
+        }
+    }
+
+    private File tryRemoteFetchIfConfigured(Engine engine) throws InitializationException {
+        RetireJSDataSource ds = new RetireJSDataSource();
+        try {
+            ds.update(engine);
+            return ds.validatedRepoFile();
+        } catch (UpdateException ex) {
             this.setEnabled(false);
             throw new InitializationException("Failed to initialize the RetireJS repo", ex);
         }
@@ -323,6 +308,12 @@ public class RetireJsAnalyzer extends AbstractFileTypeAnalyzer {
     @Override
     protected void closeAnalyzer() throws Exception {
         Log.set(Log.LEVEL_INFO);
+    }
+
+    @SuppressWarnings("SameParameterValue")
+    @VisibleForTesting
+    OptionalInt knownLibraryCountFor(String fileName) {
+        return jsRepository == null ? OptionalInt.empty() : OptionalInt.of(jsRepository.findByFilename(fileName).size());
     }
 }
 

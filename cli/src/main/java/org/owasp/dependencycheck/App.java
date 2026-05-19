@@ -24,6 +24,7 @@ import ch.qos.logback.classic.filter.ThresholdFilter;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.FileAppender;
 import org.apache.commons.cli.ParseException;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.tools.ant.DirectoryScanner;
 import org.apache.tools.ant.types.LogLevel;
 import org.owasp.dependencycheck.data.nvdcve.DatabaseException;
@@ -46,6 +47,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
@@ -95,6 +97,14 @@ public class App {
      */
     public App() {
         settings = new Settings();
+        settings.setString(Settings.KEYS.APPLICATION_NAME, determineName());
+    }
+
+    private static String determineName() {
+        return Optional.ofNullable(System.getenv("ODC_NAME"))
+                .filter(StringUtils::isNotBlank)
+                .map(n -> n.replace('/', '-').replace(' ', '_'))
+                .orElse("dependency-check-cli");
     }
 
     /**
@@ -120,11 +130,11 @@ public class App {
             cli.parse(args);
         } catch (FileNotFoundException ex) {
             System.err.println(ex.getMessage());
-            cli.printHelp();
+            cli.printHelp(System.out);
             return 1;
         } catch (ParseException ex) {
             System.err.println(ex.getMessage());
-            cli.printHelp();
+            cli.printHelp(System.out);
             return 2;
         }
         final String verboseLog = cli.getStringArgument(CliParser.ARGUMENT.VERBOSE_LOG);
@@ -224,7 +234,7 @@ public class App {
                 settings.cleanup();
             }
         } else {
-            cli.printHelp();
+            cli.printHelp(System.out);
         }
         return exitCode;
     }
@@ -456,12 +466,6 @@ public class App {
      * file is unable to be loaded.
      */
     protected void populateSettings(CliParser cli) throws InvalidSettingException {
-        String name = System.getenv("ODC_NAME") != null ? System.getenv("ODC_NAME") : "dependency-check-cli";
-        if (name.isBlank()) {
-            name = "dependency-check-cli";
-        }
-        name = name.replace("/", "-").replace(" ", "_");
-        settings.setString(Settings.KEYS.APPLICATION_NAME, name);
         final File propertiesFile = cli.getFileArgument(CliParser.ARGUMENT.PROP);
         if (propertiesFile != null) {
             try {
