@@ -63,7 +63,6 @@ class YarnAuditAnalyzerIT extends BaseTest {
             testAnalyzeForUglifyJs("yarn/yarn-classic-audit/yarn.lock");
         }
 
-        @Disabled("broken test case on my local machine - needs further investigation")
         @Test
         void testAnalyzePackageYarnClassicOnYarnBerryLockfile() {
             AnalysisException exception = assertThrows(AnalysisException.class, () -> testAnalyzeForUglifyJs("yarn/yarn-classic-audit-bad-berry-lockfile/yarn.lock"));
