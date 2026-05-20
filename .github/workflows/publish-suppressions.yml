@@ -2,13 +2,21 @@ name: Publish Suppressions
 
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - generatedSuppressions
+  pull_request_target:
+    # BE CAREFUL - this event runs in the context of the default branch (`main`) workflow definition in the target
+    #    repository (MOT the fork's context), so it has potentially sensitive access.
+    #    It is critical that this only runs on very limited events and/or access to the repo
+    # Read https://docs.github.com/en/actions/reference/workflows-and-actions/events-that-trigger-workflows#pull_request_target
+    types: [ closed ]
+    branches: [ generatedSuppressions ]
+    paths: [ generatedSuppressions.xml ]
+
 
 permissions: {}
 jobs:
   update_suppression:
+    if: github.event_name == 'workflow_dispatch' || github.event.pull_request.merged == true
+
     permissions:
       contents: write # to push changes in repo (jamesives/github-pages-deploy-action)
 
