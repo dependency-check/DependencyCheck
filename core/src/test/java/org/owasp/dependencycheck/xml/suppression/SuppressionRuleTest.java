@@ -28,8 +28,10 @@ import org.owasp.dependencycheck.dependency.Confidence;
 import org.owasp.dependencycheck.dependency.Dependency;
 import org.owasp.dependencycheck.dependency.Vulnerability;
 import org.owasp.dependencycheck.dependency.naming.CpeIdentifier;
+import org.owasp.dependencycheck.dependency.naming.Identifier;
 import org.owasp.dependencycheck.dependency.naming.PurlIdentifier;
 import org.owasp.dependencycheck.utils.CvssUtil;
+import us.springett.parsers.cpe.CpeParser;
 import us.springett.parsers.cpe.exceptions.CpeValidationException;
 
 import java.io.File;
@@ -54,8 +56,7 @@ class SuppressionRuleTest extends BaseTest {
     @Test
     void testFilePath() {
         SuppressionRule instance = new SuppressionRule();
-        PropertyType expResult = new PropertyType();
-        expResult.setValue("test");
+        PropertyType expResult = PropertyType.of("test");
         instance.setFilePath(expResult);
         PropertyType result = instance.getFilePath();
         assertEquals(expResult, result);
@@ -82,8 +83,7 @@ class SuppressionRuleTest extends BaseTest {
         List<PropertyType> cpe = new ArrayList<>();
         instance.setCpe(cpe);
         assertFalse(instance.hasCpe());
-        PropertyType pt = new PropertyType();
-        pt.setValue("one");
+        PropertyType pt = PropertyType.of("one");
         instance.addCpe(pt);
         assertTrue(instance.hasCpe());
         List<PropertyType> result = instance.getCpe();
@@ -149,269 +149,68 @@ class SuppressionRuleTest extends BaseTest {
 
     //</editor-fold>
 
-    //<editor-fold defaultstate="collapsed" desc="Ignored duplicate tests, left in, as empty tests, so IDE doesn't re-generate them">
-    /**
-     * Test of getFilePath method, of class SuppressionRule.
-     */
-    @Test
-    @SuppressWarnings("squid:S2699")
-    void testGetFilePath() {
-        //already tested, this is just left so the IDE doesn't recreate it.
-    }
-
-    /**
-     * Test of setFilePath method, of class SuppressionRule.
-     */
-    @Test
-    @SuppressWarnings("squid:S2699")
-    void testSetFilePath() {
-        //already tested, this is just left so the IDE doesn't recreate it.
-    }
-
-    /**
-     * Test of getSha1 method, of class SuppressionRule.
-     */
-    @Test
-    @SuppressWarnings("squid:S2699")
-    void testGetSha1() {
-        //already tested, this is just left so the IDE doesn't recreate it.
-    }
-
-    /**
-     * Test of setSha1 method, of class SuppressionRule.
-     */
-    @Test
-    @SuppressWarnings("squid:S2699")
-    void testSetSha1() {
-        //already tested, this is just left so the IDE doesn't recreate it.
-    }
-
-    /**
-     * Test of getCpe method, of class SuppressionRule.
-     */
-    @Test
-    @SuppressWarnings("squid:S2699")
-    void testGetCpe() {
-        //already tested, this is just left so the IDE doesn't recreate it.
-    }
-
-    /**
-     * Test of setCpe method, of class SuppressionRule.
-     */
-    @Test
-    @SuppressWarnings("squid:S2699")
-    void testSetCpe() {
-        //already tested, this is just left so the IDE doesn't recreate it.
-    }
-
-    /**
-     * Test of addCpe method, of class SuppressionRule.
-     */
-    @Test
-    @SuppressWarnings("squid:S2699")
-    void testAddCpe() {
-        //already tested, this is just left so the IDE doesn't recreate it.
-    }
-
-    /**
-     * Test of hasCpe method, of class SuppressionRule.
-     */
-    @Test
-    @SuppressWarnings("squid:S2699")
-    void testHasCpe() {
-        //already tested, this is just left so the IDE doesn't recreate it.
-    }
-
-    /**
-     * Test of setCvssBelow method, of class SuppressionRule.
-     */
-    @Test
-    @SuppressWarnings("squid:S2699")
-    void testSetCvssBelow() {
-        //already tested, this is just left so the IDE doesn't recreate it.
-    }
-
-    /**
-     * Test of addCvssBelow method, of class SuppressionRule.
-     */
-    @Test
-    @SuppressWarnings("squid:S2699")
-    void testAddCvssBelow() {
-        //already tested, this is just left so the IDE doesn't recreate it.
-    }
-
-    /**
-     * Test of hasCvssBelow method, of class SuppressionRule.
-     */
-    @Test
-    @SuppressWarnings("squid:S2699")
-    void testHasCvssBelow() {
-        //already tested, this is just left so the IDE doesn't recreate it.
-    }
-
-    /**
-     * Test of getCwe method, of class SuppressionRule.
-     */
-    @Test
-    @SuppressWarnings("squid:S2699")
-    void testGetCwe() {
-        //already tested, this is just left so the IDE doesn't recreate it.
-    }
-
-    /**
-     * Test of setCwe method, of class SuppressionRule.
-     */
-    @Test
-    @SuppressWarnings("squid:S2699")
-    void testSetCwe() {
-        //already tested, this is just left so the IDE doesn't recreate it.
-    }
-
-    /**
-     * Test of addCwe method, of class SuppressionRule.
-     */
-    @Test
-    @SuppressWarnings("squid:S2699")
-    void testAddCwe() {
-        //already tested, this is just left so the IDE doesn't recreate it.
-    }
-
-    /**
-     * Test of hasCwe method, of class SuppressionRule.
-     */
-    @Test
-    @SuppressWarnings("squid:S2699")
-    void testHasCwe() {
-        //already tested, this is just left so the IDE doesn't recreate it.
-    }
-
-    /**
-     * Test of getCve method, of class SuppressionRule.
-     */
-    @Test
-    @SuppressWarnings("squid:S2699")
-    void testGetCve() {
-        //already tested, this is just left so the IDE doesn't recreate it.
-    }
-
-    /**
-     * Test of setCve method, of class SuppressionRule.
-     */
-    @Test
-    @SuppressWarnings("squid:S2699")
-    void testSetCve() {
-        //already tested, this is just left so the IDE doesn't recreate it.
-    }
-
-    /**
-     * Test of addCve method, of class SuppressionRule.
-     */
-    @Test
-    @SuppressWarnings("squid:S2699")
-    void testAddCve() {
-        //already tested, this is just left so the IDE doesn't recreate it.
-    }
-
-    /**
-     * Test of hasCve method, of class SuppressionRule.
-     */
-    @Test
-    @SuppressWarnings("squid:S2699")
-    void testHasCve() {
-        //already tested, this is just left so the IDE doesn't recreate it.
-    }
-
-    //</editor-fold>
-
-    /**
-     * Test of cpeHasNoVersion method, of class SuppressionRule.
-     */
-    @Test
-    void testCpeHasNoVersion() {
-        PropertyType c = new PropertyType();
-        c.setValue("cpe:/a:microsoft:.net_framework:4.5");
-        SuppressionRule instance = new SuppressionRule();
-        assertFalse(instance.cpeHasNoVersion(c));
-        c.setValue("cpe:/a:microsoft:.net_framework:");
-        assertFalse(instance.cpeHasNoVersion(c));
-        c.setValue("cpe:/a:microsoft:.net_framework");
-        assertTrue(instance.cpeHasNoVersion(c));
-    }
-
     /**
      * Test of identifierMatches method, of class SuppressionRule.
      */
     @Test
-    void testCpeMatches() throws CpeValidationException, MalformedPackageURLException {
-        CpeIdentifier identifier = new CpeIdentifier("microsoft", ".net_framework", "4.5", Confidence.HIGHEST);
-
-        PropertyType cpe = new PropertyType();
-        cpe.setValue("cpe:/a:microsoft:.net_framework:4.5");
+    void testCpeMatches() throws Exception {
+        Identifier identifier = new CpeIdentifier("microsoft", ".net_framework", "4.5", Confidence.HIGHEST);
 
         SuppressionRule instance = new SuppressionRule();
         boolean expResult = true;
-        boolean result = instance.identifierMatches(cpe, identifier);
+        boolean result = instance.identifierMatches(PropertyType.of("cpe:/a:microsoft:.net_framework:4.5"), identifier);
         assertEquals(expResult, result);
 
-        cpe.setValue("cpe:/a:microsoft:.net_framework:4.0");
         expResult = false;
-        result = instance.identifierMatches(cpe, identifier);
+        result = instance.identifierMatches(PropertyType.of("cpe:/a:microsoft:.net_framework:4.0"), identifier);
         assertEquals(expResult, result);
 
-        cpe.setValue("CPE:/a:microsoft:.net_framework:4.5");
-        cpe.setCaseSensitive(true);
         expResult = false;
-        result = instance.identifierMatches(cpe, identifier);
+        result = instance.identifierMatches(PropertyType.caseSensitive("CPE:/a:microsoft:.net_framework:4.5"), identifier);
         assertEquals(expResult, result);
 
-        cpe.setValue("cpe:/a:microsoft:.net_framework");
-        cpe.setCaseSensitive(false);
         expResult = true;
-        result = instance.identifierMatches(cpe, identifier);
+        result = instance.identifierMatches(PropertyType.of("cpe:/a:microsoft:.net_framework"), identifier);
         assertEquals(expResult, result);
 
-        cpe.setValue("cpe:/a:microsoft:.*");
-        cpe.setRegex(true);
         expResult = true;
-        result = instance.identifierMatches(cpe, identifier);
+        result = instance.identifierMatches(PropertyType.regex("cpe:/a:microsoft:.*"), identifier);
         assertEquals(expResult, result);
 
-        cpe.setValue("CPE:/a:microsoft:.*");
-        cpe.setRegex(true);
-        cpe.setCaseSensitive(true);
         expResult = false;
-        result = instance.identifierMatches(cpe, identifier);
+        result = instance.identifierMatches(PropertyType.regexCaseSensitive("CPE:/a:microsoft:.*"), identifier);
         assertEquals(expResult, result);
 
-        cpe.setValue("cpe:/a:apache:.*");
-        cpe.setRegex(true);
-        cpe.setCaseSensitive(false);
         expResult = false;
-        result = instance.identifierMatches(cpe, identifier);
+        result = instance.identifierMatches(PropertyType.regex("cpe:/a:apache:.*"), identifier);
         assertEquals(expResult, result);
 
         identifier = new CpeIdentifier("apache", "tomcat", "7.0", Confidence.HIGH);
-        cpe.setValue("cpe:/a:apache:tomcat");
-        cpe.setRegex(false);
-        cpe.setCaseSensitive(false);
         expResult = true;
-        result = instance.identifierMatches(cpe, identifier);
+        result = instance.identifierMatches(PropertyType.of("cpe:/a:apache:tomcat"), identifier);
         assertEquals(expResult, result);
 
-        PurlIdentifier pid = new PurlIdentifier("maven", "org.springframework", "spring-core", "2.5.5", Confidence.HIGH);
-        cpe.setValue("org.springframework:spring-core:2.5.5");
-        cpe.setRegex(false);
-        cpe.setCaseSensitive(false);
-        expResult = true;
-        result = instance.identifierMatches(cpe, pid);
-        assertEquals(expResult, result);
-
-        cpe.setValue("org\\.springframework\\.security:spring.*");
-        cpe.setRegex(true);
-        cpe.setCaseSensitive(false);
+        identifier = new CpeIdentifier(CpeParser.parse("cpe:/a:apache:tomcat_subproduct"), Confidence.HIGH);
         expResult = false;
-        result = instance.identifierMatches(cpe, pid);
+        result = instance.identifierMatches(PropertyType.of("cpe:/a:apache:tomcat:"), identifier);
         assertEquals(expResult, result);
+
+        identifier = new CpeIdentifier(CpeParser.parse("cpe:/a:apache:tomcat"), Confidence.HIGH);
+        expResult = true;
+        result = instance.identifierMatches(PropertyType.of("cpe:/a:apache:tomcat:"), identifier);
+        assertEquals(expResult, result);
+    }
+
+    @Test
+    void testGavMatches() throws Exception {
+        SuppressionRule instance = new SuppressionRule();
+
+        PurlIdentifier id = new PurlIdentifier("maven", "org.springframework", "spring-core", "2.5.5", Confidence.HIGH);
+        PropertyType gav = PropertyType.of("org.springframework:spring-core:2.5.5");
+        assertEquals(true, instance.identifierMatches(gav, id), "gav should match purl");
+
+        gav = PropertyType.regex("org\\.springframework\\.security:spring.*");
+        assertEquals(false, instance.identifierMatches(gav, id), "gav should match purl by regex");
     }
 
     /**
@@ -463,18 +262,11 @@ class SuppressionRuleTest extends BaseTest {
 
         //cpe
         instance = new SuppressionRule();
-        PropertyType pt = new PropertyType();
-        pt.setValue("cpe:/a:microsoft:.net_framework:4.0");
-        instance.addCpe(pt);
+        instance.addCpe(PropertyType.of("cpe:/a:microsoft:.net_framework:4.0"));
         instance.process(dependency);
         assertEquals(1, dependency.getVulnerableSoftwareIdentifiers().size());
-        pt = new PropertyType();
-        pt.setValue("cpe:/a:microsoft:.net_framework:4.5");
-        instance.addCpe(pt);
-        pt = new PropertyType();
-        pt.setValue(".*");
-        pt.setRegex(true);
-        instance.setFilePath(pt);
+        instance.addCpe(PropertyType.of("cpe:/a:microsoft:.net_framework:4.5"));
+        instance.setFilePath(PropertyType.regex(".*"));
         instance.process(dependency);
         assertTrue(dependency.getVulnerableSoftwareIdentifiers().isEmpty());
         assertEquals(1, dependency.getSuppressedIdentifiers().size());
@@ -484,9 +276,7 @@ class SuppressionRuleTest extends BaseTest {
         dependency.addVulnerableSoftwareIdentifier(new CpeIdentifier("microsoft", ".net_framework", "4.0", Confidence.HIGH));
         dependency.addVulnerableSoftwareIdentifier(new CpeIdentifier("microsoft", ".net_framework", "4.5", Confidence.HIGH));
         dependency.addVulnerableSoftwareIdentifier(new CpeIdentifier("microsoft", ".net_framework", "5.0", Confidence.HIGH));
-        pt = new PropertyType();
-        pt.setValue("cpe:/a:microsoft:.net_framework");
-        instance.addCpe(pt);
+        instance.addCpe(PropertyType.of("cpe:/a:microsoft:.net_framework"));
         instance.setBase(true);
         assertEquals(3, dependency.getVulnerableSoftwareIdentifiers().size());
         assertEquals(1, dependency.getSuppressedIdentifiers().size());
@@ -510,22 +300,11 @@ class SuppressionRuleTest extends BaseTest {
 
         //cpe
         SuppressionRule instance = new SuppressionRule();
-        PropertyType pt = new PropertyType();
 
-        pt.setValue("org\\.springframework\\.security:spring.*");
-        pt.setRegex(true);
-        pt.setCaseSensitive(false);
-        instance.setGav(pt);
-
-        pt = new PropertyType();
-        pt.setValue("cpe:/a:mod_security:mod_security");
-        instance.addCpe(pt);
-        pt = new PropertyType();
-        pt.setValue("cpe:/a:springsource:spring_framework");
-        instance.addCpe(pt);
-        pt = new PropertyType();
-        pt.setValue("cpe:/a:vmware:springsource_spring_framework");
-        instance.addCpe(pt);
+        instance.setGav(PropertyType.regex("org\\.springframework\\.security:spring.*"));
+        instance.addCpe(PropertyType.of("cpe:/a:mod_security:mod_security"));
+        instance.addCpe(PropertyType.of("cpe:/a:springsource:spring_framework"));
+        instance.addCpe(PropertyType.of("cpe:/a:vmware:springsource_spring_framework"));
 
         instance.process(dependency);
         assertEquals(1, dependency.getVulnerableSoftwareIdentifiers().size());
@@ -541,25 +320,14 @@ class SuppressionRuleTest extends BaseTest {
 
         dependency.addVulnerability(createVulnerability());
         SuppressionRule instance = new SuppressionRule();
-        //gav
-        PropertyType pt = new PropertyType();
-        pt.setValue("pkg:maven/org.springframework.security/spring-security-web@3.0.0.RELEASE");
-        pt.setRegex(false);
-        pt.setCaseSensitive(false);
-        instance.setPackageUrl(pt);
-
-        pt = new PropertyType();
-        pt.setValue("CVE-2013-1338");
-        instance.addVulnerabilityName(pt);
+        instance.setPackageUrl(PropertyType.of("pkg:maven/org.springframework.security/spring-security-web@3.0.0.RELEASE"));
+        instance.addVulnerabilityName(PropertyType.of("CVE-2013-1338"));
 
         instance.process(dependency);
         assertEquals(1, dependency.getVulnerabilities().size());
         assertEquals(0, dependency.getSuppressedVulnerabilities().size());
 
-
-        pt = new PropertyType();
-        pt.setValue("CVE-2013-1337");
-        instance.addVulnerabilityName(pt);
+        instance.addVulnerabilityName(PropertyType.of("CVE-2013-1337"));
 
         instance.process(dependency);
         assertEquals(0, dependency.getVulnerabilities().size());

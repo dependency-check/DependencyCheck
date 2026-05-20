@@ -17,15 +17,16 @@
  */
 package org.owasp.dependencycheck.xml.hints;
 
-import java.util.ArrayList;
-import java.util.List;
-import javax.annotation.concurrent.NotThreadSafe;
 import org.owasp.dependencycheck.dependency.Confidence;
 import org.owasp.dependencycheck.utils.XmlUtils;
 import org.owasp.dependencycheck.xml.suppression.PropertyType;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
+
+import javax.annotation.concurrent.NotThreadSafe;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A handler to load hint rules.
@@ -268,19 +269,19 @@ public class HintHandler extends DefaultHandler {
                     }
                     break;
                 case FILE_NAME:
-                    final PropertyType pt = new PropertyType();
-                    pt.setValue(attr.getValue(CONTAINS));
+                    boolean isRegex = false;
+                    boolean isCaseSensitive = false;
                     if (attr.getLength() > 0) {
                         final String regex = attr.getValue(REGEX);
                         if (regex != null) {
-                            pt.setRegex(Boolean.parseBoolean(regex));
+                            isRegex = Boolean.parseBoolean(regex);
                         }
                         final String caseSensitive = attr.getValue(CASE_SENSITIVE);
                         if (caseSensitive != null) {
-                            pt.setCaseSensitive(Boolean.parseBoolean(caseSensitive));
+                            isCaseSensitive = Boolean.parseBoolean(caseSensitive);
                         }
                     }
-                    rule.addFilename(pt);
+                    rule.addFilename(new PropertyType(attr.getValue(CONTAINS), isRegex, isCaseSensitive));
                     break;
                 case VENDOR_DUPLICATING_RULE:
                     vendorDuplicatingHintRules.add(new VendorDuplicatingHintRule(attr.getValue(VALUE), attr.getValue(DUPLICATE)));

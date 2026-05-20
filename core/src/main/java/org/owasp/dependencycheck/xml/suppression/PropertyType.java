@@ -17,11 +17,13 @@
  */
 package org.owasp.dependencycheck.xml.suppression;
 
+import com.google.common.base.Suppliers;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
-import java.util.regex.Pattern;
 import javax.annotation.concurrent.ThreadSafe;
+import java.util.function.Supplier;
+import java.util.regex.Pattern;
 
 /**
  * A simple PropertyType used to represent a string value that could be used as
@@ -37,15 +39,45 @@ public class PropertyType {
     /**
      * The value.
      */
-    private String value;
+    private final String value;
     /**
      * Whether or not the expression is a regex.
      */
-    private boolean regex = false;
+    private final boolean regex;
     /**
      * Indicates case sensitivity.
      */
-    private boolean caseSensitive = false;
+    private final boolean caseSensitive;
+
+    private final Supplier<Pattern> compiledRegex = Suppliers
+            .memoize(() -> isRegex() ? Pattern.compile(getValue(), isCaseSensitive() ? 0 : Pattern.CASE_INSENSITIVE) : null);
+
+    /**
+     * @param value the value of the value property
+     * @param regex whether the value is a regex
+     * @param caseSensitive whether the value is case-sensitive
+     */
+    public PropertyType(String value, boolean regex, boolean caseSensitive) {
+        this.value = value;
+        this.regex = regex;
+        this.caseSensitive = caseSensitive;
+    }
+
+    public static PropertyType of(String value) {
+        return new PropertyType(value, false, false);
+    }
+
+    public static PropertyType regex(String value) {
+        return new PropertyType(value, true, false);
+    }
+
+    public static PropertyType caseSensitive(String value) {
+        return new PropertyType(value, false, true);
+    }
+
+    public static PropertyType regexCaseSensitive(String value) {
+        return new PropertyType(value, true, true);
+    }
 
     /**
      * Gets the value of the value property.
@@ -54,15 +86,6 @@ public class PropertyType {
      */
     public String getValue() {
         return value;
-    }
-
-    /**
-     * Sets the value of the value property.
-     *
-     * @param value the value of the value property
-     */
-    public void setValue(String value) {
-        this.value = value;
     }
 
     /**
@@ -75,30 +98,12 @@ public class PropertyType {
     }
 
     /**
-     * Sets whether the value property is a regex.
-     *
-     * @param value true if the value is a regex, otherwise false
-     */
-    public void setRegex(boolean value) {
-        this.regex = value;
-    }
-
-    /**
      * Gets the value of the caseSensitive property.
      *
-     * @return true if the value is case sensitive
+     * @return true if the value is case-sensitive
      */
     public boolean isCaseSensitive() {
         return caseSensitive;
-    }
-
-    /**
-     * Sets the value of the caseSensitive property.
-     *
-     * @param value whether the value is case sensitive
-     */
-    public void setCaseSensitive(boolean value) {
-        this.caseSensitive = value;
     }
     //</editor-fold>
 
@@ -114,13 +119,7 @@ public class PropertyType {
             return false;
         }
         if (this.regex) {
-            final Pattern rx;
-            if (this.caseSensitive) {
-                rx = Pattern.compile(this.value);
-            } else {
-                rx = Pattern.compile(this.value, Pattern.CASE_INSENSITIVE);
-            }
-            return rx.matcher(text).matches();
+            return compiledRegex.get().matcher(text).matches();
         } else {
             if (this.caseSensitive) {
                 return value.equals(text);
