@@ -17,15 +17,9 @@
  */
 package org.owasp.dependencycheck.xml.suppression;
 
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
-import javax.annotation.concurrent.NotThreadSafe;
+import org.apache.commons.lang3.Strings;
 import org.apache.commons.lang3.time.DateFormatUtils;
+import org.jspecify.annotations.NonNull;
 import org.owasp.dependencycheck.dependency.Dependency;
 import org.owasp.dependencycheck.dependency.Vulnerability;
 import org.owasp.dependencycheck.dependency.naming.CpeIdentifier;
@@ -35,6 +29,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import us.springett.parsers.cpe.Cpe;
 import us.springett.parsers.cpe.exceptions.CpeEncodingException;
+
+import javax.annotation.concurrent.NotThreadSafe;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 
 /**
  *
@@ -760,33 +763,35 @@ public class SuppressionRule {
             final PurlIdentifier purl = (PurlIdentifier) identifier;
             return suppressionEntry.matches(purl.toGav());
         } else if (identifier instanceof CpeIdentifier) {
-            //TODO check for regex - not just type
-            final Cpe cpeId = ((CpeIdentifier) identifier).getCpe();
-            if (suppressionEntry.isRegex()) {
-                try {
-                    return suppressionEntry.matches(cpeId.toCpe22Uri());
-                } catch (CpeEncodingException ex) {
-                    LOGGER.debug("Unable to convert CPE to 22 URI?" + cpeId);
+            final Cpe cpe = ((CpeIdentifier) identifier).getCpe();
+            try {
+                if (suppressionEntry.isRegex()) {
+                    return suppressionEntry.matches(cpe.toCpe22Uri());
+                } else {
+                    String candidate = cpe.toCpe22Uri() + cpePartMatchingSuffixFor(suppressionEntry);
+                    return matcherFor(suppressionEntry).startsWith(candidate, suppressionEntry.getValue());
                 }
-            } else if (suppressionEntry.isCaseSensitive()) {
-                try {
-                    return cpeId.toCpe22Uri().startsWith(suppressionEntry.getValue());
-                } catch (CpeEncodingException ex) {
-                    LOGGER.debug("Unable to convert CPE to 22 URI?" + cpeId);
-                }
-            } else {
-                final String id;
-                try {
-                    id = cpeId.toCpe22Uri().toLowerCase();
-                } catch (CpeEncodingException ex) {
-                    LOGGER.debug("Unable to convert CPE to 22 URI?" + cpeId);
-                    return false;
-                }
-                final String check = suppressionEntry.getValue().toLowerCase();
-                return id.startsWith(check);
+            } catch (CpeEncodingException ex) {
+                LOGGER.debug("Unable to convert CPE [{}] to 22 URI due to [{}]?, will match against string directly", cpe, ex.toString());
             }
         }
         return suppressionEntry.matches(identifier.getValue());
+    }
+
+    /**
+     * Uses the passed rule to determine whether the match should be strict; i.e whether the match must be a prefix of
+     * the CPE 2.2 URI, but a whole part; rather than matching part way through.
+     * Prefix-matching rules ending with the CPE colon delimiter imply a strict match is necessary.
+     *
+     * @param rule A non-regex CPE prefix-matching rule
+     * @return A suffix for simple string matching of a CPE 2.2 URI
+     */
+    private static @NonNull String cpePartMatchingSuffixFor(PropertyType rule) {
+        return rule.getValue().endsWith(":") ? ":" : "";
+    }
+
+    private static @NonNull Strings matcherFor(PropertyType suppressionEntry) {
+        return suppressionEntry.isCaseSensitive() ? Strings.CS : Strings.CI;
     }
 
     /**

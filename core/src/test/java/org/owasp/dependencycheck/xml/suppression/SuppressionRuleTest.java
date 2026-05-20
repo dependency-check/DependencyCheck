@@ -30,6 +30,7 @@ import org.owasp.dependencycheck.dependency.Vulnerability;
 import org.owasp.dependencycheck.dependency.naming.CpeIdentifier;
 import org.owasp.dependencycheck.dependency.naming.PurlIdentifier;
 import org.owasp.dependencycheck.utils.CvssUtil;
+import us.springett.parsers.cpe.CpeParser;
 import us.springett.parsers.cpe.exceptions.CpeValidationException;
 
 import java.io.File;
@@ -342,7 +343,7 @@ class SuppressionRuleTest extends BaseTest {
      * Test of identifierMatches method, of class SuppressionRule.
      */
     @Test
-    void testCpeMatches() throws CpeValidationException, MalformedPackageURLException {
+    void testCpeMatches() throws Exception {
         CpeIdentifier identifier = new CpeIdentifier("microsoft", ".net_framework", "4.5", Confidence.HIGHEST);
 
         PropertyType cpe = new PropertyType();
@@ -392,6 +393,22 @@ class SuppressionRuleTest extends BaseTest {
 
         identifier = new CpeIdentifier("apache", "tomcat", "7.0", Confidence.HIGH);
         cpe.setValue("cpe:/a:apache:tomcat");
+        cpe.setRegex(false);
+        cpe.setCaseSensitive(false);
+        expResult = true;
+        result = instance.identifierMatches(cpe, identifier);
+        assertEquals(expResult, result);
+
+        identifier = new CpeIdentifier(CpeParser.parse("cpe:/a:apache:tomcat_subproduct"), Confidence.HIGH);
+        cpe.setValue("cpe:/a:apache:tomcat:");
+        cpe.setRegex(false);
+        cpe.setCaseSensitive(false);
+        expResult = false;
+        result = instance.identifierMatches(cpe, identifier);
+        assertEquals(expResult, result);
+
+        identifier = new CpeIdentifier(CpeParser.parse("cpe:/a:apache:tomcat"), Confidence.HIGH);
+        cpe.setValue("cpe:/a:apache:tomcat:");
         cpe.setRegex(false);
         cpe.setCaseSensitive(false);
         expResult = true;
