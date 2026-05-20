@@ -171,12 +171,9 @@ jobs:
             }
             purl += '@.*$';
             var cpe = process.env.CPE.trim().replaceAll(/^`|`$/g,'').split(':');
-            var cpe22UriPrefix;
-            if (cpe[1] == '2.3') {
-               cpe22UriPrefix = 'cpe:/a:' + cpe[3] + ':' + cpe[4] + ':';
-            } else {
-               cpe22UriPrefix = 'cpe:/a:' + cpe[2] + ':' + cpe[3] + ':';
-            }
+            var vendor = cpe[1] === '2.3' ? cpe[3] : cpe[2];
+            var product = cpe[1] === '2.3' ? cpe[4] : cpe[3];
+            var cpe22UriRegex = 'cpe:/a:' + vendor.replaceAll('.','\\.') + ':' + product.replaceAll('.','\\.') + '(:.*)?$';
             
             await github.rest.issues.createComment({
               issue_number: context.issue.number,
@@ -189,7 +186,7 @@ jobs:
                     '    FP per issue #' + context.issue.number + '\n' +
                     '    ]]></notes>\n' +
                     '    <packageUrl regex="true">' + purl + '</packageUrl>\n' +
-                    '    <cpe>' + cpe22UriPrefix + '</cpe>\n' +
+                    '    <cpe regex="true">' + cpe22UriRegex + '</cpe>\n' +
                     '</suppress>\n```\n\n' +
                     'Link to test results: ' + context.serverUrl + '/' + context.repo.owner + '/' + context.repo.repo + '/actions/runs/' + context.runId
             })
@@ -217,13 +214,9 @@ jobs:
             }
             purl += '@.*$';
             var cpe = process.env.CPE.trim().replaceAll(/^`|`$/g,'').split(':');
-            console.log(cpe);
-            var cpe22UriPrefix;
-            if (cpe[1] == '2.3') {
-               cpe22UriPrefix = 'cpe:/a:' + cpe[3] + ':' + cpe[4] + ':';
-            } else {
-               cpe22UriPrefix = 'cpe:/a:' + cpe[2] + ':' + cpe[3] + ':';
-            }
+            var vendor = cpe[1] === '2.3' ? cpe[3] : cpe[2];
+            var product = cpe[1] === '2.3' ? cpe[4] : cpe[3];
+            var cpe22UriRegex = 'cpe:/a:' + vendor.replaceAll('.','\\.') + ':' + product.replaceAll('.','\\.') + '(:.*)?$';
             
             await github.rest.issues.createComment({
               issue_number: context.issue.number,
@@ -236,7 +229,7 @@ jobs:
                     '    FP per issue #' + context.issue.number + '\n' +
                     '    ]]></notes>\n' +
                     '    <packageUrl regex="true">' + purl + '</packageUrl>\n' +
-                    '    <cpe>' + cpe22UriPrefix + '</cpe>\n' +
+                    '    <cpe regex="true">' + cpe22UriRegex + '</cpe>\n' +
                     '</suppress>\n```\n\n' +
                     'Link to test results: ' + context.serverUrl + '/' + context.repo.owner + '/' + context.repo.repo + '/actions/runs/' + context.runId
             })
@@ -264,12 +257,9 @@ jobs:
             }
             purl += '@.*$';
             var cpe = process.env.CPE.trim().replaceAll(/^`|`$/g,'').split(':');
-            var cpe22UriPrefix;
-            if (cpe[1] == '2.3') {
-               cpe22UriPrefix = 'cpe:/a:' + cpe[3] + ':' + cpe[4] + ':';
-            } else {
-               cpe22UriPrefix = 'cpe:/a:' + cpe[2] + ':' + cpe[3] + ':';
-            }
+            var vendor = cpe[1] === '2.3' ? cpe[3] : cpe[2];
+            var product = cpe[1] === '2.3' ? cpe[4] : cpe[3];
+            var cpe22UriRegex = 'cpe:/a:' + vendor.replaceAll('.','\\.') + ':' + product.replaceAll('.','\\.') + '(:.*)?$';
             
             await github.rest.issues.createComment({
               issue_number: context.issue.number,
@@ -282,7 +272,7 @@ jobs:
                     '    FP per issue #' + context.issue.number + '\n' +
                     '    ]]></notes>\n' +
                     '    <packageUrl regex="true">' + purl + '</packageUrl>\n' +
-                    '    <cpe>' + cpe22UriPrefix + '</cpe>\n' +
+                    '    <cpe regex="true">' + cpe22UriRegex + '</cpe>\n' +
                     '</suppress>\n```\n\n' +
                     'Link to test results: ' + context.serverUrl + '/' + context.repo.owner + '/' + context.repo.repo + '/actions/runs/' + context.runId
             })
