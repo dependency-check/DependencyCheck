@@ -5370,4 +5370,14 @@
         <packageUrl regex="true">^pkg:pypi/zabbix-utils@.*$</packageUrl>
         <cpe>cpe:/a:zabbix:zabbix:</cpe>
     </suppress>
+    <suppress base="true">
+        <notes><![CDATA[
+        FP per issue #8540 - com.microsoft.kiota is the Kiota Java client
+        library (https://github.com/microsoft/kiota-java), not the Kiota
+        CLI/SDK tool (https://github.com/microsoft/kiota) which the CPE
+        cpe:2.3:a:microsoft:kiota maps to. These are different products.
+        ]]></notes>
+        <packageUrl regex="true">^pkg:maven/com\.microsoft\.kiota/.*$</packageUrl>
+        <cpe>cpe:/a:microsoft:kiota:</cpe>
+    </suppress>
 </suppressions>
