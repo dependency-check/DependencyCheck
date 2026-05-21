@@ -46,17 +46,19 @@ The NVD API has enforced rate limits. If you are using a single API KEY and
 multiple builds occur you could hit the rate limit and receive 403 errors. In
 a CI environment one must use a caching strategy.
 
-### Sonatype OSS Index API Token Now Required for usage
+### Sonatype OSS Index mandatory authentication and migration to Sonatype Guide
 
-Since September 2025 Sonatype OSS Index started enforcing use of API tokens for authentication. In April 2026 a
-subsequent migration to Sonatype Guide began.
+In September 2025 Sonatype OSS Index started enforcing use of API tokens for authentication. In April 2026 a
+subsequent migration to Sonatype Guide began, kicking off a transition to use of Sonatype Guide API Tokens that are
+planned to replace the legacy OSS Index API keys/tokens before the end of 2026.
 
-If you wish to use Sonatype OSS Index you must configure Dependency-Check and consider implications for migration to 
-Sonatype Guide. See the [analyzer documentation](https://dependency-check.github.io/DependencyCheck/analyzers/oss-index-analyzer.html)
+Without credentials, Dependency Check will **automatically disable the OSS Index analyzer**. Please see the documentation
+for the CLI, Maven, Gradle, or Ant integrations on how to set the analyzer credentials for use of a Sonatype Guide token
+or legacy OSS Index API key.
+
+If you wish to use Sonatype OSS Index (via Guide) you must configure Dependency-Check and consider implications for the
+migration to Sonatype Guide; whose commercial/usage model has changed. See the [analyzer documentation](https://dependency-check.github.io/DependencyCheck/analyzers/oss-index-analyzer.html)
 for more information.
-
-Without credentials, Dependency Check will **automatically disable the OSS Index analyzer**. Please see the documentation 
-for the cli, maven, gradle, or ant integrations on how to set the OSS Index credentials.
 
 ### Gradle build Environment
 

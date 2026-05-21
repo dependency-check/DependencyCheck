@@ -2,6 +2,9 @@ name: Publish Suppressions
 
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - generatedSuppressions
 
 permissions: {}
 jobs:
