@@ -53,14 +53,19 @@ _odc_completions()
             --disableOpenSSL
             --disableOssIndex
             --disableOssIndexCache
+            --ossIndexCacheValidForHours <hours>
+            --ossIndexUrl <url>
+            --ossIndexUsername <username>
+            --ossIndexPassword <password>
             --ossIndexRemoteErrorWarnOnly
             --disableKnownExploited
             --kevURL <url>
+            --disablePE
             --disablePip
             --disablePipfile
             --disablePyDist
             --disablePyPkg
-            --disableRetireJS
+            --disableRetireJs
             --disableRubygems
             --disableSwiftPackageManagerAnalyzer
             --disableSwiftPackageResolvedAnalyzer
@@ -95,8 +100,6 @@ _odc_completions()
             --nvdApiDelay <ms>
             --nvdValidForHours <hours>
         -o --out
-            --ossIndexPassword <password>
-            --ossIndexUsername <username>
         -P --propertyfile
             --prettyPrint
             --project <name>
@@ -106,8 +109,8 @@ _odc_completions()
             --proxyuser <user>
             --pnpm
             --purge
-            --retirejsFilter <pattern>
-            --retirejsFilterNonVulnerable
+            --retireJsFilter <pattern>
+            --retireJsFilterNonVulnerable
             --retireJsForceUpdate
             --retireJsUrl <url>
         -s --scan

@@ -112,8 +112,8 @@ class JsonArrayFixingInputStreamTest {
      */
     @Test
     void testRead_0args() throws Exception {
-        try (InputStream sample = new ByteArrayInputStream(sample1.getBytes());
-                JsonArrayFixingInputStream instance = new JsonArrayFixingInputStream(sample)) {
+        try (InputStream sample = new ByteArrayInputStream(sample1.getBytes(UTF_8));
+             JsonArrayFixingInputStream instance = new JsonArrayFixingInputStream(sample)) {
             assertEquals('[', instance.read());
             assertEquals('{', instance.read());
             assertEquals('}', instance.read());
@@ -121,8 +121,8 @@ class JsonArrayFixingInputStreamTest {
             assertEquals(-1, instance.read());
         }
 
-        try (InputStream sample = new ByteArrayInputStream(sample2.getBytes());
-                JsonArrayFixingInputStream instance = new JsonArrayFixingInputStream(sample)) {
+        try (InputStream sample = new ByteArrayInputStream(sample2.getBytes(UTF_8));
+             JsonArrayFixingInputStream instance = new JsonArrayFixingInputStream(sample)) {
             assertEquals('[', instance.read());
             assertEquals('{', instance.read());
             assertEquals('}', instance.read());
@@ -142,8 +142,8 @@ class JsonArrayFixingInputStreamTest {
     @Test
     void testRead_byteArr() throws Exception {
         byte[] b = new byte[9];
-        try (InputStream sample = new ByteArrayInputStream(sample2.getBytes());
-                JsonArrayFixingInputStream instance = new JsonArrayFixingInputStream(sample)) {
+        try (InputStream sample = new ByteArrayInputStream(sample2.getBytes(UTF_8));
+             JsonArrayFixingInputStream instance = new JsonArrayFixingInputStream(sample)) {
             int read = instance.read(b);
             assertEquals(2, read);
             assertEquals('[', b[0]);
@@ -170,8 +170,8 @@ class JsonArrayFixingInputStreamTest {
 
     @Test
     void testRead_IOUtils() throws Exception {
-        try (InputStream sample = new ByteArrayInputStream(sample3.getBytes());
-                JsonArrayFixingInputStream instance = new JsonArrayFixingInputStream(sample)) {
+        try (InputStream sample = new ByteArrayInputStream(sample3.getBytes(UTF_8));
+             JsonArrayFixingInputStream instance = new JsonArrayFixingInputStream(sample)) {
             String results = IOUtils.toString(instance, UTF_8);
             assertEquals("[{'key'='value'},{'key'='value'}]", results);
 
@@ -180,8 +180,8 @@ class JsonArrayFixingInputStreamTest {
 
     @Test
     void testRead_RealSample() throws Exception {
-        try (InputStream sample = new ByteArrayInputStream(sample4.getBytes());
-                JsonArrayFixingInputStream instance = new JsonArrayFixingInputStream(sample)) {
+        try (InputStream sample = new ByteArrayInputStream(sample4.getBytes(UTF_8));
+             JsonArrayFixingInputStream instance = new JsonArrayFixingInputStream(sample)) {
             try (JsonReader reader = Json.createReader(instance)) {
                 final JsonArray modules = reader.readArray();
                 assertEquals(8, modules.size());
@@ -222,13 +222,12 @@ class JsonArrayFixingInputStreamTest {
     /**
      * Test of skip method, of class JsonArrayFixingInputStream.
      *
-     * @throws Exception because one might happen
      */
     @Test
     void testSkip() {
         assertThrows(UnsupportedOperationException.class, () -> {
-            try (InputStream sample = new ByteArrayInputStream(sample1.getBytes());
-                JsonArrayFixingInputStream instance = new JsonArrayFixingInputStream(sample)) {
+            try (InputStream sample = new ByteArrayInputStream(sample1.getBytes(UTF_8));
+                 JsonArrayFixingInputStream instance = new JsonArrayFixingInputStream(sample)) {
                 instance.skip(1);
             }
         });
@@ -241,16 +240,13 @@ class JsonArrayFixingInputStreamTest {
      */
     @Test
     void testAvailable() throws Exception {
-        try (InputStream sample = new ByteArrayInputStream(sample1.getBytes());
-                JsonArrayFixingInputStream instance = new JsonArrayFixingInputStream(sample)) {
+        try (InputStream sample = new ByteArrayInputStream(sample1.getBytes(UTF_8));
+             JsonArrayFixingInputStream instance = new JsonArrayFixingInputStream(sample)) {
             int results = instance.available();
             assertTrue(results > 0);
-            String text = IOUtils.toString(instance, UTF_8);
+            IOUtils.toString(instance, UTF_8);
             int i = instance.read();
             assertEquals(-1, i);
-            //odd buffer is 0 and we've read to the end - but available on the underlying stream still says 3...
-            //results = instance.available();
-            //assertEquals(0, results);
         }
     }
 
@@ -261,8 +257,8 @@ class JsonArrayFixingInputStreamTest {
      */
     @Test
     void testClose() throws Exception {
-        try (InputStream sample = new ByteArrayInputStream(sample1.getBytes());
-                JsonArrayFixingInputStream instance = new JsonArrayFixingInputStream(sample)) {
+        try (InputStream sample = new ByteArrayInputStream(sample1.getBytes(UTF_8));
+             JsonArrayFixingInputStream instance = new JsonArrayFixingInputStream(sample)) {
             int i = instance.read();
         }
     }
@@ -274,21 +270,22 @@ class JsonArrayFixingInputStreamTest {
      */
     @Test
     void testMarkSupported() throws Exception {
-        try (InputStream sample = new ByteArrayInputStream(sample1.getBytes());
-                JsonArrayFixingInputStream instance = new JsonArrayFixingInputStream(sample)) {
+        try (InputStream sample = new ByteArrayInputStream(sample1.getBytes(UTF_8));
+             JsonArrayFixingInputStream instance = new JsonArrayFixingInputStream(sample)) {
             boolean result = instance.markSupported();
             assertFalse(result);
         }
     }
 
     @Test
-    void testIsWhiteSpace() {
-        JsonArrayFixingInputStream instance = new JsonArrayFixingInputStream(null);
-        assertFalse(instance.isWhiteSpace((byte) 'a'));
-        assertTrue(instance.isWhiteSpace((byte) '\n'));
-        assertTrue(instance.isWhiteSpace((byte) '\t'));
-        assertTrue(instance.isWhiteSpace((byte) '\r'));
-        assertTrue(instance.isWhiteSpace((byte) ' '));
+    void testIsWhiteSpace() throws Exception {
+        try (JsonArrayFixingInputStream instance = new JsonArrayFixingInputStream(null)) {
+            assertFalse(instance.isWhiteSpace((byte) 'a'));
+            assertTrue(instance.isWhiteSpace((byte) '\n'));
+            assertTrue(instance.isWhiteSpace((byte) '\t'));
+            assertTrue(instance.isWhiteSpace((byte) '\r'));
+            assertTrue(instance.isWhiteSpace((byte) ' '));
+        }
     }
 
 }

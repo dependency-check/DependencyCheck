@@ -19,11 +19,11 @@ package org.owasp.dependencycheck.xml.suppression;
 
 import org.junit.jupiter.api.Test;
 import org.owasp.dependencycheck.BaseTest;
+import org.owasp.dependencycheck.utils.AutoCloseableInputSource;
 import org.owasp.dependencycheck.utils.XmlUtils;
 import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
 
-import javax.xml.parsers.SAXParser;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
@@ -33,6 +33,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.owasp.dependencycheck.utils.AutoCloseableInputSource.fromResource;
 
 /**
  *
@@ -48,29 +49,27 @@ class SuppressionHandlerTest extends BaseTest {
     @Test
     void testHandler() throws Exception {
         File file = BaseTest.getResourceAsFile(this, "suppressions.xml");
-        InputStream schemaStream = BaseTest.getResourceAsStream(this, "schema/suppression.xsd");
 
-        SuppressionHandler handler = new SuppressionHandler();
-        SAXParser saxParser = XmlUtils.buildSecureSaxParser(schemaStream);
-        XMLReader xmlReader = saxParser.getXMLReader();
-        xmlReader.setErrorHandler(new SuppressionErrorHandler());
-        xmlReader.setContentHandler(handler);
+        try (AutoCloseableInputSource schema = fromResource("schema/suppression.xsd")) {
+            SuppressionHandler handler = new SuppressionHandler();
+            XMLReader xmlReader = XmlUtils.buildSecureValidatingXmlReader(schema);
+            xmlReader.setErrorHandler(new SuppressionErrorHandler());
+            xmlReader.setContentHandler(handler);
 
-        InputStream inputStream = new FileInputStream(file);
-        Reader reader = new InputStreamReader(inputStream, StandardCharsets.UTF_8);
-        InputSource in = new InputSource(reader);
-        //in.setEncoding(StandardCharsets.UTF_8);
-
-        xmlReader.parse(in);
-
-        List<SuppressionRule> result = handler.getSuppressionRules();
-        assertTrue(result.size() > 3);
-        int baseCount = 0;
-        for (SuppressionRule r : result) {
-            if (r.isBase()) {
-                baseCount++;
+            try (Reader reader = new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8)) {
+                InputSource in = new InputSource(reader);
+                xmlReader.parse(in);
             }
+
+            List<SuppressionRule> result = handler.getSuppressionRules();
+            assertTrue(result.size() > 3);
+            int baseCount = 0;
+            for (SuppressionRule r : result) {
+                if (r.isBase()) {
+                    baseCount++;
+                }
+            }
+            assertTrue(baseCount > 0);
         }
-        assertTrue(baseCount > 0);
     }
 }

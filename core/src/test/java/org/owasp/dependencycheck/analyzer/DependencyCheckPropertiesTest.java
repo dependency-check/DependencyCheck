@@ -16,6 +16,7 @@ import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Properties;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -86,7 +87,9 @@ class DependencyCheckPropertiesTest {
     }
 
     private boolean isATestAnalyzer(Class<?> clazz) {
-        return clazz == AbstractSuppressionAnalyzerTest.AbstractSuppressionAnalyzerImpl.class;
+        return Optional.ofNullable(clazz.getDeclaringClass())
+                .map(c -> c.getSimpleName().contains("Test"))
+                .orElseGet(() -> clazz.getSimpleName().contains("Test"));
     }
 
     private Set<Class<?>> findAllClasses(String packageName) throws IOException {

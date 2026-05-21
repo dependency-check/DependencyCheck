@@ -93,7 +93,7 @@
                 #end]]>#end</system-out>
             #set($referencedProjects="")
             #set($projectReferenced=false)
-            #foreach($ref in $dependency.projectReferences)
+            #foreach($ref in $dependency.projectReferencesSorted)
                 #if($projectReferenced)
                     #set($referencedProjects="$referencedProjects, $ref")
                 #else

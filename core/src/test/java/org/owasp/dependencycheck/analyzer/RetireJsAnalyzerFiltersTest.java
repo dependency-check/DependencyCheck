@@ -57,7 +57,7 @@ class RetireJsAnalyzerFiltersTest extends BaseDBTestCase {
             analyzer.prepare(engine);
 
             //removed by filter (see setup above)
-            File file = BaseTest.getResourceAsFile(this, "javascript/jquery-1.6.2.js");
+            File file = BaseTest.getResourceAsFile(this, "javascript/jquery.safe.js");
             List<Dependency> scanned = engine.scan(file);
             assertTrue(scanned == null || scanned.isEmpty());
 
@@ -70,7 +70,7 @@ class RetireJsAnalyzerFiltersTest extends BaseDBTestCase {
             assertEquals(0, engine.getDependencies().length);
 
             //kept because it is does not match the filter and is vulnerable
-            file = BaseTest.getResourceAsFile(this, "javascript/ember.js");
+            file = BaseTest.getResourceAsFile(this, "javascript/ember.safe.js");
             scanned = engine.scan(file);
             assertEquals(1, scanned.size());
             assertEquals(1, engine.getDependencies().length);

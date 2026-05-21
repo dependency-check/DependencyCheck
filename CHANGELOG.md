@@ -1,27 +1,120 @@
 # Change Log
 
+## [Version 12.2.2](https://github.com/dependency-check/DependencyCheck/releases/tag/v12.2.2) (2026-05-03)
+
+**NOTE**: The database schema was updated to fix [#8466](https://github.com/dependency-check/DependencyCheck/pull/8466) - if using an external database the update scripts must be run!
+
+- feat: improve Sonatype Guide / OSS Index cache handling and insufficient credits error reporting ([#8451](https://github.com/dependency-check/DependencyCheck/pull/8451))
+- feat: support and prefer githubID vuln identifiers from RetireJS ([#8419](https://github.com/dependency-check/DependencyCheck/pull/8419))
+- fix(db): widen reference URL column to handle long Mozilla CVE URLs ([#8467](https://github.com/dependency-check/DependencyCheck/pull/8467))
+- fix: add corepack to docker image ([#8386](https://github.com/dependency-check/DependencyCheck/pull/8386))
+- fix: bump open-vulnerability-clients to resolve NVD timestamp parsing errors ([#8427](https://github.com/dependency-check/DependencyCheck/pull/8427))
+- fix: de-duplicate and sort both `includedBy` and `projectReferences` in reports ([#8440](https://github.com/dependency-check/DependencyCheck/pull/8440))
+- fix: migrate default OSS Index API URL to Sonatype Guide; supporting optional username ([#8404](https://github.com/dependency-check/DependencyCheck/pull/8404))
+- docs: correct missing documentation for Gradle plugin ([#8431](https://github.com/dependency-check/DependencyCheck/pull/8431))
+- docs: tweak docs site structure; documenting missing analyzers ([#8462](https://github.com/dependency-check/DependencyCheck/pull/8462))
+- chore: remove spurious bundle-audit log line when there are no errors ([#8454](https://github.com/dependency-check/DependencyCheck/pull/8454))
+- chore: tidy CHANGELOG formatting ([#8414](https://github.com/dependency-check/DependencyCheck/pull/8414))
+- chore(fp): remove duplicate log4j FP suppressions ([#8468](https://github.com/dependency-check/DependencyCheck/pull/8468))
+- build(deps): bump apache.ant.version from 1.10.16 to 1.10.17 ([#8416](https://github.com/dependency-check/DependencyCheck/pull/8416))
+- build(deps): bump com.fasterxml.jackson:jackson-bom from 2.21.2 to 2.21.3 ([#8465](https://github.com/dependency-check/DependencyCheck/pull/8465))
+- build(deps): bump com.google.guava:guava from 33.5.0-jre to 33.6.0-jre ([#8420](https://github.com/dependency-check/DependencyCheck/pull/8420))
+- build(deps): bump com.mysql:mysql-connector-j from 9.6.0 to 9.7.0 ([#8445](https://github.com/dependency-check/DependencyCheck/pull/8445))
+- build(deps): bump commons-codec:commons-codec from 1.21.0 to 1.22.0 ([#8453](https://github.com/dependency-check/DependencyCheck/pull/8453))
+- build(deps): bump commons-io:commons-io from 2.21.0 to 2.22.0 ([#8448](https://github.com/dependency-check/DependencyCheck/pull/8448))
+- build(deps): bump httpcomponents.client.version from 5.6 to 5.6.1 ([#8432](https://github.com/dependency-check/DependencyCheck/pull/8432))
+- build(deps): bump joda-time:joda-time from 2.14.1 to 2.14.2 ([#8464](https://github.com/dependency-check/DependencyCheck/pull/8464))
+- build(deps): bump org.apache.maven.plugins:maven-invoker-plugin from 3.9.1 to 3.10.0 ([#8452](https://github.com/dependency-check/DependencyCheck/pull/8452))
+- build(deps): bump org.jsoup:jsoup from 1.22.1 to 1.22.2 ([#8437](https://github.com/dependency-check/DependencyCheck/pull/8437))
+- build(deps): bump org.postgresql:postgresql from 42.7.10 to 42.7.11 ([#8463](https://github.com/dependency-check/DependencyCheck/pull/8463))
+- build(deps): bump the actions-deps group with 8 updates ([#8472](https://github.com/dependency-check/DependencyCheck/pull/8472))
+
+See the full listing of [changes](https://github.com/dependency-check/DependencyCheck/milestone/106?closed=1)
+
+## [Version 12.2.1](https://github.com/dependency-check/DependencyCheck/releases/tag/v12.2.1) (2026-04-11)
+
+- fix(core): correct xml schema validation handling without needing external access ([#8272](https://github.com/dependency-check/DependencyCheck/pull/8272))
+- fix(deps): upgrade slf4j and logback ([#8306](https://github.com/dependency-check/DependencyCheck/pull/8306))
+- fix(test): disable pnpm analyzer during test ([#8305](https://github.com/dependency-check/DependencyCheck/pull/8305))
+- fix: Correct published/hosted suppressions namespace header and indent ([#8258](https://github.com/dependency-check/DependencyCheck/pull/8258))
+- fix: Suppress noisy WARN logging from Apache Lucene within Maven and Ant plugins ([#8248](https://github.com/dependency-check/DependencyCheck/pull/8248))
+- fix: [#8140](https://github.com/dependency-check/DependencyCheck/pull/8140) AssemblyAnalyzer version resolution issue ([#8352](https://github.com/dependency-check/DependencyCheck/pull/8352))
+- fix: [#8140](https://github.com/dependency-check/DependencyCheck/pull/8140) fix version resolution
+- fix: [#8140](https://github.com/dependency-check/DependencyCheck/pull/8140) hint azure_identity_library_for_.net
+- fix: [#8356](https://github.com/dependency-check/DependencyCheck/pull/8356) narrow down VersionFilterAnalyzer scope to JAR files ([#8358](https://github.com/dependency-check/DependencyCheck/pull/8358))
+- fix: correct parsing for CVSSv4 strings with Provider Urgency ([#8377](https://github.com/dependency-check/DependencyCheck/pull/8377))
+- fix: evidence source in Retire JS analyzer ([#8303](https://github.com/dependency-check/DependencyCheck/pull/8303))
+- fix: exclude deprecations from Yarn Berry audit results ([#8380](https://github.com/dependency-check/DependencyCheck/pull/8380))
+- fix: improve PEAnalyzer reliability by migrating to maintained PE/COFF 4J library fork ([#8245](https://github.com/dependency-check/DependencyCheck/pull/8245))
+- fix: improve configuration consistency (casing) ([#8355](https://github.com/dependency-check/DependencyCheck/pull/8355))
+- fix: improve logging of unexpected Java Errors during processing of NVD ([#8250](https://github.com/dependency-check/DependencyCheck/pull/8250))
+- fix: raw type warning in ProcessReader ([#8324](https://github.com/dependency-check/DependencyCheck/pull/8324))
+- fix: suppress false positives for zabbix-utils [#8087](https://github.com/dependency-check/DependencyCheck/pull/8087) ([#8218](https://github.com/dependency-check/DependencyCheck/pull/8218))
+- fix: update docs ([#8405](https://github.com/dependency-check/DependencyCheck/pull/8405))
+- fix: warn if deprecated configs are used ([#8366](https://github.com/dependency-check/DependencyCheck/pull/8366))
+- docs: define schema locations in XML examples ([#8254](https://github.com/dependency-check/DependencyCheck/pull/8254))
+- docs: document external data sources and hostnames ([#8219](https://github.com/dependency-check/DependencyCheck/pull/8219))
+- docs: ensure OSS Index URL override is consistently documented ([#8338](https://github.com/dependency-check/DependencyCheck/pull/8338))
+- docs: fix minor typo in README ([#8246](https://github.com/dependency-check/DependencyCheck/pull/8246))
+- chore: avoid use of parent pom and maven properties where unnecessary ([#8322](https://github.com/dependency-check/DependencyCheck/pull/8322))
+- chore: bump java development to 25.0 ([#8365](https://github.com/dependency-check/DependencyCheck/pull/8365))
+- chore: fix Charset warnings; preferring typed charsets ([#8326](https://github.com/dependency-check/DependencyCheck/pull/8326))
+- chore: fix Maven scm tags after 12.2.1-SNAPSHOT bump ([#8265](https://github.com/dependency-check/DependencyCheck/pull/8265))
+- chore: pin GitHub actions to specific SHAs rather than mutable tags ([#8381](https://github.com/dependency-check/DependencyCheck/pull/8381))
+- chore: remove unused properties and schemas ([#8378](https://github.com/dependency-check/DependencyCheck/pull/8378))
+- test: Make tests locale independent ([#8328](https://github.com/dependency-check/DependencyCheck/pull/8328))
+- test: [#8140](https://github.com/dependency-check/DependencyCheck/pull/8140) reproduce current behavior
+- test: avoid polluting test classpaths with sample dependencies to be scanned ([#8267](https://github.com/dependency-check/DependencyCheck/pull/8267))
+- build: improve GHA workflow experience for forks ([#8285](https://github.com/dependency-check/DependencyCheck/pull/8285))
+- build: use maven jdk toolchains to build with Java 25; test against Java 11/17/21/25 ([#8292](https://github.com/dependency-check/DependencyCheck/pull/8292))
+
+See the full listing of [changes](https://github.com/dependency-check/DependencyCheck/milestone/104?closed=1)
+
+## [Version 12.2.0](https://github.com/dependency-check/DependencyCheck/releases/tag/v12.2.0) (2026-01-09)
+
+- feat: package and utilize generated suppression file ([#8116](https://github.com/dependency-check/DependencyCheck/pull/8116))
+- feat: override pnpm audit registry parameter ([#8158](https://github.com/dependency-check/DependencyCheck/pull/8158))
+- feat: support multiple cvssBelow thresholds per version ([#2563](https://github.com/dependency-check/DependencyCheck/pull/2563)) ([#8024](https://github.com/dependency-check/DependencyCheck/pull/8024))
+- feat: usage telemetry via scarf ([#8066](https://github.com/dependency-check/DependencyCheck/pull/8066))
+- feat: add new suppression xsd allowing grouping of suppressions ([#7957](https://github.com/dependency-check/DependencyCheck/pull/7957))
+- fix: add hint for Elastic APM Java agent CPE mapping ([#8200](https://github.com/dependency-check/DependencyCheck/pull/8200))
+- fix: Allow NVD data feed metadata downloads to fail on 1st Jan while logging correct errors ([#8205](https://github.com/dependency-check/DependencyCheck/pull/8205))
+- fix: correct XML/JSON report CVSS field & HTML report URL mappings ([#8156](https://github.com/dependency-check/DependencyCheck/pull/8156))
+- fix: log GrokAssembly output when dotnet invocation fails ([#8141](https://github.com/dependency-check/DependencyCheck/pull/8141))
+- fix: correct reliability of Central etc (JCS cache) analyzers on Java 25/Docker by making CLI classpath deterministic  ([#8117](https://github.com/dependency-check/DependencyCheck/pull/8117))
+- fix(ant): resolve relative paths against basedir ([#8202](https://github.com/dependency-check/DependencyCheck/pull/8202))
+- fix(ant): resolve paths relative to basedir for suppression and output
+- docs: Update & correct README ([#8166](https://github.com/dependency-check/DependencyCheck/pull/8166))
+- docs: update suppression schema version ([#8136](https://github.com/dependency-check/DependencyCheck/pull/8136))
+- docs: fix typos in some files ([#8135](https://github.com/dependency-check/DependencyCheck/pull/8135))
+- chore: remove duplicate suppression rules from base that are in the generated branch ([#8138](https://github.com/dependency-check/DependencyCheck/pull/8138))
+- chore: remove suppression rules that were deleted from the generatedSuppression branch ([#8119](https://github.com/dependency-check/DependencyCheck/pull/8119))
+- build: transition dependency to `org.eclipse.parsson` groupId ([#8128](https://github.com/dependency-check/DependencyCheck/pull/8128))
+
+See the full listing of [changes](https://github.com/dependency-check/DependencyCheck/milestone/103?closed=1)
+
 ## [Version 12.1.9](https://github.com/dependency-check/DependencyCheck/releases/tag/v12.1.9) (2025-11-11)
 
 - fix: correct bundle audit gem in Dockerfile ([#8121](https://github.com/dependency-check/DependencyCheck/pull/8121))
 - fix: normalization during comparisons ([#8046](https://github.com/dependency-check/DependencyCheck/pull/8046))
-- docs: document multiple configurations for gradle ([#8111](https://github.com/dependency-check/DependencyCheck/pull/8111))
-- docs: fix typos in some files ([#8106](https://github.com/dependency-check/DependencyCheck/pull/8106))
-- docs: Update SBT plugin link; fix dead report link ([#8086](https://github.com/dependency-check/DependencyCheck/pull/8086))
-- chore: Replace deprecated lucene methods ([#8079](https://github.com/dependency-check/DependencyCheck/pull/8079))
-- docs: fix [#8076](https://github.com/dependency-check/DependencyCheck/pull/8076) - Error in documentation "Suppressing False Positives" ([#8077](https://github.com/dependency-check/DependencyCheck/pull/8077))
 - fix(fp): Improve false positive suppression for matches against golang web_project ([#8059](https://github.com/dependency-check/DependencyCheck/pull/8059))
 - fix(fp): Consolidate/update icu4j suppressions for false positives ([#8062](https://github.com/dependency-check/DependencyCheck/pull/8062))
 - fix(fp): Correct GRPC java suppressions for newer C/C++/native false positives ([#8063](https://github.com/dependency-check/DependencyCheck/pull/8063))
 - fix(fp): Suppress false positive CPEs for protobuf-java per [#7854](https://github.com/dependency-check/DependencyCheck/pull/7854) ([#8064](https://github.com/dependency-check/DependencyCheck/pull/8064))
+- docs: document multiple configurations for gradle ([#8111](https://github.com/dependency-check/DependencyCheck/pull/8111))
+- docs: fix typos in some files ([#8106](https://github.com/dependency-check/DependencyCheck/pull/8106))
+- docs: Update SBT plugin link; fix dead report link ([#8086](https://github.com/dependency-check/DependencyCheck/pull/8086))
+- docs: fix [#8076](https://github.com/dependency-check/DependencyCheck/pull/8076) - Error in documentation "Suppressing False Positives" ([#8077](https://github.com/dependency-check/DependencyCheck/pull/8077))
+- chore: Replace deprecated lucene methods ([#8079](https://github.com/dependency-check/DependencyCheck/pull/8079))
 
 See the full listing of [changes](https://github.com/dependency-check/DependencyCheck/milestone/102?closed=1)
 
 ## [Version 12.1.8](https://github.com/dependency-check/DependencyCheck/releases/tag/v12.1.8) (2025-10-13)
 
 - fix: improve VulnerableSoftware comparison ([#8031](https://github.com/dependency-check/DependencyCheck/pull/8031))
-- build: fix flaky central test ([#8039](https://github.com/dependency-check/DependencyCheck/pull/8039))
 - docs: Improve Gradle docs wrt experimental analyzers, use of Central and Proxy configuration ([#8036](https://github.com/dependency-check/DependencyCheck/pull/8036))
 - docs: add note about central analyzer for gradle ([#8038](https://github.com/dependency-check/DependencyCheck/pull/8038))
+- build: fix flaky central test ([#8039](https://github.com/dependency-check/DependencyCheck/pull/8039))
 
 See the full listing of [changes](https://github.com/dependency-check/DependencyCheck/milestone/101?closed=1)
 
@@ -55,7 +148,7 @@ See the full listing of [changes](https://github.com/dependency-check/Dependency
 ## [Version 12.1.5](https://github.com/dependency-check/DependencyCheck/releases/tag/v12.1.5) (2025-09-20)
 
 - **fix**: Update to support OSS Index Authentication Requirements ([#7920](https://github.com/dependency-check/DependencyCheck/pull/7920))
-  - Note: OSS Index will require authentication starting 9/22/2025. Users must configure a free account to continue using the OSS Index Analyzer. See https://ossindex.sonatype.org/doc/auth-required.
+  - Note: OSS Index will require authentication starting 9/22/2025. Users must configure a free account to continue using the OSS Index Analyzer.
 - fix: add CVSSv4 to suppressed entries in JSON report ([#7900](https://github.com/dependency-check/DependencyCheck/pull/7900))
 - fix: correctly utilize CVSSv4 from ossindex ([#7899](https://github.com/dependency-check/DependencyCheck/pull/7899))
 - fix: npe when processing cve with empty configuration ([#7888](https://github.com/dependency-check/DependencyCheck/pull/7888))
@@ -124,10 +217,10 @@ See the full listing of [changes](https://github.com/dependency-check/Dependency
 
 ## [Version 12.1.0](https://github.com/dependency-check/DependencyCheck/releases/tag/v12.1.0) (2025-02-16)
 
+- feat: Implement Yarn Berry Analyser ([#7319](https://github.com/dependency-check/DependencyCheck/pull/7319))
+- fix: Improve thread safety issue [#7338](https://github.com/dependency-check/DependencyCheck/pull/7338) alternative ([#7367](https://github.com/dependency-check/DependencyCheck/pull/7367))
 - build(deps): bump open-vulnerability-client to 7.2.2 ([#7407](https://github.com/dependency-check/DependencyCheck/pull/7407))
   - resolves issue with downloading data from the NVD ([#7406](https://github.com/dependency-check/DependencyCheck/pull/7406))
-- fix: Improve thread safety issue [#7338](https://github.com/dependency-check/DependencyCheck/pull/7338) alternative ([#7367](https://github.com/dependency-check/DependencyCheck/pull/7367))
-- feat: Implement Yarn Berry Analyser ([#7319](https://github.com/dependency-check/DependencyCheck/pull/7319))
 
 See the full listing of [changes](https://github.com/dependency-check/DependencyCheck/milestone/94?closed=1)
 
@@ -143,17 +236,15 @@ See the full listing of [changes](https://github.com/dependency-check/Dependency
 
 ## [Version 12.0.1](https://github.com/dependency-check/DependencyCheck/releases/tag/v12.0.1) (2025-01-19)
 
-- docs: Fix OSS Index Maven config documentation ([#7322](https://github.com/dependency-check/DependencyCheck/pull/7322))
-- Fix OSS Index Maven config documentation
-- chore(docs): Document Gradle plugin support for failBuildOnUnusedSuppressionRule ([#7307](https://github.com/dependency-check/DependencyCheck/pull/7307))
-- chore(docs): Correct analyzers config example to use Gradle dot-syntax ([#7305](https://github.com/dependency-check/DependencyCheck/pull/7305))
 - fix: improve error message on improperly configured serverId credentials in settings.xml ([#7313](https://github.com/dependency-check/DependencyCheck/pull/7313))
 - fix: Lower Basic serverId when Bearer was expected to a warning
 - fix: improve error message on improperly configured serverId credentials
 - fix: Correct nonProxyHosts support when no sys properties set ([#7306](https://github.com/dependency-check/DependencyCheck/pull/7306))
-- core(docs): Group failBuildOnUnusedSuppressionRule flag next to suppression file configuration
-- core(docs): Update Gradle plugin documentation for failBuildOnUnusedSuppressionRule support
-- fix: Correct nonProxyHosts support when no sys properties set
+- docs: Fix OSS Index Maven config documentation ([#7322](https://github.com/dependency-check/DependencyCheck/pull/7322))
+- chore(docs): Document Gradle plugin support for failBuildOnUnusedSuppressionRule ([#7307](https://github.com/dependency-check/DependencyCheck/pull/7307))
+- chore(docs): Correct analyzers config example to use Gradle dot-syntax ([#7305](https://github.com/dependency-check/DependencyCheck/pull/7305))
+- chore(docs): Group failBuildOnUnusedSuppressionRule flag next to suppression file configuration
+- chore(docs): Update Gradle plugin documentation for failBuildOnUnusedSuppressionRule support
 - chore(docs): Correct analyzers config example to use Gradle dot-syntax
 
 See the full listing of [changes](https://github.com/dependency-check/DependencyCheck/milestone/92?closed=1). 
@@ -183,10 +274,10 @@ See the full listing of [changes](https://github.com/dependency-check/Dependency
 - fix: do not log loading of JDBC driver ([#7155](https://github.com/dependency-check/DependencyCheck/pull/7155))
 - fix: expose flag to disable version check ([#7147](https://github.com/dependency-check/DependencyCheck/pull/7147))
 - fix: Gracefully handle CVEs with bad configuration nodes missing CPE match expressions ([#7125](https://github.com/dependency-check/DependencyCheck/pull/7125))
-- chore: cleanup base suppression ([#7138](https://github.com/dependency-check/DependencyCheck/pull/7138))
 - docs: update gradle configuration documentation ([#7176](https://github.com/dependency-check/DependencyCheck/pull/7176))
 - docs: update documentation for Gradle plugin ([#7143](https://github.com/dependency-check/DependencyCheck/pull/7143))
 - docs: improve false positive issue templat ([#7130](https://github.com/dependency-check/DependencyCheck/pull/7130))
+- chore: cleanup base suppression ([#7138](https://github.com/dependency-check/DependencyCheck/pull/7138))
 
 See the full listing of [changes](https://github.com/dependency-check/DependencyCheck/milestone/90?closed=1). 
 
@@ -222,13 +313,13 @@ See the full listing of [changes](https://github.com/dependency-check/Dependency
 - fix: Fixup the missing addition of NVD API Datafeed credentials (if configured)
 - fix: Fixup broken proxy authentication in first attempt; extend to include KEV downloads
 - fix: store timestamps locally for local resources ([#6936](https://github.com/dependency-check/DependencyCheck/pull/6936))
-- build: Remove the animal-sniffer, propagate java version to plugin-archetype ([#6950](https://github.com/dependency-check/DependencyCheck/pull/6950))
-- build: Update Checkstyle configuration and Suppression DTD references ([#6951](https://github.com/dependency-check/DependencyCheck/pull/6951))
-- chore: Update test db schema ([#7036](https://github.com/dependency-check/DependencyCheck/pull/7036))
-- chore: remove old, unneeded database upgrade script
 - docs: reformat javadoc ([#7009](https://github.com/dependency-check/DependencyCheck/pull/7009))
 - docs: Fixup javadoc warnings ([#6995](https://github.com/dependency-check/DependencyCheck/pull/6995))
+- chore: Update test db schema ([#7036](https://github.com/dependency-check/DependencyCheck/pull/7036))
+- chore: remove old, unneeded database upgrade script
 - chore: Replace use of several deprecated methods/classes by their successors ([#6933](https://github.com/dependency-check/DependencyCheck/pull/6933))
+- build: Remove the animal-sniffer, propagate java version to plugin-archetype ([#6950](https://github.com/dependency-check/DependencyCheck/pull/6950))
+- build: Update Checkstyle configuration and Suppression DTD references ([#6951](https://github.com/dependency-check/DependencyCheck/pull/6951))
 
 See the full listing of [changes](https://github.com/dependency-check/DependencyCheck/milestone/87?closed=1). 
 
@@ -1272,7 +1363,7 @@ See the full listing of [resolved issues](https://github.com/dependency-check/De
 - **Breaking:** The NVD CVE data import now uses the JSON data feeds instead of the XML data feeds.
   - The parameter names have changed if you are mirroring the data feeds locally.
 - **Breaking:** For developers using the core engine the identifiers have been drastically changed;
-  ODC now uses [Package URL](https://github.com/package-url/packageurl-java) for software
+  ODC now uses [Package URL](https://github.com/package-url/purl-spec) for software
   identifiers and CPE objects from [CPE-Parser](https://github.com/stevespringett/CPE-Parser)
   for vulnerable library identifiers.
 - All of the report formats have been updated to include the additional data from the NVD CVE JSON data feeds.
@@ -1414,7 +1505,7 @@ See the full listing of [resolved issues](https://github.com/dependency-check/De
 
 - Excess white space has been removed from the XML and HTML reports; the JSON report is still pretty printed (a future release will convert this to a configurable option)
 - Better error reporting
-- Changed to use commons-text instead of commons-lang3 as a portion of commons-lang3 was moved to commonts-text
+- Changed to use commons-text instead of commons-lang3 as a portion of commons-lang3 was moved to commons-text
 - Added more flexible suppression rules with the introduction of the `until` attribute (see [#1145](https://github.com/dependency-check/DependencyCheck/issues/1145) and [dependency-suppression.1.2.xsd](https://dependency-check.github.io/DependencyCheck/dependency-suppression.1.2.xsd)
 
 ### Fixed

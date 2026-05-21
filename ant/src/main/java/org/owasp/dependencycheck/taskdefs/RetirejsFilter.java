@@ -23,6 +23,8 @@ package org.owasp.dependencycheck.taskdefs;
  *
  * @author Jeremy Long
  */
+// Poorly named class that doesn't match RetireJsFilter,
+// see https://github.com/dependency-check/DependencyCheck/pull/8355#discussion_r2901538854
 public class RetirejsFilter {
 
     /**

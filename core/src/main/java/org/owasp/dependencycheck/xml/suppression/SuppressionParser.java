@@ -28,19 +28,20 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 import javax.annotation.concurrent.ThreadSafe;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.parsers.SAXParser;
+
 import org.apache.commons.io.ByteOrderMark;
 import org.apache.commons.io.input.BOMInputStream;
 
-import org.owasp.dependencycheck.utils.FileUtils;
+import org.owasp.dependencycheck.utils.AutoCloseableInputSource;
 import org.owasp.dependencycheck.utils.XmlUtils;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
+
+import static org.owasp.dependencycheck.utils.AutoCloseableInputSource.fromResource;
 
 /**
  * A simple validating parser for XML Suppression Rules.
@@ -105,12 +106,11 @@ public class SuppressionParser {
      */
     public List<SuppressionRule> parseSuppressionRules(InputStream inputStream)
             throws SuppressionParseException, SAXException {
-        try (
-                InputStream schemaStream14 = FileUtils.getResourceAsStream(SUPPRESSION_SCHEMA_1_4);
-                InputStream schemaStream13 = FileUtils.getResourceAsStream(SUPPRESSION_SCHEMA_1_3);
-                InputStream schemaStream12 = FileUtils.getResourceAsStream(SUPPRESSION_SCHEMA_1_2);
-                InputStream schemaStream11 = FileUtils.getResourceAsStream(SUPPRESSION_SCHEMA_1_1);
-                InputStream schemaStream10 = FileUtils.getResourceAsStream(SUPPRESSION_SCHEMA_1_0)) {
+        try (AutoCloseableInputSource schemaStream14 = fromResource(SUPPRESSION_SCHEMA_1_4);
+             AutoCloseableInputSource schemaStream13 = fromResource(SUPPRESSION_SCHEMA_1_3);
+             AutoCloseableInputSource schemaStream12 = fromResource(SUPPRESSION_SCHEMA_1_2);
+             AutoCloseableInputSource schemaStream11 = fromResource(SUPPRESSION_SCHEMA_1_1);
+             AutoCloseableInputSource schemaStream10 = fromResource(SUPPRESSION_SCHEMA_1_0)) {
 
             final BOMInputStream bomStream = BOMInputStream.builder().setInputStream(inputStream).get();
             final ByteOrderMark bom = bomStream.getBOM();
@@ -118,11 +118,9 @@ public class SuppressionParser {
             final String charsetName = bom == null ? defaultEncoding : bom.getCharsetName();
 
             final SuppressionHandler handler = new SuppressionHandler();
-            final SAXParser saxParser = XmlUtils.buildSecureSaxParser(schemaStream14, schemaStream13, schemaStream12, schemaStream11, schemaStream10);
-            final XMLReader xmlReader = saxParser.getXMLReader();
+            final XMLReader xmlReader = XmlUtils.buildSecureValidatingXmlReader(schemaStream14, schemaStream13, schemaStream12, schemaStream11, schemaStream10);
             xmlReader.setErrorHandler(new SuppressionErrorHandler());
             xmlReader.setContentHandler(handler);
-            xmlReader.setEntityResolver(new ClassloaderResolver());
             try (Reader reader = new InputStreamReader(bomStream, charsetName)) {
                 final InputSource in = new InputSource(reader);
                 xmlReader.parse(in);
@@ -141,24 +139,4 @@ public class SuppressionParser {
         }
     }
 
-    /**
-     * Load HTTPS schema resources locally from the JAR files resources.
-     */
-    private static class ClassloaderResolver implements EntityResolver {
-
-        @Override
-        public InputSource resolveEntity(String publicId, String systemId) throws SAXException, IOException {
-
-            if (systemId != null && systemId.startsWith("https://jeremylong.github.io/DependencyCheck/")) {
-                final String resource = "schema/" + systemId.substring(45);
-                final InputStream in = SuppressionParser.class.getClassLoader().getResourceAsStream(resource);
-                if (in != null) {
-                    final InputSource source = new InputSource(in);
-                    source.setSystemId(systemId);
-                    return source;
-                }
-            }
-            return null;
-        }
-    }
 }

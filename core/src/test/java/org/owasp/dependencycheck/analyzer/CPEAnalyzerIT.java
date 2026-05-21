@@ -109,13 +109,12 @@ class CPEAnalyzerIT extends BaseDBTestCase {
             cpeSuppression.initialize(getSettings());
             cpeSuppression.prepare(e);
 
-            //callDetermineCPE_full("hazelcast-2.5.jar", "cpe:2.3:a:hazelcast:hazelcast:2.5:*:*:*:*:*:*:*", cpeAnalyzer, fnAnalyzer, jarAnalyzer, hAnalyzer, fp, cpeSuppression);
-            callDetermineCPE_full("spring-context-support-2.5.5.jar", "cpe:2.3:a:springsource:spring_framework:2.5.5:*:*:*:*:*:*:*", cpeAnalyzer, fnAnalyzer, jarAnalyzer, hAnalyzer, fp, cpeSuppression);
+            callDetermineCPE_full("maven-lib/spring-context-support-2.5.5.jar", "cpe:2.3:a:springsource:spring_framework:2.5.5:*:*:*:*:*:*:*", cpeAnalyzer, fnAnalyzer, jarAnalyzer, hAnalyzer, fp, cpeSuppression);
             callDetermineCPE_full("spring-core-3.0.0.RELEASE.jar", "cpe:2.3:a:pivotal_software:spring_framework:3.0.0:release:*:*:*:*:*:*", cpeAnalyzer, fnAnalyzer, jarAnalyzer, hAnalyzer, fp, cpeSuppression);
             callDetermineCPE_full("spring-core-3.0.0.RELEASE.jar", "cpe:2.3:a:springsource:spring_framework:3.0.0:release:*:*:*:*:*:*", cpeAnalyzer, fnAnalyzer, jarAnalyzer, hAnalyzer, fp, cpeSuppression);
             callDetermineCPE_full("jaxb-xercesImpl-1.5.jar", null, cpeAnalyzer, fnAnalyzer, jarAnalyzer, hAnalyzer, fp, cpeSuppression);
-            callDetermineCPE_full("ehcache-core-2.2.0.jar", null, cpeAnalyzer, fnAnalyzer, jarAnalyzer, hAnalyzer, fp, cpeSuppression);
-            callDetermineCPE_full("xstream-1.4.8.jar", "cpe:2.3:a:xstream_project:xstream:1.4.8:*:*:*:*:*:*:*", cpeAnalyzer, fnAnalyzer, jarAnalyzer, hAnalyzer, fp, cpeSuppression);
+            callDetermineCPE_full("maven-lib/ehcache-core-2.2.0.jar", null, cpeAnalyzer, fnAnalyzer, jarAnalyzer, hAnalyzer, fp, cpeSuppression);
+            callDetermineCPE_full("maven-lib/xstream-1.4.8.jar", "cpe:2.3:a:xstream_project:xstream:1.4.8:*:*:*:*:*:*:*", cpeAnalyzer, fnAnalyzer, jarAnalyzer, hAnalyzer, fp, cpeSuppression);
         } finally {
             cpeAnalyzer.close();
         }
@@ -137,7 +136,6 @@ class CPEAnalyzerIT extends BaseDBTestCase {
     private void callDetermineCPE_full(String depName, String expResult, CPEAnalyzer cpeAnalyzer, FileNameAnalyzer fnAnalyzer,
             JarAnalyzer jarAnalyzer, HintAnalyzer hAnalyzer, FalsePositiveAnalyzer fp, CpeSuppressionAnalyzer cpeSuppression) throws Exception {
 
-        //File file = new File(this.getClass().getClassLoader().getResource(depName).getPath());
         File file = BaseTest.getResourceAsFile(this, depName);
 
         Dependency dep = new Dependency(file);
@@ -170,9 +168,7 @@ class CPEAnalyzerIT extends BaseDBTestCase {
      */
     @Test
     void testDetermineCPE() throws Exception {
-        //File file = new File(this.getClass().getClassLoader().getResource("struts2-core-2.1.2.jar").getPath());
-        File file = BaseTest.getResourceAsFile(this, "struts2-core-2.1.2.jar");
-        //File file = new File(this.getClass().getClassLoader().getResource("axis2-adb-1.4.1.jar").getPath());
+        File file = BaseTest.getResourceAsFile(this, "maven-lib/struts2-core-2.1.2.jar");
         Dependency struts = new Dependency(file);
         try (Engine engine = new Engine(getSettings())) {
             CpeSuppressionAnalyzer suppressionAnalyzer = new CpeSuppressionAnalyzer();
@@ -192,19 +188,16 @@ class CPEAnalyzerIT extends BaseDBTestCase {
 
             jarAnalyzer.analyze(struts, engine);
             hintAnalyzer.analyze(struts, engine);
-            //File fileCommonValidator = new File(this.getClass().getClassLoader().getResource("commons-validator-1.4.0.jar").getPath());
             File fileCommonValidator = BaseTest.getResourceAsFile(this, "commons-validator-1.4.0.jar");
             Dependency commonValidator = new Dependency(fileCommonValidator);
             jarAnalyzer.analyze(commonValidator, engine);
             hintAnalyzer.analyze(commonValidator, engine);
 
-            //File fileSpring = new File(this.getClass().getClassLoader().getResource("spring-core-2.5.5.jar").getPath());
-            File fileSpring = BaseTest.getResourceAsFile(this, "spring-core-2.5.5.jar");
+            File fileSpring = BaseTest.getResourceAsFile(this, "maven-lib/spring-core-2.5.5.jar");
             Dependency spring = new Dependency(fileSpring);
             jarAnalyzer.analyze(spring, engine);
             hintAnalyzer.analyze(spring, engine);
 
-            //File fileSpring3 = new File(this.getClass().getClassLoader().getResource("spring-core-3.0.0.RELEASE.jar").getPath());
             File fileSpring3 = BaseTest.getResourceAsFile(this, "spring-core-3.0.0.RELEASE.jar");
             Dependency spring3 = new Dependency(fileSpring3);
             jarAnalyzer.analyze(spring3, engine);

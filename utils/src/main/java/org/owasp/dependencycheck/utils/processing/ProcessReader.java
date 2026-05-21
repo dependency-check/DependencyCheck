@@ -127,7 +127,7 @@ public class ProcessReader implements AutoCloseable {
      *
      * @param p a reference to the processor to start.
      */
-    private void startProcessor(Processor p) {
+    private void startProcessor(Processor<InputStream> p) {
         if (p != null) {
             final Thread t = new Thread(p);
             threads.add(t);
@@ -178,7 +178,7 @@ public class ProcessReader implements AutoCloseable {
         public void run() {
             try {
                 final InputStream inputStream = getInput();
-                text = IOUtils.toString(inputStream, StandardCharsets.UTF_8.name());
+                text = IOUtils.toString(inputStream, StandardCharsets.UTF_8);
 
             } catch (IOException ex) {
                 exception = ex;

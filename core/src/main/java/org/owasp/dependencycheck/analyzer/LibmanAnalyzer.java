@@ -47,6 +47,8 @@ import java.nio.file.Files;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static org.owasp.dependencycheck.utils.FileUtils.existsWithContent;
+
 /**
  * Analyzer which parses a libman.json file to gather module information.
  *
@@ -161,7 +163,7 @@ public class LibmanAnalyzer extends AbstractFileTypeAnalyzer {
 
         final File dependencyFile = dependency.getActualFile();
 
-        if (!dependencyFile.isFile() || dependencyFile.length() == 0) {
+        if (!existsWithContent(dependencyFile)) {
             return;
         }
 

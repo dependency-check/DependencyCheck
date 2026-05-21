@@ -30,6 +30,8 @@ import java.io.File;
 import java.util.HashSet;
 import java.util.Set;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.contains;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -118,8 +120,7 @@ class DependencyTest extends BaseTest {
      */
     @Test
     void testGetMd5sum() {
-        //File file = new File(this.getClass().getClassLoader().getResource("struts2-core-2.1.2.jar").getPath());
-        File file = BaseTest.getResourceAsFile(this, "struts2-core-2.1.2.jar");
+        File file = BaseTest.getResourceAsFile(this, "maven-lib/struts2-core-2.1.2.jar");
 
         Dependency instance = new Dependency(file);
         //assertEquals("89CE9E36AA9A9E03F1450936D2F4F8DD0F961F8B", result.getSha1sum());
@@ -145,8 +146,7 @@ class DependencyTest extends BaseTest {
      */
     @Test
     void testGetSha1sum() {
-        //File file = new File(this.getClass().getClassLoader().getResource("struts2-core-2.1.2.jar").getPath());
-        File file = BaseTest.getResourceAsFile(this, "struts2-core-2.1.2.jar");
+        File file = BaseTest.getResourceAsFile(this, "maven-lib/struts2-core-2.1.2.jar");
         Dependency instance = new Dependency(file);
         //String expResult = "89CE9E36AA9A9E03F1450936D2F4F8DD0F961F8B";
         String expResult = "89ce9e36aa9a9e03f1450936d2f4f8dd0f961f8b";
@@ -159,7 +159,7 @@ class DependencyTest extends BaseTest {
      */
     @Test
     void testGetSha256sum() {
-        File file = BaseTest.getResourceAsFile(this, "struts2-core-2.1.2.jar");
+        File file = BaseTest.getResourceAsFile(this, "maven-lib/struts2-core-2.1.2.jar");
         Dependency instance = new Dependency(file);
         String expResult = "5c1847a10800027254fcd0073385cceb46b1dacee061f3cd465e314bec592e81";
         String result = instance.getSha256sum();
@@ -289,5 +289,24 @@ class DependencyTest extends BaseTest {
         assertFalse(instance.getSoftwareIdentifiers().isEmpty());
 
         instance.getSoftwareIdentifiers().forEach((i) -> assertNotNull(i.getUrl()));
+    }
+
+    @Test
+    void sortsProjectReferences() {
+        Dependency instance = new Dependency();
+        instance.addAllProjectReferences(Set.of("c", "b", "a"));
+        assertThat(instance.getProjectReferencesSorted(), contains("a", "b", "c"));
+    }
+
+    @Test
+    void sortsIncludedByReferences() {
+        Dependency instance = new Dependency();
+        IncludedByReference ref1 = new IncludedByReference("ref1", null);
+        IncludedByReference ref1Typed = new IncludedByReference("ref1", "type1");
+        IncludedByReference ref2 = new IncludedByReference("ref2", null);
+        IncludedByReference ref2Typed = new IncludedByReference("ref2", "type1");
+        IncludedByReference ref1OtherType = new IncludedByReference("ref1", "type2");
+        instance.addAllIncludedBy(Set.of(ref1, ref1Typed, ref1OtherType, ref2, ref2Typed));
+        assertThat(instance.getIncludedBySorted(), contains(ref1, ref2, ref1Typed, ref2Typed, ref1OtherType));
     }
 }

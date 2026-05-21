@@ -61,11 +61,9 @@ class FileNameAnalyzerTest extends BaseTest {
      */
     @Test
     void testAnalyze() throws Exception {
-        //File struts = new File(this.getClass().getClassLoader().getResource("struts2-core-2.1.2.jar").getPath());
-        File struts = BaseTest.getResourceAsFile(this, "struts2-core-2.1.2.jar");
+        File struts = BaseTest.getResourceAsFile(this, "maven-lib/struts2-core-2.1.2.jar");
         Dependency resultStruts = new Dependency(struts);
-        //File axis = new File(this.getClass().getClassLoader().getResource("axis2-adb-1.4.1.jar").getPath());
-        File axis = BaseTest.getResourceAsFile(this, "axis2-adb-1.4.1.jar");
+        File axis = BaseTest.getResourceAsFile(this, "maven-lib/axis2-adb-1.4.1.jar");
         Dependency resultAxis = new Dependency(axis);
         FileNameAnalyzer instance = new FileNameAnalyzer();
         instance.analyze(resultStruts, null);

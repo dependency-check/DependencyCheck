@@ -107,8 +107,7 @@ public class PomParser {
     public Model parse(InputStream inputStream) throws PomParseException {
         try {
             final PomHandler handler = new PomHandler();
-            final SAXParser saxParser = XmlUtils.buildSecureSaxParser();
-            final XMLReader xmlReader = saxParser.getXMLReader();
+            final XMLReader xmlReader = XmlUtils.buildSecureXmlReader();
             xmlReader.setContentHandler(handler);
 
             final BOMInputStream bomStream = BOMInputStream.builder()
@@ -138,8 +137,7 @@ public class PomParser {
     public Model parseWithoutDocTypeCleanup(InputStream inputStream) throws PomParseException {
         try {
             final PomHandler handler = new PomHandler();
-            final SAXParser saxParser = XmlUtils.buildSecureSaxParser();
-            final XMLReader xmlReader = saxParser.getXMLReader();
+            final XMLReader xmlReader = XmlUtils.buildSecureXmlReader();
             xmlReader.setContentHandler(handler);
 
             final BOMInputStream bomStream = BOMInputStream.builder().setInputStream(new XmlInputStream(inputStream)).get();

@@ -17,6 +17,7 @@
  */
 package org.owasp.dependencycheck.analyzer;
 
+import com.google.common.annotations.VisibleForTesting;
 import org.owasp.dependencycheck.Engine;
 import org.owasp.dependencycheck.analyzer.exception.AnalysisException;
 import org.owasp.dependencycheck.dependency.Dependency;
@@ -248,9 +249,6 @@ public class HintAnalyzer extends AbstractAnalyzer {
         final HintParser parser = new HintParser();
         File file = null;
         try (InputStream in = FileUtils.getResourceAsStream(HINT_RULE_FILE_NAME)) {
-            if (in == null) {
-                throw new HintParseException("Hint rules `" + HINT_RULE_FILE_NAME + "` could not be found");
-            }
             parser.parseHints(in);
         } catch (SAXException | IOException ex) {
             throw new HintParseException("Error parsing hints: " + ex.getMessage(), ex);
@@ -299,23 +297,19 @@ public class HintAnalyzer extends AbstractAnalyzer {
                     }
                 }
 
-                if (file == null) {
-                    throw new HintParseException("Unable to locate hints file:" + filePath);
-                } else {
-                    try {
-                        parser.parseHints(file);
-                        if (parser.getHintRules() != null && !parser.getHintRules().isEmpty()) {
-                            localHints.addAll(parser.getHintRules());
-                        }
-                        if (parser.getVendorDuplicatingHintRules() != null && !parser.getVendorDuplicatingHintRules().isEmpty()) {
-                            localVendorHints.addAll(parser.getVendorDuplicatingHintRules());
-                        }
-                    } catch (HintParseException ex) {
-                        LOGGER.warn("Unable to parse hint rule xml file '{}'", file.getPath());
-                        LOGGER.warn(ex.getMessage());
-                        LOGGER.debug("", ex);
-                        throw ex;
+                try {
+                    parser.parseHints(file);
+                    if (parser.getHintRules() != null && !parser.getHintRules().isEmpty()) {
+                        localHints.addAll(parser.getHintRules());
                     }
+                    if (parser.getVendorDuplicatingHintRules() != null && !parser.getVendorDuplicatingHintRules().isEmpty()) {
+                        localVendorHints.addAll(parser.getVendorDuplicatingHintRules());
+                    }
+                } catch (HintParseException ex) {
+                    LOGGER.warn("Unable to parse hint rule xml file '{}'", file.getPath());
+                    LOGGER.warn(ex.getMessage());
+                    LOGGER.debug("", ex);
+                    throw ex;
                 }
             } catch (DownloadFailedException ex) {
                 throw new HintParseException("Unable to fetch the configured hint file", ex);
@@ -333,5 +327,15 @@ public class HintAnalyzer extends AbstractAnalyzer {
         vendorHints = localVendorHints.toArray(new VendorDuplicatingHintRule[0]);
         LOGGER.debug("{} hint rules were loaded.", hints.length);
         LOGGER.debug("{} duplicating hint rules were loaded.", vendorHints.length);
+    }
+
+    @VisibleForTesting
+    HintRule[] getHintRules() {
+        return hints;
+    }
+
+    @VisibleForTesting
+    VendorDuplicatingHintRule[] getVendorDuplicatingHintRules() {
+        return vendorHints;
     }
 }

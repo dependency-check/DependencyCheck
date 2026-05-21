@@ -68,7 +68,7 @@ public abstract class BaseDBTestCase extends BaseTest {
             if (!dataPath.exists() || !dataFile.exists()) {
                 LOGGER.trace("Extracting database to {}", dataPath);
                 dataPath.mkdirs();
-                File path = new File(BaseDBTestCase.class.getClassLoader().getResource("data.zip").toURI().getPath());
+                File path = BaseTest.getResourceAsFile(this, "data.zip");
                 try (FileInputStream fis = new FileInputStream(path);
                         ZipInputStream zin = new ZipInputStream(new BufferedInputStream(fis))) {
                     ZipEntry entry;

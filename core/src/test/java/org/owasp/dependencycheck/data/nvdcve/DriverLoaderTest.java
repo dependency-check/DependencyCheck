@@ -73,8 +73,6 @@ class DriverLoaderTest extends BaseTest {
     @Test
     void testLoad_String_String() throws Exception {
         String className = "com.mysql.jdbc.Driver";
-        //we know this is in target/test-classes
-        //File testClassPath = (new File(this.getClass().getClassLoader().getResource("org.mortbay.jetty.jar").getPath())).getParentFile();
         File testClassPath = BaseTest.getResourceAsFile(this, "org.mortbay.jetty.jar").getParentFile();
         File driver = new File(testClassPath, "../../src/test/resources/mysql-connector-java-5.1.27-bin.jar");
         assertTrue(driver.isFile(), "MySQL Driver JAR file not found in src/test/resources?");

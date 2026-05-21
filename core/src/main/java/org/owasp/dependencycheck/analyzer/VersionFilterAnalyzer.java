@@ -17,6 +17,7 @@
  */
 package org.owasp.dependencycheck.analyzer;
 
+import java.io.FileFilter;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
@@ -27,8 +28,10 @@ import org.owasp.dependencycheck.analyzer.exception.AnalysisException;
 import org.owasp.dependencycheck.dependency.Dependency;
 import org.owasp.dependencycheck.dependency.Evidence;
 import org.owasp.dependencycheck.dependency.EvidenceType;
+import org.owasp.dependencycheck.exception.InitializationException;
 import org.owasp.dependencycheck.utils.DependencyVersion;
 import org.owasp.dependencycheck.utils.DependencyVersionUtil;
+import org.owasp.dependencycheck.utils.FileFilterBuilder;
 import org.owasp.dependencycheck.utils.Settings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,7 +45,7 @@ import org.slf4j.LoggerFactory;
  * @author Jeremy Long
  */
 @ThreadSafe
-public class VersionFilterAnalyzer extends AbstractAnalyzer {
+public class VersionFilterAnalyzer extends AbstractFileTypeAnalyzer {
 
     /**
      * The Logger for use throughout the class
@@ -87,6 +90,10 @@ public class VersionFilterAnalyzer extends AbstractAnalyzer {
      * The phase that this analyzer is intended to run in.
      */
     private static final AnalysisPhase ANALYSIS_PHASE = AnalysisPhase.POST_INFORMATION_COLLECTION3;
+    /**
+     * The file filter used to determine which files this analyzer supports.
+     */
+    private static final FileFilter FILTER = FileFilterBuilder.newInstance().addExtensions("jar").build();
 
     //</editor-fold>
     //<editor-fold defaultstate="collapsed" desc="Standard implementation of Analyzer">
@@ -118,6 +125,29 @@ public class VersionFilterAnalyzer extends AbstractAnalyzer {
     @Override
     protected String getAnalyzerEnabledSettingKey() {
         return Settings.KEYS.ANALYZER_VERSION_FILTER_ENABLED;
+    }
+
+    /**
+     * Returns the FileFilter used to determine which files this analyzer
+     * supports (JAR files only).
+     *
+     * @return the file filter for JAR files
+     */
+    @Override
+    protected FileFilter getFileFilter() {
+        return FILTER;
+    }
+
+    /**
+     * No initialization required for this analyzer.
+     *
+     * @param engine a reference to the dependency-check engine
+     * @throws InitializationException thrown if there is an exception during
+     * initialization
+     */
+    @Override
+    public void prepareFileTypeAnalyzer(Engine engine) throws InitializationException {
+        //nothing to initialize
     }
     //</editor-fold>
 

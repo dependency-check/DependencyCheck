@@ -9,9 +9,9 @@ function convert() {
 
             $('#coord').text(
                     '<dependency>\n' +
-                    '   <groupId>' + pobj.namespace + '</groupId>\n' +
-                    '   <artifactId>' + pobj.name + '</artifactId>\n' +
-                    '   <version>' + pobj.version + '</version>\n' +
+                    '  <groupId>' + pobj.namespace + '</groupId>\n' +
+                    '  <artifactId>' + pobj.name + '</artifactId>\n' +
+                    '  <version>' + pobj.version + '</version>\n' +
                     '</dependency>\n'
                     );
             copyToClipboard();

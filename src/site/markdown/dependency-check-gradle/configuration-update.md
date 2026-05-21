@@ -32,27 +32,13 @@ check.dependsOn dependencyCheckUpdate
 #### Example
 ```groovy
 dependencyCheck {
-    failOnError=true
+    failOnError = true
 }
 ```
 
 ### Proxy Configuration
 
-| Config Group | Property      | Description                                                                                    | Default Value |
-|--------------|---------------|------------------------------------------------------------------------------------------------|---------------|
-| proxy        | server        | The proxy server; see the [proxy configuration](../data/proxy.html) page for more information. | &nbsp;        |
-| proxy        | port          | The proxy port.                                                                                | &nbsp;        |
-| proxy        | username      | Defines the proxy user name.                                                                   | &nbsp;        |
-| proxy        | password      | Defines the proxy password.                                                                    | &nbsp;        |
-| proxy        | nonProxyHosts | The list of hosts that do not use a proxy.                                                     | &nbsp;        |
-
-#### Example
-```groovy
-dependencyCheck {
-    proxy.server=some.proxy.server
-    proxy.port=8989
-}
-```
+Please see https://docs.gradle.org/current/userguide/build_environment.html#sec:accessing_the_web_via_a_proxy
 
 ### Advanced Configuration
 
@@ -69,14 +55,14 @@ The following properties can be configured in the dependencyCheck task. However,
 | nvd                | datafeedUser        | Credentials used for basic authentication for the NVD API Data feed.                                                                                              | &nbsp;                                                                                    |
 | nvd                | datafeedPassword    | Credentials used for basic authentication for the NVD API Data feed.                                                                                              | &nbsp;                                                                                    |
 | nvd                | datafeedBearerToken | Credentials used for bearer authentication for the NVD API Data feed.                                                                                             | &nbsp;                                                                                    |
-| nvd                | validForHours       | The number of hours to wait before checking for new updates from the NVD. The default is 4 hours.                                                                 | 4                                                                                         |
+| nvd                | validForHours       | The number of hours to wait before checking for new updates from the NVD.                                                                                         | 4                                                                                         |
 | data               | directory           | Sets the data directory to hold SQL CVEs contents. This should generally not be changed.                                                                          | ~/.gradle/dependency-check-data/                                                          |
 | data               | driver              | The database driver full classname; note, only needs to be set if the driver is not JDBC4 compliant or the JAR is outside of the class path.                      | &nbsp;                                                                                    |
 | data               | driverPath          | The path to the database driver JAR file; only needs to be set if the driver is not in the class path.                                                            | &nbsp;                                                                                    |
 | data               | connectionString    | The connection string used to connect to the database. See using a [database server](../data/database.html).                                                      | &nbsp;                                                                                    |
 | data               | username            | The username used when connecting to the database.                                                                                                                | &nbsp;                                                                                    |
 | data               | password            | The password used when connecting to the database.                                                                                                                | &nbsp;                                                                                    |
-| hostedSuppressions | enabled             | Whether the hosted suppressions file will be used.                                                                                                                | true                                                                                      |
+| hostedSuppressions | enabled             | Whether the hosted suppressions will be updated from the configured URL.                                                                                          | true                                                                                      |
 | hostedSuppressions | forceupdate         | Sets whether hosted suppressions file will update regardless of the `autoupdate` setting.                                                                         | false                                                                                     |
 | hostedSuppressions | url                 | The URL to (a mirror of) the hosted suppressions file.                                                                                                            | https://dependency-check.github.io/DependencyCheck/suppressions/publishedSuppressions.xml |
 | hostedSuppressions | user                | Credentials used for basic authentication for the hosted suppressions file.                                                                                       | &nbsp;                                                                                    |
@@ -85,17 +71,20 @@ The following properties can be configured in the dependencyCheck task. However,
 | hostedSuppressions | validForHours       | The number of hours to wait before checking for new updates of the hosted suppressions file .                                                                     | 2                                                                                         |
 
 #### Example
+
 ```groovy
 dependencyCheck {
-    data.directory='d:/nvd'
+    data.directory = 'd:/nvd'
 }
 ```
 
-### Analyzer Configuration
+### Analyzer Additional Configuration
 
 Cached web datasources for several analyzers are configured inside the `analyzers` section with some properties
-taking relevance also in the update task. In addition to the above, the updateTask can be customized for retrieval
+as the update task. In addition to the above, the update task can be customized for retrieval
 of these resources by the following analyzer-specific properties underneath the `analyzers` section.
+
+The subset of `analyzers` properties relevant to the update task are:
 
 | Config Group | Property      | Description                                                                                             | Default Value                                                                            |
 |--------------|---------------|---------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------|
@@ -105,9 +94,17 @@ of these resources by the following analyzer-specific properties underneath the 
 | kev          | password      | Credentials used for basic authentication for the CISA Known Exploited Vulnerabilities JSON data feed.  | &nbsp;                                                                                   |
 | kev          | bearerToken   | Credentials used for bearer authentication for the CISA Known Exploited Vulnerabilities JSON data feed. | &nbsp;                                                                                   |
 | kev          | validForHours | The number of hours to wait before checking for new updates of the hosted suppressions file .           | 2                                                                                        |
-| retirejs     | enabled       | Sets whether the RetireJS Analyzer should be used / the repository be updated.                          | true                                                                                     |
+| retirejs     | enabled       | Sets whether the RetireJS Analyzer should be used.                                                      | true                                                                                     |
+| retirejs     | forceupdate   | Sets whether the RetireJS Analyzer should update regardless of the `autoupdate` setting.                | false                                                                                    |
 | retirejs     | retireJsUrl   | The URL to the Retire JS repository.                                                                    | https://raw.githubusercontent.com/Retirejs/retire.js/master/repository/jsrepository.json |
 | retirejs     | user          | Credentials used for basic authentication for the Retire JS repository URL.                             | &nbsp;                                                                                   |
 | retirejs     | password      | Credentials used for basic authentication for the Retire JS repository URL.                             | &nbsp;                                                                                   |
 | retirejs     | bearerToken   | Credentials used for bearer authentication for the Retire JS repository URL.                            | &nbsp;                                                                                   |
-| retirejs     | forceupdate   | Sets whether the Retire JS repository should update regardless of the `autoupdate` setting.             | false                                                                                    |
+
+#### Example
+
+```groovy
+dependencyCheck {
+    analyzers.retirejs.enabled = false
+}
+```

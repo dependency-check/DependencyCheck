@@ -15,6 +15,7 @@
  */
 package org.owasp.dependencycheck.analyzer;
 
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.owasp.dependencycheck.BaseDBTestCase;
 import org.owasp.dependencycheck.BaseTest;
@@ -26,7 +27,11 @@ import org.owasp.dependencycheck.dependency.EvidenceType;
 import org.owasp.dependencycheck.utils.Settings;
 
 import java.io.File;
+import java.util.List;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.not;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -64,10 +69,8 @@ class HintAnalyzerTest extends BaseDBTestCase {
      */
     @Test
     void testAnalyze() throws Exception {
-        //File guice = new File(this.getClass().getClassLoader().getResource("guice-3.0.jar").getPath());
-        File guice = BaseTest.getResourceAsFile(this, "guice-3.0.jar");
+        File guice = BaseTest.getResourceAsFile(this, "maven-lib/guice-3.0.jar");
         //Dependency guice = new EngineDependency(fileg);
-        //File spring = new File(this.getClass().getClassLoader().getResource("spring-core-3.0.0.RELEASE.jar").getPath());
         File spring = BaseTest.getResourceAsFile(this, "spring-core-3.0.0.RELEASE.jar");
         //Dependency spring = new Dependency(files);
         getSettings().setBoolean(Settings.KEYS.AUTO_UPDATE, false);
@@ -132,6 +135,19 @@ class HintAnalyzerTest extends BaseDBTestCase {
         assertEquals(1, d.getEvidence(EvidenceType.VENDOR).size(), "vendor evidence mismatch");
         assertEquals(1, d.getEvidence(EvidenceType.PRODUCT).size(), "product evidence mismatch");
         assertEquals(2, d.getEvidence(EvidenceType.VERSION).size(), "version evidence mismatch");
+    }
 
+    @Nested
+    class CoreHintsLoading {
+        @Test
+        void testLoadCorePackagedHints() throws Exception {
+            getSettings().removeProperty(Settings.KEYS.HINTS_FILE);
+            HintAnalyzer instance = new HintAnalyzer();
+            instance.initialize(getSettings());
+            instance.prepare(null);
+
+            assertThat(List.of(instance.getHintRules()), not(empty()));
+            assertThat(List.of(instance.getVendorDuplicatingHintRules()), not(empty()));
+        }
     }
 }

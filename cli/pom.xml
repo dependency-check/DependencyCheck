@@ -20,7 +20,7 @@ Copyright (c) 2012 - Jeremy Long. All Rights Reserved.
     <parent>
         <groupId>org.owasp</groupId>
         <artifactId>dependency-check-parent</artifactId>
-        <version>12.1.10-SNAPSHOT</version>
+        <version>12.2.3-SNAPSHOT</version>
     </parent>
 
     <artifactId>dependency-check-cli</artifactId>
@@ -32,7 +32,7 @@ Copyright (c) 2012 - Jeremy Long. All Rights Reserved.
         <connection>scm:git:https://github.com/dependency-check/DependencyCheck.git</connection>
         <url>https://github.com/dependency-check/DependencyCheck/tree/main/cli</url>
         <developerConnection>scm:git:git@github.com/dependency-check/DependencyCheck.git</developerConnection>
-        <tag>v6.4.1</tag>
+        <tag>HEAD</tag>
     </scm>
     <build>
         <finalName>dependency-check-${project.version}</finalName>
@@ -99,13 +99,7 @@ Copyright (c) 2012 - Jeremy Long. All Rights Reserved.
                     <repositoryName>lib</repositoryName>
                     <unixScriptTemplate>${project.basedir}/src/main/conf/unixBinTemplate.sh</unixScriptTemplate>
                     <windowsScriptTemplate>${project.basedir}/src/main/conf/windowsBinTemplate.bat</windowsScriptTemplate>
-                    <!--
-                       enable-native-access=ALL-UNNAMED
-                            Java 21+: Needed by Lucene indexes unless we do -Dorg.apache.lucene.store.MMapDirectory.enableMemorySegments=false
-                                      to go back to regular ByteBuffer (non-native) usage.
-                       -XX:+IgnoreUnrecognizedVMOptions
-                            Java <21: Allow use of enable-native-access on Java 11 JVMs without errors -->
-                    <extraJvmArguments>--enable-native-access=ALL-UNNAMED -XX:+IgnoreUnrecognizedVMOptions</extraJvmArguments>
+                    <extraJvmArguments>${runtime.extra.jvm.args}</extraJvmArguments>
                 </configuration>
                 <executions>
                     <execution>
@@ -180,16 +174,7 @@ Copyright (c) 2012 - Jeremy Long. All Rights Reserved.
                     <groupId>org.apache.ant</groupId>
                     <artifactId>ant-launcher</artifactId>
                 </exclusion>
-                <exclusion>
-                    <groupId>com.sun</groupId>
-                    <artifactId>tools</artifactId>
-                </exclusion>
             </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>org.mockito</groupId>
-            <artifactId>mockito-core</artifactId>
-            <scope>test</scope>
         </dependency>
     </dependencies>
 </project>

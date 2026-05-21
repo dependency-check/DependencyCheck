@@ -46,8 +46,8 @@ import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.TopDocs;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import org.owasp.dependencycheck.Engine;
 import org.owasp.dependencycheck.analyzer.exception.AnalysisException;
 import org.owasp.dependencycheck.data.cpe.CpeMemoryIndex;
@@ -1277,7 +1277,7 @@ public class CPEAnalyzer extends AbstractAnalyzer {
          * @return the natural ordering of IdentifierMatch
          */
         @Override
-        public int compareTo(@NotNull IdentifierMatch o) {
+        public int compareTo(@NonNull IdentifierMatch o) {
             return new CompareToBuilder()
                     .append(identifierConfidence, o.identifierConfidence)
                     .append(identifier, o.identifier)

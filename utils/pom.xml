@@ -20,7 +20,7 @@ Copyright (c) 2014 - Jeremy Long. All Rights Reserved.
     <parent>
         <groupId>org.owasp</groupId>
         <artifactId>dependency-check-parent</artifactId>
-        <version>12.1.10-SNAPSHOT</version>
+        <version>12.2.3-SNAPSHOT</version>
    </parent>
 
     <artifactId>dependency-check-utils</artifactId>
@@ -30,7 +30,7 @@ Copyright (c) 2014 - Jeremy Long. All Rights Reserved.
         <connection>scm:git:https://github.com/dependency-check/DependencyCheck.git</connection>
         <url>https://github.com/dependency-check/DependencyCheck/tree/main/utils</url>
         <developerConnection>scm:git:git@github.com/dependency-check/DependencyCheck.git</developerConnection>
-        <tag>v6.4.1</tag>
+        <tag>HEAD</tag>
     </scm>
     <properties>
         <spotbugs.onlyAnalyze>org.owasp.dependencycheck.utils.*</spotbugs.onlyAnalyze>
@@ -60,17 +60,18 @@ Copyright (c) 2014 - Jeremy Long. All Rights Reserved.
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
-            <version>${jackson.version}</version>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-core</artifactId>
-            <version>${jackson.version}</version>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
-            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
         </dependency>
         <dependency>
             <groupId>ch.qos.logback</groupId>
@@ -82,27 +83,6 @@ Copyright (c) 2014 - Jeremy Long. All Rights Reserved.
             <artifactId>logback-classic</artifactId>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>org.mock-server</groupId>
-            <artifactId>mockserver-core</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.mock-server</groupId>
-            <artifactId>mockserver-client-java</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>io.netty</groupId>
-            <artifactId>netty-codec-http</artifactId>
-            <version>4.2.9.Final</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.mock-server</groupId>
-            <artifactId>mockserver-junit-jupiter</artifactId>
-            <scope>test</scope>
-        </dependency>
     </dependencies>
     <build>
         <pluginManagement>
@@ -110,7 +90,6 @@ Copyright (c) 2014 - Jeremy Long. All Rights Reserved.
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-dependency-plugin</artifactId>
-                    <version>${maven-dependency-plugin.version}</version>
                     <configuration>
                         <usedDependencies combine.children="append">
                             <!-- logback is our logging implementation during test and is test-scoped due to a lack of a
@@ -120,36 +99,7 @@ Copyright (c) 2014 - Jeremy Long. All Rights Reserved.
                         </usedDependencies>
                     </configuration>
                 </plugin>
-
             </plugins>
         </pluginManagement>
     </build>
-    <profiles>
-        <profile>
-            <id>utils</id>
-            <activation>
-                <property>
-                    <name>testMavenPlugin</name>
-                </property>
-            </activation>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-surefire-plugin</artifactId>
-                        <configuration>
-                            <skip>true</skip>
-                        </configuration>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-failsafe-plugin</artifactId>
-                        <configuration>
-                            <skip>true</skip>
-                        </configuration>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-    </profiles>
 </project>

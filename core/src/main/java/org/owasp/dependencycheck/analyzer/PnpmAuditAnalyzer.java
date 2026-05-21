@@ -20,9 +20,9 @@ package org.owasp.dependencycheck.analyzer;
 import org.apache.commons.collections4.MultiValuedMap;
 import org.apache.commons.collections4.multimap.HashSetValuedHashMap;
 import org.apache.commons.lang3.StringUtils;
-import org.jetbrains.annotations.NotNull;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.jspecify.annotations.NonNull;
 import org.owasp.dependencycheck.Engine;
 import org.owasp.dependencycheck.analyzer.exception.AnalysisException;
 import org.owasp.dependencycheck.analyzer.exception.SearchException;
@@ -46,6 +46,8 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
+
+import static org.owasp.dependencycheck.utils.FileUtils.existsWithContent;
 
 @ThreadSafe
 public class PnpmAuditAnalyzer extends AbstractNpmAnalyzer {
@@ -90,7 +92,7 @@ public class PnpmAuditAnalyzer extends AbstractNpmAnalyzer {
             engine.removeDependency(dependency);
         }
         final File packageLock = dependency.getActualFile();
-        if (!packageLock.isFile() || packageLock.length() == 0 || !shouldProcess(packageLock)) {
+        if (!existsWithContent(packageLock) || !shouldProcess(packageLock)) {
             return;
         }
         final List<Advisory> advisories;
@@ -281,7 +283,7 @@ public class PnpmAuditAnalyzer extends AbstractNpmAnalyzer {
         }
     }
 
-    @NotNull
+    @NonNull
     private NpmAuditParser getAuditParser() {
         return new NpmAuditParser();
     }

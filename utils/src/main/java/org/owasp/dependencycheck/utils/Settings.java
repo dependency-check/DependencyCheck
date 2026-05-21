@@ -17,15 +17,13 @@
  */
 package org.owasp.dependencycheck.utils;
 
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -34,7 +32,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.security.ProtectionDomain;
@@ -232,11 +229,15 @@ public final class Settings {
         /**
          * The properties key that indicates how often the CPE data needs to be
          * updated.
+         * @deprecated No longer used; will be removed in a future release.
          */
+        @Deprecated(forRemoval = true, since = "v2.0.0")
         public static final String CPE_MODIFIED_VALID_FOR_DAYS = "cpe.validfordays";
         /**
          * The properties key for the URL to retrieve the CPE.
+         * @deprecated No longer used; will be removed in a future release.
          */
+        @Deprecated(forRemoval = true, since = "v2.0.0")
         public static final String CPE_URL = "cpe.url";
         /**
          * The properties key for the URL to retrieve the Known Exploited
@@ -271,7 +272,9 @@ public final class Settings {
          * Whether or not if using basic auth with a proxy the system setting
          * 'jdk.http.auth.tunneling.disabledSchemes' should be set to an empty
          * string.
+         * @deprecated No longer used; will be removed in a future release.
          */
+        @Deprecated(forRemoval = true, since = "v12.1.2")
         public static final String PROXY_DISABLE_SCHEMAS = "proxy.disableSchemas";
         /**
          * The properties key for the proxy server.
@@ -407,7 +410,7 @@ public final class Settings {
          */
         public static final String ANALYZER_ARCHIVE_ENABLED = "analyzer.archive.enabled";
         /**
-         * The properties key for whether the node.js package analyzer is
+         * The properties key for whether the node package analyzer is
          * enabled.
          */
         public static final String ANALYZER_NODE_PACKAGE_ENABLED = "analyzer.node.package.enabled";
@@ -757,31 +760,45 @@ public final class Settings {
         public static final String ADDITIONAL_ZIP_EXTENSIONS = "extensions.zip";
         /**
          * The key to obtain the path to the VFEED data file.
+         * @deprecated No longer used; will be removed in a future release.
          */
+        @Deprecated(forRemoval = true, since = "v1.0.0")
         public static final String VFEED_DATA_FILE = "vfeed.data_file";
         /**
          * The key to obtain the VFEED connection string.
+         * @deprecated No longer used; will be removed in a future release.
          */
+        @Deprecated(forRemoval = true, since = "v1.0.0")
         public static final String VFEED_CONNECTION_STRING = "vfeed.connection_string";
         /**
          * The key to obtain the base download URL for the VFeed data file.
+         * @deprecated No longer used; will be removed in a future release.
          */
+        @Deprecated(forRemoval = true, since = "v1.0.0")
         public static final String VFEED_DOWNLOAD_URL = "vfeed.download_url";
         /**
          * The key to obtain the download file name for the VFeed data.
+         * @deprecated No longer used; will be removed in a future release.
          */
+        @Deprecated(forRemoval = true, since = "v1.0.0")
         public static final String VFEED_DOWNLOAD_FILE = "vfeed.download_file";
         /**
          * The key to obtain the VFeed update status.
+         * @deprecated No longer used; will be removed in a future release.
          */
+        @Deprecated(forRemoval = true, since = "v1.0.0")
         public static final String VFEED_UPDATE_STATUS = "vfeed.update_status";
         /**
          * The key to the HTTP request method for query last modified date.
+         * @deprecated No longer used; will be removed in a future release.
          */
+        @Deprecated(forRemoval = true, since = "v11.0.0")
         public static final String DOWNLOADER_QUICK_QUERY_TIMESTAMP = "downloader.quick.query.timestamp";
         /**
          * The key to HTTP protocol list to use.
+         * @deprecated No longer used; will be removed in a future release.
          */
+        @Deprecated(forRemoval = true, since = "v12.0.0")
         public static final String DOWNLOADER_TLS_PROTOCOL_LIST = "downloader.tls.protocols";
         /**
          * The key to determine if the CPE analyzer is enabled.
@@ -865,6 +882,11 @@ public final class Settings {
          */
         public static final String ANALYZER_OSSINDEX_USE_CACHE = "analyzer.ossindex.use.cache";
         /**
+         * The properties key for how long results from the Sonatype OSS Index
+         * should be cached.
+         */
+        public static final String ANALYZER_OSSINDEX_CACHE_VALID_FOR_HOURS = "analyzer.ossindex.cache.validforhours";
+        /**
          * The properties key for the Sonatype OSS Index URL.
          */
         public static final String ANALYZER_OSSINDEX_URL = "analyzer.ossindex.url";
@@ -891,11 +913,6 @@ public final class Settings {
          * errors instead of failing the request.
          */
         public static final String ANALYZER_OSSINDEX_WARN_ONLY_ON_REMOTE_ERRORS = "analyzer.ossindex.remote-error.warn-only";
-        /**
-         * The properties key setting whether or not the JSON and XML reports
-         * will be pretty printed.
-         */
-
         /**
          * The properties key for whether the Dart analyzer is enabled.
          */
@@ -958,7 +975,7 @@ public final class Settings {
      *
      * @param propertiesFilePath the path to the base properties file to load
      */
-    public Settings(@NotNull final String propertiesFilePath) {
+    public Settings(@NonNull final String propertiesFilePath) {
         initialize(propertiesFilePath);
     }
 
@@ -967,7 +984,7 @@ public final class Settings {
      *
      * @param propertiesFilePath the path to the settings property file
      */
-    private void initialize(@NotNull final String propertiesFilePath) {
+    private void initialize(@NonNull final String propertiesFilePath) {
         props = new Properties();
         try (InputStream in = FileUtils.getResourceAsStream(propertiesFilePath)) {
             props.load(in);
@@ -1009,7 +1026,7 @@ public final class Settings {
      * @return <code>true</code> if the key is for a sensitive property value;
      * otherwise <code>false</code>
      */
-    private boolean isKeyMasked(@NotNull String key) {
+    private boolean isKeyMasked(@NonNull String key) {
         if (maskedKeys == null || maskedKeys.isEmpty()) {
             initMaskedKeys();
         }
@@ -1024,7 +1041,7 @@ public final class Settings {
      * @param value the property value
      * @return the printable value
      */
-    String getPrintableValue(@NotNull String key, String value) {
+    String getPrintableValue(@NonNull String key, String value) {
         String printableValue = null;
         if (value != null) {
             printableValue = isKeyMasked(key) ? "********" : value;
@@ -1056,7 +1073,7 @@ public final class Settings {
      * @param header the header to print with the log message
      * @param properties the properties to log
      */
-    private void logProperties(@NotNull final String header, @NotNull final Properties properties) {
+    private void logProperties(@NonNull final String header, @NonNull final Properties properties) {
         if (LOGGER.isDebugEnabled()) {
             initMaskedKeys();
             final StringWriter sw = new StringWriter();
@@ -1082,7 +1099,7 @@ public final class Settings {
      * @param key the key for the property
      * @param value the value for the property
      */
-    public void setString(@NotNull final String key, @NotNull final String value) {
+    public void setString(@NonNull final String key, @NonNull final String value) {
         props.setProperty(key, value);
         LOGGER.debug("Setting: {}='{}'", key, getPrintableValue(key, value));
     }
@@ -1093,7 +1110,7 @@ public final class Settings {
      * @param key the key for the property
      * @param value the value for the property
      */
-    public void setStringIfNotNull(@NotNull final String key, @Nullable final String value) {
+    public void setStringIfNotNull(@NonNull final String key, @Nullable final String value) {
         if (null != value) {
             setString(key, value);
         }
@@ -1105,7 +1122,7 @@ public final class Settings {
      * @param key the key for the property
      * @param value the value for the property
      */
-    public void setStringIfNotEmpty(@NotNull final String key, @Nullable final String value) {
+    public void setStringIfNotEmpty(@NonNull final String key, @Nullable final String value) {
         if (null != value && !value.isEmpty()) {
             setString(key, value);
         }
@@ -1117,7 +1134,7 @@ public final class Settings {
      * @param key the key for the property
      * @param value the value for the property
      */
-    public void setArrayIfNotEmpty(@NotNull final String key, @Nullable final String[] value) {
+    public void setArrayIfNotEmpty(@NonNull final String key, @Nullable final String[] value) {
         if (null != value && value.length > 0) {
             try {
                 setString(key, objectMapper.writeValueAsString(value));
@@ -1133,7 +1150,7 @@ public final class Settings {
      * @param key the key for the property
      * @param value the value for the property
      */
-    public void setArrayIfNotEmpty(@NotNull final String key, @Nullable final List<String> value) {
+    public void setArrayIfNotEmpty(@NonNull final String key, @Nullable final List<String> value) {
         if (null != value && !value.isEmpty()) {
             try {
                 setString(key, objectMapper.writeValueAsString(value));
@@ -1149,7 +1166,7 @@ public final class Settings {
      * @param key the key for the property
      * @param value the value for the property
      */
-    public void setBoolean(@NotNull final String key, boolean value) {
+    public void setBoolean(@NonNull final String key, boolean value) {
         setString(key, Boolean.toString(value));
     }
 
@@ -1159,7 +1176,7 @@ public final class Settings {
      * @param key the key for the property
      * @param value the value for the property
      */
-    public void setBooleanIfNotNull(@NotNull final String key, @Nullable final Boolean value) {
+    public void setBooleanIfNotNull(@NonNull final String key, @Nullable final Boolean value) {
         if (null != value) {
             setBoolean(key, value);
         }
@@ -1171,7 +1188,7 @@ public final class Settings {
      * @param key the key for the property
      * @param value the value for the property
      */
-    public void setFloat(@NotNull final String key, final float value) {
+    public void setFloat(@NonNull final String key, final float value) {
         setString(key, Float.toString(value));
     }
 
@@ -1181,7 +1198,7 @@ public final class Settings {
      * @param key the key for the property
      * @param value the value for the property
      */
-    public void setInt(@NotNull final String key, final int value) {
+    public void setInt(@NonNull final String key, final int value) {
         props.setProperty(key, String.valueOf(value));
         LOGGER.debug("Setting: {}='{}'", key, value);
     }
@@ -1192,7 +1209,7 @@ public final class Settings {
      * @param key the key for the property
      * @param value the value for the property
      */
-    public void setIntIfNotNull(@NotNull final String key, @Nullable final Integer value) {
+    public void setIntIfNotNull(@NonNull final String key, @Nullable final Integer value) {
         if (null != value) {
             setInt(key, value);
         }
@@ -1211,7 +1228,7 @@ public final class Settings {
      * loading/merging the properties
      */
     @SuppressFBWarnings(justification = "try with resource will clenaup the resources", value = {"OBL_UNSATISFIED_OBLIGATION"})
-    public void mergeProperties(@NotNull final File filePath) throws FileNotFoundException, IOException {
+    public void mergeProperties(@NonNull final File filePath) throws FileNotFoundException, IOException {
         try (FileInputStream fis = new FileInputStream(filePath)) {
             mergeProperties(fis);
         }
@@ -1230,7 +1247,7 @@ public final class Settings {
      * loading/merging the properties
      */
     @SuppressFBWarnings(justification = "try with resource will clenaup the resources", value = {"OBL_UNSATISFIED_OBLIGATION"})
-    public void mergeProperties(@NotNull final String filePath) throws FileNotFoundException, IOException {
+    public void mergeProperties(@NonNull final String filePath) throws FileNotFoundException, IOException {
         try (FileInputStream fis = new FileInputStream(filePath)) {
             mergeProperties(fis);
         }
@@ -1246,7 +1263,7 @@ public final class Settings {
      * @throws java.io.IOException is thrown when there is an exception
      * loading/merging the properties
      */
-    public void mergeProperties(@NotNull final InputStream stream) throws IOException {
+    public void mergeProperties(@NonNull final InputStream stream) throws IOException {
         props.load(stream);
         logProperties("Properties updated via merge", props);
     }
@@ -1261,7 +1278,7 @@ public final class Settings {
      * @return the property from the properties file converted to a File object
      */
     @Nullable
-    public File getFile(@NotNull final String key) {
+    public File getFile(@NonNull final String key) {
         final String file = getString(key);
         if (file == null) {
             return null;
@@ -1283,7 +1300,7 @@ public final class Settings {
      * @param key the key to lookup within the properties file
      * @return the property from the properties file converted to a File object
      */
-    File getDataFile(@NotNull final String key) {
+    File getDataFile(@NonNull final String key) {
         final String file = getString(key);
         LOGGER.debug("Settings.getDataFile() - file: '{}'", file);
         if (file == null) {
@@ -1307,19 +1324,12 @@ public final class Settings {
      * @return a File object
      */
     private File getJarPath() {
-        String decodedPath = ".";
         String jarPath = "";
         final ProtectionDomain domain = Settings.class.getProtectionDomain();
         if (domain != null && domain.getCodeSource() != null && domain.getCodeSource().getLocation() != null) {
             jarPath = Settings.class.getProtectionDomain().getCodeSource().getLocation().getPath();
         }
-        try {
-            decodedPath = URLDecoder.decode(jarPath, StandardCharsets.UTF_8.name());
-        } catch (UnsupportedEncodingException ex) {
-            LOGGER.trace("", ex);
-        }
-
-        final File path = new File(decodedPath);
+        final File path = new File(URLDecoder.decode(jarPath, StandardCharsets.UTF_8));
         if (path.getName().toLowerCase().endsWith(".jar")) {
             return path.getParentFile();
         } else {
@@ -1337,7 +1347,7 @@ public final class Settings {
      * @param defaultValue the default value for the requested property
      * @return the property from the properties file
      */
-    public String getString(@NotNull final String key, @Nullable final String defaultValue) {
+    public String getString(@NonNull final String key, @Nullable final String defaultValue) {
         return System.getProperty(key, props.getProperty(key, defaultValue));
     }
 
@@ -1364,7 +1374,7 @@ public final class Settings {
      * @param key the key to lookup within the properties file
      * @return the property from the properties file
      */
-    public String getString(@NotNull final String key) {
+    public String getString(@NonNull final String key) {
         return System.getProperty(key, props.getProperty(key));
     }
 
@@ -1377,7 +1387,7 @@ public final class Settings {
      * {@link org.owasp.dependencycheck.utils.Settings}.
      * @return the list or {@code null} if the key wasn't present.
      */
-    public String[] getArray(@NotNull final String key) {
+    public String[] getArray(@NonNull final String key) {
         final String string = getString(key);
         if (string != null) {
             if (string.charAt(0) == '{' || string.charAt(0) == '[') {
@@ -1399,7 +1409,7 @@ public final class Settings {
      *
      * @param key the property key to remove
      */
-    public void removeProperty(@NotNull final String key) {
+    public void removeProperty(@NonNull final String key) {
         props.remove(key);
     }
 
@@ -1414,7 +1424,7 @@ public final class Settings {
      * @throws org.owasp.dependencycheck.utils.InvalidSettingException is thrown
      * if there is an error retrieving the setting
      */
-    public int getInt(@NotNull final String key) throws InvalidSettingException {
+    public int getInt(@NonNull final String key) throws InvalidSettingException {
         try {
             return Integer.parseInt(getString(key));
         } catch (NumberFormatException ex) {
@@ -1433,7 +1443,7 @@ public final class Settings {
      * @return the property from the properties file or the defaultValue if the
      * property does not exist or cannot be converted to an integer
      */
-    public int getInt(@NotNull final String key, int defaultValue) {
+    public int getInt(@NonNull final String key, int defaultValue) {
         int value;
         try {
             value = Integer.parseInt(getString(key));
@@ -1458,7 +1468,7 @@ public final class Settings {
      * @throws org.owasp.dependencycheck.utils.InvalidSettingException is thrown
      * if there is an error retrieving the setting
      */
-    public long getLong(@NotNull final String key) throws InvalidSettingException {
+    public long getLong(@NonNull final String key) throws InvalidSettingException {
         try {
             return Long.parseLong(getString(key));
         } catch (NumberFormatException ex) {
@@ -1477,7 +1487,7 @@ public final class Settings {
      * @return the property from the properties file or the defaultValue if the
      * property does not exist or cannot be converted to an integer
      */
-    public long getLong(@NotNull final String key, long defaultValue) {
+    public long getLong(@NonNull final String key, long defaultValue) {
         long value;
         try {
             value = Long.parseLong(getString(key));
@@ -1503,7 +1513,7 @@ public final class Settings {
      * @throws org.owasp.dependencycheck.utils.InvalidSettingException is thrown
      * if there is an error retrieving the setting
      */
-    public boolean getBoolean(@NotNull final String key) throws InvalidSettingException {
+    public boolean getBoolean(@NonNull final String key) throws InvalidSettingException {
         return Boolean.parseBoolean(getString(key));
     }
 
@@ -1519,7 +1529,7 @@ public final class Settings {
      * exist
      * @return the property from the properties file
      */
-    public boolean getBoolean(@NotNull final String key, boolean defaultValue) {
+    public boolean getBoolean(@NonNull final String key, boolean defaultValue) {
         return Boolean.parseBoolean(getString(key, Boolean.toString(defaultValue)));
     }
 
@@ -1535,7 +1545,7 @@ public final class Settings {
      * exist
      * @return the property from the properties file
      */
-    public float getFloat(@NotNull final String key, float defaultValue) {
+    public float getFloat(@NonNull final String key, float defaultValue) {
         float retValue = defaultValue;
         try {
             retValue = Float.parseFloat(getString(key));
@@ -1637,7 +1647,7 @@ public final class Settings {
      * @return a temporary File
      * @throws java.io.IOException if any.
      */
-    public File getTempFile(@NotNull final String prefix, @NotNull final String extension) throws IOException {
+    public File getTempFile(@NonNull final String prefix, @NonNull final String extension) throws IOException {
         final File dir = getTempDirectory();
         final String tempFileName = String.format("%s%s.%s", prefix, UUID.randomUUID(), extension);
         final File tempFile = new File(dir, tempFileName);

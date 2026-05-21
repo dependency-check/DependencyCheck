@@ -17,6 +17,9 @@
  */
 package org.owasp.dependencycheck.analyzer;
 
+import com.github.packageurl.MalformedPackageURLException;
+import com.github.packageurl.PackageURL;
+import org.jspecify.annotations.NonNull;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -27,12 +30,15 @@ import org.owasp.dependencycheck.dependency.Confidence;
 import org.owasp.dependencycheck.dependency.Dependency;
 import org.owasp.dependencycheck.dependency.Evidence;
 import org.owasp.dependencycheck.dependency.EvidenceType;
+import org.owasp.dependencycheck.dependency.naming.PurlIdentifier;
 import org.owasp.dependencycheck.exception.InitializationException;
 import org.owasp.dependencycheck.utils.Settings;
+import org.owasp.dependencycheck.xml.assembly.AssemblyData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -173,6 +179,117 @@ class AssemblyAnalyzerTest extends BaseTest {
                 System.setProperty(Settings.KEYS.ANALYZER_ASSEMBLY_DOTNET_PATH, oldValue);
             }
         }
+    }
+
+    @Test
+    void testAzureIdentity() throws MalformedPackageURLException {
+        // Given
+        var data = newAzureIdentityAssemblyData();
+        var dependency = newAzureIdentityDependency();
+
+        var expectedDescription = "Microsoft Azure.Identity Component\n\nThis is the implementation of the Azure SDK " +
+                "Client Library for Azure Identity";
+        var expectedVersionEvidences = expectedAzureIdentityVersionEvidences();
+        var expectedVersion = "1.7.0";
+        var expectedProductEvidences = expectedAzureIdentityProductEvidences();
+        var expectedVendorEvidences = expectedAzureIdentityVendorEvidences();
+        var expectedName = "Azure.Identity";
+        var expectedIdentifiers = Set.of(new PurlIdentifier(new PackageURL("pkg:generic/Azure.Identity@1.7.0"),
+                Confidence.MEDIUM));
+        var expectedEcosystem = "dotnet";
+
+        // When
+        analyzer.updateDependency(data, dependency);
+
+        // Then
+        assertEquals(expectedDescription, dependency.getDescription());
+        assertEquals(expectedVersionEvidences, dependency.getEvidence(EvidenceType.VERSION));
+        assertEquals(expectedVersion, dependency.getVersion());
+        assertEquals(expectedProductEvidences, dependency.getEvidence(EvidenceType.PRODUCT));
+        assertEquals(expectedVendorEvidences, dependency.getEvidence(EvidenceType.VENDOR));
+        assertEquals(expectedName, dependency.getName());
+        assertEquals(expectedIdentifiers, dependency.getSoftwareIdentifiers());
+        assertEquals(expectedEcosystem, dependency.getEcosystem());
+    }
+
+    private static @NonNull AssemblyData newAzureIdentityAssemblyData() {
+        var data = new AssemblyData();
+        data.setCompanyName("Microsoft Corporation");
+        data.setProductName("Azure .NET SDK");
+        data.setProductVersion("1.7.0+3627e3cbc75c628f659d033ed9270c9d02ab9038");
+        data.setComments("This is the implementation of the Azure SDK Client Library for Azure Identity");
+        data.setFileDescription("Microsoft Azure.Identity Component");
+        data.setFileName("/home/jdoe/ScanFolder/Azure.Identity.dll");
+        data.setFileVersion("1.700.22.46903");
+        data.setInternalName("Azure.Identity.dll");
+        data.setOriginalFilename("Azure.Identity.dll");
+        data.setFullName("Azure.Identity, Version=1.7.0.0, Culture=neutral, PublicKeyToken=92742159e12e44c8");
+
+        data.addNamespace("Microsoft.CodeAnalysis");
+        data.addNamespace("System.Runtime.CompilerServices");
+        data.addNamespace("Azure.Core");
+        data.addNamespace("Azure.Core.Pipeline");
+        data.addNamespace("Azure.Core.Diagnostics");
+        // The following duplication is on purpose, this use case has one
+        data.addNamespace("Azure.Identitiy");
+        data.addNamespace("Azure.Identitiy");
+        return data;
+    }
+
+    private static @NonNull Dependency newAzureIdentityDependency() {
+        var dependency = new Dependency();
+        dependency.setActualFilePath("/home/jdoe/ScanFolder/Azure.Identity.dll");
+        dependency.setFilePath("/home/jdoe/ScanFolder/Azure.Identity.dll");
+        dependency.setFileName("Azure.Identity.dll");
+        dependency.setPackagePath("/home/jdoe/ScanFolder/Azure.Identity.dll");
+        dependency.setMd5sum("19f72346b3952c135c121e30235d4064");
+        dependency.setSha1sum("1ac0e967367aa7679a89b2eb652a7996870d9043");
+        dependency.setSha256sum("666973af908cf82a495530b2ea23074004dead445e1bb46ef75a5e3c879a6321");
+
+        var nameEvidence = new Evidence("file", "name", "Azure.Identity", Confidence.HIGH);
+
+        dependency.addEvidence(EvidenceType.VENDOR, nameEvidence);
+        dependency.addEvidence(EvidenceType.PRODUCT, nameEvidence);
+
+        return dependency;
+    }
+
+    private static @NonNull Set<Evidence> expectedAzureIdentityVersionEvidences() {
+        var fileVersionEvidence = new Evidence("grokassembly", "FileVersion", "1.700.22.46903", Confidence.HIGH);
+        var productVersionEvidence = new Evidence("grokassembly", "ProductVersion", "1.7.0+3627e3cbc75c628f659d033ed9270c9d02ab9038", Confidence.HIGHEST);
+
+        return Set.of(fileVersionEvidence, productVersionEvidence);
+    }
+
+    private static @NonNull Set<Evidence> expectedAzureIdentityProductEvidences() {
+        var nameEvidence = new Evidence("file", "name", "Azure.Identity", Confidence.HIGH);
+        var companyNameLowEvidence = new Evidence("grokassembly", "CompanyName", "Microsoft Corporation", Confidence.LOW);
+        var fileDescriptionHighEvidence = new Evidence("grokassembly", "FileDescription",
+                "Microsoft Azure.Identity Component", Confidence.HIGH);
+        var internalNameMediumEvidence = new Evidence("grokassembly", "InternalName", "Azure.Identity.dll",
+                Confidence.MEDIUM);
+        var originalFilenameMediumEvidence = new Evidence("grokassembly", "OriginalFilename", "Azure.Identity.dll",
+                Confidence.MEDIUM);
+        var productNameHighestEvidence = new Evidence("grokassembly", "ProductName", "Azure .NET SDK", Confidence.HIGHEST);
+
+        return Set.of(nameEvidence, companyNameLowEvidence, fileDescriptionHighEvidence,
+                internalNameMediumEvidence, originalFilenameMediumEvidence, productNameHighestEvidence);
+    }
+
+    private static @NonNull Set<Evidence> expectedAzureIdentityVendorEvidences() {
+        var nameEvidence = new Evidence("file", "name", "Azure.Identity", Confidence.HIGH);
+        var companyNameHighestEvidence = new Evidence("grokassembly", "CompanyName", "Microsoft Corporation",
+                Confidence.HIGHEST);
+        var fileDescriptionLowEvidence = new Evidence("grokassembly", "FileDescription",
+                "Microsoft Azure.Identity Component", Confidence.LOW);
+        var internalNameLowEvidence = new Evidence("grokassembly", "InternalName", "Azure.Identity.dll",
+                Confidence.LOW);
+        var originalFilenameLowEvidence = new Evidence("grokassembly", "OriginalFilename", "Azure.Identity.dll",
+                Confidence.LOW);
+        var productNameMediumEvidence = new Evidence("grokassembly", "ProductName", "Azure .NET SDK",
+                Confidence.MEDIUM);
+        return Set.of(nameEvidence, companyNameHighestEvidence, fileDescriptionLowEvidence,
+                internalNameLowEvidence, originalFilenameLowEvidence, productNameMediumEvidence);
     }
 
     @AfterEach

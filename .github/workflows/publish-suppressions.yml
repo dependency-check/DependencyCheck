@@ -2,6 +2,9 @@ name: Publish Suppressions
 
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - generatedSuppressions
 
 permissions: {}
 jobs:
@@ -12,14 +15,14 @@ jobs:
     name: Publish Suppressions
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           ref: generatedSuppressions
-      - uses: actions/setup-node@v6.1.0
+      - uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
       - run: |
           npm install fs
       - name: Create Generated Suppressions XML
-        uses: actions/github-script@v8.0.0
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
         with:
           script: |
             const fs = require('fs');
@@ -27,12 +30,20 @@ jobs:
             if (!fs.existsSync('./suppressions')){
                 fs.mkdirSync('./suppressions');
             }
-            fs.appendFileSync('suppressions/publishedSuppressions.xml', '<?xml version="1.0" encoding="UTF-8"?>\n<suppressions xmlns="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.3.xsd">' + generatedSuppressions + '\n</suppressions>', function (err) {
+            fs.appendFileSync('suppressions/publishedSuppressions.xml',
+            `<?xml version="1.0" encoding="UTF-8"?>
+            <suppressions xmlns="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.3.xsd"
+                          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                          xsi:schemaLocation="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.3.xsd
+                                              https://dependency-check.github.io/DependencyCheck/dependency-suppression.1.3.xsd">
+            ${generatedSuppressions}
+            </suppressions>`,
+            function (err) {
               if (err) throw err;
               console.log('publishedSuppressions.xml created');
             });
       - name: Publish Updated Suppressions
-        uses: JamesIves/github-pages-deploy-action@v4.7.6
+        uses: JamesIves/github-pages-deploy-action@d92aa235d04922e8f08b40ce78cc5442fcfbfa2f # v4.8.0
         with:
           branch: gh-pages
           folder: suppressions

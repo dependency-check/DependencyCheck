@@ -17,6 +17,14 @@
  */
 package org.owasp.dependencycheck.utils;
 
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.SystemUtils;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.Closeable;
 import java.io.File;
 import java.io.FileInputStream;
@@ -29,14 +37,6 @@ import java.nio.file.Path;
 import java.util.Comparator;
 import java.util.UUID;
 import java.util.stream.Stream;
-
-import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.SystemUtils;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * A collection of utilities for processing information about files.
@@ -72,8 +72,7 @@ public final class FileUtils {
      * @return the file extension.
      */
     @Nullable
-    public static String getFileExtension(@NotNull String fileName) {
-        @Nullable
+    public static String getFileExtension(@NonNull String fileName) {
         final String fileExt = FilenameUtils.getExtension(fileName);
         return StringUtils.isNoneEmpty(fileExt) ? StringUtils.lowerCase(fileExt) : null;
     }
@@ -113,7 +112,7 @@ public final class FileUtils {
      * @throws java.io.IOException thrown when a directory cannot be created
      * within the base directory
      */
-    @NotNull
+    @NonNull
     public static File createTempDirectory(@Nullable final File base) throws IOException {
         final File tempDir = new File(base, "dctemp" + UUID.randomUUID());
         if (tempDir.exists()) {
@@ -132,7 +131,7 @@ public final class FileUtils {
      *
      * @return a String containing the bit bucket
      */
-    @NotNull
+    @NonNull
     public static String getBitBucket() {
         return SystemUtils.IS_OS_WINDOWS ? BIT_BUCKET_WIN : BIT_BUCKET_UNIX;
     }
@@ -160,8 +159,7 @@ public final class FileUtils {
      * @return the input stream for the given resource
      * @throws FileNotFoundException if the file could not be found
      */
-    @Nullable
-    public static InputStream getResourceAsStream(@NotNull String resource) throws FileNotFoundException {
+    public static InputStream getResourceAsStream(@NonNull String resource) throws FileNotFoundException {
         final ClassLoader classLoader = FileUtils.class.getClassLoader();
         final InputStream inputStream = classLoader != null
                 ? classLoader.getResourceAsStream(resource)
@@ -196,5 +194,13 @@ public final class FileUtils {
             return new File(resource);
         }
         return new File(path);
+    }
+
+    /**
+     * @param file the file to check
+     * @return true if the passed file is a file with more than 1 byte of content
+     */
+    public static boolean existsWithContent(@NonNull File file) {
+        return file.isFile() && file.length() > 1;
     }
 }

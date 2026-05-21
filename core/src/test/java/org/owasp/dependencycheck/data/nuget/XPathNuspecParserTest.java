@@ -24,6 +24,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.PrintStream;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -36,49 +37,42 @@ class XPathNuspecParserTest extends BaseTest {
 
     /**
      * Test all the valid components.
-     *
-     * @throws Exception if anything goes sideways.
      */
     @Test
     void testGoodDocument() throws Exception {
         XPathNuspecParser parser = new XPathNuspecParser();
-        //InputStream is = XPathNuspecParserTest.class.getClassLoader().getResourceAsStream("log4net.2.0.3.nuspec");
-        InputStream is = BaseTest.getResourceAsStream(this, "log4net.2.0.3.nuspec");
-        NugetPackage np = parser.parse(is);
-        assertEquals("log4net", np.getId());
-        assertEquals("2.0.3", np.getVersion());
-        assertEquals("log4net [1.2.13]", np.getTitle());
-        assertEquals("Apache Software Foundation", np.getAuthors());
-        assertEquals("Apache Software Foundation", np.getOwners());
-        assertEquals("http://logging.apache.org/log4net/license.html", np.getLicenseUrl());
+        try (InputStream is = BaseTest.getResourceAsStream(this, "log4net.2.0.3.nuspec")) {
+            NugetPackage np = parser.parse(is);
+            assertEquals("log4net", np.getId());
+            assertEquals("2.0.3", np.getVersion());
+            assertEquals("log4net [1.2.13]", np.getTitle());
+            assertEquals("Apache Software Foundation", np.getAuthors());
+            assertEquals("Apache Software Foundation", np.getOwners());
+            assertEquals("http://logging.apache.org/log4net/license.html", np.getLicenseUrl());
+        }
     }
 
     /**
      * Expect a NuspecParseException when what we pass isn't even XML.
-     *
-     * @throws Exception we expect this.
      */
     @Test
-    void testMissingDocument() {
+    void testMissingDocument() throws Exception {
         XPathNuspecParser parser = new XPathNuspecParser();
-        InputStream is = BaseTest.getResourceAsStream(this, "dependencycheck.properties");
-        final ByteArrayOutputStream myOut = new ByteArrayOutputStream();
-        System.setErr(new PrintStream(myOut));
-        assertThrows(NuspecParseException.class, () ->
-
-            parser.parse(is));
+        try (InputStream is = BaseTest.getResourceAsStream(this, "dependencycheck.properties")) {
+            final ByteArrayOutputStream myOut = new ByteArrayOutputStream();
+            System.setErr(new PrintStream(myOut, true, UTF_8));
+            assertThrows(NuspecParseException.class, () -> parser.parse(is));
+        }
     }
 
     /**
      * Expect a NuspecParseException when it's valid XML, but not a Nuspec.
-     *
-     * @throws Exception we expect this.
      */
     @Test
-    void testNotNuspec() {
+    void testNotNuspec() throws Exception {
         XPathNuspecParser parser = new XPathNuspecParser();
-        InputStream is = BaseTest.getResourceAsStream(this, "suppressions.xml");
-        assertThrows(NuspecParseException.class, () ->
-            parser.parse(is));
+        try (InputStream is = BaseTest.getResourceAsStream(this, "suppressions.xml")) {
+            assertThrows(NuspecParseException.class, () -> parser.parse(is));
+        }
     }
 }

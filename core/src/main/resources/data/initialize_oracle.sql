@@ -135,7 +135,7 @@ CREATE TABLE vulnerability (id INT NOT NULL PRIMARY KEY, cve VARCHAR(20) UNIQUE,
     v4baseScore DECIMAL(3,1), v4baseSeverity VARCHAR(15), v4threatScore DECIMAL(3,1), v4threatSeverity VARCHAR(15),
     v4environmentalScore DECIMAL(3,1), v4environmentalSeverity VARCHAR(15), v4source VARCHAR(50), v4type VARCHAR(15));
 
-CREATE TABLE reference (cveid INT, name VARCHAR(1000), url VARCHAR(1000), source VARCHAR(255),
+CREATE TABLE reference (cveid INT, name VARCHAR(1000), url VARCHAR(4000), source VARCHAR(255),
     CONSTRAINT fkReference FOREIGN KEY (cveid) REFERENCES vulnerability(id) ON DELETE CASCADE);
 
 CREATE TABLE cpeEntry (id INT NOT NULL PRIMARY KEY, part CHAR(1), vendor VARCHAR(255), product VARCHAR(255),
@@ -538,4 +538,4 @@ CREATE OR REPLACE VIEW v_update_ecosystems AS
     ON c.vendor=e.vendor
         AND c.product=e.product;
 
-INSERT INTO properties(id,value) VALUES ('version','5.5');
+INSERT INTO properties(id,value) VALUES ('version','5.6');

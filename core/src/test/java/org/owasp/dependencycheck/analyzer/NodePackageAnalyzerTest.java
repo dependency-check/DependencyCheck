@@ -134,7 +134,7 @@ class NodePackageAnalyzerTest extends BaseTest {
     void testGetName() throws InvalidSettingException {
         assumeTrue(getSettings().getBoolean(Settings.KEYS.ANALYZER_NODE_PACKAGE_ENABLED));
         assumeTrue(getSettings().getBoolean(Settings.KEYS.ANALYZER_NODE_AUDIT_ENABLED));
-        assertThat(analyzer.getName(), is("Node.js Package Analyzer"));
+        assertThat(analyzer.getName(), is("Node Package Analyzer"));
     }
 
     /**
