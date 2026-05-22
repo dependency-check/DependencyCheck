@@ -5370,4 +5370,18 @@
         <packageUrl regex="true">^pkg:pypi/zabbix-utils@.*$</packageUrl>
         <cpe>cpe:/a:zabbix:zabbix:</cpe>
     </suppress>
+    <suppress base="true">
+        <notes><![CDATA[
+        FP per issue #8539 - microsoft-kiota-abstractions primarily provides abstraction/interface contracts and
+        does not appear to contain the runtime/code-generation behavior associated with
+        CVE-2026-41134.
+        ]]></notes>
+
+        <packageUrl regex="true">
+            ^pkg:maven/com\.microsoft\.kiota/microsoft-kiota-abstractions@.*$
+        </packageUrl>
+
+        <cve>CVE-2026-41134</cve>
+    </suppress>
+
 </suppressions>
