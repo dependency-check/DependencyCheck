@@ -2070,4 +2070,11 @@
     <packageUrl regex="true">^pkg:maven/org\.testcontainers/testcontainers-mysql@.*$</packageUrl>
     <cpe regex="true">cpe:/a:mysql:mysql(:.*)?$</cpe>
 </suppress>
+<suppress base="true">
+    <notes><![CDATA[
+    FP per issue #8533
+    ]]></notes>
+    <packageUrl regex="true">^pkg:maven/com\.networknt/json-schema-validator@.*$</packageUrl>
+    <cpe regex="true">cpe:/a:json-schema_project:json-schema(:.*)?$</cpe>
+</suppress>
 </suppressions>
