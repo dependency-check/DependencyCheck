@@ -138,7 +138,7 @@ class CvssUtilTest {
      */
     @Test
     void testVectorToCvssV4() {
-        String vectorString = "CVSS:4.0/AV:N/AC:L/AT:P/PR:N/UI:N/VC:H/VI:N/VA:N/SC:N/SI:N/SA:N";
+        String vectorString = "CVSS:4.0/AV:N/AC:L/AT:P/PR:N/UI:N/VC:H/VI:N/VA:N/SC:N/SI:N/SA:N/S:N/AU:Y/R:A/V:D/RE:L/U:Amber";
         Double baseScore = 8.2;
         String source = "ossIndex";
         CvssV4.Type type = CvssV4.Type.PRIMARY;
@@ -157,8 +157,18 @@ class CvssUtilTest {
         assertEquals(CvssV4Data.CiaType.NONE, result.getCvssData().getSubConfidentialityImpact());
         assertEquals(CvssV4Data.CiaType.NONE, result.getCvssData().getSubIntegrityImpact());
         assertEquals(CvssV4Data.CiaType.NONE, result.getCvssData().getSubAvailabilityImpact());
+        assertEquals(CvssV4Data.SafetyType.NEGLIGIBLE, result.getCvssData().getSafety());
+        assertEquals(CvssV4Data.AutomatableType.YES, result.getCvssData().getAutomatable());
+        assertEquals(CvssV4Data.RecoveryType.AUTOMATIC, result.getCvssData().getRecovery());
+        assertEquals(CvssV4Data.ValueDensityType.DIFFUSE, result.getCvssData().getValueDensity());
+        assertEquals(CvssV4Data.VulnerabilityResponseEffortType.LOW, result.getCvssData().getVulnerabilityResponseEffort());
+        assertEquals(CvssV4Data.ProviderUrgencyType.AMBER, result.getCvssData().getProviderUrgency());
         assertEquals(CvssV4Data.SeverityType.HIGH, result.getCvssData().getBaseSeverity());
         assertEquals(8.2, result.getCvssData().getBaseScore(), 0);
+        assertNull(result.getCvssData().getThreatScore());
+        assertNull(result.getCvssData().getThreatSeverity());
+        assertNull(result.getCvssData().getEnvironmentalScore());
+        assertNull(result.getCvssData().getEnvironmentalSeverity());
     }
 
 }

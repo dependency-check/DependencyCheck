@@ -113,33 +113,33 @@ Copyright (c) 2012 - Jeremy Long
     <properties>
         <maven.compiler.release>11</maven.compiler.release>
         <!--reproducible build-->
-        <project.build.outputTimestamp>2026-01-09T12:38:08Z</project.build.outputTimestamp>
+        <project.build.outputTimestamp>2026-05-03T10:20:35Z</project.build.outputTimestamp>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
         <!-- Reporting plugins do not inherit from plugin management, so de-duplicate versions via properties -->
         <maven-checkstyle-plugin.version>3.6.0</maven-checkstyle-plugin.version>
         <checkstyle.tool.version>9.3</checkstyle.tool.version>
-        <maven-dependency-plugin.version>3.10.0</maven-dependency-plugin.version>
+        <maven-dependency-plugin.version>3.11.0</maven-dependency-plugin.version>
         <maven-javadoc-plugin.version>3.12.0</maven-javadoc-plugin.version>
         <maven-project-info-reports-plugin.version>3.9.0</maven-project-info-reports-plugin.version>
         <jacoco-maven-plugin.version>0.8.14</jacoco-maven-plugin.version>
-        <spotbugs.maven.plugin.version>4.9.8.2</spotbugs.maven.plugin.version>
+        <spotbugs.maven.plugin.version>4.9.8.3</spotbugs.maven.plugin.version>
 
         <!-- upgrading slf4j and logback can cause issues ;) https://github.com/dependency-check/DependencyCheck/issues/4846 -->
-        <slf4j.version>2.0.17</slf4j.version>
-        <logback.version>1.5.25</logback.version>
+        <slf4j.version>2.0.18</slf4j.version>
+        <logback.version>1.5.32</logback.version>
 
         <apache.lucene.version>9.12.3</apache.lucene.version>
         <!-- Driver versions as properties for ease of extraction for reuse in Docker builds -->
         <driver.h2database.version>2.4.240</driver.h2database.version>
-        <driver.postgresql.version>42.7.10</driver.postgresql.version>
-        <driver.mysql.version>9.6.0</driver.mysql.version>
+        <driver.postgresql.version>42.7.11</driver.postgresql.version>
+        <driver.mysql.version>9.7.0</driver.mysql.version>
 
-        <apache.ant.version>1.10.15</apache.ant.version>
-        <httpcomponents.client.version>5.6</httpcomponents.client.version>
-        <httpcomponents.core.version>5.4.1</httpcomponents.core.version>
-        <junit.version>5.14.3</junit.version>
+        <apache.ant.version>1.10.17</apache.ant.version>
+        <httpcomponents.client.version>5.6.1</httpcomponents.client.version>
+        <httpcomponents.core.version>5.4.2</httpcomponents.core.version>
+        <junit.version>5.14.4</junit.version>
 
         <!--necessary for some IDEs to be able to execute test cases (Netbeans)-->
         <surefireArgLine />
@@ -212,7 +212,7 @@ Copyright (c) 2012 - Jeremy Long
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-enforcer-plugin</artifactId>
-                    <version>3.6.2</version>
+                    <version>3.6.3</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -252,7 +252,7 @@ Copyright (c) 2012 - Jeremy Long
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-resources-plugin</artifactId>
-                    <version>3.4.0</version>
+                    <version>3.5.0</version>
                     <configuration>
                         <propertiesEncoding>ISO-8859-1</propertiesEncoding>
                     </configuration>
@@ -267,12 +267,12 @@ Copyright (c) 2012 - Jeremy Long
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-site-plugin</artifactId>
-                    <version>3.21.0</version>
+                    <version>3.22.0</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-surefire-plugin</artifactId>
-                    <version>3.5.5</version>
+                    <version>3.5.6</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -317,7 +317,7 @@ Copyright (c) 2012 - Jeremy Long
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-invoker-plugin</artifactId>
-                    <version>3.9.1</version>
+                    <version>3.10.1</version>
                 </plugin>
                 <plugin>
                     <groupId>org.codehaus.gmavenplus</groupId>
@@ -327,7 +327,7 @@ Copyright (c) 2012 - Jeremy Long
                         <dependency>
                             <groupId>org.apache.groovy</groupId>
                             <artifactId>groovy-ant</artifactId>
-                            <version>5.0.4</version>
+                            <version>5.0.6</version>
                             <scope>runtime</scope>
                         </dependency>
                     </dependencies>
@@ -434,9 +434,9 @@ Copyright (c) 2012 - Jeremy Long
                 </configuration>
             </plugin>
             <plugin>
-                <groupId>pl.project13.maven</groupId>
-                <artifactId>git-commit-id-plugin</artifactId>
-                <version>4.9.10</version>
+                <groupId>io.github.git-commit-id</groupId>
+                <artifactId>git-commit-id-maven-plugin</artifactId>
+                <version>10.0.0</version>
                 <executions>
                     <execution>
                         <id>git-info</id>
@@ -501,7 +501,7 @@ Copyright (c) 2012 - Jeremy Long
                     <dependency>
                         <groupId>org.codehaus.mojo</groupId>
                         <artifactId>extra-enforcer-rules</artifactId>
-                        <version>1.11.0</version>
+                        <version>1.12.0</version>
                     </dependency>
                 </dependencies>
                 <inherited>true</inherited>
@@ -834,7 +834,7 @@ Copyright (c) 2012 - Jeremy Long
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-report-plugin</artifactId>
-                <version>3.5.5</version>
+                <version>3.5.6</version>
                 <reportSets>
                     <reportSet>
                         <reports>
@@ -912,7 +912,7 @@ Copyright (c) 2012 - Jeremy Long
             <dependency>
                 <groupId>io.github.jeremylong</groupId>
                 <artifactId>open-vulnerability-clients</artifactId>
-                <version>9.0.3</version>
+                <version>9.0.5</version>
             </dependency>
             <dependency>
                 <groupId>org.anarres.jdiagnostics</groupId>
@@ -1020,14 +1020,14 @@ Copyright (c) 2012 - Jeremy Long
             <dependency>
                 <groupId>com.fasterxml.jackson</groupId>
                 <artifactId>jackson-bom</artifactId>
-                <version>2.21.1</version>
+                <version>2.21.3</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
             <dependency>
                 <groupId>commons-io</groupId>
                 <artifactId>commons-io</artifactId>
-                <version>2.21.0</version>
+                <version>2.22.0</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.commons</groupId>
@@ -1052,7 +1052,7 @@ Copyright (c) 2012 - Jeremy Long
             <dependency>
                 <groupId>org.mockito</groupId>
                 <artifactId>mockito-bom</artifactId>
-                <version>5.22.0</version>
+                <version>5.23.0</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -1103,7 +1103,7 @@ Copyright (c) 2012 - Jeremy Long
             <dependency>
                 <groupId>commons-codec</groupId>
                 <artifactId>commons-codec</artifactId>
-                <version>1.21.0</version>
+                <version>1.22.0</version>
             </dependency>
             <dependency>
                 <groupId>com.h3xstream.retirejs</groupId>
@@ -1120,7 +1120,7 @@ Copyright (c) 2012 - Jeremy Long
             <dependency>
                 <groupId>org.json</groupId>
                 <artifactId>json</artifactId>
-                <version>20251224</version>
+                <version>20260522</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.commons</groupId>
@@ -1135,7 +1135,7 @@ Copyright (c) 2012 - Jeremy Long
             <dependency>
                 <groupId>org.eclipse.parsson</groupId>
                 <artifactId>jakarta.json</artifactId>
-                <version>1.1.7</version>
+                <version>1.1.9</version>
             </dependency>
             <dependency>
                 <groupId>org.hamcrest</groupId>
@@ -1146,7 +1146,7 @@ Copyright (c) 2012 - Jeremy Long
             <dependency>
                 <groupId>org.jsoup</groupId>
                 <artifactId>jsoup</artifactId>
-                <version>1.22.1</version>
+                <version>1.22.2</version>
             </dependency>
             <dependency>
                 <groupId>org.slf4j</groupId>
@@ -1182,7 +1182,7 @@ Copyright (c) 2012 - Jeremy Long
             <dependency>
                 <groupId>com.google.guava</groupId>
                 <artifactId>guava</artifactId>
-                <version>33.5.0-jre</version>
+                <version>33.6.0-jre</version>
                 <exclusions>
                     <!-- Not needed at runtime for ODC cases -->
                     <exclusion>

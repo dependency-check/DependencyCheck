@@ -194,7 +194,7 @@ public class AssemblyAnalyzer extends AbstractFileTypeAnalyzer {
      * @param data the assembly data
      * @param dependency the dependency to update
      */
-    private void updateDependency(final AssemblyData data, Dependency dependency) {
+    void updateDependency(final AssemblyData data, Dependency dependency) {
         final StringBuilder sb = new StringBuilder();
         if (!StringUtils.isBlank(data.getFileDescription())) {
             sb.append(data.getFileDescription());
@@ -253,30 +253,23 @@ public class AssemblyAnalyzer extends AbstractFileTypeAnalyzer {
                 }
             }
             if (dependency.getVersion() == null) {
-                if (data.getFileVersion() != null && data.getProductVersion() != null
-                        && data.getFileVersion().length() >= data.getProductVersion().length()) {
-                    if (fileVersion != null && fileVersion.toString().length() == data.getFileVersion().length()) {
+                if (fileVersion != null && productVersion != null) {
+                    if (fileVersion.toString().startsWith(productVersion.toString())) {
                         dependency.setVersion(fileVersion.toString());
-                    } else if (productVersion != null && productVersion.toString().length() == data.getProductVersion().length()) {
+                    } else if (productVersion.toString().startsWith(fileVersion.toString())) {
                         dependency.setVersion(productVersion.toString());
-                    }
-                } else {
-                    if (productVersion != null && productVersion.toString().length() == data.getProductVersion().length()) {
-                        dependency.setVersion(productVersion.toString());
-                    } else if (fileVersion != null && fileVersion.toString().length() == data.getFileVersion().length()) {
-                        dependency.setVersion(fileVersion.toString());
                     }
                 }
             }
         }
-        if (dependency.getVersion() == null && data.getFileVersion() != null) {
-            final DependencyVersion version = DependencyVersionUtil.parseVersion(data.getFileVersion(), true);
+        if (dependency.getVersion() == null && data.getProductVersion() != null) {
+            final DependencyVersion version = DependencyVersionUtil.parseVersion(data.getProductVersion(), true);
             if (version != null) {
                 dependency.setVersion(version.toString());
             }
         }
-        if (dependency.getVersion() == null && data.getProductVersion() != null) {
-            final DependencyVersion version = DependencyVersionUtil.parseVersion(data.getProductVersion(), true);
+        if (dependency.getVersion() == null && data.getFileVersion() != null) {
+            final DependencyVersion version = DependencyVersionUtil.parseVersion(data.getFileVersion(), true);
             if (version != null) {
                 dependency.setVersion(version.toString());
             }

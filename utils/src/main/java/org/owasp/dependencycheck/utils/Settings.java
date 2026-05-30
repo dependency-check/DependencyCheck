@@ -17,14 +17,13 @@
  */
 package org.owasp.dependencycheck.utils;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -230,11 +229,15 @@ public final class Settings {
         /**
          * The properties key that indicates how often the CPE data needs to be
          * updated.
+         * @deprecated No longer used; will be removed in a future release.
          */
+        @Deprecated(forRemoval = true, since = "v2.0.0")
         public static final String CPE_MODIFIED_VALID_FOR_DAYS = "cpe.validfordays";
         /**
          * The properties key for the URL to retrieve the CPE.
+         * @deprecated No longer used; will be removed in a future release.
          */
+        @Deprecated(forRemoval = true, since = "v2.0.0")
         public static final String CPE_URL = "cpe.url";
         /**
          * The properties key for the URL to retrieve the Known Exploited
@@ -269,7 +272,9 @@ public final class Settings {
          * Whether or not if using basic auth with a proxy the system setting
          * 'jdk.http.auth.tunneling.disabledSchemes' should be set to an empty
          * string.
+         * @deprecated No longer used; will be removed in a future release.
          */
+        @Deprecated(forRemoval = true, since = "v12.1.2")
         public static final String PROXY_DISABLE_SCHEMAS = "proxy.disableSchemas";
         /**
          * The properties key for the proxy server.
@@ -405,7 +410,7 @@ public final class Settings {
          */
         public static final String ANALYZER_ARCHIVE_ENABLED = "analyzer.archive.enabled";
         /**
-         * The properties key for whether the node.js package analyzer is
+         * The properties key for whether the node package analyzer is
          * enabled.
          */
         public static final String ANALYZER_NODE_PACKAGE_ENABLED = "analyzer.node.package.enabled";
@@ -755,31 +760,45 @@ public final class Settings {
         public static final String ADDITIONAL_ZIP_EXTENSIONS = "extensions.zip";
         /**
          * The key to obtain the path to the VFEED data file.
+         * @deprecated No longer used; will be removed in a future release.
          */
+        @Deprecated(forRemoval = true, since = "v1.0.0")
         public static final String VFEED_DATA_FILE = "vfeed.data_file";
         /**
          * The key to obtain the VFEED connection string.
+         * @deprecated No longer used; will be removed in a future release.
          */
+        @Deprecated(forRemoval = true, since = "v1.0.0")
         public static final String VFEED_CONNECTION_STRING = "vfeed.connection_string";
         /**
          * The key to obtain the base download URL for the VFeed data file.
+         * @deprecated No longer used; will be removed in a future release.
          */
+        @Deprecated(forRemoval = true, since = "v1.0.0")
         public static final String VFEED_DOWNLOAD_URL = "vfeed.download_url";
         /**
          * The key to obtain the download file name for the VFeed data.
+         * @deprecated No longer used; will be removed in a future release.
          */
+        @Deprecated(forRemoval = true, since = "v1.0.0")
         public static final String VFEED_DOWNLOAD_FILE = "vfeed.download_file";
         /**
          * The key to obtain the VFeed update status.
+         * @deprecated No longer used; will be removed in a future release.
          */
+        @Deprecated(forRemoval = true, since = "v1.0.0")
         public static final String VFEED_UPDATE_STATUS = "vfeed.update_status";
         /**
          * The key to the HTTP request method for query last modified date.
+         * @deprecated No longer used; will be removed in a future release.
          */
+        @Deprecated(forRemoval = true, since = "v11.0.0")
         public static final String DOWNLOADER_QUICK_QUERY_TIMESTAMP = "downloader.quick.query.timestamp";
         /**
          * The key to HTTP protocol list to use.
+         * @deprecated No longer used; will be removed in a future release.
          */
+        @Deprecated(forRemoval = true, since = "v12.0.0")
         public static final String DOWNLOADER_TLS_PROTOCOL_LIST = "downloader.tls.protocols";
         /**
          * The key to determine if the CPE analyzer is enabled.
@@ -863,6 +882,11 @@ public final class Settings {
          */
         public static final String ANALYZER_OSSINDEX_USE_CACHE = "analyzer.ossindex.use.cache";
         /**
+         * The properties key for how long results from the Sonatype OSS Index
+         * should be cached.
+         */
+        public static final String ANALYZER_OSSINDEX_CACHE_VALID_FOR_HOURS = "analyzer.ossindex.cache.validforhours";
+        /**
          * The properties key for the Sonatype OSS Index URL.
          */
         public static final String ANALYZER_OSSINDEX_URL = "analyzer.ossindex.url";
@@ -889,11 +913,6 @@ public final class Settings {
          * errors instead of failing the request.
          */
         public static final String ANALYZER_OSSINDEX_WARN_ONLY_ON_REMOTE_ERRORS = "analyzer.ossindex.remote-error.warn-only";
-        /**
-         * The properties key setting whether or not the JSON and XML reports
-         * will be pretty printed.
-         */
-
         /**
          * The properties key for whether the Dart analyzer is enabled.
          */

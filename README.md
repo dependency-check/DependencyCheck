@@ -46,14 +46,19 @@ The NVD API has enforced rate limits. If you are using a single API KEY and
 multiple builds occur you could hit the rate limit and receive 403 errors. In
 a CI environment one must use a caching strategy.
 
-### OSSIndex API Token Now Required for usage
+### Sonatype OSS Index mandatory authentication and migration to Sonatype Guide
 
-In September 2025 Sonatype OSSIndex started enforcing use of API tokens. If you 
-wish to use Sonatype OSSIndex you must configure Dependency-Check
-to use a username and API token/password; see https://ossindex.sonatype.org/doc/api-token.
-Without OSSIndex credentials, Dependency Check will **automatically disable the OSSIndex analyzer**.
-Please see the documentation for the cli, maven, gradle, or ant integrations on
-how to set the OSSIndex credentials.
+In September 2025 Sonatype OSS Index started enforcing use of API tokens for authentication. In April 2026 a
+subsequent migration to Sonatype Guide began, kicking off a transition to use of Sonatype Guide API Tokens that are
+planned to replace the legacy OSS Index API keys/tokens before the end of 2026.
+
+Without credentials, Dependency Check will **automatically disable the OSS Index analyzer**. Please see the documentation
+for the CLI, Maven, Gradle, or Ant integrations on how to set the analyzer credentials for use of a Sonatype Guide token
+or legacy OSS Index API key.
+
+If you wish to use Sonatype OSS Index (via Guide) you must configure Dependency-Check and consider implications for the
+migration to Sonatype Guide; whose commercial/usage model has changed. See the [analyzer documentation](https://dependency-check.github.io/DependencyCheck/analyzers/oss-index-analyzer.html)
+for more information.
 
 ### Gradle build Environment
 
@@ -66,11 +71,11 @@ the transitive dependencies of dependency-check to specific versions. For exampl
 dependencies {
     constraints {
         // org.owasp.dependencycheck needs at least this version of jackson. Other plugins pull in older versions..
-        add("implementation", "com.fasterxml.jackson:jackson-bom:2.16.1")
+        add("implementation", "com.fasterxml.jackson:jackson-bom:2.21.2")
 
         // org.owasp.dependencycheck needs these versions. Other plugins pull in older versions..
-        add("implementation", "org.apache.commons:commons-lang3:3.14.0")
-        add("implementation", "org.apache.commons:commons-text:1.11.0")
+        add("implementation", "org.apache.commons:commons-lang3:3.20.0")
+        add("implementation", "org.apache.commons:commons-text:1.15.0")
     }
 }
 ```
@@ -179,7 +184,7 @@ For instructions on the use of the Ant Task, please see the [dependency-check-an
 ## Development Prerequisites
 
 For installation to pass, you must have the following components installed:
-* Java: `java -version` 11.0
+* Java: `java -version` 25.0
 * Maven: `mvn -version` 3.6.3 and higher
 
 Tests cases require:

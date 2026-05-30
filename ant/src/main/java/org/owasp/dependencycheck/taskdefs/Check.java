@@ -17,13 +17,6 @@
  */
 package org.owasp.dependencycheck.taskdefs;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-import javax.annotation.concurrent.NotThreadSafe;
-
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.types.EnumeratedAttribute;
@@ -34,6 +27,7 @@ import org.apache.tools.ant.types.resources.FileProvider;
 import org.apache.tools.ant.types.resources.Resources;
 import org.owasp.dependencycheck.Engine;
 import org.owasp.dependencycheck.agent.DependencyCheckScanAgent;
+import org.owasp.dependencycheck.ant.logging.AntTaskHolder;
 import org.owasp.dependencycheck.data.nvdcve.DatabaseException;
 import org.owasp.dependencycheck.dependency.Dependency;
 import org.owasp.dependencycheck.dependency.Vulnerability;
@@ -46,7 +40,13 @@ import org.owasp.dependencycheck.utils.InvalidSettingException;
 import org.owasp.dependencycheck.utils.Settings;
 import org.owasp.dependencycheck.utils.SeverityUtil;
 import org.owasp.dependencycheck.utils.scarf.TelemetryCollector;
-import org.owasp.dependencycheck.ant.logging.AntTaskHolder;
+
+import javax.annotation.concurrent.NotThreadSafe;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 //CSOFF: MethodCount
 /**
@@ -67,7 +67,7 @@ public class Check extends Update {
      */
     private Boolean rubygemsAnalyzerEnabled;
     /**
-     * Whether or not the Node.js Analyzer is enabled.
+     * Whether or not the Node Package Analyzer is enabled.
      */
     private Boolean nodeAnalyzerEnabled;
     /**
@@ -100,12 +100,12 @@ public class Check extends Update {
      * to exclude files that contain matching content..
      */
     @SuppressWarnings("CanBeFinal")
-    private final List<String> retirejsFilters = new ArrayList<>();
+    private final List<String> retireJsFilters = new ArrayList<>();
     /**
      * Whether or not the RetireJS Analyzer filters non-vulnerable JS files from
      * the report; default is false.
      */
-    private Boolean retirejsFilterNonVulnerable;
+    private Boolean retireJsFilterNonVulnerable;
     /**
      * Whether or not the Ruby Bundle Audit Analyzer is enabled.
      */
@@ -143,8 +143,7 @@ public class Check extends Update {
      */
     private Boolean nexusAnalyzerEnabled;
     /**
-     * The URL of a Nexus server's REST API end point
-     * (http://domain/nexus/service/local).
+     * Sets the Nexus Repository v3 API base URL (example <a href="https://domain.enterprise/nexus/">https://domain.enterprise/nexus/</a>).
      */
     private String nexusUrl;
     /**
@@ -354,23 +353,27 @@ public class Check extends Update {
     /**
      * Whether or not the Sonatype OSS Index analyzer is enabled.
      */
-    private Boolean ossindexAnalyzerEnabled;
+    private Boolean ossIndexAnalyzerEnabled;
     /**
      * Whether or not the Sonatype OSS Index analyzer should cache results.
      */
-    private Boolean ossindexAnalyzerUseCache;
+    private Boolean ossIndexAnalyzerUseCache;
+    /**
+     * The number of hours to wait before checking for new updates on individual packages/components from Sonatype OSS Index.
+     */
+    private Integer ossIndexAnalyzerCacheValidForHours;
     /**
      * URL of the Sonatype OSS Index service.
      */
-    private String ossindexAnalyzerUrl;
+    private String ossIndexAnalyzerUrl;
     /**
      * The username to use for the Sonatype OSS Index service.
      */
-    private String ossindexAnalyzerUsername;
+    private String ossIndexAnalyzerUsername;
     /**
      * The password to use for the Sonatype OSS Index service.
      */
-    private String ossindexAnalyzerPassword;
+    private String ossIndexAnalyzerPassword;
     /**
      * Whether we should only warn about Sonatype OSS Index remote errors
      * instead of failing completely.
@@ -996,11 +999,25 @@ public class Check extends Update {
     /**
      * Set the value of retirejsFilterNonVulnerable.
      *
-     * @param retirejsFilterNonVulnerable new value of
+     * @param retireJsFilterNonVulnerable new value of
      * retirejsFilterNonVulnerable
+     * @deprecated Use {@link #setRetireJsFilterNonVulnerable(Boolean)} instead.
      */
-    public void setRetirejsFilterNonVulnerable(Boolean retirejsFilterNonVulnerable) {
-        this.retirejsFilterNonVulnerable = retirejsFilterNonVulnerable;
+    @Deprecated
+    public void setRetirejsFilterNonVulnerable(Boolean retireJsFilterNonVulnerable) {
+        log("'retirejsFilterNonVulnerable' is deprecated and may be removed in the next major release, please migrate to 'retireJsFilterNonVulnerable'",
+                Project.MSG_WARN);
+        this.retireJsFilterNonVulnerable = retireJsFilterNonVulnerable;
+    }
+
+    /**
+     * Set the value of retireJsFilterNonVulnerable.
+     *
+     * @param retireJsFilterNonVulnerable new value of
+     * retireJsFilterNonVulnerable
+     */
+    public void setRetireJsFilterNonVulnerable(Boolean retireJsFilterNonVulnerable) {
+        this.retireJsFilterNonVulnerable = retireJsFilterNonVulnerable;
     }
 
     /**
@@ -1008,11 +1025,27 @@ public class Check extends Update {
      * <p>
      * This is called by Ant.
      *
-     * @param retirejsFilter the regular expression used to filter based on file
+     * @param retireJsFilter the regular expression used to filter based on file
+     * content
+     * @deprecated Use {@link #addConfiguredRetireJsFilter(RetirejsFilter)} instead.
+     */
+    @Deprecated
+    public void addConfiguredRetirejsFilter(final RetirejsFilter retireJsFilter) {
+        log("'retirejsFilter' is deprecated and may be removed in the next major release, please migrate to 'retireJsFilter'",
+                Project.MSG_WARN);
+        retireJsFilters.add(retireJsFilter.getRegex());
+    }
+
+    /**
+     * Add a regular expression to the set of retire JS content filters.
+     * <p>
+     * This is called by Ant.
+     *
+     * @param retireJsFilter the regular expression used to filter based on file
      * content
      */
-    public void addConfiguredRetirejsFilter(final RetirejsFilter retirejsFilter) {
-        retirejsFilters.add(retirejsFilter.getRegex());
+    public void addConfiguredRetireJsFilter(final RetirejsFilter retireJsFilter) {
+        retireJsFilters.add(retireJsFilter.getRegex());
     }
 
     /**
@@ -1196,48 +1229,122 @@ public class Check extends Update {
     }
 
     /**
-     * Set value of {@link #ossindexAnalyzerEnabled}.
+     * Set value of {@link #ossIndexAnalyzerEnabled}.
      *
-     * @param ossindexAnalyzerEnabled new value of ossindexAnalyzerEnabled
+     * @param ossIndexAnalyzerEnabled new value of ossIndexAnalyzerEnabled
+     * @deprecated Use {@link #setOssIndexAnalyzerEnabled(Boolean)} instead.
      */
-    public void setOssindexAnalyzerEnabled(Boolean ossindexAnalyzerEnabled) {
-        this.ossindexAnalyzerEnabled = ossindexAnalyzerEnabled;
+    @Deprecated
+    public void setOssindexAnalyzerEnabled(Boolean ossIndexAnalyzerEnabled) {
+        log("'ossindexAnalyzerEnabled' is deprecated and may be removed in the next major release, please migrate to 'ossIndexAnalyzerEnabled'",
+                Project.MSG_WARN);
+        this.ossIndexAnalyzerEnabled = ossIndexAnalyzerEnabled;
     }
 
     /**
-     * Set value of {@link #ossindexAnalyzerUseCache}.
+     * Set value of ossIndexAnalyzerEnabled.
      *
-     * @param ossindexAnalyzerUseCache new value of ossindexAnalyzerUseCache
+     * @param ossIndexAnalyzerEnabled new value of ossIndexAnalyzerEnabled
      */
-    public void setOssindexAnalyzerUseCache(Boolean ossindexAnalyzerUseCache) {
-        this.ossindexAnalyzerUseCache = ossindexAnalyzerUseCache;
+    public void setOssIndexAnalyzerEnabled(Boolean ossIndexAnalyzerEnabled) {
+        this.ossIndexAnalyzerEnabled = ossIndexAnalyzerEnabled;
     }
 
     /**
-     * Set value of {@link #ossindexAnalyzerUrl}.
+     * Set value of {@link #ossIndexAnalyzerUseCache}.
      *
-     * @param ossindexAnalyzerUrl new value of ossindexAnalyzerUrl
+     * @param ossIndexAnalyzerUseCache new value of ossIndexAnalyzerUseCache
+     * @deprecated Use {@link #setOssIndexAnalyzerUseCache(Boolean)} instead.
      */
-    public void setOssindexAnalyzerUrl(String ossindexAnalyzerUrl) {
-        this.ossindexAnalyzerUrl = ossindexAnalyzerUrl;
+    @Deprecated
+    public void setOssindexAnalyzerUseCache(Boolean ossIndexAnalyzerUseCache) {
+        log("'ossindexAnalyzerUseCache' is deprecated and may be removed in the next major release, please migrate to 'ossIndexAnalyzerUseCache'",
+                Project.MSG_WARN);
+        this.ossIndexAnalyzerUseCache = ossIndexAnalyzerUseCache;
     }
 
     /**
-     * Set value of {@link #ossindexAnalyzerUsername}.
+     * Set value of ossIndexAnalyzerUseCache.
      *
-     * @param ossindexAnalyzerUsername new value of ossindexAnalyzerUsername
+     * @param ossIndexAnalyzerUseCache new value of ossIndexAnalyzerUseCache
      */
-    public void setOssindexAnalyzerUsername(String ossindexAnalyzerUsername) {
-        this.ossindexAnalyzerUsername = ossindexAnalyzerUsername;
+    public void setOssIndexAnalyzerUseCache(Boolean ossIndexAnalyzerUseCache) {
+        this.ossIndexAnalyzerUseCache = ossIndexAnalyzerUseCache;
     }
 
     /**
-     * Set value of {@link #ossindexAnalyzerPassword}.
+     * Set value of {@link #ossIndexAnalyzerCacheValidForHours}.
      *
-     * @param ossindexAnalyzerPassword new value of ossindexAnalyzerPassword
+     * @param ossIndexAnalyzerCacheValidForHours new value of ossIndexAnalyzerCacheValidForHours
      */
-    public void setOssindexAnalyzerPassword(String ossindexAnalyzerPassword) {
-        this.ossindexAnalyzerPassword = ossindexAnalyzerPassword;
+    public void setOssIndexAnalyzerCacheValidForHours(Integer ossIndexAnalyzerCacheValidForHours) {
+        this.ossIndexAnalyzerCacheValidForHours = ossIndexAnalyzerCacheValidForHours;
+    }
+
+    /**
+     * Set value of {@link #ossIndexAnalyzerUrl}.
+     *
+     * @param ossIndexAnalyzerUrl new value of ossIndexAnalyzerUrl
+     * @deprecated Use {@link #setOssIndexAnalyzerUrl(String)} instead.
+     */
+    @Deprecated
+    public void setOssindexAnalyzerUrl(String ossIndexAnalyzerUrl) {
+        log("'ossindexAnalyzerUrl' is deprecated and may be removed in the next major release, please migrate to 'ossIndexAnalyzerUrl'",
+                Project.MSG_WARN);
+        this.ossIndexAnalyzerUrl = ossIndexAnalyzerUrl;
+    }
+
+    /**
+     * Set value of ossIndexAnalyzerUrl.
+     *
+     * @param ossIndexAnalyzerUrl new value of ossIndexAnalyzerUrl
+     */
+    public void setOssIndexAnalyzerUrl(String ossIndexAnalyzerUrl) {
+        this.ossIndexAnalyzerUrl = ossIndexAnalyzerUrl;
+    }
+
+    /**
+     * Set value of {@link #ossIndexAnalyzerUsername}.
+     *
+     * @param ossIndexAnalyzerUsername new value of ossIndexAnalyzerUsername
+     * @deprecated Use {@link #setOssIndexAnalyzerUsername(String)} instead.
+     */
+    @Deprecated
+    public void setOssindexAnalyzerUsername(String ossIndexAnalyzerUsername) {
+        log("'ossindexAnalyzerUsername' is deprecated and may be removed in the next major release, please migrate to 'ossIndexAnalyzerUsername'",
+                Project.MSG_WARN);
+        this.ossIndexAnalyzerUsername = ossIndexAnalyzerUsername;
+    }
+
+    /**
+     * Set value of ossIndexAnalyzerUsername.
+     *
+     * @param ossIndexAnalyzerUsername new value of ossIndexAnalyzerUsername
+     */
+    public void setOssIndexAnalyzerUsername(String ossIndexAnalyzerUsername) {
+        this.ossIndexAnalyzerUsername = ossIndexAnalyzerUsername;
+    }
+
+    /**
+     * Set value of {@link #ossIndexAnalyzerPassword}.
+     *
+     * @param ossIndexAnalyzerPassword new value of ossIndexAnalyzerPassword
+     * @deprecated Use {@link #setOssIndexAnalyzerPassword(String)} instead.
+     */
+    @Deprecated
+    public void setOssindexAnalyzerPassword(String ossIndexAnalyzerPassword) {
+        log("'ossindexAnalyzerPassword' is deprecated and may be removed in the next major release, please migrate to 'ossIndexAnalyzerPassword'",
+                Project.MSG_WARN);
+        this.ossIndexAnalyzerPassword = ossIndexAnalyzerPassword;
+    }
+
+    /**
+     * Set value of ossIndexAnalyzerPassword.
+     *
+     * @param ossIndexAnalyzerPassword new value of ossIndexAnalyzerPassword
+     */
+    public void setOssIndexAnalyzerPassword(String ossIndexAnalyzerPassword) {
+        this.ossIndexAnalyzerPassword = ossIndexAnalyzerPassword;
     }
 
     /**
@@ -1489,8 +1596,8 @@ public class Check extends Update {
         getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_PNPM_AUDIT_ENABLED, pnpmAuditAnalyzerEnabled);
         getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_NODE_AUDIT_USE_CACHE, nodeAuditAnalyzerUseCache);
         getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_NODE_AUDIT_SKIPDEV, nodeAuditSkipDevDependencies);
-        getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_RETIREJS_FILTER_NON_VULNERABLE, retirejsFilterNonVulnerable);
-        getSettings().setArrayIfNotEmpty(Settings.KEYS.ANALYZER_RETIREJS_FILTERS, retirejsFilters);
+        getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_RETIREJS_FILTER_NON_VULNERABLE, retireJsFilterNonVulnerable);
+        getSettings().setArrayIfNotEmpty(Settings.KEYS.ANALYZER_RETIREJS_FILTERS, retireJsFilters);
         getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_GOLANG_DEP_ENABLED, golangDepEnabled);
         getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_GOLANG_MOD_ENABLED, golangModEnabled);
         getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_DART_ENABLED, dartAnalyzerEnabled);
@@ -1514,11 +1621,12 @@ public class Check extends Update {
         getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_NEXUS_USES_PROXY, nexusUsesProxy);
         getSettings().setStringIfNotEmpty(Settings.KEYS.ADDITIONAL_ZIP_EXTENSIONS, zipExtensions);
         getSettings().setStringIfNotEmpty(Settings.KEYS.ANALYZER_ASSEMBLY_DOTNET_PATH, pathToCore);
-        getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_OSSINDEX_ENABLED, ossindexAnalyzerEnabled);
-        getSettings().setStringIfNotEmpty(Settings.KEYS.ANALYZER_OSSINDEX_URL, ossindexAnalyzerUrl);
-        getSettings().setStringIfNotEmpty(Settings.KEYS.ANALYZER_OSSINDEX_USER, ossindexAnalyzerUsername);
-        getSettings().setStringIfNotEmpty(Settings.KEYS.ANALYZER_OSSINDEX_PASSWORD, ossindexAnalyzerPassword);
-        getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_OSSINDEX_USE_CACHE, ossindexAnalyzerUseCache);
+        getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_OSSINDEX_ENABLED, ossIndexAnalyzerEnabled);
+        getSettings().setStringIfNotEmpty(Settings.KEYS.ANALYZER_OSSINDEX_URL, ossIndexAnalyzerUrl);
+        getSettings().setStringIfNotEmpty(Settings.KEYS.ANALYZER_OSSINDEX_USER, ossIndexAnalyzerUsername);
+        getSettings().setStringIfNotEmpty(Settings.KEYS.ANALYZER_OSSINDEX_PASSWORD, ossIndexAnalyzerPassword);
+        getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_OSSINDEX_USE_CACHE, ossIndexAnalyzerUseCache);
+        getSettings().setIntIfNotNull(Settings.KEYS.ANALYZER_OSSINDEX_CACHE_VALID_FOR_HOURS, ossIndexAnalyzerCacheValidForHours);
         getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_OSSINDEX_WARN_ONLY_ON_REMOTE_ERRORS, ossIndexAnalyzerWarnOnlyOnRemoteErrors);
         getSettings().setFloat(Settings.KEYS.JUNIT_FAIL_ON_CVSS, junitFailOnCVSS);
         getSettings().setBooleanIfNotNull(Settings.KEYS.FAIL_ON_UNUSED_SUPPRESSION_RULE, failBuildOnUnusedSuppressionRule);

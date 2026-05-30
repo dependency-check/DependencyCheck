@@ -1,4 +1,4 @@
-FROM golang:1.26.0-alpine AS go
+FROM golang:1.26.3-alpine AS go
 
 FROM azul/zulu-openjdk-alpine:25 AS jlink
 
@@ -17,21 +17,18 @@ ENV user=dependencycheck
 ENV JAVA_HOME=/opt/jdk
 ENV JAVA_OPTS="-Danalyzer.assembly.dotnet.path=/usr/bin/dotnet -Danalyzer.bundle.audit.path=/usr/bin/bundle-audit -Danalyzer.golang.path=/usr/local/go/bin/go"
 ENV ODC_NAME=dependency-check-docker
+ENV COREPACK_ENABLE_DOWNLOAD_PROMPT=false
 
 COPY --from=jlink /jlinked /opt/jdk/
 COPY --from=go /usr/local/go/ /usr/local/go/
 
 ADD cli/target/dependency-check-${VERSION}-release.zip /
 
-RUN apk update                                                                                       && \
-    apk add --no-cache --virtual .build-deps curl tar                                                && \
-    apk add --no-cache git ruby ruby-rdoc npm                                                        && \
-    gem install bundler-audit                                                                        && \
-    bundle audit update                                                                              && \
-    mkdir /opt/yarn                                                                                  && \
-    curl -Ls https://yarnpkg.com/latest.tar.gz | tar -xz --strip-components=1 --directory /opt/yarn  && \
-    ln -s /opt/yarn/bin/yarn /usr/bin/yarn                                                           && \
-    npm install -g pnpm                                                                              && \
+RUN apk upgrade --no-cache                                                                           && \
+    apk add --no-cache --virtual .build-deps curl                                                    && \
+    apk add --no-cache git ruby npm                                                                  && \
+    gem install --no-document bundler-audit                                                          && \
+    npm install --global --ignore-scripts corepack                                                   && \
     unzip dependency-check-${VERSION}-release.zip -d /usr/share/                                     && \
     rm dependency-check-${VERSION}-release.zip                                                       && \
     cd /usr/share/dependency-check/plugins                                                           && \
@@ -44,11 +41,18 @@ RUN apk update                                                                  
     mkdir /report                                                                                    && \
     chown -R ${user}:0 /report                                                                       && \
     chmod -R g=u /report                                                                             && \
-    apk del .build-deps
+    apk del .build-deps                                                                              && \
+    rm -rf /tmp/* /root/.cache /root/.npm
 
 ### remove any suid sgid - we don't need them
 RUN find / -path /proc -prune -perm +6000 -type f -exec chmod a-s {} \;
 USER ${UID}
+
+### Cache pieces needed for the specific run user
+RUN bundle audit update                                                                              && \
+    corepack prepare pnpm@latest yarn@latest yarn@1 --activate                                       && \
+    printf "enableTelemetry: false\nenableScripts: false\n" >> ${HOME}/.yarnrc.yml                   && \
+    rm -rf /tmp/*
 
 VOLUME ["/src", "/report"]
 

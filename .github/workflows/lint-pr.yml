@@ -2,6 +2,10 @@ name: "Lint PR"
 
 on:
   pull_request_target:
+    # BE CAREFUL - this event runs in the context of the default branch (`main`) workflow definition in the target
+    #    repository (NOT the fork's context), so it has potentially sensitive access.
+    #    It is critical that this only runs on very limited events and/or access to the repo
+    # Read https://docs.github.com/en/actions/reference/workflows-and-actions/events-that-trigger-workflows#pull_request_target
     types:
       - opened
       - edited
@@ -18,6 +22,6 @@ jobs:
       statuses: write
     runs-on: ubuntu-latest
     steps:
-      - uses: amannn/action-semantic-pull-request@v6.1.1
+      - uses: amannn/action-semantic-pull-request@48f256284bd46cdaab1048c3721360e808335d50 # v6.1.1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

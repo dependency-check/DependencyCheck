@@ -47,6 +47,8 @@ import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.owasp.dependencycheck.utils.FileUtils.existsWithContent;
+
 @ThreadSafe
 public class PnpmAuditAnalyzer extends AbstractNpmAnalyzer {
 
@@ -90,7 +92,7 @@ public class PnpmAuditAnalyzer extends AbstractNpmAnalyzer {
             engine.removeDependency(dependency);
         }
         final File packageLock = dependency.getActualFile();
-        if (!packageLock.isFile() || packageLock.length() == 0 || !shouldProcess(packageLock)) {
+        if (!existsWithContent(packageLock) || !shouldProcess(packageLock)) {
             return;
         }
         final List<Advisory> advisories;

@@ -54,6 +54,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import static org.owasp.dependencycheck.utils.FileUtils.existsWithContent;
+
 /**
  * Used to analyze Node Package Manager (npm) package.json files, and collect
  * information that can be used to determine the associated CPE.
@@ -75,7 +77,7 @@ public class NodePackageAnalyzer extends AbstractNpmAnalyzer {
     /**
      * The name of the analyzer.
      */
-    private static final String ANALYZER_NAME = "Node.js Package Analyzer";
+    private static final String ANALYZER_NAME = "Node Package Analyzer";
     /**
      * The phase that this analyzer is intended to run in.
      */
@@ -223,7 +225,7 @@ public class NodePackageAnalyzer extends AbstractNpmAnalyzer {
     @Override
     protected void analyzeDependency(Dependency dependency, Engine engine) throws AnalysisException {
         final File dependencyFile = dependency.getActualFile();
-        if (!dependencyFile.isFile() || dependencyFile.length() == 0 || !shouldProcess(dependencyFile)) {
+        if (!existsWithContent(dependencyFile) || !shouldProcess(dependencyFile)) {
             return;
         }
         if (isNodeAuditEnabled(engine)

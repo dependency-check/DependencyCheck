@@ -17,15 +17,9 @@
  */
 package org.owasp.dependencycheck.xml.suppression;
 
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
-import javax.annotation.concurrent.NotThreadSafe;
+import org.apache.commons.lang3.Strings;
 import org.apache.commons.lang3.time.DateFormatUtils;
+import org.jspecify.annotations.NonNull;
 import org.owasp.dependencycheck.dependency.Dependency;
 import org.owasp.dependencycheck.dependency.Vulnerability;
 import org.owasp.dependencycheck.dependency.naming.CpeIdentifier;
@@ -35,6 +29,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import us.springett.parsers.cpe.Cpe;
 import us.springett.parsers.cpe.exceptions.CpeEncodingException;
+
+import javax.annotation.concurrent.NotThreadSafe;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 
 /**
  *
@@ -567,37 +569,17 @@ public class SuppressionRule {
         if (sha1 != null && !sha1.equalsIgnoreCase(dependency.getSha1sum())) {
             return;
         }
-        if (hasGav()) {
-            final Iterator<Identifier> itr = dependency.getSoftwareIdentifiers().iterator();
-            boolean found = false;
-            while (itr.hasNext()) {
-                final Identifier i = itr.next();
-                if (identifierMatches(this.gav, i)) {
-                    found = true;
-                    break;
-                }
-            }
-            if (!found) {
-                return;
-            }
+        if (hasGav() && dependency.getSoftwareIdentifiers().stream()
+                .noneMatch(i -> identifierMatches(this.gav, i))) {
+            return;
         }
-        if (hasPackageUrl()) {
-            final Iterator<Identifier> itr = dependency.getSoftwareIdentifiers().iterator();
-            boolean found = false;
-            while (itr.hasNext()) {
-                final Identifier i = itr.next();
-                if (purlMatches(this.packageUrl, i)) {
-                    found = true;
-                    break;
-                }
-            }
-            if (!found) {
-                return;
-            }
+        if (hasPackageUrl() && dependency.getSoftwareIdentifiers().stream()
+                .noneMatch(i -> purlMatches(this.packageUrl, i))) {
+            return;
         }
 
-        if (this.hasCpe()) {
-            final Set<Identifier> removalList = new HashSet<>();
+        if (hasCpe()) {
+            final Set<Identifier> removeIdentifiers = new HashSet<>();
             for (Identifier i : dependency.getVulnerableSoftwareIdentifiers()) {
                 for (PropertyType c : this.cpe) {
                     if (identifierMatches(c, i)) {
@@ -608,12 +590,12 @@ public class SuppressionRule {
                             }
                             dependency.addSuppressedIdentifier(i);
                         }
-                        removalList.add(i);
+                        removeIdentifiers.add(i);
                         break;
                     }
                 }
             }
-            removalList.forEach(dependency::removeVulnerableSoftwareIdentifier);
+            removeIdentifiers.forEach(dependency::removeVulnerableSoftwareIdentifier);
         }
         if (hasCve() || hasVulnerabilityName() || hasCwe() || hasCvssBelow() || hasCvssV2Below() || hasCvssV3Below() || hasCvssV4Below()) {
             final Set<Vulnerability> removeVulns = new HashSet<>();
@@ -702,36 +684,6 @@ public class SuppressionRule {
     }
 
     /**
-     * Identifies if the cpe specified by the cpe suppression rule does not
-     * specify a version.
-     *
-     * @param c a suppression rule identifier
-     * @return true if the property type does not specify a version; otherwise
-     * false
-     */
-    protected boolean cpeHasNoVersion(PropertyType c) {
-        return !c.isRegex() && countCharacter(c.getValue(), ':') <= 3;
-    }
-
-    /**
-     * Counts the number of occurrences of the character found within the
-     * string.
-     *
-     * @param str the string to check
-     * @param c the character to count
-     * @return the number of times the character is found in the string
-     */
-    private int countCharacter(String str, char c) {
-        int count = 0;
-        int pos = str.indexOf(c) + 1;
-        while (pos > 0) {
-            count += 1;
-            pos = str.indexOf(c, pos) + 1;
-        }
-        return count;
-    }
-
-    /**
      * Determines if the cpeEntry specified as a PropertyType matches the given
      * Identifier.
      *
@@ -760,33 +712,35 @@ public class SuppressionRule {
             final PurlIdentifier purl = (PurlIdentifier) identifier;
             return suppressionEntry.matches(purl.toGav());
         } else if (identifier instanceof CpeIdentifier) {
-            //TODO check for regex - not just type
-            final Cpe cpeId = ((CpeIdentifier) identifier).getCpe();
-            if (suppressionEntry.isRegex()) {
-                try {
-                    return suppressionEntry.matches(cpeId.toCpe22Uri());
-                } catch (CpeEncodingException ex) {
-                    LOGGER.debug("Unable to convert CPE to 22 URI?" + cpeId);
-                }
-            } else if (suppressionEntry.isCaseSensitive()) {
-                try {
-                    return cpeId.toCpe22Uri().startsWith(suppressionEntry.getValue());
-                } catch (CpeEncodingException ex) {
-                    LOGGER.debug("Unable to convert CPE to 22 URI?" + cpeId);
-                }
-            } else {
-                final String id;
-                try {
-                    id = cpeId.toCpe22Uri().toLowerCase();
-                } catch (CpeEncodingException ex) {
-                    LOGGER.debug("Unable to convert CPE to 22 URI?" + cpeId);
-                    return false;
-                }
-                final String check = suppressionEntry.getValue().toLowerCase();
-                return id.startsWith(check);
+            final Cpe cpe = ((CpeIdentifier) identifier).getCpe();
+            try {
+                // Override normal matching for non-regex CPE rules to be a prefix match rather than exact
+                String cpe22Uri = cpe.toCpe22Uri();
+                return suppressionEntry.isRegex() ? suppressionEntry.matches(cpe22Uri) : cpe22UriPrefixMatches(suppressionEntry, cpe22Uri);
+            } catch (CpeEncodingException ex) {
+                LOGGER.debug("Unable to convert CPE [{}] to 22 URI due to [{}], will try direct string match to rule.", cpe, ex.toString());
             }
         }
+        // Fallback and GenericIdentifier (?)
         return suppressionEntry.matches(identifier.getValue());
+    }
+
+    private static boolean cpe22UriPrefixMatches(PropertyType suppressionEntry, String cpe22Uri) {
+        String candidate = cpe22Uri + cpePartMatchingSuffixFor(suppressionEntry);
+        return (suppressionEntry.isCaseSensitive() ? Strings.CS : Strings.CI)
+                .startsWith(candidate, suppressionEntry.getValue());
+    }
+
+    /**
+     * Uses the passed rule to determine whether the match should be strict; i.e whether the match must be a prefix of
+     * the CPE 2.2 URI, but a whole part; rather than matching part way through.
+     * Prefix-matching rules ending with the CPE colon delimiter imply a strict match is necessary.
+     *
+     * @param rule A non-regex CPE prefix-matching rule
+     * @return A suffix for simple string matching of a CPE 2.2 URI
+     */
+    private static @NonNull String cpePartMatchingSuffixFor(PropertyType rule) {
+        return rule.getValue().endsWith(":") ? ":" : "";
     }
 
     /**

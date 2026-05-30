@@ -32,9 +32,10 @@ $ gradle dependencyCheckPurge
 | failOnError | Fails the build if an error occurs during the dependency-check analysis. | true          |
 
 #### Example
+
 ```groovy
 dependencyCheck {
-    failOnError=true
+    failOnError = true
 }
 ```
 
@@ -47,8 +48,9 @@ The following properties can be configured in the dependencyCheckPurge task. How
 | data         | directory | Sets the data directory to hold SQL CVEs contents. This should generally not be changed. | &nbsp;        |
 
 #### Example
+
 ```groovy
 dependencyCheck {
-    data.directory='d:/nvd'
+    data.directory = 'd:/nvd'
 }
 ```

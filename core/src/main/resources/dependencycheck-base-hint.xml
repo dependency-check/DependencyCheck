@@ -479,5 +479,16 @@
         </remove>
     </hint>
 
+    <hint>
+        <given>
+            <evidence type="product" source="grokassembly" name="ProductName" value="Azure .NET SDK"
+                      confidence="HIGHEST" />
+            <evidence type="product" source="file" name="name" value="Azure.Identity" confidence="HIGH" />
+        </given>
+        <add>
+            <evidence type="product" source="hint analyzer" name="product" value="azure_identity_library_for_.net"
+                      confidence="HIGHEST"/>
+        </add>
+    </hint>
 </hints>
 

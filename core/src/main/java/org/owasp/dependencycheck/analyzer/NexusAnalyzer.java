@@ -27,11 +27,21 @@ import org.owasp.dependencycheck.data.nexus.NexusV3Search;
 import org.owasp.dependencycheck.dependency.Confidence;
 import org.owasp.dependencycheck.dependency.Dependency;
 import org.owasp.dependencycheck.dependency.Evidence;
+import org.owasp.dependencycheck.dependency.EvidenceType;
+import org.owasp.dependencycheck.exception.InitializationException;
+import org.owasp.dependencycheck.utils.DownloadFailedException;
+import org.owasp.dependencycheck.utils.Downloader;
+import org.owasp.dependencycheck.utils.FileFilterBuilder;
 import org.owasp.dependencycheck.utils.FileUtils;
+import org.owasp.dependencycheck.utils.InvalidSettingException;
+import org.owasp.dependencycheck.utils.ResourceNotFoundException;
+import org.owasp.dependencycheck.utils.Settings;
+import org.owasp.dependencycheck.utils.TooManyRequestsException;
 import org.owasp.dependencycheck.xml.pom.PomUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.concurrent.ThreadSafe;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.FileNotFoundException;
@@ -39,16 +49,6 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Locale;
-import javax.annotation.concurrent.ThreadSafe;
-import org.owasp.dependencycheck.dependency.EvidenceType;
-import org.owasp.dependencycheck.exception.InitializationException;
-import org.owasp.dependencycheck.utils.DownloadFailedException;
-import org.owasp.dependencycheck.utils.Downloader;
-import org.owasp.dependencycheck.utils.FileFilterBuilder;
-import org.owasp.dependencycheck.utils.InvalidSettingException;
-import org.owasp.dependencycheck.utils.ResourceNotFoundException;
-import org.owasp.dependencycheck.utils.Settings;
-import org.owasp.dependencycheck.utils.TooManyRequestsException;
 
 /**
  * Analyzer which will attempt to locate a dependency on a Nexus service by
@@ -69,13 +69,6 @@ import org.owasp.dependencycheck.utils.TooManyRequestsException;
  */
 @ThreadSafe
 public class NexusAnalyzer extends AbstractFileTypeAnalyzer {
-
-    /**
-     * The default URL - this will be used by the CentralAnalyzer to determine
-     * whether to enable this.
-     */
-    public static final String DEFAULT_URL = "https://repository.sonatype.org/service/local/";
-
     /**
      * The logger.
      */
@@ -136,8 +129,7 @@ public class NexusAnalyzer extends AbstractFileTypeAnalyzer {
         boolean retval = false;
         try {
             if (getSettings().getBoolean(Settings.KEYS.ANALYZER_NEXUS_ENABLED)) {
-                if (getSettings().getString(Settings.KEYS.ANALYZER_NEXUS_URL) != null
-                        && !DEFAULT_URL.equals(getSettings().getString(Settings.KEYS.ANALYZER_NEXUS_URL))) {
+                if (getSettings().getString(Settings.KEYS.ANALYZER_NEXUS_URL) != null) {
                     retval = true;
                 } else {
                     LOGGER.warn("Disabling Nexus analyzer - please specify the URL to a Nexus Server");
@@ -186,12 +178,15 @@ public class NexusAnalyzer extends AbstractFileTypeAnalyzer {
      * @return A NexusSearch appropriate for the configured ANALYZER_NEXUS_URL
      * @throws InitializationException Upon errors creating of validating the ANALYZER_NEXUS_URL
      */
+    @SuppressWarnings("removal")
     private NexusSearch createNexusSearchOrDisable(boolean useProxy) throws InitializationException {
         final Settings settings = getSettings();
         final String nexusRootURL = settings.getString(Settings.KEYS.ANALYZER_NEXUS_URL);
         final NexusSearch result;
         try {
             if (nexusRootURL.toLowerCase(Locale.ROOT).contains("service/local/")) {
+                LOGGER.warn("Nexus v2 went EOL on 30 June 2025. Nexus v2 support within OWASP Dependency Check is deprecated " +
+                        "and may be removed in the next major release. Continual support requires migration to Nexus v3");
                 result = new NexusV2Search(settings, useProxy);
             } else {
                 result = new NexusV3Search(settings, useProxy);

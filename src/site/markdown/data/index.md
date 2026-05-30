@@ -12,7 +12,7 @@ Dependency-Check may contact the following external hosts depending on the enabl
 | NVD API (CVE & CPE data)             | `services.nvd.nist.gov`                | All                                | All               | ✅                         | ✅           |
 | CISA Known Exploited Vulnerabilities | `www.cisa.gov`                         | Known Exploited Vulnerabilities    | All               | ✅                         | ✅           |
 | ODC Hosted suppressions file         | `dependency-check.github.io`           | Hosted Suppressions                | All               | ✅                         | ✅           |
-| Sonatype OSS Index API               | `ossindex.sonatype.org`                | OSS Index                          | All               | ✅                         | ❌           |
+| Sonatype OSS Index API via Guide     | `api.guide.sonatype.com`               | OSS Index                          | All               | ✅                         | ❌           |
 | RetireJS definitions                 | `raw.githubusercontent.com`            | RetireJS                           | Javascript        | ✅                         | ✅           |
 | NPM audit advisories                 | `registry.npmjs.org`                   | Node Audit, Yarn Audit, PNPM Audit | Javascript        | ✅                         | ❌           |
 | Maven Central search                 | `search.maven.org` / `repo1.maven.org` | Central                            | Java / JVM        | ✅                         | ❌           |
@@ -23,6 +23,7 @@ Dependency-Check may contact the following external hosts depending on the enabl
 #### Methodology
 
 **Configurable / Proxyable** - can be configured directly within ODC to use an alternate URL, e.g some kind of caching/forwarding proxy (*️⃣ - may be possible via third-party tool configuration)
+
 **Mirrorable** - data source can be mirrored somewhere locally to completely avoid direct access (*️⃣ - requires alternate data source/analyzer)
 
 Some entries (such as NPM audit data) are accessed indirectly via ecosystem-specific analyzers or external CLI tools rather
@@ -92,7 +93,7 @@ organization and to configure dependency-check to use the alternative Nexus or A
 
 **Notes:**
 1. When using Maven or Gradle plugins - there is typically little benefit to setting up a Nexus or Artifactory server 
-   for use by dependency-check - except when scanning artfifacts such as "uber-jars". This is because the Maven and 
+   for use by dependency-check - except when scanning artifacts such as "uber-jars". This is because the Maven and 
    Gradle plugins typically provide the necessary metadata directly, and looking inside JAR files is unnecessary.
 2. Even with a Nexus or Artifactory server configured it is possible for dependency-check CLI to be re-directed to other
    repositories on the Internet to download the actual POM file; this can happen due to a rare circumstance where an 
@@ -101,10 +102,10 @@ organization and to configure dependency-check to use the alternative Nexus or A
 
 ### Sonatype OSS Index
 
-OWASP dependency-check includes support to consult the [Sonatype OSS Index](https://ossindex.sonatype.org)
+OWASP dependency-check includes support to consult the [Sonatype Guide OSS Index](https://www.sonatype.com/products/sonatype-guide/oss-index-users)
 to enrich the report with supplemental vulnerability information.
 
-For more details on this integration see [Sonatype OSS Index](./ossindex.html).
+For more details on this integration see [Sonatype OSS Index](../analyzers/oss-index-analyzer.html).
 
 ### Telemetry
 

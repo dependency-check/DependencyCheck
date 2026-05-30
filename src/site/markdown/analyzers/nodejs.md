@@ -1,4 +1,4 @@
-Node.js Analyzer
+Node Package Analyzer
 ================
 
 OWASP dependency-check includes an analyzer that will scan [Node Package Manager](https://www.npmjs.com/)

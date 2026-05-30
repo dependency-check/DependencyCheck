@@ -18,18 +18,26 @@
 package org.owasp.dependencycheck.utils;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.owasp.dependencycheck.utils.FileUtils.existsWithContent;
 
 /**
  *
  * @author Jeremy Long
  */
 class FileUtilsTest extends BaseTest {
+
+    @TempDir
+    Path tempDir;
 
     /**
      * Test of getFileExtension method, of class FileUtils.
@@ -73,5 +81,18 @@ class FileUtilsTest extends BaseTest {
         boolean status = FileUtils.delete(dir);
         assertTrue(status, "delete returned a failed status");
         assertFalse(file.exists(), "Temporary file exists after attempting deletion");
+    }
+
+    @Test
+    void testExistsWithContent() throws IOException {
+        assertFalse(existsWithContent(new File("doesnt-exist")));
+        assertFalse(existsWithContent(new File(".")), "directory shouldn't be considered as existing with content");
+
+        Path tempFile = Files.createTempFile(tempDir, "", "");
+        assertFalse(existsWithContent(tempFile.toFile()), "empty file shouldn't be considered as existing with content");
+        Files.writeString(tempFile, " ");
+        assertFalse(existsWithContent(tempFile.toFile()), "1 byte file shouldn't be considered as existing with content");
+        Files.writeString(tempFile, "  ");
+        assertTrue(existsWithContent(tempFile.toFile()));
     }
 }
