@@ -42,11 +42,6 @@ The following properties can be set on the dependency-check-maven plugin.
 | enableRetired                    | Enable the [retired analyzers](../analyzers/index.html). If not enabled the retired analyzers (see below) will not be loaded or used.                                                                                                                                                                                                                                                                                                                                                                                                                                                                     | false                                                                                                                                                       |
 | versionCheckEnabled              | Whether dependency-check should check if a new version of dependency-check-maven exists.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  | true                                                                                                                                                        |
 
-### Multi-module Maven Projects
-
-When using Dependency-Check in a multi-module Maven build, suppression files can be configured in the parent POM and shared across child modules. Ensure that file paths are configured so they resolve correctly for all modules participating in the build.
-
-Refer to your project structure and Maven property configuration when specifying suppression file locations.
 Analyzer Configuration
 ====================
 The following properties are used to configure the various file type analyzers.
