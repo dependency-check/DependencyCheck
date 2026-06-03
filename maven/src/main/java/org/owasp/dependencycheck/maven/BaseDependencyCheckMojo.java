@@ -34,6 +34,7 @@ import org.apache.maven.artifact.versioning.VersionRange;
 import org.apache.maven.doxia.sink.Sink;
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.model.License;
+import org.apache.maven.model.Plugin;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecution;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -1545,6 +1546,14 @@ public abstract class BaseDependencyCheckMojo extends AbstractMojo implements Ma
         final CollectRequest collectRequest = new CollectRequest();
         collectRequest.setRoot(new org.eclipse.aether.graph.Dependency(rootArtifact, null));
         collectRequest.setRepositories(project.getRemoteProjectRepositories());
+
+        final Plugin projectPlugin = project.getPlugin(rootArtifact.getGroupId() + ":" + rootArtifact.getArtifactId());
+
+        if (projectPlugin != null) {
+            for (org.apache.maven.model.Dependency dep : projectPlugin.getDependencies()) {
+                collectRequest.addDependency(RepositoryUtils.toDependency(dep, session.getRepositorySession().getArtifactTypeRegistry()));
+            }
+        }
 
         final DependencyResult dependencyResult = repoSystem.resolveDependencies(
                 session.getRepositorySession(), new DependencyRequest(collectRequest, null));
