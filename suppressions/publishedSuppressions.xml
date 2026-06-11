@@ -2088,4 +2088,11 @@
     <packageUrl regex="true">^pkg:(?!generic/|vscode-extension/|nuget/Microsoft\.OpenApi\.Kiota).*$</packageUrl>
     <cpe regex="true">cpe:/a:microsoft:kiota(:.*)?$</cpe>
 </suppress>
+<suppress base="true">
+    <notes><![CDATA[
+    FP per issue #8596
+    ]]></notes>
+    <packageUrl regex="true">^pkg:maven/io\.prometheus/simpleclient_tracer_otel_agent@.*$</packageUrl>
+    <cpe regex="true">cpe:/a:opentelemetry:opentelemetry(:.*)?$</cpe>
+</suppress>
 </suppressions>
