@@ -2095,4 +2095,11 @@
     <packageUrl regex="true">^pkg:maven/io\.prometheus/simpleclient_tracer_otel_agent@.*$</packageUrl>
     <cpe regex="true">cpe:/a:opentelemetry:opentelemetry(:.*)?$</cpe>
 </suppress>
+<suppress base="true">
+    <notes><![CDATA[
+    FP per issue #8598
+    ]]></notes>
+    <packageUrl regex="true">^pkg:maven/io\.quarkus/quarkus-jdbc-mariadb-deployment@.*$</packageUrl>
+    <cpe regex="true">cpe:/a:mariadb:mariadb(:.*)?$</cpe>
+</suppress>
 </suppressions>
