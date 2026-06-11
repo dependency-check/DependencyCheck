@@ -2102,4 +2102,11 @@
     <packageUrl regex="true">^pkg:maven/io\.quarkus/quarkus-jdbc-mariadb-deployment@.*$</packageUrl>
     <cpe regex="true">cpe:/a:mariadb:mariadb(:.*)?$</cpe>
 </suppress>
+<suppress base="true">
+    <notes><![CDATA[
+    FP per issue #8599
+    ]]></notes>
+    <packageUrl regex="true">^pkg:maven/org\.apache\.camel\.karaf/camel-core-osgi@.*$</packageUrl>
+    <cpe regex="true">cpe:/a:apache:karaf(:.*)?$</cpe>
+</suppress>
 </suppressions>
