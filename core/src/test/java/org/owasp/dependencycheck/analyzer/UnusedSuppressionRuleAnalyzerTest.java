@@ -13,6 +13,7 @@ import org.owasp.dependencycheck.xml.suppression.PropertyType;
 import org.owasp.dependencycheck.xml.suppression.SuppressionRule;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -21,9 +22,8 @@ import static org.owasp.dependencycheck.analyzer.AbstractSuppressionAnalyzer.SUP
 import static org.owasp.dependencycheck.analyzer.UnusedSuppressionRuleAnalyzer.EXCEPTION_MSG;
 
 class UnusedSuppressionRuleAnalyzerTest extends BaseTest {
-	private static final String NAME = "Unused Suppression Rule Analyzer";
-	private static final String PACKAGE_NAME = "CoolAsACucumber";
-	private static final String EXPECTED_EX = "should have thrown an AnalysisException";
+    private static final String NAME = "Unused Suppression Rule Analyzer";
+    private static final String PACKAGE_NAME = "CoolAsACucumber";
 
     @Test
     void testGetName() {
@@ -33,125 +33,113 @@ class UnusedSuppressionRuleAnalyzerTest extends BaseTest {
 
     @Test
     void testException() throws Exception {
-		boolean shouldFail = true;
-		Dependency dependency10 = getDependency("1.0");
-		Dependency dependency11 = getDependency("1.1");
+        boolean shouldFail = true;
+        Dependency dependency10 = getDependency("1.0");
+        Dependency dependency11 = getDependency("1.1");
 
-		UnusedSuppressionRuleAnalyzer analyzer = getAnalyzer(shouldFail);
-		Engine engine = getEngine(true, false, dependency10, dependency11);
-		try {
-			analyzer.analyzeDependency(dependency10, engine);
-			throw new Exception("should have thrown an AnalysisException");
-		} catch(AnalysisException ok){
-			assertEquals(String.format(EXCEPTION_MSG, 1), ok.getMessage());
-		}
+        UnusedSuppressionRuleAnalyzer analyzer = getAnalyzer(shouldFail);
+        Engine engine = getEngine(true, false, dependency10, dependency11);
+        try {
+            analyzer.analyzeDependency(dependency10, engine);
+            throw new Exception("should have thrown an AnalysisException");
+        } catch (AnalysisException ok) {
+            assertEquals(String.format(EXCEPTION_MSG, 1), ok.getMessage());
+        }
 
-		// no exception
-		shouldFail = false;
-		analyzer = getAnalyzer(shouldFail);
-		engine = getEngine(true, false, dependency10, dependency11);
-		analyzer.analyzeDependency(dependency10, engine);
-    	assertEquals(1, analyzer.getUnusedSuppressionRuleCount());
-	}
+        // no exception
+        shouldFail = false;
+        analyzer = getAnalyzer(shouldFail);
+        engine = getEngine(true, false, dependency10, dependency11);
+        analyzer.analyzeDependency(dependency10, engine);
+        assertEquals(1, analyzer.getUnusedSuppressionRuleCount());
+    }
 
     @Test
     void testCheckUnusedRules() throws Exception {
-		// flag unset
-		boolean shouldFail = false;
-		Dependency dependency10 = getDependency("1.0");
-		Dependency dependency11 = getDependency("1.1");
+        // flag unset
+        boolean shouldFail = false;
+        Dependency dependency10 = getDependency("1.0");
+        Dependency dependency11 = getDependency("1.1");
 
-		// a run without any suppression rule ➫ no unused suppression
-		checkUnusedRules(shouldFail, 0, false, false, dependency10);
+        // a run without any suppression rule ➫ no unused suppression
+        checkUnusedRules(shouldFail, 0, false, false, dependency10);
 
-		// a run without no matching rule ➫ one unused suppression
-		checkUnusedRules(shouldFail, 1, true, false, dependency10, dependency11);
+        // a run without no matching rule ➫ one unused suppression
+        checkUnusedRules(shouldFail, 1, true, false, dependency10, dependency11);
 
-		// a run with the vulnerable package ➫ no unused suppression
-		checkUnusedRules(shouldFail, 0, true, true, dependency10, dependency11);
+        // a run with the vulnerable package ➫ no unused suppression
+        checkUnusedRules(shouldFail, 0, true, true, dependency10, dependency11);
 
 
-		// set flag
-		shouldFail = true;
+        // set flag
+        shouldFail = true;
 
-		// a run without any suppression rule ➫ no unused suppression
-		checkUnusedRules(shouldFail, 0, false, false, dependency10);
+        // a run without any suppression rule ➫ no unused suppression
+        checkUnusedRules(shouldFail, 0, false, false, dependency10);
 
-		// a run without no matching rule ➫ one unused suppression
-		checkUnusedRules(shouldFail, 1, true, false, dependency10, dependency11);
+        // a run without no matching rule ➫ one unused suppression
+        checkUnusedRules(shouldFail, 1, true, false, dependency10, dependency11);
 
-		// a run with the vulnerable package ➫ no unused suppression
-		checkUnusedRules(shouldFail, 0, true, true, dependency10, dependency11);
+        // a run with the vulnerable package ➫ no unused suppression
+        checkUnusedRules(shouldFail, 0, true, true, dependency10, dependency11);
     }
 
-	private void checkUnusedRules(boolean shouldFail, int expectedCount,
-		boolean withSuppressionRules, boolean matching,
-		Dependency ... dependencies) {
+    private void checkUnusedRules(boolean shouldFail, int expectedCount,
+                                  boolean withSuppressionRules, boolean matching,
+                                  Dependency... dependencies) {
         UnusedSuppressionRuleAnalyzer analyzer = getAnalyzer(shouldFail);
-		assertNotNull(analyzer);
-		Engine engine = getEngine(withSuppressionRules, matching, dependencies);
-		analyzer.checkUnusedRules(engine);
-		assertEquals(expectedCount, analyzer.getUnusedSuppressionRuleCount());
-	}
+        assertNotNull(analyzer);
+        Engine engine = getEngine(withSuppressionRules, matching, dependencies);
+        analyzer.checkUnusedRules(engine);
+        assertEquals(expectedCount, analyzer.getUnusedSuppressionRuleCount());
+    }
 
 
-	private Dependency getDependency(String type, String namespace, String name, String version) throws Exception {
+    private Dependency getDependency(String type, String namespace, String name, String version) throws Exception {
         Dependency dependency = new Dependency();
-		Identifier id = new PurlIdentifier(type,namespace,name,version,Confidence.HIGHEST);
+        Identifier id = new PurlIdentifier(type, namespace, name, version, Confidence.HIGHEST);
         dependency.addSoftwareIdentifier(id);
-		return dependency;
-	}
+        return dependency;
+    }
 
-	private Dependency getDependency(String version) throws Exception {
-		return getDependency("maven", "test", PACKAGE_NAME, version);
-	}
+    private Dependency getDependency(String version) throws Exception {
+        return getDependency("maven", "test", PACKAGE_NAME, version);
+    }
 
-
-	private Engine getEngine(boolean hasSuppressionRules, boolean matching, Dependency ... dependencies) {
+    private Engine getEngine(boolean hasSuppressionRules, boolean matching, Dependency... dependencies) {
         Engine engine = new Engine(getSettings());
-		List<Dependency> dependencyList = new ArrayList<>();
-		if (dependencies!=null) {
-			for(Dependency d : dependencies)
-				dependencyList.add(d);
-		}
-		engine.setDependencies(dependencyList);
-		if(!hasSuppressionRules) return engine;
-		List<SuppressionRule> rules = new ArrayList<>();
-		rules.add(getSuppressionRule(matching));
-		engine.putObject(SUPPRESSION_OBJECT_KEY,rules);
-		return engine;
-	}
+        List<Dependency> dependencyList = new ArrayList<>();
+        if (dependencies != null) {
+            dependencyList.addAll(Arrays.asList(dependencies));
+        }
+        engine.setDependencies(dependencyList);
+        if (!hasSuppressionRules) return engine;
+        List<SuppressionRule> rules = new ArrayList<>();
+        rules.add(getSuppressionRule(matching));
+        engine.putObject(SUPPRESSION_OBJECT_KEY, rules);
+        return engine;
+    }
 
-	private UnusedSuppressionRuleAnalyzer getAnalyzer(boolean flag) {
+    private UnusedSuppressionRuleAnalyzer getAnalyzer(boolean flag) {
         UnusedSuppressionRuleAnalyzer analyzer = new UnusedSuppressionRuleAnalyzer();
-		assertNotNull(analyzer);
+        assertNotNull(analyzer);
 
-		Settings settings = getSettings();
+        Settings settings = getSettings();
         settings.setBoolean(Settings.KEYS.FAIL_ON_UNUSED_SUPPRESSION_RULE, flag);
         analyzer.initialize(settings);
         assertEquals(flag, analyzer.failsForUnusedSuppressionRule());
         assertEquals(0, analyzer.getUnusedSuppressionRuleCount());
 
-		return analyzer;
-	}
-
-	private SuppressionRule getSuppressionRule(boolean matching) {
-        SuppressionRule instance = new SuppressionRule();
-		instance.addVulnerabilityName(getPropertyType("CVE-2023-5072", false, false));
-		instance.setPackageUrl(getPropertyType("^pkg:maven/test." + PACKAGE_NAME + "." + matching, false, false));
-		instance.addCpe(getPropertyType(PACKAGE_NAME, false, false));
-		instance.setBase(false);
-		instance.setMatched(matching);
-		return instance;
+        return analyzer;
     }
 
-	private PropertyType getPropertyType(String value, boolean regex, boolean caseSensitive) {
-		PropertyType property = new PropertyType();
-		property.setValue(value);
-		property.setRegex(regex);
-		property.setCaseSensitive(caseSensitive);
-		return property;
-	}
-
-
+    private SuppressionRule getSuppressionRule(boolean matching) {
+        SuppressionRule instance = new SuppressionRule();
+        instance.addVulnerabilityName(PropertyType.of("CVE-2023-5072"));
+        instance.setPackageUrl(PropertyType.regex("^pkg:maven/test." + PACKAGE_NAME + "." + matching));
+        instance.addCpe(PropertyType.of(PACKAGE_NAME));
+        instance.setBase(false);
+        instance.setMatched(matching);
+        return instance;
+    }
 }

@@ -17,11 +17,6 @@
  */
 package org.owasp.dependencycheck.xml.suppression;
 
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.List;
-import java.util.Optional;
-import javax.annotation.concurrent.NotThreadSafe;
 import org.owasp.dependencycheck.exception.ParseException;
 import org.owasp.dependencycheck.utils.DateUtil;
 import org.slf4j.Logger;
@@ -29,6 +24,12 @@ import org.slf4j.LoggerFactory;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
+
+import javax.annotation.concurrent.NotThreadSafe;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.List;
+import java.util.Optional;
 
 /**
  * A handler to load suppression rules. In the input xml a suppression rule can be part of a {@code suppressionGroup}. In that
@@ -282,18 +283,18 @@ public class SuppressionHandler extends DefaultHandler {
      * @return a PropertyType object
      */
     private PropertyType processPropertyType() {
-        final PropertyType pt = new PropertyType();
-        pt.setValue(currentText.toString().trim());
+        boolean isRegex = false;
+        boolean isCaseSensitive = false;
         if (currentAttributes != null && currentAttributes.getLength() > 0) {
             final String regex = currentAttributes.getValue("regex");
             if (regex != null) {
-                pt.setRegex(Boolean.parseBoolean(regex));
+                isRegex = Boolean.parseBoolean(regex);
             }
             final String caseSensitive = currentAttributes.getValue("caseSensitive");
             if (caseSensitive != null) {
-                pt.setCaseSensitive(Boolean.parseBoolean(caseSensitive));
+                isCaseSensitive = Boolean.parseBoolean(caseSensitive);
             }
         }
-        return pt;
+        return new PropertyType(currentText.toString().trim(), isRegex, isCaseSensitive);
     }
 }

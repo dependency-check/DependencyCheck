@@ -111,7 +111,7 @@ jobs:
           cd ..
       - name: Setup dotnet
         if: ${{ fromJSON(steps.purl-parser.outputs.result).type == 'nuget' }}
-        uses: actions/setup-dotnet@c2fa09f4bde5ebb9d1777cf28262a3eb3db3ced7 # v5.2.0
+        uses: actions/setup-dotnet@9a946fdbd5fb07b82b2f5a4466058b876ab72bb2 # v5.3.0
         with:
           dotnet-version: '8.0.x'
       - name: Setup dotnet fp-project
@@ -171,12 +171,9 @@ jobs:
             }
             purl += '@.*$';
             var cpe = process.env.CPE.trim().replaceAll(/^`|`$/g,'').split(':');
-            var matchCpe;
-            if (cpe[1] == '2.3') {
-               matchcpe = 'cpe:/a:' + cpe[3] + ':' + cpe[4];
-            } else {
-               matchcpe = 'cpe:/a:' + cpe[2] + ':' + cpe[3];
-            }
+            var vendor = cpe[1] === '2.3' ? cpe[3] : cpe[2];
+            var product = cpe[1] === '2.3' ? cpe[4] : cpe[3];
+            var cpe22UriRegex = 'cpe:/a:' + vendor.replaceAll('.','\\.') + ':' + product.replaceAll('.','\\.') + '(:.*)?$';
             
             await github.rest.issues.createComment({
               issue_number: context.issue.number,
@@ -189,7 +186,7 @@ jobs:
                     '    FP per issue #' + context.issue.number + '\n' +
                     '    ]]></notes>\n' +
                     '    <packageUrl regex="true">' + purl + '</packageUrl>\n' +
-                    '    <cpe>' + matchcpe + '</cpe>\n' +
+                    '    <cpe regex="true">' + cpe22UriRegex + '</cpe>\n' +
                     '</suppress>\n```\n\n' +
                     'Link to test results: ' + context.serverUrl + '/' + context.repo.owner + '/' + context.repo.repo + '/actions/runs/' + context.runId
             })
@@ -217,13 +214,9 @@ jobs:
             }
             purl += '@.*$';
             var cpe = process.env.CPE.trim().replaceAll(/^`|`$/g,'').split(':');
-            console.log(cpe);
-            var matchCpe;
-            if (cpe[1] == '2.3') {
-               matchcpe = 'cpe:/a:' + cpe[3] + ':' + cpe[4];
-            } else {
-               matchcpe = 'cpe:/a:' + cpe[2] + ':' + cpe[3];
-            }
+            var vendor = cpe[1] === '2.3' ? cpe[3] : cpe[2];
+            var product = cpe[1] === '2.3' ? cpe[4] : cpe[3];
+            var cpe22UriRegex = 'cpe:/a:' + vendor.replaceAll('.','\\.') + ':' + product.replaceAll('.','\\.') + '(:.*)?$';
             
             await github.rest.issues.createComment({
               issue_number: context.issue.number,
@@ -236,7 +229,7 @@ jobs:
                     '    FP per issue #' + context.issue.number + '\n' +
                     '    ]]></notes>\n' +
                     '    <packageUrl regex="true">' + purl + '</packageUrl>\n' +
-                    '    <cpe>' + matchcpe + '</cpe>\n' +
+                    '    <cpe regex="true">' + cpe22UriRegex + '</cpe>\n' +
                     '</suppress>\n```\n\n' +
                     'Link to test results: ' + context.serverUrl + '/' + context.repo.owner + '/' + context.repo.repo + '/actions/runs/' + context.runId
             })
@@ -264,12 +257,9 @@ jobs:
             }
             purl += '@.*$';
             var cpe = process.env.CPE.trim().replaceAll(/^`|`$/g,'').split(':');
-            var matchCpe;
-            if (cpe[1] == '2.3') {
-               matchcpe = 'cpe:/a:' + cpe[3] + ':' + cpe[4];
-            } else {
-               matchcpe = 'cpe:/a:' + cpe[2] + ':' + cpe[3];
-            }
+            var vendor = cpe[1] === '2.3' ? cpe[3] : cpe[2];
+            var product = cpe[1] === '2.3' ? cpe[4] : cpe[3];
+            var cpe22UriRegex = 'cpe:/a:' + vendor.replaceAll('.','\\.') + ':' + product.replaceAll('.','\\.') + '(:.*)?$';
             
             await github.rest.issues.createComment({
               issue_number: context.issue.number,
@@ -282,7 +272,7 @@ jobs:
                     '    FP per issue #' + context.issue.number + '\n' +
                     '    ]]></notes>\n' +
                     '    <packageUrl regex="true">' + purl + '</packageUrl>\n' +
-                    '    <cpe>' + matchcpe + '</cpe>\n' +
+                    '    <cpe regex="true">' + cpe22UriRegex + '</cpe>\n' +
                     '</suppress>\n```\n\n' +
                     'Link to test results: ' + context.serverUrl + '/' + context.repo.owner + '/' + context.repo.repo + '/actions/runs/' + context.runId
             })

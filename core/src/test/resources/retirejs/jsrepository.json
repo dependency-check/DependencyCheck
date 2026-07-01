@@ -1,0 +1,37 @@
+{
+  "retire-example": {
+    "vulnerabilities": [
+      {
+        "below": "0.0.2",
+        "severity": "low",
+        "cwe": [
+          "CWE-477"
+        ],
+        "identifiers": {
+          "summary": "bug summary",
+          "CVE": [
+            "CVE-XXXX-XXXX"
+          ],
+          "bug": "1234"
+        },
+        "info": [
+          "http://github.com/eoftedal/retire.js/"
+        ]
+      }
+    ],
+    "extractors": {
+      "func": [
+        "retire.VERSION"
+      ],
+      "filename": [
+        "retire-example-(§§version§§)(.min)?\\.js"
+      ],
+      "filecontent": [
+        "/\\*!? Retire-example v(§§version§§)"
+      ],
+      "hashes": {
+        "07f8b94c8d601a24a1914a1a92bec0e4fafda964": "0.0.1"
+      }
+    }
+  }
+}

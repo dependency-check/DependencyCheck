@@ -22,12 +22,35 @@ import com.google.common.io.Resources;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.github.jeremylong.openvulnerability.client.nvd.Config;
 import io.github.jeremylong.openvulnerability.client.nvd.CpeMatch;
+import io.github.jeremylong.openvulnerability.client.nvd.CvssV2;
+import io.github.jeremylong.openvulnerability.client.nvd.CvssV2Data;
+import io.github.jeremylong.openvulnerability.client.nvd.CvssV3;
+import io.github.jeremylong.openvulnerability.client.nvd.CvssV3Data;
+import io.github.jeremylong.openvulnerability.client.nvd.CvssV4;
+import io.github.jeremylong.openvulnerability.client.nvd.CvssV4Data;
+import io.github.jeremylong.openvulnerability.client.nvd.DefCveItem;
+import io.github.jeremylong.openvulnerability.client.nvd.LangString;
+import io.github.jeremylong.openvulnerability.client.nvd.Node;
+import io.github.jeremylong.openvulnerability.client.nvd.Reference;
+import io.github.jeremylong.openvulnerability.client.nvd.Weakness;
 import org.apache.commons.collections4.map.ReferenceMap;
+import org.owasp.dependencycheck.analyzer.exception.LambdaExceptionWrapper;
+import org.owasp.dependencycheck.analyzer.exception.UnexpectedAnalysisException;
+import org.owasp.dependencycheck.data.update.cpe.CpeEcosystemCache;
+import org.owasp.dependencycheck.data.update.cpe.CpePlus;
 import org.owasp.dependencycheck.dependency.Vulnerability;
 import org.owasp.dependencycheck.dependency.VulnerableSoftware;
-import org.owasp.dependencycheck.utils.*;
+import org.owasp.dependencycheck.dependency.VulnerableSoftwareBuilder;
+import org.owasp.dependencycheck.utils.InvalidSettingException;
+import org.owasp.dependencycheck.utils.Pair;
+import org.owasp.dependencycheck.utils.Settings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import us.springett.parsers.cpe.Cpe;
+import us.springett.parsers.cpe.CpeBuilder;
+import us.springett.parsers.cpe.CpeParser;
+import us.springett.parsers.cpe.exceptions.CpeParsingException;
+import us.springett.parsers.cpe.exceptions.CpeValidationException;
 
 import javax.annotation.concurrent.ThreadSafe;
 import java.io.IOException;
@@ -40,34 +63,23 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.MissingResourceException;
+import java.util.Optional;
+import java.util.Properties;
+import java.util.ResourceBundle;
+import java.util.Set;
 import java.util.stream.Collectors;
-import org.anarres.jdiagnostics.DefaultQuery;
 
 import static org.apache.commons.collections4.map.AbstractReferenceMap.ReferenceStrength.HARD;
 import static org.apache.commons.collections4.map.AbstractReferenceMap.ReferenceStrength.SOFT;
-import org.owasp.dependencycheck.analyzer.exception.LambdaExceptionWrapper;
-import org.owasp.dependencycheck.analyzer.exception.UnexpectedAnalysisException;
-import io.github.jeremylong.openvulnerability.client.nvd.DefCveItem;
 import static org.owasp.dependencycheck.data.nvdcve.CveDB.PreparedStatementCveDb.*;
-import org.owasp.dependencycheck.data.update.cpe.CpeEcosystemCache;
-import org.owasp.dependencycheck.data.update.cpe.CpePlus;
-import io.github.jeremylong.openvulnerability.client.nvd.CvssV2;
-import io.github.jeremylong.openvulnerability.client.nvd.CvssV2Data;
-import io.github.jeremylong.openvulnerability.client.nvd.CvssV3;
-import io.github.jeremylong.openvulnerability.client.nvd.CvssV3Data;
-import io.github.jeremylong.openvulnerability.client.nvd.CvssV4;
-import io.github.jeremylong.openvulnerability.client.nvd.CvssV4Data;
-import io.github.jeremylong.openvulnerability.client.nvd.LangString;
-import io.github.jeremylong.openvulnerability.client.nvd.Node;
-import io.github.jeremylong.openvulnerability.client.nvd.Reference;
-import io.github.jeremylong.openvulnerability.client.nvd.Weakness;
-import org.owasp.dependencycheck.dependency.VulnerableSoftwareBuilder;
-import us.springett.parsers.cpe.Cpe;
-import us.springett.parsers.cpe.CpeBuilder;
-import us.springett.parsers.cpe.CpeParser;
-import us.springett.parsers.cpe.exceptions.CpeParsingException;
-import us.springett.parsers.cpe.exceptions.CpeValidationException;
 
 /**
  * The database holding information about the NVD CVE data. This class is safe
@@ -120,7 +132,7 @@ public final class CveDB implements AutoCloseable {
 
     /**
      * Utility to extract information from
-     * {@linkplain org.owasp.dependencycheck.data.nvd.json.DefCveItem}.
+     * {@linkplain DefCveItem}.
      */
     private final CveItemOperator cveItemConverter;
     /**
@@ -155,8 +167,6 @@ public final class CveDB implements AutoCloseable {
             }
         } catch (IOException ex) {
             throw new DatabaseException("Unable to update the ecosystem cache", ex);
-        } catch (LinkageError ex) {
-            LOGGER.debug(new DefaultQuery(ex).call().toString());
         }
         return updateCount;
     }

@@ -18,22 +18,6 @@
 package org.owasp.dependencycheck.data.nvdcve;
 
 import com.google.common.io.Resources;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
-import java.sql.PreparedStatement;
-import java.sql.Connection;
-import java.sql.Driver;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.Locale;
-import java.util.ResourceBundle;
-import javax.annotation.concurrent.ThreadSafe;
-import org.anarres.jdiagnostics.DefaultQuery;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.commons.io.IOUtils;
 import org.owasp.dependencycheck.utils.DBUtils;
@@ -43,6 +27,22 @@ import org.owasp.dependencycheck.utils.FileUtils;
 import org.owasp.dependencycheck.utils.Settings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.annotation.concurrent.ThreadSafe;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.sql.Connection;
+import java.sql.Driver;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.Locale;
+import java.util.ResourceBundle;
 
 /**
  * Loads the configured database driver and returns the database connection. If
@@ -386,8 +386,6 @@ public final class DatabaseManager {
             }
         } catch (IOException ex) {
             throw new DatabaseException("Unable to create database schema", ex);
-        } catch (LinkageError ex) {
-            LOGGER.debug(new DefaultQuery(ex).call().toString());
         }
     }
 

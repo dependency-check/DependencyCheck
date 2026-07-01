@@ -17,6 +17,14 @@
  */
 package org.owasp.dependencycheck.utils;
 
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.SystemUtils;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.Closeable;
 import java.io.File;
 import java.io.FileInputStream;
@@ -29,14 +37,6 @@ import java.nio.file.Path;
 import java.util.Comparator;
 import java.util.UUID;
 import java.util.stream.Stream;
-
-import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.SystemUtils;
-import org.jspecify.annotations.NonNull;
-import org.jspecify.annotations.Nullable;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * A collection of utilities for processing information about files.
@@ -194,5 +194,13 @@ public final class FileUtils {
             return new File(resource);
         }
         return new File(path);
+    }
+
+    /**
+     * @param file the file to check
+     * @return true if the passed file is a file with more than 1 byte of content
+     */
+    public static boolean existsWithContent(@NonNull File file) {
+        return file.isFile() && file.length() > 1;
     }
 }

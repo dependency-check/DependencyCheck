@@ -17,12 +17,6 @@
  */
 package org.owasp.dependencycheck.data.cache;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.List;
-import java.util.Properties;
-
 import io.github.jeremylong.jcs3.slf4j.Slf4jAdapter;
 import org.apache.commons.jcs3.JCS;
 import org.apache.commons.jcs3.access.CacheAccess;
@@ -36,6 +30,12 @@ import org.owasp.dependencycheck.utils.Settings;
 import org.owasp.dependencycheck.xml.pom.Model;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.List;
+import java.util.Properties;
 
 /**
  * Factory to instantiate cache repositories.
@@ -140,7 +140,6 @@ public class DataCacheFactory {
             if (ex instanceof CacheException) {
                 throw ex;
             }
-            //TODO we may want to instrument w/ jdiagnostics per #2509
             LOGGER.debug("Error constructing cache for node audit files", ex);
             throw new CacheException(ex);
         }
@@ -165,7 +164,6 @@ public class DataCacheFactory {
             if (ex instanceof CacheException) {
                 throw ex;
             }
-            //TODO we may want to instrument w/ jdiagnostics per #2509
             LOGGER.debug("Error constructing cache for POM files", ex);
             throw new CacheException(ex);
         }
@@ -190,7 +188,6 @@ public class DataCacheFactory {
             if (ex instanceof CacheException) {
                 throw ex;
             }
-            //TODO we may want to instrument w/ jdiagnostics per #2509
             LOGGER.debug("Error constructing cache for Central files", ex);
             throw new CacheException(ex);
         }

@@ -44,6 +44,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import static org.owasp.dependencycheck.utils.FileUtils.existsWithContent;
+
 /**
  * Used to analyze pip dependency files named requirements.txt.
  *
@@ -131,7 +133,7 @@ public class PipAnalyzer extends AbstractFileTypeAnalyzer {
             engine.removeDependency(dependency);
         }
         final File dependencyFile = dependency.getActualFile();
-        if (!dependencyFile.isFile() || dependencyFile.length() == 0) {
+        if (!existsWithContent(dependencyFile)) {
             return;
         }
 
