@@ -2144,4 +2144,11 @@
     <packageUrl regex="true">^pkg:maven/org\.springframework\.boot/spring-boot-batch-jdbc@.*$</packageUrl>
     <cpe regex="true">cpe:/a:pivotal_software:spring_batch(:.*)?$</cpe>
 </suppress>
+<suppress base="true">
+    <notes><![CDATA[
+    FP per issue #8651
+    ]]></notes>
+    <packageUrl regex="true">^pkg:maven/org\.springframework\.boot/spring-boot-starter-batch-jdbc@.*$</packageUrl>
+    <cpe regex="true">cpe:/a:pivotal_software:spring_batch(:.*)?$</cpe>
+</suppress>
 </suppressions>
