@@ -2179,4 +2179,11 @@
     <packageUrl regex="true">^pkg:maven/com\.apollographql\.apollo/apollo-gradle-plugin-tasks@.*$</packageUrl>
     <cpe regex="true">cpe:/a:tasks:tasks(:.*)?$</cpe>
 </suppress>
+<suppress base="true">
+    <notes><![CDATA[
+    FP per issue #8666
+    ]]></notes>
+    <packageUrl regex="true">^pkg:maven/org\.springframework\.cloud/spring-cloud-kubernetes-client-autoconfig@.*$</packageUrl>
+    <cpe regex="true">cpe:/a:vmware:spring_cloud_config(:.*)?$</cpe>
+</suppress>
 </suppressions>
