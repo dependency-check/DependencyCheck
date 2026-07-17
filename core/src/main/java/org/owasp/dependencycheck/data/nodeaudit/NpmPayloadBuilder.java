@@ -205,6 +205,66 @@ public final class NpmPayloadBuilder {
     }
 
     /**
+     * Builds an npm bulk advisory API payload from the dependency map collected
+     * while building the legacy audit payload.
+     *
+     * @param dependencyMap a collection of module/version pairs
+     * @return the npm bulk advisory API payload
+     */
+    public static JsonObject buildBulk(MultiValuedMap<String, String> dependencyMap) {
+        final JsonObjectBuilder payloadBuilder = Json.createObjectBuilder();
+        dependencyMap.asMap().entrySet().stream()
+                .collect(Collectors.toMap(
+                        Map.Entry::getKey,
+                        Map.Entry::getValue,
+                        (oldValue, newValue) -> newValue,
+                        TreeMap::new))
+                .forEach((key, versions) -> {
+                    if (key == null || key.isBlank()) {
+                        return;
+                    }
+                    final var versionsBuilder = Json.createArrayBuilder();
+                    versions.stream()
+                            .map(NpmPayloadBuilder::normalizeVersion)
+                            .filter(Objects::nonNull)
+                            .distinct()
+                            .sorted()
+                            .forEach(versionsBuilder::add);
+                    final var versionArray = versionsBuilder.build();
+                    if (!versionArray.isEmpty()) {
+                        payloadBuilder.add(key, versionArray);
+                    }
+                });
+        return payloadBuilder.build();
+    }
+
+    /**
+     * Normalizes dependency versions for npm's bulk advisory API, which expects
+     * exact installed versions rather than ranges, aliases, or local references.
+     *
+     * @param version the candidate version
+     * @return the normalized exact version or {@code null}
+     */
+    private static String normalizeVersion(String version) {
+        if (version == null) {
+            return null;
+        }
+        String normalized = version.trim();
+        if (normalized.length() > 1 && normalized.startsWith("\"") && normalized.endsWith("\"")) {
+            normalized = normalized.substring(1, normalized.length() - 1);
+        }
+        if (normalized.isEmpty() || "*".equals(normalized)
+                || normalized.startsWith("^") || normalized.startsWith("~")
+                || normalized.startsWith(">") || normalized.startsWith("<")
+                || normalized.startsWith("=") || normalized.startsWith("file:")
+                || normalized.startsWith("link:") || normalized.startsWith("npm:")
+                || normalized.startsWith("workspace:")) {
+            return null;
+        }
+        return normalized.matches("[0-9]+\\.[0-9]+\\.[0-9]+.*") ? normalized : null;
+    }
+
+    /**
      * Adds the project name and version to the npm audit API payload.
      *
      * @param packageJson a reference to the package-lock.json

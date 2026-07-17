@@ -188,7 +188,7 @@ public class NodeAuditAnalyzer extends AbstractNpmAnalyzer {
                     getSettings().getBoolean(Settings.KEYS.ANALYZER_NODE_AUDIT_SKIPDEV, false));
 
             // Submits the package payload to the nsp check service
-            return getSearcher().submitPackage(payload);
+            return getSearcher().submitPackageWithBulkFallback(payload, dependencyMap);
 
         } catch (URLConnectionFailureException e) {
             this.setEnabled(false);
@@ -252,7 +252,7 @@ public class NodeAuditAnalyzer extends AbstractNpmAnalyzer {
                     getSettings().getBoolean(Settings.KEYS.ANALYZER_NODE_AUDIT_SKIPDEV, false));
 
             // Submits the package payload to the nsp check service
-            return getSearcher().submitPackage(payload);
+            return getSearcher().submitPackageWithBulkFallback(payload, dependencyMap);
 
         } catch (URLConnectionFailureException e) {
             this.setEnabled(false);

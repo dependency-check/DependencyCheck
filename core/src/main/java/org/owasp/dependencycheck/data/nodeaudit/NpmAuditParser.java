@@ -64,6 +64,30 @@ public class NpmAuditParser {
     }
 
     /**
+     * Parses the JSON response from the NPM bulk advisory API.
+     *
+     * @param jsonResponse the JSON node to parse
+     * @return a list of advisories
+     * @throws JSONException thrown if the JSON is not of the expected schema
+     */
+    public List<Advisory> parseBulk(JSONObject jsonResponse) throws JSONException {
+        LOGGER.debug("Parsing bulk advisory JSON node");
+        final List<Advisory> advisories = new ArrayList<>();
+        final Iterator<?> keys = jsonResponse.keys();
+        while (keys.hasNext()) {
+            final String moduleName = (String) keys.next();
+            final JSONArray moduleAdvisories = jsonResponse.optJSONArray(moduleName);
+            if (moduleAdvisories == null) {
+                continue;
+            }
+            for (int i = 0; i < moduleAdvisories.length(); i++) {
+                advisories.add(parseBulkAdvisory(moduleName, moduleAdvisories.getJSONObject(i)));
+            }
+        }
+        return advisories;
+    }
+
+    /**
      * Parses the advisory from Node Audit.
      *
      * @param object the JSON object containing the advisory
@@ -149,5 +173,118 @@ public class NpmAuditParser {
             }
         }
         return advisory;
+    }
+
+    /**
+     * Parses an advisory from the NPM bulk advisory API.
+     *
+     * @param moduleName the name of the vulnerable module
+     * @param object the JSON object containing the advisory
+     * @return the Advisory object
+     */
+    private Advisory parseBulkAdvisory(String moduleName, JSONObject object) {
+        final Advisory advisory = new Advisory();
+        final String url = object.optString("url", null);
+        String id = object.optString("github_advisory_id", null);
+        if (id == null || id.isBlank()) {
+            id = extractGhsaId(url);
+        }
+        if (id == null || id.isBlank()) {
+            id = object.optString("id", null);
+        }
+        advisory.setGhsaId(id);
+        advisory.setOverview(object.optString("overview", object.optString("title", null)));
+        advisory.setReferences(url == null || url.isBlank() ? null : "- " + url);
+        advisory.setCreated(object.optString("created", null));
+        advisory.setUpdated(object.optString("updated", null));
+        advisory.setRecommendation(object.optString("recommendation", null));
+        advisory.setTitle(object.optString("title", null));
+        advisory.setModuleName(moduleName);
+        advisory.setVulnerableVersions(object.optString("vulnerable_versions", object.optString("range", "*")));
+        if (advisory.getVulnerableVersions() == null || advisory.getVulnerableVersions().isBlank()) {
+            advisory.setVulnerableVersions("*");
+        }
+        advisory.setPatchedVersions(object.optString("patched_versions", null));
+        advisory.setAccess(object.optString("access", null));
+        advisory.setSeverity(object.optString("severity", null));
+        advisory.setCwes(parseStringArray(object.opt("cwe")));
+        advisory.setCves(parseStringArray(object.opt("cves")));
+        parseCvss(object.optJSONObject("cvss"), advisory);
+        return advisory;
+    }
+
+    /**
+     * Parses a JSON string or array of strings.
+     *
+     * @param value the value to parse
+     * @return a list of strings
+     */
+    private List<String> parseStringArray(Object value) {
+        final List<String> values = new ArrayList<>();
+        if (value instanceof JSONArray) {
+            final JSONArray array = (JSONArray) value;
+            for (int i = 0; i < array.length(); i++) {
+                values.add(array.optString(i));
+            }
+        } else if (value instanceof String) {
+            values.add((String) value);
+        }
+        return values;
+    }
+
+    /**
+     * Parses CVSSv3 details onto an advisory.
+     *
+     * @param jsonCvss the CVSS JSON object
+     * @param advisory the advisory to update
+     */
+    private void parseCvss(JSONObject jsonCvss, Advisory advisory) {
+        if (jsonCvss == null) {
+            return;
+        }
+        double baseScore = -1.0;
+        final String score = jsonCvss.optString("score");
+        if (score != null) {
+            try {
+                baseScore = Float.parseFloat(score);
+            } catch (NumberFormatException ignored) {
+                LOGGER.trace("Swallowed NumberFormatException", ignored);
+                baseScore = -1.0f;
+            }
+        }
+        if (baseScore >= 0.0) {
+            final String vector = jsonCvss.optString("vectorString");
+            if (vector != null && !"null".equals(vector)) {
+                if (vector.startsWith("CVSS:3") && baseScore >= 0.0) {
+                    try {
+                        final CvssV3 cvss = CvssUtil.vectorToCvssV3(vector, baseScore);
+                        advisory.setCvssV3(cvss);
+                    } catch (IllegalArgumentException iae) {
+                        LOGGER.warn("Invalid CVSS vector format encountered in NPM Audit results '{}': {} ", vector, iae.getMessage());
+                    }
+                } else {
+                    LOGGER.warn("Unsupported CVSS vector format in NPM Audit results, please file a feature "
+                            + "request at https://github.com/dependency-check/DependencyCheck/issues/new/choose to "
+                            + "support vector format '{}' ", vector);
+                }
+            }
+        }
+    }
+
+    /**
+     * Extracts a GHSA identifier from an advisory URL.
+     *
+     * @param url the advisory URL
+     * @return the GHSA identifier, or null
+     */
+    private String extractGhsaId(String url) {
+        if (url == null || url.isBlank()) {
+            return null;
+        }
+        final int lastSlashIndex = url.lastIndexOf('/');
+        if (lastSlashIndex == -1 || lastSlashIndex == url.length() - 1) {
+            return null;
+        }
+        return url.substring(lastSlashIndex + 1);
     }
 }

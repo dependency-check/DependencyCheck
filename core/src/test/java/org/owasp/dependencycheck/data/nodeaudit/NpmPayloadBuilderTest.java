@@ -182,4 +182,27 @@ class NpmPayloadBuilderTest {
             assertFalse(requires.containsKey("fake_submodule"));
         }
     }
+
+    @Test
+    void testBulkPayload() {
+        final MultiValuedMap<String, String> dependencyMap = new HashSetValuedHashMap<>();
+        dependencyMap.put("abbrev", "1.1.1");
+        dependencyMap.put("abbrev", "\"1.1.2\"");
+        dependencyMap.put("abbrev", "^1.1.0");
+        dependencyMap.put("react-dom", "npm:@hot-loader/react-dom");
+        dependencyMap.put("fake_submodule", "file:fake_submodule");
+        dependencyMap.put("workspace-module", "workspace:*");
+        dependencyMap.put("", "1.0.0");
+
+        final JsonObject bulkPayload = NpmPayloadBuilder.buildBulk(dependencyMap);
+
+        assertTrue(bulkPayload.containsKey("abbrev"));
+        assertEquals(2, bulkPayload.getJsonArray("abbrev").size());
+        assertEquals("1.1.1", bulkPayload.getJsonArray("abbrev").getString(0));
+        assertEquals("1.1.2", bulkPayload.getJsonArray("abbrev").getString(1));
+        assertFalse(bulkPayload.containsKey("react-dom"));
+        assertFalse(bulkPayload.containsKey("fake_submodule"));
+        assertFalse(bulkPayload.containsKey("workspace-module"));
+        assertFalse(bulkPayload.containsKey(""));
+    }
 }

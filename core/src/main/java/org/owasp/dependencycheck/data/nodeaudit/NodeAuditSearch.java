@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.concurrent.ThreadSafe;
 
+import org.apache.commons.collections4.MultiValuedMap;
 import org.apache.hc.client5.http.HttpResponseException;
 import org.apache.hc.core5.http.ContentType;
 import org.apache.hc.core5.http.Header;
@@ -63,6 +64,10 @@ public class NodeAuditSearch {
      * The URL for the public Node Audit API.
      */
     private final URL nodeAuditUrl;
+    /**
+     * The URL for the npm bulk advisory API.
+     */
+    private final URL nodeAuditBulkUrl;
 
     /**
      * Whether to use the Proxy when making requests.
@@ -92,6 +97,7 @@ public class NodeAuditSearch {
         final String searchUrl = settings.getString(Settings.KEYS.ANALYZER_NODE_AUDIT_URL, DEFAULT_URL);
         LOGGER.debug("Node Audit Search URL: {}", searchUrl);
         this.nodeAuditUrl = new URL(searchUrl);
+        this.nodeAuditBulkUrl = deriveBulkUrl(searchUrl);
         this.settings = settings;
         if (null != settings.getString(Settings.KEYS.PROXY_SERVER)) {
             useProxy = true;
@@ -109,6 +115,60 @@ public class NodeAuditSearch {
                 LOGGER.debug("Error creating cache, disabling caching", ex);
             }
         }
+    }
+
+    /**
+     * Derives the npm bulk advisory API URL from the configured legacy audit URL.
+     *
+     * @param searchUrl the configured legacy audit API URL
+     * @return the derived bulk advisory URL, or {@code null}
+     * @throws MalformedURLException thrown if the derived URL is malformed
+     */
+    private URL deriveBulkUrl(String searchUrl) throws MalformedURLException {
+        final String legacyPath = "/-/npm/v1/security/audits";
+        final String bulkPath = "/-/npm/v1/security/advisories/bulk";
+        if (searchUrl.endsWith(legacyPath)) {
+            final String bulkUrl = searchUrl.substring(0, searchUrl.length() - legacyPath.length()) + bulkPath;
+            LOGGER.debug("Node Audit bulk advisory URL: {}", bulkUrl);
+            return new URL(bulkUrl);
+        }
+        LOGGER.debug("Unable to derive npm bulk advisory URL from configured Node Audit URL: {}", searchUrl);
+        return null;
+    }
+
+    /**
+     * Submits the package to the npm bulk advisory API first, falling back to
+     * the legacy audit API if the bulk endpoint is unavailable.
+     *
+     * @param packageJson the legacy npm audit payload
+     * @param dependencyMap the dependencies and installed versions collected
+     * while building the legacy payload
+     * @return a List of zero or more Advisory object
+     * @throws SearchException if Node Audit API is unable to analyze the package
+     * @throws IOException if it's unable to connect to Node Audit API
+     */
+    public List<Advisory> submitPackageWithBulkFallback(JsonObject packageJson,
+            MultiValuedMap<String, String> dependencyMap) throws SearchException, IOException {
+        String key = null;
+        if (cache != null) {
+            key = Checksum.getSHA256Checksum(packageJson.toString());
+            final List<Advisory> cached = cache.get(key);
+            if (cached != null) {
+                LOGGER.debug("cache hit for node audit: " + key);
+                return cached;
+            }
+        }
+        if (nodeAuditBulkUrl != null) {
+            final JsonObject bulkPayload = NpmPayloadBuilder.buildBulk(dependencyMap);
+            if (!bulkPayload.isEmpty()) {
+                try {
+                    return submitBulkPackage(bulkPayload, key, 0);
+                } catch (SearchException | IOException ex) {
+                    LOGGER.debug("npm bulk advisory API failed; falling back to legacy Node Audit API", ex);
+                }
+            }
+        }
+        return submitPackage(packageJson, key, 0);
     }
 
     /**
@@ -154,11 +214,7 @@ public class NodeAuditSearch {
             LOGGER.trace("----------------------------------------");
             LOGGER.trace("----------------------------------------");
         }
-        final List<Header> additionalHeaders = new ArrayList<>();
-        additionalHeaders.add(new BasicHeader(HttpHeaders.USER_AGENT, "npm/6.1.0 node/v10.5.0 linux x64"));
-        additionalHeaders.add(new BasicHeader("npm-in-ci", "false"));
-        additionalHeaders.add(new BasicHeader("npm-scope", ""));
-        additionalHeaders.add(new BasicHeader("npm-session", generateRandomSession()));
+        final List<Header> additionalHeaders = buildAdditionalHeaders();
 
         try {
             final String response = Downloader.getInstance().postBasedFetchContent(nodeAuditUrl.toURI(),
@@ -206,6 +262,89 @@ public class NodeAuditSearch {
                 throw new IOException("Could not connect to Node Audit API", e);
             }
         }
+    }
+
+    /**
+     * Submits the package data to the npm bulk advisory API.
+     *
+     * @param packageJson the bulk advisory payload
+     * @param key the key for the cache entry
+     * @param count the current retry count
+     * @return a List of zero or more Advisory object
+     * @throws SearchException if the bulk advisory API is unable to analyze the package
+     * @throws IOException if it's unable to connect to the bulk advisory API
+     */
+    private List<Advisory> submitBulkPackage(JsonObject packageJson, String key, int count) throws SearchException, IOException {
+        if (LOGGER.isTraceEnabled()) {
+            LOGGER.trace("----------------------------------------");
+            LOGGER.trace("Node Audit Bulk Payload:");
+            LOGGER.trace(packageJson.toString());
+            LOGGER.trace("----------------------------------------");
+            LOGGER.trace("----------------------------------------");
+        }
+        final List<Header> additionalHeaders = buildAdditionalHeaders();
+
+        try {
+            final String response = Downloader.getInstance().postBasedFetchContent(nodeAuditBulkUrl.toURI(),
+                    packageJson.toString(), ContentType.APPLICATION_JSON, additionalHeaders);
+            final JSONObject jsonResponse = new JSONObject(response);
+            final NpmAuditParser parser = new NpmAuditParser();
+            final List<Advisory> advisories = parser.parseBulk(jsonResponse);
+            if (cache != null) {
+                cache.put(key, advisories);
+            }
+            return advisories;
+        } catch (RuntimeException | URISyntaxException | TooManyRequestsException | ResourceNotFoundException ex) {
+            LOGGER.debug("Error connecting to npm bulk advisory API. Error: {}",
+                    ex.getMessage());
+            throw new SearchException("Could not connect to npm bulk advisory API: " + ex.getMessage(), ex);
+        } catch (DownloadFailedException e) {
+            if (e.getCause() instanceof HttpResponseException) {
+                final HttpResponseException hre = (HttpResponseException) e.getCause();
+                switch (hre.getStatusCode()) {
+                    case 503:
+                        LOGGER.debug("npm bulk advisory API returned `{} {}` - retrying request.",
+                                hre.getStatusCode(), hre.getReasonPhrase());
+                        if (count < 5) {
+                            final int next = count + 1;
+                            try {
+                                Thread.sleep(1500L * next);
+                            } catch (InterruptedException ex) {
+                                Thread.currentThread().interrupt();
+                                throw new UnexpectedAnalysisException(ex);
+                            }
+                            return submitBulkPackage(packageJson, key, next);
+                        }
+                        throw new SearchException("Could not perform npm bulk advisory analysis - service returned a 503.", e);
+                    case 400:
+                        LOGGER.debug("Invalid payload submitted to npm bulk advisory API. Received response code: {} {}",
+                                hre.getStatusCode(), hre.getReasonPhrase());
+                        throw new SearchException("Could not perform npm bulk advisory analysis. Invalid payload submitted "
+                                + "to npm bulk advisory API.", e);
+                    default:
+                        LOGGER.debug("Could not connect to npm bulk advisory API. Received response code: {} {}",
+                                hre.getStatusCode(), hre.getReasonPhrase());
+                        throw new IOException("Could not connect to npm bulk advisory API", e);
+                }
+            } else {
+                LOGGER.debug("Could not connect to npm bulk advisory API. Received generic DownloadException", e);
+                throw new IOException("Could not connect to npm bulk advisory API", e);
+            }
+        }
+    }
+
+    /**
+     * Builds common npm audit request headers.
+     *
+     * @return request headers
+     */
+    private List<Header> buildAdditionalHeaders() {
+        final List<Header> additionalHeaders = new ArrayList<>();
+        additionalHeaders.add(new BasicHeader(HttpHeaders.USER_AGENT, "npm/6.1.0 node/v10.5.0 linux x64"));
+        additionalHeaders.add(new BasicHeader("npm-in-ci", "false"));
+        additionalHeaders.add(new BasicHeader("npm-scope", ""));
+        additionalHeaders.add(new BasicHeader("npm-session", generateRandomSession()));
+        return additionalHeaders;
     }
 
     /**
