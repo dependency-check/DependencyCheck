@@ -1,2 +1,0 @@
-The H2 database engine (http://www.h2database.com/) is dual licensed and available under a modified version of the MPL 1.1 (Mozilla Public License) or under the (unmodified) EPL 1.0 (Eclipse Public License).
-An original copy of the license agreement can be found at: http://www.h2database.com/html/license.html

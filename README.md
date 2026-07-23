@@ -373,7 +373,7 @@ Dependency-Check makes use of several other open source libraries. Please see th
 
 This product uses the NVD API but is not endorsed or certified by the NVD.
 
-Copyright (c) 2012-2025 Jeremy Long. All Rights Reserved.
+Copyright (c) 2012-2026 Jeremy Long. All Rights Reserved.
 
   [wiki]: https://github.com/dependency-check/DependencyCheck/wiki
   [notices]: https://github.com/dependency-check/DependencyCheck/blob/main/NOTICE.txt

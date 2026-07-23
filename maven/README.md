@@ -8,7 +8,7 @@ Documentation and links to production binary releases can be found on the [githu
 Copyright & License
 -------------------
 
-Dependency-Check is Copyright (c) 2012-2014 Jeremy Long. All Rights Reserved.
+Dependency-Check is Copyright (c) 2012-2026 Jeremy Long. All Rights Reserved.
 
 Permission to modify and redistribute is granted under the terms of the Apache 2.0 license. See the [LICENSE.txt](https://github.com/dependency-check/DependencyCheck/blob/main/LICENSE.txt) file for the full license.
 

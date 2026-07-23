@@ -48,7 +48,7 @@ Copyright (c) 2012 - Jeremy Long. All Rights Reserved.
                 <includes>
                     <include>completion-for-dependency-check.sh</include>
                 </includes>
-		<targetPath>../release/bin</targetPath>
+		        <targetPath>../release/bin</targetPath>
             </resource>
             <resource>
                 <directory>${basedir}</directory>
@@ -56,6 +56,13 @@ Copyright (c) 2012 - Jeremy Long. All Rights Reserved.
                 <includes>
                     <include>LICENSE.txt</include>
                     <include>NOTICE.txt</include>
+                </includes>
+            </resource>
+            <resource>
+                <directory>${license.outputDirectory}</directory>
+                <targetPath>META-INF</targetPath>
+                <includes>
+                    <include>THIRD-PARTY.txt</include>
                 </includes>
             </resource>
         </resources>
@@ -74,6 +81,18 @@ Copyright (c) 2012 - Jeremy Long. All Rights Reserved.
                         </manifestEntries>
                     </archive>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.cyclonedx</groupId>
+                <artifactId>cyclonedx-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>makeBom</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
@@ -97,7 +116,6 @@ Copyright (c) 2012 - Jeremy Long. All Rights Reserved.
                     </binFileExtensions>
                     <repositoryLayout>flat</repositoryLayout>
                     <repositoryName>lib</repositoryName>
-                    <unixScriptTemplate>${project.basedir}/src/main/conf/unixBinTemplate.sh</unixScriptTemplate>
                     <windowsScriptTemplate>${project.basedir}/src/main/conf/windowsBinTemplate.bat</windowsScriptTemplate>
                     <extraJvmArguments>${runtime.extra.jvm.args}</extraJvmArguments>
                 </configuration>
