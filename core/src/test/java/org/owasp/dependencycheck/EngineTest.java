@@ -18,13 +18,24 @@
 package org.owasp.dependencycheck;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 import org.owasp.dependencycheck.analyzer.JarAnalyzer;
 import org.owasp.dependencycheck.data.nvdcve.DatabaseException;
+import org.owasp.dependencycheck.data.update.CachedWebDataSource;
+import org.owasp.dependencycheck.data.update.exception.UpdateException;
 import org.owasp.dependencycheck.dependency.Dependency;
 
 import java.io.File;
+import java.io.IOException;
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Enumeration;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
  * @author Jeremy Long
@@ -52,6 +63,29 @@ class EngineTest extends BaseDBTestCase {
             Dependency secondDwr = instance.scanFile(file);
 
             assertEquals(2, instance.getDependencies().length);
+        }
+    }
+
+    @Test
+    void testDatabaseRemainsOpenAfterUpdateFailure(@TempDir Path tempDir) throws Exception {
+        final String serviceName = "META-INF/services/" + CachedWebDataSource.class.getName();
+        final Path serviceFile = tempDir.resolve(serviceName);
+        Files.createDirectories(serviceFile.getParent());
+        Files.writeString(serviceFile, FailingCachedWebDataSource.class.getName());
+
+        try (URLClassLoader serviceLoader = new URLClassLoader(
+                new URL[]{tempDir.toUri().toURL()}, getClass().getClassLoader()) {
+            @Override
+            public Enumeration<URL> getResources(String name) throws IOException {
+                if (serviceName.equals(name)) {
+                    return findResources(name);
+                }
+                return super.getResources(name);
+            }
+        };
+                Engine instance = new Engine(serviceLoader, getSettings())) {
+            assertThrows(UpdateException.class, () -> instance.doUpdates(true));
+            assertNotNull(instance.getDatabase());
         }
     }
 }

@@ -895,13 +895,13 @@ public class Engine implements FileFilter, AutoCloseable {
                 }
                 database.close();
                 database = null;
-                if (updateException != null) {
-                    throw updateException;
-                }
                 LOGGER.info("Check for updates complete ({} ms)", System.currentTimeMillis() - updateStart);
                 if (remainOpen) {
                     //lock is not needed as we already have the lock held
                     openDatabase(true, false);
+                }
+                if (updateException != null) {
+                    throw updateException;
                 }
 
                 return dbUpdatesMade;
