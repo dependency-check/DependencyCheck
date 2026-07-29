@@ -947,10 +947,15 @@
 </suppress>
 <suppress base="true">
     <notes><![CDATA[
-    hand-curated better suppression for FP per issues #6626, #7015, #7019, #7020, #7021, #7022
+    hand-curated better suppression for FP per issues #6626, #7015, #7019, #7020, #7021, #7022, #7028, #7034, #8374, #8588
+    >= 4.x - .main: published and versioned together under here
+    < 4.x  - .core: published and versioned together under .core and other adjacent groups, simplified here to just .core
+                    since this is 2011-era code likely to catch everything for NVD-only CVEs predating PURL and not maintained at package level.
     ]]></notes>
-    <packageUrl regex="true">^pkg:maven/org\.glassfish(?!\.main).*$</packageUrl>
+    <packageUrl regex="true">^pkg:maven/(?!org\.glassfish\.(main|core)).*$</packageUrl>
     <cpe regex="true">cpe:/a:eclipse:glassfish(:.*)?$</cpe>
+    <cpe regex="true">cpe:/a:oracle:glassfish(:.*)?$</cpe>
+    <cpe regex="true">cpe:/a:oracle:glassfish_server(:.*)?$</cpe>
 </suppress>
 <suppress base="true">
     <notes><![CDATA[
@@ -1163,20 +1168,7 @@
     <packageUrl regex="true">^pkg:maven/fi\.solita\.clamav/clamav-client@.*$</packageUrl>
     <cpe regex="true">cpe:/a:clamav:clamav(:.*)?$</cpe>
 </suppress>
-<suppress base="true">
-    <notes><![CDATA[
-    FP per issue #7034
-    ]]></notes>
-    <packageUrl regex="true">^pkg:maven/jakarta\.json/jakarta\.json-api@.*$</packageUrl>
-    <cpe regex="true">cpe:/a:eclipse:glassfish(:.*)?$</cpe>
-</suppress>
-<suppress base="true">
-    <notes><![CDATA[
-    FP per issue #7028
-    ]]></notes>
-    <packageUrl regex="true">^pkg:maven/org\.glassfish\.jaxb/jaxb-runtime@.*$</packageUrl>
-    <cpe regex="true">cpe:/a:eclipse:glassfish(:.*)?$</cpe>
-</suppress>
+
 <suppress base="true">
     <notes><![CDATA[
     FP per issue #7026
@@ -1968,13 +1960,6 @@
 </suppress>
 <suppress base="true">
     <notes><![CDATA[
-    FP per issue #8374
-    ]]></notes>
-    <packageUrl regex="true">^pkg:maven/com\.sun\.xml\.bind/jaxb-impl@.*$</packageUrl>
-    <cpe regex="true">cpe:/a:eclipse:glassfish(:.*)?$</cpe>
-</suppress>
-<suppress base="true">
-    <notes><![CDATA[
     FP per issue #8395
     ]]></notes>
     <packageUrl regex="true">^pkg:maven/org\.springframework\.grpc/spring-grpc-spring-boot-starter@.*$</packageUrl>
@@ -2194,4 +2179,18 @@
     ]]></notes>
     <packageUrl regex="true">^pkg:maven/org\.jetbrains\.kotlin/kotlin-parcelize-runtime@.*$</packageUrl>
     <cpe regex="true">cpe:/a:jetbrains:runtime(:.*)?$</cpe>
+</suppress>
+<suppress base="true">
+    <notes><![CDATA[
+    FP per issue #8674, hand-curated due to generic name
+    ]]></notes>
+    <packageUrl regex="true">^pkg:maven/.*$</packageUrl>
+    <cpe regex="true">cpe:/a:oracle:projects(:.*)?$</cpe>
+</suppress>
+<suppress base="true">
+    <notes><![CDATA[
+    FP per issue #8676
+    ]]></notes>
+    <packageUrl regex="true">^pkg:maven/org\.jruby\.rack/jruby-rack@.*$</packageUrl>
+    <cpe regex="true">cpe:/a:gmail-servlet_project:gmail-servlet(:.*)?$</cpe>
 </suppress>
