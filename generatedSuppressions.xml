@@ -947,10 +947,15 @@
 </suppress>
 <suppress base="true">
     <notes><![CDATA[
-    hand-curated better suppression for FP per issues #6626, #7015, #7019, #7020, #7021, #7022
+    hand-curated better suppression for FP per issues #6626, #7015, #7019, #7020, #7021, #7022, #7028, #7034, #8374, #8588
+    >= 4.x - .main: published and versioned together under here
+    < 4.x  - .core: published and versioned together under .core and other adjacent groups, simplified here to just .core
+                    since this is 2011-era code likely to catch everything for NVD-only CVEs predating PURL and not maintained at package level.
     ]]></notes>
-    <packageUrl regex="true">^pkg:maven/org\.glassfish(?!\.main).*$</packageUrl>
+    <packageUrl regex="true">^pkg:maven/(?!org\.glassfish\.(main|core)).*$</packageUrl>
     <cpe regex="true">cpe:/a:eclipse:glassfish(:.*)?$</cpe>
+    <cpe regex="true">cpe:/a:oracle:glassfish(:.*)?$</cpe>
+    <cpe regex="true">cpe:/a:oracle:glassfish_server(:.*)?$</cpe>
 </suppress>
 <suppress base="true">
     <notes><![CDATA[
@@ -1163,20 +1168,7 @@
     <packageUrl regex="true">^pkg:maven/fi\.solita\.clamav/clamav-client@.*$</packageUrl>
     <cpe regex="true">cpe:/a:clamav:clamav(:.*)?$</cpe>
 </suppress>
-<suppress base="true">
-    <notes><![CDATA[
-    FP per issue #7034
-    ]]></notes>
-    <packageUrl regex="true">^pkg:maven/jakarta\.json/jakarta\.json-api@.*$</packageUrl>
-    <cpe regex="true">cpe:/a:eclipse:glassfish(:.*)?$</cpe>
-</suppress>
-<suppress base="true">
-    <notes><![CDATA[
-    FP per issue #7028
-    ]]></notes>
-    <packageUrl regex="true">^pkg:maven/org\.glassfish\.jaxb/jaxb-runtime@.*$</packageUrl>
-    <cpe regex="true">cpe:/a:eclipse:glassfish(:.*)?$</cpe>
-</suppress>
+
 <suppress base="true">
     <notes><![CDATA[
     FP per issue #7026
@@ -1965,13 +1957,6 @@
     ]]></notes>
     <packageUrl regex="true">^pkg:maven/org\.springframework\.boot/spring-boot-batch@.*$</packageUrl>
     <cpe regex="true">cpe:/a:pivotal_software:spring_batch(:.*)?$</cpe>
-</suppress>
-<suppress base="true">
-    <notes><![CDATA[
-    FP per issue #8374
-    ]]></notes>
-    <packageUrl regex="true">^pkg:maven/com\.sun\.xml\.bind/jaxb-impl@.*$</packageUrl>
-    <cpe regex="true">cpe:/a:eclipse:glassfish(:.*)?$</cpe>
 </suppress>
 <suppress base="true">
     <notes><![CDATA[
