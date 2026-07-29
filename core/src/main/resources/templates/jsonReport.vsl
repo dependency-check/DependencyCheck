@@ -351,9 +351,7 @@
 #if($vuln.cvssV4.cvssData.providerUrgency)
                         ,"providerUrgency": "$enc.json($vuln.cvssV4.cvssData.providerUrgency)"
 #end
-#if($vuln.cvssV4.cvssData.baseScore)
                         ,"baseScore": $vuln.cvssV4.cvssData.baseScore
-#end
 #if($vuln.cvssV4.cvssData.baseSeverity)
                         ,"baseSeverity": "$enc.json($vuln.cvssV4.cvssData.baseSeverity)"
 #end
@@ -558,9 +556,7 @@
 #if($vuln.cvssV4.cvssData.providerUrgency)
                         ,"providerUrgency": "$enc.json($vuln.cvssV4.cvssData.providerUrgency)"
 #end
-#if($vuln.cvssV4.cvssData.baseScore)
                         ,"baseScore": $vuln.cvssV4.cvssData.baseScore
-#end
 #if($vuln.cvssV4.cvssData.baseSeverity)
                         ,"baseSeverity": "$enc.json($vuln.cvssV4.cvssData.baseSeverity)"
 #end
