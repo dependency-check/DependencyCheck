@@ -146,7 +146,7 @@ Advanced Configuration
 ====================
 The following properties can be configured in the plugin. However, they are less frequently changed.
 
-Note that any passwords in the below configuration could be exposed if you use `-x` option to debug the build. It is always better to configure the credential in your settings.xml and use the configuration to set the server id instead of placeing the password directly in the pom.xml.
+Note that any passwords in the below configuration could be exposed if you use `-X` option to debug the build. It is always better to configure the credential in your settings.xml and use the configuration to set the server id instead of placeing the password directly in the pom.xml.
 
 | Property                        | Description                                                                                                                                                                                                                          | Default Value                                                                             |
 |---------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------|

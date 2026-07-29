@@ -820,10 +820,9 @@
     </suppress>
     <suppress base="true">
         <notes><![CDATA[
-        Suppresses false positives on Jersey core client.
+        Suppresses false positives on Jersey core client, including per issue #582
         ]]></notes>
-        <gav regex="true">(com\.sun\.jersey|org\.glassfish\.jersey\.core):jersey-(client|common):.*</gav>
-        <cpe>cpe:/a:oracle:glassfish:</cpe>
+        <packageUrl regex="true">^pkg:maven/(com\.sun\.jersey|org\.glassfish\.jersey).*$</packageUrl>
         <cpe>cpe:/a:oracle:oracle_client:</cpe>
     </suppress>
     <suppress base="true">
@@ -1226,14 +1225,6 @@
     </suppress>
     <suppress base="true">
         <notes><![CDATA[
-        Suppresses false positives on glassfish and grizzly. Updated per issue #672.
-        ]]></notes>
-        <gav regex="true">org\.glassfish(\.(web|grizzly)):.*(json|faces|jstl|grizzly).*</gav>
-        <cpe>cpe:/a:oracle:glassfish:</cpe>
-        <cpe>cpe:/a:oracle:glassfish_server:</cpe>
-    </suppress>
-    <suppress base="true">
-        <notes><![CDATA[
         Akka FP per #2050
         ]]></notes>
         <packageUrl regex="true">^pkg:maven/io\.kamon/kamon\-akka.*$</packageUrl>
@@ -1602,28 +1593,6 @@
     </suppress>
     <suppress base="true">
         <notes><![CDATA[
-        Oracle Jersey is flagged as glassfish.
-        ]]></notes>
-        <gav regex="true">.*jersey.*</gav>
-        <cpe>cpe:/a:oracle:glassfish_server:</cpe>
-        <cpe>cpe:/a:oracle:glassfish:</cpe>
-    </suppress>
-    <suppress base="true">
-        <notes><![CDATA[
-        Oracle HK2 is flagged as glassfish.
-        ]]></notes>
-        <gav regex="true">.*\bhk2\b.*</gav>
-        <cpe>cpe:/a:oracle:glassfish:</cpe>
-    </suppress>
-    <suppress base="true">
-        <notes><![CDATA[
-        HK2-utils is flagged as glassfish.
-        ]]></notes>
-        <filePath regex="true">.*\bhk2-utils.*\.jar</filePath>
-        <cpe>cpe:/a:oracle:glassfish:</cpe>
-    </suppress>
-    <suppress base="true">
-        <notes><![CDATA[
         file name: petals-se-camel-1.0.0.jar - false positive for apache camel.
         ]]></notes>
         <gav regex="true">org.ow2.petals:petals-se-camel:.*</gav>
@@ -1874,13 +1843,6 @@
     </suppress>
     <suppress base="true">
         <notes><![CDATA[
-        javax.transaction and javax.annotation (#1629) false positives
-        ]]></notes>
-        <gav regex="true">javax\.(annotation|transaction):javax\.(annotation|transaction)-api:.*</gav>
-        <cpe>cpe:/a:oracle:glassfish:</cpe>
-    </suppress>
-    <suppress base="true">
-        <notes><![CDATA[
         false positives per #1630
         ]]></notes>
         <gav regex="true">^org\.apache\.directory\.api:api-ldap.*$</gav>
@@ -2053,13 +2015,6 @@
     </suppress>
     <suppress base="true">
         <notes><![CDATA[
-        filter out non-glassfish core
-        ]]></notes>
-        <gav regex="true">^(?!org\.glassfish\.main\.core:glassfish).*$</gav>
-        <cpe>cpe:/a:oracle:glassfish:</cpe>
-    </suppress>
-    <suppress base="true">
-        <notes><![CDATA[
         Grizzly is not Async Http Client
         ]]></notes>
         <gav regex="true">^org\.glassfish\.grizzly:grizzly-http-client:.*$</gav>
@@ -2100,20 +2055,6 @@
        ]]></notes>
         <gav regex="true">^org\.apache\.wink:wink-json4j:.*$</gav>
         <cpe>cpe:/a:wink:wink:</cpe>
-    </suppress>
-    <suppress base="true">
-        <notes><![CDATA[
-        Glassfish false positives. Added jws per #1640
-        ]]></notes>
-        <gav regex="true">^javax\.(jws|servlet):javax\.(jws|servlet)-api:.*$</gav>
-        <cpe>cpe:/a:oracle:glassfish:</cpe>
-    </suppress>
-    <suppress base="true">
-        <notes><![CDATA[
-        Glassfish false positives.
-        ]]></notes>
-        <gav regex="true">org\.glassfish:javax.el:.*</gav>
-        <cpe>cpe:/a:oracle:glassfish:</cpe>
     </suppress>
     <suppress base="true">
         <notes><![CDATA[
@@ -2247,13 +2188,6 @@
         ]]></notes>
         <gav regex="true">^(?!com.thoughtworks).*xstream.*$</gav>
         <cpe>cpe:/a:x-stream:xstream:</cpe>
-    </suppress>
-    <suppress base="true">
-        <notes><![CDATA[
-        false positive per issue #582
-        ]]></notes>
-        <gav regex="true">^org\.glassfish\.jersey\.ext:jersey-proxy-client:.*$</gav>
-        <cpe>cpe:/a:oracle:oracle_client:</cpe>
     </suppress>
     <suppress base="true">
         <notes><![CDATA[
@@ -2496,13 +2430,6 @@
         ]]></notes>
         <gav regex="true">^com\.vaadin\.external\.google:android-json:.*$</gav>
         <cpe>cpe:/a:google:android:</cpe>
-    </suppress>
-    <suppress base="true">
-        <notes><![CDATA[
-        json library is not glassfish server.
-        ]]></notes>
-        <gav regex="true">^org\.glassfish:javax\.json:.*$</gav>
-        <cpe>cpe:/a:oracle:glassfish:</cpe>
     </suppress>
     <suppress base="true">
         <notes><![CDATA[
