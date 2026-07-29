@@ -32,7 +32,7 @@ jobs:
                 repo: context.repo.repo
               })
               )
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
           path: odc
       - name: Parse False Positive Issue
@@ -111,7 +111,7 @@ jobs:
           cd ..
       - name: Setup dotnet
         if: ${{ fromJSON(steps.purl-parser.outputs.result).type == 'nuget' }}
-        uses: actions/setup-dotnet@9a946fdbd5fb07b82b2f5a4466058b876ab72bb2 # v5.3.0
+        uses: actions/setup-dotnet@26b0ec14cb23fa6904739307f278c14f94c95bf1 # v5.4.0
         with:
           dotnet-version: '8.0.x'
       - name: Setup dotnet fp-project

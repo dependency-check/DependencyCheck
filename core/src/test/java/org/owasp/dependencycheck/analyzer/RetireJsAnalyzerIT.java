@@ -205,9 +205,22 @@ class RetireJsAnalyzerIT extends BaseDBTestCase {
         assertThat(dependency.getVulnerabilities().stream().map(Vulnerability::getName).sorted().collect(Collectors.toList()),
                 containsInRelativeOrder(
                         "CVE-2026-0540",
-                        "GHSA-cj63-jhhr-wcxv",
-                        "GHSA-cjmm-f4jc-qw8r",
-                        "GHSA-h8r8-wccr-v5f2"
+                        "CVE-2026-41238",
+                        "CVE-2026-41239",
+                        "CVE-2026-41240",
+                        "CVE-2026-49458",
+                        "CVE-2026-49459",
+                        "CVE-2026-49978",
+                        "CVE-2026-65898",
+                        "CVE-2026-65899",
+                        "CVE-2026-65900",
+                        "CVE-2026-65901",
+                        "CVE-2026-65902",
+                        "CVE-2026-65903",
+                        "CVE-2026-65912",
+                        "CVE-2026-65913",
+                        "CVE-2026-65914",
+                        "CVE-2026-66010"
                 ));
     }
 }

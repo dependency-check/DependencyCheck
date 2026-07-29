@@ -26,8 +26,8 @@ The following properties can be set on the dependency-check-update task.
 | proxyUsername           | Defines the proxy user name.                                                                   | &nbsp;                                           |
 | proxyPassword           | Defines the proxy password.                                                                    | &nbsp;                                           |
 | nonProxyHosts           | Defines the hosts that will not be proxied.                                                    | &nbsp;                                           |
-| connectionTimeout       | The URL Connection Timeout (in milliseconds).                                                  | 10000                                            |
-| readtimeout             | The URL Read Timeout (in milliseconds).                                                        | 60000                                            |
+| connectionTimeout       | Sets the connection timeout (in milliseconds) used when downloading external data.             | 10000                                            |
+| readTimeout             | Sets the read timeout (in milliseconds) used when downloading external data.                   | 60000                                            |
 | retireJsAnalyzerEnabled | Sets whether the RetireJS Analyzer update and analyzer are enabled.                            | true                                             |
 
 Advanced Configuration
