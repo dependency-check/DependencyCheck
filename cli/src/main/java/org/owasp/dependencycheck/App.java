@@ -620,7 +620,7 @@ public class App {
         settings.setBoolean(Settings.KEYS.ANALYZER_GOLANG_MOD_ENABLED,
                 !cli.isDisabled(CliParser.ARGUMENT.DISABLE_GOLANG_MOD, Settings.KEYS.ANALYZER_GOLANG_MOD_ENABLED));
         settings.setBooleanIfNotNull(Settings.KEYS.ANALYZER_GOLANG_VULNCHECK_ENABLED,
-                cli.hasOption(CliParser.ARGUMENT.ENABLE_GOLANG_VULNCHECK) ? true : null);
+                cli.hasOption(CliParser.ARGUMENT.ENABLE_GOLANG_VULNCHECK));
         settings.setBoolean(Settings.KEYS.ANALYZER_DART_ENABLED,
                 !cli.isDisabled(CliParser.ARGUMENT.DISABLE_DART, Settings.KEYS.ANALYZER_DART_ENABLED));
         settings.setBoolean(Settings.KEYS.ANALYZER_NODE_PACKAGE_ENABLED,
