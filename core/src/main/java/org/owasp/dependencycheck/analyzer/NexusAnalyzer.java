@@ -22,7 +22,6 @@ import org.owasp.dependencycheck.Engine;
 import org.owasp.dependencycheck.analyzer.exception.AnalysisException;
 import org.owasp.dependencycheck.data.nexus.MavenArtifact;
 import org.owasp.dependencycheck.data.nexus.NexusSearch;
-import org.owasp.dependencycheck.data.nexus.NexusV2Search;
 import org.owasp.dependencycheck.data.nexus.NexusV3Search;
 import org.owasp.dependencycheck.dependency.Confidence;
 import org.owasp.dependencycheck.dependency.Dependency;
@@ -48,7 +47,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Locale;
 
 /**
  * Analyzer which will attempt to locate a dependency on a Nexus service by
@@ -178,19 +176,11 @@ public class NexusAnalyzer extends AbstractFileTypeAnalyzer {
      * @return A NexusSearch appropriate for the configured ANALYZER_NEXUS_URL
      * @throws InitializationException Upon errors creating of validating the ANALYZER_NEXUS_URL
      */
-    @SuppressWarnings("removal")
     private NexusSearch createNexusSearchOrDisable(boolean useProxy) throws InitializationException {
         final Settings settings = getSettings();
-        final String nexusRootURL = settings.getString(Settings.KEYS.ANALYZER_NEXUS_URL);
         final NexusSearch result;
         try {
-            if (nexusRootURL.toLowerCase(Locale.ROOT).contains("service/local/")) {
-                LOGGER.warn("Nexus v2 went EOL on 30 June 2025. Nexus v2 support within OWASP Dependency Check is deprecated " +
-                        "and may be removed in the next major release. Continual support requires migration to Nexus v3");
-                result = new NexusV2Search(settings, useProxy);
-            } else {
-                result = new NexusV3Search(settings, useProxy);
-            }
+            result = new NexusV3Search(settings, useProxy);
             if (!result.preflightRequest()) {
                 setEnabled(false);
                 throw new InitializationException("There was an error getting Nexus status. Disabling NexusAnalyzer.");
