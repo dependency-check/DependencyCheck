@@ -539,24 +539,10 @@ public class App {
                 cli.getStringArgument(CliParser.ARGUMENT.RETIREJS_URL_BEARER_TOKEN));
         settings.setBooleanIfNotNull(Settings.KEYS.ANALYZER_RETIREJS_FORCEUPDATE,
                 cli.hasOption(CliParser.ARGUMENT.RETIRE_JS_FORCEUPDATE));
-        String retireJsFilters = cli.getStringArgument(CliParser.ARGUMENT.RETIRE_JS_FILTERS);
-        if (retireJsFilters == null) {
-            retireJsFilters = cli.getStringArgument(CliParser.ARGUMENT.RETIREJS_FILTERS_DEPRECATED);
-            if (retireJsFilters != null) {
-                LOGGER.warn("'--{}' is deprecated and may be removed in the next major release, please migrate to '--{}'",
-                        CliParser.ARGUMENT.RETIREJS_FILTERS_DEPRECATED, CliParser.ARGUMENT.RETIRE_JS_FILTERS);
-            }
-        }
-        settings.setStringIfNotNull(Settings.KEYS.ANALYZER_RETIREJS_FILTERS, retireJsFilters);
-        Boolean retireJsFilterNonVuln = cli.hasOption(CliParser.ARGUMENT.RETIRE_JS_FILTER_NON_VULNERABLE);
-        if (retireJsFilterNonVuln == null) {
-            retireJsFilterNonVuln = cli.hasOption(CliParser.ARGUMENT.RETIREJS_FILTER_NON_VULNERABLE_DEPRECATED);
-            if (retireJsFilterNonVuln != null) {
-                LOGGER.warn("'--{}' is deprecated and may be removed in the next major release, please migrate to '--{}'",
-                        CliParser.ARGUMENT.RETIREJS_FILTER_NON_VULNERABLE_DEPRECATED, CliParser.ARGUMENT.RETIRE_JS_FILTER_NON_VULNERABLE);
-            }
-        }
-        settings.setBooleanIfNotNull(Settings.KEYS.ANALYZER_RETIREJS_FILTER_NON_VULNERABLE, retireJsFilterNonVuln);
+        settings.setStringIfNotNull(Settings.KEYS.ANALYZER_RETIREJS_FILTERS,
+                cli.getStringArgument(CliParser.ARGUMENT.RETIRE_JS_FILTERS));
+        settings.setBooleanIfNotNull(Settings.KEYS.ANALYZER_RETIREJS_FILTER_NON_VULNERABLE,
+                cli.hasOption(CliParser.ARGUMENT.RETIRE_JS_FILTER_NON_VULNERABLE));
         settings.setBoolean(Settings.KEYS.ANALYZER_JAR_ENABLED,
                 !cli.isDisabled(CliParser.ARGUMENT.DISABLE_JAR, Settings.KEYS.ANALYZER_JAR_ENABLED));
         settings.setBoolean(Settings.KEYS.UPDATE_VERSION_CHECK_ENABLED,
@@ -629,15 +615,8 @@ public class App {
                 !cli.isPnpmAuditDisabled());
         settings.setBoolean(Settings.KEYS.ANALYZER_NODE_AUDIT_USE_CACHE,
                 !cli.isDisabled(CliParser.ARGUMENT.DISABLE_NODE_AUDIT_CACHE, Settings.KEYS.ANALYZER_NODE_AUDIT_USE_CACHE));
-        boolean retireJsDisabled = cli.isDisabled(CliParser.ARGUMENT.DISABLE_RETIRE_JS, Settings.KEYS.ANALYZER_RETIREJS_ENABLED);
-        if (!retireJsDisabled) {
-            retireJsDisabled = cli.isDisabled(CliParser.ARGUMENT.DISABLE_RETIREJS_DEPRECATED, Settings.KEYS.ANALYZER_RETIREJS_ENABLED);
-            if (retireJsDisabled) {
-                LOGGER.warn("'--{}' is deprecated and may be removed in the next major release, please migrate to '--{}'",
-                        CliParser.ARGUMENT.DISABLE_RETIREJS_DEPRECATED, CliParser.ARGUMENT.DISABLE_RETIRE_JS);
-            }
-        }
-        settings.setBoolean(Settings.KEYS.ANALYZER_RETIREJS_ENABLED, !retireJsDisabled);
+        settings.setBoolean(Settings.KEYS.ANALYZER_RETIREJS_ENABLED,
+                !cli.isDisabled(CliParser.ARGUMENT.DISABLE_RETIRE_JS, Settings.KEYS.ANALYZER_RETIREJS_ENABLED));
         settings.setBoolean(Settings.KEYS.ANALYZER_SWIFT_PACKAGE_MANAGER_ENABLED,
                 !cli.isDisabled(CliParser.ARGUMENT.DISABLE_SWIFT, Settings.KEYS.ANALYZER_SWIFT_PACKAGE_MANAGER_ENABLED));
         settings.setBoolean(Settings.KEYS.ANALYZER_SWIFT_PACKAGE_RESOLVED_ENABLED,

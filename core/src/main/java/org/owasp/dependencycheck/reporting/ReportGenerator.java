@@ -22,8 +22,8 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.text.WordUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.text.WordUtils;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.context.Context;
@@ -156,24 +156,6 @@ public class ReportGenerator {
      * @param properties the database properties (containing timestamps of the
      * NVD CVE data)
      * @param settings a reference to the database settings
-     * @deprecated Please use
-     * {@link #ReportGenerator(java.lang.String, java.util.List, java.util.List, DatabaseProperties, Settings, ExceptionCollection)}
-     */
-    @Deprecated
-    public ReportGenerator(String applicationName, List<Dependency> dependencies, List<Analyzer> analyzers,
-                           DatabaseProperties properties, Settings settings) {
-        this(applicationName, dependencies, analyzers, properties, settings, null);
-    }
-
-    /**
-     * Constructs a new ReportGenerator.
-     *
-     * @param applicationName the application name being analyzed
-     * @param dependencies the list of dependencies
-     * @param analyzers the list of analyzers used
-     * @param properties the database properties (containing timestamps of the
-     * NVD CVE data)
-     * @param settings a reference to the database settings
      * @param exceptions a collection of exceptions that may have occurred
      * during the analysis
      * @since 5.1.0
@@ -181,28 +163,6 @@ public class ReportGenerator {
     public ReportGenerator(String applicationName, List<Dependency> dependencies, List<Analyzer> analyzers,
                            DatabaseProperties properties, Settings settings, ExceptionCollection exceptions) {
         this(applicationName, null, null, null, dependencies, analyzers, properties, settings, exceptions);
-    }
-
-    /**
-     * Constructs a new ReportGenerator.
-     *
-     * @param applicationName the application name being analyzed
-     * @param groupID the group id of the project being analyzed
-     * @param artifactID the application id of the project being analyzed
-     * @param version the application version of the project being analyzed
-     * @param dependencies the list of dependencies
-     * @param analyzers the list of analyzers used
-     * @param properties the database properties (containing timestamps of the
-     * NVD CVE data)
-     * @param settings a reference to the database settings
-     * @deprecated Please use
-     * {@link #ReportGenerator(String, String, String, String, List, List, DatabaseProperties, Settings, ExceptionCollection)}
-     */
-    @Deprecated
-    public ReportGenerator(String applicationName, String groupID, String artifactID, String version,
-                           List<Dependency> dependencies, List<Analyzer> analyzers, DatabaseProperties properties,
-                           Settings settings) {
-        this(applicationName, groupID, artifactID, version, dependencies, analyzers, properties, settings, null);
     }
 
     /**

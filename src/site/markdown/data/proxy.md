@@ -58,12 +58,6 @@ import it using keytool, then specify that trust store on the command line
 have that set, you can set the environment variable `JAVA_TOOL_OPTIONS` to have 
 `-Djavax.net.ssl.trustStore=/path/to/cacerts`.
 
-Still failing?
---------------
-In some cases the proxy is configured to block `HEAD` requests. While an attempt
-is made by dependency-check to identify this situation it does not appear to be
-100% successful. As such, the last thing to try is to add the property 
-`mvn -Ddownloader.quick.query.timestamp=false`.
 
 If trying the above and it still fails please open a ticket in the 
 [github repo](https://github.com/dependency-check/DependencyCheck/issues).

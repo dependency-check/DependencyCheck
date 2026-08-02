@@ -226,22 +226,11 @@ public final class Settings {
          * The key to determine if the NVD CVE analyzer is enabled.
          */
         public static final String ANALYZER_NVD_CVE_ENABLED = "analyzer.nvdcve.enabled";
-        /**
-         * The properties key that indicates how often the CPE data needs to be
-         * updated.
-         * @deprecated No longer used; will be removed in a future release.
-         */
-        @Deprecated(forRemoval = true, since = "v2.0.0")
-        public static final String CPE_MODIFIED_VALID_FOR_DAYS = "cpe.validfordays";
-        /**
-         * The properties key for the URL to retrieve the CPE.
-         * @deprecated No longer used; will be removed in a future release.
-         */
-        @Deprecated(forRemoval = true, since = "v2.0.0")
-        public static final String CPE_URL = "cpe.url";
+
+
         /**
          * The properties key for the URL to retrieve the Known Exploited
-         * Vulnerabilities..
+         * Vulnerabilities.
          */
         public static final String KEV_URL = "kev.url";
 
@@ -268,14 +257,6 @@ public final class Settings {
          * Exploited Vulnerabilities updates.
          */
         public static final String KEV_CHECK_VALID_FOR_HOURS = "kev.check.validforhours";
-        /**
-         * Whether or not if using basic auth with a proxy the system setting
-         * 'jdk.http.auth.tunneling.disabledSchemes' should be set to an empty
-         * string.
-         * @deprecated No longer used; will be removed in a future release.
-         */
-        @Deprecated(forRemoval = true, since = "v12.1.2")
-        public static final String PROXY_DISABLE_SCHEMAS = "proxy.disableSchemas";
         /**
          * The properties key for the proxy server.
          */
@@ -758,48 +739,6 @@ public final class Settings {
          * The additional configured zip file extensions, if available.
          */
         public static final String ADDITIONAL_ZIP_EXTENSIONS = "extensions.zip";
-        /**
-         * The key to obtain the path to the VFEED data file.
-         * @deprecated No longer used; will be removed in a future release.
-         */
-        @Deprecated(forRemoval = true, since = "v1.0.0")
-        public static final String VFEED_DATA_FILE = "vfeed.data_file";
-        /**
-         * The key to obtain the VFEED connection string.
-         * @deprecated No longer used; will be removed in a future release.
-         */
-        @Deprecated(forRemoval = true, since = "v1.0.0")
-        public static final String VFEED_CONNECTION_STRING = "vfeed.connection_string";
-        /**
-         * The key to obtain the base download URL for the VFeed data file.
-         * @deprecated No longer used; will be removed in a future release.
-         */
-        @Deprecated(forRemoval = true, since = "v1.0.0")
-        public static final String VFEED_DOWNLOAD_URL = "vfeed.download_url";
-        /**
-         * The key to obtain the download file name for the VFeed data.
-         * @deprecated No longer used; will be removed in a future release.
-         */
-        @Deprecated(forRemoval = true, since = "v1.0.0")
-        public static final String VFEED_DOWNLOAD_FILE = "vfeed.download_file";
-        /**
-         * The key to obtain the VFeed update status.
-         * @deprecated No longer used; will be removed in a future release.
-         */
-        @Deprecated(forRemoval = true, since = "v1.0.0")
-        public static final String VFEED_UPDATE_STATUS = "vfeed.update_status";
-        /**
-         * The key to the HTTP request method for query last modified date.
-         * @deprecated No longer used; will be removed in a future release.
-         */
-        @Deprecated(forRemoval = true, since = "v11.0.0")
-        public static final String DOWNLOADER_QUICK_QUERY_TIMESTAMP = "downloader.quick.query.timestamp";
-        /**
-         * The key to HTTP protocol list to use.
-         * @deprecated No longer used; will be removed in a future release.
-         */
-        @Deprecated(forRemoval = true, since = "v12.0.0")
-        public static final String DOWNLOADER_TLS_PROTOCOL_LIST = "downloader.tls.protocols";
         /**
          * The key to determine if the CPE analyzer is enabled.
          */

@@ -231,16 +231,6 @@ public abstract class BaseDependencyCheckMojo extends AbstractMojo implements Ma
     @Parameter(property = "junitFailOnCVSS", defaultValue = "0", required = true)
     private float junitFailOnCVSS = 0;
     /**
-     * Fail the build if any dependency has a vulnerability listed.
-     *
-     * @deprecated use {@link BaseDependencyCheckMojo#failBuildOnCVSS} with a
-     * value of 0 instead
-     */
-    @SuppressWarnings("CanBeFinal")
-    @Parameter(property = "failBuildOnAnyVulnerability", defaultValue = "false", required = true)
-    @Deprecated
-    private boolean failBuildOnAnyVulnerability = false;
-    /**
      * Sets whether auto-updating of the NVD CVE data is enabled. It is not
      * recommended that this be turned to false. Default is true.
      */
@@ -2910,13 +2900,11 @@ public abstract class BaseDependencyCheckMojo extends AbstractMojo implements Ma
                 final boolean useUnscored = cvssV2 == -1 && cvssV3 == -1 && cvssV4 == -1;
                 final double unscoredCvss = (useUnscored && v.getUnscoredSeverity() != null) ? SeverityUtil.estimateCvssV2(v.getUnscoredSeverity()) : -1;
 
-                if (failBuildOnAnyVulnerability
+                if (failBuildOnCVSS <= 0.0
                         || cvssV2 >= failBuildOnCVSS
                         || cvssV3 >= failBuildOnCVSS
                         || cvssV4 >= failBuildOnCVSS
                         || unscoredCvss >= failBuildOnCVSS
-                        //safety net to fail on any if for some reason the above misses on 0
-                        || failBuildOnCVSS <= 0.0
                 ) {
                     String name = v.getName();
                     if (cvssV4 >= 0.0) {
@@ -2945,13 +2933,8 @@ public abstract class BaseDependencyCheckMojo extends AbstractMojo implements Ma
         if (ids.length() > 0) {
             final String msg;
             if (showSummary) {
-                if (failBuildOnAnyVulnerability) {
-                    msg = String.format("%n%nOne or more dependencies were identified with vulnerabilities: %n%s%n%n"
-                            + "See the dependency-check report for more details.%n%n", ids);
-                } else {
-                    msg = String.format("%n%nOne or more dependencies were identified with vulnerabilities that have a CVSS score greater than or "
-                            + "equal to '%.1f': %n%s%n%nSee the dependency-check report for more details.%n%n", failBuildOnCVSS, ids);
-                }
+                msg = String.format("%n%nOne or more dependencies were identified with vulnerabilities that have a CVSS score greater than or "
+                        + "equal to '%.1f': %n%s%n%nSee the dependency-check report for more details.%n%n", failBuildOnCVSS, ids);
             } else {
                 msg = String.format("%n%nOne or more dependencies were identified with vulnerabilities.%n%n"
                         + "See the dependency-check report for more details.%n%n");
@@ -3254,9 +3237,8 @@ public abstract class BaseDependencyCheckMojo extends AbstractMojo implements Ma
 
 
     private void checkForDeprecatedParameters() {
-        warnIfDeprecatedParamUsed("ossIndexAnalyzerEnabled", "ossindexAnalyzerEnabled");
-        warnIfDeprecatedParamUsed("ossIndexAnalyzerUseCache", "ossindexAnalyzerUseCache");
-        warnIfDeprecatedParamUsed("ossIndexAnalyzerUrl", "ossindexAnalyzerUrl");
+        // Replace the below if deprecating parameters in future
+        warnIfDeprecatedParamUsed("fakeCurrentOption", "fakeDeprecatedOption");
     }
 
     /**
