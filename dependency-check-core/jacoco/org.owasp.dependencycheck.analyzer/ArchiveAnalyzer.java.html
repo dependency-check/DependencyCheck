@@ -462,7 +462,7 @@ public class ArchiveAnalyzer extends AbstractFileTypeAnalyzer {
 <span class="fc bfc" id="L462" title="All 4 branches covered.">                } else if (&quot;gz&quot;.equals(archiveExt) || &quot;tgz&quot;.equals(archiveExt)) {</span>
 <span class="fc" id="L463">                    final String uncompressedName = GzipUtils.getUncompressedFileName(archive.getName());</span>
 <span class="fc" id="L464">                    final File f = new File(destination, uncompressedName);</span>
-<span class="fc bfc" id="L465" title="All 2 branches covered.">                    if (engine.accept(f)) {</span>
+<span class="pc bpc" id="L465" title="1 of 2 branches missed.">                    if (engine.accept(f)) {</span>
 <span class="fc" id="L466">                        final String destPath = destination.getCanonicalPath();</span>
 <span class="pc bpc" id="L467" title="1 of 2 branches missed.">                        if (!f.getCanonicalPath().startsWith(destPath)) {</span>
 <span class="nc" id="L468">                            final String msg = String.format(</span>
@@ -768,4 +768,4 @@ public class ArchiveAnalyzer extends AbstractFileTypeAnalyzer {
 <span class="fc" id="L768">        fileFilter = FileFilterBuilder.newInstance().addExtensions(extensions).build();</span>
 <span class="fc" id="L769">    }</span>
 }
-</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.14.202510111229</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.15.202606040825</span></div></body></html>

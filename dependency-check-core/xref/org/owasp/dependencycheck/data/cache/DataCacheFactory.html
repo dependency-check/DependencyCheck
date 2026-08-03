@@ -25,25 +25,25 @@
 <a class="jxr_linenumber" name="L17" href="#L17">17</a>  <em class="jxr_comment"> */</em>
 <a class="jxr_linenumber" name="L18" href="#L18">18</a>  <strong class="jxr_keyword">package</strong> org.owasp.dependencycheck.data.cache;
 <a class="jxr_linenumber" name="L19" href="#L19">19</a>  
-<a class="jxr_linenumber" name="L20" href="#L20">20</a>  <strong class="jxr_keyword">import</strong> java.io.File;
-<a class="jxr_linenumber" name="L21" href="#L21">21</a>  <strong class="jxr_keyword">import</strong> java.io.IOException;
-<a class="jxr_linenumber" name="L22" href="#L22">22</a>  <strong class="jxr_keyword">import</strong> java.io.InputStream;
-<a class="jxr_linenumber" name="L23" href="#L23">23</a>  <strong class="jxr_keyword">import</strong> java.util.List;
-<a class="jxr_linenumber" name="L24" href="#L24">24</a>  <strong class="jxr_keyword">import</strong> java.util.Properties;
-<a class="jxr_linenumber" name="L25" href="#L25">25</a>  
-<a class="jxr_linenumber" name="L26" href="#L26">26</a>  <strong class="jxr_keyword">import</strong> io.github.jeremylong.jcs3.slf4j.Slf4jAdapter;
-<a class="jxr_linenumber" name="L27" href="#L27">27</a>  <strong class="jxr_keyword">import</strong> org.apache.commons.jcs3.JCS;
-<a class="jxr_linenumber" name="L28" href="#L28">28</a>  <strong class="jxr_keyword">import</strong> org.apache.commons.jcs3.access.CacheAccess;
-<a class="jxr_linenumber" name="L29" href="#L29">29</a>  <strong class="jxr_keyword">import</strong> org.apache.commons.jcs3.access.exception.CacheException;
-<a class="jxr_linenumber" name="L30" href="#L30">30</a>  <strong class="jxr_keyword">import</strong> org.apache.commons.jcs3.engine.CompositeCacheAttributes;
-<a class="jxr_linenumber" name="L31" href="#L31">31</a>  <strong class="jxr_keyword">import</strong> org.apache.commons.jcs3.engine.behavior.ICompositeCacheAttributes;
-<a class="jxr_linenumber" name="L32" href="#L32">32</a>  <strong class="jxr_keyword">import</strong> org.owasp.dependencycheck.data.nexus.MavenArtifact;
-<a class="jxr_linenumber" name="L33" href="#L33">33</a>  <strong class="jxr_keyword">import</strong> org.owasp.dependencycheck.data.nodeaudit.Advisory;
-<a class="jxr_linenumber" name="L34" href="#L34">34</a>  <strong class="jxr_keyword">import</strong> org.owasp.dependencycheck.utils.FileUtils;
-<a class="jxr_linenumber" name="L35" href="#L35">35</a>  <strong class="jxr_keyword">import</strong> org.owasp.dependencycheck.utils.Settings;
-<a class="jxr_linenumber" name="L36" href="#L36">36</a>  <strong class="jxr_keyword">import</strong> org.owasp.dependencycheck.xml.pom.Model;
-<a class="jxr_linenumber" name="L37" href="#L37">37</a>  <strong class="jxr_keyword">import</strong> org.slf4j.Logger;
-<a class="jxr_linenumber" name="L38" href="#L38">38</a>  <strong class="jxr_keyword">import</strong> org.slf4j.LoggerFactory;
+<a class="jxr_linenumber" name="L20" href="#L20">20</a>  <strong class="jxr_keyword">import</strong> io.github.jeremylong.jcs3.slf4j.Slf4jAdapter;
+<a class="jxr_linenumber" name="L21" href="#L21">21</a>  <strong class="jxr_keyword">import</strong> org.apache.commons.jcs3.JCS;
+<a class="jxr_linenumber" name="L22" href="#L22">22</a>  <strong class="jxr_keyword">import</strong> org.apache.commons.jcs3.access.CacheAccess;
+<a class="jxr_linenumber" name="L23" href="#L23">23</a>  <strong class="jxr_keyword">import</strong> org.apache.commons.jcs3.access.exception.CacheException;
+<a class="jxr_linenumber" name="L24" href="#L24">24</a>  <strong class="jxr_keyword">import</strong> org.apache.commons.jcs3.engine.CompositeCacheAttributes;
+<a class="jxr_linenumber" name="L25" href="#L25">25</a>  <strong class="jxr_keyword">import</strong> org.apache.commons.jcs3.engine.behavior.ICompositeCacheAttributes;
+<a class="jxr_linenumber" name="L26" href="#L26">26</a>  <strong class="jxr_keyword">import</strong> org.owasp.dependencycheck.data.nexus.MavenArtifact;
+<a class="jxr_linenumber" name="L27" href="#L27">27</a>  <strong class="jxr_keyword">import</strong> org.owasp.dependencycheck.data.nodeaudit.Advisory;
+<a class="jxr_linenumber" name="L28" href="#L28">28</a>  <strong class="jxr_keyword">import</strong> org.owasp.dependencycheck.utils.FileUtils;
+<a class="jxr_linenumber" name="L29" href="#L29">29</a>  <strong class="jxr_keyword">import</strong> org.owasp.dependencycheck.utils.Settings;
+<a class="jxr_linenumber" name="L30" href="#L30">30</a>  <strong class="jxr_keyword">import</strong> org.owasp.dependencycheck.xml.pom.Model;
+<a class="jxr_linenumber" name="L31" href="#L31">31</a>  <strong class="jxr_keyword">import</strong> org.slf4j.Logger;
+<a class="jxr_linenumber" name="L32" href="#L32">32</a>  <strong class="jxr_keyword">import</strong> org.slf4j.LoggerFactory;
+<a class="jxr_linenumber" name="L33" href="#L33">33</a>  
+<a class="jxr_linenumber" name="L34" href="#L34">34</a>  <strong class="jxr_keyword">import</strong> java.io.File;
+<a class="jxr_linenumber" name="L35" href="#L35">35</a>  <strong class="jxr_keyword">import</strong> java.io.IOException;
+<a class="jxr_linenumber" name="L36" href="#L36">36</a>  <strong class="jxr_keyword">import</strong> java.io.InputStream;
+<a class="jxr_linenumber" name="L37" href="#L37">37</a>  <strong class="jxr_keyword">import</strong> java.util.List;
+<a class="jxr_linenumber" name="L38" href="#L38">38</a>  <strong class="jxr_keyword">import</strong> java.util.Properties;
 <a class="jxr_linenumber" name="L39" href="#L39">39</a>  
 <a class="jxr_linenumber" name="L40" href="#L40">40</a>  <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L41" href="#L41">41</a>  <em class="jxr_javadoccomment"> * Factory to instantiate cache repositories.</em>
@@ -148,62 +148,59 @@
 <a class="jxr_linenumber" name="L140" href="#L140">140</a>             <strong class="jxr_keyword">if</strong> (ex instanceof CacheException) {
 <a class="jxr_linenumber" name="L141" href="#L141">141</a>                 <strong class="jxr_keyword">throw</strong> ex;
 <a class="jxr_linenumber" name="L142" href="#L142">142</a>             }
-<a class="jxr_linenumber" name="L143" href="#L143">143</a>             <em class="jxr_comment">//TODO we may want to instrument w/ jdiagnostics per #2509</em>
-<a class="jxr_linenumber" name="L144" href="#L144">144</a>             LOGGER.debug(<span class="jxr_string">"Error constructing cache for node audit files"</span>, ex);
-<a class="jxr_linenumber" name="L145" href="#L145">145</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> CacheException(ex);
-<a class="jxr_linenumber" name="L146" href="#L146">146</a>         }
-<a class="jxr_linenumber" name="L147" href="#L147">147</a>     }
-<a class="jxr_linenumber" name="L148" href="#L148">148</a> 
-<a class="jxr_linenumber" name="L149" href="#L149">149</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L150" href="#L150">150</a> <em class="jxr_javadoccomment">     * Returns the data cache for POM files.</em>
-<a class="jxr_linenumber" name="L151" href="#L151">151</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L152" href="#L152">152</a> <em class="jxr_javadoccomment">     * @return a references to the data cache for POM files</em>
-<a class="jxr_linenumber" name="L153" href="#L153">153</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L154" href="#L154">154</a>     <strong class="jxr_keyword">public</strong> DataCache&lt;Model&gt; getPomCache() {
-<a class="jxr_linenumber" name="L155" href="#L155">155</a>         <strong class="jxr_keyword">try</strong> {
-<a class="jxr_linenumber" name="L156" href="#L156">156</a>             <strong class="jxr_keyword">final</strong> ICompositeCacheAttributes attr = <strong class="jxr_keyword">new</strong> CompositeCacheAttributes();
-<a class="jxr_linenumber" name="L157" href="#L157">157</a>             attr.setUseDisk(<strong class="jxr_keyword">true</strong>);
-<a class="jxr_linenumber" name="L158" href="#L158">158</a>             attr.setUseLateral(false);
-<a class="jxr_linenumber" name="L159" href="#L159">159</a>             attr.setUseRemote(false);
-<a class="jxr_linenumber" name="L160" href="#L160">160</a>             <strong class="jxr_keyword">final</strong> CacheAccess&lt;String, Model&gt; ca = JCS.getInstance(<span class="jxr_string">"POM"</span>, attr);
-<a class="jxr_linenumber" name="L161" href="#L161">161</a>             <strong class="jxr_keyword">final</strong> DataCache&lt;Model&gt; dc = <strong class="jxr_keyword">new</strong> DataCache&lt;&gt;(ca);
-<a class="jxr_linenumber" name="L162" href="#L162">162</a>             <strong class="jxr_keyword">return</strong> dc;
-<a class="jxr_linenumber" name="L163" href="#L163">163</a>         } <strong class="jxr_keyword">catch</strong> (Throwable ex) {
-<a class="jxr_linenumber" name="L164" href="#L164">164</a>             <em class="jxr_comment">//some reports of class not found exception, log and disable the cache.</em>
-<a class="jxr_linenumber" name="L165" href="#L165">165</a>             <strong class="jxr_keyword">if</strong> (ex instanceof CacheException) {
-<a class="jxr_linenumber" name="L166" href="#L166">166</a>                 <strong class="jxr_keyword">throw</strong> ex;
-<a class="jxr_linenumber" name="L167" href="#L167">167</a>             }
-<a class="jxr_linenumber" name="L168" href="#L168">168</a>             <em class="jxr_comment">//TODO we may want to instrument w/ jdiagnostics per #2509</em>
-<a class="jxr_linenumber" name="L169" href="#L169">169</a>             LOGGER.debug(<span class="jxr_string">"Error constructing cache for POM files"</span>, ex);
-<a class="jxr_linenumber" name="L170" href="#L170">170</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> CacheException(ex);
-<a class="jxr_linenumber" name="L171" href="#L171">171</a>         }
-<a class="jxr_linenumber" name="L172" href="#L172">172</a>     }
-<a class="jxr_linenumber" name="L173" href="#L173">173</a> 
-<a class="jxr_linenumber" name="L174" href="#L174">174</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L175" href="#L175">175</a> <em class="jxr_javadoccomment">     * Returns the data cache for Central search.</em>
-<a class="jxr_linenumber" name="L176" href="#L176">176</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L177" href="#L177">177</a> <em class="jxr_javadoccomment">     * @return a references to the data cache for Central search</em>
-<a class="jxr_linenumber" name="L178" href="#L178">178</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L179" href="#L179">179</a>     <strong class="jxr_keyword">public</strong> DataCache&lt;List&lt;MavenArtifact&gt;&gt; getCentralCache() {
-<a class="jxr_linenumber" name="L180" href="#L180">180</a>         <strong class="jxr_keyword">try</strong> {
-<a class="jxr_linenumber" name="L181" href="#L181">181</a>             <strong class="jxr_keyword">final</strong> ICompositeCacheAttributes attr = <strong class="jxr_keyword">new</strong> CompositeCacheAttributes();
-<a class="jxr_linenumber" name="L182" href="#L182">182</a>             attr.setUseDisk(<strong class="jxr_keyword">true</strong>);
-<a class="jxr_linenumber" name="L183" href="#L183">183</a>             attr.setUseLateral(false);
-<a class="jxr_linenumber" name="L184" href="#L184">184</a>             attr.setUseRemote(false);
-<a class="jxr_linenumber" name="L185" href="#L185">185</a>             <strong class="jxr_keyword">final</strong> CacheAccess&lt;String, List&lt;MavenArtifact&gt;&gt; ca = JCS.getInstance(<span class="jxr_string">"CENTRAL"</span>, attr);
-<a class="jxr_linenumber" name="L186" href="#L186">186</a>             <strong class="jxr_keyword">final</strong> DataCache&lt;List&lt;MavenArtifact&gt;&gt; dc = <strong class="jxr_keyword">new</strong> DataCache&lt;&gt;(ca);
-<a class="jxr_linenumber" name="L187" href="#L187">187</a>             <strong class="jxr_keyword">return</strong> dc;
-<a class="jxr_linenumber" name="L188" href="#L188">188</a>         } <strong class="jxr_keyword">catch</strong> (Throwable ex) {
-<a class="jxr_linenumber" name="L189" href="#L189">189</a>             <em class="jxr_comment">//some reports of class not found exception, log and disable the cache.</em>
-<a class="jxr_linenumber" name="L190" href="#L190">190</a>             <strong class="jxr_keyword">if</strong> (ex instanceof CacheException) {
-<a class="jxr_linenumber" name="L191" href="#L191">191</a>                 <strong class="jxr_keyword">throw</strong> ex;
-<a class="jxr_linenumber" name="L192" href="#L192">192</a>             }
-<a class="jxr_linenumber" name="L193" href="#L193">193</a>             <em class="jxr_comment">//TODO we may want to instrument w/ jdiagnostics per #2509</em>
-<a class="jxr_linenumber" name="L194" href="#L194">194</a>             LOGGER.debug(<span class="jxr_string">"Error constructing cache for Central files"</span>, ex);
-<a class="jxr_linenumber" name="L195" href="#L195">195</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> CacheException(ex);
-<a class="jxr_linenumber" name="L196" href="#L196">196</a>         }
-<a class="jxr_linenumber" name="L197" href="#L197">197</a>     }
-<a class="jxr_linenumber" name="L198" href="#L198">198</a> }
+<a class="jxr_linenumber" name="L143" href="#L143">143</a>             LOGGER.debug(<span class="jxr_string">"Error constructing cache for node audit files"</span>, ex);
+<a class="jxr_linenumber" name="L144" href="#L144">144</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> CacheException(ex);
+<a class="jxr_linenumber" name="L145" href="#L145">145</a>         }
+<a class="jxr_linenumber" name="L146" href="#L146">146</a>     }
+<a class="jxr_linenumber" name="L147" href="#L147">147</a> 
+<a class="jxr_linenumber" name="L148" href="#L148">148</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L149" href="#L149">149</a> <em class="jxr_javadoccomment">     * Returns the data cache for POM files.</em>
+<a class="jxr_linenumber" name="L150" href="#L150">150</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L151" href="#L151">151</a> <em class="jxr_javadoccomment">     * @return a references to the data cache for POM files</em>
+<a class="jxr_linenumber" name="L152" href="#L152">152</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L153" href="#L153">153</a>     <strong class="jxr_keyword">public</strong> DataCache&lt;Model&gt; getPomCache() {
+<a class="jxr_linenumber" name="L154" href="#L154">154</a>         <strong class="jxr_keyword">try</strong> {
+<a class="jxr_linenumber" name="L155" href="#L155">155</a>             <strong class="jxr_keyword">final</strong> ICompositeCacheAttributes attr = <strong class="jxr_keyword">new</strong> CompositeCacheAttributes();
+<a class="jxr_linenumber" name="L156" href="#L156">156</a>             attr.setUseDisk(<strong class="jxr_keyword">true</strong>);
+<a class="jxr_linenumber" name="L157" href="#L157">157</a>             attr.setUseLateral(false);
+<a class="jxr_linenumber" name="L158" href="#L158">158</a>             attr.setUseRemote(false);
+<a class="jxr_linenumber" name="L159" href="#L159">159</a>             <strong class="jxr_keyword">final</strong> CacheAccess&lt;String, Model&gt; ca = JCS.getInstance(<span class="jxr_string">"POM"</span>, attr);
+<a class="jxr_linenumber" name="L160" href="#L160">160</a>             <strong class="jxr_keyword">final</strong> DataCache&lt;Model&gt; dc = <strong class="jxr_keyword">new</strong> DataCache&lt;&gt;(ca);
+<a class="jxr_linenumber" name="L161" href="#L161">161</a>             <strong class="jxr_keyword">return</strong> dc;
+<a class="jxr_linenumber" name="L162" href="#L162">162</a>         } <strong class="jxr_keyword">catch</strong> (Throwable ex) {
+<a class="jxr_linenumber" name="L163" href="#L163">163</a>             <em class="jxr_comment">//some reports of class not found exception, log and disable the cache.</em>
+<a class="jxr_linenumber" name="L164" href="#L164">164</a>             <strong class="jxr_keyword">if</strong> (ex instanceof CacheException) {
+<a class="jxr_linenumber" name="L165" href="#L165">165</a>                 <strong class="jxr_keyword">throw</strong> ex;
+<a class="jxr_linenumber" name="L166" href="#L166">166</a>             }
+<a class="jxr_linenumber" name="L167" href="#L167">167</a>             LOGGER.debug(<span class="jxr_string">"Error constructing cache for POM files"</span>, ex);
+<a class="jxr_linenumber" name="L168" href="#L168">168</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> CacheException(ex);
+<a class="jxr_linenumber" name="L169" href="#L169">169</a>         }
+<a class="jxr_linenumber" name="L170" href="#L170">170</a>     }
+<a class="jxr_linenumber" name="L171" href="#L171">171</a> 
+<a class="jxr_linenumber" name="L172" href="#L172">172</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L173" href="#L173">173</a> <em class="jxr_javadoccomment">     * Returns the data cache for Central search.</em>
+<a class="jxr_linenumber" name="L174" href="#L174">174</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L175" href="#L175">175</a> <em class="jxr_javadoccomment">     * @return a references to the data cache for Central search</em>
+<a class="jxr_linenumber" name="L176" href="#L176">176</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L177" href="#L177">177</a>     <strong class="jxr_keyword">public</strong> DataCache&lt;List&lt;MavenArtifact&gt;&gt; getCentralCache() {
+<a class="jxr_linenumber" name="L178" href="#L178">178</a>         <strong class="jxr_keyword">try</strong> {
+<a class="jxr_linenumber" name="L179" href="#L179">179</a>             <strong class="jxr_keyword">final</strong> ICompositeCacheAttributes attr = <strong class="jxr_keyword">new</strong> CompositeCacheAttributes();
+<a class="jxr_linenumber" name="L180" href="#L180">180</a>             attr.setUseDisk(<strong class="jxr_keyword">true</strong>);
+<a class="jxr_linenumber" name="L181" href="#L181">181</a>             attr.setUseLateral(false);
+<a class="jxr_linenumber" name="L182" href="#L182">182</a>             attr.setUseRemote(false);
+<a class="jxr_linenumber" name="L183" href="#L183">183</a>             <strong class="jxr_keyword">final</strong> CacheAccess&lt;String, List&lt;MavenArtifact&gt;&gt; ca = JCS.getInstance(<span class="jxr_string">"CENTRAL"</span>, attr);
+<a class="jxr_linenumber" name="L184" href="#L184">184</a>             <strong class="jxr_keyword">final</strong> DataCache&lt;List&lt;MavenArtifact&gt;&gt; dc = <strong class="jxr_keyword">new</strong> DataCache&lt;&gt;(ca);
+<a class="jxr_linenumber" name="L185" href="#L185">185</a>             <strong class="jxr_keyword">return</strong> dc;
+<a class="jxr_linenumber" name="L186" href="#L186">186</a>         } <strong class="jxr_keyword">catch</strong> (Throwable ex) {
+<a class="jxr_linenumber" name="L187" href="#L187">187</a>             <em class="jxr_comment">//some reports of class not found exception, log and disable the cache.</em>
+<a class="jxr_linenumber" name="L188" href="#L188">188</a>             <strong class="jxr_keyword">if</strong> (ex instanceof CacheException) {
+<a class="jxr_linenumber" name="L189" href="#L189">189</a>                 <strong class="jxr_keyword">throw</strong> ex;
+<a class="jxr_linenumber" name="L190" href="#L190">190</a>             }
+<a class="jxr_linenumber" name="L191" href="#L191">191</a>             LOGGER.debug(<span class="jxr_string">"Error constructing cache for Central files"</span>, ex);
+<a class="jxr_linenumber" name="L192" href="#L192">192</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> CacheException(ex);
+<a class="jxr_linenumber" name="L193" href="#L193">193</a>         }
+<a class="jxr_linenumber" name="L194" href="#L194">194</a>     }
+<a class="jxr_linenumber" name="L195" href="#L195">195</a> }
 </pre>
 <hr/>
 <div id="footer">Copyright &#169; 2012&#x2013;2026 <a href="https://www.owasp.org">OWASP</a>. All rights reserved.</div>

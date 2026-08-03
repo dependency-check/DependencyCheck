@@ -76,7 +76,7 @@
 <a class="jxr_linenumber" name="L68" href="#L68">68</a>              <strong class="jxr_keyword">if</strong> (!dataPath.exists() || !dataFile.exists()) {
 <a class="jxr_linenumber" name="L69" href="#L69">69</a>                  LOGGER.trace(<span class="jxr_string">"Extracting database to {}"</span>, dataPath);
 <a class="jxr_linenumber" name="L70" href="#L70">70</a>                  dataPath.mkdirs();
-<a class="jxr_linenumber" name="L71" href="#L71">71</a>                  File path = <strong class="jxr_keyword">new</strong> File(BaseDBTestCase.<strong class="jxr_keyword">class</strong>.getClassLoader().getResource(<span class="jxr_string">"data.zip"</span>).toURI().getPath());
+<a class="jxr_linenumber" name="L71" href="#L71">71</a>                  File path = BaseTest.getResourceAsFile(<strong class="jxr_keyword">this</strong>, <span class="jxr_string">"data.zip"</span>);
 <a class="jxr_linenumber" name="L72" href="#L72">72</a>                  <strong class="jxr_keyword">try</strong> (FileInputStream fis = <strong class="jxr_keyword">new</strong> FileInputStream(path);
 <a class="jxr_linenumber" name="L73" href="#L73">73</a>                          ZipInputStream zin = <strong class="jxr_keyword">new</strong> ZipInputStream(<strong class="jxr_keyword">new</strong> BufferedInputStream(fis))) {
 <a class="jxr_linenumber" name="L74" href="#L74">74</a>                      ZipEntry entry;

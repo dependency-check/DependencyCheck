@@ -45,6 +45,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.util.List;
 
+import static org.owasp.dependencycheck.utils.FileUtils.existsWithContent;
+
 /**
  * Used to analyze Node Package Manager (npm) package-lock.json and
  * npm-shrinkwrap.json files via NPM Audit API.
@@ -52,12 +54,12 @@ import java.util.List;
  * @author Steve Springett
  */
 @ThreadSafe
-<span class="fc" id="L55">public class NodeAuditAnalyzer extends AbstractNpmAnalyzer {</span>
+<span class="fc" id="L57">public class NodeAuditAnalyzer extends AbstractNpmAnalyzer {</span>
 
     /**
      * The logger.
      */
-<span class="fc" id="L60">    private static final Logger LOGGER = LoggerFactory.getLogger(NodeAuditAnalyzer.class);</span>
+<span class="fc" id="L62">    private static final Logger LOGGER = LoggerFactory.getLogger(NodeAuditAnalyzer.class);</span>
     /**
      * The default URL to the NPM Audit API.
      */
@@ -80,8 +82,8 @@ import java.util.List;
      * Filter that detects files named &quot;package-lock.json or
      * npm-shrinkwrap.json&quot;.
      */
-<span class="fc" id="L83">    private static final FileFilter PACKAGE_JSON_FILTER = FileFilterBuilder.newInstance()</span>
-<span class="fc" id="L84">            .addFilenames(PACKAGE_LOCK_JSON, SHRINKWRAP_JSON).build();</span>
+<span class="fc" id="L85">    private static final FileFilter PACKAGE_JSON_FILTER = FileFilterBuilder.newInstance()</span>
+<span class="fc" id="L86">            .addFilenames(PACKAGE_LOCK_JSON, SHRINKWRAP_JSON).build();</span>
 
     /**
      * Returns the FileFilter
@@ -90,7 +92,7 @@ import java.util.List;
      */
     @Override
     protected FileFilter getFileFilter() {
-<span class="fc" id="L93">        return PACKAGE_JSON_FILTER;</span>
+<span class="fc" id="L95">        return PACKAGE_JSON_FILTER;</span>
     }
 
     /**
@@ -100,7 +102,7 @@ import java.util.List;
      */
     @Override
     public String getName() {
-<span class="fc" id="L103">        return &quot;Node Audit Analyzer&quot;;</span>
+<span class="fc" id="L105">        return &quot;Node Audit Analyzer&quot;;</span>
     }
 
     /**
@@ -110,7 +112,7 @@ import java.util.List;
      */
     @Override
     public AnalysisPhase getAnalysisPhase() {
-<span class="fc" id="L113">        return AnalysisPhase.FINDING_ANALYSIS;</span>
+<span class="fc" id="L115">        return AnalysisPhase.FINDING_ANALYSIS;</span>
     }
 
     /**
@@ -121,38 +123,38 @@ import java.util.List;
      */
     @Override
     protected String getAnalyzerEnabledSettingKey() {
-<span class="fc" id="L124">        return Settings.KEYS.ANALYZER_NODE_AUDIT_ENABLED;</span>
+<span class="fc" id="L126">        return Settings.KEYS.ANALYZER_NODE_AUDIT_ENABLED;</span>
     }
 
     @Override
     protected void analyzeDependency(Dependency dependency, Engine engine) throws AnalysisException {
-<span class="pc bpc" id="L129" title="1 of 2 branches missed.">        if (dependency.getDisplayFileName().equals(dependency.getFileName())) {</span>
-<span class="fc" id="L130">            engine.removeDependency(dependency);</span>
+<span class="pc bpc" id="L131" title="1 of 2 branches missed.">        if (dependency.getDisplayFileName().equals(dependency.getFileName())) {</span>
+<span class="fc" id="L132">            engine.removeDependency(dependency);</span>
         }
-<span class="fc" id="L132">        final File packageLock = dependency.getActualFile();</span>
-<span class="fc" id="L133">        final File shrinkwrap = new File(packageLock.getParentFile(), SHRINKWRAP_JSON);</span>
-<span class="pc bpc" id="L134" title="1 of 4 branches missed.">        if (PACKAGE_LOCK_JSON.equals(dependency.getFileName()) &amp;&amp; shrinkwrap.isFile()) {</span>
-<span class="nc" id="L135">            LOGGER.debug(&quot;Skipping {} because shrinkwrap lock file exists&quot;, dependency.getFilePath());</span>
-<span class="nc" id="L136">            return;</span>
+<span class="fc" id="L134">        final File packageLock = dependency.getActualFile();</span>
+<span class="fc" id="L135">        final File shrinkwrap = new File(packageLock.getParentFile(), SHRINKWRAP_JSON);</span>
+<span class="fc bfc" id="L136" title="All 4 branches covered.">        if (PACKAGE_LOCK_JSON.equals(dependency.getFileName()) &amp;&amp; shrinkwrap.isFile()) {</span>
+<span class="fc" id="L137">            LOGGER.debug(&quot;Skipping {} because shrinkwrap lock file exists&quot;, dependency.getFilePath());</span>
+<span class="fc" id="L138">            return;</span>
         }
-<span class="pc bpc" id="L138" title="1 of 6 branches missed.">        if (!packageLock.isFile() || packageLock.length() == 0 || !shouldProcess(packageLock)) {</span>
-<span class="fc" id="L139">            return;</span>
+<span class="fc bfc" id="L140" title="All 4 branches covered.">        if (!existsWithContent(packageLock) || !shouldProcess(packageLock)) {</span>
+<span class="fc" id="L141">            return;</span>
         }
-<span class="fc" id="L141">        final File packageJson = new File(packageLock.getParentFile(), &quot;package.json&quot;);</span>
+<span class="fc" id="L143">        final File packageJson = new File(packageLock.getParentFile(), &quot;package.json&quot;);</span>
         final List&lt;Advisory&gt; advisories;
-<span class="fc" id="L143">        final MultiValuedMap&lt;String, String&gt; dependencyMap = new HashSetValuedHashMap&lt;&gt;();</span>
+<span class="fc" id="L145">        final MultiValuedMap&lt;String, String&gt; dependencyMap = new HashSetValuedHashMap&lt;&gt;();</span>
         //final Map&lt;String, String&gt; dependencyMap = new HashMap&lt;&gt;();
-<span class="pc bpc" id="L145" title="1 of 2 branches missed.">        if (packageJson.isFile()) {</span>
-<span class="fc" id="L146">            advisories = analyzePackage(packageLock, packageJson, dependency, dependencyMap);</span>
+<span class="pc bpc" id="L147" title="1 of 2 branches missed.">        if (packageJson.isFile()) {</span>
+<span class="fc" id="L148">            advisories = analyzePackage(packageLock, packageJson, dependency, dependencyMap);</span>
         } else {
-<span class="nc" id="L148">            advisories = legacyAnalysis(packageLock, dependency, dependencyMap);</span>
+<span class="nc" id="L150">            advisories = legacyAnalysis(packageLock, dependency, dependencyMap);</span>
         }
         try {
-<span class="fc" id="L151">            processResults(advisories, engine, dependency, dependencyMap);</span>
-<span class="nc" id="L152">        } catch (CpeValidationException ex) {</span>
-<span class="nc" id="L153">            throw new UnexpectedAnalysisException(ex);</span>
-<span class="fc" id="L154">        }</span>
-<span class="fc" id="L155">    }</span>
+<span class="fc" id="L153">            processResults(advisories, engine, dependency, dependencyMap);</span>
+<span class="nc" id="L154">        } catch (CpeValidationException ex) {</span>
+<span class="nc" id="L155">            throw new UnexpectedAnalysisException(ex);</span>
+<span class="fc" id="L156">        }</span>
+<span class="fc" id="L157">    }</span>
 
     /**
      * Analyzes the package and package-lock files by extracting dependency
@@ -174,42 +176,42 @@ import java.util.List;
                                           Dependency dependency, MultiValuedMap&lt;String, String&gt; dependencyMap)
             throws AnalysisException {
         try {
-<span class="fc" id="L177">            final JsonReader packageReader = Json.createReader(Files.newInputStream(packageFile.toPath()));</span>
-<span class="fc" id="L178">            final JsonReader lockReader = Json.createReader(Files.newInputStream(lockFile.toPath()));</span>
+<span class="fc" id="L179">            final JsonReader packageReader = Json.createReader(Files.newInputStream(packageFile.toPath()));</span>
+<span class="fc" id="L180">            final JsonReader lockReader = Json.createReader(Files.newInputStream(lockFile.toPath()));</span>
             // Retrieves the contents of package-lock.json from the Dependency
-<span class="fc" id="L180">            final JsonObject lockJson = lockReader.readObject();</span>
+<span class="fc" id="L182">            final JsonObject lockJson = lockReader.readObject();</span>
             // Retrieves the contents of package-lock.json from the Dependency
-<span class="fc" id="L182">            final JsonObject packageJson = packageReader.readObject();</span>
+<span class="fc" id="L184">            final JsonObject packageJson = packageReader.readObject();</span>
 
             // Modify the payload to meet the NPM Audit API requirements
-<span class="fc" id="L185">            final JsonObject payload = NpmPayloadBuilder.build(lockJson, packageJson, dependencyMap,</span>
-<span class="fc" id="L186">                    getSettings().getBoolean(Settings.KEYS.ANALYZER_NODE_AUDIT_SKIPDEV, false));</span>
+<span class="fc" id="L187">            final JsonObject payload = NpmPayloadBuilder.build(lockJson, packageJson, dependencyMap,</span>
+<span class="fc" id="L188">                    getSettings().getBoolean(Settings.KEYS.ANALYZER_NODE_AUDIT_SKIPDEV, false));</span>
 
             // Submits the package payload to the nsp check service
-<span class="fc" id="L189">            return getSearcher().submitPackage(payload);</span>
+<span class="fc" id="L191">            return getSearcher().submitPackage(payload);</span>
 
-<span class="nc" id="L191">        } catch (URLConnectionFailureException e) {</span>
-<span class="nc" id="L192">            this.setEnabled(false);</span>
-<span class="nc" id="L193">            throw new AnalysisException(&quot;Failed to connect to the NPM Audit API (NodeAuditAnalyzer); the analyzer &quot;</span>
+<span class="nc" id="L193">        } catch (URLConnectionFailureException e) {</span>
+<span class="nc" id="L194">            this.setEnabled(false);</span>
+<span class="nc" id="L195">            throw new AnalysisException(&quot;Failed to connect to the NPM Audit API (NodeAuditAnalyzer); the analyzer &quot;</span>
                     + &quot;is being disabled and may result in false negatives.&quot;, e);
-<span class="nc" id="L195">        } catch (IOException e) {</span>
-<span class="nc" id="L196">            LOGGER.debug(&quot;Error reading dependency or connecting to NPM Audit API&quot;, e);</span>
-<span class="nc" id="L197">            this.setEnabled(false);</span>
-<span class="nc" id="L198">            throw new AnalysisException(&quot;Failed to read results from the NPM Audit API (NodeAuditAnalyzer); &quot;</span>
+<span class="nc" id="L197">        } catch (IOException e) {</span>
+<span class="nc" id="L198">            LOGGER.debug(&quot;Error reading dependency or connecting to NPM Audit API&quot;, e);</span>
+<span class="nc" id="L199">            this.setEnabled(false);</span>
+<span class="nc" id="L200">            throw new AnalysisException(&quot;Failed to read results from the NPM Audit API (NodeAuditAnalyzer); &quot;</span>
                     + &quot;the analyzer is being disabled and may result in false negatives.&quot;, e);
-<span class="nc" id="L200">        } catch (JsonException e) {</span>
-<span class="nc" id="L201">            throw new AnalysisException(String.format(&quot;Failed to parse %s file from the NPM Audit API &quot;</span>
-<span class="nc" id="L202">                    + &quot;(NodeAuditAnalyzer).&quot;, lockFile.getPath()), e);</span>
-<span class="nc" id="L203">        } catch (SearchException e) {</span>
-<span class="nc" id="L204">            final File yarnCheck = new File(lockFile.getParentFile(), &quot;yarn.lock&quot;);</span>
-<span class="nc bnc" id="L205" title="All 2 branches missed.">            if (yarnCheck.exists()) {</span>
-<span class="nc" id="L206">                final String msg = &quot;NodeAuditAnalyzer failed on &quot; + dependency.getActualFilePath()</span>
+<span class="nc" id="L202">        } catch (JsonException e) {</span>
+<span class="nc" id="L203">            throw new AnalysisException(String.format(&quot;Failed to parse %s file from the NPM Audit API &quot;</span>
+<span class="nc" id="L204">                    + &quot;(NodeAuditAnalyzer).&quot;, lockFile.getPath()), e);</span>
+<span class="nc" id="L205">        } catch (SearchException e) {</span>
+<span class="nc" id="L206">            final File yarnCheck = new File(lockFile.getParentFile(), &quot;yarn.lock&quot;);</span>
+<span class="nc bnc" id="L207" title="All 2 branches missed.">            if (yarnCheck.exists()) {</span>
+<span class="nc" id="L208">                final String msg = &quot;NodeAuditAnalyzer failed on &quot; + dependency.getActualFilePath()</span>
                         + &quot; - yarn.lock was found; if package-lock.json was generated using synp, it may not be in the correct format.&quot;;
-<span class="nc" id="L208">                LOGGER.error(msg);</span>
-<span class="nc" id="L209">                throw new AnalysisException(msg, e);</span>
+<span class="nc" id="L210">                LOGGER.error(msg);</span>
+<span class="nc" id="L211">                throw new AnalysisException(msg, e);</span>
             }
-<span class="nc" id="L211">            LOGGER.error(&quot;NodeAuditAnalyzer failed on {}&quot;, dependency.getActualFilePath());</span>
-<span class="nc" id="L212">            throw e;</span>
+<span class="nc" id="L213">            LOGGER.error(&quot;NodeAuditAnalyzer failed on {}&quot;, dependency.getActualFilePath());</span>
+<span class="nc" id="L214">            throw e;</span>
         }
     }
 
@@ -231,43 +233,43 @@ import java.util.List;
     private List&lt;Advisory&gt; legacyAnalysis(final File file, Dependency dependency, MultiValuedMap&lt;String, String&gt; dependencyMap)
             throws AnalysisException {
 
-<span class="nc" id="L234">        try (JsonReader jsonReader = Json.createReader(Files.newInputStream(file.toPath()))) {</span>
+<span class="nc" id="L236">        try (JsonReader jsonReader = Json.createReader(Files.newInputStream(file.toPath()))) {</span>
 
             // Retrieves the contents of package-lock.json from the Dependency
-<span class="nc" id="L237">            final JsonObject packageJson = jsonReader.readObject();</span>
+<span class="nc" id="L239">            final JsonObject packageJson = jsonReader.readObject();</span>
 
-<span class="nc" id="L239">            final String projectName = packageJson.getString(&quot;name&quot;, &quot;&quot;);</span>
-<span class="nc" id="L240">            final String projectVersion = packageJson.getString(&quot;version&quot;, &quot;&quot;);</span>
-<span class="nc bnc" id="L241" title="All 2 branches missed.">            if (!projectName.isEmpty()) {</span>
-<span class="nc" id="L242">                dependency.setName(projectName);</span>
+<span class="nc" id="L241">            final String projectName = packageJson.getString(&quot;name&quot;, &quot;&quot;);</span>
+<span class="nc" id="L242">            final String projectVersion = packageJson.getString(&quot;version&quot;, &quot;&quot;);</span>
+<span class="nc bnc" id="L243" title="All 2 branches missed.">            if (!projectName.isEmpty()) {</span>
+<span class="nc" id="L244">                dependency.setName(projectName);</span>
             }
-<span class="nc bnc" id="L244" title="All 2 branches missed.">            if (!projectVersion.isEmpty()) {</span>
-<span class="nc" id="L245">                dependency.setVersion(projectVersion);</span>
+<span class="nc bnc" id="L246" title="All 2 branches missed.">            if (!projectVersion.isEmpty()) {</span>
+<span class="nc" id="L247">                dependency.setVersion(projectVersion);</span>
             }
 
             // Modify the payload to meet the NPM Audit API requirements
-<span class="nc" id="L249">            final JsonObject payload = NpmPayloadBuilder.build(packageJson, dependencyMap,</span>
-<span class="nc" id="L250">                    getSettings().getBoolean(Settings.KEYS.ANALYZER_NODE_AUDIT_SKIPDEV, false));</span>
+<span class="nc" id="L251">            final JsonObject payload = NpmPayloadBuilder.build(packageJson, dependencyMap,</span>
+<span class="nc" id="L252">                    getSettings().getBoolean(Settings.KEYS.ANALYZER_NODE_AUDIT_SKIPDEV, false));</span>
 
             // Submits the package payload to the nsp check service
-<span class="nc" id="L253">            return getSearcher().submitPackage(payload);</span>
+<span class="nc" id="L255">            return getSearcher().submitPackage(payload);</span>
 
-<span class="nc" id="L255">        } catch (URLConnectionFailureException e) {</span>
-<span class="nc" id="L256">            this.setEnabled(false);</span>
-<span class="nc" id="L257">            throw new AnalysisException(&quot;Failed to connect to the NPM Audit API (NodeAuditAnalyzer); the analyzer &quot;</span>
+<span class="nc" id="L257">        } catch (URLConnectionFailureException e) {</span>
+<span class="nc" id="L258">            this.setEnabled(false);</span>
+<span class="nc" id="L259">            throw new AnalysisException(&quot;Failed to connect to the NPM Audit API (NodeAuditAnalyzer); the analyzer &quot;</span>
                     + &quot;is being disabled and may result in false negatives.&quot;, e);
-<span class="nc" id="L259">        } catch (IOException e) {</span>
-<span class="nc" id="L260">            LOGGER.debug(&quot;Error reading dependency or connecting to NPM Audit API&quot;, e);</span>
-<span class="nc" id="L261">            this.setEnabled(false);</span>
-<span class="nc" id="L262">            throw new AnalysisException(&quot;Failed to read results from the NPM Audit API (NodeAuditAnalyzer); &quot;</span>
+<span class="nc" id="L261">        } catch (IOException e) {</span>
+<span class="nc" id="L262">            LOGGER.debug(&quot;Error reading dependency or connecting to NPM Audit API&quot;, e);</span>
+<span class="nc" id="L263">            this.setEnabled(false);</span>
+<span class="nc" id="L264">            throw new AnalysisException(&quot;Failed to read results from the NPM Audit API (NodeAuditAnalyzer); &quot;</span>
                     + &quot;the analyzer is being disabled and may result in false negatives.&quot;, e);
-<span class="nc" id="L264">        } catch (JsonException e) {</span>
-<span class="nc" id="L265">            throw new AnalysisException(String.format(&quot;Failed to parse %s file from the NPM Audit API &quot;</span>
-<span class="nc" id="L266">                    + &quot;(NodeAuditAnalyzer).&quot;, file.getPath()), e);</span>
-<span class="nc" id="L267">        } catch (SearchException ex) {</span>
-<span class="nc" id="L268">            LOGGER.error(&quot;NodeAuditAnalyzer failed on {}&quot;, dependency.getActualFilePath());</span>
-<span class="nc" id="L269">            throw ex;</span>
+<span class="nc" id="L266">        } catch (JsonException e) {</span>
+<span class="nc" id="L267">            throw new AnalysisException(String.format(&quot;Failed to parse %s file from the NPM Audit API &quot;</span>
+<span class="nc" id="L268">                    + &quot;(NodeAuditAnalyzer).&quot;, file.getPath()), e);</span>
+<span class="nc" id="L269">        } catch (SearchException ex) {</span>
+<span class="nc" id="L270">            LOGGER.error(&quot;NodeAuditAnalyzer failed on {}&quot;, dependency.getActualFilePath());</span>
+<span class="nc" id="L271">            throw ex;</span>
         }
     }
 }
-</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.14.202510111229</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.15.202606040825</span></div></body></html>

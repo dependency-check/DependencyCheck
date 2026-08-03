@@ -17,9 +17,6 @@
  */
 package org.owasp.dependencycheck.xml.hints;
 
-import java.util.ArrayList;
-import java.util.List;
-import javax.annotation.concurrent.NotThreadSafe;
 import org.owasp.dependencycheck.dependency.Confidence;
 import org.owasp.dependencycheck.utils.XmlUtils;
 import org.owasp.dependencycheck.xml.suppression.PropertyType;
@@ -27,30 +24,34 @@ import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
+import javax.annotation.concurrent.NotThreadSafe;
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * A handler to load hint rules.
  *
  * @author Jeremy Long
  */
 @NotThreadSafe
-<span class="fc" id="L36">public class HintHandler extends DefaultHandler {</span>
+<span class="fc" id="L37">public class HintHandler extends DefaultHandler {</span>
 
     /**
      * Internal type to track the parent node state.
      */
-<span class="fc" id="L41">    enum ParentType {</span>
+<span class="fc" id="L42">    enum ParentType {</span>
         /**
          * Marks the add node.
          */
-<span class="fc" id="L45">        ADD,</span>
+<span class="fc" id="L46">        ADD,</span>
         /**
          * Marks the given node.
          */
-<span class="fc" id="L49">        GIVEN,</span>
+<span class="fc" id="L50">        GIVEN,</span>
         /**
          * Marks the remove node.
          */
-<span class="fc" id="L53">        REMOVE</span>
+<span class="fc" id="L54">        REMOVE</span>
     }
 
     //&lt;editor-fold defaultstate=&quot;collapsed&quot; desc=&quot;Element and attribute names&quot;&gt;
@@ -136,12 +137,12 @@ import org.xml.sax.helpers.DefaultHandler;
     /**
      * The list of hint rules.
      */
-<span class="fc" id="L139">    private final List&lt;HintRule&gt; hintRules = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L140">    private final List&lt;HintRule&gt; hintRules = new ArrayList&lt;&gt;();</span>
 
     /**
      * The list of vendor duplicating hint rules.
      */
-<span class="fc" id="L144">    private final List&lt;VendorDuplicatingHintRule&gt; vendorDuplicatingHintRules = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L145">    private final List&lt;VendorDuplicatingHintRule&gt; vendorDuplicatingHintRules = new ArrayList&lt;&gt;();</span>
     /**
      * The current rule being read.
      */
@@ -151,7 +152,7 @@ import org.xml.sax.helpers.DefaultHandler;
      * The current state of the parent node (to differentiate between 'add' and
      * 'given').
      */
-<span class="fc" id="L154">    private ParentType nodeType = ParentType.GIVEN;</span>
+<span class="fc" id="L155">    private ParentType nodeType = ParentType.GIVEN;</span>
 
     /**
      * Returns the list of hint rules.
@@ -159,7 +160,7 @@ import org.xml.sax.helpers.DefaultHandler;
      * @return the value of hintRules
      */
     public List&lt;HintRule&gt; getHintRules() {
-<span class="fc" id="L162">        return hintRules;</span>
+<span class="fc" id="L163">        return hintRules;</span>
     }
 
     /**
@@ -168,7 +169,7 @@ import org.xml.sax.helpers.DefaultHandler;
      * @return the list of vendor duplicating hint rules
      */
     public List&lt;VendorDuplicatingHintRule&gt; getVendorDuplicatingHintRules() {
-<span class="fc" id="L171">        return vendorDuplicatingHintRules;</span>
+<span class="fc" id="L172">        return vendorDuplicatingHintRules;</span>
     }
 
     /**
@@ -182,114 +183,114 @@ import org.xml.sax.helpers.DefaultHandler;
      */
     @Override
     public void startElement(String uri, String localName, String qName, Attributes attr) throws SAXException {
-<span class="pc bpc" id="L185" title="1 of 2 branches missed.">        if (null != qName) {</span>
-<span class="fc bfc" id="L186" title="All 8 branches covered.">            switch (qName) {</span>
+<span class="pc bpc" id="L186" title="1 of 2 branches missed.">        if (null != qName) {</span>
+<span class="fc bfc" id="L187" title="All 8 branches covered.">            switch (qName) {</span>
                 case HINT:
-<span class="fc" id="L188">                    rule = new HintRule();</span>
-<span class="fc" id="L189">                    break;</span>
+<span class="fc" id="L189">                    rule = new HintRule();</span>
+<span class="fc" id="L190">                    break;</span>
                 case ADD:
-<span class="fc" id="L191">                    nodeType = ParentType.ADD;</span>
-<span class="fc" id="L192">                    break;</span>
+<span class="fc" id="L192">                    nodeType = ParentType.ADD;</span>
+<span class="fc" id="L193">                    break;</span>
                 case GIVEN:
-<span class="fc" id="L194">                    nodeType = ParentType.GIVEN;</span>
-<span class="fc" id="L195">                    break;</span>
+<span class="fc" id="L195">                    nodeType = ParentType.GIVEN;</span>
+<span class="fc" id="L196">                    break;</span>
                 case REMOVE:
-<span class="fc" id="L197">                    nodeType = ParentType.REMOVE;</span>
-<span class="fc" id="L198">                    break;</span>
+<span class="fc" id="L198">                    nodeType = ParentType.REMOVE;</span>
+<span class="fc" id="L199">                    break;</span>
                 case EVIDENCE:
-<span class="fc" id="L200">                    final String hintType = attr.getValue(TYPE);</span>
-<span class="pc bpc" id="L201" title="2 of 4 branches missed.">                    if (null != hintType &amp;&amp; null != nodeType) {</span>
-<span class="fc" id="L202">                        final String source = attr.getValue(SOURCE);</span>
-<span class="fc" id="L203">                        final String name = attr.getValue(NAME);</span>
-<span class="fc" id="L204">                        final String value = attr.getValue(VALUE);</span>
+<span class="fc" id="L201">                    final String hintType = attr.getValue(TYPE);</span>
+<span class="pc bpc" id="L202" title="2 of 4 branches missed.">                    if (null != hintType &amp;&amp; null != nodeType) {</span>
+<span class="fc" id="L203">                        final String source = attr.getValue(SOURCE);</span>
+<span class="fc" id="L204">                        final String name = attr.getValue(NAME);</span>
+<span class="fc" id="L205">                        final String value = attr.getValue(VALUE);</span>
                         final Confidence confidence;
-<span class="fc" id="L206">                        final String confidenceAttribute = attr.getValue(CONFIDENCE);</span>
-<span class="fc bfc" id="L207" title="All 2 branches covered.">                        if (confidenceAttribute == null) {</span>
-<span class="fc" id="L208">                            confidence = null;</span>
+<span class="fc" id="L207">                        final String confidenceAttribute = attr.getValue(CONFIDENCE);</span>
+<span class="fc bfc" id="L208" title="All 2 branches covered.">                        if (confidenceAttribute == null) {</span>
+<span class="fc" id="L209">                            confidence = null;</span>
                         } else {
-<span class="fc" id="L210">                            confidence = Confidence.valueOf(confidenceAttribute);</span>
+<span class="fc" id="L211">                            confidence = Confidence.valueOf(confidenceAttribute);</span>
                         }
                         final boolean regex;
-<span class="fc" id="L213">                        final String regexAttribute = attr.getValue(REGEX);</span>
-<span class="fc bfc" id="L214" title="All 2 branches covered.">                        if (regexAttribute == null) {</span>
-<span class="fc" id="L215">                            regex = false;</span>
+<span class="fc" id="L214">                        final String regexAttribute = attr.getValue(REGEX);</span>
+<span class="fc bfc" id="L215" title="All 2 branches covered.">                        if (regexAttribute == null) {</span>
+<span class="fc" id="L216">                            regex = false;</span>
                         } else {
-<span class="fc" id="L217">                            regex = XmlUtils.parseBoolean(regexAttribute);</span>
+<span class="fc" id="L218">                            regex = XmlUtils.parseBoolean(regexAttribute);</span>
                         }
-<span class="pc bpc" id="L219" title="1 of 4 branches missed.">                        switch (hintType) {</span>
+<span class="pc bpc" id="L220" title="1 of 4 branches missed.">                        switch (hintType) {</span>
                             case VENDOR:
-<span class="pc bpc" id="L221" title="1 of 4 branches missed.">                                switch (nodeType) {</span>
+<span class="pc bpc" id="L222" title="1 of 4 branches missed.">                                switch (nodeType) {</span>
                                     case ADD:
-<span class="fc" id="L223">                                        rule.addAddVendor(source, name, value, confidence);</span>
-<span class="fc" id="L224">                                        break;</span>
+<span class="fc" id="L224">                                        rule.addAddVendor(source, name, value, confidence);</span>
+<span class="fc" id="L225">                                        break;</span>
                                     case REMOVE:
-<span class="fc" id="L226">                                        rule.addRemoveVendor(source, name, value, regex, confidence);</span>
-<span class="fc" id="L227">                                        break;</span>
+<span class="fc" id="L227">                                        rule.addRemoveVendor(source, name, value, regex, confidence);</span>
+<span class="fc" id="L228">                                        break;</span>
                                     case GIVEN:
-<span class="fc" id="L229">                                        rule.addGivenVendor(source, name, value, regex, confidence);</span>
-<span class="fc" id="L230">                                        break;</span>
+<span class="fc" id="L230">                                        rule.addGivenVendor(source, name, value, regex, confidence);</span>
+<span class="fc" id="L231">                                        break;</span>
                                     default:
-<span class="nc" id="L232">                                        break;</span>
+<span class="nc" id="L233">                                        break;</span>
                                 }
                                 break;
                             case PRODUCT:
-<span class="pc bpc" id="L236" title="1 of 4 branches missed.">                                switch (nodeType) {</span>
+<span class="pc bpc" id="L237" title="1 of 4 branches missed.">                                switch (nodeType) {</span>
                                     case ADD:
-<span class="fc" id="L238">                                        rule.addAddProduct(source, name, value, confidence);</span>
-<span class="fc" id="L239">                                        break;</span>
+<span class="fc" id="L239">                                        rule.addAddProduct(source, name, value, confidence);</span>
+<span class="fc" id="L240">                                        break;</span>
                                     case REMOVE:
-<span class="fc" id="L241">                                        rule.addRemoveProduct(source, name, value, regex, confidence);</span>
-<span class="fc" id="L242">                                        break;</span>
+<span class="fc" id="L242">                                        rule.addRemoveProduct(source, name, value, regex, confidence);</span>
+<span class="fc" id="L243">                                        break;</span>
                                     case GIVEN:
-<span class="fc" id="L244">                                        rule.addGivenProduct(source, name, value, regex, confidence);</span>
-<span class="fc" id="L245">                                        break;</span>
+<span class="fc" id="L245">                                        rule.addGivenProduct(source, name, value, regex, confidence);</span>
+<span class="fc" id="L246">                                        break;</span>
                                     default:
-<span class="nc" id="L247">                                        break;</span>
+<span class="nc" id="L248">                                        break;</span>
                                 }
                                 break;
                             case VERSION:
-<span class="pc bpc" id="L251" title="1 of 4 branches missed.">                                switch (nodeType) {</span>
+<span class="pc bpc" id="L252" title="1 of 4 branches missed.">                                switch (nodeType) {</span>
                                     case ADD:
-<span class="fc" id="L253">                                        rule.addAddVersion(source, name, value, confidence);</span>
-<span class="fc" id="L254">                                        break;</span>
+<span class="fc" id="L254">                                        rule.addAddVersion(source, name, value, confidence);</span>
+<span class="fc" id="L255">                                        break;</span>
                                     case REMOVE:
-<span class="fc" id="L256">                                        rule.addRemoveVersion(source, name, value, regex, confidence);</span>
-<span class="fc" id="L257">                                        break;</span>
+<span class="fc" id="L257">                                        rule.addRemoveVersion(source, name, value, regex, confidence);</span>
+<span class="fc" id="L258">                                        break;</span>
                                     case GIVEN:
-<span class="fc" id="L259">                                        rule.addGivenVersion(source, name, value, regex, confidence);</span>
-<span class="fc" id="L260">                                        break;</span>
+<span class="fc" id="L260">                                        rule.addGivenVersion(source, name, value, regex, confidence);</span>
+<span class="fc" id="L261">                                        break;</span>
                                     default:
-<span class="nc" id="L262">                                        break;</span>
+<span class="nc" id="L263">                                        break;</span>
                                 }
                                 break;
                             default:
                                 break;
                         }
-<span class="fc" id="L268">                    }</span>
+<span class="fc" id="L269">                    }</span>
                     break;
                 case FILE_NAME:
-<span class="fc" id="L271">                    final PropertyType pt = new PropertyType();</span>
-<span class="fc" id="L272">                    pt.setValue(attr.getValue(CONTAINS));</span>
-<span class="pc bpc" id="L273" title="1 of 2 branches missed.">                    if (attr.getLength() &gt; 0) {</span>
-<span class="fc" id="L274">                        final String regex = attr.getValue(REGEX);</span>
-<span class="pc bpc" id="L275" title="1 of 2 branches missed.">                        if (regex != null) {</span>
-<span class="fc" id="L276">                            pt.setRegex(Boolean.parseBoolean(regex));</span>
+<span class="fc" id="L272">                    boolean isRegex = false;</span>
+<span class="fc" id="L273">                    boolean isCaseSensitive = false;</span>
+<span class="pc bpc" id="L274" title="1 of 2 branches missed.">                    if (attr.getLength() &gt; 0) {</span>
+<span class="fc" id="L275">                        final String regex = attr.getValue(REGEX);</span>
+<span class="pc bpc" id="L276" title="1 of 2 branches missed.">                        if (regex != null) {</span>
+<span class="fc" id="L277">                            isRegex = Boolean.parseBoolean(regex);</span>
                         }
-<span class="fc" id="L278">                        final String caseSensitive = attr.getValue(CASE_SENSITIVE);</span>
-<span class="pc bpc" id="L279" title="1 of 2 branches missed.">                        if (caseSensitive != null) {</span>
-<span class="fc" id="L280">                            pt.setCaseSensitive(Boolean.parseBoolean(caseSensitive));</span>
+<span class="fc" id="L279">                        final String caseSensitive = attr.getValue(CASE_SENSITIVE);</span>
+<span class="pc bpc" id="L280" title="1 of 2 branches missed.">                        if (caseSensitive != null) {</span>
+<span class="fc" id="L281">                            isCaseSensitive = Boolean.parseBoolean(caseSensitive);</span>
                         }
                     }
-<span class="fc" id="L283">                    rule.addFilename(pt);</span>
-<span class="fc" id="L284">                    break;</span>
+<span class="fc" id="L284">                    rule.addFilename(new PropertyType(attr.getValue(CONTAINS), isRegex, isCaseSensitive));</span>
+<span class="fc" id="L285">                    break;</span>
                 case VENDOR_DUPLICATING_RULE:
-<span class="fc" id="L286">                    vendorDuplicatingHintRules.add(new VendorDuplicatingHintRule(attr.getValue(VALUE), attr.getValue(DUPLICATE)));</span>
-<span class="fc" id="L287">                    break;</span>
+<span class="fc" id="L287">                    vendorDuplicatingHintRules.add(new VendorDuplicatingHintRule(attr.getValue(VALUE), attr.getValue(DUPLICATE)));</span>
+<span class="fc" id="L288">                    break;</span>
                 default:
                     break;
             }
         }
-<span class="fc" id="L292">    }</span>
+<span class="fc" id="L293">    }</span>
 
     /**
      * Handles the end element event.
@@ -302,10 +303,10 @@ import org.xml.sax.helpers.DefaultHandler;
      */
     @Override
     public void endElement(String uri, String localName, String qName) throws SAXException {
-<span class="pc bpc" id="L305" title="1 of 4 branches missed.">        if (HINT.equals(qName) &amp;&amp; rule != null) {</span>
-<span class="fc" id="L306">            hintRules.add(rule);</span>
-<span class="fc" id="L307">            rule = null;</span>
+<span class="pc bpc" id="L306" title="1 of 4 branches missed.">        if (HINT.equals(qName) &amp;&amp; rule != null) {</span>
+<span class="fc" id="L307">            hintRules.add(rule);</span>
+<span class="fc" id="L308">            rule = null;</span>
         }
-<span class="fc" id="L309">    }</span>
+<span class="fc" id="L310">    }</span>
 }
-</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.14.202510111229</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.15.202606040825</span></div></body></html>

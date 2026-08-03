@@ -163,11 +163,11 @@ public class CentralSearch {
 <span class="fc" id="L163">            final Document doc = Downloader.getInstance().fetchAndHandle(url, handler, List.of(acceptHeader), useProxy);</span>
 <span class="fc" id="L164">            final boolean missing = addMavenArtifacts(doc, result);</span>
 
-<span class="fc bfc" id="L166" title="All 2 branches covered.">            if (missing) {</span>
-<span class="pc bpc" id="L167" title="1 of 2 branches missed.">                if (cache != null) {</span>
-<span class="fc" id="L168">                    cache.put(sha1, result);</span>
+<span class="pc bpc" id="L166" title="1 of 2 branches missed.">            if (missing) {</span>
+<span class="nc bnc" id="L167" title="All 2 branches missed.">                if (cache != null) {</span>
+<span class="nc" id="L168">                    cache.put(sha1, result);</span>
                 }
-<span class="fc" id="L170">                throw new FileNotFoundException(&quot;Artifact not found in Central&quot;);</span>
+<span class="nc" id="L170">                throw new FileNotFoundException(&quot;Artifact not found in Central&quot;);</span>
             }
 <span class="nc" id="L172">        } catch (XPathExpressionException e) {</span>
 <span class="nc" id="L173">            final String errorMessage = &quot;Failed to parse MavenCentral XML Response: &quot; + e.getMessage();</span>
@@ -201,8 +201,8 @@ public class CentralSearch {
 <span class="fc" id="L201">        boolean missing = false;</span>
 <span class="fc" id="L202">        final XPath xpath = XPathFactory.newInstance().newXPath();</span>
 <span class="fc" id="L203">        final String numFound = xpath.evaluate(&quot;/response/result/@numFound&quot;, doc);</span>
-<span class="fc bfc" id="L204" title="All 2 branches covered.">        if (&quot;0&quot;.equals(numFound)) {</span>
-<span class="fc" id="L205">            missing = true;</span>
+<span class="pc bpc" id="L204" title="1 of 2 branches missed.">        if (&quot;0&quot;.equals(numFound)) {</span>
+<span class="nc" id="L205">            missing = true;</span>
         } else {
 <span class="fc" id="L207">            final NodeList docs = (NodeList) xpath.evaluate(&quot;/response/result/doc&quot;, doc, XPathConstants.NODESET);</span>
 <span class="fc bfc" id="L208" title="All 2 branches covered.">            for (int i = 0; i &lt; docs.getLength(); i++) {</span>
@@ -259,4 +259,4 @@ public class CentralSearch {
     }
 
 }
-</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.14.202510111229</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.15.202606040825</span></div></body></html>

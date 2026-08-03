@@ -17,68 +17,95 @@
  */
 package org.owasp.dependencycheck.data.update;
 
+import org.jspecify.annotations.NonNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.Properties;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import static org.owasp.dependencycheck.utils.FileUtils.existsWithContent;
 
 /**
  *
  * @author Jeremy Long
  */
-<span class="fc" id="L34">public abstract class LocalDataSource implements CachedWebDataSource {</span>
+<span class="fc" id="L40">public abstract class LocalDataSource implements CachedWebDataSource {</span>
 
     /**
      * Static logger.
      */
-<span class="fc" id="L39">    private static final Logger LOGGER = LoggerFactory.getLogger(LocalDataSource.class);</span>
+<span class="fc" id="L45">    private static final Logger LOGGER = LoggerFactory.getLogger(LocalDataSource.class);</span>
 
     /**
-     * Saves the timestamp in a properties file next to the provided repo file
+     * Saves the timestamp in a properties file adjacent to the provided repo file
      *
      * @param repo the local file data source
-     * @param timestamp the epoch timestamp to store
      */
-    protected void saveLastUpdated(File repo, long timestamp) {
-<span class="fc" id="L48">        final File timestampFile = new File(repo + &quot;.properties&quot;);</span>
-<span class="fc" id="L49">        try (OutputStream out = new FileOutputStream(timestampFile)) {</span>
-<span class="fc" id="L50">            final Properties prop = new Properties();</span>
-<span class="fc" id="L51">            prop.setProperty(&quot;LAST_UPDATED&quot;, String.valueOf(timestamp));</span>
-<span class="fc" id="L52">            prop.store(out, null);</span>
-<span class="nc" id="L53">        } catch (IOException ex) {</span>
-<span class="nc" id="L54">            throw new RuntimeException(ex);</span>
-<span class="fc" id="L55">        }</span>
-<span class="fc" id="L56">    }</span>
+    protected void saveLastUpdated(@NonNull File repo) {
+<span class="fc" id="L53">        final File timestampFile = new File(repo + &quot;.properties&quot;);</span>
+<span class="fc" id="L54">        try (OutputStream out = new FileOutputStream(timestampFile)) {</span>
+<span class="fc" id="L55">            final Properties prop = new Properties();</span>
+<span class="fc" id="L56">            prop.setProperty(&quot;LAST_UPDATED&quot;, String.valueOf(System.currentTimeMillis()));</span>
+<span class="fc" id="L57">            prop.store(out, null);</span>
+<span class="nc" id="L58">        } catch (IOException ex) {</span>
+<span class="nc" id="L59">            throw new RuntimeException(ex);</span>
+<span class="fc" id="L60">        }</span>
+<span class="fc" id="L61">    }</span>
 
     /**
      * Retrieves the last updated date from the local file system (in a file
      * next to the repo file).
      *
      * @param repo the local file data source
-     * @return the epoch timestamp of the last updated date/time
+     * @return the instant of the last updated date/time
      */
-    protected long getLastUpdated(File repo) {
-<span class="nc" id="L66">        long lastUpdatedOn = 0;</span>
-<span class="nc" id="L67">        final File timestampFile = new File(repo + &quot;.properties&quot;);</span>
-<span class="nc bnc" id="L68" title="All 2 branches missed.">        if (timestampFile.isFile()) {</span>
-<span class="nc" id="L69">            try (InputStream is = new FileInputStream(timestampFile)) {</span>
-<span class="nc" id="L70">                final Properties props = new Properties();</span>
-<span class="nc" id="L71">                props.load(is);</span>
-<span class="nc" id="L72">                lastUpdatedOn = Integer.parseInt(props.getProperty(&quot;LAST_UPDATED&quot;, &quot;0&quot;));</span>
-<span class="nc" id="L73">            } catch (IOException | NumberFormatException ex) {</span>
-<span class="nc" id="L74">                LOGGER.debug(&quot;error reading timestamp file&quot;, ex);</span>
-<span class="nc" id="L75">            }</span>
-<span class="nc bnc" id="L76" title="All 2 branches missed.">            if (lastUpdatedOn &lt;= 0) {</span>
-                //fall back on conversion from file last modified to storing in the db.
-<span class="nc" id="L78">                lastUpdatedOn = repo.lastModified();</span>
+    protected Instant getLastUpdated(@NonNull File repo) {
+<span class="fc" id="L71">        long lastUpdatedOn = 0;</span>
+<span class="fc" id="L72">        final File timestampFile = new File(repo + &quot;.properties&quot;);</span>
+<span class="fc bfc" id="L73" title="All 2 branches covered.">        if (timestampFile.isFile()) {</span>
+<span class="fc" id="L74">            try (InputStream is = new FileInputStream(timestampFile)) {</span>
+<span class="fc" id="L75">                final Properties props = new Properties();</span>
+<span class="fc" id="L76">                props.load(is);</span>
+<span class="fc" id="L77">                lastUpdatedOn = Long.parseLong(props.getProperty(&quot;LAST_UPDATED&quot;, &quot;0&quot;));</span>
+<span class="nc" id="L78">            } catch (IOException | NumberFormatException ex) {</span>
+<span class="nc" id="L79">                LOGGER.debug(&quot;error reading timestamp file&quot;, ex);</span>
+<span class="fc" id="L80">            }</span>
+<span class="pc bpc" id="L81" title="1 of 2 branches missed.">            if (lastUpdatedOn &lt;= 0) {</span>
+                //fall back on conversion from file last modified
+<span class="nc" id="L83">                lastUpdatedOn = repo.lastModified();</span>
             }
         }
-<span class="nc" id="L81">        return lastUpdatedOn;</span>
+<span class="fc" id="L86">        return Instant.ofEpochMilli(lastUpdatedOn);</span>
+    }
+
+    /**
+     * Determines if we should update the local data source.
+     *
+     * @param repo the local file data source
+     * @param validFor the duration for which the local data source should be considered valid
+     * @return &lt;code&gt;true&lt;/code&gt; if an update to the data source should be performed; otherwise &lt;code&gt;false&lt;/code&gt;.
+     *         If the repo does not exist, or is an empty file, it is considered stale.
+     */
+    protected boolean isStale(@NonNull File repo, @NonNull Duration validFor) {
+<span class="fc" id="L98">        boolean stale = true;</span>
+<span class="fc bfc" id="L99" title="All 2 branches covered.">        if (existsWithContent(repo)) {</span>
+<span class="fc" id="L100">            final Instant lastUpdatedOn = getLastUpdated(repo);</span>
+<span class="fc" id="L101">            final Instant now = Instant.now();</span>
+<span class="fc" id="L102">            LOGGER.debug(&quot;{} last updated: {}, now: {}&quot;, getClass().getSimpleName(), lastUpdatedOn, now);</span>
+<span class="fc" id="L103">            stale = lastUpdatedOn.plus(validFor).isBefore(now);</span>
+<span class="fc bfc" id="L104" title="All 2 branches covered.">            if (!stale) {</span>
+<span class="fc" id="L105">                LOGGER.info(&quot;Should skip {} update since last update was within period {}.&quot;, getClass().getSimpleName(), validFor);</span>
+            }
+        }
+<span class="fc" id="L108">        return stale;</span>
     }
 }
-</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.14.202510111229</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.15.202606040825</span></div></body></html>

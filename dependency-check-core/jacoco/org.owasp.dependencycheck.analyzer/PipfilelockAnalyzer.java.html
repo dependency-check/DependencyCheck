@@ -50,6 +50,8 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.Set;
 
+import static org.owasp.dependencycheck.utils.FileUtils.existsWithContent;
+
 /**
  * Used to analyze dependencies defined in Pipfile.lock. This analyzer works in
  * tandem with the `PipfileAnalyzer` - and both analyzers use the same key to
@@ -60,12 +62,12 @@ import java.util.Set;
  */
 @Experimental
 @ThreadSafe
-<span class="fc" id="L63">public class PipfilelockAnalyzer extends AbstractFileTypeAnalyzer {</span>
+<span class="fc" id="L65">public class PipfilelockAnalyzer extends AbstractFileTypeAnalyzer {</span>
 
     /**
      * The logger.
      */
-<span class="fc" id="L68">    private static final Logger LOGGER = LoggerFactory.getLogger(PipfilelockAnalyzer.class);</span>
+<span class="fc" id="L70">    private static final Logger LOGGER = LoggerFactory.getLogger(PipfilelockAnalyzer.class);</span>
     /**
      * &quot;Pipfile.lock&quot; file.
      */
@@ -79,12 +81,12 @@ import java.util.Set;
     /**
      * The phase that this analyzer is intended to run in.
      */
-<span class="fc" id="L82">    private static final AnalysisPhase ANALYSIS_PHASE = AnalysisPhase.INFORMATION_COLLECTION;</span>
+<span class="fc" id="L84">    private static final AnalysisPhase ANALYSIS_PHASE = AnalysisPhase.INFORMATION_COLLECTION;</span>
 
     /**
      * The file filter used to determine which files this analyzer supports.
      */
-<span class="fc" id="L87">    private static final FileFilter FILTER = FileFilterBuilder.newInstance().addFilenames(LOCKFILE).build();</span>
+<span class="fc" id="L89">    private static final FileFilter FILTER = FileFilterBuilder.newInstance().addFilenames(LOCKFILE).build();</span>
 
     /**
      * Returns the FileFilter
@@ -93,7 +95,7 @@ import java.util.Set;
      */
     @Override
     protected FileFilter getFileFilter() {
-<span class="fc" id="L96">        return FILTER;</span>
+<span class="fc" id="L98">        return FILTER;</span>
     }
 
     /**
@@ -103,7 +105,7 @@ import java.util.Set;
      */
     @Override
     public String getName() {
-<span class="fc" id="L106">        return ANALYZER_NAME;</span>
+<span class="fc" id="L108">        return ANALYZER_NAME;</span>
     }
 
     /**
@@ -113,7 +115,7 @@ import java.util.Set;
      */
     @Override
     public AnalysisPhase getAnalysisPhase() {
-<span class="fc" id="L116">        return ANALYSIS_PHASE;</span>
+<span class="fc" id="L118">        return ANALYSIS_PHASE;</span>
     }
 
     /**
@@ -124,70 +126,70 @@ import java.util.Set;
      */
     @Override
     protected String getAnalyzerEnabledSettingKey() {
-<span class="fc" id="L127">        return Settings.KEYS.ANALYZER_PIPFILE_ENABLED;</span>
+<span class="fc" id="L129">        return Settings.KEYS.ANALYZER_PIPFILE_ENABLED;</span>
     }
 
     @Override
     protected void analyzeDependency(Dependency dependency, Engine engine) throws AnalysisException {
-<span class="fc" id="L132">        LOGGER.debug(&quot;Checking file {}&quot;, dependency.getActualFilePath());</span>
+<span class="fc" id="L134">        LOGGER.debug(&quot;Checking file {}&quot;, dependency.getActualFilePath());</span>
 
-<span class="fc" id="L134">        engine.removeDependency(dependency);</span>
+<span class="fc" id="L136">        engine.removeDependency(dependency);</span>
 
-<span class="fc" id="L136">        final File dependencyFile = dependency.getActualFile();</span>
-<span class="pc bpc" id="L137" title="2 of 4 branches missed.">        if (!dependencyFile.isFile() || dependencyFile.length() == 0) {</span>
-<span class="nc" id="L138">            return;</span>
+<span class="fc" id="L138">        final File dependencyFile = dependency.getActualFile();</span>
+<span class="pc bpc" id="L139" title="1 of 2 branches missed.">        if (!existsWithContent(dependencyFile)) {</span>
+<span class="nc" id="L140">            return;</span>
         }
 
-<span class="fc" id="L141">        final File actualFile = dependency.getActualFile();</span>
-<span class="fc" id="L142">        try (FileInputStream fin = new FileInputStream(actualFile);</span>
-<span class="fc" id="L143">                InputStream in = new BufferedInputStream(fin);</span>
-<span class="fc" id="L144">                JsonReader jsonReader = Json.createReader(in)) {</span>
+<span class="fc" id="L143">        final File actualFile = dependency.getActualFile();</span>
+<span class="fc" id="L144">        try (FileInputStream fin = new FileInputStream(actualFile);</span>
+<span class="fc" id="L145">                InputStream in = new BufferedInputStream(fin);</span>
+<span class="fc" id="L146">                JsonReader jsonReader = Json.createReader(in)) {</span>
 
-<span class="fc" id="L146">            final JsonObject jsonLock = jsonReader.readObject();</span>
-<span class="fc" id="L147">            final JsonObject develop = jsonLock.getJsonObject(&quot;develop&quot;);</span>
-<span class="fc" id="L148">            final Set&lt;String&gt; keys = develop.keySet();</span>
-<span class="fc bfc" id="L149" title="All 2 branches covered.">            for (String identifiedPackage : keys) {</span>
-<span class="fc" id="L150">                final JsonObject dep = develop.getJsonObject(identifiedPackage);</span>
-<span class="fc" id="L151">                final String selectedVersion = dep.getString(&quot;version&quot;, &quot;&quot;).trim();</span>
-<span class="pc bpc" id="L152" title="1 of 4 branches missed.">                if (selectedVersion.startsWith(&quot;==&quot;) &amp;&amp; selectedVersion.length() &gt; 2) {</span>
-<span class="fc" id="L153">                    final String identifiedVersion = selectedVersion.substring(2).trim();</span>
-<span class="fc" id="L154">                    LOGGER.debug(&quot;package, version: {} {}&quot;, identifiedPackage, identifiedVersion);</span>
+<span class="fc" id="L148">            final JsonObject jsonLock = jsonReader.readObject();</span>
+<span class="fc" id="L149">            final JsonObject develop = jsonLock.getJsonObject(&quot;develop&quot;);</span>
+<span class="fc" id="L150">            final Set&lt;String&gt; keys = develop.keySet();</span>
+<span class="fc bfc" id="L151" title="All 2 branches covered.">            for (String identifiedPackage : keys) {</span>
+<span class="fc" id="L152">                final JsonObject dep = develop.getJsonObject(identifiedPackage);</span>
+<span class="fc" id="L153">                final String selectedVersion = dep.getString(&quot;version&quot;, &quot;&quot;).trim();</span>
+<span class="pc bpc" id="L154" title="1 of 4 branches missed.">                if (selectedVersion.startsWith(&quot;==&quot;) &amp;&amp; selectedVersion.length() &gt; 2) {</span>
+<span class="fc" id="L155">                    final String identifiedVersion = selectedVersion.substring(2).trim();</span>
+<span class="fc" id="L156">                    LOGGER.debug(&quot;package, version: {} {}&quot;, identifiedPackage, identifiedVersion);</span>
 
-<span class="fc" id="L156">                    final Dependency d = new Dependency(dependency.getActualFile(), true);</span>
-<span class="fc" id="L157">                    d.setName(identifiedPackage);</span>
-<span class="fc" id="L158">                    d.setVersion(identifiedVersion);</span>
+<span class="fc" id="L158">                    final Dependency d = new Dependency(dependency.getActualFile(), true);</span>
+<span class="fc" id="L159">                    d.setName(identifiedPackage);</span>
+<span class="fc" id="L160">                    d.setVersion(identifiedVersion);</span>
                     try {
-<span class="fc" id="L160">                        final PackageURL purl = PackageURLBuilder.aPackageURL()</span>
-<span class="fc" id="L161">                                .withType(&quot;pypi&quot;)</span>
-<span class="fc" id="L162">                                .withName(identifiedPackage)</span>
-<span class="fc" id="L163">                                .withVersion(identifiedVersion)</span>
-<span class="fc" id="L164">                                .build();</span>
-<span class="fc" id="L165">                        d.addSoftwareIdentifier(new PurlIdentifier(purl, Confidence.HIGHEST));</span>
-<span class="nc" id="L166">                    } catch (MalformedPackageURLException ex) {</span>
-<span class="nc" id="L167">                        LOGGER.debug(&quot;Unable to build package url for pypi&quot;, ex);</span>
-<span class="nc" id="L168">                        d.addSoftwareIdentifier(new GenericIdentifier(&quot;pypi:&quot; + identifiedPackage + &quot;@&quot; + identifiedVersion, Confidence.HIGH));</span>
-<span class="fc" id="L169">                    }</span>
-<span class="fc" id="L170">                    d.setPackagePath(String.format(&quot;%s:%s&quot;, identifiedPackage, identifiedVersion));</span>
-<span class="fc" id="L171">                    d.setEcosystem(PythonDistributionAnalyzer.DEPENDENCY_ECOSYSTEM);</span>
-<span class="fc" id="L172">                    final String filePath = String.format(&quot;%s:%s/%s&quot;, dependency.getFilePath(), identifiedPackage, identifiedVersion);</span>
-<span class="fc" id="L173">                    d.setFilePath(filePath);</span>
-<span class="fc" id="L174">                    d.setSha1sum(Checksum.getSHA1Checksum(filePath));</span>
-<span class="fc" id="L175">                    d.setSha256sum(Checksum.getSHA256Checksum(filePath));</span>
-<span class="fc" id="L176">                    d.setMd5sum(Checksum.getMD5Checksum(filePath));</span>
-<span class="fc" id="L177">                    d.addEvidence(EvidenceType.VENDOR, LOCKFILE, &quot;vendor&quot;, identifiedPackage, Confidence.HIGHEST);</span>
-<span class="fc" id="L178">                    d.addEvidence(EvidenceType.PRODUCT, LOCKFILE, &quot;product&quot;, identifiedPackage, Confidence.HIGHEST);</span>
-<span class="fc" id="L179">                    d.addEvidence(EvidenceType.VERSION, LOCKFILE, &quot;version&quot;, identifiedVersion, Confidence.HIGHEST);</span>
-<span class="fc" id="L180">                    engine.addDependency(d);</span>
-<span class="fc" id="L181">                } else {</span>
-<span class="fc" id="L182">                    LOGGER.debug(&quot;Skipping `{}`: Unknown version `{}` in `{}`&quot;, identifiedPackage, selectedVersion, dependency.getActualFilePath());</span>
+<span class="fc" id="L162">                        final PackageURL purl = PackageURLBuilder.aPackageURL()</span>
+<span class="fc" id="L163">                                .withType(&quot;pypi&quot;)</span>
+<span class="fc" id="L164">                                .withName(identifiedPackage)</span>
+<span class="fc" id="L165">                                .withVersion(identifiedVersion)</span>
+<span class="fc" id="L166">                                .build();</span>
+<span class="fc" id="L167">                        d.addSoftwareIdentifier(new PurlIdentifier(purl, Confidence.HIGHEST));</span>
+<span class="nc" id="L168">                    } catch (MalformedPackageURLException ex) {</span>
+<span class="nc" id="L169">                        LOGGER.debug(&quot;Unable to build package url for pypi&quot;, ex);</span>
+<span class="nc" id="L170">                        d.addSoftwareIdentifier(new GenericIdentifier(&quot;pypi:&quot; + identifiedPackage + &quot;@&quot; + identifiedVersion, Confidence.HIGH));</span>
+<span class="fc" id="L171">                    }</span>
+<span class="fc" id="L172">                    d.setPackagePath(String.format(&quot;%s:%s&quot;, identifiedPackage, identifiedVersion));</span>
+<span class="fc" id="L173">                    d.setEcosystem(PythonDistributionAnalyzer.DEPENDENCY_ECOSYSTEM);</span>
+<span class="fc" id="L174">                    final String filePath = String.format(&quot;%s:%s/%s&quot;, dependency.getFilePath(), identifiedPackage, identifiedVersion);</span>
+<span class="fc" id="L175">                    d.setFilePath(filePath);</span>
+<span class="fc" id="L176">                    d.setSha1sum(Checksum.getSHA1Checksum(filePath));</span>
+<span class="fc" id="L177">                    d.setSha256sum(Checksum.getSHA256Checksum(filePath));</span>
+<span class="fc" id="L178">                    d.setMd5sum(Checksum.getMD5Checksum(filePath));</span>
+<span class="fc" id="L179">                    d.addEvidence(EvidenceType.VENDOR, LOCKFILE, &quot;vendor&quot;, identifiedPackage, Confidence.HIGHEST);</span>
+<span class="fc" id="L180">                    d.addEvidence(EvidenceType.PRODUCT, LOCKFILE, &quot;product&quot;, identifiedPackage, Confidence.HIGHEST);</span>
+<span class="fc" id="L181">                    d.addEvidence(EvidenceType.VERSION, LOCKFILE, &quot;version&quot;, identifiedVersion, Confidence.HIGHEST);</span>
+<span class="fc" id="L182">                    engine.addDependency(d);</span>
+<span class="fc" id="L183">                } else {</span>
+<span class="fc" id="L184">                    LOGGER.debug(&quot;Skipping `{}`: Unknown version `{}` in `{}`&quot;, identifiedPackage, selectedVersion, dependency.getActualFilePath());</span>
                 }
-<span class="fc" id="L184">            }</span>
-<span class="nc" id="L185">        } catch (FileNotFoundException ex) {</span>
-<span class="nc" id="L186">            throw new RuntimeException(ex);</span>
-<span class="nc" id="L187">        } catch (IOException | JsonException ex) {</span>
+<span class="fc" id="L186">            }</span>
+<span class="nc" id="L187">        } catch (FileNotFoundException ex) {</span>
 <span class="nc" id="L188">            throw new RuntimeException(ex);</span>
-<span class="fc" id="L189">        }</span>
-<span class="fc" id="L190">    }</span>
+<span class="nc" id="L189">        } catch (IOException | JsonException ex) {</span>
+<span class="nc" id="L190">            throw new RuntimeException(ex);</span>
+<span class="fc" id="L191">        }</span>
+<span class="fc" id="L192">    }</span>
 
     /**
      * Retrieves the contents of a given file.
@@ -198,9 +200,9 @@ import java.util.Set;
      */
     private String getFileContents(final File actualFile) throws AnalysisException {
         try {
-<span class="nc" id="L201">            return new String(Files.readAllBytes(actualFile.toPath()), StandardCharsets.UTF_8).trim();</span>
-<span class="nc" id="L202">        } catch (IOException e) {</span>
-<span class="nc" id="L203">            throw new AnalysisException(&quot;Problem occurred while reading dependency file.&quot;, e);</span>
+<span class="nc" id="L203">            return new String(Files.readAllBytes(actualFile.toPath()), StandardCharsets.UTF_8).trim();</span>
+<span class="nc" id="L204">        } catch (IOException e) {</span>
+<span class="nc" id="L205">            throw new AnalysisException(&quot;Problem occurred while reading dependency file.&quot;, e);</span>
         }
     }
 
@@ -214,6 +216,6 @@ import java.util.Set;
     @Override
     protected void prepareFileTypeAnalyzer(Engine engine) throws InitializationException {
         // No initialization needed.
-<span class="fc" id="L217">    }</span>
+<span class="fc" id="L219">    }</span>
 }
-</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.14.202510111229</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.15.202606040825</span></div></body></html>

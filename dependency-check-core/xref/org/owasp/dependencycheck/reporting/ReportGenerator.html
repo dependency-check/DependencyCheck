@@ -30,8 +30,8 @@
 <a class="jxr_linenumber" name="L22" href="#L22">22</a>  <strong class="jxr_keyword">import</strong> com.fasterxml.jackson.core.JsonParser;
 <a class="jxr_linenumber" name="L23" href="#L23">23</a>  <strong class="jxr_keyword">import</strong> edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 <a class="jxr_linenumber" name="L24" href="#L24">24</a>  <strong class="jxr_keyword">import</strong> org.apache.commons.io.FilenameUtils;
-<a class="jxr_linenumber" name="L25" href="#L25">25</a>  <strong class="jxr_keyword">import</strong> org.apache.commons.text.WordUtils;
-<a class="jxr_linenumber" name="L26" href="#L26">26</a>  <strong class="jxr_keyword">import</strong> org.apache.commons.lang3.StringUtils;
+<a class="jxr_linenumber" name="L25" href="#L25">25</a>  <strong class="jxr_keyword">import</strong> org.apache.commons.lang3.StringUtils;
+<a class="jxr_linenumber" name="L26" href="#L26">26</a>  <strong class="jxr_keyword">import</strong> org.apache.commons.text.WordUtils;
 <a class="jxr_linenumber" name="L27" href="#L27">27</a>  <strong class="jxr_keyword">import</strong> org.apache.velocity.VelocityContext;
 <a class="jxr_linenumber" name="L28" href="#L28">28</a>  <strong class="jxr_keyword">import</strong> org.apache.velocity.app.VelocityEngine;
 <a class="jxr_linenumber" name="L29" href="#L29">29</a>  <strong class="jxr_keyword">import</strong> org.apache.velocity.context.Context;
@@ -164,414 +164,374 @@
 <a class="jxr_linenumber" name="L156" href="#L156">156</a> <em class="jxr_javadoccomment">     * @param properties the database properties (containing timestamps of the</em>
 <a class="jxr_linenumber" name="L157" href="#L157">157</a> <em class="jxr_javadoccomment">     * NVD CVE data)</em>
 <a class="jxr_linenumber" name="L158" href="#L158">158</a> <em class="jxr_javadoccomment">     * @param settings a reference to the database settings</em>
-<a class="jxr_linenumber" name="L159" href="#L159">159</a> <em class="jxr_javadoccomment">     * @deprecated Please use</em>
-<a class="jxr_linenumber" name="L160" href="#L160">160</a> <em class="jxr_javadoccomment">     * {@link #ReportGenerator(java.lang.String, java.util.List, java.util.List, DatabaseProperties, Settings, ExceptionCollection)}</em>
-<a class="jxr_linenumber" name="L161" href="#L161">161</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L162" href="#L162">162</a>     @Deprecated
+<a class="jxr_linenumber" name="L159" href="#L159">159</a> <em class="jxr_javadoccomment">     * @param exceptions a collection of exceptions that may have occurred</em>
+<a class="jxr_linenumber" name="L160" href="#L160">160</a> <em class="jxr_javadoccomment">     * during the analysis</em>
+<a class="jxr_linenumber" name="L161" href="#L161">161</a> <em class="jxr_javadoccomment">     * @since 5.1.0</em>
+<a class="jxr_linenumber" name="L162" href="#L162">162</a> <em class="jxr_javadoccomment">     */</em>
 <a class="jxr_linenumber" name="L163" href="#L163">163</a>     <strong class="jxr_keyword">public</strong> <a href="../../../../org/owasp/dependencycheck/reporting/ReportGenerator.html">ReportGenerator</a>(String applicationName, List&lt;Dependency&gt; dependencies, List&lt;Analyzer&gt; analyzers,
-<a class="jxr_linenumber" name="L164" href="#L164">164</a>                            <a href="../../../../org/owasp/dependencycheck/data/nvdcve/DatabaseProperties.html">DatabaseProperties</a> properties, Settings settings) {
-<a class="jxr_linenumber" name="L165" href="#L165">165</a>         <strong class="jxr_keyword">this</strong>(applicationName, dependencies, analyzers, properties, settings, <strong class="jxr_keyword">null</strong>);
+<a class="jxr_linenumber" name="L164" href="#L164">164</a>                            <a href="../../../../org/owasp/dependencycheck/data/nvdcve/DatabaseProperties.html">DatabaseProperties</a> properties, Settings settings, <a href="../../../../org/owasp/dependencycheck/exception/ExceptionCollection.html">ExceptionCollection</a> exceptions) {
+<a class="jxr_linenumber" name="L165" href="#L165">165</a>         <strong class="jxr_keyword">this</strong>(applicationName, <strong class="jxr_keyword">null</strong>, <strong class="jxr_keyword">null</strong>, <strong class="jxr_keyword">null</strong>, dependencies, analyzers, properties, settings, exceptions);
 <a class="jxr_linenumber" name="L166" href="#L166">166</a>     }
 <a class="jxr_linenumber" name="L167" href="#L167">167</a> 
 <a class="jxr_linenumber" name="L168" href="#L168">168</a>     <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L169" href="#L169">169</a> <em class="jxr_javadoccomment">     * Constructs a new ReportGenerator.</em>
 <a class="jxr_linenumber" name="L170" href="#L170">170</a> <em class="jxr_javadoccomment">     *</em>
 <a class="jxr_linenumber" name="L171" href="#L171">171</a> <em class="jxr_javadoccomment">     * @param applicationName the application name being analyzed</em>
-<a class="jxr_linenumber" name="L172" href="#L172">172</a> <em class="jxr_javadoccomment">     * @param dependencies the list of dependencies</em>
-<a class="jxr_linenumber" name="L173" href="#L173">173</a> <em class="jxr_javadoccomment">     * @param analyzers the list of analyzers used</em>
-<a class="jxr_linenumber" name="L174" href="#L174">174</a> <em class="jxr_javadoccomment">     * @param properties the database properties (containing timestamps of the</em>
-<a class="jxr_linenumber" name="L175" href="#L175">175</a> <em class="jxr_javadoccomment">     * NVD CVE data)</em>
-<a class="jxr_linenumber" name="L176" href="#L176">176</a> <em class="jxr_javadoccomment">     * @param settings a reference to the database settings</em>
-<a class="jxr_linenumber" name="L177" href="#L177">177</a> <em class="jxr_javadoccomment">     * @param exceptions a collection of exceptions that may have occurred</em>
-<a class="jxr_linenumber" name="L178" href="#L178">178</a> <em class="jxr_javadoccomment">     * during the analysis</em>
-<a class="jxr_linenumber" name="L179" href="#L179">179</a> <em class="jxr_javadoccomment">     * @since 5.1.0</em>
-<a class="jxr_linenumber" name="L180" href="#L180">180</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L181" href="#L181">181</a>     <strong class="jxr_keyword">public</strong> <a href="../../../../org/owasp/dependencycheck/reporting/ReportGenerator.html">ReportGenerator</a>(String applicationName, List&lt;Dependency&gt; dependencies, List&lt;Analyzer&gt; analyzers,
-<a class="jxr_linenumber" name="L182" href="#L182">182</a>                            <a href="../../../../org/owasp/dependencycheck/data/nvdcve/DatabaseProperties.html">DatabaseProperties</a> properties, Settings settings, <a href="../../../../org/owasp/dependencycheck/exception/ExceptionCollection.html">ExceptionCollection</a> exceptions) {
-<a class="jxr_linenumber" name="L183" href="#L183">183</a>         <strong class="jxr_keyword">this</strong>(applicationName, <strong class="jxr_keyword">null</strong>, <strong class="jxr_keyword">null</strong>, <strong class="jxr_keyword">null</strong>, dependencies, analyzers, properties, settings, exceptions);
-<a class="jxr_linenumber" name="L184" href="#L184">184</a>     }
-<a class="jxr_linenumber" name="L185" href="#L185">185</a> 
-<a class="jxr_linenumber" name="L186" href="#L186">186</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L187" href="#L187">187</a> <em class="jxr_javadoccomment">     * Constructs a new ReportGenerator.</em>
-<a class="jxr_linenumber" name="L188" href="#L188">188</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L189" href="#L189">189</a> <em class="jxr_javadoccomment">     * @param applicationName the application name being analyzed</em>
-<a class="jxr_linenumber" name="L190" href="#L190">190</a> <em class="jxr_javadoccomment">     * @param groupID the group id of the project being analyzed</em>
-<a class="jxr_linenumber" name="L191" href="#L191">191</a> <em class="jxr_javadoccomment">     * @param artifactID the application id of the project being analyzed</em>
-<a class="jxr_linenumber" name="L192" href="#L192">192</a> <em class="jxr_javadoccomment">     * @param version the application version of the project being analyzed</em>
-<a class="jxr_linenumber" name="L193" href="#L193">193</a> <em class="jxr_javadoccomment">     * @param dependencies the list of dependencies</em>
-<a class="jxr_linenumber" name="L194" href="#L194">194</a> <em class="jxr_javadoccomment">     * @param analyzers the list of analyzers used</em>
-<a class="jxr_linenumber" name="L195" href="#L195">195</a> <em class="jxr_javadoccomment">     * @param properties the database properties (containing timestamps of the</em>
-<a class="jxr_linenumber" name="L196" href="#L196">196</a> <em class="jxr_javadoccomment">     * NVD CVE data)</em>
-<a class="jxr_linenumber" name="L197" href="#L197">197</a> <em class="jxr_javadoccomment">     * @param settings a reference to the database settings</em>
-<a class="jxr_linenumber" name="L198" href="#L198">198</a> <em class="jxr_javadoccomment">     * @deprecated Please use</em>
-<a class="jxr_linenumber" name="L199" href="#L199">199</a> <em class="jxr_javadoccomment">     * {@link #ReportGenerator(String, String, String, String, List, List, DatabaseProperties, Settings, ExceptionCollection)}</em>
-<a class="jxr_linenumber" name="L200" href="#L200">200</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L201" href="#L201">201</a>     @Deprecated
-<a class="jxr_linenumber" name="L202" href="#L202">202</a>     <strong class="jxr_keyword">public</strong> <a href="../../../../org/owasp/dependencycheck/reporting/ReportGenerator.html">ReportGenerator</a>(String applicationName, String groupID, String artifactID, String version,
-<a class="jxr_linenumber" name="L203" href="#L203">203</a>                            List&lt;Dependency&gt; dependencies, List&lt;Analyzer&gt; analyzers, <a href="../../../../org/owasp/dependencycheck/data/nvdcve/DatabaseProperties.html">DatabaseProperties</a> properties,
-<a class="jxr_linenumber" name="L204" href="#L204">204</a>                            Settings settings) {
-<a class="jxr_linenumber" name="L205" href="#L205">205</a>         <strong class="jxr_keyword">this</strong>(applicationName, groupID, artifactID, version, dependencies, analyzers, properties, settings, <strong class="jxr_keyword">null</strong>);
-<a class="jxr_linenumber" name="L206" href="#L206">206</a>     }
-<a class="jxr_linenumber" name="L207" href="#L207">207</a> 
-<a class="jxr_linenumber" name="L208" href="#L208">208</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L209" href="#L209">209</a> <em class="jxr_javadoccomment">     * Constructs a new ReportGenerator.</em>
-<a class="jxr_linenumber" name="L210" href="#L210">210</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L211" href="#L211">211</a> <em class="jxr_javadoccomment">     * @param applicationName the application name being analyzed</em>
-<a class="jxr_linenumber" name="L212" href="#L212">212</a> <em class="jxr_javadoccomment">     * @param groupID the group id of the project being analyzed</em>
-<a class="jxr_linenumber" name="L213" href="#L213">213</a> <em class="jxr_javadoccomment">     * @param artifactID the application id of the project being analyzed</em>
-<a class="jxr_linenumber" name="L214" href="#L214">214</a> <em class="jxr_javadoccomment">     * @param version the application version of the project being analyzed</em>
-<a class="jxr_linenumber" name="L215" href="#L215">215</a> <em class="jxr_javadoccomment">     * @param dependencies the list of dependencies</em>
-<a class="jxr_linenumber" name="L216" href="#L216">216</a> <em class="jxr_javadoccomment">     * @param analyzers the list of analyzers used</em>
-<a class="jxr_linenumber" name="L217" href="#L217">217</a> <em class="jxr_javadoccomment">     * @param properties the database properties (containing timestamps of the</em>
-<a class="jxr_linenumber" name="L218" href="#L218">218</a> <em class="jxr_javadoccomment">     * NVD CVE data)</em>
-<a class="jxr_linenumber" name="L219" href="#L219">219</a> <em class="jxr_javadoccomment">     * @param settings a reference to the database settings</em>
-<a class="jxr_linenumber" name="L220" href="#L220">220</a> <em class="jxr_javadoccomment">     * @param exceptions a collection of exceptions that may have occurred</em>
-<a class="jxr_linenumber" name="L221" href="#L221">221</a> <em class="jxr_javadoccomment">     * during the analysis</em>
-<a class="jxr_linenumber" name="L222" href="#L222">222</a> <em class="jxr_javadoccomment">     * @since 5.1.0</em>
-<a class="jxr_linenumber" name="L223" href="#L223">223</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L224" href="#L224">224</a>     <strong class="jxr_keyword">public</strong> <a href="../../../../org/owasp/dependencycheck/reporting/ReportGenerator.html">ReportGenerator</a>(String applicationName, String groupID, String artifactID, String version,
-<a class="jxr_linenumber" name="L225" href="#L225">225</a>                            List&lt;Dependency&gt; dependencies, List&lt;Analyzer&gt; analyzers, <a href="../../../../org/owasp/dependencycheck/data/nvdcve/DatabaseProperties.html">DatabaseProperties</a> properties,
-<a class="jxr_linenumber" name="L226" href="#L226">226</a>                            Settings settings, <a href="../../../../org/owasp/dependencycheck/exception/ExceptionCollection.html">ExceptionCollection</a> exceptions) {
-<a class="jxr_linenumber" name="L227" href="#L227">227</a>         <strong class="jxr_keyword">this</strong>.settings = settings;
-<a class="jxr_linenumber" name="L228" href="#L228">228</a>         velocityEngine = createVelocityEngine();
-<a class="jxr_linenumber" name="L229" href="#L229">229</a>         velocityEngine.init();
-<a class="jxr_linenumber" name="L230" href="#L230">230</a>         context = createContext(applicationName, dependencies, analyzers, properties, groupID,
-<a class="jxr_linenumber" name="L231" href="#L231">231</a>                 artifactID, version, exceptions);
-<a class="jxr_linenumber" name="L232" href="#L232">232</a>     }
-<a class="jxr_linenumber" name="L233" href="#L233">233</a> 
-<a class="jxr_linenumber" name="L234" href="#L234">234</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L235" href="#L235">235</a> <em class="jxr_javadoccomment">     * Constructs the velocity context used to generate the dependency-check</em>
-<a class="jxr_linenumber" name="L236" href="#L236">236</a> <em class="jxr_javadoccomment">     * reports.</em>
-<a class="jxr_linenumber" name="L237" href="#L237">237</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L238" href="#L238">238</a> <em class="jxr_javadoccomment">     * @param applicationName the application name being analyzed</em>
-<a class="jxr_linenumber" name="L239" href="#L239">239</a> <em class="jxr_javadoccomment">     * @param groupID the group id of the project being analyzed</em>
-<a class="jxr_linenumber" name="L240" href="#L240">240</a> <em class="jxr_javadoccomment">     * @param artifactID the application id of the project being analyzed</em>
-<a class="jxr_linenumber" name="L241" href="#L241">241</a> <em class="jxr_javadoccomment">     * @param version the application version of the project being analyzed</em>
-<a class="jxr_linenumber" name="L242" href="#L242">242</a> <em class="jxr_javadoccomment">     * @param dependencies the list of dependencies</em>
-<a class="jxr_linenumber" name="L243" href="#L243">243</a> <em class="jxr_javadoccomment">     * @param analyzers the list of analyzers used</em>
-<a class="jxr_linenumber" name="L244" href="#L244">244</a> <em class="jxr_javadoccomment">     * @param properties the database properties (containing timestamps of the</em>
-<a class="jxr_linenumber" name="L245" href="#L245">245</a> <em class="jxr_javadoccomment">     * NVD CVE data)</em>
-<a class="jxr_linenumber" name="L246" href="#L246">246</a> <em class="jxr_javadoccomment">     * @param exceptions a collection of exceptions that may have occurred</em>
-<a class="jxr_linenumber" name="L247" href="#L247">247</a> <em class="jxr_javadoccomment">     * during the analysis</em>
-<a class="jxr_linenumber" name="L248" href="#L248">248</a> <em class="jxr_javadoccomment">     * @return the velocity context</em>
-<a class="jxr_linenumber" name="L249" href="#L249">249</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L250" href="#L250">250</a>     @SuppressWarnings(<span class="jxr_string">"JavaTimeDefaultTimeZone"</span>)
-<a class="jxr_linenumber" name="L251" href="#L251">251</a>     <strong class="jxr_keyword">private</strong> VelocityContext createContext(String applicationName, List&lt;Dependency&gt; dependencies,
-<a class="jxr_linenumber" name="L252" href="#L252">252</a>                                           List&lt;Analyzer&gt; analyzers, <a href="../../../../org/owasp/dependencycheck/data/nvdcve/DatabaseProperties.html">DatabaseProperties</a> properties, String groupID,
-<a class="jxr_linenumber" name="L253" href="#L253">253</a>                                           String artifactID, String version, <a href="../../../../org/owasp/dependencycheck/exception/ExceptionCollection.html">ExceptionCollection</a> exceptions) {
-<a class="jxr_linenumber" name="L254" href="#L254">254</a> 
-<a class="jxr_linenumber" name="L255" href="#L255">255</a>         <strong class="jxr_keyword">final</strong> ZonedDateTime dt = ZonedDateTime.now();
-<a class="jxr_linenumber" name="L256" href="#L256">256</a>         <strong class="jxr_keyword">final</strong> String scanDate = DateTimeFormatter.RFC_1123_DATE_TIME.format(dt);
-<a class="jxr_linenumber" name="L257" href="#L257">257</a>         <strong class="jxr_keyword">final</strong> String scanDateXML = DateTimeFormatter.ISO_INSTANT.format(dt);
-<a class="jxr_linenumber" name="L258" href="#L258">258</a>         <strong class="jxr_keyword">final</strong> String scanDateJunit = DateTimeFormatter.ISO_LOCAL_DATE_TIME.format(dt);
-<a class="jxr_linenumber" name="L259" href="#L259">259</a>         <strong class="jxr_keyword">final</strong> String scanDateGitLab = DateTimeFormatter.ISO_LOCAL_DATE_TIME.format(dt.withNano(0));
-<a class="jxr_linenumber" name="L260" href="#L260">260</a> 
-<a class="jxr_linenumber" name="L261" href="#L261">261</a>         <em class="jxr_comment">// Remember to update type definitions at templates/velocity_implicit.vm</em>
-<a class="jxr_linenumber" name="L262" href="#L262">262</a>         <strong class="jxr_keyword">final</strong> VelocityContext ctxt = <strong class="jxr_keyword">new</strong> VelocityContext();
-<a class="jxr_linenumber" name="L263" href="#L263">263</a>         ctxt.put(<span class="jxr_string">"applicationName"</span>, applicationName);
-<a class="jxr_linenumber" name="L264" href="#L264">264</a>         dependencies.sort(Dependency.NAME_COMPARATOR);
-<a class="jxr_linenumber" name="L265" href="#L265">265</a>         ctxt.put(<span class="jxr_string">"dependencies"</span>, dependencies);
-<a class="jxr_linenumber" name="L266" href="#L266">266</a>         ctxt.put(<span class="jxr_string">"analyzers"</span>, analyzers);
-<a class="jxr_linenumber" name="L267" href="#L267">267</a>         ctxt.put(<span class="jxr_string">"properties"</span>, properties);
-<a class="jxr_linenumber" name="L268" href="#L268">268</a>         ctxt.put(<span class="jxr_string">"scanDate"</span>, scanDate);
-<a class="jxr_linenumber" name="L269" href="#L269">269</a>         ctxt.put(<span class="jxr_string">"scanDateXML"</span>, scanDateXML);
-<a class="jxr_linenumber" name="L270" href="#L270">270</a>         ctxt.put(<span class="jxr_string">"scanDateJunit"</span>, scanDateJunit);
-<a class="jxr_linenumber" name="L271" href="#L271">271</a>         ctxt.put(<span class="jxr_string">"scanDateGitLab"</span>, scanDateGitLab);
-<a class="jxr_linenumber" name="L272" href="#L272">272</a>         ctxt.put(<span class="jxr_string">"enc"</span>, <strong class="jxr_keyword">new</strong> <a href="../../../../org/owasp/dependencycheck/reporting/EscapeTool.html">EscapeTool</a>());
-<a class="jxr_linenumber" name="L273" href="#L273">273</a>         ctxt.put(<span class="jxr_string">"rpt"</span>, <strong class="jxr_keyword">new</strong> <a href="../../../../org/owasp/dependencycheck/reporting/ReportTool.html">ReportTool</a>());
-<a class="jxr_linenumber" name="L274" href="#L274">274</a>         ctxt.put(<span class="jxr_string">"checksum"</span>, Checksum.<strong class="jxr_keyword">class</strong>);
-<a class="jxr_linenumber" name="L275" href="#L275">275</a>         ctxt.put(<span class="jxr_string">"WordUtils"</span>, <strong class="jxr_keyword">new</strong> WordUtils());
-<a class="jxr_linenumber" name="L276" href="#L276">276</a>         ctxt.put(<span class="jxr_string">"StringUtils"</span>, <strong class="jxr_keyword">new</strong> StringUtils());
-<a class="jxr_linenumber" name="L277" href="#L277">277</a>         ctxt.put(<span class="jxr_string">"VENDOR"</span>, EvidenceType.VENDOR);
-<a class="jxr_linenumber" name="L278" href="#L278">278</a>         ctxt.put(<span class="jxr_string">"PRODUCT"</span>, EvidenceType.PRODUCT);
-<a class="jxr_linenumber" name="L279" href="#L279">279</a>         ctxt.put(<span class="jxr_string">"VERSION"</span>, EvidenceType.VERSION);
-<a class="jxr_linenumber" name="L280" href="#L280">280</a>         ctxt.put(<span class="jxr_string">"version"</span>, settings.getString(Settings.KEYS.APPLICATION_VERSION, <span class="jxr_string">"Unknown"</span>));
-<a class="jxr_linenumber" name="L281" href="#L281">281</a>         ctxt.put(<span class="jxr_string">"settings"</span>, settings);
-<a class="jxr_linenumber" name="L282" href="#L282">282</a>         <strong class="jxr_keyword">if</strong> (version != <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="L283" href="#L283">283</a>             ctxt.put(<span class="jxr_string">"applicationVersion"</span>, version);
+<a class="jxr_linenumber" name="L172" href="#L172">172</a> <em class="jxr_javadoccomment">     * @param groupID the group id of the project being analyzed</em>
+<a class="jxr_linenumber" name="L173" href="#L173">173</a> <em class="jxr_javadoccomment">     * @param artifactID the application id of the project being analyzed</em>
+<a class="jxr_linenumber" name="L174" href="#L174">174</a> <em class="jxr_javadoccomment">     * @param version the application version of the project being analyzed</em>
+<a class="jxr_linenumber" name="L175" href="#L175">175</a> <em class="jxr_javadoccomment">     * @param dependencies the list of dependencies</em>
+<a class="jxr_linenumber" name="L176" href="#L176">176</a> <em class="jxr_javadoccomment">     * @param analyzers the list of analyzers used</em>
+<a class="jxr_linenumber" name="L177" href="#L177">177</a> <em class="jxr_javadoccomment">     * @param properties the database properties (containing timestamps of the</em>
+<a class="jxr_linenumber" name="L178" href="#L178">178</a> <em class="jxr_javadoccomment">     * NVD CVE data)</em>
+<a class="jxr_linenumber" name="L179" href="#L179">179</a> <em class="jxr_javadoccomment">     * @param settings a reference to the database settings</em>
+<a class="jxr_linenumber" name="L180" href="#L180">180</a> <em class="jxr_javadoccomment">     * @param exceptions a collection of exceptions that may have occurred</em>
+<a class="jxr_linenumber" name="L181" href="#L181">181</a> <em class="jxr_javadoccomment">     * during the analysis</em>
+<a class="jxr_linenumber" name="L182" href="#L182">182</a> <em class="jxr_javadoccomment">     * @since 5.1.0</em>
+<a class="jxr_linenumber" name="L183" href="#L183">183</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L184" href="#L184">184</a>     <strong class="jxr_keyword">public</strong> <a href="../../../../org/owasp/dependencycheck/reporting/ReportGenerator.html">ReportGenerator</a>(String applicationName, String groupID, String artifactID, String version,
+<a class="jxr_linenumber" name="L185" href="#L185">185</a>                            List&lt;Dependency&gt; dependencies, List&lt;Analyzer&gt; analyzers, <a href="../../../../org/owasp/dependencycheck/data/nvdcve/DatabaseProperties.html">DatabaseProperties</a> properties,
+<a class="jxr_linenumber" name="L186" href="#L186">186</a>                            Settings settings, <a href="../../../../org/owasp/dependencycheck/exception/ExceptionCollection.html">ExceptionCollection</a> exceptions) {
+<a class="jxr_linenumber" name="L187" href="#L187">187</a>         <strong class="jxr_keyword">this</strong>.settings = settings;
+<a class="jxr_linenumber" name="L188" href="#L188">188</a>         velocityEngine = createVelocityEngine();
+<a class="jxr_linenumber" name="L189" href="#L189">189</a>         velocityEngine.init();
+<a class="jxr_linenumber" name="L190" href="#L190">190</a>         context = createContext(applicationName, dependencies, analyzers, properties, groupID,
+<a class="jxr_linenumber" name="L191" href="#L191">191</a>                 artifactID, version, exceptions);
+<a class="jxr_linenumber" name="L192" href="#L192">192</a>     }
+<a class="jxr_linenumber" name="L193" href="#L193">193</a> 
+<a class="jxr_linenumber" name="L194" href="#L194">194</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L195" href="#L195">195</a> <em class="jxr_javadoccomment">     * Constructs the velocity context used to generate the dependency-check</em>
+<a class="jxr_linenumber" name="L196" href="#L196">196</a> <em class="jxr_javadoccomment">     * reports.</em>
+<a class="jxr_linenumber" name="L197" href="#L197">197</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L198" href="#L198">198</a> <em class="jxr_javadoccomment">     * @param applicationName the application name being analyzed</em>
+<a class="jxr_linenumber" name="L199" href="#L199">199</a> <em class="jxr_javadoccomment">     * @param groupID the group id of the project being analyzed</em>
+<a class="jxr_linenumber" name="L200" href="#L200">200</a> <em class="jxr_javadoccomment">     * @param artifactID the application id of the project being analyzed</em>
+<a class="jxr_linenumber" name="L201" href="#L201">201</a> <em class="jxr_javadoccomment">     * @param version the application version of the project being analyzed</em>
+<a class="jxr_linenumber" name="L202" href="#L202">202</a> <em class="jxr_javadoccomment">     * @param dependencies the list of dependencies</em>
+<a class="jxr_linenumber" name="L203" href="#L203">203</a> <em class="jxr_javadoccomment">     * @param analyzers the list of analyzers used</em>
+<a class="jxr_linenumber" name="L204" href="#L204">204</a> <em class="jxr_javadoccomment">     * @param properties the database properties (containing timestamps of the</em>
+<a class="jxr_linenumber" name="L205" href="#L205">205</a> <em class="jxr_javadoccomment">     * NVD CVE data)</em>
+<a class="jxr_linenumber" name="L206" href="#L206">206</a> <em class="jxr_javadoccomment">     * @param exceptions a collection of exceptions that may have occurred</em>
+<a class="jxr_linenumber" name="L207" href="#L207">207</a> <em class="jxr_javadoccomment">     * during the analysis</em>
+<a class="jxr_linenumber" name="L208" href="#L208">208</a> <em class="jxr_javadoccomment">     * @return the velocity context</em>
+<a class="jxr_linenumber" name="L209" href="#L209">209</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L210" href="#L210">210</a>     @SuppressWarnings(<span class="jxr_string">"JavaTimeDefaultTimeZone"</span>)
+<a class="jxr_linenumber" name="L211" href="#L211">211</a>     <strong class="jxr_keyword">private</strong> VelocityContext createContext(String applicationName, List&lt;Dependency&gt; dependencies,
+<a class="jxr_linenumber" name="L212" href="#L212">212</a>                                           List&lt;Analyzer&gt; analyzers, <a href="../../../../org/owasp/dependencycheck/data/nvdcve/DatabaseProperties.html">DatabaseProperties</a> properties, String groupID,
+<a class="jxr_linenumber" name="L213" href="#L213">213</a>                                           String artifactID, String version, <a href="../../../../org/owasp/dependencycheck/exception/ExceptionCollection.html">ExceptionCollection</a> exceptions) {
+<a class="jxr_linenumber" name="L214" href="#L214">214</a> 
+<a class="jxr_linenumber" name="L215" href="#L215">215</a>         <strong class="jxr_keyword">final</strong> ZonedDateTime dt = ZonedDateTime.now();
+<a class="jxr_linenumber" name="L216" href="#L216">216</a>         <strong class="jxr_keyword">final</strong> String scanDate = DateTimeFormatter.RFC_1123_DATE_TIME.format(dt);
+<a class="jxr_linenumber" name="L217" href="#L217">217</a>         <strong class="jxr_keyword">final</strong> String scanDateXML = DateTimeFormatter.ISO_INSTANT.format(dt);
+<a class="jxr_linenumber" name="L218" href="#L218">218</a>         <strong class="jxr_keyword">final</strong> String scanDateJunit = DateTimeFormatter.ISO_LOCAL_DATE_TIME.format(dt);
+<a class="jxr_linenumber" name="L219" href="#L219">219</a>         <strong class="jxr_keyword">final</strong> String scanDateGitLab = DateTimeFormatter.ISO_LOCAL_DATE_TIME.format(dt.withNano(0));
+<a class="jxr_linenumber" name="L220" href="#L220">220</a> 
+<a class="jxr_linenumber" name="L221" href="#L221">221</a>         <em class="jxr_comment">// Remember to update type definitions at templates/velocity_implicit.vm</em>
+<a class="jxr_linenumber" name="L222" href="#L222">222</a>         <strong class="jxr_keyword">final</strong> VelocityContext ctxt = <strong class="jxr_keyword">new</strong> VelocityContext();
+<a class="jxr_linenumber" name="L223" href="#L223">223</a>         ctxt.put(<span class="jxr_string">"applicationName"</span>, applicationName);
+<a class="jxr_linenumber" name="L224" href="#L224">224</a>         dependencies.sort(Dependency.NAME_COMPARATOR);
+<a class="jxr_linenumber" name="L225" href="#L225">225</a>         ctxt.put(<span class="jxr_string">"dependencies"</span>, dependencies);
+<a class="jxr_linenumber" name="L226" href="#L226">226</a>         ctxt.put(<span class="jxr_string">"analyzers"</span>, analyzers);
+<a class="jxr_linenumber" name="L227" href="#L227">227</a>         ctxt.put(<span class="jxr_string">"properties"</span>, properties);
+<a class="jxr_linenumber" name="L228" href="#L228">228</a>         ctxt.put(<span class="jxr_string">"scanDate"</span>, scanDate);
+<a class="jxr_linenumber" name="L229" href="#L229">229</a>         ctxt.put(<span class="jxr_string">"scanDateXML"</span>, scanDateXML);
+<a class="jxr_linenumber" name="L230" href="#L230">230</a>         ctxt.put(<span class="jxr_string">"scanDateJunit"</span>, scanDateJunit);
+<a class="jxr_linenumber" name="L231" href="#L231">231</a>         ctxt.put(<span class="jxr_string">"scanDateGitLab"</span>, scanDateGitLab);
+<a class="jxr_linenumber" name="L232" href="#L232">232</a>         ctxt.put(<span class="jxr_string">"enc"</span>, <strong class="jxr_keyword">new</strong> <a href="../../../../org/owasp/dependencycheck/reporting/EscapeTool.html">EscapeTool</a>());
+<a class="jxr_linenumber" name="L233" href="#L233">233</a>         ctxt.put(<span class="jxr_string">"rpt"</span>, <strong class="jxr_keyword">new</strong> <a href="../../../../org/owasp/dependencycheck/reporting/ReportTool.html">ReportTool</a>());
+<a class="jxr_linenumber" name="L234" href="#L234">234</a>         ctxt.put(<span class="jxr_string">"checksum"</span>, Checksum.<strong class="jxr_keyword">class</strong>);
+<a class="jxr_linenumber" name="L235" href="#L235">235</a>         ctxt.put(<span class="jxr_string">"WordUtils"</span>, <strong class="jxr_keyword">new</strong> WordUtils());
+<a class="jxr_linenumber" name="L236" href="#L236">236</a>         ctxt.put(<span class="jxr_string">"StringUtils"</span>, <strong class="jxr_keyword">new</strong> StringUtils());
+<a class="jxr_linenumber" name="L237" href="#L237">237</a>         ctxt.put(<span class="jxr_string">"VENDOR"</span>, EvidenceType.VENDOR);
+<a class="jxr_linenumber" name="L238" href="#L238">238</a>         ctxt.put(<span class="jxr_string">"PRODUCT"</span>, EvidenceType.PRODUCT);
+<a class="jxr_linenumber" name="L239" href="#L239">239</a>         ctxt.put(<span class="jxr_string">"VERSION"</span>, EvidenceType.VERSION);
+<a class="jxr_linenumber" name="L240" href="#L240">240</a>         ctxt.put(<span class="jxr_string">"version"</span>, settings.getString(Settings.KEYS.APPLICATION_VERSION, <span class="jxr_string">"Unknown"</span>));
+<a class="jxr_linenumber" name="L241" href="#L241">241</a>         ctxt.put(<span class="jxr_string">"settings"</span>, settings);
+<a class="jxr_linenumber" name="L242" href="#L242">242</a>         <strong class="jxr_keyword">if</strong> (version != <strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="L243" href="#L243">243</a>             ctxt.put(<span class="jxr_string">"applicationVersion"</span>, version);
+<a class="jxr_linenumber" name="L244" href="#L244">244</a>         }
+<a class="jxr_linenumber" name="L245" href="#L245">245</a>         <strong class="jxr_keyword">if</strong> (artifactID != <strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="L246" href="#L246">246</a>             ctxt.put(<span class="jxr_string">"artifactID"</span>, artifactID);
+<a class="jxr_linenumber" name="L247" href="#L247">247</a>         }
+<a class="jxr_linenumber" name="L248" href="#L248">248</a>         <strong class="jxr_keyword">if</strong> (groupID != <strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="L249" href="#L249">249</a>             ctxt.put(<span class="jxr_string">"groupID"</span>, groupID);
+<a class="jxr_linenumber" name="L250" href="#L250">250</a>         }
+<a class="jxr_linenumber" name="L251" href="#L251">251</a>         <strong class="jxr_keyword">if</strong> (exceptions != <strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="L252" href="#L252">252</a>             ctxt.put(<span class="jxr_string">"exceptions"</span>, exceptions.getExceptions());
+<a class="jxr_linenumber" name="L253" href="#L253">253</a>         }
+<a class="jxr_linenumber" name="L254" href="#L254">254</a>         <strong class="jxr_keyword">return</strong> ctxt;
+<a class="jxr_linenumber" name="L255" href="#L255">255</a>     }
+<a class="jxr_linenumber" name="L256" href="#L256">256</a>     <em class="jxr_comment">//CSON: ParameterNumber</em>
+<a class="jxr_linenumber" name="L257" href="#L257">257</a>     <em class="jxr_comment">//CSON: LineLength</em>
+<a class="jxr_linenumber" name="L258" href="#L258">258</a> 
+<a class="jxr_linenumber" name="L259" href="#L259">259</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L260" href="#L260">260</a> <em class="jxr_javadoccomment">     * Creates a new Velocity Engine.</em>
+<a class="jxr_linenumber" name="L261" href="#L261">261</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L262" href="#L262">262</a> <em class="jxr_javadoccomment">     * @return a velocity engine</em>
+<a class="jxr_linenumber" name="L263" href="#L263">263</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L264" href="#L264">264</a>     <strong class="jxr_keyword">private</strong> VelocityEngine createVelocityEngine() {
+<a class="jxr_linenumber" name="L265" href="#L265">265</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> VelocityEngine();
+<a class="jxr_linenumber" name="L266" href="#L266">266</a>     }
+<a class="jxr_linenumber" name="L267" href="#L267">267</a> 
+<a class="jxr_linenumber" name="L268" href="#L268">268</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L269" href="#L269">269</a> <em class="jxr_javadoccomment">     * Writes the dependency-check report to the given output location.</em>
+<a class="jxr_linenumber" name="L270" href="#L270">270</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L271" href="#L271">271</a> <em class="jxr_javadoccomment">     * @param outputLocation the path where the reports should be written</em>
+<a class="jxr_linenumber" name="L272" href="#L272">272</a> <em class="jxr_javadoccomment">     * @param format the format the report should be written in (a valid member</em>
+<a class="jxr_linenumber" name="L273" href="#L273">273</a> <em class="jxr_javadoccomment">     * of {@link Format}) or even the path to a custom velocity template</em>
+<a class="jxr_linenumber" name="L274" href="#L274">274</a> <em class="jxr_javadoccomment">     * (either fully qualified or the template name on the class path).</em>
+<a class="jxr_linenumber" name="L275" href="#L275">275</a> <em class="jxr_javadoccomment">     * @throws ReportException is thrown if there is an error creating out the</em>
+<a class="jxr_linenumber" name="L276" href="#L276">276</a> <em class="jxr_javadoccomment">     * reports</em>
+<a class="jxr_linenumber" name="L277" href="#L277">277</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L278" href="#L278">278</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> write(String outputLocation, String format) <strong class="jxr_keyword">throws</strong> ReportException {
+<a class="jxr_linenumber" name="L279" href="#L279">279</a>         <a href="../../../../org/owasp/dependencycheck/reporting/ReportGenerator.html">Format</a> reportFormat = <strong class="jxr_keyword">null</strong>;
+<a class="jxr_linenumber" name="L280" href="#L280">280</a>         <strong class="jxr_keyword">try</strong> {
+<a class="jxr_linenumber" name="L281" href="#L281">281</a>             reportFormat = Format.valueOf(format.toUpperCase());
+<a class="jxr_linenumber" name="L282" href="#L282">282</a>         } <strong class="jxr_keyword">catch</strong> (IllegalArgumentException ex) {
+<a class="jxr_linenumber" name="L283" href="#L283">283</a>             LOGGER.trace(<span class="jxr_string">"ignore this exception"</span>, ex);
 <a class="jxr_linenumber" name="L284" href="#L284">284</a>         }
-<a class="jxr_linenumber" name="L285" href="#L285">285</a>         <strong class="jxr_keyword">if</strong> (artifactID != <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="L286" href="#L286">286</a>             ctxt.put(<span class="jxr_string">"artifactID"</span>, artifactID);
-<a class="jxr_linenumber" name="L287" href="#L287">287</a>         }
-<a class="jxr_linenumber" name="L288" href="#L288">288</a>         <strong class="jxr_keyword">if</strong> (groupID != <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="L289" href="#L289">289</a>             ctxt.put(<span class="jxr_string">"groupID"</span>, groupID);
-<a class="jxr_linenumber" name="L290" href="#L290">290</a>         }
-<a class="jxr_linenumber" name="L291" href="#L291">291</a>         <strong class="jxr_keyword">if</strong> (exceptions != <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="L292" href="#L292">292</a>             ctxt.put(<span class="jxr_string">"exceptions"</span>, exceptions.getExceptions());
-<a class="jxr_linenumber" name="L293" href="#L293">293</a>         }
-<a class="jxr_linenumber" name="L294" href="#L294">294</a>         <strong class="jxr_keyword">return</strong> ctxt;
-<a class="jxr_linenumber" name="L295" href="#L295">295</a>     }
-<a class="jxr_linenumber" name="L296" href="#L296">296</a>     <em class="jxr_comment">//CSON: ParameterNumber</em>
-<a class="jxr_linenumber" name="L297" href="#L297">297</a>     <em class="jxr_comment">//CSON: LineLength</em>
-<a class="jxr_linenumber" name="L298" href="#L298">298</a> 
-<a class="jxr_linenumber" name="L299" href="#L299">299</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L300" href="#L300">300</a> <em class="jxr_javadoccomment">     * Creates a new Velocity Engine.</em>
-<a class="jxr_linenumber" name="L301" href="#L301">301</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L302" href="#L302">302</a> <em class="jxr_javadoccomment">     * @return a velocity engine</em>
-<a class="jxr_linenumber" name="L303" href="#L303">303</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L304" href="#L304">304</a>     <strong class="jxr_keyword">private</strong> VelocityEngine createVelocityEngine() {
-<a class="jxr_linenumber" name="L305" href="#L305">305</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> VelocityEngine();
-<a class="jxr_linenumber" name="L306" href="#L306">306</a>     }
-<a class="jxr_linenumber" name="L307" href="#L307">307</a> 
-<a class="jxr_linenumber" name="L308" href="#L308">308</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L309" href="#L309">309</a> <em class="jxr_javadoccomment">     * Writes the dependency-check report to the given output location.</em>
-<a class="jxr_linenumber" name="L310" href="#L310">310</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L311" href="#L311">311</a> <em class="jxr_javadoccomment">     * @param outputLocation the path where the reports should be written</em>
-<a class="jxr_linenumber" name="L312" href="#L312">312</a> <em class="jxr_javadoccomment">     * @param format the format the report should be written in (a valid member</em>
-<a class="jxr_linenumber" name="L313" href="#L313">313</a> <em class="jxr_javadoccomment">     * of {@link Format}) or even the path to a custom velocity template</em>
-<a class="jxr_linenumber" name="L314" href="#L314">314</a> <em class="jxr_javadoccomment">     * (either fully qualified or the template name on the class path).</em>
-<a class="jxr_linenumber" name="L315" href="#L315">315</a> <em class="jxr_javadoccomment">     * @throws ReportException is thrown if there is an error creating out the</em>
-<a class="jxr_linenumber" name="L316" href="#L316">316</a> <em class="jxr_javadoccomment">     * reports</em>
-<a class="jxr_linenumber" name="L317" href="#L317">317</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L318" href="#L318">318</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> write(String outputLocation, String format) <strong class="jxr_keyword">throws</strong> ReportException {
-<a class="jxr_linenumber" name="L319" href="#L319">319</a>         <a href="../../../../org/owasp/dependencycheck/reporting/ReportGenerator.html">Format</a> reportFormat = <strong class="jxr_keyword">null</strong>;
-<a class="jxr_linenumber" name="L320" href="#L320">320</a>         <strong class="jxr_keyword">try</strong> {
-<a class="jxr_linenumber" name="L321" href="#L321">321</a>             reportFormat = Format.valueOf(format.toUpperCase());
-<a class="jxr_linenumber" name="L322" href="#L322">322</a>         } <strong class="jxr_keyword">catch</strong> (IllegalArgumentException ex) {
-<a class="jxr_linenumber" name="L323" href="#L323">323</a>             LOGGER.trace(<span class="jxr_string">"ignore this exception"</span>, ex);
-<a class="jxr_linenumber" name="L324" href="#L324">324</a>         }
-<a class="jxr_linenumber" name="L325" href="#L325">325</a> 
-<a class="jxr_linenumber" name="L326" href="#L326">326</a>         <strong class="jxr_keyword">if</strong> (reportFormat != <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="L327" href="#L327">327</a>             write(outputLocation, reportFormat);
-<a class="jxr_linenumber" name="L328" href="#L328">328</a>         } <strong class="jxr_keyword">else</strong> {
-<a class="jxr_linenumber" name="L329" href="#L329">329</a>             File out = getReportFile(outputLocation, <strong class="jxr_keyword">null</strong>);
-<a class="jxr_linenumber" name="L330" href="#L330">330</a>             <strong class="jxr_keyword">if</strong> (out.isDirectory()) {
-<a class="jxr_linenumber" name="L331" href="#L331">331</a>                 out = <strong class="jxr_keyword">new</strong> File(out, FilenameUtils.getBaseName(format));
-<a class="jxr_linenumber" name="L332" href="#L332">332</a>                 LOGGER.warn(<span class="jxr_string">"Writing non-standard VSL output to a directory using template name as file name."</span>);
-<a class="jxr_linenumber" name="L333" href="#L333">333</a>             }
-<a class="jxr_linenumber" name="L334" href="#L334">334</a>             LOGGER.info(<span class="jxr_string">"Writing custom report to: {}"</span>, out.getAbsolutePath());
-<a class="jxr_linenumber" name="L335" href="#L335">335</a>             processTemplate(format, out);
-<a class="jxr_linenumber" name="L336" href="#L336">336</a>         }
-<a class="jxr_linenumber" name="L337" href="#L337">337</a> 
-<a class="jxr_linenumber" name="L338" href="#L338">338</a>     }
-<a class="jxr_linenumber" name="L339" href="#L339">339</a> 
-<a class="jxr_linenumber" name="L340" href="#L340">340</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L341" href="#L341">341</a> <em class="jxr_javadoccomment">     * Writes the dependency-check report(s).</em>
-<a class="jxr_linenumber" name="L342" href="#L342">342</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L343" href="#L343">343</a> <em class="jxr_javadoccomment">     * @param outputLocation the path where the reports should be written</em>
-<a class="jxr_linenumber" name="L344" href="#L344">344</a> <em class="jxr_javadoccomment">     * @param format the format the report should be written in (see</em>
-<a class="jxr_linenumber" name="L345" href="#L345">345</a> <em class="jxr_javadoccomment">     * {@link Format})</em>
-<a class="jxr_linenumber" name="L346" href="#L346">346</a> <em class="jxr_javadoccomment">     * @throws ReportException is thrown if there is an error creating out the</em>
-<a class="jxr_linenumber" name="L347" href="#L347">347</a> <em class="jxr_javadoccomment">     * reports</em>
-<a class="jxr_linenumber" name="L348" href="#L348">348</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L349" href="#L349">349</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> write(String outputLocation, <a href="../../../../org/owasp/dependencycheck/reporting/ReportGenerator.html">Format</a> format) <strong class="jxr_keyword">throws</strong> ReportException {
-<a class="jxr_linenumber" name="L350" href="#L350">350</a>         <strong class="jxr_keyword">if</strong> (format == Format.ALL) {
-<a class="jxr_linenumber" name="L351" href="#L351">351</a>             <strong class="jxr_keyword">for</strong> (Format f : Format.values()) {
-<a class="jxr_linenumber" name="L352" href="#L352">352</a>                 <strong class="jxr_keyword">if</strong> (f != Format.ALL) {
-<a class="jxr_linenumber" name="L353" href="#L353">353</a>                     write(outputLocation, f);
-<a class="jxr_linenumber" name="L354" href="#L354">354</a>                 }
-<a class="jxr_linenumber" name="L355" href="#L355">355</a>             }
-<a class="jxr_linenumber" name="L356" href="#L356">356</a>         } <strong class="jxr_keyword">else</strong> {
-<a class="jxr_linenumber" name="L357" href="#L357">357</a>             <strong class="jxr_keyword">final</strong> File out = getReportFile(outputLocation, format);
-<a class="jxr_linenumber" name="L358" href="#L358">358</a>             <strong class="jxr_keyword">final</strong> String templateName = format.toString().toLowerCase() + <span class="jxr_string">"Report"</span>;
-<a class="jxr_linenumber" name="L359" href="#L359">359</a>             LOGGER.info(<span class="jxr_string">"Writing {} report to: {}"</span>, format, out.getAbsolutePath());
-<a class="jxr_linenumber" name="L360" href="#L360">360</a>             processTemplate(templateName, out);
-<a class="jxr_linenumber" name="L361" href="#L361">361</a>             <strong class="jxr_keyword">if</strong> (settings.getBoolean(Settings.KEYS.PRETTY_PRINT, false)) {
-<a class="jxr_linenumber" name="L362" href="#L362">362</a>                 <strong class="jxr_keyword">if</strong> (format == Format.JSON || format == Format.SARIF) {
-<a class="jxr_linenumber" name="L363" href="#L363">363</a>                     pretifyJson(out.getPath());
-<a class="jxr_linenumber" name="L364" href="#L364">364</a>                 } <strong class="jxr_keyword">else</strong> <strong class="jxr_keyword">if</strong> (format == Format.XML || format == Format.JUNIT) {
-<a class="jxr_linenumber" name="L365" href="#L365">365</a>                     pretifyXml(out.getPath());
-<a class="jxr_linenumber" name="L366" href="#L366">366</a>                 }
-<a class="jxr_linenumber" name="L367" href="#L367">367</a>             }
+<a class="jxr_linenumber" name="L285" href="#L285">285</a> 
+<a class="jxr_linenumber" name="L286" href="#L286">286</a>         <strong class="jxr_keyword">if</strong> (reportFormat != <strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="L287" href="#L287">287</a>             write(outputLocation, reportFormat);
+<a class="jxr_linenumber" name="L288" href="#L288">288</a>         } <strong class="jxr_keyword">else</strong> {
+<a class="jxr_linenumber" name="L289" href="#L289">289</a>             File out = getReportFile(outputLocation, <strong class="jxr_keyword">null</strong>);
+<a class="jxr_linenumber" name="L290" href="#L290">290</a>             <strong class="jxr_keyword">if</strong> (out.isDirectory()) {
+<a class="jxr_linenumber" name="L291" href="#L291">291</a>                 out = <strong class="jxr_keyword">new</strong> File(out, FilenameUtils.getBaseName(format));
+<a class="jxr_linenumber" name="L292" href="#L292">292</a>                 LOGGER.warn(<span class="jxr_string">"Writing non-standard VSL output to a directory using template name as file name."</span>);
+<a class="jxr_linenumber" name="L293" href="#L293">293</a>             }
+<a class="jxr_linenumber" name="L294" href="#L294">294</a>             LOGGER.info(<span class="jxr_string">"Writing custom report to: {}"</span>, out.getAbsolutePath());
+<a class="jxr_linenumber" name="L295" href="#L295">295</a>             processTemplate(format, out);
+<a class="jxr_linenumber" name="L296" href="#L296">296</a>         }
+<a class="jxr_linenumber" name="L297" href="#L297">297</a> 
+<a class="jxr_linenumber" name="L298" href="#L298">298</a>     }
+<a class="jxr_linenumber" name="L299" href="#L299">299</a> 
+<a class="jxr_linenumber" name="L300" href="#L300">300</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L301" href="#L301">301</a> <em class="jxr_javadoccomment">     * Writes the dependency-check report(s).</em>
+<a class="jxr_linenumber" name="L302" href="#L302">302</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L303" href="#L303">303</a> <em class="jxr_javadoccomment">     * @param outputLocation the path where the reports should be written</em>
+<a class="jxr_linenumber" name="L304" href="#L304">304</a> <em class="jxr_javadoccomment">     * @param format the format the report should be written in (see</em>
+<a class="jxr_linenumber" name="L305" href="#L305">305</a> <em class="jxr_javadoccomment">     * {@link Format})</em>
+<a class="jxr_linenumber" name="L306" href="#L306">306</a> <em class="jxr_javadoccomment">     * @throws ReportException is thrown if there is an error creating out the</em>
+<a class="jxr_linenumber" name="L307" href="#L307">307</a> <em class="jxr_javadoccomment">     * reports</em>
+<a class="jxr_linenumber" name="L308" href="#L308">308</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L309" href="#L309">309</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> write(String outputLocation, <a href="../../../../org/owasp/dependencycheck/reporting/ReportGenerator.html">Format</a> format) <strong class="jxr_keyword">throws</strong> ReportException {
+<a class="jxr_linenumber" name="L310" href="#L310">310</a>         <strong class="jxr_keyword">if</strong> (format == Format.ALL) {
+<a class="jxr_linenumber" name="L311" href="#L311">311</a>             <strong class="jxr_keyword">for</strong> (Format f : Format.values()) {
+<a class="jxr_linenumber" name="L312" href="#L312">312</a>                 <strong class="jxr_keyword">if</strong> (f != Format.ALL) {
+<a class="jxr_linenumber" name="L313" href="#L313">313</a>                     write(outputLocation, f);
+<a class="jxr_linenumber" name="L314" href="#L314">314</a>                 }
+<a class="jxr_linenumber" name="L315" href="#L315">315</a>             }
+<a class="jxr_linenumber" name="L316" href="#L316">316</a>         } <strong class="jxr_keyword">else</strong> {
+<a class="jxr_linenumber" name="L317" href="#L317">317</a>             <strong class="jxr_keyword">final</strong> File out = getReportFile(outputLocation, format);
+<a class="jxr_linenumber" name="L318" href="#L318">318</a>             <strong class="jxr_keyword">final</strong> String templateName = format.toString().toLowerCase() + <span class="jxr_string">"Report"</span>;
+<a class="jxr_linenumber" name="L319" href="#L319">319</a>             LOGGER.info(<span class="jxr_string">"Writing {} report to: {}"</span>, format, out.getAbsolutePath());
+<a class="jxr_linenumber" name="L320" href="#L320">320</a>             processTemplate(templateName, out);
+<a class="jxr_linenumber" name="L321" href="#L321">321</a>             <strong class="jxr_keyword">if</strong> (settings.getBoolean(Settings.KEYS.PRETTY_PRINT, false)) {
+<a class="jxr_linenumber" name="L322" href="#L322">322</a>                 <strong class="jxr_keyword">if</strong> (format == Format.JSON || format == Format.SARIF) {
+<a class="jxr_linenumber" name="L323" href="#L323">323</a>                     pretifyJson(out.getPath());
+<a class="jxr_linenumber" name="L324" href="#L324">324</a>                 } <strong class="jxr_keyword">else</strong> <strong class="jxr_keyword">if</strong> (format == Format.XML || format == Format.JUNIT) {
+<a class="jxr_linenumber" name="L325" href="#L325">325</a>                     pretifyXml(out.getPath());
+<a class="jxr_linenumber" name="L326" href="#L326">326</a>                 }
+<a class="jxr_linenumber" name="L327" href="#L327">327</a>             }
+<a class="jxr_linenumber" name="L328" href="#L328">328</a>         }
+<a class="jxr_linenumber" name="L329" href="#L329">329</a>     }
+<a class="jxr_linenumber" name="L330" href="#L330">330</a> 
+<a class="jxr_linenumber" name="L331" href="#L331">331</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L332" href="#L332">332</a> <em class="jxr_javadoccomment">     * Determines the report file name based on the give output location and</em>
+<a class="jxr_linenumber" name="L333" href="#L333">333</a> <em class="jxr_javadoccomment">     * format. If the output location contains a full file name that has the</em>
+<a class="jxr_linenumber" name="L334" href="#L334">334</a> <em class="jxr_javadoccomment">     * correct extension for the given report type then the output location is</em>
+<a class="jxr_linenumber" name="L335" href="#L335">335</a> <em class="jxr_javadoccomment">     * returned. However, if the output location is a directory, this method</em>
+<a class="jxr_linenumber" name="L336" href="#L336">336</a> <em class="jxr_javadoccomment">     * will generate the correct name for the given output format.</em>
+<a class="jxr_linenumber" name="L337" href="#L337">337</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L338" href="#L338">338</a> <em class="jxr_javadoccomment">     * @param outputLocation the specified output location</em>
+<a class="jxr_linenumber" name="L339" href="#L339">339</a> <em class="jxr_javadoccomment">     * @param format the report format</em>
+<a class="jxr_linenumber" name="L340" href="#L340">340</a> <em class="jxr_javadoccomment">     * @return the report File</em>
+<a class="jxr_linenumber" name="L341" href="#L341">341</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L342" href="#L342">342</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> File getReportFile(String outputLocation, <a href="../../../../org/owasp/dependencycheck/reporting/ReportGenerator.html">Format</a> format) {
+<a class="jxr_linenumber" name="L343" href="#L343">343</a>         File outFile = <strong class="jxr_keyword">new</strong> File(outputLocation);
+<a class="jxr_linenumber" name="L344" href="#L344">344</a>         <strong class="jxr_keyword">if</strong> (outFile.getParentFile() == <strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="L345" href="#L345">345</a>             outFile = <strong class="jxr_keyword">new</strong> File(<span class="jxr_string">"."</span>, outputLocation);
+<a class="jxr_linenumber" name="L346" href="#L346">346</a>         }
+<a class="jxr_linenumber" name="L347" href="#L347">347</a>         <strong class="jxr_keyword">final</strong> String pathToCheck = outputLocation.toLowerCase();
+<a class="jxr_linenumber" name="L348" href="#L348">348</a>         <strong class="jxr_keyword">if</strong> (format == Format.XML &amp;&amp; !pathToCheck.endsWith(<span class="jxr_string">".xml"</span>)) {
+<a class="jxr_linenumber" name="L349" href="#L349">349</a>             <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> File(outFile, <span class="jxr_string">"dependency-check-report.xml"</span>);
+<a class="jxr_linenumber" name="L350" href="#L350">350</a>         }
+<a class="jxr_linenumber" name="L351" href="#L351">351</a>         <strong class="jxr_keyword">if</strong> (format == Format.HTML &amp;&amp; !pathToCheck.endsWith(<span class="jxr_string">".html"</span>) &amp;&amp; !pathToCheck.endsWith(<span class="jxr_string">".htm"</span>)) {
+<a class="jxr_linenumber" name="L352" href="#L352">352</a>             <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> File(outFile, <span class="jxr_string">"dependency-check-report.html"</span>);
+<a class="jxr_linenumber" name="L353" href="#L353">353</a>         }
+<a class="jxr_linenumber" name="L354" href="#L354">354</a>         <strong class="jxr_keyword">if</strong> (format == Format.JENKINS &amp;&amp; !pathToCheck.endsWith(<span class="jxr_string">".html"</span>) &amp;&amp; !pathToCheck.endsWith(<span class="jxr_string">".htm"</span>)) {
+<a class="jxr_linenumber" name="L355" href="#L355">355</a>             <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> File(outFile, <span class="jxr_string">"dependency-check-jenkins.html"</span>);
+<a class="jxr_linenumber" name="L356" href="#L356">356</a>         }
+<a class="jxr_linenumber" name="L357" href="#L357">357</a>         <strong class="jxr_keyword">if</strong> (format == Format.JSON &amp;&amp; !pathToCheck.endsWith(<span class="jxr_string">".json"</span>)) {
+<a class="jxr_linenumber" name="L358" href="#L358">358</a>             <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> File(outFile, <span class="jxr_string">"dependency-check-report.json"</span>);
+<a class="jxr_linenumber" name="L359" href="#L359">359</a>         }
+<a class="jxr_linenumber" name="L360" href="#L360">360</a>         <strong class="jxr_keyword">if</strong> (format == Format.CSV &amp;&amp; !pathToCheck.endsWith(<span class="jxr_string">".csv"</span>)) {
+<a class="jxr_linenumber" name="L361" href="#L361">361</a>             <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> File(outFile, <span class="jxr_string">"dependency-check-report.csv"</span>);
+<a class="jxr_linenumber" name="L362" href="#L362">362</a>         }
+<a class="jxr_linenumber" name="L363" href="#L363">363</a>         <strong class="jxr_keyword">if</strong> (format == Format.JUNIT &amp;&amp; !pathToCheck.endsWith(<span class="jxr_string">".xml"</span>)) {
+<a class="jxr_linenumber" name="L364" href="#L364">364</a>             <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> File(outFile, <span class="jxr_string">"dependency-check-junit.xml"</span>);
+<a class="jxr_linenumber" name="L365" href="#L365">365</a>         }
+<a class="jxr_linenumber" name="L366" href="#L366">366</a>         <strong class="jxr_keyword">if</strong> (format == Format.SARIF &amp;&amp; !pathToCheck.endsWith(<span class="jxr_string">".sarif"</span>)) {
+<a class="jxr_linenumber" name="L367" href="#L367">367</a>             <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> File(outFile, <span class="jxr_string">"dependency-check-report.sarif"</span>);
 <a class="jxr_linenumber" name="L368" href="#L368">368</a>         }
-<a class="jxr_linenumber" name="L369" href="#L369">369</a>     }
-<a class="jxr_linenumber" name="L370" href="#L370">370</a> 
-<a class="jxr_linenumber" name="L371" href="#L371">371</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L372" href="#L372">372</a> <em class="jxr_javadoccomment">     * Determines the report file name based on the give output location and</em>
-<a class="jxr_linenumber" name="L373" href="#L373">373</a> <em class="jxr_javadoccomment">     * format. If the output location contains a full file name that has the</em>
-<a class="jxr_linenumber" name="L374" href="#L374">374</a> <em class="jxr_javadoccomment">     * correct extension for the given report type then the output location is</em>
-<a class="jxr_linenumber" name="L375" href="#L375">375</a> <em class="jxr_javadoccomment">     * returned. However, if the output location is a directory, this method</em>
-<a class="jxr_linenumber" name="L376" href="#L376">376</a> <em class="jxr_javadoccomment">     * will generate the correct name for the given output format.</em>
-<a class="jxr_linenumber" name="L377" href="#L377">377</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L378" href="#L378">378</a> <em class="jxr_javadoccomment">     * @param outputLocation the specified output location</em>
-<a class="jxr_linenumber" name="L379" href="#L379">379</a> <em class="jxr_javadoccomment">     * @param format the report format</em>
-<a class="jxr_linenumber" name="L380" href="#L380">380</a> <em class="jxr_javadoccomment">     * @return the report File</em>
-<a class="jxr_linenumber" name="L381" href="#L381">381</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L382" href="#L382">382</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> File getReportFile(String outputLocation, <a href="../../../../org/owasp/dependencycheck/reporting/ReportGenerator.html">Format</a> format) {
-<a class="jxr_linenumber" name="L383" href="#L383">383</a>         File outFile = <strong class="jxr_keyword">new</strong> File(outputLocation);
-<a class="jxr_linenumber" name="L384" href="#L384">384</a>         <strong class="jxr_keyword">if</strong> (outFile.getParentFile() == <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="L385" href="#L385">385</a>             outFile = <strong class="jxr_keyword">new</strong> File(<span class="jxr_string">"."</span>, outputLocation);
-<a class="jxr_linenumber" name="L386" href="#L386">386</a>         }
-<a class="jxr_linenumber" name="L387" href="#L387">387</a>         <strong class="jxr_keyword">final</strong> String pathToCheck = outputLocation.toLowerCase();
-<a class="jxr_linenumber" name="L388" href="#L388">388</a>         <strong class="jxr_keyword">if</strong> (format == Format.XML &amp;&amp; !pathToCheck.endsWith(<span class="jxr_string">".xml"</span>)) {
-<a class="jxr_linenumber" name="L389" href="#L389">389</a>             <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> File(outFile, <span class="jxr_string">"dependency-check-report.xml"</span>);
-<a class="jxr_linenumber" name="L390" href="#L390">390</a>         }
-<a class="jxr_linenumber" name="L391" href="#L391">391</a>         <strong class="jxr_keyword">if</strong> (format == Format.HTML &amp;&amp; !pathToCheck.endsWith(<span class="jxr_string">".html"</span>) &amp;&amp; !pathToCheck.endsWith(<span class="jxr_string">".htm"</span>)) {
-<a class="jxr_linenumber" name="L392" href="#L392">392</a>             <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> File(outFile, <span class="jxr_string">"dependency-check-report.html"</span>);
-<a class="jxr_linenumber" name="L393" href="#L393">393</a>         }
-<a class="jxr_linenumber" name="L394" href="#L394">394</a>         <strong class="jxr_keyword">if</strong> (format == Format.JENKINS &amp;&amp; !pathToCheck.endsWith(<span class="jxr_string">".html"</span>) &amp;&amp; !pathToCheck.endsWith(<span class="jxr_string">".htm"</span>)) {
-<a class="jxr_linenumber" name="L395" href="#L395">395</a>             <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> File(outFile, <span class="jxr_string">"dependency-check-jenkins.html"</span>);
-<a class="jxr_linenumber" name="L396" href="#L396">396</a>         }
-<a class="jxr_linenumber" name="L397" href="#L397">397</a>         <strong class="jxr_keyword">if</strong> (format == Format.JSON &amp;&amp; !pathToCheck.endsWith(<span class="jxr_string">".json"</span>)) {
-<a class="jxr_linenumber" name="L398" href="#L398">398</a>             <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> File(outFile, <span class="jxr_string">"dependency-check-report.json"</span>);
-<a class="jxr_linenumber" name="L399" href="#L399">399</a>         }
-<a class="jxr_linenumber" name="L400" href="#L400">400</a>         <strong class="jxr_keyword">if</strong> (format == Format.CSV &amp;&amp; !pathToCheck.endsWith(<span class="jxr_string">".csv"</span>)) {
-<a class="jxr_linenumber" name="L401" href="#L401">401</a>             <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> File(outFile, <span class="jxr_string">"dependency-check-report.csv"</span>);
-<a class="jxr_linenumber" name="L402" href="#L402">402</a>         }
-<a class="jxr_linenumber" name="L403" href="#L403">403</a>         <strong class="jxr_keyword">if</strong> (format == Format.JUNIT &amp;&amp; !pathToCheck.endsWith(<span class="jxr_string">".xml"</span>)) {
-<a class="jxr_linenumber" name="L404" href="#L404">404</a>             <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> File(outFile, <span class="jxr_string">"dependency-check-junit.xml"</span>);
-<a class="jxr_linenumber" name="L405" href="#L405">405</a>         }
-<a class="jxr_linenumber" name="L406" href="#L406">406</a>         <strong class="jxr_keyword">if</strong> (format == Format.SARIF &amp;&amp; !pathToCheck.endsWith(<span class="jxr_string">".sarif"</span>)) {
-<a class="jxr_linenumber" name="L407" href="#L407">407</a>             <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> File(outFile, <span class="jxr_string">"dependency-check-report.sarif"</span>);
-<a class="jxr_linenumber" name="L408" href="#L408">408</a>         }
-<a class="jxr_linenumber" name="L409" href="#L409">409</a>         <strong class="jxr_keyword">if</strong> (format == Format.GITLAB &amp;&amp; !pathToCheck.endsWith(<span class="jxr_string">".json"</span>)) {
-<a class="jxr_linenumber" name="L410" href="#L410">410</a>             <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> File(outFile, <span class="jxr_string">"dependency-check-gitlab.json"</span>);
-<a class="jxr_linenumber" name="L411" href="#L411">411</a>         }
-<a class="jxr_linenumber" name="L412" href="#L412">412</a>         <strong class="jxr_keyword">return</strong> outFile;
-<a class="jxr_linenumber" name="L413" href="#L413">413</a>     }
-<a class="jxr_linenumber" name="L414" href="#L414">414</a> 
-<a class="jxr_linenumber" name="L415" href="#L415">415</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L416" href="#L416">416</a> <em class="jxr_javadoccomment">     * Generates a report from a given Velocity Template. The template name</em>
-<a class="jxr_linenumber" name="L417" href="#L417">417</a> <em class="jxr_javadoccomment">     * provided can be the name of a template contained in the jar file, such as</em>
-<a class="jxr_linenumber" name="L418" href="#L418">418</a> <em class="jxr_javadoccomment">     * 'XmlReport' or 'HtmlReport', or the template name can be the path to a</em>
-<a class="jxr_linenumber" name="L419" href="#L419">419</a> <em class="jxr_javadoccomment">     * template file.</em>
-<a class="jxr_linenumber" name="L420" href="#L420">420</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L421" href="#L421">421</a> <em class="jxr_javadoccomment">     * @param template the name of the template to load</em>
-<a class="jxr_linenumber" name="L422" href="#L422">422</a> <em class="jxr_javadoccomment">     * @param file the output file to write the report to</em>
-<a class="jxr_linenumber" name="L423" href="#L423">423</a> <em class="jxr_javadoccomment">     * @throws ReportException is thrown when the report cannot be generated</em>
-<a class="jxr_linenumber" name="L424" href="#L424">424</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L425" href="#L425">425</a>     @SuppressFBWarnings(justification = <span class="jxr_string">"try with resources will clean up the output stream"</span>, value = {<span class="jxr_string">"OBL_UNSATISFIED_OBLIGATION"</span>})
-<a class="jxr_linenumber" name="L426" href="#L426">426</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">void</strong> processTemplate(String template, File file) <strong class="jxr_keyword">throws</strong> ReportException {
-<a class="jxr_linenumber" name="L427" href="#L427">427</a>         ensureParentDirectoryExists(file);
-<a class="jxr_linenumber" name="L428" href="#L428">428</a>         <strong class="jxr_keyword">try</strong> (OutputStream output = <strong class="jxr_keyword">new</strong> FileOutputStream(file)) {
-<a class="jxr_linenumber" name="L429" href="#L429">429</a>             processTemplate(template, output);
-<a class="jxr_linenumber" name="L430" href="#L430">430</a>         } <strong class="jxr_keyword">catch</strong> (IOException ex) {
-<a class="jxr_linenumber" name="L431" href="#L431">431</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a href="../../../../org/owasp/dependencycheck/exception/ReportException.html">ReportException</a>(String.format(<span class="jxr_string">"Unable to write to file: %s"</span>, file), ex);
-<a class="jxr_linenumber" name="L432" href="#L432">432</a>         }
-<a class="jxr_linenumber" name="L433" href="#L433">433</a>     }
-<a class="jxr_linenumber" name="L434" href="#L434">434</a> 
-<a class="jxr_linenumber" name="L435" href="#L435">435</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L436" href="#L436">436</a> <em class="jxr_javadoccomment">     * Generates a report from a given Velocity Template. The template name</em>
-<a class="jxr_linenumber" name="L437" href="#L437">437</a> <em class="jxr_javadoccomment">     * provided can be the name of a template contained in the jar file, such as</em>
-<a class="jxr_linenumber" name="L438" href="#L438">438</a> <em class="jxr_javadoccomment">     * 'XmlReport' or 'HtmlReport', or the template name can be the path to a</em>
-<a class="jxr_linenumber" name="L439" href="#L439">439</a> <em class="jxr_javadoccomment">     * template file.</em>
-<a class="jxr_linenumber" name="L440" href="#L440">440</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L441" href="#L441">441</a> <em class="jxr_javadoccomment">     * @param templateName the name of the template to load</em>
-<a class="jxr_linenumber" name="L442" href="#L442">442</a> <em class="jxr_javadoccomment">     * @param outputStream the OutputStream to write the report to</em>
-<a class="jxr_linenumber" name="L443" href="#L443">443</a> <em class="jxr_javadoccomment">     * @throws ReportException is thrown when an exception occurs</em>
-<a class="jxr_linenumber" name="L444" href="#L444">444</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L445" href="#L445">445</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">void</strong> processTemplate(String templateName, OutputStream outputStream) <strong class="jxr_keyword">throws</strong> ReportException {
-<a class="jxr_linenumber" name="L446" href="#L446">446</a>         <strong class="jxr_keyword">try</strong> {
-<a class="jxr_linenumber" name="L447" href="#L447">447</a>             String logTag;
-<a class="jxr_linenumber" name="L448" href="#L448">448</a>             InputStream input;
-<a class="jxr_linenumber" name="L449" href="#L449">449</a>             <strong class="jxr_keyword">final</strong> File f = <strong class="jxr_keyword">new</strong> File(templateName);
-<a class="jxr_linenumber" name="L450" href="#L450">450</a>             <strong class="jxr_keyword">if</strong> (f.isFile()) {
-<a class="jxr_linenumber" name="L451" href="#L451">451</a>                 logTag = templateName;
-<a class="jxr_linenumber" name="L452" href="#L452">452</a>                 input = <strong class="jxr_keyword">new</strong> FileInputStream(f);
-<a class="jxr_linenumber" name="L453" href="#L453">453</a>             } <strong class="jxr_keyword">else</strong> {
-<a class="jxr_linenumber" name="L454" href="#L454">454</a>                 logTag = <span class="jxr_string">"templates/"</span> + templateName + <span class="jxr_string">".vsl"</span>;
-<a class="jxr_linenumber" name="L455" href="#L455">455</a>                 input = FileUtils.getResourceAsStream(logTag);
-<a class="jxr_linenumber" name="L456" href="#L456">456</a>             }
-<a class="jxr_linenumber" name="L457" href="#L457">457</a> 
-<a class="jxr_linenumber" name="L458" href="#L458">458</a>             <strong class="jxr_keyword">try</strong> (InputStreamReader reader = <strong class="jxr_keyword">new</strong> InputStreamReader(input, StandardCharsets.UTF_8);
-<a class="jxr_linenumber" name="L459" href="#L459">459</a>                  OutputStreamWriter writer = <strong class="jxr_keyword">new</strong> OutputStreamWriter(outputStream, StandardCharsets.UTF_8)) {
-<a class="jxr_linenumber" name="L460" href="#L460">460</a>                 <strong class="jxr_keyword">if</strong> (!velocityEngine.evaluate(context, writer, logTag, reader)) {
-<a class="jxr_linenumber" name="L461" href="#L461">461</a>                     <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a href="../../../../org/owasp/dependencycheck/exception/ReportException.html">ReportException</a>(<span class="jxr_string">"Failed to convert the template into html."</span>);
-<a class="jxr_linenumber" name="L462" href="#L462">462</a>                 }
-<a class="jxr_linenumber" name="L463" href="#L463">463</a>                 writer.flush();
-<a class="jxr_linenumber" name="L464" href="#L464">464</a>             }
-<a class="jxr_linenumber" name="L465" href="#L465">465</a>         } <strong class="jxr_keyword">catch</strong> (FileNotFoundException ex) {
-<a class="jxr_linenumber" name="L466" href="#L466">466</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a href="../../../../org/owasp/dependencycheck/exception/ReportException.html">ReportException</a>(<span class="jxr_string">"Unable to locate template file: "</span> + templateName, ex);
-<a class="jxr_linenumber" name="L467" href="#L467">467</a>         } <strong class="jxr_keyword">catch</strong> (IOException ex) {
-<a class="jxr_linenumber" name="L468" href="#L468">468</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a href="../../../../org/owasp/dependencycheck/exception/ReportException.html">ReportException</a>(<span class="jxr_string">"Unable to write the report"</span>, ex);
-<a class="jxr_linenumber" name="L469" href="#L469">469</a>         }
-<a class="jxr_linenumber" name="L470" href="#L470">470</a>     }
-<a class="jxr_linenumber" name="L471" href="#L471">471</a> 
-<a class="jxr_linenumber" name="L472" href="#L472">472</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L473" href="#L473">473</a> <em class="jxr_javadoccomment">     * Validates that the given file's parent directory exists. If the directory</em>
-<a class="jxr_linenumber" name="L474" href="#L474">474</a> <em class="jxr_javadoccomment">     * does not exist an attempt to create the necessary path is made; if that</em>
-<a class="jxr_linenumber" name="L475" href="#L475">475</a> <em class="jxr_javadoccomment">     * fails a ReportException will be raised.</em>
-<a class="jxr_linenumber" name="L476" href="#L476">476</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L477" href="#L477">477</a> <em class="jxr_javadoccomment">     * @param file the file or directory directory</em>
-<a class="jxr_linenumber" name="L478" href="#L478">478</a> <em class="jxr_javadoccomment">     * @throws ReportException thrown if the parent directory does not exist and</em>
-<a class="jxr_linenumber" name="L479" href="#L479">479</a> <em class="jxr_javadoccomment">     * cannot be created</em>
-<a class="jxr_linenumber" name="L480" href="#L480">480</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L481" href="#L481">481</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> ensureParentDirectoryExists(File file) <strong class="jxr_keyword">throws</strong> ReportException {
-<a class="jxr_linenumber" name="L482" href="#L482">482</a>         <strong class="jxr_keyword">if</strong> (!file.getParentFile().exists()) {
-<a class="jxr_linenumber" name="L483" href="#L483">483</a>             <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">boolean</strong> created = file.getParentFile().mkdirs();
-<a class="jxr_linenumber" name="L484" href="#L484">484</a>             <strong class="jxr_keyword">if</strong> (!created) {
-<a class="jxr_linenumber" name="L485" href="#L485">485</a>                 <strong class="jxr_keyword">final</strong> String msg = String.format(<span class="jxr_string">"Unable to create directory '%s'."</span>, file.getParentFile().getAbsolutePath());
-<a class="jxr_linenumber" name="L486" href="#L486">486</a>                 <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a href="../../../../org/owasp/dependencycheck/exception/ReportException.html">ReportException</a>(msg);
-<a class="jxr_linenumber" name="L487" href="#L487">487</a>             }
-<a class="jxr_linenumber" name="L488" href="#L488">488</a>         }
-<a class="jxr_linenumber" name="L489" href="#L489">489</a>     }
-<a class="jxr_linenumber" name="L490" href="#L490">490</a> 
-<a class="jxr_linenumber" name="L491" href="#L491">491</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L492" href="#L492">492</a> <em class="jxr_javadoccomment">     * Reformats the given XML file.</em>
-<a class="jxr_linenumber" name="L493" href="#L493">493</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L494" href="#L494">494</a> <em class="jxr_javadoccomment">     * @param path the path to the XML file to be reformatted</em>
-<a class="jxr_linenumber" name="L495" href="#L495">495</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L496" href="#L496">496</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> pretifyXml(String path) {
-<a class="jxr_linenumber" name="L497" href="#L497">497</a>         <strong class="jxr_keyword">final</strong> String outputPath = path + <span class="jxr_string">".pretty"</span>;
-<a class="jxr_linenumber" name="L498" href="#L498">498</a>         <strong class="jxr_keyword">final</strong> File in = <strong class="jxr_keyword">new</strong> File(path);
-<a class="jxr_linenumber" name="L499" href="#L499">499</a>         <strong class="jxr_keyword">final</strong> File out = <strong class="jxr_keyword">new</strong> File(outputPath);
-<a class="jxr_linenumber" name="L500" href="#L500">500</a>         <strong class="jxr_keyword">try</strong> (OutputStream os = <strong class="jxr_keyword">new</strong> FileOutputStream(out)) {
-<a class="jxr_linenumber" name="L501" href="#L501">501</a>             <strong class="jxr_keyword">final</strong> TransformerFactory transformerFactory = SAXTransformerFactory.newInstance();
-<a class="jxr_linenumber" name="L502" href="#L502">502</a>             transformerFactory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, <strong class="jxr_keyword">true</strong>);
-<a class="jxr_linenumber" name="L503" href="#L503">503</a>             <strong class="jxr_keyword">final</strong> Transformer transformer = transformerFactory.newTransformer();
-<a class="jxr_linenumber" name="L504" href="#L504">504</a>             transformer.setOutputProperty(OutputKeys.ENCODING, StandardCharsets.UTF_8.name());
-<a class="jxr_linenumber" name="L505" href="#L505">505</a>             transformer.setOutputProperty(OutputKeys.INDENT, <span class="jxr_string">"yes"</span>);
-<a class="jxr_linenumber" name="L506" href="#L506">506</a>             transformer.setOutputProperty(<span class="jxr_string">"{http://xml.apache.org/xslt}indent-amount"</span>, <span class="jxr_string">"2"</span>);
-<a class="jxr_linenumber" name="L507" href="#L507">507</a> 
-<a class="jxr_linenumber" name="L508" href="#L508">508</a>             <strong class="jxr_keyword">final</strong> SAXSource saxs = <strong class="jxr_keyword">new</strong> SAXSource(XmlUtils.buildSecureXmlReader(), <strong class="jxr_keyword">new</strong> InputSource(path));
-<a class="jxr_linenumber" name="L509" href="#L509">509</a>             transformer.transform(saxs, <strong class="jxr_keyword">new</strong> StreamResult(<strong class="jxr_keyword">new</strong> OutputStreamWriter(os, StandardCharsets.UTF_8)));
-<a class="jxr_linenumber" name="L510" href="#L510">510</a>         } <strong class="jxr_keyword">catch</strong> (ParserConfigurationException | TransformerConfigurationException ex) {
-<a class="jxr_linenumber" name="L511" href="#L511">511</a>             LOGGER.debug(<span class="jxr_string">"Configuration exception when pretty printing"</span>, ex);
-<a class="jxr_linenumber" name="L512" href="#L512">512</a>             LOGGER.error(<span class="jxr_string">"Unable to generate pretty report, caused by: {}"</span>, ex.getMessage());
-<a class="jxr_linenumber" name="L513" href="#L513">513</a>         } <strong class="jxr_keyword">catch</strong> (TransformerException | SAXException | IOException ex) {
-<a class="jxr_linenumber" name="L514" href="#L514">514</a>             LOGGER.debug(<span class="jxr_string">"Malformed XML?"</span>, ex);
-<a class="jxr_linenumber" name="L515" href="#L515">515</a>             LOGGER.error(<span class="jxr_string">"Unable to generate pretty report, caused by: {}"</span>, ex.getMessage());
-<a class="jxr_linenumber" name="L516" href="#L516">516</a>         }
-<a class="jxr_linenumber" name="L517" href="#L517">517</a>         replaceWithPrettified(out, in);
-<a class="jxr_linenumber" name="L518" href="#L518">518</a>     }
-<a class="jxr_linenumber" name="L519" href="#L519">519</a> 
-<a class="jxr_linenumber" name="L520" href="#L520">520</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L521" href="#L521">521</a> <em class="jxr_javadoccomment">     * Reformats the given JSON file.</em>
-<a class="jxr_linenumber" name="L522" href="#L522">522</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L523" href="#L523">523</a> <em class="jxr_javadoccomment">     * @param pathToJson the path to the JSON file to be reformatted</em>
-<a class="jxr_linenumber" name="L524" href="#L524">524</a> <em class="jxr_javadoccomment">     * @throws ReportException thrown if the given JSON file is malformed</em>
-<a class="jxr_linenumber" name="L525" href="#L525">525</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L526" href="#L526">526</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> pretifyJson(String pathToJson) <strong class="jxr_keyword">throws</strong> ReportException {
-<a class="jxr_linenumber" name="L527" href="#L527">527</a>         LOGGER.debug(<span class="jxr_string">"pretify json: {}"</span>, pathToJson);
-<a class="jxr_linenumber" name="L528" href="#L528">528</a>         <strong class="jxr_keyword">final</strong> String outputPath = pathToJson + <span class="jxr_string">".pretty"</span>;
-<a class="jxr_linenumber" name="L529" href="#L529">529</a>         <strong class="jxr_keyword">final</strong> File in = <strong class="jxr_keyword">new</strong> File(pathToJson);
-<a class="jxr_linenumber" name="L530" href="#L530">530</a>         <strong class="jxr_keyword">final</strong> File out = <strong class="jxr_keyword">new</strong> File(outputPath);
-<a class="jxr_linenumber" name="L531" href="#L531">531</a> 
-<a class="jxr_linenumber" name="L532" href="#L532">532</a>         <strong class="jxr_keyword">final</strong> JsonFactory factory = <strong class="jxr_keyword">new</strong> JsonFactory();
-<a class="jxr_linenumber" name="L533" href="#L533">533</a> 
-<a class="jxr_linenumber" name="L534" href="#L534">534</a>         <strong class="jxr_keyword">try</strong> (InputStream is = <strong class="jxr_keyword">new</strong> FileInputStream(in); OutputStream os = <strong class="jxr_keyword">new</strong> FileOutputStream(out)) {
-<a class="jxr_linenumber" name="L535" href="#L535">535</a> 
-<a class="jxr_linenumber" name="L536" href="#L536">536</a>             <strong class="jxr_keyword">final</strong> JsonParser parser = factory.createParser(is);
-<a class="jxr_linenumber" name="L537" href="#L537">537</a>             <strong class="jxr_keyword">final</strong> JsonGenerator generator = factory.createGenerator(os);
-<a class="jxr_linenumber" name="L538" href="#L538">538</a> 
-<a class="jxr_linenumber" name="L539" href="#L539">539</a>             generator.useDefaultPrettyPrinter();
-<a class="jxr_linenumber" name="L540" href="#L540">540</a> 
-<a class="jxr_linenumber" name="L541" href="#L541">541</a>             <strong class="jxr_keyword">while</strong> (parser.nextToken() != <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="L542" href="#L542">542</a>                 generator.copyCurrentEvent(parser);
-<a class="jxr_linenumber" name="L543" href="#L543">543</a>             }
-<a class="jxr_linenumber" name="L544" href="#L544">544</a>             generator.flush();
-<a class="jxr_linenumber" name="L545" href="#L545">545</a>         } <strong class="jxr_keyword">catch</strong> (IOException ex) {
-<a class="jxr_linenumber" name="L546" href="#L546">546</a>             LOGGER.debug(<span class="jxr_string">"Malformed JSON?"</span>, ex);
-<a class="jxr_linenumber" name="L547" href="#L547">547</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a href="../../../../org/owasp/dependencycheck/exception/ReportException.html">ReportException</a>(<span class="jxr_string">"Unable to generate json report"</span>, ex);
-<a class="jxr_linenumber" name="L548" href="#L548">548</a>         }
-<a class="jxr_linenumber" name="L549" href="#L549">549</a>         replaceWithPrettified(out, in);
-<a class="jxr_linenumber" name="L550" href="#L550">550</a>     }
-<a class="jxr_linenumber" name="L551" href="#L551">551</a> 
-<a class="jxr_linenumber" name="L552" href="#L552">552</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> replaceWithPrettified(File prettified, File original) {
-<a class="jxr_linenumber" name="L553" href="#L553">553</a>         <strong class="jxr_keyword">if</strong> (prettified.isFile() &amp;&amp; original.isFile() &amp;&amp; original.delete()) {
-<a class="jxr_linenumber" name="L554" href="#L554">554</a>             <strong class="jxr_keyword">try</strong> {
-<a class="jxr_linenumber" name="L555" href="#L555">555</a>                 Thread.sleep(1000);
-<a class="jxr_linenumber" name="L556" href="#L556">556</a>                 Files.move(prettified.toPath(), original.toPath());
-<a class="jxr_linenumber" name="L557" href="#L557">557</a>             } <strong class="jxr_keyword">catch</strong> (IOException ex) {
-<a class="jxr_linenumber" name="L558" href="#L558">558</a>                 LOGGER.error(<span class="jxr_string">"Unable to generate pretty report, caused by: {}"</span>, ex.getMessage());
-<a class="jxr_linenumber" name="L559" href="#L559">559</a>             } <strong class="jxr_keyword">catch</strong> (InterruptedException ex) {
-<a class="jxr_linenumber" name="L560" href="#L560">560</a>                 Thread.currentThread().interrupt();
-<a class="jxr_linenumber" name="L561" href="#L561">561</a>                 LOGGER.error(<span class="jxr_string">"Unable to generate pretty report, caused by: {}"</span>, ex.getMessage());
-<a class="jxr_linenumber" name="L562" href="#L562">562</a>             }
-<a class="jxr_linenumber" name="L563" href="#L563">563</a>         }
-<a class="jxr_linenumber" name="L564" href="#L564">564</a>     }
-<a class="jxr_linenumber" name="L565" href="#L565">565</a> 
-<a class="jxr_linenumber" name="L566" href="#L566">566</a> }
+<a class="jxr_linenumber" name="L369" href="#L369">369</a>         <strong class="jxr_keyword">if</strong> (format == Format.GITLAB &amp;&amp; !pathToCheck.endsWith(<span class="jxr_string">".json"</span>)) {
+<a class="jxr_linenumber" name="L370" href="#L370">370</a>             <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> File(outFile, <span class="jxr_string">"dependency-check-gitlab.json"</span>);
+<a class="jxr_linenumber" name="L371" href="#L371">371</a>         }
+<a class="jxr_linenumber" name="L372" href="#L372">372</a>         <strong class="jxr_keyword">return</strong> outFile;
+<a class="jxr_linenumber" name="L373" href="#L373">373</a>     }
+<a class="jxr_linenumber" name="L374" href="#L374">374</a> 
+<a class="jxr_linenumber" name="L375" href="#L375">375</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L376" href="#L376">376</a> <em class="jxr_javadoccomment">     * Generates a report from a given Velocity Template. The template name</em>
+<a class="jxr_linenumber" name="L377" href="#L377">377</a> <em class="jxr_javadoccomment">     * provided can be the name of a template contained in the jar file, such as</em>
+<a class="jxr_linenumber" name="L378" href="#L378">378</a> <em class="jxr_javadoccomment">     * 'XmlReport' or 'HtmlReport', or the template name can be the path to a</em>
+<a class="jxr_linenumber" name="L379" href="#L379">379</a> <em class="jxr_javadoccomment">     * template file.</em>
+<a class="jxr_linenumber" name="L380" href="#L380">380</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L381" href="#L381">381</a> <em class="jxr_javadoccomment">     * @param template the name of the template to load</em>
+<a class="jxr_linenumber" name="L382" href="#L382">382</a> <em class="jxr_javadoccomment">     * @param file the output file to write the report to</em>
+<a class="jxr_linenumber" name="L383" href="#L383">383</a> <em class="jxr_javadoccomment">     * @throws ReportException is thrown when the report cannot be generated</em>
+<a class="jxr_linenumber" name="L384" href="#L384">384</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L385" href="#L385">385</a>     @SuppressFBWarnings(justification = <span class="jxr_string">"try with resources will clean up the output stream"</span>, value = {<span class="jxr_string">"OBL_UNSATISFIED_OBLIGATION"</span>})
+<a class="jxr_linenumber" name="L386" href="#L386">386</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">void</strong> processTemplate(String template, File file) <strong class="jxr_keyword">throws</strong> ReportException {
+<a class="jxr_linenumber" name="L387" href="#L387">387</a>         ensureParentDirectoryExists(file);
+<a class="jxr_linenumber" name="L388" href="#L388">388</a>         <strong class="jxr_keyword">try</strong> (OutputStream output = <strong class="jxr_keyword">new</strong> FileOutputStream(file)) {
+<a class="jxr_linenumber" name="L389" href="#L389">389</a>             processTemplate(template, output);
+<a class="jxr_linenumber" name="L390" href="#L390">390</a>         } <strong class="jxr_keyword">catch</strong> (IOException ex) {
+<a class="jxr_linenumber" name="L391" href="#L391">391</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a href="../../../../org/owasp/dependencycheck/exception/ReportException.html">ReportException</a>(String.format(<span class="jxr_string">"Unable to write to file: %s"</span>, file), ex);
+<a class="jxr_linenumber" name="L392" href="#L392">392</a>         }
+<a class="jxr_linenumber" name="L393" href="#L393">393</a>     }
+<a class="jxr_linenumber" name="L394" href="#L394">394</a> 
+<a class="jxr_linenumber" name="L395" href="#L395">395</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L396" href="#L396">396</a> <em class="jxr_javadoccomment">     * Generates a report from a given Velocity Template. The template name</em>
+<a class="jxr_linenumber" name="L397" href="#L397">397</a> <em class="jxr_javadoccomment">     * provided can be the name of a template contained in the jar file, such as</em>
+<a class="jxr_linenumber" name="L398" href="#L398">398</a> <em class="jxr_javadoccomment">     * 'XmlReport' or 'HtmlReport', or the template name can be the path to a</em>
+<a class="jxr_linenumber" name="L399" href="#L399">399</a> <em class="jxr_javadoccomment">     * template file.</em>
+<a class="jxr_linenumber" name="L400" href="#L400">400</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L401" href="#L401">401</a> <em class="jxr_javadoccomment">     * @param templateName the name of the template to load</em>
+<a class="jxr_linenumber" name="L402" href="#L402">402</a> <em class="jxr_javadoccomment">     * @param outputStream the OutputStream to write the report to</em>
+<a class="jxr_linenumber" name="L403" href="#L403">403</a> <em class="jxr_javadoccomment">     * @throws ReportException is thrown when an exception occurs</em>
+<a class="jxr_linenumber" name="L404" href="#L404">404</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L405" href="#L405">405</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">void</strong> processTemplate(String templateName, OutputStream outputStream) <strong class="jxr_keyword">throws</strong> ReportException {
+<a class="jxr_linenumber" name="L406" href="#L406">406</a>         <strong class="jxr_keyword">try</strong> {
+<a class="jxr_linenumber" name="L407" href="#L407">407</a>             String logTag;
+<a class="jxr_linenumber" name="L408" href="#L408">408</a>             InputStream input;
+<a class="jxr_linenumber" name="L409" href="#L409">409</a>             <strong class="jxr_keyword">final</strong> File f = <strong class="jxr_keyword">new</strong> File(templateName);
+<a class="jxr_linenumber" name="L410" href="#L410">410</a>             <strong class="jxr_keyword">if</strong> (f.isFile()) {
+<a class="jxr_linenumber" name="L411" href="#L411">411</a>                 logTag = templateName;
+<a class="jxr_linenumber" name="L412" href="#L412">412</a>                 input = <strong class="jxr_keyword">new</strong> FileInputStream(f);
+<a class="jxr_linenumber" name="L413" href="#L413">413</a>             } <strong class="jxr_keyword">else</strong> {
+<a class="jxr_linenumber" name="L414" href="#L414">414</a>                 logTag = <span class="jxr_string">"templates/"</span> + templateName + <span class="jxr_string">".vsl"</span>;
+<a class="jxr_linenumber" name="L415" href="#L415">415</a>                 input = FileUtils.getResourceAsStream(logTag);
+<a class="jxr_linenumber" name="L416" href="#L416">416</a>             }
+<a class="jxr_linenumber" name="L417" href="#L417">417</a> 
+<a class="jxr_linenumber" name="L418" href="#L418">418</a>             <strong class="jxr_keyword">try</strong> (InputStreamReader reader = <strong class="jxr_keyword">new</strong> InputStreamReader(input, StandardCharsets.UTF_8);
+<a class="jxr_linenumber" name="L419" href="#L419">419</a>                  OutputStreamWriter writer = <strong class="jxr_keyword">new</strong> OutputStreamWriter(outputStream, StandardCharsets.UTF_8)) {
+<a class="jxr_linenumber" name="L420" href="#L420">420</a>                 <strong class="jxr_keyword">if</strong> (!velocityEngine.evaluate(context, writer, logTag, reader)) {
+<a class="jxr_linenumber" name="L421" href="#L421">421</a>                     <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a href="../../../../org/owasp/dependencycheck/exception/ReportException.html">ReportException</a>(<span class="jxr_string">"Failed to convert the template into html."</span>);
+<a class="jxr_linenumber" name="L422" href="#L422">422</a>                 }
+<a class="jxr_linenumber" name="L423" href="#L423">423</a>                 writer.flush();
+<a class="jxr_linenumber" name="L424" href="#L424">424</a>             }
+<a class="jxr_linenumber" name="L425" href="#L425">425</a>         } <strong class="jxr_keyword">catch</strong> (FileNotFoundException ex) {
+<a class="jxr_linenumber" name="L426" href="#L426">426</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a href="../../../../org/owasp/dependencycheck/exception/ReportException.html">ReportException</a>(<span class="jxr_string">"Unable to locate template file: "</span> + templateName, ex);
+<a class="jxr_linenumber" name="L427" href="#L427">427</a>         } <strong class="jxr_keyword">catch</strong> (IOException ex) {
+<a class="jxr_linenumber" name="L428" href="#L428">428</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a href="../../../../org/owasp/dependencycheck/exception/ReportException.html">ReportException</a>(<span class="jxr_string">"Unable to write the report"</span>, ex);
+<a class="jxr_linenumber" name="L429" href="#L429">429</a>         }
+<a class="jxr_linenumber" name="L430" href="#L430">430</a>     }
+<a class="jxr_linenumber" name="L431" href="#L431">431</a> 
+<a class="jxr_linenumber" name="L432" href="#L432">432</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L433" href="#L433">433</a> <em class="jxr_javadoccomment">     * Validates that the given file's parent directory exists. If the directory</em>
+<a class="jxr_linenumber" name="L434" href="#L434">434</a> <em class="jxr_javadoccomment">     * does not exist an attempt to create the necessary path is made; if that</em>
+<a class="jxr_linenumber" name="L435" href="#L435">435</a> <em class="jxr_javadoccomment">     * fails a ReportException will be raised.</em>
+<a class="jxr_linenumber" name="L436" href="#L436">436</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L437" href="#L437">437</a> <em class="jxr_javadoccomment">     * @param file the file or directory directory</em>
+<a class="jxr_linenumber" name="L438" href="#L438">438</a> <em class="jxr_javadoccomment">     * @throws ReportException thrown if the parent directory does not exist and</em>
+<a class="jxr_linenumber" name="L439" href="#L439">439</a> <em class="jxr_javadoccomment">     * cannot be created</em>
+<a class="jxr_linenumber" name="L440" href="#L440">440</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L441" href="#L441">441</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> ensureParentDirectoryExists(File file) <strong class="jxr_keyword">throws</strong> ReportException {
+<a class="jxr_linenumber" name="L442" href="#L442">442</a>         <strong class="jxr_keyword">if</strong> (!file.getParentFile().exists()) {
+<a class="jxr_linenumber" name="L443" href="#L443">443</a>             <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">boolean</strong> created = file.getParentFile().mkdirs();
+<a class="jxr_linenumber" name="L444" href="#L444">444</a>             <strong class="jxr_keyword">if</strong> (!created) {
+<a class="jxr_linenumber" name="L445" href="#L445">445</a>                 <strong class="jxr_keyword">final</strong> String msg = String.format(<span class="jxr_string">"Unable to create directory '%s'."</span>, file.getParentFile().getAbsolutePath());
+<a class="jxr_linenumber" name="L446" href="#L446">446</a>                 <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a href="../../../../org/owasp/dependencycheck/exception/ReportException.html">ReportException</a>(msg);
+<a class="jxr_linenumber" name="L447" href="#L447">447</a>             }
+<a class="jxr_linenumber" name="L448" href="#L448">448</a>         }
+<a class="jxr_linenumber" name="L449" href="#L449">449</a>     }
+<a class="jxr_linenumber" name="L450" href="#L450">450</a> 
+<a class="jxr_linenumber" name="L451" href="#L451">451</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L452" href="#L452">452</a> <em class="jxr_javadoccomment">     * Reformats the given XML file.</em>
+<a class="jxr_linenumber" name="L453" href="#L453">453</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L454" href="#L454">454</a> <em class="jxr_javadoccomment">     * @param path the path to the XML file to be reformatted</em>
+<a class="jxr_linenumber" name="L455" href="#L455">455</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L456" href="#L456">456</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> pretifyXml(String path) {
+<a class="jxr_linenumber" name="L457" href="#L457">457</a>         <strong class="jxr_keyword">final</strong> String outputPath = path + <span class="jxr_string">".pretty"</span>;
+<a class="jxr_linenumber" name="L458" href="#L458">458</a>         <strong class="jxr_keyword">final</strong> File in = <strong class="jxr_keyword">new</strong> File(path);
+<a class="jxr_linenumber" name="L459" href="#L459">459</a>         <strong class="jxr_keyword">final</strong> File out = <strong class="jxr_keyword">new</strong> File(outputPath);
+<a class="jxr_linenumber" name="L460" href="#L460">460</a>         <strong class="jxr_keyword">try</strong> (OutputStream os = <strong class="jxr_keyword">new</strong> FileOutputStream(out)) {
+<a class="jxr_linenumber" name="L461" href="#L461">461</a>             <strong class="jxr_keyword">final</strong> TransformerFactory transformerFactory = SAXTransformerFactory.newInstance();
+<a class="jxr_linenumber" name="L462" href="#L462">462</a>             transformerFactory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, <strong class="jxr_keyword">true</strong>);
+<a class="jxr_linenumber" name="L463" href="#L463">463</a>             <strong class="jxr_keyword">final</strong> Transformer transformer = transformerFactory.newTransformer();
+<a class="jxr_linenumber" name="L464" href="#L464">464</a>             transformer.setOutputProperty(OutputKeys.ENCODING, StandardCharsets.UTF_8.name());
+<a class="jxr_linenumber" name="L465" href="#L465">465</a>             transformer.setOutputProperty(OutputKeys.INDENT, <span class="jxr_string">"yes"</span>);
+<a class="jxr_linenumber" name="L466" href="#L466">466</a>             transformer.setOutputProperty(<span class="jxr_string">"{http://xml.apache.org/xslt}indent-amount"</span>, <span class="jxr_string">"2"</span>);
+<a class="jxr_linenumber" name="L467" href="#L467">467</a> 
+<a class="jxr_linenumber" name="L468" href="#L468">468</a>             <strong class="jxr_keyword">final</strong> SAXSource saxs = <strong class="jxr_keyword">new</strong> SAXSource(XmlUtils.buildSecureXmlReader(), <strong class="jxr_keyword">new</strong> InputSource(path));
+<a class="jxr_linenumber" name="L469" href="#L469">469</a>             transformer.transform(saxs, <strong class="jxr_keyword">new</strong> StreamResult(<strong class="jxr_keyword">new</strong> OutputStreamWriter(os, StandardCharsets.UTF_8)));
+<a class="jxr_linenumber" name="L470" href="#L470">470</a>         } <strong class="jxr_keyword">catch</strong> (ParserConfigurationException | TransformerConfigurationException ex) {
+<a class="jxr_linenumber" name="L471" href="#L471">471</a>             LOGGER.debug(<span class="jxr_string">"Configuration exception when pretty printing"</span>, ex);
+<a class="jxr_linenumber" name="L472" href="#L472">472</a>             LOGGER.error(<span class="jxr_string">"Unable to generate pretty report, caused by: {}"</span>, ex.getMessage());
+<a class="jxr_linenumber" name="L473" href="#L473">473</a>         } <strong class="jxr_keyword">catch</strong> (TransformerException | SAXException | IOException ex) {
+<a class="jxr_linenumber" name="L474" href="#L474">474</a>             LOGGER.debug(<span class="jxr_string">"Malformed XML?"</span>, ex);
+<a class="jxr_linenumber" name="L475" href="#L475">475</a>             LOGGER.error(<span class="jxr_string">"Unable to generate pretty report, caused by: {}"</span>, ex.getMessage());
+<a class="jxr_linenumber" name="L476" href="#L476">476</a>         }
+<a class="jxr_linenumber" name="L477" href="#L477">477</a>         replaceWithPrettified(out, in);
+<a class="jxr_linenumber" name="L478" href="#L478">478</a>     }
+<a class="jxr_linenumber" name="L479" href="#L479">479</a> 
+<a class="jxr_linenumber" name="L480" href="#L480">480</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L481" href="#L481">481</a> <em class="jxr_javadoccomment">     * Reformats the given JSON file.</em>
+<a class="jxr_linenumber" name="L482" href="#L482">482</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L483" href="#L483">483</a> <em class="jxr_javadoccomment">     * @param pathToJson the path to the JSON file to be reformatted</em>
+<a class="jxr_linenumber" name="L484" href="#L484">484</a> <em class="jxr_javadoccomment">     * @throws ReportException thrown if the given JSON file is malformed</em>
+<a class="jxr_linenumber" name="L485" href="#L485">485</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L486" href="#L486">486</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> pretifyJson(String pathToJson) <strong class="jxr_keyword">throws</strong> ReportException {
+<a class="jxr_linenumber" name="L487" href="#L487">487</a>         LOGGER.debug(<span class="jxr_string">"pretify json: {}"</span>, pathToJson);
+<a class="jxr_linenumber" name="L488" href="#L488">488</a>         <strong class="jxr_keyword">final</strong> String outputPath = pathToJson + <span class="jxr_string">".pretty"</span>;
+<a class="jxr_linenumber" name="L489" href="#L489">489</a>         <strong class="jxr_keyword">final</strong> File in = <strong class="jxr_keyword">new</strong> File(pathToJson);
+<a class="jxr_linenumber" name="L490" href="#L490">490</a>         <strong class="jxr_keyword">final</strong> File out = <strong class="jxr_keyword">new</strong> File(outputPath);
+<a class="jxr_linenumber" name="L491" href="#L491">491</a> 
+<a class="jxr_linenumber" name="L492" href="#L492">492</a>         <strong class="jxr_keyword">final</strong> JsonFactory factory = <strong class="jxr_keyword">new</strong> JsonFactory();
+<a class="jxr_linenumber" name="L493" href="#L493">493</a> 
+<a class="jxr_linenumber" name="L494" href="#L494">494</a>         <strong class="jxr_keyword">try</strong> (InputStream is = <strong class="jxr_keyword">new</strong> FileInputStream(in); OutputStream os = <strong class="jxr_keyword">new</strong> FileOutputStream(out)) {
+<a class="jxr_linenumber" name="L495" href="#L495">495</a> 
+<a class="jxr_linenumber" name="L496" href="#L496">496</a>             <strong class="jxr_keyword">final</strong> JsonParser parser = factory.createParser(is);
+<a class="jxr_linenumber" name="L497" href="#L497">497</a>             <strong class="jxr_keyword">final</strong> JsonGenerator generator = factory.createGenerator(os);
+<a class="jxr_linenumber" name="L498" href="#L498">498</a> 
+<a class="jxr_linenumber" name="L499" href="#L499">499</a>             generator.useDefaultPrettyPrinter();
+<a class="jxr_linenumber" name="L500" href="#L500">500</a> 
+<a class="jxr_linenumber" name="L501" href="#L501">501</a>             <strong class="jxr_keyword">while</strong> (parser.nextToken() != <strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="L502" href="#L502">502</a>                 generator.copyCurrentEvent(parser);
+<a class="jxr_linenumber" name="L503" href="#L503">503</a>             }
+<a class="jxr_linenumber" name="L504" href="#L504">504</a>             generator.flush();
+<a class="jxr_linenumber" name="L505" href="#L505">505</a>         } <strong class="jxr_keyword">catch</strong> (IOException ex) {
+<a class="jxr_linenumber" name="L506" href="#L506">506</a>             LOGGER.debug(<span class="jxr_string">"Malformed JSON?"</span>, ex);
+<a class="jxr_linenumber" name="L507" href="#L507">507</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a href="../../../../org/owasp/dependencycheck/exception/ReportException.html">ReportException</a>(<span class="jxr_string">"Unable to generate json report"</span>, ex);
+<a class="jxr_linenumber" name="L508" href="#L508">508</a>         }
+<a class="jxr_linenumber" name="L509" href="#L509">509</a>         replaceWithPrettified(out, in);
+<a class="jxr_linenumber" name="L510" href="#L510">510</a>     }
+<a class="jxr_linenumber" name="L511" href="#L511">511</a> 
+<a class="jxr_linenumber" name="L512" href="#L512">512</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> replaceWithPrettified(File prettified, File original) {
+<a class="jxr_linenumber" name="L513" href="#L513">513</a>         <strong class="jxr_keyword">if</strong> (prettified.isFile() &amp;&amp; original.isFile() &amp;&amp; original.delete()) {
+<a class="jxr_linenumber" name="L514" href="#L514">514</a>             <strong class="jxr_keyword">try</strong> {
+<a class="jxr_linenumber" name="L515" href="#L515">515</a>                 Thread.sleep(1000);
+<a class="jxr_linenumber" name="L516" href="#L516">516</a>                 Files.move(prettified.toPath(), original.toPath());
+<a class="jxr_linenumber" name="L517" href="#L517">517</a>             } <strong class="jxr_keyword">catch</strong> (IOException ex) {
+<a class="jxr_linenumber" name="L518" href="#L518">518</a>                 LOGGER.error(<span class="jxr_string">"Unable to generate pretty report, caused by: {}"</span>, ex.getMessage());
+<a class="jxr_linenumber" name="L519" href="#L519">519</a>             } <strong class="jxr_keyword">catch</strong> (InterruptedException ex) {
+<a class="jxr_linenumber" name="L520" href="#L520">520</a>                 Thread.currentThread().interrupt();
+<a class="jxr_linenumber" name="L521" href="#L521">521</a>                 LOGGER.error(<span class="jxr_string">"Unable to generate pretty report, caused by: {}"</span>, ex.getMessage());
+<a class="jxr_linenumber" name="L522" href="#L522">522</a>             }
+<a class="jxr_linenumber" name="L523" href="#L523">523</a>         }
+<a class="jxr_linenumber" name="L524" href="#L524">524</a>     }
+<a class="jxr_linenumber" name="L525" href="#L525">525</a> 
+<a class="jxr_linenumber" name="L526" href="#L526">526</a> }
 </pre>
 <hr/>
 <div id="footer">Copyright &#169; 2012&#x2013;2026 <a href="https://www.owasp.org">OWASP</a>. All rights reserved.</div>

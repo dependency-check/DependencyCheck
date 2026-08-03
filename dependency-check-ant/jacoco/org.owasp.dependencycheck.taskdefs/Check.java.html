@@ -143,8 +143,7 @@ public class Check extends Update {
      */
     private Boolean nexusAnalyzerEnabled;
     /**
-     * The URL of a Nexus server's REST API end point
-     * (http://domain/nexus/service/local).
+     * Sets the Nexus Repository v3 API base URL (example &lt;a href=&quot;https://domain.enterprise/nexus/&quot;&gt;https://domain.enterprise/nexus/&lt;/a&gt;).
      */
     private String nexusUrl;
     /**
@@ -197,7 +196,7 @@ public class Check extends Update {
     /**
      * The name of the project being analyzed.
      */
-<span class="fc" id="L200">    private String projectName = &quot;dependency-check&quot;;</span>
+<span class="fc" id="L199">    private String projectName = &quot;dependency-check&quot;;</span>
     /**
      * Specifies the destination directory for the generated Dependency-Check
      * report.
@@ -207,7 +206,7 @@ public class Check extends Update {
      * If using the JUNIT report format the junitFailOnCVSS sets the CVSS score
      * threshold that is considered a failure. The default is 0.
      */
-<span class="fc" id="L210">    private float junitFailOnCVSS = 0;</span>
+<span class="fc" id="L209">    private float junitFailOnCVSS = 0;</span>
     /**
      * Specifies if the build should be failed if a CVSS score above a specified
      * level is identified. The default is 11 which means since the CVSS scores
@@ -215,7 +214,7 @@ public class Check extends Update {
      * to 11. The valid range for the fail build on CVSS is 0 to 11, where
      * anything above 10 will not cause the build to fail.
      */
-<span class="fc" id="L218">    private float failBuildOnCVSS = 11;</span>
+<span class="fc" id="L217">    private float failBuildOnCVSS = 11;</span>
     /**
      * Sets whether auto-updating of the NVD CVE/CPE data is enabled. It is not
      * recommended that this be turned to false. Default is true.
@@ -225,22 +224,22 @@ public class Check extends Update {
      * The report format to be generated (HTML, XML, CSV, JSON, JUNIT, SARIF,
      * JENKINS, GITLAB, ALL). Default is HTML.
      */
-<span class="fc" id="L228">    private String reportFormat = &quot;HTML&quot;;</span>
+<span class="fc" id="L227">    private String reportFormat = &quot;HTML&quot;;</span>
     /**
      * The report format to be generated (HTML, XML, CSV, JSON, JUNIT, SARIF,
      * JENKINS, GITLAB, ALL). Default is HTML.
      */
-<span class="fc" id="L233">    private final List&lt;String&gt; reportFormats = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L232">    private final List&lt;String&gt; reportFormats = new ArrayList&lt;&gt;();</span>
     /**
      * Whether the JSON and XML reports should be pretty printed; the default is
      * false.
      */
-<span class="fc" id="L238">    private Boolean prettyPrint = null;</span>
+<span class="fc" id="L237">    private Boolean prettyPrint = null;</span>
 
     /**
      * Suppression file paths.
      */
-<span class="fc" id="L243">    @SuppressWarnings(&quot;CanBeFinal&quot;)</span>
+<span class="fc" id="L242">    @SuppressWarnings(&quot;CanBeFinal&quot;)</span>
     private final List&lt;String&gt; suppressionFiles = new ArrayList&lt;&gt;();
 
     /**
@@ -250,7 +249,7 @@ public class Check extends Update {
     /**
      * flag indicating whether or not to show a summary of findings.
      */
-<span class="fc" id="L253">    private boolean showSummary = true;</span>
+<span class="fc" id="L252">    private boolean showSummary = true;</span>
     /**
      * Whether experimental analyzers are enabled.
      */
@@ -417,7 +416,7 @@ public class Check extends Update {
     /**
      * whether an unused suppression rule should get force the build to fail
      */
-<span class="fc" id="L420">    private boolean failBuildOnUnusedSuppressionRule = false;</span>
+<span class="fc" id="L419">    private boolean failBuildOnUnusedSuppressionRule = false;</span>
 
     /**
      * The username to download user-authored suppression files from an HTTP Basic auth protected location.
@@ -437,11 +436,11 @@ public class Check extends Update {
     /**
      * Path to be converted
      */
-<span class="fc" id="L440">    private Resources path = null;</span>
+<span class="fc" id="L439">    private Resources path = null;</span>
     /**
      * Reference to path/file set to convert
      */
-<span class="fc" id="L444">    private Reference refId = null;</span>
+<span class="fc" id="L443">    private Reference refId = null;</span>
 
     /**
      * Add an arbitrary ResourceCollection.
@@ -450,11 +449,11 @@ public class Check extends Update {
      * @since Ant 1.7
      */
     public void add(ResourceCollection rc) {
-<span class="pc bpc" id="L453" title="1 of 2 branches missed.">        if (isReference()) {</span>
-<span class="nc" id="L454">            throw new BuildException(&quot;Nested elements are not allowed when using the refId attribute.&quot;);</span>
+<span class="pc bpc" id="L452" title="1 of 2 branches missed.">        if (isReference()) {</span>
+<span class="nc" id="L453">            throw new BuildException(&quot;Nested elements are not allowed when using the refId attribute.&quot;);</span>
         }
-<span class="fc" id="L456">        getPath().add(rc);</span>
-<span class="fc" id="L457">    }</span>
+<span class="fc" id="L455">        getPath().add(rc);</span>
+<span class="fc" id="L456">    }</span>
 
     /**
      * Returns the path. If the path has not been initialized yet, this class is
@@ -463,11 +462,11 @@ public class Check extends Update {
      * @return the path
      */
     private synchronized Resources getPath() {
-<span class="fc bfc" id="L466" title="All 2 branches covered.">        if (path == null) {</span>
-<span class="fc" id="L467">            path = new Resources(getProject());</span>
-<span class="fc" id="L468">            path.setCache(true);</span>
+<span class="fc bfc" id="L465" title="All 2 branches covered.">        if (path == null) {</span>
+<span class="fc" id="L466">            path = new Resources(getProject());</span>
+<span class="fc" id="L467">            path.setCache(true);</span>
         }
-<span class="fc" id="L470">        return path;</span>
+<span class="fc" id="L469">        return path;</span>
     }
 
     /**
@@ -476,7 +475,7 @@ public class Check extends Update {
      * @return true if refId is valid.
      */
     public boolean isReference() {
-<span class="pc bpc" id="L479" title="1 of 2 branches missed.">        return refId != null;</span>
+<span class="pc bpc" id="L478" title="1 of 2 branches missed.">        return refId != null;</span>
     }
 
     /**
@@ -486,11 +485,11 @@ public class Check extends Update {
      * @param r the reference to a path, fileset, dirset or filelist.
      */
     public synchronized void setRefId(Reference r) {
-<span class="nc bnc" id="L489" title="All 2 branches missed.">        if (path != null) {</span>
-<span class="nc" id="L490">            throw new BuildException(&quot;Nested elements are not allowed when using the refId attribute.&quot;);</span>
+<span class="nc bnc" id="L488" title="All 2 branches missed.">        if (path != null) {</span>
+<span class="nc" id="L489">            throw new BuildException(&quot;Nested elements are not allowed when using the refId attribute.&quot;);</span>
         }
-<span class="nc" id="L492">        refId = r;</span>
-<span class="nc" id="L493">    }</span>
+<span class="nc" id="L491">        refId = r;</span>
+<span class="nc" id="L492">    }</span>
 
     /**
      * If this is a reference, this method will add the referenced resource
@@ -503,26 +502,26 @@ public class Check extends Update {
     //contains an `execute() throws BuildExecption`.
     @SuppressWarnings(&quot;squid:RedundantThrowsDeclarationCheck&quot;)
     private void dealWithReferences() throws BuildException {
-<span class="pc bpc" id="L506" title="1 of 2 branches missed.">        if (isReference()) {</span>
-<span class="nc" id="L507">            final Object o = refId.getReferencedObject(getProject());</span>
-<span class="nc bnc" id="L508" title="All 2 branches missed.">            if (!(o instanceof ResourceCollection)) {</span>
-<span class="nc" id="L509">                throw new BuildException(&quot;refId '&quot; + refId.getRefId()</span>
+<span class="pc bpc" id="L505" title="1 of 2 branches missed.">        if (isReference()) {</span>
+<span class="nc" id="L506">            final Object o = refId.getReferencedObject(getProject());</span>
+<span class="nc bnc" id="L507" title="All 2 branches missed.">            if (!(o instanceof ResourceCollection)) {</span>
+<span class="nc" id="L508">                throw new BuildException(&quot;refId '&quot; + refId.getRefId()</span>
                         + &quot;' does not refer to a resource collection.&quot;);
             }
-<span class="nc" id="L512">            getPath().add((ResourceCollection) o);</span>
+<span class="nc" id="L511">            getPath().add((ResourceCollection) o);</span>
         }
-<span class="fc" id="L514">    }</span>
+<span class="fc" id="L513">    }</span>
     //endregion COPIED from org.apache.tools.ant.taskdefs
 
     /**
      * Construct a new DependencyCheckTask.
      */
     public Check() {
-<span class="fc" id="L521">        super();</span>
+<span class="fc" id="L520">        super();</span>
         // Call this before Dependency Check Core starts logging anything - this way, all SLF4J messages from
         // core end up coming through this tasks logger
-<span class="fc" id="L524">        AntTaskHolder.setTask(this);</span>
-<span class="fc" id="L525">    }</span>
+<span class="fc" id="L523">        AntTaskHolder.setTask(this);</span>
+<span class="fc" id="L524">    }</span>
 
     /**
      * Add a suppression file.
@@ -532,8 +531,8 @@ public class Check extends Update {
      * @param suppressionFile the suppression file to add.
      */
     public void addConfiguredSuppressionFile(final SuppressionFile suppressionFile) {
-<span class="fc" id="L535">        suppressionFiles.add(resolveRelative(suppressionFile.getPath()));</span>
-<span class="fc" id="L536">    }</span>
+<span class="fc" id="L534">        suppressionFiles.add(resolveRelative(suppressionFile.getPath()));</span>
+<span class="fc" id="L535">    }</span>
 
     /**
      * Add a report format.
@@ -543,8 +542,8 @@ public class Check extends Update {
      * @param reportFormat the reportFormat to add.
      */
     public void addConfiguredReportFormat(final ReportFormat reportFormat) {
-<span class="fc" id="L546">        reportFormats.add(reportFormat.getFormat());</span>
-<span class="fc" id="L547">    }</span>
+<span class="fc" id="L545">        reportFormats.add(reportFormat.getFormat());</span>
+<span class="fc" id="L546">    }</span>
 
     /**
      * Sets whether the version check is enabled.
@@ -553,8 +552,8 @@ public class Check extends Update {
      * enabled.
      */
     public void setVersionCheckEnabled(Boolean versionCheckEnabled) {
-<span class="nc" id="L556">        this.versionCheckEnabled = versionCheckEnabled;</span>
-<span class="nc" id="L557">    }</span>
+<span class="nc" id="L555">        this.versionCheckEnabled = versionCheckEnabled;</span>
+<span class="nc" id="L556">    }</span>
 
     /**
      * Get the value of projectName.
@@ -562,10 +561,10 @@ public class Check extends Update {
      * @return the value of projectName
      */
     public String getProjectName() {
-<span class="pc bpc" id="L565" title="1 of 2 branches missed.">        if (projectName == null) {</span>
-<span class="nc" id="L566">            projectName = &quot;&quot;;</span>
+<span class="pc bpc" id="L564" title="1 of 2 branches missed.">        if (projectName == null) {</span>
+<span class="nc" id="L565">            projectName = &quot;&quot;;</span>
         }
-<span class="fc" id="L568">        return projectName;</span>
+<span class="fc" id="L567">        return projectName;</span>
     }
 
     /**
@@ -574,20 +573,20 @@ public class Check extends Update {
      * @param projectName new value of projectName
      */
     public void setProjectName(String projectName) {
-<span class="fc" id="L577">        this.projectName = projectName;</span>
-<span class="fc" id="L578">    }</span>
+<span class="fc" id="L576">        this.projectName = projectName;</span>
+<span class="fc" id="L577">    }</span>
 
     private String resolveRelative(String path) {
-<span class="pc bpc" id="L581" title="1 of 2 branches missed.">        if (path == null) {</span>
-<span class="nc" id="L582">            return null;</span>
+<span class="pc bpc" id="L580" title="1 of 2 branches missed.">        if (path == null) {</span>
+<span class="nc" id="L581">            return null;</span>
         }
 
-<span class="fc" id="L585">        File file = new File(path);</span>
-<span class="pc bpc" id="L586" title="1 of 2 branches missed.">        if (file.isAbsolute()) {</span>
-<span class="fc" id="L587">            return path;</span>
+<span class="fc" id="L584">        File file = new File(path);</span>
+<span class="pc bpc" id="L585" title="1 of 2 branches missed.">        if (file.isAbsolute()) {</span>
+<span class="fc" id="L586">            return path;</span>
         }
 
-<span class="nc" id="L590">        return new File(getProject().getBaseDir(), path).getPath();</span>
+<span class="nc" id="L589">        return new File(getProject().getBaseDir(), path).getPath();</span>
     }
 
     /**
@@ -596,8 +595,8 @@ public class Check extends Update {
      * @param reportOutputDirectory new value of reportOutputDirectory
      */
     public void setReportOutputDirectory(String reportOutputDirectory) {
-<span class="fc" id="L599">        this.reportOutputDirectory = resolveRelative(reportOutputDirectory);</span>
-<span class="fc" id="L600">    }</span>
+<span class="fc" id="L598">        this.reportOutputDirectory = resolveRelative(reportOutputDirectory);</span>
+<span class="fc" id="L599">    }</span>
 
     /**
      * Set the value of failBuildOnCVSS.
@@ -605,8 +604,8 @@ public class Check extends Update {
      * @param failBuildOnCVSS new value of failBuildOnCVSS
      */
     public void setFailBuildOnCVSS(float failBuildOnCVSS) {
-<span class="fc" id="L608">        this.failBuildOnCVSS = failBuildOnCVSS;</span>
-<span class="fc" id="L609">    }</span>
+<span class="fc" id="L607">        this.failBuildOnCVSS = failBuildOnCVSS;</span>
+<span class="fc" id="L608">    }</span>
 
     /**
      * Set the value of junitFailOnCVSS.
@@ -614,8 +613,8 @@ public class Check extends Update {
      * @param junitFailOnCVSS new value of junitFailOnCVSS
      */
     public void setJunitFailOnCVSS(float junitFailOnCVSS) {
-<span class="nc" id="L617">        this.junitFailOnCVSS = junitFailOnCVSS;</span>
-<span class="nc" id="L618">    }</span>
+<span class="nc" id="L616">        this.junitFailOnCVSS = junitFailOnCVSS;</span>
+<span class="nc" id="L617">    }</span>
 
     /**
      * Set the value of autoUpdate.
@@ -623,8 +622,8 @@ public class Check extends Update {
      * @param autoUpdate new value of autoUpdate
      */
     public void setAutoUpdate(Boolean autoUpdate) {
-<span class="fc" id="L626">        this.autoUpdate = autoUpdate;</span>
-<span class="fc" id="L627">    }</span>
+<span class="fc" id="L625">        this.autoUpdate = autoUpdate;</span>
+<span class="fc" id="L626">    }</span>
 
     /**
      * Set the value of prettyPrint.
@@ -632,8 +631,8 @@ public class Check extends Update {
      * @param prettyPrint new value of prettyPrint
      */
     public void setPrettyPrint(boolean prettyPrint) {
-<span class="nc" id="L635">        this.prettyPrint = prettyPrint;</span>
-<span class="nc" id="L636">    }</span>
+<span class="nc" id="L634">        this.prettyPrint = prettyPrint;</span>
+<span class="nc" id="L635">    }</span>
 
     /**
      * Set the value of reportFormat.
@@ -641,9 +640,9 @@ public class Check extends Update {
      * @param reportFormat new value of reportFormat
      */
     public void setReportFormat(ReportFormats reportFormat) {
-<span class="fc" id="L644">        this.reportFormat = reportFormat.getValue();</span>
-<span class="fc" id="L645">        this.reportFormats.add(this.reportFormat);</span>
-<span class="fc" id="L646">    }</span>
+<span class="fc" id="L643">        this.reportFormat = reportFormat.getValue();</span>
+<span class="fc" id="L644">        this.reportFormats.add(this.reportFormat);</span>
+<span class="fc" id="L645">    }</span>
 
     /**
      * Get the value of reportFormats.
@@ -651,10 +650,10 @@ public class Check extends Update {
      * @return the value of reportFormats
      */
     public List&lt;String&gt; getReportFormats() {
-<span class="fc bfc" id="L654" title="All 2 branches covered.">        if (reportFormats.isEmpty()) {</span>
-<span class="fc" id="L655">            this.reportFormats.add(this.reportFormat);</span>
+<span class="fc bfc" id="L653" title="All 2 branches covered.">        if (reportFormats.isEmpty()) {</span>
+<span class="fc" id="L654">            this.reportFormats.add(this.reportFormat);</span>
         }
-<span class="fc" id="L657">        return this.reportFormats;</span>
+<span class="fc" id="L656">        return this.reportFormats;</span>
     }
 
     /**
@@ -663,8 +662,8 @@ public class Check extends Update {
      * @param suppressionFile new value of suppressionFile
      */
     public void setSuppressionFile(String suppressionFile) {
-<span class="fc" id="L666">        suppressionFiles.add(resolveRelative(suppressionFile));</span>
-<span class="fc" id="L667">    }</span>
+<span class="fc" id="L665">        suppressionFiles.add(resolveRelative(suppressionFile));</span>
+<span class="fc" id="L666">    }</span>
 
     /**
      * Sets the username to download user-authored suppression files from an HTTP Basic auth protected location.
@@ -672,8 +671,8 @@ public class Check extends Update {
      * @param suppressionFileUser The username
      */
     public void setSuppressionFileUser(String suppressionFileUser) {
-<span class="nc" id="L675">        this.suppressionFileUser = suppressionFileUser;</span>
-<span class="nc" id="L676">    }</span>
+<span class="nc" id="L674">        this.suppressionFileUser = suppressionFileUser;</span>
+<span class="nc" id="L675">    }</span>
 
     /**
      * Sets the password/token to download user-authored suppression files from an HTTP Basic auth protected location.
@@ -681,8 +680,8 @@ public class Check extends Update {
      * @param suppressionFilePassword The password/token
      */
     public void setSuppressionFilePassword(String suppressionFilePassword) {
-<span class="nc" id="L684">        this.suppressionFilePassword = suppressionFilePassword;</span>
-<span class="nc" id="L685">    }</span>
+<span class="nc" id="L683">        this.suppressionFilePassword = suppressionFilePassword;</span>
+<span class="nc" id="L684">    }</span>
 
     /**
      * Sets the token to download user-authored suppression files from an HTTP Bearer auth protected location.
@@ -690,8 +689,8 @@ public class Check extends Update {
      * @param suppressionFileBearerToken The token
      */
     public void setSuppressionFileBearerToken(String suppressionFileBearerToken) {
-<span class="nc" id="L693">        this.suppressionFileBearerToken = suppressionFileBearerToken;</span>
-<span class="nc" id="L694">    }</span>
+<span class="nc" id="L692">        this.suppressionFileBearerToken = suppressionFileBearerToken;</span>
+<span class="nc" id="L693">    }</span>
 
     /**
      * Set the value of hintsFile.
@@ -699,8 +698,8 @@ public class Check extends Update {
      * @param hintsFile new value of hintsFile
      */
     public void setHintsFile(String hintsFile) {
-<span class="nc" id="L702">        this.hintsFile = hintsFile;</span>
-<span class="nc" id="L703">    }</span>
+<span class="nc" id="L701">        this.hintsFile = hintsFile;</span>
+<span class="nc" id="L702">    }</span>
 
     /**
      * Set the value of showSummary.
@@ -708,8 +707,8 @@ public class Check extends Update {
      * @param showSummary new value of showSummary
      */
     public void setShowSummary(boolean showSummary) {
-<span class="nc" id="L711">        this.showSummary = showSummary;</span>
-<span class="nc" id="L712">    }</span>
+<span class="nc" id="L710">        this.showSummary = showSummary;</span>
+<span class="nc" id="L711">    }</span>
 
     /**
      * Set the value of enableExperimental.
@@ -717,8 +716,8 @@ public class Check extends Update {
      * @param enableExperimental new value of enableExperimental
      */
     public void setEnableExperimental(Boolean enableExperimental) {
-<span class="nc" id="L720">        this.enableExperimental = enableExperimental;</span>
-<span class="nc" id="L721">    }</span>
+<span class="nc" id="L719">        this.enableExperimental = enableExperimental;</span>
+<span class="nc" id="L720">    }</span>
 
     /**
      * Set the value of enableRetired.
@@ -726,8 +725,8 @@ public class Check extends Update {
      * @param enableRetired new value of enableRetired
      */
     public void setEnableRetired(Boolean enableRetired) {
-<span class="nc" id="L729">        this.enableRetired = enableRetired;</span>
-<span class="nc" id="L730">    }</span>
+<span class="nc" id="L728">        this.enableRetired = enableRetired;</span>
+<span class="nc" id="L729">    }</span>
 
     /**
      * Sets whether or not the analyzer is enabled.
@@ -735,8 +734,8 @@ public class Check extends Update {
      * @param jarAnalyzerEnabled the value of the new setting
      */
     public void setJarAnalyzerEnabled(Boolean jarAnalyzerEnabled) {
-<span class="nc" id="L738">        this.jarAnalyzerEnabled = jarAnalyzerEnabled;</span>
-<span class="nc" id="L739">    }</span>
+<span class="nc" id="L737">        this.jarAnalyzerEnabled = jarAnalyzerEnabled;</span>
+<span class="nc" id="L738">    }</span>
 
     /**
      * Sets whether the analyzer is enabled.
@@ -744,8 +743,8 @@ public class Check extends Update {
      * @param archiveAnalyzerEnabled the value of the new setting
      */
     public void setArchiveAnalyzerEnabled(Boolean archiveAnalyzerEnabled) {
-<span class="nc" id="L747">        this.archiveAnalyzerEnabled = archiveAnalyzerEnabled;</span>
-<span class="nc" id="L748">    }</span>
+<span class="nc" id="L746">        this.archiveAnalyzerEnabled = archiveAnalyzerEnabled;</span>
+<span class="nc" id="L747">    }</span>
 
     /**
      * Sets whether or not the analyzer is enabled.
@@ -753,8 +752,8 @@ public class Check extends Update {
      * @param assemblyAnalyzerEnabled the value of the new setting
      */
     public void setAssemblyAnalyzerEnabled(Boolean assemblyAnalyzerEnabled) {
-<span class="nc" id="L756">        this.assemblyAnalyzerEnabled = assemblyAnalyzerEnabled;</span>
-<span class="nc" id="L757">    }</span>
+<span class="nc" id="L755">        this.assemblyAnalyzerEnabled = assemblyAnalyzerEnabled;</span>
+<span class="nc" id="L756">    }</span>
 
     /**
      * Sets whether or not the analyzer is enabled.
@@ -762,8 +761,8 @@ public class Check extends Update {
      * @param msbuildAnalyzerEnabled the value of the new setting
      */
     public void setMSBuildAnalyzerEnabled(Boolean msbuildAnalyzerEnabled) {
-<span class="nc" id="L765">        this.msbuildAnalyzerEnabled = msbuildAnalyzerEnabled;</span>
-<span class="nc" id="L766">    }</span>
+<span class="nc" id="L764">        this.msbuildAnalyzerEnabled = msbuildAnalyzerEnabled;</span>
+<span class="nc" id="L765">    }</span>
 
     /**
      * Sets whether or not the analyzer is enabled.
@@ -771,8 +770,8 @@ public class Check extends Update {
      * @param nuspecAnalyzerEnabled the value of the new setting
      */
     public void setNuspecAnalyzerEnabled(Boolean nuspecAnalyzerEnabled) {
-<span class="nc" id="L774">        this.nuspecAnalyzerEnabled = nuspecAnalyzerEnabled;</span>
-<span class="nc" id="L775">    }</span>
+<span class="nc" id="L773">        this.nuspecAnalyzerEnabled = nuspecAnalyzerEnabled;</span>
+<span class="nc" id="L774">    }</span>
 
     /**
      * Sets whether or not the analyzer is enabled.
@@ -780,8 +779,8 @@ public class Check extends Update {
      * @param nugetconfAnalyzerEnabled the value of the new setting
      */
     public void setNugetconfAnalyzerEnabled(Boolean nugetconfAnalyzerEnabled) {
-<span class="nc" id="L783">        this.nugetconfAnalyzerEnabled = nugetconfAnalyzerEnabled;</span>
-<span class="nc" id="L784">    }</span>
+<span class="nc" id="L782">        this.nugetconfAnalyzerEnabled = nugetconfAnalyzerEnabled;</span>
+<span class="nc" id="L783">    }</span>
 
     /**
      * Sets whether or not the analyzer is enabled.
@@ -789,8 +788,8 @@ public class Check extends Update {
      * @param libmanAnalyzerEnabled the value of the new setting
      */
     public void setLibmanAnalyzerEnabled(Boolean libmanAnalyzerEnabled) {
-<span class="nc" id="L792">        this.libmanAnalyzerEnabled = libmanAnalyzerEnabled;</span>
-<span class="nc" id="L793">    }</span>
+<span class="nc" id="L791">        this.libmanAnalyzerEnabled = libmanAnalyzerEnabled;</span>
+<span class="nc" id="L792">    }</span>
 
     /**
      * Set the value of composerAnalyzerEnabled.
@@ -798,8 +797,8 @@ public class Check extends Update {
      * @param composerAnalyzerEnabled new value of composerAnalyzerEnabled
      */
     public void setComposerAnalyzerEnabled(Boolean composerAnalyzerEnabled) {
-<span class="nc" id="L801">        this.composerAnalyzerEnabled = composerAnalyzerEnabled;</span>
-<span class="nc" id="L802">    }</span>
+<span class="nc" id="L800">        this.composerAnalyzerEnabled = composerAnalyzerEnabled;</span>
+<span class="nc" id="L801">    }</span>
 
     /**
      * Set the value of composerAnalyzerSkipDev.
@@ -807,8 +806,8 @@ public class Check extends Update {
      * @param composerAnalyzerSkipDev new value of composerAnalyzerSkipDev
      */
     public void setComposerAnalyzerSkipDev(Boolean composerAnalyzerSkipDev) {
-<span class="nc" id="L810">        this.composerAnalyzerSkipDev = composerAnalyzerSkipDev;</span>
-<span class="nc" id="L811">    }</span>
+<span class="nc" id="L809">        this.composerAnalyzerSkipDev = composerAnalyzerSkipDev;</span>
+<span class="nc" id="L810">    }</span>
 
     /**
      * Set the value of cpanfileAnalyzerEnabled.
@@ -816,8 +815,8 @@ public class Check extends Update {
      * @param cpanfileAnalyzerEnabled new value of cpanfileAnalyzerEnabled
      */
     public void setCpanfileAnalyzerEnabled(Boolean cpanfileAnalyzerEnabled) {
-<span class="nc" id="L819">        this.cpanfileAnalyzerEnabled = cpanfileAnalyzerEnabled;</span>
-<span class="nc" id="L820">    }</span>
+<span class="nc" id="L818">        this.cpanfileAnalyzerEnabled = cpanfileAnalyzerEnabled;</span>
+<span class="nc" id="L819">    }</span>
 
     /**
      * Set the value of autoconfAnalyzerEnabled.
@@ -825,8 +824,8 @@ public class Check extends Update {
      * @param autoconfAnalyzerEnabled new value of autoconfAnalyzerEnabled
      */
     public void setAutoconfAnalyzerEnabled(Boolean autoconfAnalyzerEnabled) {
-<span class="nc" id="L828">        this.autoconfAnalyzerEnabled = autoconfAnalyzerEnabled;</span>
-<span class="nc" id="L829">    }</span>
+<span class="nc" id="L827">        this.autoconfAnalyzerEnabled = autoconfAnalyzerEnabled;</span>
+<span class="nc" id="L828">    }</span>
 
     /**
      * Set the value of pipAnalyzerEnabled.
@@ -834,8 +833,8 @@ public class Check extends Update {
      * @param pipAnalyzerEnabled new value of pipAnalyzerEnabled
      */
     public void setPipAnalyzerEnabled(Boolean pipAnalyzerEnabled) {
-<span class="nc" id="L837">        this.pipAnalyzerEnabled = pipAnalyzerEnabled;</span>
-<span class="nc" id="L838">    }</span>
+<span class="nc" id="L836">        this.pipAnalyzerEnabled = pipAnalyzerEnabled;</span>
+<span class="nc" id="L837">    }</span>
 
     /**
      * Set the value of pipfileAnalyzerEnabled.
@@ -843,8 +842,8 @@ public class Check extends Update {
      * @param pipfileAnalyzerEnabled new value of pipfileAnalyzerEnabled
      */
     public void setPipfileAnalyzerEnabled(Boolean pipfileAnalyzerEnabled) {
-<span class="nc" id="L846">        this.pipfileAnalyzerEnabled = pipfileAnalyzerEnabled;</span>
-<span class="nc" id="L847">    }</span>
+<span class="nc" id="L845">        this.pipfileAnalyzerEnabled = pipfileAnalyzerEnabled;</span>
+<span class="nc" id="L846">    }</span>
 
     /**
      * Set the value of poetryAnalyzerEnabled.
@@ -852,8 +851,8 @@ public class Check extends Update {
      * @param poetryAnalyzerEnabled new value of poetryAnalyzerEnabled
      */
     public void setPoetryAnalyzerEnabled(Boolean poetryAnalyzerEnabled) {
-<span class="nc" id="L855">        this.poetryAnalyzerEnabled = poetryAnalyzerEnabled;</span>
-<span class="nc" id="L856">    }</span>
+<span class="nc" id="L854">        this.poetryAnalyzerEnabled = poetryAnalyzerEnabled;</span>
+<span class="nc" id="L855">    }</span>
 
     /**
      * Sets if the Bundle Audit Analyzer is enabled.
@@ -862,8 +861,8 @@ public class Check extends Update {
      * enabled
      */
     public void setBundleAuditAnalyzerEnabled(Boolean bundleAuditAnalyzerEnabled) {
-<span class="nc" id="L865">        this.bundleAuditAnalyzerEnabled = bundleAuditAnalyzerEnabled;</span>
-<span class="nc" id="L866">    }</span>
+<span class="nc" id="L864">        this.bundleAuditAnalyzerEnabled = bundleAuditAnalyzerEnabled;</span>
+<span class="nc" id="L865">    }</span>
 
     /**
      * Sets the path to the bundle audit executable.
@@ -871,8 +870,8 @@ public class Check extends Update {
      * @param bundleAuditPath the path to the bundle audit executable
      */
     public void setBundleAuditPath(String bundleAuditPath) {
-<span class="nc" id="L874">        this.bundleAuditPath = bundleAuditPath;</span>
-<span class="nc" id="L875">    }</span>
+<span class="nc" id="L873">        this.bundleAuditPath = bundleAuditPath;</span>
+<span class="nc" id="L874">    }</span>
 
     /**
      * Sets the path to the working directory that the bundle audit executable
@@ -882,8 +881,8 @@ public class Check extends Update {
      * the bundle audit executable should be executed from.
      */
     public void setBundleAuditWorkingDirectory(String bundleAuditWorkingDirectory) {
-<span class="nc" id="L885">        this.bundleAuditWorkingDirectory = bundleAuditWorkingDirectory;</span>
-<span class="nc" id="L886">    }</span>
+<span class="nc" id="L884">        this.bundleAuditWorkingDirectory = bundleAuditWorkingDirectory;</span>
+<span class="nc" id="L885">    }</span>
 
     /**
      * Sets whether or not the cocoapods analyzer is enabled.
@@ -891,8 +890,8 @@ public class Check extends Update {
      * @param cocoapodsAnalyzerEnabled the state of the cocoapods analyzer
      */
     public void setCocoapodsAnalyzerEnabled(Boolean cocoapodsAnalyzerEnabled) {
-<span class="nc" id="L894">        this.cocoapodsAnalyzerEnabled = cocoapodsAnalyzerEnabled;</span>
-<span class="nc" id="L895">    }</span>
+<span class="nc" id="L893">        this.cocoapodsAnalyzerEnabled = cocoapodsAnalyzerEnabled;</span>
+<span class="nc" id="L894">    }</span>
 
     /**
      * Sets whether or not the Carthage analyzer is enabled.
@@ -900,8 +899,8 @@ public class Check extends Update {
      * @param carthageAnalyzerEnabled the state of the Carthage analyzer
      */
     public void setCarthageAnalyzerEnabled(Boolean carthageAnalyzerEnabled) {
-<span class="nc" id="L903">        this.carthageAnalyzerEnabled = carthageAnalyzerEnabled;</span>
-<span class="nc" id="L904">    }</span>
+<span class="nc" id="L902">        this.carthageAnalyzerEnabled = carthageAnalyzerEnabled;</span>
+<span class="nc" id="L903">    }</span>
 
     /**
      * Sets the enabled state of the swift package manager analyzer.
@@ -910,8 +909,8 @@ public class Check extends Update {
      * package manager
      */
     public void setSwiftPackageManagerAnalyzerEnabled(Boolean swiftPackageManagerAnalyzerEnabled) {
-<span class="nc" id="L913">        this.swiftPackageManagerAnalyzerEnabled = swiftPackageManagerAnalyzerEnabled;</span>
-<span class="nc" id="L914">    }</span>
+<span class="nc" id="L912">        this.swiftPackageManagerAnalyzerEnabled = swiftPackageManagerAnalyzerEnabled;</span>
+<span class="nc" id="L913">    }</span>
 
     /**
      * Sets the enabled state of the swift package manager analyzer.
@@ -920,8 +919,8 @@ public class Check extends Update {
      * package resolved analyzer
      */
     public void setSwiftPackageResolvedAnalyzerEnabled(Boolean swiftPackageResolvedAnalyzerEnabled) {
-<span class="nc" id="L923">        this.swiftPackageResolvedAnalyzerEnabled = swiftPackageResolvedAnalyzerEnabled;</span>
-<span class="nc" id="L924">    }</span>
+<span class="nc" id="L922">        this.swiftPackageResolvedAnalyzerEnabled = swiftPackageResolvedAnalyzerEnabled;</span>
+<span class="nc" id="L923">    }</span>
 
     /**
      * Set the value of opensslAnalyzerEnabled.
@@ -929,8 +928,8 @@ public class Check extends Update {
      * @param opensslAnalyzerEnabled new value of opensslAnalyzerEnabled
      */
     public void setOpensslAnalyzerEnabled(Boolean opensslAnalyzerEnabled) {
-<span class="nc" id="L932">        this.opensslAnalyzerEnabled = opensslAnalyzerEnabled;</span>
-<span class="nc" id="L933">    }</span>
+<span class="nc" id="L931">        this.opensslAnalyzerEnabled = opensslAnalyzerEnabled;</span>
+<span class="nc" id="L932">    }</span>
 
     /**
      * Set the value of nodeAnalyzerEnabled.
@@ -938,8 +937,8 @@ public class Check extends Update {
      * @param nodeAnalyzerEnabled new value of nodeAnalyzerEnabled
      */
     public void setNodeAnalyzerEnabled(Boolean nodeAnalyzerEnabled) {
-<span class="nc" id="L941">        this.nodeAnalyzerEnabled = nodeAnalyzerEnabled;</span>
-<span class="nc" id="L942">    }</span>
+<span class="nc" id="L940">        this.nodeAnalyzerEnabled = nodeAnalyzerEnabled;</span>
+<span class="nc" id="L941">    }</span>
 
     /**
      * Set the value of nodeAuditAnalyzerEnabled.
@@ -947,8 +946,8 @@ public class Check extends Update {
      * @param nodeAuditAnalyzerEnabled new value of nodeAuditAnalyzerEnabled
      */
     public void setNodeAuditAnalyzerEnabled(Boolean nodeAuditAnalyzerEnabled) {
-<span class="nc" id="L950">        this.nodeAuditAnalyzerEnabled = nodeAuditAnalyzerEnabled;</span>
-<span class="nc" id="L951">    }</span>
+<span class="nc" id="L949">        this.nodeAuditAnalyzerEnabled = nodeAuditAnalyzerEnabled;</span>
+<span class="nc" id="L950">    }</span>
 
     /**
      * Set the value of yarnAuditAnalyzerEnabled.
@@ -956,8 +955,8 @@ public class Check extends Update {
      * @param yarnAuditAnalyzerEnabled new value of yarnAuditAnalyzerEnabled
      */
     public void setYarnAuditAnalyzerEnabled(Boolean yarnAuditAnalyzerEnabled) {
-<span class="nc" id="L959">        this.yarnAuditAnalyzerEnabled = yarnAuditAnalyzerEnabled;</span>
-<span class="nc" id="L960">    }</span>
+<span class="nc" id="L958">        this.yarnAuditAnalyzerEnabled = yarnAuditAnalyzerEnabled;</span>
+<span class="nc" id="L959">    }</span>
 
     /**
      * Set the value of pnpmAuditAnalyzerEnabled.
@@ -965,8 +964,8 @@ public class Check extends Update {
      * @param pnpmAuditAnalyzerEnabled new value of pnpmAuditAnalyzerEnabled
      */
     public void setPnpmAuditAnalyzerEnabled(Boolean pnpmAuditAnalyzerEnabled) {
-<span class="nc" id="L968">        this.pnpmAuditAnalyzerEnabled = pnpmAuditAnalyzerEnabled;</span>
-<span class="nc" id="L969">    }</span>
+<span class="nc" id="L967">        this.pnpmAuditAnalyzerEnabled = pnpmAuditAnalyzerEnabled;</span>
+<span class="nc" id="L968">    }</span>
 
     /**
      * Set the value of nodeAuditAnalyzerUseCache.
@@ -974,8 +973,8 @@ public class Check extends Update {
      * @param nodeAuditAnalyzerUseCache new value of nodeAuditAnalyzerUseCache
      */
     public void setNodeAuditAnalyzerUseCache(Boolean nodeAuditAnalyzerUseCache) {
-<span class="nc" id="L977">        this.nodeAuditAnalyzerUseCache = nodeAuditAnalyzerUseCache;</span>
-<span class="nc" id="L978">    }</span>
+<span class="nc" id="L976">        this.nodeAuditAnalyzerUseCache = nodeAuditAnalyzerUseCache;</span>
+<span class="nc" id="L977">    }</span>
 
     /**
      * Set the value of nodePackageSkipDevDependencies.
@@ -984,8 +983,8 @@ public class Check extends Update {
      * nodePackageSkipDevDependencies
      */
     public void setNodePackageSkipDevDependencies(Boolean nodePackageSkipDevDependencies) {
-<span class="nc" id="L987">        this.nodePackageSkipDevDependencies = nodePackageSkipDevDependencies;</span>
-<span class="nc" id="L988">    }</span>
+<span class="nc" id="L986">        this.nodePackageSkipDevDependencies = nodePackageSkipDevDependencies;</span>
+<span class="nc" id="L987">    }</span>
 
     /**
      * Set the value of nodeAuditSkipDevDependencies.
@@ -994,22 +993,8 @@ public class Check extends Update {
      * nodeAuditSkipDevDependencies
      */
     public void setNodeAuditSkipDevDependencies(Boolean nodeAuditSkipDevDependencies) {
-<span class="nc" id="L997">        this.nodeAuditSkipDevDependencies = nodeAuditSkipDevDependencies;</span>
-<span class="nc" id="L998">    }</span>
-
-    /**
-     * Set the value of retirejsFilterNonVulnerable.
-     *
-     * @param retireJsFilterNonVulnerable new value of
-     * retirejsFilterNonVulnerable
-     * @deprecated Use {@link #setRetireJsFilterNonVulnerable(Boolean)} instead.
-     */
-    @Deprecated
-    public void setRetirejsFilterNonVulnerable(Boolean retireJsFilterNonVulnerable) {
-<span class="nc" id="L1009">        log(&quot;'retirejsFilterNonVulnerable' is deprecated and may be removed in the next major release, please migrate to 'retireJsFilterNonVulnerable'&quot;,</span>
-                Project.MSG_WARN);
-<span class="nc" id="L1011">        this.retireJsFilterNonVulnerable = retireJsFilterNonVulnerable;</span>
-<span class="nc" id="L1012">    }</span>
+<span class="nc" id="L996">        this.nodeAuditSkipDevDependencies = nodeAuditSkipDevDependencies;</span>
+<span class="nc" id="L997">    }</span>
 
     /**
      * Set the value of retireJsFilterNonVulnerable.
@@ -1018,24 +1003,9 @@ public class Check extends Update {
      * retireJsFilterNonVulnerable
      */
     public void setRetireJsFilterNonVulnerable(Boolean retireJsFilterNonVulnerable) {
-<span class="fc" id="L1021">        this.retireJsFilterNonVulnerable = retireJsFilterNonVulnerable;</span>
-<span class="fc" id="L1022">    }</span>
+<span class="fc" id="L1006">        this.retireJsFilterNonVulnerable = retireJsFilterNonVulnerable;</span>
+<span class="fc" id="L1007">    }</span>
 
-    /**
-     * Add a regular expression to the set of retire JS content filters.
-     * &lt;p&gt;
-     * This is called by Ant.
-     *
-     * @param retireJsFilter the regular expression used to filter based on file
-     * content
-     * @deprecated Use {@link #addConfiguredRetireJsFilter(RetirejsFilter)} instead.
-     */
-    @Deprecated
-    public void addConfiguredRetirejsFilter(final RetirejsFilter retireJsFilter) {
-<span class="nc" id="L1035">        log(&quot;'retirejsFilter' is deprecated and may be removed in the next major release, please migrate to 'retireJsFilter'&quot;,</span>
-                Project.MSG_WARN);
-<span class="nc" id="L1037">        retireJsFilters.add(retireJsFilter.getRegex());</span>
-<span class="nc" id="L1038">    }</span>
 
     /**
      * Add a regular expression to the set of retire JS content filters.
@@ -1046,8 +1016,8 @@ public class Check extends Update {
      * content
      */
     public void addConfiguredRetireJsFilter(final RetirejsFilter retireJsFilter) {
-<span class="fc" id="L1049">        retireJsFilters.add(retireJsFilter.getRegex());</span>
-<span class="fc" id="L1050">    }</span>
+<span class="fc" id="L1019">        retireJsFilters.add(retireJsFilter.getRegex());</span>
+<span class="fc" id="L1020">    }</span>
 
     /**
      * Set the value of rubygemsAnalyzerEnabled.
@@ -1055,8 +1025,8 @@ public class Check extends Update {
      * @param rubygemsAnalyzerEnabled new value of rubygemsAnalyzerEnabled
      */
     public void setRubygemsAnalyzerEnabled(Boolean rubygemsAnalyzerEnabled) {
-<span class="nc" id="L1058">        this.rubygemsAnalyzerEnabled = rubygemsAnalyzerEnabled;</span>
-<span class="nc" id="L1059">    }</span>
+<span class="nc" id="L1028">        this.rubygemsAnalyzerEnabled = rubygemsAnalyzerEnabled;</span>
+<span class="nc" id="L1029">    }</span>
 
     /**
      * Set the value of pyPackageAnalyzerEnabled.
@@ -1064,8 +1034,8 @@ public class Check extends Update {
      * @param pyPackageAnalyzerEnabled new value of pyPackageAnalyzerEnabled
      */
     public void setPyPackageAnalyzerEnabled(Boolean pyPackageAnalyzerEnabled) {
-<span class="nc" id="L1067">        this.pyPackageAnalyzerEnabled = pyPackageAnalyzerEnabled;</span>
-<span class="nc" id="L1068">    }</span>
+<span class="nc" id="L1037">        this.pyPackageAnalyzerEnabled = pyPackageAnalyzerEnabled;</span>
+<span class="nc" id="L1038">    }</span>
 
     /**
      * Set the value of pyDistributionAnalyzerEnabled.
@@ -1074,8 +1044,8 @@ public class Check extends Update {
      * pyDistributionAnalyzerEnabled
      */
     public void setPyDistributionAnalyzerEnabled(Boolean pyDistributionAnalyzerEnabled) {
-<span class="nc" id="L1077">        this.pyDistributionAnalyzerEnabled = pyDistributionAnalyzerEnabled;</span>
-<span class="nc" id="L1078">    }</span>
+<span class="nc" id="L1047">        this.pyDistributionAnalyzerEnabled = pyDistributionAnalyzerEnabled;</span>
+<span class="nc" id="L1048">    }</span>
 
     /**
      * Set the value of mixAuditAnalyzerEnabled.
@@ -1083,8 +1053,8 @@ public class Check extends Update {
      * @param mixAuditAnalyzerEnabled new value of mixAuditAnalyzerEnabled
      */
     public void setMixAuditAnalyzerEnabled(Boolean mixAuditAnalyzerEnabled) {
-<span class="nc" id="L1086">        this.mixAuditAnalyzerEnabled = mixAuditAnalyzerEnabled;</span>
-<span class="nc" id="L1087">    }</span>
+<span class="nc" id="L1056">        this.mixAuditAnalyzerEnabled = mixAuditAnalyzerEnabled;</span>
+<span class="nc" id="L1057">    }</span>
 
     /**
      * Sets the path to the mix audit executable.
@@ -1092,16 +1062,16 @@ public class Check extends Update {
      * @param mixAuditPath the path to the bundle audit executable
      */
     public void setMixAuditPath(String mixAuditPath) {
-<span class="nc" id="L1095">        this.mixAuditPath = mixAuditPath;</span>
-<span class="nc" id="L1096">    }</span>
+<span class="nc" id="L1065">        this.mixAuditPath = mixAuditPath;</span>
+<span class="nc" id="L1066">    }</span>
     /**
      * Set the value of centralAnalyzerEnabled.
      *
      * @param centralAnalyzerEnabled new value of centralAnalyzerEnabled
      */
     public void setCentralAnalyzerEnabled(Boolean centralAnalyzerEnabled) {
-<span class="fc" id="L1103">        this.centralAnalyzerEnabled = centralAnalyzerEnabled;</span>
-<span class="fc" id="L1104">    }</span>
+<span class="fc" id="L1073">        this.centralAnalyzerEnabled = centralAnalyzerEnabled;</span>
+<span class="fc" id="L1074">    }</span>
 
     /**
      * Set the value of centralAnalyzerUseCache.
@@ -1109,8 +1079,8 @@ public class Check extends Update {
      * @param centralAnalyzerUseCache new value of centralAnalyzerUseCache
      */
     public void setCentralAnalyzerUseCache(Boolean centralAnalyzerUseCache) {
-<span class="nc" id="L1112">        this.centralAnalyzerUseCache = centralAnalyzerUseCache;</span>
-<span class="nc" id="L1113">    }</span>
+<span class="nc" id="L1082">        this.centralAnalyzerUseCache = centralAnalyzerUseCache;</span>
+<span class="nc" id="L1083">    }</span>
 
     /**
      * Set the value of nexusAnalyzerEnabled.
@@ -1118,8 +1088,8 @@ public class Check extends Update {
      * @param nexusAnalyzerEnabled new value of nexusAnalyzerEnabled
      */
     public void setNexusAnalyzerEnabled(Boolean nexusAnalyzerEnabled) {
-<span class="nc" id="L1121">        this.nexusAnalyzerEnabled = nexusAnalyzerEnabled;</span>
-<span class="nc" id="L1122">    }</span>
+<span class="nc" id="L1091">        this.nexusAnalyzerEnabled = nexusAnalyzerEnabled;</span>
+<span class="nc" id="L1092">    }</span>
 
     /**
      * Set the value of golangDepEnabled.
@@ -1127,8 +1097,8 @@ public class Check extends Update {
      * @param golangDepEnabled new value of golangDepEnabled
      */
     public void setGolangDepEnabled(Boolean golangDepEnabled) {
-<span class="nc" id="L1130">        this.golangDepEnabled = golangDepEnabled;</span>
-<span class="nc" id="L1131">    }</span>
+<span class="nc" id="L1100">        this.golangDepEnabled = golangDepEnabled;</span>
+<span class="nc" id="L1101">    }</span>
 
     /**
      * Set the value of golangModEnabled.
@@ -1136,8 +1106,8 @@ public class Check extends Update {
      * @param golangModEnabled new value of golangModEnabled
      */
     public void setGolangModEnabled(Boolean golangModEnabled) {
-<span class="nc" id="L1139">        this.golangModEnabled = golangModEnabled;</span>
-<span class="nc" id="L1140">    }</span>
+<span class="nc" id="L1109">        this.golangModEnabled = golangModEnabled;</span>
+<span class="nc" id="L1110">    }</span>
 
     /**
      * Set the value of dartAnalyzerEnabled.
@@ -1145,8 +1115,8 @@ public class Check extends Update {
      * @param dartAnalyzerEnabled new value of dartAnalyzerEnabled
      */
     public void setDartAnalyzerEnabled(Boolean dartAnalyzerEnabled) {
-<span class="nc" id="L1148">        this.dartAnalyzerEnabled = dartAnalyzerEnabled;</span>
-<span class="nc" id="L1149">    }</span>
+<span class="nc" id="L1118">        this.dartAnalyzerEnabled = dartAnalyzerEnabled;</span>
+<span class="nc" id="L1119">    }</span>
 
     /**
      * Set the value of pathToYarn.
@@ -1154,8 +1124,8 @@ public class Check extends Update {
      * @param pathToYarn new value of pathToYarn
      */
     public void setPathToYarn(String pathToYarn) {
-<span class="nc" id="L1157">        this.pathToYarn = pathToYarn;</span>
-<span class="nc" id="L1158">    }</span>
+<span class="nc" id="L1127">        this.pathToYarn = pathToYarn;</span>
+<span class="nc" id="L1128">    }</span>
 
     /**
      * Set the value of pathToPnpm.
@@ -1163,8 +1133,8 @@ public class Check extends Update {
      * @param pathToPnpm new value of pathToPnpm
      */
     public void setPathToPnpm(String pathToPnpm) {
-<span class="nc" id="L1166">        this.pathToPnpm = pathToPnpm;</span>
-<span class="nc" id="L1167">    }</span>
+<span class="nc" id="L1136">        this.pathToPnpm = pathToPnpm;</span>
+<span class="nc" id="L1137">    }</span>
 
     /**
      * Set the value of pathToGo.
@@ -1172,8 +1142,8 @@ public class Check extends Update {
      * @param pathToGo new value of pathToGo
      */
     public void setPathToGo(String pathToGo) {
-<span class="nc" id="L1175">        this.pathToGo = pathToGo;</span>
-<span class="nc" id="L1176">    }</span>
+<span class="nc" id="L1145">        this.pathToGo = pathToGo;</span>
+<span class="nc" id="L1146">    }</span>
 
     /**
      * Set the value of nexusUrl.
@@ -1181,8 +1151,8 @@ public class Check extends Update {
      * @param nexusUrl new value of nexusUrl
      */
     public void setNexusUrl(String nexusUrl) {
-<span class="nc" id="L1184">        this.nexusUrl = nexusUrl;</span>
-<span class="nc" id="L1185">    }</span>
+<span class="nc" id="L1154">        this.nexusUrl = nexusUrl;</span>
+<span class="nc" id="L1155">    }</span>
 
     /**
      * Set the value of nexusUser.
@@ -1190,8 +1160,8 @@ public class Check extends Update {
      * @param nexusUser new value of nexusUser
      */
     public void setNexusUser(String nexusUser) {
-<span class="nc" id="L1193">        this.nexusUser = nexusUser;</span>
-<span class="nc" id="L1194">    }</span>
+<span class="nc" id="L1163">        this.nexusUser = nexusUser;</span>
+<span class="nc" id="L1164">    }</span>
 
     /**
      * Set the value of nexusPassword.
@@ -1199,8 +1169,8 @@ public class Check extends Update {
      * @param nexusPassword new value of nexusPassword
      */
     public void setNexusPassword(String nexusPassword) {
-<span class="nc" id="L1202">        this.nexusPassword = nexusPassword;</span>
-<span class="nc" id="L1203">    }</span>
+<span class="nc" id="L1172">        this.nexusPassword = nexusPassword;</span>
+<span class="nc" id="L1173">    }</span>
 
     /**
      * Set the value of nexusUsesProxy.
@@ -1208,8 +1178,8 @@ public class Check extends Update {
      * @param nexusUsesProxy new value of nexusUsesProxy
      */
     public void setNexusUsesProxy(Boolean nexusUsesProxy) {
-<span class="nc" id="L1211">        this.nexusUsesProxy = nexusUsesProxy;</span>
-<span class="nc" id="L1212">    }</span>
+<span class="nc" id="L1181">        this.nexusUsesProxy = nexusUsesProxy;</span>
+<span class="nc" id="L1182">    }</span>
 
     /**
      * Set the value of zipExtensions.
@@ -1217,8 +1187,8 @@ public class Check extends Update {
      * @param zipExtensions new value of zipExtensions
      */
     public void setZipExtensions(String zipExtensions) {
-<span class="nc" id="L1220">        this.zipExtensions = zipExtensions;</span>
-<span class="nc" id="L1221">    }</span>
+<span class="nc" id="L1190">        this.zipExtensions = zipExtensions;</span>
+<span class="nc" id="L1191">    }</span>
 
     /**
      * Set the value of pathToCore.
@@ -1226,21 +1196,8 @@ public class Check extends Update {
      * @param pathToCore new value of pathToCore
      */
     public void setPathToDotnetCore(String pathToCore) {
-<span class="nc" id="L1229">        this.pathToCore = pathToCore;</span>
-<span class="nc" id="L1230">    }</span>
-
-    /**
-     * Set value of {@link #ossIndexAnalyzerEnabled}.
-     *
-     * @param ossIndexAnalyzerEnabled new value of ossIndexAnalyzerEnabled
-     * @deprecated Use {@link #setOssIndexAnalyzerEnabled(Boolean)} instead.
-     */
-    @Deprecated
-    public void setOssindexAnalyzerEnabled(Boolean ossIndexAnalyzerEnabled) {
-<span class="nc" id="L1240">        log(&quot;'ossindexAnalyzerEnabled' is deprecated and may be removed in the next major release, please migrate to 'ossIndexAnalyzerEnabled'&quot;,</span>
-                Project.MSG_WARN);
-<span class="nc" id="L1242">        this.ossIndexAnalyzerEnabled = ossIndexAnalyzerEnabled;</span>
-<span class="nc" id="L1243">    }</span>
+<span class="nc" id="L1199">        this.pathToCore = pathToCore;</span>
+<span class="nc" id="L1200">    }</span>
 
     /**
      * Set value of ossIndexAnalyzerEnabled.
@@ -1248,21 +1205,8 @@ public class Check extends Update {
      * @param ossIndexAnalyzerEnabled new value of ossIndexAnalyzerEnabled
      */
     public void setOssIndexAnalyzerEnabled(Boolean ossIndexAnalyzerEnabled) {
-<span class="fc" id="L1251">        this.ossIndexAnalyzerEnabled = ossIndexAnalyzerEnabled;</span>
-<span class="fc" id="L1252">    }</span>
-
-    /**
-     * Set value of {@link #ossIndexAnalyzerUseCache}.
-     *
-     * @param ossIndexAnalyzerUseCache new value of ossIndexAnalyzerUseCache
-     * @deprecated Use {@link #setOssIndexAnalyzerUseCache(Boolean)} instead.
-     */
-    @Deprecated
-    public void setOssindexAnalyzerUseCache(Boolean ossIndexAnalyzerUseCache) {
-<span class="nc" id="L1262">        log(&quot;'ossindexAnalyzerUseCache' is deprecated and may be removed in the next major release, please migrate to 'ossIndexAnalyzerUseCache'&quot;,</span>
-                Project.MSG_WARN);
-<span class="nc" id="L1264">        this.ossIndexAnalyzerUseCache = ossIndexAnalyzerUseCache;</span>
-<span class="nc" id="L1265">    }</span>
+<span class="fc" id="L1208">        this.ossIndexAnalyzerEnabled = ossIndexAnalyzerEnabled;</span>
+<span class="fc" id="L1209">    }</span>
 
     /**
      * Set value of ossIndexAnalyzerUseCache.
@@ -1270,8 +1214,8 @@ public class Check extends Update {
      * @param ossIndexAnalyzerUseCache new value of ossIndexAnalyzerUseCache
      */
     public void setOssIndexAnalyzerUseCache(Boolean ossIndexAnalyzerUseCache) {
-<span class="nc" id="L1273">        this.ossIndexAnalyzerUseCache = ossIndexAnalyzerUseCache;</span>
-<span class="nc" id="L1274">    }</span>
+<span class="nc" id="L1217">        this.ossIndexAnalyzerUseCache = ossIndexAnalyzerUseCache;</span>
+<span class="nc" id="L1218">    }</span>
 
     /**
      * Set value of {@link #ossIndexAnalyzerCacheValidForHours}.
@@ -1279,21 +1223,8 @@ public class Check extends Update {
      * @param ossIndexAnalyzerCacheValidForHours new value of ossIndexAnalyzerCacheValidForHours
      */
     public void setOssIndexAnalyzerCacheValidForHours(Integer ossIndexAnalyzerCacheValidForHours) {
-<span class="nc" id="L1282">        this.ossIndexAnalyzerCacheValidForHours = ossIndexAnalyzerCacheValidForHours;</span>
-<span class="nc" id="L1283">    }</span>
-
-    /**
-     * Set value of {@link #ossIndexAnalyzerUrl}.
-     *
-     * @param ossIndexAnalyzerUrl new value of ossIndexAnalyzerUrl
-     * @deprecated Use {@link #setOssIndexAnalyzerUrl(String)} instead.
-     */
-    @Deprecated
-    public void setOssindexAnalyzerUrl(String ossIndexAnalyzerUrl) {
-<span class="nc" id="L1293">        log(&quot;'ossindexAnalyzerUrl' is deprecated and may be removed in the next major release, please migrate to 'ossIndexAnalyzerUrl'&quot;,</span>
-                Project.MSG_WARN);
-<span class="nc" id="L1295">        this.ossIndexAnalyzerUrl = ossIndexAnalyzerUrl;</span>
-<span class="nc" id="L1296">    }</span>
+<span class="nc" id="L1226">        this.ossIndexAnalyzerCacheValidForHours = ossIndexAnalyzerCacheValidForHours;</span>
+<span class="nc" id="L1227">    }</span>
 
     /**
      * Set value of ossIndexAnalyzerUrl.
@@ -1301,21 +1232,8 @@ public class Check extends Update {
      * @param ossIndexAnalyzerUrl new value of ossIndexAnalyzerUrl
      */
     public void setOssIndexAnalyzerUrl(String ossIndexAnalyzerUrl) {
-<span class="nc" id="L1304">        this.ossIndexAnalyzerUrl = ossIndexAnalyzerUrl;</span>
-<span class="nc" id="L1305">    }</span>
-
-    /**
-     * Set value of {@link #ossIndexAnalyzerUsername}.
-     *
-     * @param ossIndexAnalyzerUsername new value of ossIndexAnalyzerUsername
-     * @deprecated Use {@link #setOssIndexAnalyzerUsername(String)} instead.
-     */
-    @Deprecated
-    public void setOssindexAnalyzerUsername(String ossIndexAnalyzerUsername) {
-<span class="nc" id="L1315">        log(&quot;'ossindexAnalyzerUsername' is deprecated and may be removed in the next major release, please migrate to 'ossIndexAnalyzerUsername'&quot;,</span>
-                Project.MSG_WARN);
-<span class="nc" id="L1317">        this.ossIndexAnalyzerUsername = ossIndexAnalyzerUsername;</span>
-<span class="nc" id="L1318">    }</span>
+<span class="nc" id="L1235">        this.ossIndexAnalyzerUrl = ossIndexAnalyzerUrl;</span>
+<span class="nc" id="L1236">    }</span>
 
     /**
      * Set value of ossIndexAnalyzerUsername.
@@ -1323,21 +1241,8 @@ public class Check extends Update {
      * @param ossIndexAnalyzerUsername new value of ossIndexAnalyzerUsername
      */
     public void setOssIndexAnalyzerUsername(String ossIndexAnalyzerUsername) {
-<span class="nc" id="L1326">        this.ossIndexAnalyzerUsername = ossIndexAnalyzerUsername;</span>
-<span class="nc" id="L1327">    }</span>
-
-    /**
-     * Set value of {@link #ossIndexAnalyzerPassword}.
-     *
-     * @param ossIndexAnalyzerPassword new value of ossIndexAnalyzerPassword
-     * @deprecated Use {@link #setOssIndexAnalyzerPassword(String)} instead.
-     */
-    @Deprecated
-    public void setOssindexAnalyzerPassword(String ossIndexAnalyzerPassword) {
-<span class="nc" id="L1337">        log(&quot;'ossindexAnalyzerPassword' is deprecated and may be removed in the next major release, please migrate to 'ossIndexAnalyzerPassword'&quot;,</span>
-                Project.MSG_WARN);
-<span class="nc" id="L1339">        this.ossIndexAnalyzerPassword = ossIndexAnalyzerPassword;</span>
-<span class="nc" id="L1340">    }</span>
+<span class="nc" id="L1244">        this.ossIndexAnalyzerUsername = ossIndexAnalyzerUsername;</span>
+<span class="nc" id="L1245">    }</span>
 
     /**
      * Set value of ossIndexAnalyzerPassword.
@@ -1345,8 +1250,8 @@ public class Check extends Update {
      * @param ossIndexAnalyzerPassword new value of ossIndexAnalyzerPassword
      */
     public void setOssIndexAnalyzerPassword(String ossIndexAnalyzerPassword) {
-<span class="nc" id="L1348">        this.ossIndexAnalyzerPassword = ossIndexAnalyzerPassword;</span>
-<span class="nc" id="L1349">    }</span>
+<span class="nc" id="L1253">        this.ossIndexAnalyzerPassword = ossIndexAnalyzerPassword;</span>
+<span class="nc" id="L1254">    }</span>
 
     /**
      * Set value of {@link #ossIndexAnalyzerWarnOnlyOnRemoteErrors}.
@@ -1355,8 +1260,8 @@ public class Check extends Update {
      * ossIndexWarnOnlyOnRemoteErrors
      */
     public void setOssIndexWarnOnlyOnRemoteErrors(Boolean ossIndexWarnOnlyOnRemoteErrors) {
-<span class="nc" id="L1358">        this.ossIndexAnalyzerWarnOnlyOnRemoteErrors = ossIndexWarnOnlyOnRemoteErrors;</span>
-<span class="nc" id="L1359">    }</span>
+<span class="nc" id="L1263">        this.ossIndexAnalyzerWarnOnlyOnRemoteErrors = ossIndexWarnOnlyOnRemoteErrors;</span>
+<span class="nc" id="L1264">    }</span>
 
     /**
      * Set the value of cmakeAnalyzerEnabled.
@@ -1364,8 +1269,8 @@ public class Check extends Update {
      * @param cmakeAnalyzerEnabled new value of cmakeAnalyzerEnabled
      */
     public void setCmakeAnalyzerEnabled(Boolean cmakeAnalyzerEnabled) {
-<span class="nc" id="L1367">        this.cmakeAnalyzerEnabled = cmakeAnalyzerEnabled;</span>
-<span class="nc" id="L1368">    }</span>
+<span class="nc" id="L1272">        this.cmakeAnalyzerEnabled = cmakeAnalyzerEnabled;</span>
+<span class="nc" id="L1273">    }</span>
 
     /**
      * Set the value of artifactoryAnalyzerEnabled.
@@ -1373,8 +1278,8 @@ public class Check extends Update {
      * @param artifactoryAnalyzerEnabled new value of artifactoryAnalyzerEnabled
      */
     public void setArtifactoryAnalyzerEnabled(Boolean artifactoryAnalyzerEnabled) {
-<span class="nc" id="L1376">        this.artifactoryAnalyzerEnabled = artifactoryAnalyzerEnabled;</span>
-<span class="nc" id="L1377">    }</span>
+<span class="nc" id="L1281">        this.artifactoryAnalyzerEnabled = artifactoryAnalyzerEnabled;</span>
+<span class="nc" id="L1282">    }</span>
 
     /**
      * Set the value of artifactoryAnalyzerUrl.
@@ -1382,8 +1287,8 @@ public class Check extends Update {
      * @param artifactoryAnalyzerUrl new value of artifactoryAnalyzerUrl
      */
     public void setArtifactoryAnalyzerUrl(String artifactoryAnalyzerUrl) {
-<span class="nc" id="L1385">        this.artifactoryAnalyzerUrl = artifactoryAnalyzerUrl;</span>
-<span class="nc" id="L1386">    }</span>
+<span class="nc" id="L1290">        this.artifactoryAnalyzerUrl = artifactoryAnalyzerUrl;</span>
+<span class="nc" id="L1291">    }</span>
 
     /**
      * Set the value of artifactoryAnalyzerUseProxy.
@@ -1392,8 +1297,8 @@ public class Check extends Update {
      * artifactoryAnalyzerUseProxy
      */
     public void setArtifactoryAnalyzerUseProxy(Boolean artifactoryAnalyzerUseProxy) {
-<span class="nc" id="L1395">        this.artifactoryAnalyzerUseProxy = artifactoryAnalyzerUseProxy;</span>
-<span class="nc" id="L1396">    }</span>
+<span class="nc" id="L1300">        this.artifactoryAnalyzerUseProxy = artifactoryAnalyzerUseProxy;</span>
+<span class="nc" id="L1301">    }</span>
 
     /**
      * Set the value of artifactoryAnalyzerParallelAnalysis.
@@ -1402,8 +1307,8 @@ public class Check extends Update {
      * artifactoryAnalyzerParallelAnalysis
      */
     public void setArtifactoryAnalyzerParallelAnalysis(Boolean artifactoryAnalyzerParallelAnalysis) {
-<span class="nc" id="L1405">        this.artifactoryAnalyzerParallelAnalysis = artifactoryAnalyzerParallelAnalysis;</span>
-<span class="nc" id="L1406">    }</span>
+<span class="nc" id="L1310">        this.artifactoryAnalyzerParallelAnalysis = artifactoryAnalyzerParallelAnalysis;</span>
+<span class="nc" id="L1311">    }</span>
 
     /**
      * Set the value of artifactoryAnalyzerUsername.
@@ -1412,8 +1317,8 @@ public class Check extends Update {
      * artifactoryAnalyzerUsername
      */
     public void setArtifactoryAnalyzerUsername(String artifactoryAnalyzerUsername) {
-<span class="nc" id="L1415">        this.artifactoryAnalyzerUsername = artifactoryAnalyzerUsername;</span>
-<span class="nc" id="L1416">    }</span>
+<span class="nc" id="L1320">        this.artifactoryAnalyzerUsername = artifactoryAnalyzerUsername;</span>
+<span class="nc" id="L1321">    }</span>
 
     /**
      * Set the value of artifactoryAnalyzerApiToken.
@@ -1422,8 +1327,8 @@ public class Check extends Update {
      * artifactoryAnalyzerApiToken
      */
     public void setArtifactoryAnalyzerApiToken(String artifactoryAnalyzerApiToken) {
-<span class="nc" id="L1425">        this.artifactoryAnalyzerApiToken = artifactoryAnalyzerApiToken;</span>
-<span class="nc" id="L1426">    }</span>
+<span class="nc" id="L1330">        this.artifactoryAnalyzerApiToken = artifactoryAnalyzerApiToken;</span>
+<span class="nc" id="L1331">    }</span>
 
     /**
      * Set the value of artifactoryAnalyzerBearerToken.
@@ -1432,8 +1337,8 @@ public class Check extends Update {
      * artifactoryAnalyzerBearerToken
      */
     public void setArtifactoryAnalyzerBearerToken(String artifactoryAnalyzerBearerToken) {
-<span class="nc" id="L1435">        this.artifactoryAnalyzerBearerToken = artifactoryAnalyzerBearerToken;</span>
-<span class="nc" id="L1436">    }</span>
+<span class="nc" id="L1340">        this.artifactoryAnalyzerBearerToken = artifactoryAnalyzerBearerToken;</span>
+<span class="nc" id="L1341">    }</span>
 
     /**
      * Set the value of failBuildOnUnusedSuppressionRule.
@@ -1442,60 +1347,60 @@ public class Check extends Update {
      * failBuildOnUnusedSuppressionRule
      */
     public void setFailBuildOnUnusedSuppressionRule(boolean failBuildOnUnusedSuppressionRule) {
-<span class="nc" id="L1445">        this.failBuildOnUnusedSuppressionRule = failBuildOnUnusedSuppressionRule;</span>
-<span class="nc" id="L1446">    }</span>
+<span class="nc" id="L1350">        this.failBuildOnUnusedSuppressionRule = failBuildOnUnusedSuppressionRule;</span>
+<span class="nc" id="L1351">    }</span>
 
     //see note on `dealWithReferences()` for information on this suppression
     @SuppressWarnings(&quot;squid:RedundantThrowsDeclarationCheck&quot;)
     @Override
     protected void executeWithContextClassloader() throws BuildException {
-<span class="fc" id="L1452">        dealWithReferences();</span>
-<span class="fc" id="L1453">        validateConfiguration();</span>
-<span class="fc" id="L1454">        populateSettings();</span>
+<span class="fc" id="L1357">        dealWithReferences();</span>
+<span class="fc" id="L1358">        validateConfiguration();</span>
+<span class="fc" id="L1359">        populateSettings();</span>
         try {
-<span class="fc" id="L1456">            Downloader.getInstance().configure(getSettings());</span>
-<span class="nc" id="L1457">        } catch (InvalidSettingException e) {</span>
-<span class="nc" id="L1458">            throw new BuildException(e);</span>
-<span class="fc" id="L1459">        }</span>
-<span class="fc" id="L1460">        TelemetryCollector.send(getSettings());</span>
-<span class="fc" id="L1461">        try (Engine engine = new Engine(Check.class.getClassLoader(), getSettings())) {</span>
-<span class="fc bfc" id="L1462" title="All 2 branches covered.">            for (Resource resource : getPath()) {</span>
-<span class="fc" id="L1463">                final FileProvider provider = resource.as(FileProvider.class);</span>
-<span class="pc bpc" id="L1464" title="1 of 2 branches missed.">                if (provider != null) {</span>
-<span class="fc" id="L1465">                    final File file = provider.getFile();</span>
-<span class="pc bpc" id="L1466" title="1 of 4 branches missed.">                    if (file != null &amp;&amp; file.exists()) {</span>
-<span class="fc" id="L1467">                        engine.scan(file);</span>
+<span class="fc" id="L1361">            Downloader.getInstance().configure(getSettings());</span>
+<span class="nc" id="L1362">        } catch (InvalidSettingException e) {</span>
+<span class="nc" id="L1363">            throw new BuildException(e);</span>
+<span class="fc" id="L1364">        }</span>
+<span class="fc" id="L1365">        TelemetryCollector.send(getSettings());</span>
+<span class="fc" id="L1366">        try (Engine engine = new Engine(Check.class.getClassLoader(), getSettings())) {</span>
+<span class="fc bfc" id="L1367" title="All 2 branches covered.">            for (Resource resource : getPath()) {</span>
+<span class="fc" id="L1368">                final FileProvider provider = resource.as(FileProvider.class);</span>
+<span class="pc bpc" id="L1369" title="1 of 2 branches missed.">                if (provider != null) {</span>
+<span class="fc" id="L1370">                    final File file = provider.getFile();</span>
+<span class="pc bpc" id="L1371" title="1 of 4 branches missed.">                    if (file != null &amp;&amp; file.exists()) {</span>
+<span class="fc" id="L1372">                        engine.scan(file);</span>
                     }
                 }
-<span class="fc" id="L1470">            }</span>
-<span class="fc" id="L1471">            final ExceptionCollection exceptions = callExecuteAnalysis(engine);</span>
-<span class="pc bpc" id="L1472" title="3 of 4 branches missed.">            if (exceptions == null || !exceptions.isFatal()) {</span>
-<span class="fc bfc" id="L1473" title="All 2 branches covered.">                for (String format : getReportFormats()) {</span>
-<span class="fc" id="L1474">                    engine.writeReports(getProjectName(), new File(reportOutputDirectory), format, exceptions);</span>
-<span class="fc" id="L1475">                }</span>
-<span class="fc bfc" id="L1476" title="All 2 branches covered.">                if (this.failBuildOnCVSS &lt;= 10) {</span>
-<span class="fc" id="L1477">                    checkForFailure(engine.getDependencies());</span>
+<span class="fc" id="L1375">            }</span>
+<span class="fc" id="L1376">            final ExceptionCollection exceptions = callExecuteAnalysis(engine);</span>
+<span class="pc bpc" id="L1377" title="3 of 4 branches missed.">            if (exceptions == null || !exceptions.isFatal()) {</span>
+<span class="fc bfc" id="L1378" title="All 2 branches covered.">                for (String format : getReportFormats()) {</span>
+<span class="fc" id="L1379">                    engine.writeReports(getProjectName(), new File(reportOutputDirectory), format, exceptions);</span>
+<span class="fc" id="L1380">                }</span>
+<span class="fc bfc" id="L1381" title="All 2 branches covered.">                if (this.failBuildOnCVSS &lt;= 10) {</span>
+<span class="fc" id="L1382">                    checkForFailure(engine.getDependencies());</span>
                 }
-<span class="pc bpc" id="L1479" title="1 of 2 branches missed.">                if (this.showSummary) {</span>
-<span class="fc" id="L1480">                    DependencyCheckScanAgent.showSummary(engine.getDependencies());</span>
+<span class="pc bpc" id="L1384" title="1 of 2 branches missed.">                if (this.showSummary) {</span>
+<span class="fc" id="L1385">                    DependencyCheckScanAgent.showSummary(engine.getDependencies());</span>
                 }
             }
-<span class="nc" id="L1483">        } catch (DatabaseException ex) {</span>
-<span class="nc" id="L1484">            final String msg = &quot;Unable to connect to the dependency-check database; analysis has stopped&quot;;</span>
-<span class="nc bnc" id="L1485" title="All 2 branches missed.">            if (this.isFailOnError()) {</span>
-<span class="nc" id="L1486">                throw new BuildException(msg, ex);</span>
+<span class="nc" id="L1388">        } catch (DatabaseException ex) {</span>
+<span class="nc" id="L1389">            final String msg = &quot;Unable to connect to the dependency-check database; analysis has stopped&quot;;</span>
+<span class="nc bnc" id="L1390" title="All 2 branches missed.">            if (this.isFailOnError()) {</span>
+<span class="nc" id="L1391">                throw new BuildException(msg, ex);</span>
             }
-<span class="nc" id="L1488">            log(msg, ex, Project.MSG_ERR);</span>
-<span class="nc" id="L1489">        } catch (ReportException ex) {</span>
-<span class="nc" id="L1490">            final String msg = &quot;Unable to generate the dependency-check report&quot;;</span>
-<span class="nc bnc" id="L1491" title="All 2 branches missed.">            if (this.isFailOnError()) {</span>
-<span class="nc" id="L1492">                throw new BuildException(msg, ex);</span>
+<span class="nc" id="L1393">            log(msg, ex, Project.MSG_ERR);</span>
+<span class="nc" id="L1394">        } catch (ReportException ex) {</span>
+<span class="nc" id="L1395">            final String msg = &quot;Unable to generate the dependency-check report&quot;;</span>
+<span class="nc bnc" id="L1396" title="All 2 branches missed.">            if (this.isFailOnError()) {</span>
+<span class="nc" id="L1397">                throw new BuildException(msg, ex);</span>
             }
-<span class="nc" id="L1494">            log(msg, ex, Project.MSG_ERR);</span>
+<span class="nc" id="L1399">            log(msg, ex, Project.MSG_ERR);</span>
         } finally {
-<span class="fc" id="L1496">            getSettings().cleanup();</span>
+<span class="fc" id="L1401">            getSettings().cleanup();</span>
         }
-<span class="fc" id="L1498">    }</span>
+<span class="fc" id="L1403">    }</span>
 
     /**
      * Wraps the call to `engine.analyzeDependencies()` and correctly handles
@@ -1509,16 +1414,16 @@ public class Check extends Update {
     //see note on `dealWithReferences()` for information on this suppression
     @SuppressWarnings(&quot;squid:RedundantThrowsDeclarationCheck&quot;)
     private ExceptionCollection callExecuteAnalysis(final Engine engine) throws BuildException {
-<span class="fc" id="L1512">        ExceptionCollection exceptions = null;</span>
+<span class="fc" id="L1417">        ExceptionCollection exceptions = null;</span>
         try {
-<span class="fc" id="L1514">            engine.analyzeDependencies();</span>
-<span class="nc" id="L1515">        } catch (ExceptionCollection ex) {</span>
-<span class="nc bnc" id="L1516" title="All 2 branches missed.">            if (this.isFailOnError()) {</span>
-<span class="nc" id="L1517">                throw new BuildException(ex);</span>
+<span class="fc" id="L1419">            engine.analyzeDependencies();</span>
+<span class="nc" id="L1420">        } catch (ExceptionCollection ex) {</span>
+<span class="nc bnc" id="L1421" title="All 2 branches missed.">            if (this.isFailOnError()) {</span>
+<span class="nc" id="L1422">                throw new BuildException(ex);</span>
             }
-<span class="nc" id="L1519">            exceptions = ex;</span>
-<span class="fc" id="L1520">        }</span>
-<span class="fc" id="L1521">        return exceptions;</span>
+<span class="nc" id="L1424">            exceptions = ex;</span>
+<span class="fc" id="L1425">        }</span>
+<span class="fc" id="L1426">        return exceptions;</span>
     }
 
     /**
@@ -1530,13 +1435,13 @@ public class Check extends Update {
     //see note on `dealWithReferences()` for information on this suppression
     @SuppressWarnings(&quot;squid:RedundantThrowsDeclarationCheck&quot;)
     private synchronized void validateConfiguration() throws BuildException {
-<span class="pc bpc" id="L1533" title="1 of 2 branches missed.">        if (path == null) {</span>
-<span class="nc" id="L1534">            throw new BuildException(&quot;No project dependencies have been defined to analyze.&quot;);</span>
+<span class="pc bpc" id="L1438" title="1 of 2 branches missed.">        if (path == null) {</span>
+<span class="nc" id="L1439">            throw new BuildException(&quot;No project dependencies have been defined to analyze.&quot;);</span>
         }
-<span class="pc bpc" id="L1536" title="2 of 4 branches missed.">        if (failBuildOnCVSS &lt; 0 || failBuildOnCVSS &gt; 11) {</span>
-<span class="nc" id="L1537">            throw new BuildException(&quot;Invalid configuration, failBuildOnCVSS must be between 0 and 11.&quot;);</span>
+<span class="pc bpc" id="L1441" title="2 of 4 branches missed.">        if (failBuildOnCVSS &lt; 0 || failBuildOnCVSS &gt; 11) {</span>
+<span class="nc" id="L1442">            throw new BuildException(&quot;Invalid configuration, failBuildOnCVSS must be between 0 and 11.&quot;);</span>
         }
-<span class="fc" id="L1539">    }</span>
+<span class="fc" id="L1444">    }</span>
 
     /**
      * Takes the properties supplied and updates the dependency-check settings.
@@ -1549,89 +1454,89 @@ public class Check extends Update {
     @SuppressWarnings(&quot;squid:RedundantThrowsDeclarationCheck&quot;)
     @Override
     protected void populateSettings() throws BuildException {
-<span class="fc" id="L1552">        super.populateSettings();</span>
-<span class="fc" id="L1553">        getSettings().setBooleanIfNotNull(Settings.KEYS.AUTO_UPDATE, autoUpdate);</span>
-<span class="fc" id="L1554">        getSettings().setArrayIfNotEmpty(Settings.KEYS.SUPPRESSION_FILE, suppressionFiles);</span>
-<span class="fc" id="L1555">        getSettings().setStringIfNotEmpty(Settings.KEYS.SUPPRESSION_FILE_USER, suppressionFileUser);</span>
-<span class="fc" id="L1556">        getSettings().setStringIfNotEmpty(Settings.KEYS.SUPPRESSION_FILE_PASSWORD, suppressionFilePassword);</span>
-<span class="fc" id="L1557">        getSettings().setStringIfNotEmpty(Settings.KEYS.SUPPRESSION_FILE_BEARER_TOKEN, suppressionFileBearerToken);</span>
-<span class="fc" id="L1558">        getSettings().setBooleanIfNotNull(Settings.KEYS.UPDATE_VERSION_CHECK_ENABLED, versionCheckEnabled);</span>
-<span class="fc" id="L1559">        getSettings().setStringIfNotEmpty(Settings.KEYS.HINTS_FILE, hintsFile);</span>
-<span class="fc" id="L1560">        getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_EXPERIMENTAL_ENABLED, enableExperimental);</span>
-<span class="fc" id="L1561">        getSettings().setBooleanIfNotNull(Settings.KEYS.PRETTY_PRINT, prettyPrint);</span>
-<span class="fc" id="L1562">        getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_RETIRED_ENABLED, enableRetired);</span>
-<span class="fc" id="L1563">        getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_JAR_ENABLED, jarAnalyzerEnabled);</span>
-<span class="fc" id="L1564">        getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_PYTHON_DISTRIBUTION_ENABLED, pyDistributionAnalyzerEnabled);</span>
-<span class="fc" id="L1565">        getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_PYTHON_PACKAGE_ENABLED, pyPackageAnalyzerEnabled);</span>
-<span class="fc" id="L1566">        getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_RUBY_GEMSPEC_ENABLED, rubygemsAnalyzerEnabled);</span>
-<span class="fc" id="L1567">        getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_OPENSSL_ENABLED, opensslAnalyzerEnabled);</span>
-<span class="fc" id="L1568">        getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_CMAKE_ENABLED, cmakeAnalyzerEnabled);</span>
+<span class="fc" id="L1457">        super.populateSettings();</span>
+<span class="fc" id="L1458">        getSettings().setBooleanIfNotNull(Settings.KEYS.AUTO_UPDATE, autoUpdate);</span>
+<span class="fc" id="L1459">        getSettings().setArrayIfNotEmpty(Settings.KEYS.SUPPRESSION_FILE, suppressionFiles);</span>
+<span class="fc" id="L1460">        getSettings().setStringIfNotEmpty(Settings.KEYS.SUPPRESSION_FILE_USER, suppressionFileUser);</span>
+<span class="fc" id="L1461">        getSettings().setStringIfNotEmpty(Settings.KEYS.SUPPRESSION_FILE_PASSWORD, suppressionFilePassword);</span>
+<span class="fc" id="L1462">        getSettings().setStringIfNotEmpty(Settings.KEYS.SUPPRESSION_FILE_BEARER_TOKEN, suppressionFileBearerToken);</span>
+<span class="fc" id="L1463">        getSettings().setBooleanIfNotNull(Settings.KEYS.UPDATE_VERSION_CHECK_ENABLED, versionCheckEnabled);</span>
+<span class="fc" id="L1464">        getSettings().setStringIfNotEmpty(Settings.KEYS.HINTS_FILE, hintsFile);</span>
+<span class="fc" id="L1465">        getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_EXPERIMENTAL_ENABLED, enableExperimental);</span>
+<span class="fc" id="L1466">        getSettings().setBooleanIfNotNull(Settings.KEYS.PRETTY_PRINT, prettyPrint);</span>
+<span class="fc" id="L1467">        getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_RETIRED_ENABLED, enableRetired);</span>
+<span class="fc" id="L1468">        getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_JAR_ENABLED, jarAnalyzerEnabled);</span>
+<span class="fc" id="L1469">        getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_PYTHON_DISTRIBUTION_ENABLED, pyDistributionAnalyzerEnabled);</span>
+<span class="fc" id="L1470">        getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_PYTHON_PACKAGE_ENABLED, pyPackageAnalyzerEnabled);</span>
+<span class="fc" id="L1471">        getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_RUBY_GEMSPEC_ENABLED, rubygemsAnalyzerEnabled);</span>
+<span class="fc" id="L1472">        getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_OPENSSL_ENABLED, opensslAnalyzerEnabled);</span>
+<span class="fc" id="L1473">        getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_CMAKE_ENABLED, cmakeAnalyzerEnabled);</span>
 
-<span class="fc" id="L1570">        getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_ARTIFACTORY_ENABLED, artifactoryAnalyzerEnabled);</span>
-<span class="fc" id="L1571">        getSettings().setStringIfNotEmpty(Settings.KEYS.ANALYZER_ARTIFACTORY_URL, artifactoryAnalyzerUrl);</span>
-<span class="fc" id="L1572">        getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_ARTIFACTORY_USES_PROXY, artifactoryAnalyzerUseProxy);</span>
-<span class="fc" id="L1573">        getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_ARTIFACTORY_PARALLEL_ANALYSIS, artifactoryAnalyzerParallelAnalysis);</span>
-<span class="fc" id="L1574">        getSettings().setStringIfNotEmpty(Settings.KEYS.ANALYZER_ARTIFACTORY_API_USERNAME, artifactoryAnalyzerUsername);</span>
-<span class="fc" id="L1575">        getSettings().setStringIfNotEmpty(Settings.KEYS.ANALYZER_ARTIFACTORY_API_TOKEN, artifactoryAnalyzerApiToken);</span>
-<span class="fc" id="L1576">        getSettings().setStringIfNotEmpty(Settings.KEYS.ANALYZER_ARTIFACTORY_BEARER_TOKEN, artifactoryAnalyzerBearerToken);</span>
+<span class="fc" id="L1475">        getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_ARTIFACTORY_ENABLED, artifactoryAnalyzerEnabled);</span>
+<span class="fc" id="L1476">        getSettings().setStringIfNotEmpty(Settings.KEYS.ANALYZER_ARTIFACTORY_URL, artifactoryAnalyzerUrl);</span>
+<span class="fc" id="L1477">        getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_ARTIFACTORY_USES_PROXY, artifactoryAnalyzerUseProxy);</span>
+<span class="fc" id="L1478">        getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_ARTIFACTORY_PARALLEL_ANALYSIS, artifactoryAnalyzerParallelAnalysis);</span>
+<span class="fc" id="L1479">        getSettings().setStringIfNotEmpty(Settings.KEYS.ANALYZER_ARTIFACTORY_API_USERNAME, artifactoryAnalyzerUsername);</span>
+<span class="fc" id="L1480">        getSettings().setStringIfNotEmpty(Settings.KEYS.ANALYZER_ARTIFACTORY_API_TOKEN, artifactoryAnalyzerApiToken);</span>
+<span class="fc" id="L1481">        getSettings().setStringIfNotEmpty(Settings.KEYS.ANALYZER_ARTIFACTORY_BEARER_TOKEN, artifactoryAnalyzerBearerToken);</span>
 
-<span class="fc" id="L1578">        getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_SWIFT_PACKAGE_MANAGER_ENABLED, swiftPackageManagerAnalyzerEnabled);</span>
-<span class="fc" id="L1579">        getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_SWIFT_PACKAGE_RESOLVED_ENABLED, swiftPackageResolvedAnalyzerEnabled);</span>
-<span class="fc" id="L1580">        getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_COCOAPODS_ENABLED, cocoapodsAnalyzerEnabled);</span>
-<span class="fc" id="L1581">        getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_CARTHAGE_ENABLED, carthageAnalyzerEnabled);</span>
-<span class="fc" id="L1582">        getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_BUNDLE_AUDIT_ENABLED, bundleAuditAnalyzerEnabled);</span>
-<span class="fc" id="L1583">        getSettings().setStringIfNotNull(Settings.KEYS.ANALYZER_BUNDLE_AUDIT_PATH, bundleAuditPath);</span>
-<span class="fc" id="L1584">        getSettings().setStringIfNotNull(Settings.KEYS.ANALYZER_BUNDLE_AUDIT_WORKING_DIRECTORY, bundleAuditWorkingDirectory);</span>
-<span class="fc" id="L1585">        getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_AUTOCONF_ENABLED, autoconfAnalyzerEnabled);</span>
-<span class="fc" id="L1586">        getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_MAVEN_INSTALL_ENABLED, mavenInstallAnalyzerEnabled);</span>
-<span class="fc" id="L1587">        getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_PIP_ENABLED, pipAnalyzerEnabled);</span>
-<span class="fc" id="L1588">        getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_PIPFILE_ENABLED, pipfileAnalyzerEnabled);</span>
-<span class="fc" id="L1589">        getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_POETRY_ENABLED, poetryAnalyzerEnabled);</span>
-<span class="fc" id="L1590">        getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_COMPOSER_LOCK_ENABLED, composerAnalyzerEnabled);</span>
-<span class="fc" id="L1591">        getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_COMPOSER_LOCK_SKIP_DEV, composerAnalyzerSkipDev);</span>
-<span class="fc" id="L1592">        getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_CPANFILE_ENABLED, cpanfileAnalyzerEnabled);</span>
-<span class="fc" id="L1593">        getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_NODE_PACKAGE_ENABLED, nodeAnalyzerEnabled);</span>
-<span class="fc" id="L1594">        getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_NODE_PACKAGE_SKIPDEV, nodePackageSkipDevDependencies);</span>
-<span class="fc" id="L1595">        getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_NODE_AUDIT_ENABLED, nodeAuditAnalyzerEnabled);</span>
-<span class="fc" id="L1596">        getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_YARN_AUDIT_ENABLED, yarnAuditAnalyzerEnabled);</span>
-<span class="fc" id="L1597">        getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_PNPM_AUDIT_ENABLED, pnpmAuditAnalyzerEnabled);</span>
-<span class="fc" id="L1598">        getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_NODE_AUDIT_USE_CACHE, nodeAuditAnalyzerUseCache);</span>
-<span class="fc" id="L1599">        getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_NODE_AUDIT_SKIPDEV, nodeAuditSkipDevDependencies);</span>
-<span class="fc" id="L1600">        getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_RETIREJS_FILTER_NON_VULNERABLE, retireJsFilterNonVulnerable);</span>
-<span class="fc" id="L1601">        getSettings().setArrayIfNotEmpty(Settings.KEYS.ANALYZER_RETIREJS_FILTERS, retireJsFilters);</span>
-<span class="fc" id="L1602">        getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_GOLANG_DEP_ENABLED, golangDepEnabled);</span>
-<span class="fc" id="L1603">        getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_GOLANG_MOD_ENABLED, golangModEnabled);</span>
-<span class="fc" id="L1604">        getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_DART_ENABLED, dartAnalyzerEnabled);</span>
-<span class="fc" id="L1605">        getSettings().setStringIfNotNull(Settings.KEYS.ANALYZER_GOLANG_PATH, pathToGo);</span>
-<span class="fc" id="L1606">        getSettings().setStringIfNotNull(Settings.KEYS.ANALYZER_YARN_PATH, pathToYarn);</span>
-<span class="fc" id="L1607">        getSettings().setStringIfNotNull(Settings.KEYS.ANALYZER_PNPM_PATH, pathToPnpm);</span>
-<span class="fc" id="L1608">        getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_MIX_AUDIT_ENABLED, mixAuditAnalyzerEnabled);</span>
-<span class="fc" id="L1609">        getSettings().setStringIfNotNull(Settings.KEYS.ANALYZER_MIX_AUDIT_PATH, mixAuditPath);</span>
-<span class="fc" id="L1610">        getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_NUSPEC_ENABLED, nuspecAnalyzerEnabled);</span>
-<span class="fc" id="L1611">        getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_NUGETCONF_ENABLED, nugetconfAnalyzerEnabled);</span>
-<span class="fc" id="L1612">        getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_LIBMAN_ENABLED, libmanAnalyzerEnabled);</span>
-<span class="fc" id="L1613">        getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_CENTRAL_ENABLED, centralAnalyzerEnabled);</span>
-<span class="fc" id="L1614">        getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_CENTRAL_USE_CACHE, centralAnalyzerUseCache);</span>
-<span class="fc" id="L1615">        getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_NEXUS_ENABLED, nexusAnalyzerEnabled);</span>
-<span class="fc" id="L1616">        getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_ARCHIVE_ENABLED, archiveAnalyzerEnabled);</span>
-<span class="fc" id="L1617">        getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_ASSEMBLY_ENABLED, assemblyAnalyzerEnabled);</span>
-<span class="fc" id="L1618">        getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_MSBUILD_PROJECT_ENABLED, msbuildAnalyzerEnabled);</span>
-<span class="fc" id="L1619">        getSettings().setStringIfNotEmpty(Settings.KEYS.ANALYZER_NEXUS_URL, nexusUrl);</span>
-<span class="fc" id="L1620">        getSettings().setStringIfNotEmpty(Settings.KEYS.ANALYZER_NEXUS_USER, nexusUser);</span>
-<span class="fc" id="L1621">        getSettings().setStringIfNotEmpty(Settings.KEYS.ANALYZER_NEXUS_PASSWORD, nexusPassword);</span>
-<span class="fc" id="L1622">        getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_NEXUS_USES_PROXY, nexusUsesProxy);</span>
-<span class="fc" id="L1623">        getSettings().setStringIfNotEmpty(Settings.KEYS.ADDITIONAL_ZIP_EXTENSIONS, zipExtensions);</span>
-<span class="fc" id="L1624">        getSettings().setStringIfNotEmpty(Settings.KEYS.ANALYZER_ASSEMBLY_DOTNET_PATH, pathToCore);</span>
-<span class="fc" id="L1625">        getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_OSSINDEX_ENABLED, ossIndexAnalyzerEnabled);</span>
-<span class="fc" id="L1626">        getSettings().setStringIfNotEmpty(Settings.KEYS.ANALYZER_OSSINDEX_URL, ossIndexAnalyzerUrl);</span>
-<span class="fc" id="L1627">        getSettings().setStringIfNotEmpty(Settings.KEYS.ANALYZER_OSSINDEX_USER, ossIndexAnalyzerUsername);</span>
-<span class="fc" id="L1628">        getSettings().setStringIfNotEmpty(Settings.KEYS.ANALYZER_OSSINDEX_PASSWORD, ossIndexAnalyzerPassword);</span>
-<span class="fc" id="L1629">        getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_OSSINDEX_USE_CACHE, ossIndexAnalyzerUseCache);</span>
-<span class="fc" id="L1630">        getSettings().setIntIfNotNull(Settings.KEYS.ANALYZER_OSSINDEX_CACHE_VALID_FOR_HOURS, ossIndexAnalyzerCacheValidForHours);</span>
-<span class="fc" id="L1631">        getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_OSSINDEX_WARN_ONLY_ON_REMOTE_ERRORS, ossIndexAnalyzerWarnOnlyOnRemoteErrors);</span>
-<span class="fc" id="L1632">        getSettings().setFloat(Settings.KEYS.JUNIT_FAIL_ON_CVSS, junitFailOnCVSS);</span>
-<span class="fc" id="L1633">        getSettings().setBooleanIfNotNull(Settings.KEYS.FAIL_ON_UNUSED_SUPPRESSION_RULE, failBuildOnUnusedSuppressionRule);</span>
-<span class="fc" id="L1634">    }</span>
+<span class="fc" id="L1483">        getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_SWIFT_PACKAGE_MANAGER_ENABLED, swiftPackageManagerAnalyzerEnabled);</span>
+<span class="fc" id="L1484">        getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_SWIFT_PACKAGE_RESOLVED_ENABLED, swiftPackageResolvedAnalyzerEnabled);</span>
+<span class="fc" id="L1485">        getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_COCOAPODS_ENABLED, cocoapodsAnalyzerEnabled);</span>
+<span class="fc" id="L1486">        getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_CARTHAGE_ENABLED, carthageAnalyzerEnabled);</span>
+<span class="fc" id="L1487">        getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_BUNDLE_AUDIT_ENABLED, bundleAuditAnalyzerEnabled);</span>
+<span class="fc" id="L1488">        getSettings().setStringIfNotNull(Settings.KEYS.ANALYZER_BUNDLE_AUDIT_PATH, bundleAuditPath);</span>
+<span class="fc" id="L1489">        getSettings().setStringIfNotNull(Settings.KEYS.ANALYZER_BUNDLE_AUDIT_WORKING_DIRECTORY, bundleAuditWorkingDirectory);</span>
+<span class="fc" id="L1490">        getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_AUTOCONF_ENABLED, autoconfAnalyzerEnabled);</span>
+<span class="fc" id="L1491">        getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_MAVEN_INSTALL_ENABLED, mavenInstallAnalyzerEnabled);</span>
+<span class="fc" id="L1492">        getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_PIP_ENABLED, pipAnalyzerEnabled);</span>
+<span class="fc" id="L1493">        getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_PIPFILE_ENABLED, pipfileAnalyzerEnabled);</span>
+<span class="fc" id="L1494">        getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_POETRY_ENABLED, poetryAnalyzerEnabled);</span>
+<span class="fc" id="L1495">        getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_COMPOSER_LOCK_ENABLED, composerAnalyzerEnabled);</span>
+<span class="fc" id="L1496">        getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_COMPOSER_LOCK_SKIP_DEV, composerAnalyzerSkipDev);</span>
+<span class="fc" id="L1497">        getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_CPANFILE_ENABLED, cpanfileAnalyzerEnabled);</span>
+<span class="fc" id="L1498">        getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_NODE_PACKAGE_ENABLED, nodeAnalyzerEnabled);</span>
+<span class="fc" id="L1499">        getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_NODE_PACKAGE_SKIPDEV, nodePackageSkipDevDependencies);</span>
+<span class="fc" id="L1500">        getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_NODE_AUDIT_ENABLED, nodeAuditAnalyzerEnabled);</span>
+<span class="fc" id="L1501">        getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_YARN_AUDIT_ENABLED, yarnAuditAnalyzerEnabled);</span>
+<span class="fc" id="L1502">        getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_PNPM_AUDIT_ENABLED, pnpmAuditAnalyzerEnabled);</span>
+<span class="fc" id="L1503">        getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_NODE_AUDIT_USE_CACHE, nodeAuditAnalyzerUseCache);</span>
+<span class="fc" id="L1504">        getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_NODE_AUDIT_SKIPDEV, nodeAuditSkipDevDependencies);</span>
+<span class="fc" id="L1505">        getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_RETIREJS_FILTER_NON_VULNERABLE, retireJsFilterNonVulnerable);</span>
+<span class="fc" id="L1506">        getSettings().setArrayIfNotEmpty(Settings.KEYS.ANALYZER_RETIREJS_FILTERS, retireJsFilters);</span>
+<span class="fc" id="L1507">        getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_GOLANG_DEP_ENABLED, golangDepEnabled);</span>
+<span class="fc" id="L1508">        getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_GOLANG_MOD_ENABLED, golangModEnabled);</span>
+<span class="fc" id="L1509">        getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_DART_ENABLED, dartAnalyzerEnabled);</span>
+<span class="fc" id="L1510">        getSettings().setStringIfNotNull(Settings.KEYS.ANALYZER_GOLANG_PATH, pathToGo);</span>
+<span class="fc" id="L1511">        getSettings().setStringIfNotNull(Settings.KEYS.ANALYZER_YARN_PATH, pathToYarn);</span>
+<span class="fc" id="L1512">        getSettings().setStringIfNotNull(Settings.KEYS.ANALYZER_PNPM_PATH, pathToPnpm);</span>
+<span class="fc" id="L1513">        getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_MIX_AUDIT_ENABLED, mixAuditAnalyzerEnabled);</span>
+<span class="fc" id="L1514">        getSettings().setStringIfNotNull(Settings.KEYS.ANALYZER_MIX_AUDIT_PATH, mixAuditPath);</span>
+<span class="fc" id="L1515">        getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_NUSPEC_ENABLED, nuspecAnalyzerEnabled);</span>
+<span class="fc" id="L1516">        getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_NUGETCONF_ENABLED, nugetconfAnalyzerEnabled);</span>
+<span class="fc" id="L1517">        getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_LIBMAN_ENABLED, libmanAnalyzerEnabled);</span>
+<span class="fc" id="L1518">        getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_CENTRAL_ENABLED, centralAnalyzerEnabled);</span>
+<span class="fc" id="L1519">        getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_CENTRAL_USE_CACHE, centralAnalyzerUseCache);</span>
+<span class="fc" id="L1520">        getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_NEXUS_ENABLED, nexusAnalyzerEnabled);</span>
+<span class="fc" id="L1521">        getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_ARCHIVE_ENABLED, archiveAnalyzerEnabled);</span>
+<span class="fc" id="L1522">        getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_ASSEMBLY_ENABLED, assemblyAnalyzerEnabled);</span>
+<span class="fc" id="L1523">        getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_MSBUILD_PROJECT_ENABLED, msbuildAnalyzerEnabled);</span>
+<span class="fc" id="L1524">        getSettings().setStringIfNotEmpty(Settings.KEYS.ANALYZER_NEXUS_URL, nexusUrl);</span>
+<span class="fc" id="L1525">        getSettings().setStringIfNotEmpty(Settings.KEYS.ANALYZER_NEXUS_USER, nexusUser);</span>
+<span class="fc" id="L1526">        getSettings().setStringIfNotEmpty(Settings.KEYS.ANALYZER_NEXUS_PASSWORD, nexusPassword);</span>
+<span class="fc" id="L1527">        getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_NEXUS_USES_PROXY, nexusUsesProxy);</span>
+<span class="fc" id="L1528">        getSettings().setStringIfNotEmpty(Settings.KEYS.ADDITIONAL_ZIP_EXTENSIONS, zipExtensions);</span>
+<span class="fc" id="L1529">        getSettings().setStringIfNotEmpty(Settings.KEYS.ANALYZER_ASSEMBLY_DOTNET_PATH, pathToCore);</span>
+<span class="fc" id="L1530">        getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_OSSINDEX_ENABLED, ossIndexAnalyzerEnabled);</span>
+<span class="fc" id="L1531">        getSettings().setStringIfNotEmpty(Settings.KEYS.ANALYZER_OSSINDEX_URL, ossIndexAnalyzerUrl);</span>
+<span class="fc" id="L1532">        getSettings().setStringIfNotEmpty(Settings.KEYS.ANALYZER_OSSINDEX_USER, ossIndexAnalyzerUsername);</span>
+<span class="fc" id="L1533">        getSettings().setStringIfNotEmpty(Settings.KEYS.ANALYZER_OSSINDEX_PASSWORD, ossIndexAnalyzerPassword);</span>
+<span class="fc" id="L1534">        getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_OSSINDEX_USE_CACHE, ossIndexAnalyzerUseCache);</span>
+<span class="fc" id="L1535">        getSettings().setIntIfNotNull(Settings.KEYS.ANALYZER_OSSINDEX_CACHE_VALID_FOR_HOURS, ossIndexAnalyzerCacheValidForHours);</span>
+<span class="fc" id="L1536">        getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_OSSINDEX_WARN_ONLY_ON_REMOTE_ERRORS, ossIndexAnalyzerWarnOnlyOnRemoteErrors);</span>
+<span class="fc" id="L1537">        getSettings().setFloat(Settings.KEYS.JUNIT_FAIL_ON_CVSS, junitFailOnCVSS);</span>
+<span class="fc" id="L1538">        getSettings().setBooleanIfNotNull(Settings.KEYS.FAIL_ON_UNUSED_SUPPRESSION_RULE, failBuildOnUnusedSuppressionRule);</span>
+<span class="fc" id="L1539">    }</span>
 
     /**
      * Checks to see if a vulnerability has been identified with a CVSS score
@@ -1644,61 +1549,61 @@ public class Check extends Update {
     //see note on `dealWithReferences()` for information on this suppression
     @SuppressWarnings(&quot;squid:RedundantThrowsDeclarationCheck&quot;)
     private void checkForFailure(Dependency[] dependencies) throws BuildException {
-<span class="fc" id="L1647">        final StringBuilder ids = new StringBuilder();</span>
-<span class="fc bfc" id="L1648" title="All 2 branches covered.">        for (Dependency d : dependencies) {</span>
-<span class="fc" id="L1649">            boolean addName = true;</span>
-<span class="fc bfc" id="L1650" title="All 2 branches covered.">            for (Vulnerability v : d.getVulnerabilities()) {</span>
-<span class="pc bpc" id="L1651" title="2 of 4 branches missed.">                final double cvssV2 = v.getCvssV2() != null &amp;&amp; v.getCvssV2().getCvssData() != null</span>
-<span class="pc bpc" id="L1652" title="1 of 2 branches missed.">                        &amp;&amp; v.getCvssV2().getCvssData().getBaseScore() != null ? v.getCvssV2().getCvssData().getBaseScore() : -1;</span>
-<span class="pc bpc" id="L1653" title="1 of 4 branches missed.">                final double cvssV3 = v.getCvssV3() != null &amp;&amp; v.getCvssV3().getCvssData() != null</span>
-<span class="pc bpc" id="L1654" title="1 of 2 branches missed.">                        &amp;&amp; v.getCvssV3().getCvssData().getBaseScore() != null ? v.getCvssV3().getCvssData().getBaseScore() : -1;</span>
-<span class="pc bpc" id="L1655" title="3 of 4 branches missed.">                final double cvssV4 = v.getCvssV4() != null &amp;&amp; v.getCvssV4().getCvssData() != null</span>
-<span class="pc bnc" id="L1656" title="All 2 branches missed.">                        &amp;&amp; v.getCvssV4().getCvssData().getBaseScore() != null ? v.getCvssV4().getCvssData().getBaseScore() : -1;</span>
-<span class="pc bpc" id="L1657" title="5 of 6 branches missed.">                final boolean useUnscored = cvssV2 == -1 &amp;&amp; cvssV3 == -1 &amp;&amp; cvssV4 == -1;</span>
+<span class="fc" id="L1552">        final StringBuilder ids = new StringBuilder();</span>
+<span class="fc bfc" id="L1553" title="All 2 branches covered.">        for (Dependency d : dependencies) {</span>
+<span class="fc" id="L1554">            boolean addName = true;</span>
+<span class="fc bfc" id="L1555" title="All 2 branches covered.">            for (Vulnerability v : d.getVulnerabilities()) {</span>
+<span class="pc bpc" id="L1556" title="2 of 4 branches missed.">                final double cvssV2 = v.getCvssV2() != null &amp;&amp; v.getCvssV2().getCvssData() != null</span>
+<span class="pc bpc" id="L1557" title="1 of 2 branches missed.">                        &amp;&amp; v.getCvssV2().getCvssData().getBaseScore() != null ? v.getCvssV2().getCvssData().getBaseScore() : -1;</span>
+<span class="pc bpc" id="L1558" title="1 of 4 branches missed.">                final double cvssV3 = v.getCvssV3() != null &amp;&amp; v.getCvssV3().getCvssData() != null</span>
+<span class="pc bpc" id="L1559" title="1 of 2 branches missed.">                        &amp;&amp; v.getCvssV3().getCvssData().getBaseScore() != null ? v.getCvssV3().getCvssData().getBaseScore() : -1;</span>
+<span class="pc bpc" id="L1560" title="3 of 4 branches missed.">                final double cvssV4 = v.getCvssV4() != null &amp;&amp; v.getCvssV4().getCvssData() != null</span>
+<span class="pc bnc" id="L1561" title="All 2 branches missed.">                        &amp;&amp; v.getCvssV4().getCvssData().getBaseScore() != null ? v.getCvssV4().getCvssData().getBaseScore() : -1;</span>
+<span class="pc bpc" id="L1562" title="5 of 6 branches missed.">                final boolean useUnscored = cvssV2 == -1 &amp;&amp; cvssV3 == -1 &amp;&amp; cvssV4 == -1;</span>
                 final double unscoredCvss =
-<span class="pc bpc" id="L1659" title="3 of 4 branches missed.">                        useUnscored &amp;&amp; v.getUnscoredSeverity() != null ? SeverityUtil.estimateCvssV2(v.getUnscoredSeverity()) : -1;</span>
+<span class="pc bpc" id="L1564" title="3 of 4 branches missed.">                        useUnscored &amp;&amp; v.getUnscoredSeverity() != null ? SeverityUtil.estimateCvssV2(v.getUnscoredSeverity()) : -1;</span>
 
-<span class="pc bpc" id="L1661" title="9 of 10 branches missed.">                if (cvssV2 &gt;= failBuildOnCVSS</span>
+<span class="pc bpc" id="L1566" title="9 of 10 branches missed.">                if (cvssV2 &gt;= failBuildOnCVSS</span>
                         || cvssV3 &gt;= failBuildOnCVSS
                         || cvssV4 &gt;= failBuildOnCVSS
                         || unscoredCvss &gt;= failBuildOnCVSS
                         //safety net to fail on any if for some reason the above misses on 0
                         || failBuildOnCVSS &lt;= 0.0f
                 ) {
-<span class="fc bfc" id="L1668" title="All 2 branches covered.">                    if (addName) {</span>
-<span class="fc" id="L1669">                        addName = false;</span>
-<span class="fc" id="L1670">                        ids.append(NEW_LINE).append(d.getFileName()).append(&quot; (&quot;)</span>
-<span class="fc" id="L1671">                           .append(Stream.concat(d.getSoftwareIdentifiers().stream(), d.getVulnerableSoftwareIdentifiers().stream())</span>
-<span class="fc" id="L1672">                                         .map(Identifier::getValue)</span>
-<span class="fc" id="L1673">                                         .collect(Collectors.joining(&quot;, &quot;)))</span>
-<span class="fc" id="L1674">                           .append(&quot;): &quot;)</span>
-<span class="fc" id="L1675">                           .append(v.getName());</span>
+<span class="fc bfc" id="L1573" title="All 2 branches covered.">                    if (addName) {</span>
+<span class="fc" id="L1574">                        addName = false;</span>
+<span class="fc" id="L1575">                        ids.append(NEW_LINE).append(d.getFileName()).append(&quot; (&quot;)</span>
+<span class="fc" id="L1576">                           .append(Stream.concat(d.getSoftwareIdentifiers().stream(), d.getVulnerableSoftwareIdentifiers().stream())</span>
+<span class="fc" id="L1577">                                         .map(Identifier::getValue)</span>
+<span class="fc" id="L1578">                                         .collect(Collectors.joining(&quot;, &quot;)))</span>
+<span class="fc" id="L1579">                           .append(&quot;): &quot;)</span>
+<span class="fc" id="L1580">                           .append(v.getName());</span>
                     } else {
-<span class="fc" id="L1677">                        ids.append(&quot;, &quot;).append(v.getName());</span>
+<span class="fc" id="L1582">                        ids.append(&quot;, &quot;).append(v.getName());</span>
                     }
                 }
-<span class="fc" id="L1680">            }</span>
+<span class="fc" id="L1585">            }</span>
         }
-<span class="fc bfc" id="L1682" title="All 2 branches covered.">        if (ids.length() &gt; 0) {</span>
+<span class="fc bfc" id="L1587" title="All 2 branches covered.">        if (ids.length() &gt; 0) {</span>
             final String msg;
-<span class="pc bpc" id="L1684" title="1 of 2 branches missed.">            if (showSummary) {</span>
-<span class="fc" id="L1685">                msg = String.format(&quot;%n%nDependency-Check Failure:%n&quot;</span>
+<span class="pc bpc" id="L1589" title="1 of 2 branches missed.">            if (showSummary) {</span>
+<span class="fc" id="L1590">                msg = String.format(&quot;%n%nDependency-Check Failure:%n&quot;</span>
                         + &quot;One or more dependencies were identified with vulnerabilities that have a CVSS score greater than or equal to '%.1f': %s%n&quot;
-<span class="fc" id="L1687">                        + &quot;See the dependency-check report for more details.%n%n&quot;, failBuildOnCVSS, ids);</span>
+<span class="fc" id="L1592">                        + &quot;See the dependency-check report for more details.%n%n&quot;, failBuildOnCVSS, ids);</span>
             } else {
-<span class="nc" id="L1689">                msg = String.format(&quot;%n%nDependency-Check Failure:%n&quot;</span>
+<span class="nc" id="L1594">                msg = String.format(&quot;%n%nDependency-Check Failure:%n&quot;</span>
                         + &quot;One or more dependencies were identified with vulnerabilities.%n%n&quot;
                         + &quot;See the dependency-check report for more details.%n%n&quot;);
             }
-<span class="fc" id="L1693">            throw new BuildException(msg);</span>
+<span class="fc" id="L1598">            throw new BuildException(msg);</span>
         }
-<span class="fc" id="L1695">    }</span>
+<span class="fc" id="L1600">    }</span>
 
     /**
      * An enumeration of supported report formats: &quot;ALL&quot;, &quot;HTML&quot;, &quot;XML&quot;, &quot;CSV&quot;,
      * &quot;JSON&quot;, &quot;JUNIT&quot;, &quot;SARIF&quot;, 'JENkINS', etc..
      */
-<span class="fc" id="L1701">    public static class ReportFormats extends EnumeratedAttribute {</span>
+<span class="fc" id="L1606">    public static class ReportFormats extends EnumeratedAttribute {</span>
 
         /**
          * Returns the list of values for the report format.
@@ -1707,13 +1612,13 @@ public class Check extends Update {
          */
         @Override
         public String[] getValues() {
-<span class="fc" id="L1710">            int i = 0;</span>
-<span class="fc" id="L1711">            final Format[] formats = Format.values();</span>
-<span class="fc" id="L1712">            final String[] values = new String[formats.length];</span>
-<span class="fc bfc" id="L1713" title="All 2 branches covered.">            for (Format format : formats) {</span>
-<span class="fc" id="L1714">                values[i++] = format.name();</span>
+<span class="fc" id="L1615">            int i = 0;</span>
+<span class="fc" id="L1616">            final Format[] formats = Format.values();</span>
+<span class="fc" id="L1617">            final String[] values = new String[formats.length];</span>
+<span class="fc bfc" id="L1618" title="All 2 branches covered.">            for (Format format : formats) {</span>
+<span class="fc" id="L1619">                values[i++] = format.name();</span>
             }
-<span class="fc" id="L1716">            return values;</span>
+<span class="fc" id="L1621">            return values;</span>
         }
     }
 
@@ -1722,7 +1627,7 @@ public class Check extends Update {
      * {@code &lt;reportFormat format=&quot;&lt;format&gt;&quot;/&gt;} nested element to define
      * multiple report formats for the ant-task.
      */
-<span class="fc" id="L1725">    public static class ReportFormat {</span>
+<span class="fc" id="L1630">    public static class ReportFormat {</span>
 
         /**
          * The format of this ReportFormat.
@@ -1735,7 +1640,7 @@ public class Check extends Update {
          * @return the String representing a report format
          */
         public String getFormat() {
-<span class="fc" id="L1738">            return this.format.getValue();</span>
+<span class="fc" id="L1643">            return this.format.getValue();</span>
         }
 
         /**
@@ -1746,9 +1651,9 @@ public class Check extends Update {
          * valid values of the {@link ReportFormats} EnumeratedAttribute
          */
         public void setFormat(final String format) {
-<span class="fc" id="L1749">            this.format = (ReportFormats) EnumeratedAttribute.getInstance(ReportFormats.class, format);</span>
-<span class="fc" id="L1750">        }</span>
+<span class="fc" id="L1654">            this.format = (ReportFormats) EnumeratedAttribute.getInstance(ReportFormats.class, format);</span>
+<span class="fc" id="L1655">        }</span>
     }
 }
 //CSON: MethodCount
-</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.14.202510111229</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.15.202606040825</span></div></body></html>

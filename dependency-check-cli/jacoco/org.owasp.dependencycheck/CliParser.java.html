@@ -21,11 +21,12 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
-import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.OptionGroup;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
+import org.apache.commons.cli.help.HelpFormatter;
+import org.apache.commons.cli.help.TextHelpAppendable;
 import org.owasp.dependencycheck.reporting.ReportGenerator.Format;
 import org.owasp.dependencycheck.utils.InvalidSettingException;
 import org.owasp.dependencycheck.utils.Settings;
@@ -34,6 +35,9 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.UncheckedIOException;
+import java.util.Comparator;
 
 /**
  * A utility to parse command line arguments for the DependencyCheck.
@@ -47,7 +51,7 @@ public final class CliParser {
     /**
      * The logger.
      */
-<span class="fc" id="L50">    private static final Logger LOGGER = LoggerFactory.getLogger(CliParser.class);</span>
+<span class="fc" id="L54">    private static final Logger LOGGER = LoggerFactory.getLogger(CliParser.class);</span>
     /**
      * The command line.
      */
@@ -55,7 +59,7 @@ public final class CliParser {
     /**
      * Indicates whether the arguments are valid.
      */
-<span class="fc" id="L58">    private boolean isValid = true;</span>
+<span class="fc" id="L62">    private boolean isValid = true;</span>
     /**
      * The configured settings.
      */
@@ -65,14 +69,20 @@ public final class CliParser {
      */
     private static final String SUPPORTED_FORMATS = &quot;HTML, XML, CSV, JSON, JUNIT, SARIF, JENKINS, GITLAB or ALL&quot;;
 
+<span class="fc" id="L72">    private static final String HELP_MSG = String.format(</span>
+            &quot;Dependency-Check can be used to identify if there are any known CVE vulnerabilities in libraries &quot; +
+                    &quot;utilized by an application. Dependency-Check will automatically update required data from the &quot; +
+                    &quot;Internet, such as the CVE and CPE data files from nvd.nist.gov.%n&quot;
+    );
+
     /**
      * Constructs a new CLI Parser object with the configured settings.
      *
      * @param settings the configured settings
      */
-<span class="fc" id="L73">    public CliParser(Settings settings) {</span>
-<span class="fc" id="L74">        this.settings = settings;</span>
-<span class="fc" id="L75">    }</span>
+<span class="fc" id="L83">    public CliParser(Settings settings) {</span>
+<span class="fc" id="L84">        this.settings = settings;</span>
+<span class="fc" id="L85">    }</span>
 
     /**
      * Parses the arguments passed in and captures the results for later use.
@@ -82,13 +92,13 @@ public final class CliParser {
      * point to a file that exists.
      * @throws ParseException is thrown when a Parse Exception occurs.
      */
-    public void parse(String[] args) throws FileNotFoundException, ParseException {
-<span class="fc" id="L86">        line = parseArgs(args);</span>
+    public void parse(String... args) throws FileNotFoundException, ParseException {
+<span class="fc" id="L96">        line = parseArgs(args);</span>
 
-<span class="pc bpc" id="L88" title="1 of 2 branches missed.">        if (line != null) {</span>
-<span class="fc" id="L89">            validateArgs();</span>
+<span class="pc bpc" id="L98" title="1 of 2 branches missed.">        if (line != null) {</span>
+<span class="fc" id="L99">            validateArgs();</span>
         }
-<span class="fc" id="L91">    }</span>
+<span class="fc" id="L101">    }</span>
 
     /**
      * Parses the command line arguments.
@@ -97,10 +107,10 @@ public final class CliParser {
      * @return the results of parsing the command line arguments
      * @throws ParseException if the arguments are invalid
      */
-    private CommandLine parseArgs(String[] args) throws ParseException {
-<span class="fc" id="L101">        final CommandLineParser parser = new DefaultParser();</span>
-<span class="fc" id="L102">        final Options options = createCommandLineOptions();</span>
-<span class="fc" id="L103">        return parser.parse(options, args);</span>
+    private CommandLine parseArgs(String... args) throws ParseException {
+<span class="fc" id="L111">        final CommandLineParser parser = new DefaultParser();</span>
+<span class="fc" id="L112">        final Options options = createCommandLineOptions();</span>
+<span class="fc" id="L113">        return parser.parse(options, args);</span>
     }
 
     /**
@@ -112,83 +122,83 @@ public final class CliParser {
      * command line.
      */
     private void validateArgs() throws FileNotFoundException, ParseException {
-<span class="pc bpc" id="L115" title="1 of 4 branches missed.">        if (isUpdateOnly() || isRunScan()) {</span>
+<span class="pc bpc" id="L125" title="1 of 4 branches missed.">        if (isUpdateOnly() || isRunScan()) {</span>
 
-<span class="fc" id="L117">            String value = line.getOptionValue(ARGUMENT.NVD_API_VALID_FOR_HOURS);</span>
-<span class="pc bpc" id="L118" title="1 of 2 branches missed.">            if (value != null) {</span>
+<span class="fc" id="L127">            String value = line.getOptionValue(ARGUMENT.NVD_API_VALID_FOR_HOURS);</span>
+<span class="pc bpc" id="L128" title="1 of 2 branches missed.">            if (value != null) {</span>
                 try {
-<span class="nc" id="L120">                    final int i = Integer.parseInt(value);</span>
-<span class="nc bnc" id="L121" title="All 2 branches missed.">                    if (i &lt; 0) {</span>
-<span class="nc" id="L122">                        throw new ParseException(&quot;Invalid Setting: nvdValidForHours must be a number greater than or equal to 0.&quot;);</span>
+<span class="nc" id="L130">                    final int i = Integer.parseInt(value);</span>
+<span class="nc bnc" id="L131" title="All 2 branches missed.">                    if (i &lt; 0) {</span>
+<span class="nc" id="L132">                        throw new ParseException(&quot;Invalid Setting: nvdValidForHours must be a number greater than or equal to 0.&quot;);</span>
                     }
-<span class="nc" id="L124">                } catch (NumberFormatException ex) {</span>
-<span class="nc" id="L125">                    throw new ParseException(&quot;Invalid Setting: nvdValidForHours must be a number greater than or equal to 0.&quot;);</span>
-<span class="nc" id="L126">                }</span>
+<span class="nc" id="L134">                } catch (NumberFormatException ex) {</span>
+<span class="nc" id="L135">                    throw new ParseException(&quot;Invalid Setting: nvdValidForHours must be a number greater than or equal to 0.&quot;);</span>
+<span class="nc" id="L136">                }</span>
             }
-<span class="fc" id="L128">            value = line.getOptionValue(ARGUMENT.NVD_API_MAX_RETRY_COUNT);</span>
-<span class="pc bpc" id="L129" title="1 of 2 branches missed.">            if (value != null) {</span>
+<span class="fc" id="L138">            value = line.getOptionValue(ARGUMENT.NVD_API_MAX_RETRY_COUNT);</span>
+<span class="pc bpc" id="L139" title="1 of 2 branches missed.">            if (value != null) {</span>
                 try {
-<span class="nc" id="L131">                    final int i = Integer.parseInt(value);</span>
-<span class="nc bnc" id="L132" title="All 2 branches missed.">                    if (i &lt;= 0) {</span>
-<span class="nc" id="L133">                        throw new ParseException(&quot;Invalid Setting: nvdMaxRetryCount must be a number greater than 0.&quot;);</span>
+<span class="nc" id="L141">                    final int i = Integer.parseInt(value);</span>
+<span class="nc bnc" id="L142" title="All 2 branches missed.">                    if (i &lt;= 0) {</span>
+<span class="nc" id="L143">                        throw new ParseException(&quot;Invalid Setting: nvdMaxRetryCount must be a number greater than 0.&quot;);</span>
                     }
-<span class="nc" id="L135">                } catch (NumberFormatException ex) {</span>
-<span class="nc" id="L136">                    throw new ParseException(&quot;Invalid Setting: nvdMaxRetryCount must be a number greater than 0.&quot;);</span>
-<span class="nc" id="L137">                }</span>
+<span class="nc" id="L145">                } catch (NumberFormatException ex) {</span>
+<span class="nc" id="L146">                    throw new ParseException(&quot;Invalid Setting: nvdMaxRetryCount must be a number greater than 0.&quot;);</span>
+<span class="nc" id="L147">                }</span>
             }
-<span class="fc" id="L139">            value = line.getOptionValue(ARGUMENT.NVD_API_DELAY);</span>
-<span class="pc bpc" id="L140" title="1 of 2 branches missed.">            if (value != null) {</span>
+<span class="fc" id="L149">            value = line.getOptionValue(ARGUMENT.NVD_API_DELAY);</span>
+<span class="pc bpc" id="L150" title="1 of 2 branches missed.">            if (value != null) {</span>
                 try {
-<span class="nc" id="L142">                    final int i = Integer.parseInt(value);</span>
-<span class="nc bnc" id="L143" title="All 2 branches missed.">                    if (i &lt; 0) {</span>
-<span class="nc" id="L144">                        throw new ParseException(&quot;Invalid Setting: nvdApiDelay must be a number greater than or equal to 0.&quot;);</span>
+<span class="nc" id="L152">                    final int i = Integer.parseInt(value);</span>
+<span class="nc bnc" id="L153" title="All 2 branches missed.">                    if (i &lt; 0) {</span>
+<span class="nc" id="L154">                        throw new ParseException(&quot;Invalid Setting: nvdApiDelay must be a number greater than or equal to 0.&quot;);</span>
                     }
-<span class="nc" id="L146">                } catch (NumberFormatException ex) {</span>
-<span class="nc" id="L147">                    throw new ParseException(&quot;Invalid Setting: nvdApiDelay must be a number greater than or equal to 0.&quot;);</span>
-<span class="nc" id="L148">                }</span>
+<span class="nc" id="L156">                } catch (NumberFormatException ex) {</span>
+<span class="nc" id="L157">                    throw new ParseException(&quot;Invalid Setting: nvdApiDelay must be a number greater than or equal to 0.&quot;);</span>
+<span class="nc" id="L158">                }</span>
             }
-<span class="fc" id="L150">            value = line.getOptionValue(ARGUMENT.NVD_API_RESULTS_PER_PAGE);</span>
-<span class="pc bpc" id="L151" title="1 of 2 branches missed.">            if (value != null) {</span>
+<span class="fc" id="L160">            value = line.getOptionValue(ARGUMENT.NVD_API_RESULTS_PER_PAGE);</span>
+<span class="pc bpc" id="L161" title="1 of 2 branches missed.">            if (value != null) {</span>
                 try {
-<span class="nc" id="L153">                    final int i = Integer.parseInt(value);</span>
-<span class="nc bnc" id="L154" title="All 4 branches missed.">                    if (i &lt;= 0 || i &gt; 2000) {</span>
-<span class="nc" id="L155">                        throw new ParseException(&quot;Invalid Setting: nvdApiResultsPerPage must be a number in the range [1, 2000].&quot;);</span>
+<span class="nc" id="L163">                    final int i = Integer.parseInt(value);</span>
+<span class="nc bnc" id="L164" title="All 4 branches missed.">                    if (i &lt;= 0 || i &gt; 2000) {</span>
+<span class="nc" id="L165">                        throw new ParseException(&quot;Invalid Setting: nvdApiResultsPerPage must be a number in the range [1, 2000].&quot;);</span>
                     }
-<span class="nc" id="L157">                } catch (NumberFormatException ex) {</span>
-<span class="nc" id="L158">                    throw new ParseException(&quot;Invalid Setting: nvdApiResultsPerPage must be a number in the range [1, 2000].&quot;);</span>
-<span class="nc" id="L159">                }</span>
+<span class="nc" id="L167">                } catch (NumberFormatException ex) {</span>
+<span class="nc" id="L168">                    throw new ParseException(&quot;Invalid Setting: nvdApiResultsPerPage must be a number in the range [1, 2000].&quot;);</span>
+<span class="nc" id="L169">                }</span>
             }
         }
-<span class="fc bfc" id="L162" title="All 2 branches covered.">        if (isRunScan()) {</span>
-<span class="fc" id="L163">            validatePathExists(getScanFiles(), ARGUMENT.SCAN);</span>
-<span class="fc" id="L164">            validatePathExists(getReportDirectory(), ARGUMENT.OUT);</span>
-<span class="fc" id="L165">            final String pathToCore = getStringArgument(ARGUMENT.PATH_TO_CORE);</span>
-<span class="pc bpc" id="L166" title="1 of 2 branches missed.">            if (pathToCore != null) {</span>
-<span class="nc" id="L167">                validatePathExists(pathToCore, ARGUMENT.PATH_TO_CORE);</span>
+<span class="fc bfc" id="L172" title="All 2 branches covered.">        if (isRunScan()) {</span>
+<span class="fc" id="L173">            validatePathExists(getScanFiles(), ARGUMENT.SCAN);</span>
+<span class="fc" id="L174">            validatePathExists(getReportDirectory(), ARGUMENT.OUT);</span>
+<span class="fc" id="L175">            final String pathToCore = getStringArgument(ARGUMENT.PATH_TO_CORE);</span>
+<span class="pc bpc" id="L176" title="1 of 2 branches missed.">            if (pathToCore != null) {</span>
+<span class="nc" id="L177">                validatePathExists(pathToCore, ARGUMENT.PATH_TO_CORE);</span>
             }
-<span class="pc bpc" id="L169" title="1 of 2 branches missed.">            if (line.hasOption(ARGUMENT.OUTPUT_FORMAT)) {</span>
-<span class="nc bnc" id="L170" title="All 2 branches missed.">                for (String validating : getReportFormat()) {</span>
-<span class="nc bnc" id="L171" title="All 2 branches missed.">                    if (!isValidFormat(validating)</span>
-<span class="nc bnc" id="L172" title="All 2 branches missed.">                            &amp;&amp; !isValidFilePath(validating, &quot;format&quot;)) {</span>
-<span class="nc" id="L173">                        final String msg = String.format(&quot;An invalid 'format' of '%s' was specified. &quot;</span>
+<span class="pc bpc" id="L179" title="1 of 2 branches missed.">            if (line.hasOption(ARGUMENT.OUTPUT_FORMAT)) {</span>
+<span class="nc bnc" id="L180" title="All 2 branches missed.">                for (String validating : getReportFormat()) {</span>
+<span class="nc bnc" id="L181" title="All 2 branches missed.">                    if (!isValidFormat(validating)</span>
+<span class="nc bnc" id="L182" title="All 2 branches missed.">                            &amp;&amp; !isValidFilePath(validating, &quot;format&quot;)) {</span>
+<span class="nc" id="L183">                        final String msg = String.format(&quot;An invalid 'format' of '%s' was specified. &quot;</span>
                                         + &quot;Supported output formats are %s, and custom template files.&quot;,
                                 validating, SUPPORTED_FORMATS);
-<span class="nc" id="L176">                        throw new ParseException(msg);</span>
+<span class="nc" id="L186">                        throw new ParseException(msg);</span>
                     }
                 }
             }
-<span class="pc bpc" id="L180" title="1 of 2 branches missed.">            if (line.hasOption(ARGUMENT.SYM_LINK_DEPTH)) {</span>
+<span class="pc bpc" id="L190" title="1 of 2 branches missed.">            if (line.hasOption(ARGUMENT.SYM_LINK_DEPTH)) {</span>
                 try {
-<span class="nc" id="L182">                    final int i = Integer.parseInt(line.getOptionValue(ARGUMENT.SYM_LINK_DEPTH));</span>
-<span class="nc bnc" id="L183" title="All 2 branches missed.">                    if (i &lt; 0) {</span>
-<span class="nc" id="L184">                        throw new ParseException(&quot;Symbolic Link Depth (symLink) must be greater than zero.&quot;);</span>
+<span class="nc" id="L192">                    final int i = Integer.parseInt(line.getOptionValue(ARGUMENT.SYM_LINK_DEPTH));</span>
+<span class="nc bnc" id="L193" title="All 2 branches missed.">                    if (i &lt; 0) {</span>
+<span class="nc" id="L194">                        throw new ParseException(&quot;Symbolic Link Depth (symLink) must be greater than zero.&quot;);</span>
                     }
-<span class="nc" id="L186">                } catch (NumberFormatException ex) {</span>
-<span class="nc" id="L187">                    throw new ParseException(&quot;Symbolic Link Depth (symLink) is not a number.&quot;);</span>
-<span class="nc" id="L188">                }</span>
+<span class="nc" id="L196">                } catch (NumberFormatException ex) {</span>
+<span class="nc" id="L197">                    throw new ParseException(&quot;Symbolic Link Depth (symLink) is not a number.&quot;);</span>
+<span class="nc" id="L198">                }</span>
             }
         }
-<span class="fc" id="L191">    }</span>
+<span class="fc" id="L201">    }</span>
 
     /**
      * Validates the format to be one of the known Formats.
@@ -199,10 +209,10 @@ public final class CliParser {
      */
     private boolean isValidFormat(String format) {
         try {
-<span class="nc" id="L202">            Format.valueOf(format);</span>
-<span class="nc" id="L203">            return true;</span>
-<span class="nc" id="L204">        } catch (IllegalArgumentException ex) {</span>
-<span class="nc" id="L205">            return false;</span>
+<span class="nc" id="L212">            Format.valueOf(format);</span>
+<span class="nc" id="L213">            return true;</span>
+<span class="nc" id="L214">        } catch (IllegalArgumentException ex) {</span>
+<span class="nc" id="L215">            return false;</span>
         }
     }
 
@@ -213,12 +223,12 @@ public final class CliParser {
      * @param argumentName the argument being validated (e.g. scan, out, etc.)
      * @return true, if path exists; false otherwise
      */
-    private boolean isValidFilePath(String path, String argumentName) {
+    private boolean isValidFilePath(String path, @SuppressWarnings(&quot;SameParameterValue&quot;) String argumentName) {
         try {
-<span class="nc" id="L218">            validatePathExists(path, argumentName);</span>
-<span class="nc" id="L219">            return true;</span>
-<span class="nc" id="L220">        } catch (FileNotFoundException ex) {</span>
-<span class="nc" id="L221">            return false;</span>
+<span class="nc" id="L228">            validatePathExists(path, argumentName);</span>
+<span class="nc" id="L229">            return true;</span>
+<span class="nc" id="L230">        } catch (FileNotFoundException ex) {</span>
+<span class="nc" id="L231">            return false;</span>
         }
     }
 
@@ -232,11 +242,11 @@ public final class CliParser {
      * @throws FileNotFoundException is thrown if one of the paths being
      * validated does not exist.
      */
-    private void validatePathExists(String[] paths, String optType) throws FileNotFoundException {
-<span class="fc bfc" id="L236" title="All 2 branches covered.">        for (String path : paths) {</span>
-<span class="fc" id="L237">            validatePathExists(path, optType);</span>
+    private void validatePathExists(String[] paths, @SuppressWarnings(&quot;SameParameterValue&quot;) String optType) throws FileNotFoundException {
+<span class="fc bfc" id="L246" title="All 2 branches covered.">        for (String path : paths) {</span>
+<span class="fc" id="L247">            validatePathExists(path, optType);</span>
         }
-<span class="fc" id="L239">    }</span>
+<span class="fc" id="L249">    }</span>
 
     /**
      * Validates whether or not the path points at a file that exists; if the
@@ -249,51 +259,51 @@ public final class CliParser {
      * not exist.
      */
     private void validatePathExists(String path, String argumentName) throws FileNotFoundException {
-<span class="pc bpc" id="L252" title="1 of 2 branches missed.">        if (path == null) {</span>
-<span class="nc" id="L253">            isValid = false;</span>
-<span class="nc" id="L254">            final String msg = String.format(&quot;Invalid '%s' argument: null&quot;, argumentName);</span>
-<span class="nc" id="L255">            throw new FileNotFoundException(msg);</span>
-<span class="pc bpc" id="L256" title="2 of 4 branches missed.">        } else if (!path.contains(&quot;*&quot;) &amp;&amp; !path.contains(&quot;?&quot;)) {</span>
-<span class="fc" id="L257">            File f = new File(path);</span>
-<span class="fc" id="L258">            final String[] formats = this.getReportFormat();</span>
-<span class="pc bpc" id="L259" title="2 of 6 branches missed.">            if (&quot;o&quot;.equalsIgnoreCase(argumentName.substring(0, 1)) &amp;&amp; formats.length == 1 &amp;&amp; !&quot;ALL&quot;.equalsIgnoreCase(formats[0])) {</span>
-<span class="fc" id="L260">                final String checkPath = path.toLowerCase();</span>
-<span class="pc bpc" id="L261" title="3 of 6 branches missed.">                if (checkPath.endsWith(&quot;.html&quot;) || checkPath.endsWith(&quot;.xml&quot;) || checkPath.endsWith(&quot;.htm&quot;)</span>
-<span class="pc bpc" id="L262" title="2 of 4 branches missed.">                        || checkPath.endsWith(&quot;.csv&quot;) || checkPath.endsWith(&quot;.json&quot;)) {</span>
-<span class="nc bnc" id="L263" title="All 2 branches missed.">                    if (f.getParentFile() == null) {</span>
-<span class="nc" id="L264">                        f = new File(&quot;.&quot;, path);</span>
+<span class="pc bpc" id="L262" title="1 of 2 branches missed.">        if (path == null) {</span>
+<span class="nc" id="L263">            isValid = false;</span>
+<span class="nc" id="L264">            final String msg = String.format(&quot;Invalid '%s' argument: null&quot;, argumentName);</span>
+<span class="nc" id="L265">            throw new FileNotFoundException(msg);</span>
+<span class="pc bpc" id="L266" title="2 of 4 branches missed.">        } else if (!path.contains(&quot;*&quot;) &amp;&amp; !path.contains(&quot;?&quot;)) {</span>
+<span class="fc" id="L267">            File f = new File(path);</span>
+<span class="fc" id="L268">            final String[] formats = this.getReportFormat();</span>
+<span class="pc bpc" id="L269" title="2 of 6 branches missed.">            if (&quot;o&quot;.equalsIgnoreCase(argumentName.substring(0, 1)) &amp;&amp; formats.length == 1 &amp;&amp; !&quot;ALL&quot;.equalsIgnoreCase(formats[0])) {</span>
+<span class="fc" id="L270">                final String checkPath = path.toLowerCase();</span>
+<span class="pc bpc" id="L271" title="3 of 6 branches missed.">                if (checkPath.endsWith(&quot;.html&quot;) || checkPath.endsWith(&quot;.xml&quot;) || checkPath.endsWith(&quot;.htm&quot;)</span>
+<span class="pc bpc" id="L272" title="2 of 4 branches missed.">                        || checkPath.endsWith(&quot;.csv&quot;) || checkPath.endsWith(&quot;.json&quot;)) {</span>
+<span class="nc bnc" id="L273" title="All 2 branches missed.">                    if (f.getParentFile() == null) {</span>
+<span class="nc" id="L274">                        f = new File(&quot;.&quot;, path);</span>
                     }
-<span class="nc bnc" id="L266" title="All 2 branches missed.">                    if (!f.getParentFile().isDirectory()) {</span>
-<span class="nc" id="L267">                        isValid = false;</span>
-<span class="nc" id="L268">                        final String msg = String.format(&quot;Invalid '%s' argument: '%s' - directory path does not exist&quot;, argumentName, path);</span>
-<span class="nc" id="L269">                        throw new FileNotFoundException(msg);</span>
+<span class="nc bnc" id="L276" title="All 2 branches missed.">                    if (!f.getParentFile().isDirectory()) {</span>
+<span class="nc" id="L277">                        isValid = false;</span>
+<span class="nc" id="L278">                        final String msg = String.format(&quot;Invalid '%s' argument: '%s' - directory path does not exist&quot;, argumentName, path);</span>
+<span class="nc" id="L279">                        throw new FileNotFoundException(msg);</span>
                     }
                 }
-<span class="pc bpc" id="L272" title="3 of 4 branches missed.">            } else if (&quot;o&quot;.equalsIgnoreCase(argumentName.substring(0, 1)) &amp;&amp; !f.isDirectory()) {</span>
-<span class="nc bnc" id="L273" title="All 6 branches missed.">                if (f.getParentFile() != null &amp;&amp; f.getParentFile().isDirectory() &amp;&amp; !f.mkdir()) {</span>
-<span class="nc" id="L274">                    isValid = false;</span>
-<span class="nc" id="L275">                    final String msg = String.format(&quot;Invalid '%s' argument: '%s' - unable to create the output directory&quot;, argumentName, path);</span>
-<span class="nc" id="L276">                    throw new FileNotFoundException(msg);</span>
+<span class="pc bpc" id="L282" title="3 of 4 branches missed.">            } else if (&quot;o&quot;.equalsIgnoreCase(argumentName.substring(0, 1)) &amp;&amp; !f.isDirectory()) {</span>
+<span class="nc bnc" id="L283" title="All 6 branches missed.">                if (f.getParentFile() != null &amp;&amp; f.getParentFile().isDirectory() &amp;&amp; !f.mkdir()) {</span>
+<span class="nc" id="L284">                    isValid = false;</span>
+<span class="nc" id="L285">                    final String msg = String.format(&quot;Invalid '%s' argument: '%s' - unable to create the output directory&quot;, argumentName, path);</span>
+<span class="nc" id="L286">                    throw new FileNotFoundException(msg);</span>
                 }
-<span class="nc bnc" id="L278" title="All 2 branches missed.">                if (!f.isDirectory()) {</span>
-<span class="nc" id="L279">                    isValid = false;</span>
-<span class="nc" id="L280">                    final String msg = String.format(&quot;Invalid '%s' argument: '%s' - path does not exist&quot;, argumentName, path);</span>
-<span class="nc" id="L281">                    throw new FileNotFoundException(msg);</span>
+<span class="nc bnc" id="L288" title="All 2 branches missed.">                if (!f.isDirectory()) {</span>
+<span class="nc" id="L289">                    isValid = false;</span>
+<span class="nc" id="L290">                    final String msg = String.format(&quot;Invalid '%s' argument: '%s' - path does not exist&quot;, argumentName, path);</span>
+<span class="nc" id="L291">                    throw new FileNotFoundException(msg);</span>
                 }
-<span class="fc bfc" id="L283" title="All 2 branches covered.">            } else if (!f.exists()) {</span>
-<span class="fc" id="L284">                isValid = false;</span>
-<span class="fc" id="L285">                final String msg = String.format(&quot;Invalid '%s' argument: '%s' - path does not exist&quot;, argumentName, path);</span>
-<span class="fc" id="L286">                throw new FileNotFoundException(msg);</span>
+<span class="fc bfc" id="L293" title="All 2 branches covered.">            } else if (!f.exists()) {</span>
+<span class="fc" id="L294">                isValid = false;</span>
+<span class="fc" id="L295">                final String msg = String.format(&quot;Invalid '%s' argument: '%s' - path does not exist&quot;, argumentName, path);</span>
+<span class="fc" id="L296">                throw new FileNotFoundException(msg);</span>
             }
 //        } else if (path.startsWith(&quot;//&quot;) || path.startsWith(&quot;\\\\&quot;)) {
 //            isValid = false;
 //            final String msg = String.format(&quot;Invalid '%s' argument: '%s'%nUnable to scan paths that start with '//'.&quot;, argumentName, path);
 //            throw new FileNotFoundException(msg);
-<span class="pc bnc" id="L292" title="All 8 branches missed.">        } else if ((path.endsWith(&quot;/*&quot;) &amp;&amp; !path.endsWith(&quot;**/*&quot;)) || (path.endsWith(&quot;\\*&quot;) &amp;&amp; path.endsWith(&quot;**\\*&quot;))) {</span>
-<span class="nc" id="L293">            LOGGER.warn(&quot;Possibly incorrect path '{}' from argument '{}' because it ends with a slash star; &quot;</span>
+<span class="pc bnc" id="L302" title="All 8 branches missed.">        } else if ((path.endsWith(&quot;/*&quot;) &amp;&amp; !path.endsWith(&quot;**/*&quot;)) || (path.endsWith(&quot;\\*&quot;) &amp;&amp; path.endsWith(&quot;**\\*&quot;))) {</span>
+<span class="nc" id="L303">            LOGGER.warn(&quot;Possibly incorrect path '{}' from argument '{}' because it ends with a slash star; &quot;</span>
                     + &quot;dependency-check uses ant-style paths&quot;, path, argumentName);
         }
-<span class="fc" id="L296">    }</span>
+<span class="fc" id="L306">    }</span>
 
     /**
      * Generates an Options collection that is used to parse the command line
@@ -301,13 +311,12 @@ public final class CliParser {
      *
      * @return the command line options used for parsing the command line
      */
-    @SuppressWarnings(&quot;static-access&quot;)
     private Options createCommandLineOptions() {
-<span class="fc" id="L306">        final Options options = new Options();</span>
-<span class="fc" id="L307">        addStandardOptions(options);</span>
-<span class="fc" id="L308">        addAdvancedOptions(options);</span>
-<span class="fc" id="L309">        addDeprecatedOptions(options);</span>
-<span class="fc" id="L310">        return options;</span>
+<span class="fc" id="L315">        final Options options = new Options();</span>
+<span class="fc" id="L316">        addStandardOptions(options);</span>
+<span class="fc" id="L317">        addAdvancedOptions(options);</span>
+<span class="fc" id="L318">        addDeprecatedOptions(options);</span>
+<span class="fc" id="L319">        return options;</span>
     }
 
     /**
@@ -315,40 +324,38 @@ public final class CliParser {
      *
      * @param options a collection of command line arguments
      */
-    @SuppressWarnings(&quot;static-access&quot;)
     private void addStandardOptions(final Options options) {
-        //This is an option group because it can be specified more then once.
-
-<span class="fc" id="L322">        options.addOptionGroup(newOptionGroup(newOptionWithArg(ARGUMENT.SCAN_SHORT, ARGUMENT.SCAN, &quot;path&quot;,</span>
+        //This is an option group because it can be specified more than once.
+<span class="fc" id="L329">        options.addOptionGroup(newOptionGroup(newOptionWithArg(ARGUMENT.SCAN_SHORT, ARGUMENT.SCAN, &quot;path&quot;,</span>
                         &quot;The path to scan - this option can be specified multiple times. Ant style paths are supported (e.g. 'path/**/*.jar'); &quot;
                                 + &quot;if using Ant style paths it is highly recommended to quote the argument value.&quot;)))
-<span class="fc" id="L325">                .addOptionGroup(newOptionGroup(newOptionWithArg(ARGUMENT.EXCLUDE, &quot;pattern&quot;, &quot;Specify an exclusion pattern. This option &quot;</span>
+<span class="fc" id="L332">                .addOptionGroup(newOptionGroup(newOptionWithArg(ARGUMENT.EXCLUDE, &quot;pattern&quot;, &quot;Specify an exclusion pattern. This option &quot;</span>
                         + &quot;can be specified multiple times and it accepts Ant style exclusions.&quot;)))
-<span class="fc" id="L327">                .addOption(newOptionWithArg(ARGUMENT.PROJECT, &quot;name&quot;, &quot;The name of the project being scanned.&quot;))</span>
-<span class="fc" id="L328">                .addOption(newOptionWithArg(ARGUMENT.OUT_SHORT, ARGUMENT.OUT, &quot;path&quot;,</span>
+<span class="fc" id="L334">                .addOption(newOptionWithArg(ARGUMENT.PROJECT, &quot;name&quot;, &quot;The name of the project being scanned.&quot;))</span>
+<span class="fc" id="L335">                .addOption(newOptionWithArg(ARGUMENT.OUT_SHORT, ARGUMENT.OUT, &quot;path&quot;,</span>
                         &quot;The folder to write reports to. This defaults to the current directory. It is possible to set this to a specific &quot;
                                 + &quot;file name if the format argument is not set to ALL.&quot;))
-<span class="fc" id="L331">                .addOption(newOptionWithArg(ARGUMENT.OUTPUT_FORMAT_SHORT, ARGUMENT.OUTPUT_FORMAT, &quot;format&quot;,</span>
+<span class="fc" id="L338">                .addOption(newOptionWithArg(ARGUMENT.OUTPUT_FORMAT_SHORT, ARGUMENT.OUTPUT_FORMAT, &quot;format&quot;,</span>
                         &quot;The report format (&quot; + SUPPORTED_FORMATS + &quot;). The default is HTML. Multiple format parameters can be specified.&quot;))
-<span class="fc" id="L333">                .addOption(newOption(ARGUMENT.PRETTY_PRINT, &quot;When specified the JSON and XML report formats will be pretty printed.&quot;))</span>
-<span class="fc" id="L334">                .addOption(newOption(ARGUMENT.VERSION_SHORT, ARGUMENT.VERSION, &quot;Print the version information.&quot;))</span>
-<span class="fc" id="L335">                .addOption(newOption(ARGUMENT.HELP_SHORT, ARGUMENT.HELP, &quot;Print this message.&quot;))</span>
-<span class="fc" id="L336">                .addOption(newOption(ARGUMENT.ADVANCED_HELP, &quot;Print the advanced help message.&quot;))</span>
-<span class="fc" id="L337">                .addOption(newOption(ARGUMENT.DISABLE_AUTO_UPDATE_SHORT, ARGUMENT.DISABLE_AUTO_UPDATE,</span>
+<span class="fc" id="L340">                .addOption(newOption(ARGUMENT.PRETTY_PRINT, &quot;When specified the JSON and XML report formats will be pretty printed.&quot;))</span>
+<span class="fc" id="L341">                .addOption(newOption(ARGUMENT.VERSION_SHORT, ARGUMENT.VERSION, &quot;Print the version information.&quot;))</span>
+<span class="fc" id="L342">                .addOption(newOption(ARGUMENT.HELP_SHORT, ARGUMENT.HELP, &quot;Print this message.&quot;))</span>
+<span class="fc" id="L343">                .addOption(newOption(ARGUMENT.ADVANCED_HELP, &quot;Print the advanced help message.&quot;))</span>
+<span class="fc" id="L344">                .addOption(newOption(ARGUMENT.DISABLE_AUTO_UPDATE_SHORT, ARGUMENT.DISABLE_AUTO_UPDATE,</span>
                         &quot;Disables the automatic updating of the NVD-CVE, hosted-suppressions and RetireJS data.&quot;))
-<span class="fc" id="L339">                .addOption(newOptionWithArg(ARGUMENT.VERBOSE_LOG_SHORT, ARGUMENT.VERBOSE_LOG, &quot;file&quot;,</span>
+<span class="fc" id="L346">                .addOption(newOptionWithArg(ARGUMENT.VERBOSE_LOG_SHORT, ARGUMENT.VERBOSE_LOG, &quot;file&quot;,</span>
                         &quot;The file path to write verbose logging information.&quot;))
-<span class="fc" id="L341">                .addOptionGroup(newOptionGroup(newOptionWithArg(ARGUMENT.SUPPRESSION_FILES, &quot;file&quot;,</span>
+<span class="fc" id="L348">                .addOptionGroup(newOptionGroup(newOptionWithArg(ARGUMENT.SUPPRESSION_FILES, &quot;file&quot;,</span>
                         &quot;The file path to the suppression XML file. This can be specified more then once to utilize multiple suppression files&quot;)))
-<span class="fc" id="L343">                .addOption(newOption(ARGUMENT.DISABLE_VERSION_CHECK, &quot;Disables the dependency-check version check&quot;))</span>
-<span class="fc" id="L344">                .addOption(newOption(ARGUMENT.EXPERIMENTAL, &quot;Enables the experimental analyzers.&quot;))</span>
-<span class="fc" id="L345">                .addOption(newOptionWithArg(ARGUMENT.NVD_API_KEY, &quot;apiKey&quot;, &quot;The API Key to access the NVD API.&quot;))</span>
-<span class="fc" id="L346">                .addOption(newOptionWithArg(ARGUMENT.FAIL_ON_CVSS, &quot;score&quot;,</span>
+<span class="fc" id="L350">                .addOption(newOption(ARGUMENT.DISABLE_VERSION_CHECK, &quot;Disables the dependency-check version check&quot;))</span>
+<span class="fc" id="L351">                .addOption(newOption(ARGUMENT.EXPERIMENTAL, &quot;Enables the experimental analyzers.&quot;))</span>
+<span class="fc" id="L352">                .addOption(newOptionWithArg(ARGUMENT.NVD_API_KEY, &quot;apiKey&quot;, &quot;The API Key to access the NVD API.&quot;))</span>
+<span class="fc" id="L353">                .addOption(newOptionWithArg(ARGUMENT.FAIL_ON_CVSS, &quot;score&quot;,</span>
                         &quot;Specifies if the build should be failed if a CVSS score above a specified level is identified. The default is 11; &quot;
                                 + &quot;since the CVSS scores are 0-10, by default the build will never fail.&quot;))
-<span class="fc" id="L349">                .addOption(newOptionWithArg(ARGUMENT.FAIL_JUNIT_ON_CVSS, &quot;score&quot;,</span>
+<span class="fc" id="L356">                .addOption(newOptionWithArg(ARGUMENT.FAIL_JUNIT_ON_CVSS, &quot;score&quot;,</span>
                         &quot;Specifies the CVSS score that is considered a failure when generating the junit report. The default is 0.&quot;));
-<span class="fc" id="L351">    }</span>
+<span class="fc" id="L358">    }</span>
 
     /**
      * Adds the advanced command line options to the given options collection.
@@ -357,211 +364,210 @@ public final class CliParser {
      *
      * @param options a collection of command line arguments
      */
-    @SuppressWarnings(&quot;static-access&quot;)
     private void addAdvancedOptions(final Options options) {
-<span class="fc" id="L362">        options</span>
-<span class="fc" id="L363">                .addOption(newOption(ARGUMENT.UPDATE_ONLY,</span>
+<span class="fc" id="L368">        options</span>
+<span class="fc" id="L369">                .addOption(newOption(ARGUMENT.UPDATE_ONLY,</span>
                         &quot;Only update the local NVD data cache; no scan will be executed.&quot;))
-<span class="fc" id="L365">                .addOption(newOptionWithArg(ARGUMENT.NVD_API_DELAY, &quot;milliseconds&quot;,</span>
+<span class="fc" id="L371">                .addOption(newOptionWithArg(ARGUMENT.NVD_API_DELAY, &quot;milliseconds&quot;,</span>
                         &quot;Time in milliseconds to wait between downloading from the NVD.&quot;))
-<span class="fc" id="L367">                .addOption(newOptionWithArg(ARGUMENT.NVD_API_RESULTS_PER_PAGE, &quot;count&quot;,</span>
+<span class="fc" id="L373">                .addOption(newOptionWithArg(ARGUMENT.NVD_API_RESULTS_PER_PAGE, &quot;count&quot;,</span>
                         &quot;The number records for a single page from NVD API (must be &lt;=2000).&quot;))
-<span class="fc" id="L369">                .addOption(newOptionWithArg(ARGUMENT.NVD_API_ENDPOINT, &quot;endpoint&quot;,</span>
+<span class="fc" id="L375">                .addOption(newOptionWithArg(ARGUMENT.NVD_API_ENDPOINT, &quot;endpoint&quot;,</span>
                         &quot;The NVD API Endpoint - setting this is rare.&quot;))
-<span class="fc" id="L371">                .addOption(newOptionWithArg(ARGUMENT.NVD_API_DATAFEED_URL, &quot;url&quot;,</span>
+<span class="fc" id="L377">                .addOption(newOptionWithArg(ARGUMENT.NVD_API_DATAFEED_URL, &quot;url&quot;,</span>
                         &quot;The URL to the NVD API Datafeed.&quot;))
-<span class="fc" id="L373">                .addOption(newOptionWithArg(ARGUMENT.NVD_API_DATAFEED_USER, &quot;user&quot;,</span>
+<span class="fc" id="L379">                .addOption(newOptionWithArg(ARGUMENT.NVD_API_DATAFEED_USER, &quot;user&quot;,</span>
                         &quot;Credentials for basic authentication to the NVD API Datafeed.&quot;))
-<span class="fc" id="L375">                .addOption(newOptionWithArg(ARGUMENT.NVD_API_DATAFEED_PASSWORD, &quot;password&quot;,</span>
+<span class="fc" id="L381">                .addOption(newOptionWithArg(ARGUMENT.NVD_API_DATAFEED_PASSWORD, &quot;password&quot;,</span>
                         &quot;Credentials for basic authentication to the NVD API Datafeed.&quot;))
-<span class="fc" id="L377">                .addOption(newOptionWithArg(ARGUMENT.NVD_API_DATAFEED_BEARER_TOKEN, &quot;token&quot;,</span>
+<span class="fc" id="L383">                .addOption(newOptionWithArg(ARGUMENT.NVD_API_DATAFEED_BEARER_TOKEN, &quot;token&quot;,</span>
                         &quot;Credentials for bearer authentication to the NVD API Datafeed.&quot;))
-<span class="fc" id="L379">                .addOption(newOptionWithArg(ARGUMENT.SUPPRESSION_FILE_USER, &quot;user&quot;,</span>
+<span class="fc" id="L385">                .addOption(newOptionWithArg(ARGUMENT.SUPPRESSION_FILE_USER, &quot;user&quot;,</span>
                         &quot;Credentials for basic authentication to web-hosted suppression files.&quot;))
-<span class="fc" id="L381">                .addOption(newOptionWithArg(ARGUMENT.SUPPRESSION_FILE_PASSWORD, &quot;password&quot;,</span>
+<span class="fc" id="L387">                .addOption(newOptionWithArg(ARGUMENT.SUPPRESSION_FILE_PASSWORD, &quot;password&quot;,</span>
                         &quot;Credentials for basic authentication to web-hosted suppression files.&quot;))
-<span class="fc" id="L383">                .addOption(newOptionWithArg(ARGUMENT.SUPPRESSION_FILE_BEARER_TOKEN, &quot;token&quot;,</span>
+<span class="fc" id="L389">                .addOption(newOptionWithArg(ARGUMENT.SUPPRESSION_FILE_BEARER_TOKEN, &quot;token&quot;,</span>
                         &quot;Credentials for bearer authentication to web-hosted suppression files.&quot;))
-<span class="fc" id="L385">                .addOption(newOptionWithArg(ARGUMENT.NVD_API_MAX_RETRY_COUNT, &quot;count&quot;,</span>
+<span class="fc" id="L391">                .addOption(newOptionWithArg(ARGUMENT.NVD_API_MAX_RETRY_COUNT, &quot;count&quot;,</span>
                         &quot;The maximum number of retry requests for a single call to the NVD API.&quot;))
-<span class="fc" id="L387">                .addOption(newOptionWithArg(ARGUMENT.NVD_API_VALID_FOR_HOURS, &quot;hours&quot;,</span>
+<span class="fc" id="L393">                .addOption(newOptionWithArg(ARGUMENT.NVD_API_VALID_FOR_HOURS, &quot;hours&quot;,</span>
                         &quot;The number of hours to wait before checking for new updates from the NVD.&quot;))
-<span class="fc" id="L389">                .addOption(newOptionWithArg(ARGUMENT.PROXY_PORT, &quot;port&quot;,</span>
+<span class="fc" id="L395">                .addOption(newOptionWithArg(ARGUMENT.PROXY_PORT, &quot;port&quot;,</span>
                         &quot;The proxy port to use when downloading resources.&quot;))
-<span class="fc" id="L391">                .addOption(newOptionWithArg(ARGUMENT.PROXY_SERVER, &quot;server&quot;,</span>
+<span class="fc" id="L397">                .addOption(newOptionWithArg(ARGUMENT.PROXY_SERVER, &quot;server&quot;,</span>
                         &quot;The proxy server to use when downloading resources.&quot;))
-<span class="fc" id="L393">                .addOption(newOptionWithArg(ARGUMENT.PROXY_USERNAME, &quot;user&quot;,</span>
+<span class="fc" id="L399">                .addOption(newOptionWithArg(ARGUMENT.PROXY_USERNAME, &quot;user&quot;,</span>
                         &quot;The proxy username to use when downloading resources.&quot;))
-<span class="fc" id="L395">                .addOption(newOptionWithArg(ARGUMENT.PROXY_PASSWORD, &quot;pass&quot;,</span>
+<span class="fc" id="L401">                .addOption(newOptionWithArg(ARGUMENT.PROXY_PASSWORD, &quot;pass&quot;,</span>
                         &quot;The proxy password to use when downloading resources.&quot;))
-<span class="fc" id="L397">                .addOption(newOptionWithArg(ARGUMENT.NON_PROXY_HOSTS, &quot;list&quot;,</span>
+<span class="fc" id="L403">                .addOption(newOptionWithArg(ARGUMENT.NON_PROXY_HOSTS, &quot;list&quot;,</span>
                         &quot;The proxy exclusion list: hostnames (or patterns) for which proxy should not be used. &quot;
                                 + &quot;Use pipe, comma or colon as list separator.&quot;))
-<span class="fc" id="L400">                .addOption(newOptionWithArg(ARGUMENT.CONNECTION_TIMEOUT_SHORT, ARGUMENT.CONNECTION_TIMEOUT, &quot;timeout&quot;,</span>
+<span class="fc" id="L406">                .addOption(newOptionWithArg(ARGUMENT.CONNECTION_TIMEOUT_SHORT, ARGUMENT.CONNECTION_TIMEOUT, &quot;timeout&quot;,</span>
                         &quot;The connection timeout (in milliseconds) to use when downloading resources.&quot;))
-<span class="fc" id="L402">                .addOption(newOptionWithArg(ARGUMENT.CONNECTION_READ_TIMEOUT, &quot;timeout&quot;,</span>
+<span class="fc" id="L408">                .addOption(newOptionWithArg(ARGUMENT.CONNECTION_READ_TIMEOUT, &quot;timeout&quot;,</span>
                         &quot;The read timeout (in milliseconds) to use when downloading resources.&quot;))
-<span class="fc" id="L404">                .addOption(newOptionWithArg(ARGUMENT.CONNECTION_STRING, &quot;connStr&quot;,</span>
+<span class="fc" id="L410">                .addOption(newOptionWithArg(ARGUMENT.CONNECTION_STRING, &quot;connStr&quot;,</span>
                         &quot;The connection string to the database.&quot;))
-<span class="fc" id="L406">                .addOption(newOptionWithArg(ARGUMENT.DB_NAME, &quot;user&quot;,</span>
+<span class="fc" id="L412">                .addOption(newOptionWithArg(ARGUMENT.DB_NAME, &quot;user&quot;,</span>
                         &quot;The username used to connect to the database.&quot;))
-<span class="fc" id="L408">                .addOption(newOptionWithArg(ARGUMENT.DATA_DIRECTORY_SHORT, ARGUMENT.DATA_DIRECTORY, &quot;path&quot;,</span>
+<span class="fc" id="L414">                .addOption(newOptionWithArg(ARGUMENT.DATA_DIRECTORY_SHORT, ARGUMENT.DATA_DIRECTORY, &quot;path&quot;,</span>
                         &quot;The location of the H2 Database file. This option should generally not be set.&quot;))
-<span class="fc" id="L410">                .addOption(newOptionWithArg(ARGUMENT.DB_PASSWORD, &quot;password&quot;,</span>
+<span class="fc" id="L416">                .addOption(newOptionWithArg(ARGUMENT.DB_PASSWORD, &quot;password&quot;,</span>
                         &quot;The password for connecting to the database.&quot;))
-<span class="fc" id="L412">                .addOption(newOptionWithArg(ARGUMENT.DB_DRIVER, &quot;driver&quot;,</span>
+<span class="fc" id="L418">                .addOption(newOptionWithArg(ARGUMENT.DB_DRIVER, &quot;driver&quot;,</span>
                         &quot;The database driver name.&quot;))
-<span class="fc" id="L414">                .addOption(newOptionWithArg(ARGUMENT.DB_DRIVER_PATH, &quot;path&quot;,</span>
+<span class="fc" id="L420">                .addOption(newOptionWithArg(ARGUMENT.DB_DRIVER_PATH, &quot;path&quot;,</span>
                         &quot;The path to the database driver; note, this does not need to be set unless the JAR is &quot;
                                 + &quot;outside of the classpath.&quot;))
-<span class="fc" id="L417">                .addOption(newOptionWithArg(ARGUMENT.SYM_LINK_DEPTH, &quot;depth&quot;,</span>
+<span class="fc" id="L423">                .addOption(newOptionWithArg(ARGUMENT.SYM_LINK_DEPTH, &quot;depth&quot;,</span>
                         &quot;Sets how deep nested symbolic links will be followed; 0 indicates symbolic links will not be followed.&quot;))
-<span class="fc" id="L419">                .addOption(newOptionWithArg(ARGUMENT.PATH_TO_BUNDLE_AUDIT, &quot;path&quot;,</span>
+<span class="fc" id="L425">                .addOption(newOptionWithArg(ARGUMENT.PATH_TO_BUNDLE_AUDIT, &quot;path&quot;,</span>
                         &quot;The path to bundle-audit for Gem bundle analysis.&quot;))
-<span class="fc" id="L421">                .addOption(newOptionWithArg(ARGUMENT.PATH_TO_BUNDLE_AUDIT_WORKING_DIRECTORY, &quot;path&quot;,</span>
+<span class="fc" id="L427">                .addOption(newOptionWithArg(ARGUMENT.PATH_TO_BUNDLE_AUDIT_WORKING_DIRECTORY, &quot;path&quot;,</span>
                         &quot;The path to working directory that the bundle-audit command should be executed from when &quot;
                                 + &quot;doing Gem bundle analysis.&quot;))
-<span class="fc" id="L424">                .addOption(newOptionWithArg(ARGUMENT.CENTRAL_URL, &quot;url&quot;,</span>
+<span class="fc" id="L430">                .addOption(newOptionWithArg(ARGUMENT.CENTRAL_URL, &quot;url&quot;,</span>
                         &quot;Alternative URL for Maven Central Search. If not set the public Sonatype Maven Central will be used.&quot;))
-<span class="fc" id="L426">                .addOption(newOptionWithArg(ARGUMENT.CENTRAL_USERNAME, &quot;username&quot;,</span>
+<span class="fc" id="L432">                .addOption(newOptionWithArg(ARGUMENT.CENTRAL_USERNAME, &quot;username&quot;,</span>
                         &quot;Credentials for basic auth towards the --centralUrl.&quot;))
-<span class="fc" id="L428">                .addOption(newOptionWithArg(ARGUMENT.CENTRAL_PASSWORD, &quot;password&quot;,</span>
+<span class="fc" id="L434">                .addOption(newOptionWithArg(ARGUMENT.CENTRAL_PASSWORD, &quot;password&quot;,</span>
                         &quot;Credentials for basic auth towards the --centralUrl&quot;))
-<span class="fc" id="L430">                .addOption(newOptionWithArg(ARGUMENT.CENTRAL_BEARER_TOKEN, &quot;token&quot;,</span>
+<span class="fc" id="L436">                .addOption(newOptionWithArg(ARGUMENT.CENTRAL_BEARER_TOKEN, &quot;token&quot;,</span>
                         &quot;Token for bearer auth towards the --centralUrl&quot;))
-<span class="fc" id="L432">                .addOption(newOptionWithArg(ARGUMENT.OSSINDEX_CACHE_VALID_FOR_HOURS, &quot;hours&quot;,</span>
+<span class="fc" id="L438">                .addOption(newOptionWithArg(ARGUMENT.OSSINDEX_CACHE_VALID_FOR_HOURS, &quot;hours&quot;,</span>
                         &quot;The number of hours to wait before checking for new updates on individual packages/components from Sonatype OSS Index. The default is 24 hours.&quot;))
-<span class="fc" id="L434">                .addOption(newOptionWithArg(ARGUMENT.OSSINDEX_URL, &quot;url&quot;,</span>
+<span class="fc" id="L440">                .addOption(newOptionWithArg(ARGUMENT.OSSINDEX_URL, &quot;url&quot;,</span>
                         &quot;Alternative base URL for the OSS Index API. If not set the public Sonatype OSS Index API on Sonatype Guide will be used.&quot;))
-<span class="fc" id="L436">                .addOption(newOptionWithArg(ARGUMENT.OSSINDEX_USERNAME, &quot;username&quot;,</span>
+<span class="fc" id="L442">                .addOption(newOptionWithArg(ARGUMENT.OSSINDEX_USERNAME, &quot;username&quot;,</span>
                         &quot;(deprecated) Sets the OSS Index API username for use with legacy OSS Index API tokens. &quot; +
                                 &quot;Username is not required after migration to using Sonatype Guide personal access token as password.&quot;))
-<span class="fc" id="L439">                .addOption(newOptionWithArg(ARGUMENT.OSSINDEX_PASSWORD, &quot;password&quot;, &quot;Sets the Sonatype Guide personal &quot; +</span>
+<span class="fc" id="L445">                .addOption(newOptionWithArg(ARGUMENT.OSSINDEX_PASSWORD, &quot;password&quot;, &quot;Sets the Sonatype Guide personal &quot; +</span>
                         &quot;access token or (deprecated) legacy OSS Index API token to authenticate with.&quot;))
-<span class="fc" id="L441">                .addOption(newOptionWithArg(ARGUMENT.OSSINDEX_WARN_ONLY_ON_REMOTE_ERRORS, &quot;true/false&quot;,</span>
+<span class="fc" id="L447">                .addOption(newOptionWithArg(ARGUMENT.OSSINDEX_WARN_ONLY_ON_REMOTE_ERRORS, &quot;true/false&quot;,</span>
                         &quot;Whether a Sonatype OSS Index remote error should result in a warning only or a failure.&quot;))
-<span class="fc" id="L443">                .addOption(newOption(ARGUMENT.RETIRE_JS_FORCEUPDATE, &quot;Force the RetireJS Analyzer to update &quot;</span>
+<span class="fc" id="L449">                .addOption(newOption(ARGUMENT.RETIRE_JS_FORCEUPDATE, &quot;Force the RetireJS Analyzer to update &quot;</span>
                         + &quot;even if autoupdate is disabled&quot;))
-<span class="fc" id="L445">                .addOption(newOptionWithArg(ARGUMENT.RETIREJS_URL, &quot;url&quot;,</span>
+<span class="fc" id="L451">                .addOption(newOptionWithArg(ARGUMENT.RETIREJS_URL, &quot;url&quot;,</span>
                         &quot;The Retire JS Repository URL&quot;))
-<span class="fc" id="L447">                .addOption(newOptionWithArg(ARGUMENT.RETIREJS_URL_USER, &quot;username&quot;,</span>
-                        &quot;The password to authenticate to Retire JS Repository URL&quot;))
-<span class="fc" id="L449">                .addOption(newOptionWithArg(ARGUMENT.RETIREJS_URL_PASSWORD, &quot;password&quot;,</span>
-                        &quot;The password to authenticate to Retire JS Repository URL&quot;))
-<span class="fc" id="L451">                .addOption(newOptionWithArg(ARGUMENT.RETIREJS_URL_BEARER_TOKEN, &quot;token&quot;,</span>
-                        &quot;The password to authenticate to Retire JS Repository URL&quot;))
-<span class="fc" id="L453">                .addOption(newOption(ARGUMENT.RETIRE_JS_FILTER_NON_VULNERABLE, &quot;Specifies that the Retire JS &quot;</span>
+<span class="fc" id="L453">                .addOption(newOptionWithArg(ARGUMENT.RETIREJS_URL_USER, &quot;username&quot;,</span>
+                        &quot;Credentials for basic auth towards the Retire JS Repository URL&quot;))
+<span class="fc" id="L455">                .addOption(newOptionWithArg(ARGUMENT.RETIREJS_URL_PASSWORD, &quot;password&quot;,</span>
+                        &quot;Credentials for basic auth towards the Retire JS Repository URL&quot;))
+<span class="fc" id="L457">                .addOption(newOptionWithArg(ARGUMENT.RETIREJS_URL_BEARER_TOKEN, &quot;token&quot;,</span>
+                        &quot;Token for bearer auth towards the Retire JS Repository URL&quot;))
+<span class="fc" id="L459">                .addOption(newOption(ARGUMENT.RETIRE_JS_FILTER_NON_VULNERABLE, &quot;Specifies that the Retire JS &quot;</span>
                         + &quot;Analyzer should filter out non-vulnerable JS files from the report.&quot;))
-<span class="fc" id="L455">                .addOption(newOptionWithArg(ARGUMENT.ARTIFACTORY_PARALLEL_ANALYSIS, &quot;true/false&quot;,</span>
+<span class="fc" id="L461">                .addOption(newOptionWithArg(ARGUMENT.ARTIFACTORY_PARALLEL_ANALYSIS, &quot;true/false&quot;,</span>
                         &quot;Whether the Artifactory Analyzer should use parallel analysis.&quot;))
-<span class="fc" id="L457">                .addOption(newOptionWithArg(ARGUMENT.ARTIFACTORY_USES_PROXY, &quot;true/false&quot;,</span>
+<span class="fc" id="L463">                .addOption(newOptionWithArg(ARGUMENT.ARTIFACTORY_USES_PROXY, &quot;true/false&quot;,</span>
                         &quot;Whether the Artifactory Analyzer should use the proxy.&quot;))
-<span class="fc" id="L459">                .addOption(newOptionWithArg(ARGUMENT.ARTIFACTORY_USERNAME, &quot;username&quot;,</span>
+<span class="fc" id="L465">                .addOption(newOptionWithArg(ARGUMENT.ARTIFACTORY_USERNAME, &quot;username&quot;,</span>
                         &quot;The Artifactory username for authentication.&quot;))
-<span class="fc" id="L461">                .addOption(newOptionWithArg(ARGUMENT.ARTIFACTORY_API_TOKEN, &quot;token&quot;,</span>
+<span class="fc" id="L467">                .addOption(newOptionWithArg(ARGUMENT.ARTIFACTORY_API_TOKEN, &quot;token&quot;,</span>
                         &quot;The Artifactory API token.&quot;))
-<span class="fc" id="L463">                .addOption(newOptionWithArg(ARGUMENT.ARTIFACTORY_BEARER_TOKEN, &quot;token&quot;,</span>
+<span class="fc" id="L469">                .addOption(newOptionWithArg(ARGUMENT.ARTIFACTORY_BEARER_TOKEN, &quot;token&quot;,</span>
                         &quot;The Artifactory bearer token.&quot;))
-<span class="fc" id="L465">                .addOption(newOptionWithArg(ARGUMENT.ARTIFACTORY_URL, &quot;url&quot;,</span>
+<span class="fc" id="L471">                .addOption(newOptionWithArg(ARGUMENT.ARTIFACTORY_URL, &quot;url&quot;,</span>
                         &quot;The Artifactory URL.&quot;))
-<span class="fc" id="L467">                .addOption(newOptionWithArg(ARGUMENT.PATH_TO_GO, &quot;path&quot;,</span>
+<span class="fc" id="L473">                .addOption(newOptionWithArg(ARGUMENT.PATH_TO_GO, &quot;path&quot;,</span>
                         &quot;The path to the `go` executable.&quot;))
-<span class="fc" id="L469">                .addOption(newOptionWithArg(ARGUMENT.PATH_TO_YARN, &quot;path&quot;,</span>
+<span class="fc" id="L475">                .addOption(newOptionWithArg(ARGUMENT.PATH_TO_YARN, &quot;path&quot;,</span>
                         &quot;The path to the `yarn` executable.&quot;))
-<span class="fc" id="L471">                .addOption(newOptionWithArg(ARGUMENT.PATH_TO_PNPM, &quot;path&quot;,</span>
+<span class="fc" id="L477">                .addOption(newOptionWithArg(ARGUMENT.PATH_TO_PNPM, &quot;path&quot;,</span>
                         &quot;The path to the `pnpm` executable.&quot;))
-<span class="fc" id="L473">                .addOption(newOptionWithArg(ARGUMENT.RETIRE_JS_FILTERS, &quot;pattern&quot;,</span>
+<span class="fc" id="L479">                .addOption(newOptionWithArg(ARGUMENT.RETIRE_JS_FILTERS, &quot;pattern&quot;,</span>
                         &quot;Specify Retire JS content filter used to exclude files from analysis based on their content; &quot;
                                 + &quot;most commonly used to exclude based on your applications own copyright line. This &quot;
                                 + &quot;option can be specified multiple times.&quot;))
-<span class="fc" id="L477">                .addOption(newOptionWithArg(ARGUMENT.NEXUS_URL, &quot;url&quot;,</span>
-                        &quot;The url to the Nexus Server's REST API Endpoint (http://domain/nexus/service/local). If not &quot;
+<span class="fc" id="L483">                .addOption(newOptionWithArg(ARGUMENT.NEXUS_URL, &quot;url&quot;,</span>
+                        &quot;Sets the Nexus Repository v3 API base URL (example https://domain.enterprise/nexus/). If not &quot;
                                 + &quot;set the Nexus Analyzer will be disabled.&quot;))
-<span class="fc" id="L480">                .addOption(newOptionWithArg(ARGUMENT.NEXUS_USERNAME, &quot;username&quot;,</span>
+<span class="fc" id="L486">                .addOption(newOptionWithArg(ARGUMENT.NEXUS_USERNAME, &quot;username&quot;,</span>
                         &quot;The username to authenticate to the Nexus Server's REST API Endpoint. If not set the Nexus &quot;
                                 + &quot;Analyzer will use an unauthenticated connection.&quot;))
-<span class="fc" id="L483">                .addOption(newOptionWithArg(ARGUMENT.NEXUS_PASSWORD, &quot;password&quot;,</span>
+<span class="fc" id="L489">                .addOption(newOptionWithArg(ARGUMENT.NEXUS_PASSWORD, &quot;password&quot;,</span>
                         &quot;The password to authenticate to the Nexus Server's REST API Endpoint. If not set the Nexus &quot;
                                 + &quot;Analyzer will use an unauthenticated connection.&quot;))
                 //TODO remove as this should be covered by non-proxy hosts
-<span class="fc" id="L487">                .addOption(newOptionWithArg(ARGUMENT.NEXUS_USES_PROXY, &quot;true/false&quot;,</span>
+<span class="fc" id="L493">                .addOption(newOptionWithArg(ARGUMENT.NEXUS_USES_PROXY, &quot;true/false&quot;,</span>
                         &quot;Whether or not the configured proxy should be used when connecting to Nexus.&quot;))
-<span class="fc" id="L489">                .addOption(newOptionWithArg(ARGUMENT.ADDITIONAL_ZIP_EXTENSIONS, &quot;extensions&quot;,</span>
+<span class="fc" id="L495">                .addOption(newOptionWithArg(ARGUMENT.ADDITIONAL_ZIP_EXTENSIONS, &quot;extensions&quot;,</span>
                         &quot;A comma separated list of additional extensions to be scanned as ZIP files (ZIP, EAR, WAR &quot;
                                 + &quot;are already treated as zip files)&quot;))
-<span class="fc" id="L492">                .addOption(newOptionWithArg(ARGUMENT.PROP_SHORT, ARGUMENT.PROP, &quot;file&quot;, &quot;A property file to load.&quot;))</span>
-<span class="fc" id="L493">                .addOption(newOptionWithArg(ARGUMENT.PATH_TO_CORE, &quot;path&quot;, &quot;The path to dotnet core.&quot;))</span>
-<span class="fc" id="L494">                .addOption(newOptionWithArg(ARGUMENT.HINTS_FILE, &quot;file&quot;, &quot;The file path to the hints XML file.&quot;))</span>
-<span class="fc" id="L495">                .addOption(newOption(ARGUMENT.RETIRED, &quot;Enables the retired analyzers.&quot;))</span>
-<span class="fc" id="L496">                .addOption(newOption(ARGUMENT.DISABLE_MSBUILD, &quot;Disable the MS Build Analyzer.&quot;))</span>
-<span class="fc" id="L497">                .addOption(newOption(ARGUMENT.DISABLE_JAR, &quot;Disable the Jar Analyzer.&quot;))</span>
-<span class="fc" id="L498">                .addOption(newOption(ARGUMENT.DISABLE_ARCHIVE, &quot;Disable the Archive Analyzer.&quot;))</span>
-<span class="fc" id="L499">                .addOption(newOption(ARGUMENT.DISABLE_KEV, &quot;Disable the Known Exploited Vulnerability Analyzer.&quot;))</span>
-<span class="fc" id="L500">                .addOption(newOptionWithArg(ARGUMENT.KEV_URL, &quot;url&quot;, &quot;The url to the CISA Known Exploited Vulnerabilities JSON data feed&quot;))</span>
-<span class="fc" id="L501">                .addOption(newOptionWithArg(ARGUMENT.KEV_USER, &quot;user&quot;, &quot;The user for basic authentication towards the CISA Known Exploited &quot;</span>
+<span class="fc" id="L498">                .addOption(newOptionWithArg(ARGUMENT.PROP_SHORT, ARGUMENT.PROP, &quot;file&quot;, &quot;A property file to load.&quot;))</span>
+<span class="fc" id="L499">                .addOption(newOptionWithArg(ARGUMENT.PATH_TO_CORE, &quot;path&quot;, &quot;The path to dotnet core.&quot;))</span>
+<span class="fc" id="L500">                .addOption(newOptionWithArg(ARGUMENT.HINTS_FILE, &quot;file&quot;, &quot;The file path to the hints XML file.&quot;))</span>
+<span class="fc" id="L501">                .addOption(newOption(ARGUMENT.RETIRED, &quot;Enables the retired analyzers.&quot;))</span>
+<span class="fc" id="L502">                .addOption(newOption(ARGUMENT.DISABLE_MSBUILD, &quot;Disable the MS Build Analyzer.&quot;))</span>
+<span class="fc" id="L503">                .addOption(newOption(ARGUMENT.DISABLE_JAR, &quot;Disable the Jar Analyzer.&quot;))</span>
+<span class="fc" id="L504">                .addOption(newOption(ARGUMENT.DISABLE_ARCHIVE, &quot;Disable the Archive Analyzer.&quot;))</span>
+<span class="fc" id="L505">                .addOption(newOption(ARGUMENT.DISABLE_KEV, &quot;Disable the Known Exploited Vulnerability Analyzer.&quot;))</span>
+<span class="fc" id="L506">                .addOption(newOptionWithArg(ARGUMENT.KEV_URL, &quot;url&quot;, &quot;The url to the CISA Known Exploited Vulnerabilities JSON data feed&quot;))</span>
+<span class="fc" id="L507">                .addOption(newOptionWithArg(ARGUMENT.KEV_USER, &quot;user&quot;, &quot;The user for basic authentication towards the CISA Known Exploited &quot;</span>
                         + &quot;Vulnerabilities JSON data feed&quot;))
-<span class="fc" id="L503">                .addOption(newOptionWithArg(ARGUMENT.KEV_PASSWORD, &quot;password&quot;, &quot;The password for basic authentication towards the CISA Known &quot;</span>
+<span class="fc" id="L509">                .addOption(newOptionWithArg(ARGUMENT.KEV_PASSWORD, &quot;password&quot;, &quot;The password for basic authentication towards the CISA Known &quot;</span>
                         + &quot;Exploited Vulnerabilities JSON data feed&quot;))
-<span class="fc" id="L505">                .addOption(newOptionWithArg(ARGUMENT.KEV_BEARER_TOKEN, &quot;token&quot;, &quot;The token for bearer authentication towards the CISA Known &quot;</span>
+<span class="fc" id="L511">                .addOption(newOptionWithArg(ARGUMENT.KEV_BEARER_TOKEN, &quot;token&quot;, &quot;The token for bearer authentication towards the CISA Known &quot;</span>
                         + &quot;Exploited Vulnerabilities JSON data feed&quot;))
-<span class="fc" id="L507">                .addOption(newOption(ARGUMENT.DISABLE_ASSEMBLY, &quot;Disable the .NET Assembly Analyzer.&quot;))</span>
-<span class="fc" id="L508">                .addOption(newOption(ARGUMENT.DISABLE_PY_DIST, &quot;Disable the Python Distribution Analyzer.&quot;))</span>
-<span class="fc" id="L509">                .addOption(newOption(ARGUMENT.DISABLE_CMAKE, &quot;Disable the Cmake Analyzer.&quot;))</span>
-<span class="fc" id="L510">                .addOption(newOption(ARGUMENT.DISABLE_PY_PKG, &quot;Disable the Python Package Analyzer.&quot;))</span>
-<span class="fc" id="L511">                .addOption(newOption(ARGUMENT.DISABLE_MIX_AUDIT, &quot;Disable the Elixir mix_audit Analyzer.&quot;))</span>
-<span class="fc" id="L512">                .addOption(newOption(ARGUMENT.DISABLE_RUBYGEMS, &quot;Disable the Ruby Gemspec Analyzer.&quot;))</span>
-<span class="fc" id="L513">                .addOption(newOption(ARGUMENT.DISABLE_BUNDLE_AUDIT, &quot;Disable the Ruby Bundler-Audit Analyzer.&quot;))</span>
-<span class="fc" id="L514">                .addOption(newOption(ARGUMENT.DISABLE_FILENAME, &quot;Disable the File Name Analyzer.&quot;))</span>
-<span class="fc" id="L515">                .addOption(newOption(ARGUMENT.DISABLE_AUTOCONF, &quot;Disable the Autoconf Analyzer.&quot;))</span>
-<span class="fc" id="L516">                .addOption(newOption(ARGUMENT.DISABLE_MAVEN_INSTALL, &quot;Disable the Maven install Analyzer.&quot;))</span>
-<span class="fc" id="L517">                .addOption(newOption(ARGUMENT.DISABLE_PE, &quot;Disable the PE Analyzer.&quot;))</span>
-<span class="fc" id="L518">                .addOption(newOption(ARGUMENT.DISABLE_PIP, &quot;Disable the pip Analyzer.&quot;))</span>
-<span class="fc" id="L519">                .addOption(newOption(ARGUMENT.DISABLE_PIPFILE, &quot;Disable the Pipfile Analyzer.&quot;))</span>
-<span class="fc" id="L520">                .addOption(newOption(ARGUMENT.DISABLE_COMPOSER, &quot;Disable the PHP Composer Analyzer.&quot;))</span>
-<span class="fc" id="L521">                .addOption(newOption(ARGUMENT.COMPOSER_LOCK_SKIP_DEV, &quot;Configures the PHP Composer Analyzer to skip packages-dev&quot;))</span>
-<span class="fc" id="L522">                .addOption(newOption(ARGUMENT.DISABLE_CPAN, &quot;Disable the Perl CPAN file Analyzer.&quot;))</span>
-<span class="fc" id="L523">                .addOption(newOption(ARGUMENT.DISABLE_POETRY, &quot;Disable the Poetry Analyzer.&quot;))</span>
-<span class="fc" id="L524">                .addOption(newOption(ARGUMENT.DISABLE_GOLANG_MOD, &quot;Disable the Golang Mod Analyzer.&quot;))</span>
-<span class="fc" id="L525">                .addOption(newOption(ARGUMENT.DISABLE_DART, &quot;Disable the Dart Analyzer.&quot;))</span>
-<span class="fc" id="L526">                .addOption(newOption(ARGUMENT.DISABLE_OPENSSL, &quot;Disable the OpenSSL Analyzer.&quot;))</span>
-<span class="fc" id="L527">                .addOption(newOption(ARGUMENT.DISABLE_NUSPEC, &quot;Disable the Nuspec Analyzer.&quot;))</span>
-<span class="fc" id="L528">                .addOption(newOption(ARGUMENT.DISABLE_NUGETCONF, &quot;Disable the Nuget packages.config Analyzer.&quot;))</span>
-<span class="fc" id="L529">                .addOption(newOption(ARGUMENT.DISABLE_CENTRAL, &quot;Disable the Central Analyzer. If this analyzer &quot;</span>
+<span class="fc" id="L513">                .addOption(newOption(ARGUMENT.DISABLE_ASSEMBLY, &quot;Disable the .NET Assembly Analyzer.&quot;))</span>
+<span class="fc" id="L514">                .addOption(newOption(ARGUMENT.DISABLE_PY_DIST, &quot;Disable the Python Distribution Analyzer.&quot;))</span>
+<span class="fc" id="L515">                .addOption(newOption(ARGUMENT.DISABLE_CMAKE, &quot;Disable the Cmake Analyzer.&quot;))</span>
+<span class="fc" id="L516">                .addOption(newOption(ARGUMENT.DISABLE_PY_PKG, &quot;Disable the Python Package Analyzer.&quot;))</span>
+<span class="fc" id="L517">                .addOption(newOption(ARGUMENT.DISABLE_MIX_AUDIT, &quot;Disable the Elixir mix_audit Analyzer.&quot;))</span>
+<span class="fc" id="L518">                .addOption(newOption(ARGUMENT.DISABLE_RUBYGEMS, &quot;Disable the Ruby Gemspec Analyzer.&quot;))</span>
+<span class="fc" id="L519">                .addOption(newOption(ARGUMENT.DISABLE_BUNDLE_AUDIT, &quot;Disable the Ruby Bundler-Audit Analyzer.&quot;))</span>
+<span class="fc" id="L520">                .addOption(newOption(ARGUMENT.DISABLE_FILENAME, &quot;Disable the File Name Analyzer.&quot;))</span>
+<span class="fc" id="L521">                .addOption(newOption(ARGUMENT.DISABLE_AUTOCONF, &quot;Disable the Autoconf Analyzer.&quot;))</span>
+<span class="fc" id="L522">                .addOption(newOption(ARGUMENT.DISABLE_MAVEN_INSTALL, &quot;Disable the Maven install Analyzer.&quot;))</span>
+<span class="fc" id="L523">                .addOption(newOption(ARGUMENT.DISABLE_PE, &quot;Disable the PE Analyzer.&quot;))</span>
+<span class="fc" id="L524">                .addOption(newOption(ARGUMENT.DISABLE_PIP, &quot;Disable the pip Analyzer.&quot;))</span>
+<span class="fc" id="L525">                .addOption(newOption(ARGUMENT.DISABLE_PIPFILE, &quot;Disable the Pipfile Analyzer.&quot;))</span>
+<span class="fc" id="L526">                .addOption(newOption(ARGUMENT.DISABLE_COMPOSER, &quot;Disable the PHP Composer Analyzer.&quot;))</span>
+<span class="fc" id="L527">                .addOption(newOption(ARGUMENT.COMPOSER_LOCK_SKIP_DEV, &quot;Configures the PHP Composer Analyzer to skip packages-dev&quot;))</span>
+<span class="fc" id="L528">                .addOption(newOption(ARGUMENT.DISABLE_CPAN, &quot;Disable the Perl CPAN file Analyzer.&quot;))</span>
+<span class="fc" id="L529">                .addOption(newOption(ARGUMENT.DISABLE_POETRY, &quot;Disable the Poetry Analyzer.&quot;))</span>
+<span class="fc" id="L530">                .addOption(newOption(ARGUMENT.DISABLE_GOLANG_MOD, &quot;Disable the Golang Mod Analyzer.&quot;))</span>
+<span class="fc" id="L531">                .addOption(newOption(ARGUMENT.DISABLE_DART, &quot;Disable the Dart Analyzer.&quot;))</span>
+<span class="fc" id="L532">                .addOption(newOption(ARGUMENT.DISABLE_OPENSSL, &quot;Disable the OpenSSL Analyzer.&quot;))</span>
+<span class="fc" id="L533">                .addOption(newOption(ARGUMENT.DISABLE_NUSPEC, &quot;Disable the Nuspec Analyzer.&quot;))</span>
+<span class="fc" id="L534">                .addOption(newOption(ARGUMENT.DISABLE_NUGETCONF, &quot;Disable the Nuget packages.config Analyzer.&quot;))</span>
+<span class="fc" id="L535">                .addOption(newOption(ARGUMENT.DISABLE_CENTRAL, &quot;Disable the Central Analyzer. If this analyzer &quot;</span>
                         + &quot;is disabled it is likely you also want to disable the Nexus Analyzer.&quot;))
-<span class="fc" id="L531">                .addOption(newOption(ARGUMENT.DISABLE_CENTRAL_CACHE, &quot;Disallow the Central Analyzer from caching results&quot;))</span>
-<span class="fc" id="L532">                .addOption(newOption(ARGUMENT.DISABLE_OSSINDEX, &quot;Disable the Sonatype OSS Index Analyzer.&quot;))</span>
-<span class="fc" id="L533">                .addOption(newOption(ARGUMENT.DISABLE_OSSINDEX_CACHE, &quot;Disallow the OSS Index Analyzer from caching results&quot;))</span>
-<span class="fc" id="L534">                .addOption(newOption(ARGUMENT.DISABLE_COCOAPODS, &quot;Disable the CocoaPods Analyzer.&quot;))</span>
-<span class="fc" id="L535">                .addOption(newOption(ARGUMENT.DISABLE_CARTHAGE, &quot;Disable the Carthage Analyzer.&quot;))</span>
-<span class="fc" id="L536">                .addOption(newOption(ARGUMENT.DISABLE_SWIFT, &quot;Disable the swift package Analyzer.&quot;))</span>
-<span class="fc" id="L537">                .addOption(newOption(ARGUMENT.DISABLE_SWIFT_RESOLVED, &quot;Disable the swift package resolved Analyzer.&quot;))</span>
-<span class="fc" id="L538">                .addOption(newOption(ARGUMENT.DISABLE_GO_DEP, &quot;Disable the Golang Package Analyzer.&quot;))</span>
-<span class="fc" id="L539">                .addOption(newOption(ARGUMENT.DISABLE_NODE_JS, &quot;Disable the Node Package Analyzer.&quot;))</span>
-<span class="fc" id="L540">                .addOption(newOption(ARGUMENT.NODE_PACKAGE_SKIP_DEV_DEPENDENCIES, &quot;Configures the Node Package Analyzer to skip devDependencies&quot;))</span>
-<span class="fc" id="L541">                .addOption(newOption(ARGUMENT.DISABLE_NODE_AUDIT, &quot;Disable the Node Audit Analyzer.&quot;))</span>
-<span class="fc" id="L542">                .addOption(newOption(ARGUMENT.DISABLE_PNPM_AUDIT, &quot;Disable the Pnpm Audit Analyzer.&quot;))</span>
-<span class="fc" id="L543">                .addOption(newOption(ARGUMENT.DISABLE_YARN_AUDIT, &quot;Disable the Yarn Audit Analyzer.&quot;))</span>
-<span class="fc" id="L544">                .addOption(newOption(ARGUMENT.DISABLE_NODE_AUDIT_CACHE, &quot;Disallow the Node Audit Analyzer from caching results&quot;))</span>
-<span class="fc" id="L545">                .addOption(newOption(ARGUMENT.DISABLE_NODE_AUDIT_SKIPDEV, &quot;Configures the Node Audit Analyzer to skip devDependencies&quot;))</span>
-<span class="fc" id="L546">                .addOption(newOption(ARGUMENT.DISABLE_RETIRE_JS, &quot;Disable the RetireJS Analyzer.&quot;))</span>
-<span class="fc" id="L547">                .addOption(newOption(ARGUMENT.ENABLE_NEXUS, &quot;Enable the Nexus Analyzer.&quot;))</span>
-<span class="fc" id="L548">                .addOption(newOption(ARGUMENT.ARTIFACTORY_ENABLED, &quot;Whether the Artifactory Analyzer should be enabled.&quot;))</span>
-<span class="fc" id="L549">                .addOption(newOption(ARGUMENT.PURGE_NVD, &quot;Purges the local NVD data cache&quot;))</span>
-<span class="fc" id="L550">                .addOption(newOption(ARGUMENT.DISABLE_HOSTED_SUPPRESSIONS, &quot;Disable the usage of the hosted suppressions file&quot;))</span>
-<span class="fc" id="L551">                .addOption(newOption(ARGUMENT.HOSTED_SUPPRESSIONS_FORCEUPDATE, &quot;Force the hosted suppressions file to update even&quot;</span>
+<span class="fc" id="L537">                .addOption(newOption(ARGUMENT.DISABLE_CENTRAL_CACHE, &quot;Disallow the Central Analyzer from caching results&quot;))</span>
+<span class="fc" id="L538">                .addOption(newOption(ARGUMENT.DISABLE_OSSINDEX, &quot;Disable the Sonatype OSS Index Analyzer.&quot;))</span>
+<span class="fc" id="L539">                .addOption(newOption(ARGUMENT.DISABLE_OSSINDEX_CACHE, &quot;Disallow the OSS Index Analyzer from caching results&quot;))</span>
+<span class="fc" id="L540">                .addOption(newOption(ARGUMENT.DISABLE_COCOAPODS, &quot;Disable the CocoaPods Analyzer.&quot;))</span>
+<span class="fc" id="L541">                .addOption(newOption(ARGUMENT.DISABLE_CARTHAGE, &quot;Disable the Carthage Analyzer.&quot;))</span>
+<span class="fc" id="L542">                .addOption(newOption(ARGUMENT.DISABLE_SWIFT, &quot;Disable the swift package Analyzer.&quot;))</span>
+<span class="fc" id="L543">                .addOption(newOption(ARGUMENT.DISABLE_SWIFT_RESOLVED, &quot;Disable the swift package resolved Analyzer.&quot;))</span>
+<span class="fc" id="L544">                .addOption(newOption(ARGUMENT.DISABLE_GO_DEP, &quot;Disable the Golang Package Analyzer.&quot;))</span>
+<span class="fc" id="L545">                .addOption(newOption(ARGUMENT.DISABLE_NODE_JS, &quot;Disable the Node Package Analyzer.&quot;))</span>
+<span class="fc" id="L546">                .addOption(newOption(ARGUMENT.NODE_PACKAGE_SKIP_DEV_DEPENDENCIES, &quot;Configures the Node Package Analyzer to skip devDependencies&quot;))</span>
+<span class="fc" id="L547">                .addOption(newOption(ARGUMENT.DISABLE_NODE_AUDIT, &quot;Disable the Node Audit Analyzer.&quot;))</span>
+<span class="fc" id="L548">                .addOption(newOption(ARGUMENT.DISABLE_PNPM_AUDIT, &quot;Disable the Pnpm Audit Analyzer.&quot;))</span>
+<span class="fc" id="L549">                .addOption(newOption(ARGUMENT.DISABLE_YARN_AUDIT, &quot;Disable the Yarn Audit Analyzer.&quot;))</span>
+<span class="fc" id="L550">                .addOption(newOption(ARGUMENT.DISABLE_NODE_AUDIT_CACHE, &quot;Disallow the Node Audit Analyzer from caching results&quot;))</span>
+<span class="fc" id="L551">                .addOption(newOption(ARGUMENT.DISABLE_NODE_AUDIT_SKIPDEV, &quot;Configures the Node Audit Analyzer to skip devDependencies&quot;))</span>
+<span class="fc" id="L552">                .addOption(newOption(ARGUMENT.DISABLE_RETIRE_JS, &quot;Disable the RetireJS Analyzer.&quot;))</span>
+<span class="fc" id="L553">                .addOption(newOption(ARGUMENT.ENABLE_NEXUS, &quot;Enable the Nexus Analyzer.&quot;))</span>
+<span class="fc" id="L554">                .addOption(newOption(ARGUMENT.ARTIFACTORY_ENABLED, &quot;Whether the Artifactory Analyzer should be enabled.&quot;))</span>
+<span class="fc" id="L555">                .addOption(newOption(ARGUMENT.PURGE_NVD, &quot;Purges the local NVD data cache&quot;))</span>
+<span class="fc" id="L556">                .addOption(newOption(ARGUMENT.DISABLE_HOSTED_SUPPRESSIONS, &quot;Disable retrieval of the hosted suppressions from the configured URL.&quot;))</span>
+<span class="fc" id="L557">                .addOption(newOption(ARGUMENT.HOSTED_SUPPRESSIONS_FORCEUPDATE, &quot;Force the hosted suppressions file to update even&quot;</span>
                         + &quot; if autoupdate is disabled&quot;))
-<span class="fc" id="L553">                .addOption(newOptionWithArg(ARGUMENT.HOSTED_SUPPRESSIONS_VALID_FOR_HOURS, &quot;hours&quot;,</span>
+<span class="fc" id="L559">                .addOption(newOptionWithArg(ARGUMENT.HOSTED_SUPPRESSIONS_VALID_FOR_HOURS, &quot;hours&quot;,</span>
                         &quot;The number of hours to wait before checking for new updates of the the hosted suppressions file.&quot;))
-<span class="fc" id="L555">                .addOption(newOptionWithArg(ARGUMENT.HOSTED_SUPPRESSIONS_URL, &quot;url&quot;,</span>
+<span class="fc" id="L561">                .addOption(newOptionWithArg(ARGUMENT.HOSTED_SUPPRESSIONS_URL, &quot;url&quot;,</span>
                         &quot;The URL for a mirrored hosted suppressions file&quot;))
-<span class="fc" id="L557">                .addOption(newOptionWithArg(ARGUMENT.HOSTED_SUPPRESSIONS_USER, &quot;user&quot;,</span>
+<span class="fc" id="L563">                .addOption(newOptionWithArg(ARGUMENT.HOSTED_SUPPRESSIONS_USER, &quot;user&quot;,</span>
                         &quot;The user for basic auth to a mirrored hosted suppressions file&quot;))
-<span class="fc" id="L559">                .addOption(newOptionWithArg(ARGUMENT.HOSTED_SUPPRESSIONS_PASSWORD, &quot;password&quot;,</span>
+<span class="fc" id="L565">                .addOption(newOptionWithArg(ARGUMENT.HOSTED_SUPPRESSIONS_PASSWORD, &quot;password&quot;,</span>
                         &quot;The password for basic auth to a mirrored hosted suppressions file&quot;))
-<span class="fc" id="L561">                .addOption(newOptionWithArg(ARGUMENT.HOSTED_SUPPRESSIONS_BEARER_TOKEN, &quot;token&quot;,</span>
+<span class="fc" id="L567">                .addOption(newOptionWithArg(ARGUMENT.HOSTED_SUPPRESSIONS_BEARER_TOKEN, &quot;token&quot;,</span>
                         &quot;The token for bearer auth to  a mirrored hosted suppressions file&quot;));
 
-<span class="fc" id="L564">    }</span>
+<span class="fc" id="L570">    }</span>
 
     /**
      * Adds the deprecated command line options to the given options collection.
@@ -571,19 +577,11 @@ public final class CliParser {
      *
      * @param options a collection of command line arguments
      */
-    @SuppressWarnings({&quot;static-access&quot;, &quot;deprecation&quot;})
     private void addDeprecatedOptions(final Options options) {
         //not a real option - but enables java debugging via the shell script
-<span class="fc" id="L577">        options.addOption(newOption(&quot;debug&quot;,</span>
+<span class="fc" id="L582">        options.addOption(newOption(&quot;debug&quot;,</span>
                 &quot;Used to enable java debugging of the cli via dependency-check.sh.&quot;));
-<span class="fc" id="L579">        options.addOption(newOption(ARGUMENT.DISABLE_RETIREJS_DEPRECATED, &quot;Disable the RetireJS Analyzer.&quot;));</span>
-<span class="fc" id="L580">        options.addOption(newOption(ARGUMENT.RETIREJS_FILTER_NON_VULNERABLE_DEPRECATED, &quot;Specifies that the Retire JS &quot;</span>
-                + &quot;Analyzer should filter out non-vulnerable JS files from the report.&quot;));
-<span class="fc" id="L582">        options.addOption(newOptionWithArg(ARGUMENT.RETIREJS_FILTERS_DEPRECATED, &quot;pattern&quot;,</span>
-                &quot;Specify Retire JS content filter used to exclude files from analysis based on their content; &quot;
-                        + &quot;most commonly used to exclude based on your applications own copyright line. This &quot;
-                        + &quot;option can be specified multiple times.&quot;));
-<span class="fc" id="L586">    }</span>
+<span class="fc" id="L584">    }</span>
 
     /**
      * Determines if the 'version' command line argument was passed in.
@@ -591,7 +589,7 @@ public final class CliParser {
      * @return whether or not the 'version' command line argument was passed in
      */
     public boolean isGetVersion() {
-<span class="fc bfc" id="L594" title="All 4 branches covered.">        return (line != null) &amp;&amp; line.hasOption(ARGUMENT.VERSION);</span>
+<span class="fc bfc" id="L592" title="All 4 branches covered.">        return (line != null) &amp;&amp; line.hasOption(ARGUMENT.VERSION);</span>
     }
 
     /**
@@ -600,7 +598,7 @@ public final class CliParser {
      * @return whether or not the 'help' command line argument was passed in
      */
     public boolean isGetHelp() {
-<span class="fc bfc" id="L603" title="All 4 branches covered.">        return (line != null) &amp;&amp; line.hasOption(ARGUMENT.HELP);</span>
+<span class="fc bfc" id="L601" title="All 4 branches covered.">        return (line != null) &amp;&amp; line.hasOption(ARGUMENT.HELP);</span>
     }
 
     /**
@@ -609,7 +607,7 @@ public final class CliParser {
      * @return whether or not the 'scan' command line argument was passed in
      */
     public boolean isRunScan() {
-<span class="fc bfc" id="L612" title="All 6 branches covered.">        return (line != null) &amp;&amp; isValid &amp;&amp; line.hasOption(ARGUMENT.SCAN);</span>
+<span class="fc bfc" id="L610" title="All 6 branches covered.">        return (line != null) &amp;&amp; isValid &amp;&amp; line.hasOption(ARGUMENT.SCAN);</span>
     }
 
     /**
@@ -619,16 +617,16 @@ public final class CliParser {
      * @return the symbolic link depth
      */
     public int getSymLinkDepth() {
-<span class="nc" id="L622">        int value = 0;</span>
+<span class="nc" id="L620">        int value = 0;</span>
         try {
-<span class="nc" id="L624">            value = Integer.parseInt(line.getOptionValue(ARGUMENT.SYM_LINK_DEPTH, &quot;0&quot;));</span>
-<span class="nc bnc" id="L625" title="All 2 branches missed.">            if (value &lt; 0) {</span>
-<span class="nc" id="L626">                value = 0;</span>
+<span class="nc" id="L622">            value = Integer.parseInt(line.getOptionValue(ARGUMENT.SYM_LINK_DEPTH, &quot;0&quot;));</span>
+<span class="nc bnc" id="L623" title="All 2 branches missed.">            if (value &lt; 0) {</span>
+<span class="nc" id="L624">                value = 0;</span>
             }
-<span class="nc" id="L628">        } catch (NumberFormatException ex) {</span>
-<span class="nc" id="L629">            LOGGER.debug(&quot;Symbolic link was not a number&quot;);</span>
-<span class="nc" id="L630">        }</span>
-<span class="nc" id="L631">        return value;</span>
+<span class="nc" id="L626">        } catch (NumberFormatException ex) {</span>
+<span class="nc" id="L627">            LOGGER.debug(&quot;Symbolic link was not a number&quot;);</span>
+<span class="nc" id="L628">        }</span>
+<span class="nc" id="L629">        return value;</span>
     }
 
     /**
@@ -645,15 +643,15 @@ public final class CliParser {
      * configured value will be returned
      */
     public boolean isDisabled(String disableFlag, String setting) {
-<span class="pc bpc" id="L648" title="1 of 4 branches missed.">        if (line == null || !line.hasOption(disableFlag)) {</span>
+<span class="pc bpc" id="L646" title="1 of 4 branches missed.">        if (line == null || !line.hasOption(disableFlag)) {</span>
             try {
-<span class="fc bfc" id="L650" title="All 2 branches covered.">                return !settings.getBoolean(setting);</span>
-<span class="nc" id="L651">            } catch (InvalidSettingException ise) {</span>
-<span class="nc" id="L652">                LOGGER.warn(&quot;Invalid property setting '{}' defaulting to false&quot;, setting);</span>
-<span class="nc" id="L653">                return false;</span>
+<span class="fc bfc" id="L648" title="All 2 branches covered.">                return !settings.getBoolean(setting);</span>
+<span class="nc" id="L649">            } catch (InvalidSettingException ise) {</span>
+<span class="nc" id="L650">                LOGGER.warn(&quot;Invalid property setting '{}' defaulting to false&quot;, setting);</span>
+<span class="nc" id="L651">                return false;</span>
             }
         } else {
-<span class="fc" id="L656">            return true;</span>
+<span class="fc" id="L654">            return true;</span>
         }
     }
 
@@ -664,7 +662,7 @@ public final class CliParser {
      * otherwise false
      */
     public boolean isNodeAuditDisabled() {
-<span class="fc" id="L667">        return isDisabled(ARGUMENT.DISABLE_NODE_AUDIT, Settings.KEYS.ANALYZER_NODE_AUDIT_ENABLED);</span>
+<span class="fc" id="L665">        return isDisabled(ARGUMENT.DISABLE_NODE_AUDIT, Settings.KEYS.ANALYZER_NODE_AUDIT_ENABLED);</span>
     }
 
     /**
@@ -674,7 +672,7 @@ public final class CliParser {
      * otherwise false
      */
     public boolean isYarnAuditDisabled() {
-<span class="fc" id="L677">        return isDisabled(ARGUMENT.DISABLE_YARN_AUDIT, Settings.KEYS.ANALYZER_YARN_AUDIT_ENABLED);</span>
+<span class="fc" id="L675">        return isDisabled(ARGUMENT.DISABLE_YARN_AUDIT, Settings.KEYS.ANALYZER_YARN_AUDIT_ENABLED);</span>
     }
 
     /**
@@ -684,7 +682,7 @@ public final class CliParser {
      * otherwise false
      */
     public boolean isPnpmAuditDisabled() {
-<span class="fc" id="L687">        return isDisabled(ARGUMENT.DISABLE_PNPM_AUDIT, Settings.KEYS.ANALYZER_PNPM_AUDIT_ENABLED);</span>
+<span class="fc" id="L685">        return isDisabled(ARGUMENT.DISABLE_PNPM_AUDIT, Settings.KEYS.ANALYZER_PNPM_AUDIT_ENABLED);</span>
     }
 
     /**
@@ -697,14 +695,14 @@ public final class CliParser {
     public boolean isNexusUsesProxy() {
         // If they didn't specify whether Nexus needs to use the proxy, we should
         // still honor the property if it's set.
-<span class="pc bpc" id="L700" title="2 of 4 branches missed.">        if (line == null || !line.hasOption(ARGUMENT.NEXUS_USES_PROXY)) {</span>
+<span class="pc bpc" id="L698" title="2 of 4 branches missed.">        if (line == null || !line.hasOption(ARGUMENT.NEXUS_USES_PROXY)) {</span>
             try {
-<span class="fc" id="L702">                return settings.getBoolean(Settings.KEYS.ANALYZER_NEXUS_USES_PROXY);</span>
-<span class="nc" id="L703">            } catch (InvalidSettingException ise) {</span>
-<span class="nc" id="L704">                return true;</span>
+<span class="fc" id="L700">                return settings.getBoolean(Settings.KEYS.ANALYZER_NEXUS_USES_PROXY);</span>
+<span class="nc" id="L701">            } catch (InvalidSettingException ise) {</span>
+<span class="nc" id="L702">                return true;</span>
             }
         } else {
-<span class="nc" id="L707">            return Boolean.parseBoolean(line.getOptionValue(ARGUMENT.NEXUS_USES_PROXY));</span>
+<span class="nc" id="L705">            return Boolean.parseBoolean(line.getOptionValue(ARGUMENT.NEXUS_USES_PROXY));</span>
         }
     }
 
@@ -717,13 +715,13 @@ public final class CliParser {
     @SuppressFBWarnings(justification = &quot;Accepting that this is a bad practice - used a Boolean as we needed three states&quot;,
             value = {&quot;NP_BOOLEAN_RETURN_NULL&quot;})
     public Boolean getBooleanArgument(String argument) {
-<span class="pc bpc" id="L720" title="1 of 4 branches missed.">        if (line != null &amp;&amp; line.hasOption(argument)) {</span>
-<span class="fc" id="L721">            final String value = line.getOptionValue(argument);</span>
-<span class="pc bpc" id="L722" title="1 of 2 branches missed.">            if (value != null) {</span>
-<span class="fc" id="L723">                return Boolean.parseBoolean(value);</span>
+<span class="pc bpc" id="L718" title="1 of 4 branches missed.">        if (line != null &amp;&amp; line.hasOption(argument)) {</span>
+<span class="fc" id="L719">            final String value = line.getOptionValue(argument);</span>
+<span class="pc bpc" id="L720" title="1 of 2 branches missed.">            if (value != null) {</span>
+<span class="fc" id="L721">                return Boolean.parseBoolean(value);</span>
             }
         }
-<span class="fc" id="L726">        return null;</span>
+<span class="fc" id="L724">        return null;</span>
     }
 
     /**
@@ -733,7 +731,7 @@ public final class CliParser {
      * @return the value of the argument
      */
     public String getStringArgument(String option) {
-<span class="fc" id="L736">        return getStringArgument(option, null);</span>
+<span class="fc" id="L734">        return getStringArgument(option, null);</span>
     }
 
     /**
@@ -744,16 +742,16 @@ public final class CliParser {
      * @return the value of the argument
      */
     public String getStringArgument(String option, String key) {
-<span class="pc bpc" id="L747" title="1 of 4 branches missed.">        if (line != null &amp;&amp; line.hasOption(option)) {</span>
-<span class="pc bpc" id="L748" title="3 of 4 branches missed.">            if (key != null &amp;&amp; (option.toLowerCase().endsWith(&quot;password&quot;)</span>
-<span class="nc bnc" id="L749" title="All 2 branches missed.">                    || option.toLowerCase().endsWith(&quot;pass&quot;))) {</span>
-<span class="nc" id="L750">                LOGGER.warn(&quot;{} used on the command line, consider moving the password &quot;</span>
+<span class="pc bpc" id="L745" title="1 of 4 branches missed.">        if (line != null &amp;&amp; line.hasOption(option)) {</span>
+<span class="pc bpc" id="L746" title="3 of 4 branches missed.">            if (key != null &amp;&amp; (option.toLowerCase().endsWith(&quot;password&quot;)</span>
+<span class="nc bnc" id="L747" title="All 2 branches missed.">                    || option.toLowerCase().endsWith(&quot;pass&quot;))) {</span>
+<span class="nc" id="L748">                LOGGER.warn(&quot;{} used on the command line, consider moving the password &quot;</span>
                         + &quot;to a properties file using the key `{}` and using the &quot;
                         + &quot;--propertyfile argument instead&quot;, option, key);
             }
-<span class="fc" id="L754">            return line.getOptionValue(option);</span>
+<span class="fc" id="L752">            return line.getOptionValue(option);</span>
         }
-<span class="fc" id="L756">        return null;</span>
+<span class="fc" id="L754">        return null;</span>
     }
 
     /**
@@ -763,10 +761,10 @@ public final class CliParser {
      * @return the value of the argument
      */
     public String[] getStringArguments(String option) {
-<span class="pc bpc" id="L766" title="1 of 4 branches missed.">        if (line != null &amp;&amp; line.hasOption(option)) {</span>
-<span class="fc" id="L767">            return line.getOptionValues(option);</span>
+<span class="pc bpc" id="L764" title="1 of 4 branches missed.">        if (line != null &amp;&amp; line.hasOption(option)) {</span>
+<span class="fc" id="L765">            return line.getOptionValues(option);</span>
         }
-<span class="fc" id="L769">        return null;</span>
+<span class="fc" id="L767">        return null;</span>
     }
 
     /**
@@ -776,34 +774,36 @@ public final class CliParser {
      * @return the value of the argument
      */
     public File getFileArgument(String option) {
-<span class="fc" id="L779">        final String path = line.getOptionValue(option);</span>
-<span class="fc bfc" id="L780" title="All 2 branches covered.">        if (path != null) {</span>
-<span class="fc" id="L781">            return new File(path);</span>
+<span class="fc" id="L777">        final String path = line.getOptionValue(option);</span>
+<span class="fc bfc" id="L778" title="All 2 branches covered.">        if (path != null) {</span>
+<span class="fc" id="L779">            return new File(path);</span>
         }
-<span class="fc" id="L783">        return null;</span>
+<span class="fc" id="L781">        return null;</span>
     }
 
     /**
-     * Displays the command line help message to the standard output.
+     * Appends the command line help message to the passed appendable
      */
-    public void printHelp() {
-<span class="fc" id="L790">        final HelpFormatter formatter = new HelpFormatter();</span>
-<span class="fc" id="L791">        final Options options = new Options();</span>
-<span class="fc" id="L792">        addStandardOptions(options);</span>
-<span class="pc bpc" id="L793" title="1 of 4 branches missed.">        if (line != null &amp;&amp; line.hasOption(ARGUMENT.ADVANCED_HELP)) {</span>
-<span class="fc" id="L794">            addAdvancedOptions(options);</span>
-        }
-<span class="fc" id="L796">        final String helpMsg = String.format(&quot;%n%s&quot;</span>
-                        + &quot; can be used to identify if there are any known CVE vulnerabilities in libraries utilized by an application. &quot;
-                        + &quot;%s will automatically update required data from the Internet, such as the CVE and CPE data files from nvd.nist.gov.%n%n&quot;,
-<span class="fc" id="L799">                settings.getString(Settings.KEYS.APPLICATION_NAME, &quot;DependencyCheck&quot;),</span>
-<span class="fc" id="L800">                settings.getString(Settings.KEYS.APPLICATION_NAME, &quot;DependencyCheck&quot;));</span>
+    void printHelp(Appendable appendable) {
+<span class="fc" id="L788">        TextHelpAppendable helpAppendable = new TextHelpAppendable(appendable);</span>
+<span class="fc" id="L789">        helpAppendable.setMaxWidth(100);</span>
+<span class="fc" id="L790">        HelpFormatter formatter = HelpFormatter.builder()</span>
+<span class="fc" id="L791">                .setShowSince(false)</span>
+<span class="fc" id="L792">                .setComparator(Comparator.comparing(Option::getKey, String::compareToIgnoreCase))</span>
+<span class="fc" id="L793">                .setHelpAppendable(helpAppendable)</span>
+<span class="fc" id="L794">                .get();</span>
 
-<span class="fc" id="L802">        formatter.printHelp(settings.getString(Settings.KEYS.APPLICATION_NAME, &quot;DependencyCheck&quot;),</span>
-                helpMsg,
-                options,
-                &quot;&quot;,
-                true);
+<span class="fc" id="L796">        final Options options = new Options();</span>
+<span class="fc" id="L797">        addStandardOptions(options);</span>
+<span class="pc bpc" id="L798" title="1 of 4 branches missed.">        if (line != null &amp;&amp; line.hasOption(ARGUMENT.ADVANCED_HELP)) {</span>
+<span class="fc" id="L799">            addAdvancedOptions(options);</span>
+        }
+
+        try {
+<span class="fc" id="L803">            formatter.printHelp(&quot;dependency-check&quot;, HELP_MSG, formatter.sort(options), &quot;&quot;, true);</span>
+<span class="nc" id="L804">        } catch (IOException e) {</span>
+<span class="nc" id="L805">            throw new UncheckedIOException(e);</span>
+<span class="fc" id="L806">        }</span>
 <span class="fc" id="L807">    }</span>
 
     /**
@@ -833,8 +833,7 @@ public final class CliParser {
      * @return the retireJS filters
      */
     public String[] getRetireJsFilters() {
-<span class="nc" id="L836">        final String[] values = line.getOptionValues(ARGUMENT.RETIRE_JS_FILTERS);</span>
-<span class="nc bnc" id="L837" title="All 2 branches missed.">        return values != null ? values : line.getOptionValues(ARGUMENT.RETIREJS_FILTERS_DEPRECATED);</span>
+<span class="nc" id="L836">        return line.getOptionValues(ARGUMENT.RETIRE_JS_FILTERS);</span>
     }
 
     /**
@@ -847,8 +846,7 @@ public final class CliParser {
     @SuppressFBWarnings(justification = &quot;Accepting that this is a bad practice - but made more sense in this use case&quot;,
             value = {&quot;NP_BOOLEAN_RETURN_NULL&quot;})
     public Boolean isRetireJsFilterNonVulnerable() {
-<span class="nc bnc" id="L850" title="All 4 branches missed.">        return (line != null &amp;&amp; (line.hasOption(ARGUMENT.RETIRE_JS_FILTER_NON_VULNERABLE)</span>
-<span class="nc bnc" id="L851" title="All 2 branches missed.">                || line.hasOption(ARGUMENT.RETIREJS_FILTER_NON_VULNERABLE_DEPRECATED))) ? true : null;</span>
+<span class="nc bnc" id="L849" title="All 4 branches missed.">        return line != null &amp;&amp; line.hasOption(ARGUMENT.RETIRE_JS_FILTER_NON_VULNERABLE) ? true : null;</span>
     }
 
     /**
@@ -858,7 +856,7 @@ public final class CliParser {
      * @return the path to the reports directory.
      */
     public String getReportDirectory() {
-<span class="fc" id="L861">        return line.getOptionValue(ARGUMENT.OUT, &quot;.&quot;);</span>
+<span class="fc" id="L859">        return line.getOptionValue(ARGUMENT.OUT, &quot;.&quot;);</span>
     }
 
     /**
@@ -868,10 +866,10 @@ public final class CliParser {
      * @return the output format name.
      */
     public String[] getReportFormat() {
-<span class="pc bpc" id="L871" title="1 of 2 branches missed.">        if (line.hasOption(ARGUMENT.OUTPUT_FORMAT)) {</span>
-<span class="nc" id="L872">            return line.getOptionValues(ARGUMENT.OUTPUT_FORMAT);</span>
+<span class="pc bpc" id="L869" title="1 of 2 branches missed.">        if (line.hasOption(ARGUMENT.OUTPUT_FORMAT)) {</span>
+<span class="nc" id="L870">            return line.getOptionValues(ARGUMENT.OUTPUT_FORMAT);</span>
         }
-<span class="fc" id="L874">        return new String[]{&quot;HTML&quot;};</span>
+<span class="fc" id="L872">        return new String[]{&quot;HTML&quot;};</span>
     }
 
     /**
@@ -880,11 +878,11 @@ public final class CliParser {
      * @return the application name.
      */
     public String getProjectName() {
-<span class="nc" id="L883">        String name = line.getOptionValue(ARGUMENT.PROJECT);</span>
-<span class="nc bnc" id="L884" title="All 2 branches missed.">        if (name == null) {</span>
-<span class="nc" id="L885">            name = &quot;&quot;;</span>
+<span class="nc" id="L881">        String name = line.getOptionValue(ARGUMENT.PROJECT);</span>
+<span class="nc bnc" id="L882" title="All 2 branches missed.">        if (name == null) {</span>
+<span class="nc" id="L883">            name = &quot;&quot;;</span>
         }
-<span class="nc" id="L887">        return name;</span>
+<span class="nc" id="L885">        return name;</span>
     }
 
     /**
@@ -894,11 +892,11 @@ public final class CliParser {
      * &lt;li&gt;Implementation-Version: ${pom.version}&lt;/li&gt;&lt;/ul&gt;
      */
     public void printVersionInfo() {
-<span class="fc" id="L897">        final String version = String.format(&quot;%s version %s&quot;,</span>
-<span class="fc" id="L898">                settings.getString(Settings.KEYS.APPLICATION_NAME, &quot;dependency-check&quot;),</span>
-<span class="fc" id="L899">                settings.getString(Settings.KEYS.APPLICATION_VERSION, &quot;Unknown&quot;));</span>
-<span class="fc" id="L900">        System.out.println(version);</span>
-<span class="fc" id="L901">    }</span>
+<span class="fc" id="L895">        final String version = String.format(&quot;%s version %s&quot;,</span>
+<span class="fc" id="L896">                settings.getString(Settings.KEYS.APPLICATION_NAME, &quot;dependency-check&quot;),</span>
+<span class="fc" id="L897">                settings.getString(Settings.KEYS.APPLICATION_VERSION, &quot;Unknown&quot;));</span>
+<span class="fc" id="L898">        System.out.println(version);</span>
+<span class="fc" id="L899">    }</span>
 
     /**
      * Checks if the update only flag has been set.
@@ -907,7 +905,7 @@ public final class CliParser {
      * &lt;code&gt;false&lt;/code&gt;.
      */
     public boolean isUpdateOnly() {
-<span class="pc bpc" id="L910" title="2 of 4 branches missed.">        return line != null &amp;&amp; line.hasOption(ARGUMENT.UPDATE_ONLY);</span>
+<span class="pc bpc" id="L908" title="2 of 4 branches missed.">        return line != null &amp;&amp; line.hasOption(ARGUMENT.UPDATE_ONLY);</span>
     }
 
     /**
@@ -917,7 +915,7 @@ public final class CliParser {
      * &lt;code&gt;false&lt;/code&gt;.
      */
     public boolean isPurge() {
-<span class="nc bnc" id="L920" title="All 4 branches missed.">        return line != null &amp;&amp; line.hasOption(ARGUMENT.PURGE_NVD);</span>
+<span class="nc bnc" id="L918" title="All 4 branches missed.">        return line != null &amp;&amp; line.hasOption(ARGUMENT.PURGE_NVD);</span>
     }
 
     /**
@@ -927,7 +925,7 @@ public final class CliParser {
      * @return the database driver name if specified; otherwise null is returned
      */
     public String getDatabaseDriverName() {
-<span class="nc" id="L930">        return line.getOptionValue(ARGUMENT.DB_DRIVER);</span>
+<span class="nc" id="L928">        return line.getOptionValue(ARGUMENT.DB_DRIVER);</span>
     }
 
     /**
@@ -937,11 +935,11 @@ public final class CliParser {
      * @return the value of the argument
      */
     public Integer getIntegerValue(String argument) {
-<span class="fc" id="L940">        final String v = line.getOptionValue(argument);</span>
-<span class="pc bpc" id="L941" title="1 of 2 branches missed.">        if (v != null) {</span>
-<span class="nc" id="L942">            return Integer.parseInt(v);</span>
+<span class="fc" id="L938">        final String v = line.getOptionValue(argument);</span>
+<span class="pc bpc" id="L939" title="1 of 2 branches missed.">        if (v != null) {</span>
+<span class="nc" id="L940">            return Integer.parseInt(v);</span>
         }
-<span class="fc" id="L944">        return null;</span>
+<span class="fc" id="L942">        return null;</span>
     }
 
     /**
@@ -955,7 +953,7 @@ public final class CliParser {
     @SuppressFBWarnings(justification = &quot;Accepting that this is a bad practice - but made more sense in this use case&quot;,
             value = {&quot;NP_BOOLEAN_RETURN_NULL&quot;})
     public Boolean hasOption(String option) {
-<span class="pc bpc" id="L958" title="1 of 4 branches missed.">        return (line != null &amp;&amp; line.hasOption(option)) ? true : null;</span>
+<span class="pc bpc" id="L956" title="1 of 4 branches missed.">        return (line != null &amp;&amp; line.hasOption(option)) ? true : null;</span>
     }
 
     /**
@@ -965,15 +963,15 @@ public final class CliParser {
      * the command line arg
      */
     public float getFailOnCVSS() {
-<span class="pc bpc" id="L968" title="1 of 2 branches missed.">        if (line.hasOption(ARGUMENT.FAIL_ON_CVSS)) {</span>
-<span class="fc" id="L969">            final String value = line.getOptionValue(ARGUMENT.FAIL_ON_CVSS);</span>
+<span class="pc bpc" id="L966" title="1 of 2 branches missed.">        if (line.hasOption(ARGUMENT.FAIL_ON_CVSS)) {</span>
+<span class="fc" id="L967">            final String value = line.getOptionValue(ARGUMENT.FAIL_ON_CVSS);</span>
             try {
-<span class="fc" id="L971">                return Float.parseFloat(value);</span>
-<span class="fc" id="L972">            } catch (NumberFormatException nfe) {</span>
-<span class="fc" id="L973">                return 11;</span>
+<span class="fc" id="L969">                return Float.parseFloat(value);</span>
+<span class="fc" id="L970">            } catch (NumberFormatException nfe) {</span>
+<span class="fc" id="L971">                return 11;</span>
             }
         } else {
-<span class="nc" id="L976">            return 11;</span>
+<span class="nc" id="L974">            return 11;</span>
         }
     }
 
@@ -985,15 +983,15 @@ public final class CliParser {
      * @return the value of the argument if present; otherwise the defaultValue
      */
     public float getFloatArgument(String option, float defaultValue) {
-<span class="pc bpc" id="L988" title="1 of 2 branches missed.">        if (line.hasOption(option)) {</span>
-<span class="nc" id="L989">            final String value = line.getOptionValue(option);</span>
+<span class="pc bpc" id="L986" title="1 of 2 branches missed.">        if (line.hasOption(option)) {</span>
+<span class="nc" id="L987">            final String value = line.getOptionValue(option);</span>
             try {
-<span class="nc" id="L991">                return Integer.parseInt(value);</span>
-<span class="nc" id="L992">            } catch (NumberFormatException nfe) {</span>
-<span class="nc" id="L993">                return defaultValue;</span>
+<span class="nc" id="L989">                return Integer.parseInt(value);</span>
+<span class="nc" id="L990">            } catch (NumberFormatException nfe) {</span>
+<span class="nc" id="L991">                return defaultValue;</span>
             }
         } else {
-<span class="fc" id="L996">            return defaultValue;</span>
+<span class="fc" id="L994">            return defaultValue;</span>
         }
     }
 
@@ -1005,7 +1003,7 @@ public final class CliParser {
      * @return a new option
      */
     private Option newOption(String name, String description) {
-<span class="fc" id="L1008">        return Option.builder().longOpt(name).desc(description).build();</span>
+<span class="fc" id="L1006">        return Option.builder().longOpt(name).desc(description).get();</span>
     }
 
     /**
@@ -1017,7 +1015,7 @@ public final class CliParser {
      * @return a new option
      */
     private Option newOption(String shortName, String name, String description) {
-<span class="fc" id="L1020">        return Option.builder(shortName).longOpt(name).desc(description).build();</span>
+<span class="fc" id="L1018">        return Option.builder(shortName).longOpt(name).desc(description).get();</span>
     }
 
     /**
@@ -1029,7 +1027,7 @@ public final class CliParser {
      * @return a new option
      */
     private Option newOptionWithArg(String name, String arg, String description) {
-<span class="fc" id="L1032">        return Option.builder().longOpt(name).argName(arg).hasArg().desc(description).build();</span>
+<span class="fc" id="L1030">        return Option.builder().longOpt(name).argName(arg).hasArg().desc(description).get();</span>
     }
 
     /**
@@ -1042,7 +1040,7 @@ public final class CliParser {
      * @return a new option
      */
     private Option newOptionWithArg(String shortName, String name, String arg, String description) {
-<span class="fc" id="L1045">        return Option.builder(shortName).longOpt(name).argName(arg).hasArg().desc(description).build();</span>
+<span class="fc" id="L1043">        return Option.builder(shortName).longOpt(name).argName(arg).hasArg().desc(description).get();</span>
     }
 
     /**
@@ -1053,16 +1051,16 @@ public final class CliParser {
      * @return a new option group
      */
     private OptionGroup newOptionGroup(Option option) {
-<span class="fc" id="L1056">        final OptionGroup group = new OptionGroup();</span>
-<span class="fc" id="L1057">        group.addOption(option);</span>
-<span class="fc" id="L1058">        return group;</span>
+<span class="fc" id="L1054">        final OptionGroup group = new OptionGroup();</span>
+<span class="fc" id="L1055">        group.addOption(option);</span>
+<span class="fc" id="L1056">        return group;</span>
     }
 
     /**
      * A collection of static final strings that represent the possible command
      * line arguments.
      */
-<span class="nc" id="L1065">    public static class ARGUMENT {</span>
+<span class="nc" id="L1063">    public static class ARGUMENT {</span>
 
         /**
          * The long CLI argument name specifying the directory/file to scan.
@@ -1509,12 +1507,6 @@ public final class CliParser {
         public static final String DISABLE_NODE_AUDIT_SKIPDEV = &quot;nodeAuditSkipDevDependencies&quot;;
         /**
          * Disables the RetireJS Analyzer.
-         * @deprecated Use {@link #DISABLE_RETIRE_JS} instead.
-         */
-        @Deprecated
-        public static final String DISABLE_RETIREJS_DEPRECATED = &quot;disableRetireJS&quot;;
-        /**
-         * Disables the RetireJS Analyzer.
          */
         public static final String DISABLE_RETIRE_JS = &quot;disableRetireJs&quot;;
         /**
@@ -1614,21 +1606,9 @@ public final class CliParser {
          */
         public static final String RETIRED = &quot;enableRetired&quot;;
         /**
-         * The CLI argument for the retire js content filters.
-         * @deprecated Use {@link #RETIRE_JS_FILTERS} instead.
-         */
-        @Deprecated
-        public static final String RETIREJS_FILTERS_DEPRECATED = &quot;retirejsFilter&quot;;
-        /**
          * The CLI argument for the retire JS content filters.
          */
         public static final String RETIRE_JS_FILTERS = &quot;retireJsFilter&quot;;
-        /**
-         * The CLI argument for the retire js content filters.
-         * @deprecated Use {@link #RETIRE_JS_FILTER_NON_VULNERABLE} instead.
-         */
-        @Deprecated
-        public static final String RETIREJS_FILTER_NON_VULNERABLE_DEPRECATED = &quot;retirejsFilterNonVulnerable&quot;;
         /**
          * The CLI argument for the retire JS content filter for non-vulnerable.
          */
@@ -1714,4 +1694,4 @@ public final class CliParser {
         public static final String HOSTED_SUPPRESSIONS_BEARER_TOKEN = &quot;hostedSuppressionsBearerToken&quot;;
     }
 }
-</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.14.202510111229</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.15.202606040825</span></div></body></html>

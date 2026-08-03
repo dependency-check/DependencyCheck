@@ -47,13 +47,15 @@ import java.nio.file.Files;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static org.owasp.dependencycheck.utils.FileUtils.existsWithContent;
+
 /**
  * Analyzer which parses a libman.json file to gather module information.
  *
  * @author Arjen Korevaar
  */
 @ThreadSafe
-<span class="fc" id="L56">public class LibmanAnalyzer extends AbstractFileTypeAnalyzer {</span>
+<span class="fc" id="L58">public class LibmanAnalyzer extends AbstractFileTypeAnalyzer {</span>
 
     /**
      * A descriptor for the type of dependencies processed or added by this
@@ -64,7 +66,7 @@ import java.util.regex.Pattern;
     /**
      * The logger.
      */
-<span class="fc" id="L67">    private static final Logger LOGGER = LoggerFactory.getLogger(LibmanAnalyzer.class);</span>
+<span class="fc" id="L69">    private static final Logger LOGGER = LoggerFactory.getLogger(LibmanAnalyzer.class);</span>
 
     /**
      * The name of the analyzer.
@@ -74,7 +76,7 @@ import java.util.regex.Pattern;
     /**
      * The phase in which the analyzer runs.
      */
-<span class="fc" id="L77">    private static final AnalysisPhase ANALYSIS_PHASE = AnalysisPhase.INFORMATION_COLLECTION;</span>
+<span class="fc" id="L79">    private static final AnalysisPhase ANALYSIS_PHASE = AnalysisPhase.INFORMATION_COLLECTION;</span>
 
     /**
      * The file filter used to determine which files this analyzer supports.
@@ -84,13 +86,13 @@ import java.util.regex.Pattern;
     /**
      * The file filter used to determine which files this analyzer supports.
      */
-<span class="fc" id="L87">    private static final FileFilter FILTER = FileFilterBuilder.newInstance().addFilenames(FILE_NAME).build();</span>
+<span class="fc" id="L89">    private static final FileFilter FILTER = FileFilterBuilder.newInstance().addFilenames(FILE_NAME).build();</span>
 
     /**
      * Regex used to match Library property.
      */
-<span class="fc" id="L92">    private static final Pattern LIBRARY_REGEX = Pattern</span>
-<span class="fc" id="L93">            .compile(&quot;(\\@(?&lt;package&gt;[a-zA-Z]+)\\/)?(?&lt;name&gt;.+)\\@(?&lt;version&gt;.+)&quot;, Pattern.CASE_INSENSITIVE);</span>
+<span class="fc" id="L94">    private static final Pattern LIBRARY_REGEX = Pattern</span>
+<span class="fc" id="L95">            .compile(&quot;(\\@(?&lt;package&gt;[a-zA-Z]+)\\/)?(?&lt;name&gt;.+)\\@(?&lt;version&gt;.+)&quot;, Pattern.CASE_INSENSITIVE);</span>
 
     /**
      * Initializes the analyzer once before any analysis is performed.
@@ -101,7 +103,7 @@ import java.util.regex.Pattern;
     @Override
     public void prepareFileTypeAnalyzer(Engine engine) throws InitializationException {
         // nothing to initialize
-<span class="fc" id="L104">    }</span>
+<span class="fc" id="L106">    }</span>
 
     /**
      * Returns the analyzer's name.
@@ -110,7 +112,7 @@ import java.util.regex.Pattern;
      */
     @Override
     public String getName() {
-<span class="fc" id="L113">        return ANALYZER_NAME;</span>
+<span class="fc" id="L115">        return ANALYZER_NAME;</span>
     }
 
     /**
@@ -121,7 +123,7 @@ import java.util.regex.Pattern;
      */
     @Override
     protected String getAnalyzerEnabledSettingKey() {
-<span class="fc" id="L124">        return Settings.KEYS.ANALYZER_LIBMAN_ENABLED;</span>
+<span class="fc" id="L126">        return Settings.KEYS.ANALYZER_LIBMAN_ENABLED;</span>
     }
 
     /**
@@ -131,7 +133,7 @@ import java.util.regex.Pattern;
      */
     @Override
     public AnalysisPhase getAnalysisPhase() {
-<span class="fc" id="L134">        return ANALYSIS_PHASE;</span>
+<span class="fc" id="L136">        return ANALYSIS_PHASE;</span>
     }
 
     /**
@@ -141,7 +143,7 @@ import java.util.regex.Pattern;
      */
     @Override
     protected FileFilter getFileFilter() {
-<span class="fc" id="L144">        return FILTER;</span>
+<span class="fc" id="L146">        return FILTER;</span>
     }
 
     /**
@@ -153,94 +155,94 @@ import java.util.regex.Pattern;
      */
     @Override
     public void analyzeDependency(Dependency dependency, Engine engine) throws AnalysisException {
-<span class="fc" id="L156">        LOGGER.debug(&quot;Checking file {}&quot;, dependency.getActualFilePath());</span>
+<span class="fc" id="L158">        LOGGER.debug(&quot;Checking file {}&quot;, dependency.getActualFilePath());</span>
 
-<span class="pc bpc" id="L158" title="2 of 4 branches missed.">        if (FILE_NAME.equals(dependency.getFileName()) &amp;&amp; !dependency.isVirtual()) {</span>
-<span class="fc" id="L159">            engine.removeDependency(dependency);</span>
+<span class="pc bpc" id="L160" title="2 of 4 branches missed.">        if (FILE_NAME.equals(dependency.getFileName()) &amp;&amp; !dependency.isVirtual()) {</span>
+<span class="fc" id="L161">            engine.removeDependency(dependency);</span>
         }
 
-<span class="fc" id="L162">        final File dependencyFile = dependency.getActualFile();</span>
+<span class="fc" id="L164">        final File dependencyFile = dependency.getActualFile();</span>
 
-<span class="pc bpc" id="L164" title="2 of 4 branches missed.">        if (!dependencyFile.isFile() || dependencyFile.length() == 0) {</span>
-<span class="nc" id="L165">            return;</span>
+<span class="pc bpc" id="L166" title="1 of 2 branches missed.">        if (!existsWithContent(dependencyFile)) {</span>
+<span class="nc" id="L167">            return;</span>
         }
 
-<span class="fc" id="L168">        try (JsonReader jsonReader = Json.createReader(Files.newInputStream(dependencyFile.toPath()))) {</span>
-<span class="fc" id="L169">            final JsonObject json = jsonReader.readObject();</span>
+<span class="fc" id="L170">        try (JsonReader jsonReader = Json.createReader(Files.newInputStream(dependencyFile.toPath()))) {</span>
+<span class="fc" id="L171">            final JsonObject json = jsonReader.readObject();</span>
 
-<span class="fc" id="L171">            final String libmanVersion = json.getString(&quot;version&quot;);</span>
+<span class="fc" id="L173">            final String libmanVersion = json.getString(&quot;version&quot;);</span>
 
-<span class="pc bpc" id="L173" title="1 of 2 branches missed.">            if (!&quot;1.0&quot;.equals(libmanVersion)) {</span>
-<span class="nc" id="L174">                LOGGER.warn(&quot;The Libman analyzer currently only supports Libman version 1.0&quot;);</span>
-<span class="nc" id="L175">                return;</span>
+<span class="pc bpc" id="L175" title="1 of 2 branches missed.">            if (!&quot;1.0&quot;.equals(libmanVersion)) {</span>
+<span class="nc" id="L176">                LOGGER.warn(&quot;The Libman analyzer currently only supports Libman version 1.0&quot;);</span>
+<span class="nc" id="L177">                return;</span>
             }
 
-<span class="fc" id="L178">            final String defaultProvider = json.getString(&quot;defaultProvider&quot;);</span>
-<span class="fc" id="L179">            final JsonArray libraries = json.getJsonArray(&quot;libraries&quot;);</span>
+<span class="fc" id="L180">            final String defaultProvider = json.getString(&quot;defaultProvider&quot;);</span>
+<span class="fc" id="L181">            final JsonArray libraries = json.getJsonArray(&quot;libraries&quot;);</span>
 
-<span class="fc" id="L181">            libraries.forEach(e -&gt; {</span>
-<span class="fc" id="L182">                final JsonObject reference = (JsonObject) e;</span>
+<span class="fc" id="L183">            libraries.forEach(e -&gt; {</span>
+<span class="fc" id="L184">                final JsonObject reference = (JsonObject) e;</span>
 
-<span class="fc" id="L184">                final String provider = reference.getString(&quot;provider&quot;, defaultProvider);</span>
-<span class="fc" id="L185">                final String library = reference.getString(&quot;library&quot;);</span>
+<span class="fc" id="L186">                final String provider = reference.getString(&quot;provider&quot;, defaultProvider);</span>
+<span class="fc" id="L187">                final String library = reference.getString(&quot;library&quot;);</span>
 
-<span class="fc bfc" id="L187" title="All 2 branches covered.">                if (&quot;filesystem&quot;.equals(provider)) {</span>
-<span class="fc" id="L188">                    LOGGER.warn(&quot;Unable to determine name and version for filesystem package: {}&quot;, library);</span>
-<span class="fc" id="L189">                    return;</span>
+<span class="fc bfc" id="L189" title="All 2 branches covered.">                if (&quot;filesystem&quot;.equals(provider)) {</span>
+<span class="fc" id="L190">                    LOGGER.warn(&quot;Unable to determine name and version for filesystem package: {}&quot;, library);</span>
+<span class="fc" id="L191">                    return;</span>
                 }
 
-<span class="fc" id="L192">                final Matcher matcher = LIBRARY_REGEX.matcher(library);</span>
+<span class="fc" id="L194">                final Matcher matcher = LIBRARY_REGEX.matcher(library);</span>
 
-<span class="pc bpc" id="L194" title="1 of 2 branches missed.">                if (!matcher.find()) {</span>
-<span class="nc" id="L195">                    LOGGER.warn(&quot;Unable to parse library, unknown format: {}&quot;, library);</span>
-<span class="nc" id="L196">                    return;</span>
+<span class="pc bpc" id="L196" title="1 of 2 branches missed.">                if (!matcher.find()) {</span>
+<span class="nc" id="L197">                    LOGGER.warn(&quot;Unable to parse library, unknown format: {}&quot;, library);</span>
+<span class="nc" id="L198">                    return;</span>
                 }
 
-<span class="fc" id="L199">                final String vendor = matcher.group(&quot;package&quot;);</span>
-<span class="fc" id="L200">                final String name = matcher.group(&quot;name&quot;);</span>
-<span class="fc" id="L201">                final String version = matcher.group(&quot;version&quot;);</span>
+<span class="fc" id="L201">                final String vendor = matcher.group(&quot;package&quot;);</span>
+<span class="fc" id="L202">                final String name = matcher.group(&quot;name&quot;);</span>
+<span class="fc" id="L203">                final String version = matcher.group(&quot;version&quot;);</span>
 
-<span class="fc" id="L203">                LOGGER.debug(&quot;Found Libman package: vendor {}, name {}, version {}&quot;, vendor, name, version);</span>
+<span class="fc" id="L205">                LOGGER.debug(&quot;Found Libman package: vendor {}, name {}, version {}&quot;, vendor, name, version);</span>
 
-<span class="fc" id="L205">                final Dependency child = new Dependency(dependency.getActualFile(), true);</span>
+<span class="fc" id="L207">                final Dependency child = new Dependency(dependency.getActualFile(), true);</span>
 
-<span class="fc" id="L207">                child.setEcosystem(DEPENDENCY_ECOSYSTEM);</span>
-<span class="fc" id="L208">                child.setName(name);</span>
-<span class="fc" id="L209">                child.setVersion(version);</span>
+<span class="fc" id="L209">                child.setEcosystem(DEPENDENCY_ECOSYSTEM);</span>
+<span class="fc" id="L210">                child.setName(name);</span>
+<span class="fc" id="L211">                child.setVersion(version);</span>
 
-<span class="fc bfc" id="L211" title="All 2 branches covered.">                if (vendor != null) {</span>
-<span class="fc" id="L212">                    child.addEvidence(EvidenceType.VENDOR, FILE_NAME, &quot;vendor&quot;, vendor, Confidence.HIGHEST);</span>
+<span class="fc bfc" id="L213" title="All 2 branches covered.">                if (vendor != null) {</span>
+<span class="fc" id="L214">                    child.addEvidence(EvidenceType.VENDOR, FILE_NAME, &quot;vendor&quot;, vendor, Confidence.HIGHEST);</span>
                 }
-<span class="fc" id="L214">                child.addEvidence(EvidenceType.VENDOR, FILE_NAME, &quot;name&quot;, name, Confidence.HIGH);</span>
-<span class="fc" id="L215">                child.addEvidence(EvidenceType.PRODUCT, FILE_NAME, &quot;name&quot;, name, Confidence.HIGHEST);</span>
-<span class="fc" id="L216">                child.addEvidence(EvidenceType.VERSION, FILE_NAME, &quot;version&quot;, version, Confidence.HIGHEST);</span>
+<span class="fc" id="L216">                child.addEvidence(EvidenceType.VENDOR, FILE_NAME, &quot;name&quot;, name, Confidence.HIGH);</span>
+<span class="fc" id="L217">                child.addEvidence(EvidenceType.PRODUCT, FILE_NAME, &quot;name&quot;, name, Confidence.HIGHEST);</span>
+<span class="fc" id="L218">                child.addEvidence(EvidenceType.VERSION, FILE_NAME, &quot;version&quot;, version, Confidence.HIGHEST);</span>
 
-<span class="fc" id="L218">                final String packagePath = String.format(&quot;%s:%s&quot;, name, version);</span>
+<span class="fc" id="L220">                final String packagePath = String.format(&quot;%s:%s&quot;, name, version);</span>
 
-<span class="fc" id="L220">                child.setSha1sum(Checksum.getSHA1Checksum(packagePath));</span>
-<span class="fc" id="L221">                child.setSha256sum(Checksum.getSHA256Checksum(packagePath));</span>
-<span class="fc" id="L222">                child.setMd5sum(Checksum.getMD5Checksum(packagePath));</span>
-<span class="fc" id="L223">                child.setPackagePath(packagePath);</span>
+<span class="fc" id="L222">                child.setSha1sum(Checksum.getSHA1Checksum(packagePath));</span>
+<span class="fc" id="L223">                child.setSha256sum(Checksum.getSHA256Checksum(packagePath));</span>
+<span class="fc" id="L224">                child.setMd5sum(Checksum.getMD5Checksum(packagePath));</span>
+<span class="fc" id="L225">                child.setPackagePath(packagePath);</span>
 
                 try {
-<span class="fc" id="L226">                    final PackageURL purl = PackageURLBuilder.aPackageURL()</span>
-<span class="fc" id="L227">                            .withType(&quot;libman&quot;)</span>
-<span class="fc" id="L228">                            .withName(name)</span>
-<span class="fc" id="L229">                            .withVersion(version)</span>
-<span class="fc" id="L230">                            .build();</span>
-<span class="fc" id="L231">                    final PurlIdentifier id = new PurlIdentifier(purl, Confidence.HIGHEST);</span>
-<span class="fc" id="L232">                    child.addSoftwareIdentifier(id);</span>
-<span class="nc" id="L233">                } catch (MalformedPackageURLException ex) {</span>
-<span class="nc" id="L234">                    LOGGER.warn(&quot;Unable to build package url for {}&quot;, ex.toString());</span>
-<span class="fc" id="L235">                }</span>
+<span class="fc" id="L228">                    final PackageURL purl = PackageURLBuilder.aPackageURL()</span>
+<span class="fc" id="L229">                            .withType(&quot;libman&quot;)</span>
+<span class="fc" id="L230">                            .withName(name)</span>
+<span class="fc" id="L231">                            .withVersion(version)</span>
+<span class="fc" id="L232">                            .build();</span>
+<span class="fc" id="L233">                    final PurlIdentifier id = new PurlIdentifier(purl, Confidence.HIGHEST);</span>
+<span class="fc" id="L234">                    child.addSoftwareIdentifier(id);</span>
+<span class="nc" id="L235">                } catch (MalformedPackageURLException ex) {</span>
+<span class="nc" id="L236">                    LOGGER.warn(&quot;Unable to build package url for {}&quot;, ex.toString());</span>
+<span class="fc" id="L237">                }</span>
 
-<span class="fc" id="L237">                engine.addDependency(child);</span>
-<span class="fc" id="L238">            });</span>
-<span class="nc bnc" id="L239" title="All 2 branches missed.">        } catch (JsonException e) {</span>
-<span class="nc" id="L240">            LOGGER.warn(String.format(&quot;Failed to parse %s file&quot;, FILE_NAME), e);</span>
-<span class="nc" id="L241">        } catch (IOException e) {</span>
-<span class="nc" id="L242">            throw new AnalysisException(&quot;Problem occurred while reading dependency file&quot;, e);</span>
-<span class="pc" id="L243">        }</span>
-<span class="fc" id="L244">    }</span>
+<span class="fc" id="L239">                engine.addDependency(child);</span>
+<span class="fc" id="L240">            });</span>
+<span class="nc bnc" id="L241" title="All 2 branches missed.">        } catch (JsonException e) {</span>
+<span class="nc" id="L242">            LOGGER.warn(String.format(&quot;Failed to parse %s file&quot;, FILE_NAME), e);</span>
+<span class="nc" id="L243">        } catch (IOException e) {</span>
+<span class="nc" id="L244">            throw new AnalysisException(&quot;Problem occurred while reading dependency file&quot;, e);</span>
+<span class="pc" id="L245">        }</span>
+<span class="fc" id="L246">    }</span>
 }
-</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.14.202510111229</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.15.202606040825</span></div></body></html>

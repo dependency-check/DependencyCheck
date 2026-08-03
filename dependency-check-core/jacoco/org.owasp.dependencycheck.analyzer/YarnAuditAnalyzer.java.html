@@ -41,12 +41,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import us.springett.parsers.cpe.exceptions.CpeValidationException;
 
+import javax.annotation.concurrent.ThreadSafe;
 import jakarta.json.Json;
 import jakarta.json.JsonException;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonReader;
-
-import javax.annotation.concurrent.ThreadSafe;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
@@ -57,13 +56,15 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
 
+import static org.owasp.dependencycheck.utils.FileUtils.existsWithContent;
+
 @ThreadSafe
-<span class="fc" id="L61">public class YarnAuditAnalyzer extends AbstractNpmAnalyzer {</span>
+<span class="fc" id="L62">public class YarnAuditAnalyzer extends AbstractNpmAnalyzer {</span>
 
     /**
      * The Logger for use throughout the class.
      */
-<span class="fc" id="L66">    private static final Logger LOGGER = LoggerFactory.getLogger(YarnAuditAnalyzer.class);</span>
+<span class="fc" id="L67">    private static final Logger LOGGER = LoggerFactory.getLogger(YarnAuditAnalyzer.class);</span>
 
     /**
      * The major version of the Yarn Classic CLI.
@@ -78,8 +79,8 @@ import java.util.stream.Stream;
     /**
      * Filter that detects files named &quot;yarn.lock&quot;
      */
-<span class="fc" id="L81">    private static final FileFilter LOCK_FILE_FILTER = FileFilterBuilder.newInstance()</span>
-<span class="fc" id="L82">            .addFilenames(YARN_PACKAGE_LOCK).build();</span>
+<span class="fc" id="L82">    private static final FileFilter LOCK_FILE_FILTER = FileFilterBuilder.newInstance()</span>
+<span class="fc" id="L83">            .addFilenames(YARN_PACKAGE_LOCK).build();</span>
 
     /**
      * An expected error from `yarn audit --offline --verbose --json` that will
@@ -95,22 +96,22 @@ import java.util.stream.Stream;
 
     @Override
     protected String getAnalyzerEnabledSettingKey() {
-<span class="fc" id="L98">        return Settings.KEYS.ANALYZER_YARN_AUDIT_ENABLED;</span>
+<span class="fc" id="L99">        return Settings.KEYS.ANALYZER_YARN_AUDIT_ENABLED;</span>
     }
 
     @Override
     protected FileFilter getFileFilter() {
-<span class="fc" id="L103">        return LOCK_FILE_FILTER;</span>
+<span class="fc" id="L104">        return LOCK_FILE_FILTER;</span>
     }
 
     @Override
     public String getName() {
-<span class="fc" id="L108">        return &quot;Yarn Audit Analyzer&quot;;</span>
+<span class="fc" id="L109">        return &quot;Yarn Audit Analyzer&quot;;</span>
     }
 
     @Override
     public AnalysisPhase getAnalysisPhase() {
-<span class="fc" id="L113">        return AnalysisPhase.FINDING_ANALYSIS;</span>
+<span class="fc" id="L114">        return AnalysisPhase.FINDING_ANALYSIS;</span>
     }
 
     /**
@@ -120,27 +121,27 @@ import java.util.stream.Stream;
      * @return the yarn version detected
      */
     private Semver getYarnVersion(File dependencyDirectory) {
-<span class="fc" id="L123">        List&lt;String&gt; args = List.of(yarnPath, &quot;--version&quot;);</span>
-<span class="fc" id="L124">        final ProcessBuilder builder = new ProcessBuilder(args);</span>
-<span class="fc" id="L125">        builder.directory(dependencyDirectory);</span>
+<span class="fc" id="L124">        List&lt;String&gt; args = List.of(yarnPath, &quot;--version&quot;);</span>
+<span class="fc" id="L125">        final ProcessBuilder builder = new ProcessBuilder(args);</span>
+<span class="fc" id="L126">        builder.directory(dependencyDirectory);</span>
         try {
-<span class="fc" id="L127">            final Process process = builder.start();</span>
-<span class="fc" id="L128">            try (ProcessReader processReader = new ProcessReader(process)) {</span>
-<span class="fc" id="L129">                processReader.readAll();</span>
-<span class="fc" id="L130">                final int exitValue = process.waitFor();</span>
-<span class="fc" id="L131">                final var yarnVersion = StringUtils.trimToEmpty(processReader.getOutput());</span>
-<span class="fc bfc" id="L132" title="All 2 branches covered.">                if (exitValue != 0) {</span>
-<span class="fc" id="L133">                    throw new IllegalStateException(String.format(&quot;Unable to determine yarn version, unexpected response (exit value %s, output: %s, error: %s)&quot;, exitValue, yarnVersion, processReader.getError()));</span>
+<span class="fc" id="L128">            final Process process = builder.start();</span>
+<span class="fc" id="L129">            try (ProcessReader processReader = new ProcessReader(process)) {</span>
+<span class="fc" id="L130">                processReader.readAll();</span>
+<span class="fc" id="L131">                final int exitValue = process.waitFor();</span>
+<span class="fc" id="L132">                final var yarnVersion = StringUtils.trimToEmpty(processReader.getOutput());</span>
+<span class="fc bfc" id="L133" title="All 2 branches covered.">                if (exitValue != 0) {</span>
+<span class="fc" id="L134">                    throw new IllegalStateException(String.format(&quot;Unable to determine yarn version, unexpected response (exit value %s, output: %s, error: %s)&quot;, exitValue, yarnVersion, processReader.getError()));</span>
                 }
-<span class="pc bpc" id="L135" title="1 of 2 branches missed.">                if (StringUtils.isBlank(yarnVersion)) {</span>
-<span class="nc" id="L136">                    throw new IllegalStateException(&quot;Unable to determine yarn version, blank output.&quot;);</span>
+<span class="pc bpc" id="L136" title="1 of 2 branches missed.">                if (StringUtils.isBlank(yarnVersion)) {</span>
+<span class="nc" id="L137">                    throw new IllegalStateException(&quot;Unable to determine yarn version, blank output.&quot;);</span>
                 }
-<span class="fc" id="L138">                return Semver.coerce(yarnVersion);</span>
+<span class="fc" id="L139">                return Semver.coerce(yarnVersion);</span>
             }
-<span class="nc" id="L140">        }  catch (SemverException e) {</span>
-<span class="nc" id="L141">            throw new IllegalStateException(&quot;Invalid version string format&quot;, e);</span>
-<span class="fc" id="L142">        } catch (Exception ex) {</span>
-<span class="fc" id="L143">            throw new IllegalStateException(&quot;Unable to determine yarn version.&quot;, ex);</span>
+<span class="nc" id="L141">        }  catch (SemverException e) {</span>
+<span class="nc" id="L142">            throw new IllegalStateException(&quot;Invalid version string format&quot;, e);</span>
+<span class="fc" id="L143">        } catch (Exception ex) {</span>
+<span class="fc" id="L144">            throw new IllegalStateException(&quot;Unable to determine yarn version.&quot;, ex);</span>
         }
     }
 
@@ -153,41 +154,41 @@ import java.util.stream.Stream;
      */
     @Override
     protected void prepareFileTypeAnalyzer(Engine engine) throws InitializationException {
-<span class="fc" id="L156">        super.prepareFileTypeAnalyzer(engine);</span>
-<span class="pc bpc" id="L157" title="1 of 2 branches missed.">        if (!isEnabled()) {</span>
-<span class="nc" id="L158">            LOGGER.debug(&quot;{} Analyzer is disabled skipping yarn executable check&quot;, getName());</span>
-<span class="nc" id="L159">            return;</span>
+<span class="fc" id="L157">        super.prepareFileTypeAnalyzer(engine);</span>
+<span class="pc bpc" id="L158" title="1 of 2 branches missed.">        if (!isEnabled()) {</span>
+<span class="nc" id="L159">            LOGGER.debug(&quot;{} Analyzer is disabled skipping yarn executable check&quot;, getName());</span>
+<span class="nc" id="L160">            return;</span>
         }
         try {
-<span class="fc" id="L162">            cacheYarnCommandPath();</span>
-<span class="fc" id="L163">            getYarnVersion(new File(&quot;.&quot;));</span>
-<span class="nc" id="L164">        } catch (Exception ex){</span>
-<span class="nc" id="L165">            this.setEnabled(false);</span>
-<span class="nc" id="L166">            LOGGER.warn(&quot;The {} has been disabled after failing to find yarn. Yarn executable was not &quot; +</span>
-<span class="nc" id="L167">                    &quot;found or received a non-zero exit value: {}&quot;, getName(), ex.getMessage());</span>
-<span class="nc" id="L168">            throw new InitializationException(&quot;Unable to determine yarn executable to use.&quot;, ex);</span>
-<span class="fc" id="L169">        }</span>
-<span class="fc" id="L170">    }</span>
+<span class="fc" id="L163">            cacheYarnCommandPath();</span>
+<span class="fc" id="L164">            getYarnVersion(new File(&quot;.&quot;));</span>
+<span class="nc" id="L165">        } catch (Exception ex){</span>
+<span class="nc" id="L166">            this.setEnabled(false);</span>
+<span class="nc" id="L167">            LOGGER.warn(&quot;The {} has been disabled after failing to find yarn. Yarn executable was not &quot; +</span>
+<span class="nc" id="L168">                    &quot;found or received a non-zero exit value: {}&quot;, getName(), ex.getMessage());</span>
+<span class="nc" id="L169">            throw new InitializationException(&quot;Unable to determine yarn executable to use.&quot;, ex);</span>
+<span class="fc" id="L170">        }</span>
+<span class="fc" id="L171">    }</span>
 
     /**
      * Attempts to determine and cache the path to `yarn`.
      */
     private void cacheYarnCommandPath() {
-<span class="fc" id="L176">        String value = getSettings().getString(Settings.KEYS.ANALYZER_YARN_PATH);</span>
-<span class="pc bpc" id="L177" title="3 of 4 branches missed.">        if (value == null || value.isBlank()) {</span>
-<span class="fc" id="L178">            value = &quot;yarn&quot;;</span>
+<span class="fc" id="L177">        String value = getSettings().getString(Settings.KEYS.ANALYZER_YARN_PATH);</span>
+<span class="pc bpc" id="L178" title="3 of 4 branches missed.">        if (value == null || value.isBlank()) {</span>
+<span class="fc" id="L179">            value = &quot;yarn&quot;;</span>
         } else {
-<span class="nc" id="L180">            File fileValue = new File(value);</span>
-<span class="nc bnc" id="L181" title="All 2 branches missed.">            if (fileValue.isFile()) {</span>
-<span class="nc" id="L182">                value = fileValue.getAbsolutePath();</span>
+<span class="nc" id="L181">            File fileValue = new File(value);</span>
+<span class="nc bnc" id="L182" title="All 2 branches missed.">            if (fileValue.isFile()) {</span>
+<span class="nc" id="L183">                value = fileValue.getAbsolutePath();</span>
             } else {
-<span class="nc" id="L184">                LOGGER.warn(&quot;Provided path to `yarn` executable is invalid; defaulting to `yarn`.&quot;);</span>
-<span class="nc" id="L185">                value = &quot;yarn&quot;;</span>
+<span class="nc" id="L185">                LOGGER.warn(&quot;Provided path to `yarn` executable is invalid; defaulting to `yarn`.&quot;);</span>
+<span class="nc" id="L186">                value = &quot;yarn&quot;;</span>
             }
         }
 
-<span class="fc" id="L189">        yarnPath = value;</span>
-<span class="fc" id="L190">    }</span>
+<span class="fc" id="L190">        yarnPath = value;</span>
+<span class="fc" id="L191">    }</span>
 
     /**
      * Workaround 64k limitation of InputStream, redirect stdout to a file that we will read later
@@ -198,24 +199,24 @@ import java.util.stream.Stream;
      */
     private String startAndReadStdoutToString(ProcessBuilder builder) throws AnalysisException {
         try {
-<span class="fc" id="L201">            final File tmpFile = getSettings().getTempFile(&quot;yarn_audit&quot;, &quot;json&quot;);</span>
-<span class="fc" id="L202">            builder.redirectOutput(tmpFile);</span>
-<span class="fc" id="L203">            final Process process = builder.start();</span>
-<span class="fc" id="L204">            try (ProcessReader processReader = new ProcessReader(process)) {</span>
-<span class="fc" id="L205">                processReader.readAll();</span>
-<span class="fc" id="L206">                final String errOutput = processReader.getError();</span>
+<span class="fc" id="L202">            final File tmpFile = getSettings().getTempFile(&quot;yarn_audit&quot;, &quot;json&quot;);</span>
+<span class="fc" id="L203">            builder.redirectOutput(tmpFile);</span>
+<span class="fc" id="L204">            final Process process = builder.start();</span>
+<span class="fc" id="L205">            try (ProcessReader processReader = new ProcessReader(process)) {</span>
+<span class="fc" id="L206">                processReader.readAll();</span>
+<span class="fc" id="L207">                final String errOutput = processReader.getError();</span>
 
-<span class="pc bpc" id="L208" title="1 of 4 branches missed.">                if (!StringUtils.isBlank(errOutput) &amp;&amp; !EXPECTED_ERROR.equals(errOutput)) {</span>
-<span class="fc" id="L209">                    LOGGER.debug(&quot;Process Error Out: {}&quot;, errOutput);</span>
-<span class="fc" id="L210">                    LOGGER.debug(&quot;Process Out: {}&quot;, processReader.getOutput());</span>
+<span class="pc bpc" id="L209" title="1 of 4 branches missed.">                if (!StringUtils.isBlank(errOutput) &amp;&amp; !EXPECTED_ERROR.equals(errOutput)) {</span>
+<span class="fc" id="L210">                    LOGGER.debug(&quot;Process Error Out: {}&quot;, errOutput);</span>
+<span class="fc" id="L211">                    LOGGER.debug(&quot;Process Out: {}&quot;, processReader.getOutput());</span>
                 }
-<span class="fc" id="L212">                return Files.readString(tmpFile.toPath());</span>
-<span class="nc" id="L213">            } catch (InterruptedException ex) {</span>
-<span class="nc" id="L214">                Thread.currentThread().interrupt();</span>
-<span class="nc" id="L215">                throw new AnalysisException(&quot;Yarn audit process was interrupted.&quot;, ex);</span>
+<span class="fc" id="L213">                return Files.readString(tmpFile.toPath());</span>
+<span class="nc" id="L214">            } catch (InterruptedException ex) {</span>
+<span class="nc" id="L215">                Thread.currentThread().interrupt();</span>
+<span class="nc" id="L216">                throw new AnalysisException(&quot;Yarn audit process was interrupted.&quot;, ex);</span>
             }
-<span class="nc" id="L217">        } catch (IOException ioe) {</span>
-<span class="nc" id="L218">            throw new AnalysisException(&quot;yarn audit failure; this error can be ignored if you are not analyzing projects with a yarn lockfile.&quot;, ioe);</span>
+<span class="nc" id="L218">        } catch (IOException ioe) {</span>
+<span class="nc" id="L219">            throw new AnalysisException(&quot;yarn audit failure; this error can be ignored if you are not analyzing projects with a yarn lockfile.&quot;, ioe);</span>
         }
     }
 
@@ -229,69 +230,69 @@ import java.util.stream.Stream;
      */
     @Override
     protected void analyzeDependency(Dependency dependency, Engine engine) throws AnalysisException {
-<span class="pc bpc" id="L232" title="1 of 2 branches missed.">        if (dependency.getDisplayFileName().equals(dependency.getFileName())) {</span>
-<span class="fc" id="L233">            engine.removeDependency(dependency);</span>
+<span class="pc bpc" id="L233" title="1 of 2 branches missed.">        if (dependency.getDisplayFileName().equals(dependency.getFileName())) {</span>
+<span class="fc" id="L234">            engine.removeDependency(dependency);</span>
         }
-<span class="fc" id="L235">        final File packageLock = dependency.getActualFile();</span>
-<span class="pc bpc" id="L236" title="3 of 6 branches missed.">        if (!packageLock.isFile() || packageLock.length() == 0 || !shouldProcess(packageLock)) {</span>
-<span class="nc" id="L237">            return;</span>
+<span class="fc" id="L236">        final File packageLock = dependency.getActualFile();</span>
+<span class="pc bpc" id="L237" title="2 of 4 branches missed.">        if (!existsWithContent(packageLock) || !shouldProcess(packageLock)) {</span>
+<span class="nc" id="L238">            return;</span>
         }
-<span class="fc" id="L239">        File dependencyDirectory = getDependencyDirectory(packageLock);</span>
-<span class="fc" id="L240">        final var yarnVersion = getYarnVersion(dependencyDirectory);</span>
+<span class="fc" id="L240">        File dependencyDirectory = getDependencyDirectory(packageLock);</span>
+<span class="fc" id="L241">        final var yarnVersion = getYarnVersion(dependencyDirectory);</span>
         final List&lt;Advisory&gt; advisories;
-<span class="fc" id="L242">        final MultiValuedMap&lt;String, String&gt; dependencyMap = new HashSetValuedHashMap&lt;&gt;();</span>
-<span class="fc bfc" id="L243" title="All 2 branches covered.">        if (YARN_CLASSIC_MAJOR_VERSION &lt; yarnVersion.getMajor()) {</span>
-<span class="fc" id="L244">            LOGGER.info(&quot;Analyzing using Yarn Berry ({}) audit for {}&quot;, yarnVersion, dependency.getActualFilePath());</span>
-<span class="fc" id="L245">            advisories = analyzePackageWithYarnBerry(dependency);</span>
+<span class="fc" id="L243">        final MultiValuedMap&lt;String, String&gt; dependencyMap = new HashSetValuedHashMap&lt;&gt;();</span>
+<span class="fc bfc" id="L244" title="All 2 branches covered.">        if (YARN_CLASSIC_MAJOR_VERSION &lt; yarnVersion.getMajor()) {</span>
+<span class="fc" id="L245">            LOGGER.info(&quot;Analyzing using Yarn Berry ({}) audit for {}&quot;, yarnVersion, dependency.getActualFilePath());</span>
+<span class="fc" id="L246">            advisories = analyzePackageWithYarnBerry(dependency);</span>
         } else {
-<span class="fc" id="L247">            LOGGER.info(&quot;Analyzing using Yarn Classic ({}) audit for {}&quot;, yarnVersion, dependency.getActualFilePath());</span>
-<span class="fc" id="L248">            advisories = analyzePackageWithYarnClassic(packageLock, dependency, dependencyMap);</span>
+<span class="fc" id="L248">            LOGGER.info(&quot;Analyzing using Yarn Classic ({}) audit for {}&quot;, yarnVersion, dependency.getActualFilePath());</span>
+<span class="fc" id="L249">            advisories = analyzePackageWithYarnClassic(packageLock, dependency, dependencyMap);</span>
         }
         try {
-<span class="fc" id="L251">            processResults(advisories, engine, dependency, dependencyMap);</span>
-<span class="nc" id="L252">        } catch (CpeValidationException ex) {</span>
-<span class="nc" id="L253">            throw new UnexpectedAnalysisException(ex);</span>
-<span class="fc" id="L254">        }</span>
-<span class="fc" id="L255">    }</span>
+<span class="fc" id="L252">            processResults(advisories, engine, dependency, dependencyMap);</span>
+<span class="nc" id="L253">        } catch (CpeValidationException ex) {</span>
+<span class="nc" id="L254">            throw new UnexpectedAnalysisException(ex);</span>
+<span class="fc" id="L255">        }</span>
+<span class="fc" id="L256">    }</span>
 
     private JsonObject fetchYarnAuditJson(File dependencyDirectory, boolean skipDevDependencies) throws AnalysisException {
-<span class="fc" id="L258">        final List&lt;String&gt; args = new ArrayList&lt;&gt;();</span>
-<span class="fc" id="L259">        args.add(yarnPath);</span>
-<span class="fc" id="L260">        args.add(&quot;audit&quot;);</span>
+<span class="fc" id="L259">        final List&lt;String&gt; args = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L260">        args.add(yarnPath);</span>
+<span class="fc" id="L261">        args.add(&quot;audit&quot;);</span>
         //offline audit is not supported - but the audit request is generated in the verbose output
-<span class="fc" id="L262">        args.add(&quot;--offline&quot;);</span>
-<span class="pc bpc" id="L263" title="1 of 2 branches missed.">        if (skipDevDependencies) {</span>
-<span class="nc" id="L264">            args.add(&quot;--groups&quot;);</span>
-<span class="nc" id="L265">            args.add(&quot;dependencies&quot;);</span>
+<span class="fc" id="L263">        args.add(&quot;--offline&quot;);</span>
+<span class="pc bpc" id="L264" title="1 of 2 branches missed.">        if (skipDevDependencies) {</span>
+<span class="nc" id="L265">            args.add(&quot;--groups&quot;);</span>
+<span class="nc" id="L266">            args.add(&quot;dependencies&quot;);</span>
         }
-<span class="fc" id="L267">        args.add(&quot;--json&quot;);</span>
-<span class="fc" id="L268">        args.add(&quot;--verbose&quot;);</span>
-<span class="fc" id="L269">        final ProcessBuilder builder = new ProcessBuilder(args);</span>
-<span class="fc" id="L270">        builder.directory(dependencyDirectory);</span>
-<span class="fc" id="L271">        LOGGER.debug(&quot;Launching: {}&quot;, args);</span>
+<span class="fc" id="L268">        args.add(&quot;--json&quot;);</span>
+<span class="fc" id="L269">        args.add(&quot;--verbose&quot;);</span>
+<span class="fc" id="L270">        final ProcessBuilder builder = new ProcessBuilder(args);</span>
+<span class="fc" id="L271">        builder.directory(dependencyDirectory);</span>
+<span class="fc" id="L272">        LOGGER.debug(&quot;Launching: {}&quot;, args);</span>
 
-<span class="fc" id="L273">        final String verboseJson = startAndReadStdoutToString(builder);</span>
-<span class="fc" id="L274">        final String auditRequestJson = Arrays.stream(verboseJson.split(&quot;\n&quot;))</span>
-<span class="fc" id="L275">                .filter(line -&gt; line.contains(&quot;Audit Request&quot;))</span>
-<span class="fc" id="L276">                .findFirst()</span>
-<span class="pc" id="L277">                .orElseThrow(() -&gt; new AnalysisException(&quot;No results from Yarn Classic (offline step) - possibly trying to use classic analyzer on Yarn Berry lockfile&quot;));</span>
+<span class="fc" id="L274">        final String verboseJson = startAndReadStdoutToString(builder);</span>
+<span class="fc" id="L275">        final String auditRequestJson = Arrays.stream(verboseJson.split(&quot;\n&quot;))</span>
+<span class="fc" id="L276">                .filter(line -&gt; line.contains(&quot;Audit Request&quot;))</span>
+<span class="fc" id="L277">                .findFirst()</span>
+<span class="fc" id="L278">                .orElseThrow(() -&gt; new AnalysisException(&quot;No results from Yarn Classic (offline step) - possibly trying to use classic analyzer on Yarn Berry lockfile&quot;));</span>
         String auditRequest;
-<span class="fc" id="L279">        try (JsonReader reader = Json.createReader(IOUtils.toInputStream(auditRequestJson, StandardCharsets.UTF_8))) {</span>
-<span class="fc" id="L280">            final JsonObject jsonObject = reader.readObject();</span>
-<span class="fc" id="L281">            auditRequest = jsonObject.getString(&quot;data&quot;);</span>
-<span class="fc" id="L282">            auditRequest = auditRequest.substring(15);</span>
+<span class="fc" id="L280">        try (JsonReader reader = Json.createReader(IOUtils.toInputStream(auditRequestJson, StandardCharsets.UTF_8))) {</span>
+<span class="fc" id="L281">            final JsonObject jsonObject = reader.readObject();</span>
+<span class="fc" id="L282">            auditRequest = jsonObject.getString(&quot;data&quot;);</span>
+<span class="fc" id="L283">            auditRequest = auditRequest.substring(15);</span>
         }
-<span class="fc" id="L284">        LOGGER.debug(&quot;Audit Request: {}&quot;, auditRequest);</span>
+<span class="fc" id="L285">        LOGGER.debug(&quot;Audit Request: {}&quot;, auditRequest);</span>
 
-<span class="fc" id="L286">        return Json.createReader(IOUtils.toInputStream(auditRequest, StandardCharsets.UTF_8)).readObject();</span>
+<span class="fc" id="L287">        return Json.createReader(IOUtils.toInputStream(auditRequest, StandardCharsets.UTF_8)).readObject();</span>
     }
 
     private static File getDependencyDirectory(File lockFile) {
-<span class="fc" id="L290">        final File folder = lockFile.getParentFile();</span>
-<span class="pc bpc" id="L291" title="1 of 2 branches missed.">        if (!folder.isDirectory()) {</span>
-<span class="nc" id="L292">            throw new IllegalArgumentException(String.format(&quot;%s should have been a directory.&quot;, folder.getAbsolutePath()));</span>
+<span class="fc" id="L291">        final File folder = lockFile.getParentFile();</span>
+<span class="pc bpc" id="L292" title="1 of 2 branches missed.">        if (!folder.isDirectory()) {</span>
+<span class="nc" id="L293">            throw new IllegalArgumentException(String.format(&quot;%s should have been a directory.&quot;, folder.getAbsolutePath()));</span>
         }
-<span class="fc" id="L294">        return folder;</span>
+<span class="fc" id="L295">        return folder;</span>
     }
 
     /**
@@ -312,70 +313,70 @@ import java.util.stream.Stream;
                                                          MultiValuedMap&lt;String, String&gt; dependencyMap)
             throws AnalysisException {
         try {
-<span class="fc" id="L315">            final boolean skipDevDependencies = getSettings().getBoolean(Settings.KEYS.ANALYZER_NODE_AUDIT_SKIPDEV, false);</span>
+<span class="fc" id="L316">            final boolean skipDevDependencies = getSettings().getBoolean(Settings.KEYS.ANALYZER_NODE_AUDIT_SKIPDEV, false);</span>
             // Retrieves the contents of package-lock.json from the Dependency
-<span class="fc" id="L317">            final JsonObject lockJson = fetchYarnAuditJson(getDependencyDirectory(lockFile), skipDevDependencies);</span>
+<span class="fc" id="L318">            final JsonObject lockJson = fetchYarnAuditJson(getDependencyDirectory(lockFile), skipDevDependencies);</span>
             // Retrieves the contents of package-lock.json from the Dependency
             final JsonObject packageJson;
-<span class="fc" id="L320">            try (JsonReader packageReader = Json.createReader(Files.newInputStream(lockFile.getParentFile().toPath().resolve(&quot;package.json&quot;)))) {</span>
-<span class="fc" id="L321">                packageJson = packageReader.readObject();</span>
+<span class="fc" id="L321">            try (JsonReader packageReader = Json.createReader(Files.newInputStream(lockFile.getParentFile().toPath().resolve(&quot;package.json&quot;)))) {</span>
+<span class="fc" id="L322">                packageJson = packageReader.readObject();</span>
             }
             // Modify the payload to meet the NPM Audit API requirements
-<span class="fc" id="L324">            final JsonObject payload = NpmPayloadBuilder.build(lockJson, packageJson, dependencyMap, skipDevDependencies);</span>
+<span class="fc" id="L325">            final JsonObject payload = NpmPayloadBuilder.build(lockJson, packageJson, dependencyMap, skipDevDependencies);</span>
 
             // Submits the package payload to the nsp check service
-<span class="fc" id="L327">            return getSearcher().submitPackage(payload);</span>
+<span class="fc" id="L328">            return getSearcher().submitPackage(payload);</span>
 
-<span class="nc" id="L329">        } catch (URLConnectionFailureException e) {</span>
-<span class="nc" id="L330">            this.setEnabled(false);</span>
-<span class="nc" id="L331">            throw new AnalysisException(&quot;Failed to connect to the NPM Audit API (YarnAuditAnalyzer); the analyzer &quot;</span>
+<span class="nc" id="L330">        } catch (URLConnectionFailureException e) {</span>
+<span class="nc" id="L331">            this.setEnabled(false);</span>
+<span class="nc" id="L332">            throw new AnalysisException(&quot;Failed to connect to the NPM Audit API (YarnAuditAnalyzer); the analyzer &quot;</span>
                     + &quot;is being disabled and may result in false negatives.&quot;, e);
-<span class="nc" id="L333">        } catch (IOException e) {</span>
-<span class="nc" id="L334">            LOGGER.debug(&quot;Error reading dependency or connecting to NPM Audit API&quot;, e);</span>
-<span class="nc" id="L335">            this.setEnabled(false);</span>
-<span class="nc" id="L336">            throw new AnalysisException(&quot;Failed to read results from the NPM Audit API (YarnAuditAnalyzer); &quot;</span>
+<span class="nc" id="L334">        } catch (IOException e) {</span>
+<span class="nc" id="L335">            LOGGER.debug(&quot;Error reading dependency or connecting to NPM Audit API&quot;, e);</span>
+<span class="nc" id="L336">            this.setEnabled(false);</span>
+<span class="nc" id="L337">            throw new AnalysisException(&quot;Failed to read results from the NPM Audit API (YarnAuditAnalyzer); &quot;</span>
                     + &quot;the analyzer is being disabled and may result in false negatives.&quot;, e);
-<span class="nc" id="L338">        } catch (JsonException e) {</span>
-<span class="nc" id="L339">            throw new AnalysisException(String.format(&quot;Failed to parse %s file from the NPM Audit API &quot;</span>
-<span class="nc" id="L340">                    + &quot;(YarnAuditAnalyzer).&quot;, lockFile.getPath()), e);</span>
-<span class="nc" id="L341">        } catch (SearchException ex) {</span>
-<span class="nc" id="L342">            LOGGER.error(&quot;YarnAuditAnalyzer failed on {}&quot;, dependency.getActualFilePath());</span>
-<span class="nc" id="L343">            throw ex;</span>
+<span class="nc" id="L339">        } catch (JsonException e) {</span>
+<span class="nc" id="L340">            throw new AnalysisException(String.format(&quot;Failed to parse %s file from the NPM Audit API &quot;</span>
+<span class="nc" id="L341">                    + &quot;(YarnAuditAnalyzer).&quot;, lockFile.getPath()), e);</span>
+<span class="nc" id="L342">        } catch (SearchException ex) {</span>
+<span class="nc" id="L343">            LOGGER.error(&quot;YarnAuditAnalyzer failed on {}&quot;, dependency.getActualFilePath());</span>
+<span class="nc" id="L344">            throw ex;</span>
         }
     }
 
     private List&lt;JSONObject&gt; fetchYarnAdvisories(Dependency dependency, boolean skipDevDependencies) throws AnalysisException {
-<span class="fc" id="L348">        final List&lt;String&gt; args = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L349">        final List&lt;String&gt; args = new ArrayList&lt;&gt;();</span>
 
-<span class="fc" id="L350">        args.add(yarnPath);</span>
-<span class="fc" id="L351">        args.add(&quot;npm&quot;);</span>
-<span class="fc" id="L352">        args.add(&quot;audit&quot;);</span>
-<span class="pc bpc" id="L353" title="1 of 2 branches missed.">        if (skipDevDependencies) {</span>
-<span class="nc" id="L354">            args.add(&quot;--environment&quot;);</span>
-<span class="nc" id="L355">            args.add(&quot;production&quot;);</span>
+<span class="fc" id="L351">        args.add(yarnPath);</span>
+<span class="fc" id="L352">        args.add(&quot;npm&quot;);</span>
+<span class="fc" id="L353">        args.add(&quot;audit&quot;);</span>
+<span class="pc bpc" id="L354" title="1 of 2 branches missed.">        if (skipDevDependencies) {</span>
+<span class="nc" id="L355">            args.add(&quot;--environment&quot;);</span>
+<span class="nc" id="L356">            args.add(&quot;production&quot;);</span>
         }
-<span class="fc" id="L357">        args.add(&quot;--all&quot;);</span>
-<span class="fc" id="L358">        args.add(&quot;--recursive&quot;);</span>
-<span class="fc" id="L359">        args.add(&quot;--no-deprecations&quot;);</span>
-<span class="fc" id="L360">        args.add(&quot;--json&quot;);</span>
-<span class="fc" id="L361">        final ProcessBuilder builder = new ProcessBuilder(args);</span>
-<span class="fc" id="L362">        builder.directory(getDependencyDirectory(dependency.getActualFile()));</span>
+<span class="fc" id="L358">        args.add(&quot;--all&quot;);</span>
+<span class="fc" id="L359">        args.add(&quot;--recursive&quot;);</span>
+<span class="fc" id="L360">        args.add(&quot;--no-deprecations&quot;);</span>
+<span class="fc" id="L361">        args.add(&quot;--json&quot;);</span>
+<span class="fc" id="L362">        final ProcessBuilder builder = new ProcessBuilder(args);</span>
+<span class="fc" id="L363">        builder.directory(getDependencyDirectory(dependency.getActualFile()));</span>
 
-<span class="fc" id="L364">        final String advisoriesJsons = startAndReadStdoutToString(builder);</span>
+<span class="fc" id="L365">        final String advisoriesJsons = startAndReadStdoutToString(builder);</span>
 
-<span class="fc" id="L366">        LOGGER.debug(&quot;Advisories JSON: {}&quot;, advisoriesJsons);</span>
-<span class="fc" id="L367">        final String[] advisoriesJsonArray = Stream.of(advisoriesJsons.split(&quot;\n&quot;))</span>
-<span class="fc bfc" id="L368" title="All 2 branches covered.">                .filter(s -&gt; !s.isBlank())</span>
-<span class="fc" id="L369">                .toArray(String[]::new);</span>
+<span class="fc" id="L367">        LOGGER.debug(&quot;Advisories JSON: {}&quot;, advisoriesJsons);</span>
+<span class="fc" id="L368">        final String[] advisoriesJsonArray = Stream.of(advisoriesJsons.split(&quot;\n&quot;))</span>
+<span class="fc bfc" id="L369" title="All 2 branches covered.">                .filter(s -&gt; !s.isBlank())</span>
+<span class="fc" id="L370">                .toArray(String[]::new);</span>
         try {
-<span class="fc" id="L371">            final List&lt;JSONObject&gt; advisories = new ArrayList&lt;&gt;();</span>
-<span class="fc bfc" id="L372" title="All 2 branches covered.">            for (String advisoriesJson : advisoriesJsonArray) {</span>
-<span class="fc" id="L373">                advisories.add(new JSONObject(advisoriesJson));</span>
+<span class="fc" id="L372">            final List&lt;JSONObject&gt; advisories = new ArrayList&lt;&gt;();</span>
+<span class="fc bfc" id="L373" title="All 2 branches covered.">            for (String advisoriesJson : advisoriesJsonArray) {</span>
+<span class="fc" id="L374">                advisories.add(new JSONObject(advisoriesJson));</span>
             }
 
-<span class="fc" id="L376">            return advisories;</span>
-<span class="nc" id="L377">        } catch (JSONException e) {</span>
-<span class="nc" id="L378">            throw new AnalysisException(&quot;Failed to parse the response from NPM Audit API &quot;</span>
+<span class="fc" id="L377">            return advisories;</span>
+<span class="nc" id="L378">        } catch (JSONException e) {</span>
+<span class="nc" id="L379">            throw new AnalysisException(&quot;Failed to parse the response from NPM Audit API &quot;</span>
                     + &quot;(YarnBerryAuditAnalyzer).&quot;, e);
         }
     }
@@ -388,63 +389,63 @@ import java.util.stream.Stream;
      */
     private List&lt;Advisory&gt; analyzePackageWithYarnBerry(Dependency dependency) throws AnalysisException {
         try {
-<span class="fc" id="L391">            final var skipDevDependencies = getSettings().getBoolean(Settings.KEYS.ANALYZER_NODE_AUDIT_SKIPDEV, false);</span>
-<span class="fc" id="L392">            final var advisoryJsons = fetchYarnAdvisories(dependency, skipDevDependencies);</span>
-<span class="fc" id="L393">            return parseAdvisoryJsons(advisoryJsons);</span>
-<span class="nc" id="L394">        } catch (JSONException e) {</span>
-<span class="nc" id="L395">            throw new AnalysisException(&quot;Failed to parse the response from NPM Audit API &quot;</span>
+<span class="fc" id="L392">            final var skipDevDependencies = getSettings().getBoolean(Settings.KEYS.ANALYZER_NODE_AUDIT_SKIPDEV, false);</span>
+<span class="fc" id="L393">            final var advisoryJsons = fetchYarnAdvisories(dependency, skipDevDependencies);</span>
+<span class="fc" id="L394">            return parseAdvisoryJsons(advisoryJsons);</span>
+<span class="nc" id="L395">        } catch (JSONException e) {</span>
+<span class="nc" id="L396">            throw new AnalysisException(&quot;Failed to parse the response from NPM Audit API &quot;</span>
                     + &quot;(YarnBerryAuditAnalyzer).&quot;, e);
-<span class="nc" id="L397">        } catch (SearchException ex) {</span>
-<span class="nc" id="L398">            LOGGER.error(&quot;YarnBerryAuditAnalyzer failed on {}&quot;, dependency.getActualFilePath());</span>
-<span class="nc" id="L399">            throw ex;</span>
+<span class="nc" id="L398">        } catch (SearchException ex) {</span>
+<span class="nc" id="L399">            LOGGER.error(&quot;YarnBerryAuditAnalyzer failed on {}&quot;, dependency.getActualFilePath());</span>
+<span class="nc" id="L400">            throw ex;</span>
         }
     }
 
     private static List&lt;Advisory&gt; parseAdvisoryJsons(List&lt;JSONObject&gt; advisoryJsons) throws JSONException {
-<span class="fc" id="L404">        final List&lt;Advisory&gt; advisories = new ArrayList&lt;&gt;();</span>
-<span class="fc bfc" id="L405" title="All 2 branches covered.">        for (JSONObject advisoryJson : advisoryJsons) {</span>
-<span class="fc" id="L406">            final var advisory = new Advisory();</span>
-<span class="fc" id="L407">            final var object = advisoryJson.getJSONObject(&quot;children&quot;);</span>
-<span class="fc" id="L408">            final var moduleName = advisoryJson.optString(&quot;value&quot;, null);</span>
-<span class="fc" id="L409">            final var id = object.get(&quot;ID&quot;);</span>
-<span class="fc" id="L410">            final var url = object.optString(&quot;URL&quot;, null);</span>
-<span class="fc" id="L411">            final var ghsaId = extractGhsaId(url);</span>
-<span class="fc" id="L412">            final var issue = object.optString(&quot;Issue&quot;, null);</span>
-<span class="fc" id="L413">            final var severity = object.optString(&quot;Severity&quot;, null);</span>
-<span class="fc" id="L414">            final var vulnerableVersions = object.optString(&quot;Vulnerable Versions&quot;, null);</span>
-<span class="fc" id="L415">            final var treeVersions = object.optJSONArray(&quot;Tree Versions&quot;);</span>
-<span class="pc bpc" id="L416" title="1 of 2 branches missed.">            final var treeVersionsLength = treeVersions == null ? 0 : treeVersions.length();</span>
-<span class="fc" id="L417">            final var versions = new ArrayList&lt;String&gt;();</span>
-<span class="fc bfc" id="L418" title="All 2 branches covered.">            for (int i = 0; i &lt; treeVersionsLength; i++) {</span>
-<span class="fc" id="L419">                versions.add(treeVersions.getString(i));</span>
+<span class="fc" id="L405">        final List&lt;Advisory&gt; advisories = new ArrayList&lt;&gt;();</span>
+<span class="fc bfc" id="L406" title="All 2 branches covered.">        for (JSONObject advisoryJson : advisoryJsons) {</span>
+<span class="fc" id="L407">            final var advisory = new Advisory();</span>
+<span class="fc" id="L408">            final var object = advisoryJson.getJSONObject(&quot;children&quot;);</span>
+<span class="fc" id="L409">            final var moduleName = advisoryJson.optString(&quot;value&quot;, null);</span>
+<span class="fc" id="L410">            final var id = object.get(&quot;ID&quot;);</span>
+<span class="fc" id="L411">            final var url = object.optString(&quot;URL&quot;, null);</span>
+<span class="fc" id="L412">            final var ghsaId = extractGhsaId(url);</span>
+<span class="fc" id="L413">            final var issue = object.optString(&quot;Issue&quot;, null);</span>
+<span class="fc" id="L414">            final var severity = object.optString(&quot;Severity&quot;, null);</span>
+<span class="fc" id="L415">            final var vulnerableVersions = object.optString(&quot;Vulnerable Versions&quot;, null);</span>
+<span class="fc" id="L416">            final var treeVersions = object.optJSONArray(&quot;Tree Versions&quot;);</span>
+<span class="pc bpc" id="L417" title="1 of 2 branches missed.">            final var treeVersionsLength = treeVersions == null ? 0 : treeVersions.length();</span>
+<span class="fc" id="L418">            final var versions = new ArrayList&lt;String&gt;();</span>
+<span class="fc bfc" id="L419" title="All 2 branches covered.">            for (int i = 0; i &lt; treeVersionsLength; i++) {</span>
+<span class="fc" id="L420">                versions.add(treeVersions.getString(i));</span>
             }
-<span class="pc bpc" id="L421" title="1 of 2 branches missed.">            if (versions.isEmpty()) {</span>
-<span class="nc" id="L422">                versions.add(null);</span>
+<span class="pc bpc" id="L422" title="1 of 2 branches missed.">            if (versions.isEmpty()) {</span>
+<span class="nc" id="L423">                versions.add(null);</span>
             }
-<span class="fc bfc" id="L424" title="All 2 branches covered.">            for (String version : versions) {</span>
-<span class="fc" id="L425">                advisory.setGhsaId(ghsaId);</span>
-<span class="fc" id="L426">                advisory.setTitle(issue);</span>
-<span class="fc" id="L427">                advisory.setOverview(&quot;URL:&quot; + url + &quot;ID: &quot; + id);</span>
-<span class="fc" id="L428">                advisory.setSeverity(severity);</span>
-<span class="fc" id="L429">                advisory.setVulnerableVersions(vulnerableVersions);</span>
-<span class="fc" id="L430">                advisory.setModuleName(moduleName);</span>
-<span class="fc" id="L431">                advisory.setVersion(version);</span>
-<span class="fc" id="L432">                advisory.setCwes(new ArrayList&lt;&gt;());</span>
-<span class="fc" id="L433">                advisories.add(advisory);</span>
-<span class="fc" id="L434">            }</span>
-<span class="fc" id="L435">        }</span>
-<span class="fc" id="L436">        return advisories;</span>
+<span class="fc bfc" id="L425" title="All 2 branches covered.">            for (String version : versions) {</span>
+<span class="fc" id="L426">                advisory.setGhsaId(ghsaId);</span>
+<span class="fc" id="L427">                advisory.setTitle(issue);</span>
+<span class="fc" id="L428">                advisory.setOverview(&quot;URL:&quot; + url + &quot;ID: &quot; + id);</span>
+<span class="fc" id="L429">                advisory.setSeverity(severity);</span>
+<span class="fc" id="L430">                advisory.setVulnerableVersions(vulnerableVersions);</span>
+<span class="fc" id="L431">                advisory.setModuleName(moduleName);</span>
+<span class="fc" id="L432">                advisory.setVersion(version);</span>
+<span class="fc" id="L433">                advisory.setCwes(new ArrayList&lt;&gt;());</span>
+<span class="fc" id="L434">                advisories.add(advisory);</span>
+<span class="fc" id="L435">            }</span>
+<span class="fc" id="L436">        }</span>
+<span class="fc" id="L437">        return advisories;</span>
     }
 
     private static String extractGhsaId(String url) {
-<span class="pc bpc" id="L440" title="2 of 4 branches missed.">        if (url == null || url.isEmpty()) {</span>
-<span class="nc" id="L441">            return null;</span>
+<span class="pc bpc" id="L441" title="2 of 4 branches missed.">        if (url == null || url.isEmpty()) {</span>
+<span class="nc" id="L442">            return null;</span>
         }
-<span class="fc" id="L443">        final int lastSlashIndex = url.lastIndexOf('/');</span>
-<span class="pc bpc" id="L444" title="2 of 4 branches missed.">        if (lastSlashIndex == -1 || lastSlashIndex == url.length() - 1) {</span>
-<span class="nc" id="L445">            return null;</span>
+<span class="fc" id="L444">        final int lastSlashIndex = url.lastIndexOf('/');</span>
+<span class="pc bpc" id="L445" title="2 of 4 branches missed.">        if (lastSlashIndex == -1 || lastSlashIndex == url.length() - 1) {</span>
+<span class="nc" id="L446">            return null;</span>
         }
-<span class="fc" id="L447">        return url.substring(lastSlashIndex + 1);</span>
+<span class="fc" id="L448">        return url.substring(lastSlashIndex + 1);</span>
     }
 }
-</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.14.202510111229</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.15.202606040825</span></div></body></html>

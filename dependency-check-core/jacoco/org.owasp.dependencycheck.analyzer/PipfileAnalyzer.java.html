@@ -43,6 +43,8 @@ import java.nio.file.Files;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static org.owasp.dependencycheck.utils.FileUtils.existsWithContent;
+
 /**
  * Used to analyze dependencies defined in Pipfile. This analyzer works in
  * tandem with the `PipfilelockAnalyzer` - and both analyzers use the same key
@@ -54,12 +56,12 @@ import java.util.regex.Pattern;
  */
 @Experimental
 @ThreadSafe
-<span class="fc" id="L57">public class PipfileAnalyzer extends AbstractFileTypeAnalyzer {</span>
+<span class="fc" id="L59">public class PipfileAnalyzer extends AbstractFileTypeAnalyzer {</span>
 
     /**
      * The logger.
      */
-<span class="fc" id="L62">    private static final Logger LOGGER = LoggerFactory.getLogger(PipfileAnalyzer.class);</span>
+<span class="fc" id="L64">    private static final Logger LOGGER = LoggerFactory.getLogger(PipfileAnalyzer.class);</span>
     /**
      * &quot;Pipfile&quot; file.
      */
@@ -76,17 +78,17 @@ import java.util.regex.Pattern;
     /**
      * The phase that this analyzer is intended to run in.
      */
-<span class="fc" id="L79">    private static final AnalysisPhase ANALYSIS_PHASE = AnalysisPhase.INFORMATION_COLLECTION;</span>
+<span class="fc" id="L81">    private static final AnalysisPhase ANALYSIS_PHASE = AnalysisPhase.INFORMATION_COLLECTION;</span>
 
     /**
      * o * Matches AC_INIT variables in the output configure script.
      */
-<span class="fc" id="L84">    private static final Pattern PACKAGE_VERSION = Pattern.compile(&quot;^([^#].*?) = \&quot;(?:[=~&gt;]=([\\.\\*0-9]+?))?\&quot;$&quot;, Pattern.MULTILINE);</span>
+<span class="fc" id="L86">    private static final Pattern PACKAGE_VERSION = Pattern.compile(&quot;^([^#].*?) = \&quot;(?:[=~&gt;]=([\\.\\*0-9]+?))?\&quot;$&quot;, Pattern.MULTILINE);</span>
 
     /**
      * The file filter used to determine which files this analyzer supports.
      */
-<span class="fc" id="L89">    private static final FileFilter FILTER = FileFilterBuilder.newInstance().addFilenames(PIPFILE).build();</span>
+<span class="fc" id="L91">    private static final FileFilter FILTER = FileFilterBuilder.newInstance().addFilenames(PIPFILE).build();</span>
 
     /**
      * Returns the FileFilter
@@ -95,7 +97,7 @@ import java.util.regex.Pattern;
      */
     @Override
     protected FileFilter getFileFilter() {
-<span class="fc" id="L98">        return FILTER;</span>
+<span class="fc" id="L100">        return FILTER;</span>
     }
 
     /**
@@ -105,7 +107,7 @@ import java.util.regex.Pattern;
      */
     @Override
     public String getName() {
-<span class="fc" id="L108">        return ANALYZER_NAME;</span>
+<span class="fc" id="L110">        return ANALYZER_NAME;</span>
     }
 
     /**
@@ -115,7 +117,7 @@ import java.util.regex.Pattern;
      */
     @Override
     public AnalysisPhase getAnalysisPhase() {
-<span class="fc" id="L118">        return ANALYSIS_PHASE;</span>
+<span class="fc" id="L120">        return ANALYSIS_PHASE;</span>
     }
 
     /**
@@ -126,62 +128,62 @@ import java.util.regex.Pattern;
      */
     @Override
     protected String getAnalyzerEnabledSettingKey() {
-<span class="fc" id="L129">        return Settings.KEYS.ANALYZER_PIPFILE_ENABLED;</span>
+<span class="fc" id="L131">        return Settings.KEYS.ANALYZER_PIPFILE_ENABLED;</span>
     }
 
     @Override
     protected void analyzeDependency(Dependency dependency, Engine engine) throws AnalysisException {
-<span class="fc" id="L134">        engine.removeDependency(dependency);</span>
-<span class="fc" id="L135">        final File lock = new File(dependency.getActualFile().getParentFile(), LOCKFILE);</span>
-<span class="fc bfc" id="L136" title="All 2 branches covered.">        if (lock.isFile()) {</span>
-<span class="fc" id="L137">            LOGGER.debug(&quot;Skipping {} because a lock file was identified&quot;, dependency.getActualFilePath());</span>
-<span class="fc" id="L138">            return;</span>
+<span class="fc" id="L136">        engine.removeDependency(dependency);</span>
+<span class="fc" id="L137">        final File lock = new File(dependency.getActualFile().getParentFile(), LOCKFILE);</span>
+<span class="fc bfc" id="L138" title="All 2 branches covered.">        if (lock.isFile()) {</span>
+<span class="fc" id="L139">            LOGGER.debug(&quot;Skipping {} because a lock file was identified&quot;, dependency.getActualFilePath());</span>
+<span class="fc" id="L140">            return;</span>
         } else {
-<span class="fc" id="L140">            LOGGER.debug(&quot;Checking file {}&quot;, dependency.getActualFilePath());</span>
+<span class="fc" id="L142">            LOGGER.debug(&quot;Checking file {}&quot;, dependency.getActualFilePath());</span>
         }
 
-<span class="fc" id="L143">        final File dependencyFile = dependency.getActualFile();</span>
-<span class="pc bpc" id="L144" title="2 of 4 branches missed.">        if (!dependencyFile.isFile() || dependencyFile.length() == 0) {</span>
-<span class="nc" id="L145">            return;</span>
+<span class="fc" id="L145">        final File dependencyFile = dependency.getActualFile();</span>
+<span class="pc bpc" id="L146" title="1 of 2 branches missed.">        if (!existsWithContent(dependencyFile)) {</span>
+<span class="nc" id="L147">            return;</span>
         }
 
-<span class="fc" id="L148">        final File actualFile = dependency.getActualFile();</span>
+<span class="fc" id="L150">        final File actualFile = dependency.getActualFile();</span>
 
-<span class="fc" id="L150">        final String contents = getFileContents(actualFile);</span>
-<span class="pc bpc" id="L151" title="1 of 2 branches missed.">        if (!contents.isEmpty()) {</span>
-<span class="fc" id="L152">            final Matcher matcher = PACKAGE_VERSION.matcher(contents);</span>
-<span class="fc bfc" id="L153" title="All 2 branches covered.">            while (matcher.find()) {</span>
-<span class="fc" id="L154">                final String identifiedPackage = matcher.group(1);</span>
-<span class="fc" id="L155">                final String identifiedVersion = matcher.group(2);</span>
-<span class="fc" id="L156">                LOGGER.debug(String.format(&quot;package, version: %s %s&quot;, identifiedPackage, identifiedVersion));</span>
-<span class="fc" id="L157">                final Dependency d = new Dependency(dependency.getActualFile(), true);</span>
-<span class="fc" id="L158">                d.setName(identifiedPackage);</span>
-<span class="fc" id="L159">                d.setVersion(identifiedVersion);</span>
+<span class="fc" id="L152">        final String contents = getFileContents(actualFile);</span>
+<span class="pc bpc" id="L153" title="1 of 2 branches missed.">        if (!contents.isEmpty()) {</span>
+<span class="fc" id="L154">            final Matcher matcher = PACKAGE_VERSION.matcher(contents);</span>
+<span class="fc bfc" id="L155" title="All 2 branches covered.">            while (matcher.find()) {</span>
+<span class="fc" id="L156">                final String identifiedPackage = matcher.group(1);</span>
+<span class="fc" id="L157">                final String identifiedVersion = matcher.group(2);</span>
+<span class="fc" id="L158">                LOGGER.debug(String.format(&quot;package, version: %s %s&quot;, identifiedPackage, identifiedVersion));</span>
+<span class="fc" id="L159">                final Dependency d = new Dependency(dependency.getActualFile(), true);</span>
+<span class="fc" id="L160">                d.setName(identifiedPackage);</span>
+<span class="fc" id="L161">                d.setVersion(identifiedVersion);</span>
                 try {
-<span class="fc" id="L161">                    final PackageURL purl = PackageURLBuilder.aPackageURL()</span>
-<span class="fc" id="L162">                            .withType(&quot;pypi&quot;)</span>
-<span class="fc" id="L163">                            .withName(identifiedPackage)</span>
-<span class="fc" id="L164">                            .withVersion(identifiedVersion)</span>
-<span class="fc" id="L165">                            .build();</span>
-<span class="fc" id="L166">                    d.addSoftwareIdentifier(new PurlIdentifier(purl, Confidence.HIGHEST));</span>
-<span class="nc" id="L167">                } catch (MalformedPackageURLException ex) {</span>
-<span class="nc" id="L168">                    LOGGER.debug(&quot;Unable to build package url for pypi&quot;, ex);</span>
-<span class="nc" id="L169">                    d.addSoftwareIdentifier(new GenericIdentifier(&quot;pypi:&quot; + identifiedPackage + &quot;@&quot; + identifiedVersion, Confidence.HIGH));</span>
-<span class="fc" id="L170">                }</span>
-<span class="fc" id="L171">                d.setPackagePath(String.format(&quot;%s:%s&quot;, identifiedPackage, identifiedVersion));</span>
-<span class="fc" id="L172">                d.setEcosystem(PythonDistributionAnalyzer.DEPENDENCY_ECOSYSTEM);</span>
-<span class="fc" id="L173">                final String filePath = String.format(&quot;%s:%s/%s&quot;, dependency.getFilePath(), identifiedPackage, identifiedVersion);</span>
-<span class="fc" id="L174">                d.setFilePath(filePath);</span>
-<span class="fc" id="L175">                d.setSha1sum(Checksum.getSHA1Checksum(filePath));</span>
-<span class="fc" id="L176">                d.setSha256sum(Checksum.getSHA256Checksum(filePath));</span>
-<span class="fc" id="L177">                d.setMd5sum(Checksum.getMD5Checksum(filePath));</span>
-<span class="fc" id="L178">                d.addEvidence(EvidenceType.VENDOR, PIPFILE, &quot;vendor&quot;, identifiedPackage, Confidence.HIGHEST);</span>
-<span class="fc" id="L179">                d.addEvidence(EvidenceType.PRODUCT, PIPFILE, &quot;product&quot;, identifiedPackage, Confidence.HIGHEST);</span>
-<span class="fc" id="L180">                d.addEvidence(EvidenceType.VERSION, PIPFILE, &quot;version&quot;, identifiedVersion, Confidence.HIGHEST);</span>
-<span class="fc" id="L181">                engine.addDependency(d);</span>
-<span class="fc" id="L182">            }</span>
+<span class="fc" id="L163">                    final PackageURL purl = PackageURLBuilder.aPackageURL()</span>
+<span class="fc" id="L164">                            .withType(&quot;pypi&quot;)</span>
+<span class="fc" id="L165">                            .withName(identifiedPackage)</span>
+<span class="fc" id="L166">                            .withVersion(identifiedVersion)</span>
+<span class="fc" id="L167">                            .build();</span>
+<span class="fc" id="L168">                    d.addSoftwareIdentifier(new PurlIdentifier(purl, Confidence.HIGHEST));</span>
+<span class="nc" id="L169">                } catch (MalformedPackageURLException ex) {</span>
+<span class="nc" id="L170">                    LOGGER.debug(&quot;Unable to build package url for pypi&quot;, ex);</span>
+<span class="nc" id="L171">                    d.addSoftwareIdentifier(new GenericIdentifier(&quot;pypi:&quot; + identifiedPackage + &quot;@&quot; + identifiedVersion, Confidence.HIGH));</span>
+<span class="fc" id="L172">                }</span>
+<span class="fc" id="L173">                d.setPackagePath(String.format(&quot;%s:%s&quot;, identifiedPackage, identifiedVersion));</span>
+<span class="fc" id="L174">                d.setEcosystem(PythonDistributionAnalyzer.DEPENDENCY_ECOSYSTEM);</span>
+<span class="fc" id="L175">                final String filePath = String.format(&quot;%s:%s/%s&quot;, dependency.getFilePath(), identifiedPackage, identifiedVersion);</span>
+<span class="fc" id="L176">                d.setFilePath(filePath);</span>
+<span class="fc" id="L177">                d.setSha1sum(Checksum.getSHA1Checksum(filePath));</span>
+<span class="fc" id="L178">                d.setSha256sum(Checksum.getSHA256Checksum(filePath));</span>
+<span class="fc" id="L179">                d.setMd5sum(Checksum.getMD5Checksum(filePath));</span>
+<span class="fc" id="L180">                d.addEvidence(EvidenceType.VENDOR, PIPFILE, &quot;vendor&quot;, identifiedPackage, Confidence.HIGHEST);</span>
+<span class="fc" id="L181">                d.addEvidence(EvidenceType.PRODUCT, PIPFILE, &quot;product&quot;, identifiedPackage, Confidence.HIGHEST);</span>
+<span class="fc" id="L182">                d.addEvidence(EvidenceType.VERSION, PIPFILE, &quot;version&quot;, identifiedVersion, Confidence.HIGHEST);</span>
+<span class="fc" id="L183">                engine.addDependency(d);</span>
+<span class="fc" id="L184">            }</span>
         }
-<span class="fc" id="L184">    }</span>
+<span class="fc" id="L186">    }</span>
 
     /**
      * Retrieves the contents of a given file.
@@ -192,9 +194,9 @@ import java.util.regex.Pattern;
      */
     private String getFileContents(final File actualFile) throws AnalysisException {
         try {
-<span class="fc" id="L195">            return new String(Files.readAllBytes(actualFile.toPath()), StandardCharsets.UTF_8).trim();</span>
-<span class="nc" id="L196">        } catch (IOException e) {</span>
-<span class="nc" id="L197">            throw new AnalysisException(&quot;Problem occurred while reading dependency file.&quot;, e);</span>
+<span class="fc" id="L197">            return new String(Files.readAllBytes(actualFile.toPath()), StandardCharsets.UTF_8).trim();</span>
+<span class="nc" id="L198">        } catch (IOException e) {</span>
+<span class="nc" id="L199">            throw new AnalysisException(&quot;Problem occurred while reading dependency file.&quot;, e);</span>
         }
     }
 
@@ -208,6 +210,6 @@ import java.util.regex.Pattern;
     @Override
     protected void prepareFileTypeAnalyzer(Engine engine) throws InitializationException {
         // No initialization needed.
-<span class="fc" id="L211">    }</span>
+<span class="fc" id="L213">    }</span>
 }
-</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.14.202510111229</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.15.202606040825</span></div></body></html>

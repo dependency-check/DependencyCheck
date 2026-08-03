@@ -17,11 +17,13 @@
  */
 package org.owasp.dependencycheck.xml.suppression;
 
+import com.google.common.base.Suppliers;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
-import java.util.regex.Pattern;
 import javax.annotation.concurrent.ThreadSafe;
+import java.util.function.Supplier;
+import java.util.regex.Pattern;
 
 /**
  * A simple PropertyType used to represent a string value that could be used as
@@ -31,21 +33,51 @@ import javax.annotation.concurrent.ThreadSafe;
  * @author Jeremy Long
  */
 @ThreadSafe
-<span class="fc" id="L34">public class PropertyType {</span>
+public class PropertyType {
 
     //&lt;editor-fold defaultstate=&quot;collapsed&quot; desc=&quot;properties&quot;&gt;
     /**
      * The value.
      */
-    private String value;
+    private final String value;
     /**
      * Whether or not the expression is a regex.
      */
-<span class="fc" id="L44">    private boolean regex = false;</span>
+    private final boolean regex;
     /**
      * Indicates case sensitivity.
      */
-<span class="fc" id="L48">    private boolean caseSensitive = false;</span>
+    private final boolean caseSensitive;
+
+<span class="fc" id="L52">    private final Supplier&lt;Pattern&gt; compiledRegex = Suppliers</span>
+<span class="pc bpc" id="L53" title="1 of 4 branches missed.">            .memoize(() -&gt; isRegex() ? Pattern.compile(getValue(), isCaseSensitive() ? 0 : Pattern.CASE_INSENSITIVE) : null);</span>
+
+    /**
+     * @param value the value of the value property
+     * @param regex whether the value is a regex
+     * @param caseSensitive whether the value is case-sensitive
+     */
+<span class="fc" id="L60">    public PropertyType(String value, boolean regex, boolean caseSensitive) {</span>
+<span class="fc" id="L61">        this.value = value;</span>
+<span class="fc" id="L62">        this.regex = regex;</span>
+<span class="fc" id="L63">        this.caseSensitive = caseSensitive;</span>
+<span class="fc" id="L64">    }</span>
+
+    public static PropertyType of(String value) {
+<span class="fc" id="L67">        return new PropertyType(value, false, false);</span>
+    }
+
+    public static PropertyType regex(String value) {
+<span class="fc" id="L71">        return new PropertyType(value, true, false);</span>
+    }
+
+    public static PropertyType caseSensitive(String value) {
+<span class="fc" id="L75">        return new PropertyType(value, false, true);</span>
+    }
+
+    public static PropertyType regexCaseSensitive(String value) {
+<span class="fc" id="L79">        return new PropertyType(value, true, true);</span>
+    }
 
     /**
      * Gets the value of the value property.
@@ -53,17 +85,8 @@ import javax.annotation.concurrent.ThreadSafe;
      * @return the value of the value property
      */
     public String getValue() {
-<span class="fc" id="L56">        return value;</span>
+<span class="fc" id="L88">        return value;</span>
     }
-
-    /**
-     * Sets the value of the value property.
-     *
-     * @param value the value of the value property
-     */
-    public void setValue(String value) {
-<span class="fc" id="L65">        this.value = value;</span>
-<span class="fc" id="L66">    }</span>
 
     /**
      * Returns whether or not the value is a regex.
@@ -71,35 +94,17 @@ import javax.annotation.concurrent.ThreadSafe;
      * @return true if the value is a regex, otherwise false
      */
     public boolean isRegex() {
-<span class="fc" id="L74">        return regex;</span>
+<span class="fc" id="L97">        return regex;</span>
     }
-
-    /**
-     * Sets whether the value property is a regex.
-     *
-     * @param value true if the value is a regex, otherwise false
-     */
-    public void setRegex(boolean value) {
-<span class="fc" id="L83">        this.regex = value;</span>
-<span class="fc" id="L84">    }</span>
 
     /**
      * Gets the value of the caseSensitive property.
      *
-     * @return true if the value is case sensitive
+     * @return true if the value is case-sensitive
      */
     public boolean isCaseSensitive() {
-<span class="fc" id="L92">        return caseSensitive;</span>
+<span class="fc" id="L106">        return caseSensitive;</span>
     }
-
-    /**
-     * Sets the value of the caseSensitive property.
-     *
-     * @param value whether the value is case sensitive
-     */
-    public void setCaseSensitive(boolean value) {
-<span class="fc" id="L101">        this.caseSensitive = value;</span>
-<span class="fc" id="L102">    }</span>
     //&lt;/editor-fold&gt;
 
     /**
@@ -110,22 +115,16 @@ import javax.annotation.concurrent.ThreadSafe;
      * @return whether the text supplied is matched by the value of the property
      */
     public boolean matches(String text) {
-<span class="fc bfc" id="L113" title="All 2 branches covered.">        if (text == null) {</span>
-<span class="fc" id="L114">            return false;</span>
+<span class="fc bfc" id="L118" title="All 2 branches covered.">        if (text == null) {</span>
+<span class="fc" id="L119">            return false;</span>
         }
-<span class="fc bfc" id="L116" title="All 2 branches covered.">        if (this.regex) {</span>
-            final Pattern rx;
-<span class="fc bfc" id="L118" title="All 2 branches covered.">            if (this.caseSensitive) {</span>
-<span class="fc" id="L119">                rx = Pattern.compile(this.value);</span>
-            } else {
-<span class="fc" id="L121">                rx = Pattern.compile(this.value, Pattern.CASE_INSENSITIVE);</span>
-            }
-<span class="fc" id="L123">            return rx.matcher(text).matches();</span>
+<span class="fc bfc" id="L121" title="All 2 branches covered.">        if (this.regex) {</span>
+<span class="fc" id="L122">            return compiledRegex.get().matcher(text).matches();</span>
         } else {
-<span class="fc bfc" id="L125" title="All 2 branches covered.">            if (this.caseSensitive) {</span>
-<span class="fc" id="L126">                return value.equals(text);</span>
+<span class="fc bfc" id="L124" title="All 2 branches covered.">            if (this.caseSensitive) {</span>
+<span class="fc" id="L125">                return value.equals(text);</span>
             } else {
-<span class="fc" id="L128">                return value.equalsIgnoreCase(text);</span>
+<span class="fc" id="L127">                return value.equalsIgnoreCase(text);</span>
             }
         }
     }
@@ -139,11 +138,11 @@ import javax.annotation.concurrent.ThreadSafe;
      */
     @Override
     public int hashCode() {
-<span class="nc" id="L142">        return new HashCodeBuilder(3, 59)</span>
-<span class="nc" id="L143">                .append(value)</span>
-<span class="nc" id="L144">                .append(regex)</span>
-<span class="nc" id="L145">                .append(caseSensitive)</span>
-<span class="nc" id="L146">                .toHashCode();</span>
+<span class="nc" id="L141">        return new HashCodeBuilder(3, 59)</span>
+<span class="nc" id="L142">                .append(value)</span>
+<span class="nc" id="L143">                .append(regex)</span>
+<span class="nc" id="L144">                .append(caseSensitive)</span>
+<span class="nc" id="L145">                .toHashCode();</span>
     }
 
     /**
@@ -154,18 +153,18 @@ import javax.annotation.concurrent.ThreadSafe;
      */
     @Override
     public boolean equals(Object obj) {
-<span class="pc bpc" id="L157" title="1 of 4 branches missed.">        if (obj == null || !(obj instanceof PropertyType)) {</span>
-<span class="fc" id="L158">            return false;</span>
+<span class="pc bpc" id="L156" title="2 of 4 branches missed.">        if (obj == null || !(obj instanceof PropertyType)) {</span>
+<span class="nc" id="L157">            return false;</span>
         }
-<span class="fc bfc" id="L160" title="All 2 branches covered.">        if (this == obj) {</span>
-<span class="fc" id="L161">            return true;</span>
+<span class="pc bpc" id="L159" title="1 of 2 branches missed.">        if (this == obj) {</span>
+<span class="fc" id="L160">            return true;</span>
         }
-<span class="fc" id="L163">        final PropertyType rhs = (PropertyType) obj;</span>
-<span class="fc" id="L164">        return new EqualsBuilder()</span>
-<span class="fc" id="L165">                .append(value, rhs.value)</span>
-<span class="fc" id="L166">                .append(regex, rhs.regex)</span>
-<span class="fc" id="L167">                .append(caseSensitive, rhs.caseSensitive)</span>
-<span class="fc" id="L168">                .isEquals();</span>
+<span class="nc" id="L162">        final PropertyType rhs = (PropertyType) obj;</span>
+<span class="nc" id="L163">        return new EqualsBuilder()</span>
+<span class="nc" id="L164">                .append(value, rhs.value)</span>
+<span class="nc" id="L165">                .append(regex, rhs.regex)</span>
+<span class="nc" id="L166">                .append(caseSensitive, rhs.caseSensitive)</span>
+<span class="nc" id="L167">                .isEquals();</span>
     }
 
     /**
@@ -175,8 +174,8 @@ import javax.annotation.concurrent.ThreadSafe;
      */
     @Override
     public String toString() {
-<span class="fc" id="L178">        return &quot;PropertyType{&quot; + &quot;value=&quot; + value + &quot;, regex=&quot; + regex + &quot;, caseSensitive=&quot; + caseSensitive + '}';</span>
+<span class="fc" id="L177">        return &quot;PropertyType{&quot; + &quot;value=&quot; + value + &quot;, regex=&quot; + regex + &quot;, caseSensitive=&quot; + caseSensitive + '}';</span>
     }
     //&lt;/editor-fold&gt;
 }
-</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.14.202510111229</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.15.202606040825</span></div></body></html>

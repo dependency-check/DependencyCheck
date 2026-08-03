@@ -657,7 +657,7 @@
 <a class="jxr_linenumber" name="L649" href="#L649">649</a> <em class="jxr_javadoccomment">     * @throws ResourceNotFoundException When HTTP status 404 is encountered</em>
 <a class="jxr_linenumber" name="L650" href="#L650">650</a> <em class="jxr_javadoccomment">     */</em>
 <a class="jxr_linenumber" name="L651" href="#L651">651</a>     <strong class="jxr_keyword">public</strong> &lt;T&gt; T fetchAndHandle(@NonNull URL url, @NonNull HttpClientResponseHandler&lt;T&gt; handler)
-<a class="jxr_linenumber" name="L652" href="#L652">652</a>             <strong class="jxr_keyword">throws</strong> IOException, TooManyRequestsException, ResourceNotFoundException, URISyntaxException, <a href="../../../../org/owasp/dependencycheck/utils/ForbiddenException.html">ForbiddenException</a> {
+<a class="jxr_linenumber" name="L652" href="#L652">652</a>             <strong class="jxr_keyword">throws</strong> IOException, TooManyRequestsException, ResourceNotFoundException, URISyntaxException {
 <a class="jxr_linenumber" name="L653" href="#L653">653</a>         <strong class="jxr_keyword">return</strong> fetchAndHandle(url, handler, Collections.emptyList(), <strong class="jxr_keyword">true</strong>);
 <a class="jxr_linenumber" name="L654" href="#L654">654</a>     }
 <a class="jxr_linenumber" name="L655" href="#L655">655</a> 
@@ -667,143 +667,125 @@
 <a class="jxr_linenumber" name="L659" href="#L659">659</a> <em class="jxr_javadoccomment">     * @param url               The url of the resource</em>
 <a class="jxr_linenumber" name="L660" href="#L660">660</a> <em class="jxr_javadoccomment">     * @param handler   The responsehandler to handle the response</em>
 <a class="jxr_linenumber" name="L661" href="#L661">661</a> <em class="jxr_javadoccomment">     * @param hdr Additional headers to add to the HTTP request</em>
-<a class="jxr_linenumber" name="L662" href="#L662">662</a> <em class="jxr_javadoccomment">     * @param &lt;T&gt;               The return-type for the responseHandler</em>
-<a class="jxr_linenumber" name="L663" href="#L663">663</a> <em class="jxr_javadoccomment">     * @return The response handler result</em>
-<a class="jxr_linenumber" name="L664" href="#L664">664</a> <em class="jxr_javadoccomment">     * @throws IOException               on I/O Exceptions</em>
-<a class="jxr_linenumber" name="L665" href="#L665">665</a> <em class="jxr_javadoccomment">     * @throws TooManyRequestsException  When HTTP status 429 is encountered</em>
-<a class="jxr_linenumber" name="L666" href="#L666">666</a> <em class="jxr_javadoccomment">     * @throws ResourceNotFoundException When HTTP status 404 is encountered</em>
-<a class="jxr_linenumber" name="L667" href="#L667">667</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L668" href="#L668">668</a>     <strong class="jxr_keyword">public</strong> &lt;T&gt; T fetchAndHandle(@NonNull URL url, @NonNull HttpClientResponseHandler&lt;T&gt; handler, @NonNull List&lt;Header&gt; hdr)
-<a class="jxr_linenumber" name="L669" href="#L669">669</a>             <strong class="jxr_keyword">throws</strong> IOException, TooManyRequestsException, ResourceNotFoundException, URISyntaxException, <a href="../../../../org/owasp/dependencycheck/utils/ForbiddenException.html">ForbiddenException</a> {
-<a class="jxr_linenumber" name="L670" href="#L670">670</a>         <strong class="jxr_keyword">return</strong> fetchAndHandle(url, handler, hdr, <strong class="jxr_keyword">true</strong>);
-<a class="jxr_linenumber" name="L671" href="#L671">671</a>     }
-<a class="jxr_linenumber" name="L672" href="#L672">672</a> 
-<a class="jxr_linenumber" name="L673" href="#L673">673</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L674" href="#L674">674</a> <em class="jxr_javadoccomment">     * Download a resource from the given URL and have its content handled by the given ResponseHandler.</em>
-<a class="jxr_linenumber" name="L675" href="#L675">675</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L676" href="#L676">676</a> <em class="jxr_javadoccomment">     * @param url               The url of the resource</em>
-<a class="jxr_linenumber" name="L677" href="#L677">677</a> <em class="jxr_javadoccomment">     * @param handler   The responsehandler to handle the response</em>
-<a class="jxr_linenumber" name="L678" href="#L678">678</a> <em class="jxr_javadoccomment">     * @param hdr Additional headers to add to the HTTP request</em>
-<a class="jxr_linenumber" name="L679" href="#L679">679</a> <em class="jxr_javadoccomment">     * @param useProxy          Whether to use the configured proxy for the connection</em>
-<a class="jxr_linenumber" name="L680" href="#L680">680</a> <em class="jxr_javadoccomment">     * @param &lt;T&gt;               The return-type for the responseHandler</em>
-<a class="jxr_linenumber" name="L681" href="#L681">681</a> <em class="jxr_javadoccomment">     * @return The response handler result</em>
-<a class="jxr_linenumber" name="L682" href="#L682">682</a> <em class="jxr_javadoccomment">     * @throws IOException               on I/O Exceptions</em>
-<a class="jxr_linenumber" name="L683" href="#L683">683</a> <em class="jxr_javadoccomment">     * @throws TooManyRequestsException  When HTTP status 429 is encountered</em>
-<a class="jxr_linenumber" name="L684" href="#L684">684</a> <em class="jxr_javadoccomment">     * @throws ResourceNotFoundException When HTTP status 404 is encountered</em>
-<a class="jxr_linenumber" name="L685" href="#L685">685</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L686" href="#L686">686</a>     <strong class="jxr_keyword">public</strong> &lt;T&gt; T fetchAndHandle(@NonNull URL url, @NonNull HttpClientResponseHandler&lt;T&gt; handler, @NonNull List&lt;Header&gt; hdr, <strong class="jxr_keyword">boolean</strong> useProxy)
-<a class="jxr_linenumber" name="L687" href="#L687">687</a>             <strong class="jxr_keyword">throws</strong> IOException, TooManyRequestsException, ResourceNotFoundException, URISyntaxException, <a href="../../../../org/owasp/dependencycheck/utils/ForbiddenException.html">ForbiddenException</a> {
-<a class="jxr_linenumber" name="L688" href="#L688">688</a>         <strong class="jxr_keyword">final</strong> T data;
-<a class="jxr_linenumber" name="L689" href="#L689">689</a>         <strong class="jxr_keyword">if</strong> (<span class="jxr_string">"file"</span>.equals(url.getProtocol())) {
-<a class="jxr_linenumber" name="L690" href="#L690">690</a>             <strong class="jxr_keyword">final</strong> Path p = Paths.get(url.toURI());
-<a class="jxr_linenumber" name="L691" href="#L691">691</a>             <strong class="jxr_keyword">try</strong> (InputStream is = Files.newInputStream(p)) {
-<a class="jxr_linenumber" name="L692" href="#L692">692</a>                 <strong class="jxr_keyword">final</strong> HttpEntity dummyEntity = <strong class="jxr_keyword">new</strong> BasicHttpEntity(is, ContentType.APPLICATION_JSON);
-<a class="jxr_linenumber" name="L693" href="#L693">693</a>                 <strong class="jxr_keyword">final</strong> ClassicHttpResponse dummyResponse = <strong class="jxr_keyword">new</strong> BasicClassicHttpResponse(200);
-<a class="jxr_linenumber" name="L694" href="#L694">694</a>                 dummyResponse.setEntity(dummyEntity);
-<a class="jxr_linenumber" name="L695" href="#L695">695</a>                 data = handler.handleResponse(dummyResponse);
-<a class="jxr_linenumber" name="L696" href="#L696">696</a>             } <strong class="jxr_keyword">catch</strong> (HttpException e) {
-<a class="jxr_linenumber" name="L697" href="#L697">697</a>                 <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> IllegalStateException(<span class="jxr_string">"HttpException encountered emulating a HTTP response from a file"</span>, e);
-<a class="jxr_linenumber" name="L698" href="#L698">698</a>             }
-<a class="jxr_linenumber" name="L699" href="#L699">699</a>         } <strong class="jxr_keyword">else</strong> {
-<a class="jxr_linenumber" name="L700" href="#L700">700</a>             <strong class="jxr_keyword">try</strong> (CloseableHttpClient hc = useProxy ? httpClientBuilder.build() : httpClientBuilderExplicitNoproxy.build()) {
-<a class="jxr_linenumber" name="L701" href="#L701">701</a>                 <strong class="jxr_keyword">return</strong> fetchAndHandle(hc, url, handler, hdr);
-<a class="jxr_linenumber" name="L702" href="#L702">702</a>             }
-<a class="jxr_linenumber" name="L703" href="#L703">703</a>         }
-<a class="jxr_linenumber" name="L704" href="#L704">704</a>         <strong class="jxr_keyword">return</strong> data;
-<a class="jxr_linenumber" name="L705" href="#L705">705</a>     }
-<a class="jxr_linenumber" name="L706" href="#L706">706</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L707" href="#L707">707</a> <em class="jxr_javadoccomment">     * Download a resource from the given URL and have its content handled by the given ResponseHandler.</em>
-<a class="jxr_linenumber" name="L708" href="#L708">708</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L709" href="#L709">709</a> <em class="jxr_javadoccomment">     * @param client            The HTTP Client to reuse for the request</em>
-<a class="jxr_linenumber" name="L710" href="#L710">710</a> <em class="jxr_javadoccomment">     * @param url               The url of the resource</em>
-<a class="jxr_linenumber" name="L711" href="#L711">711</a> <em class="jxr_javadoccomment">     * @param handler   The responsehandler to handle the response</em>
-<a class="jxr_linenumber" name="L712" href="#L712">712</a> <em class="jxr_javadoccomment">     * @param hdr Additional headers to add to the HTTP request</em>
-<a class="jxr_linenumber" name="L713" href="#L713">713</a> <em class="jxr_javadoccomment">     * @param &lt;T&gt;               The return-type for the responseHandler</em>
-<a class="jxr_linenumber" name="L714" href="#L714">714</a> <em class="jxr_javadoccomment">     * @return The response handler result</em>
-<a class="jxr_linenumber" name="L715" href="#L715">715</a> <em class="jxr_javadoccomment">     * @throws IOException               on I/O Exceptions</em>
-<a class="jxr_linenumber" name="L716" href="#L716">716</a> <em class="jxr_javadoccomment">     * @throws TooManyRequestsException  When HTTP status 429 is encountered</em>
-<a class="jxr_linenumber" name="L717" href="#L717">717</a> <em class="jxr_javadoccomment">     * @throws ResourceNotFoundException When HTTP status 404 is encountered</em>
-<a class="jxr_linenumber" name="L718" href="#L718">718</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L719" href="#L719">719</a>     <strong class="jxr_keyword">public</strong> &lt;T&gt; T fetchAndHandle(@NonNull CloseableHttpClient client, @NonNull URL url, @NonNull HttpClientResponseHandler&lt;T&gt; handler,
-<a class="jxr_linenumber" name="L720" href="#L720">720</a>                                 @NonNull List&lt;Header&gt; hdr) <strong class="jxr_keyword">throws</strong> IOException, TooManyRequestsException,
-<a class="jxr_linenumber" name="L721" href="#L721">721</a>             ResourceNotFoundException, <a href="../../../../org/owasp/dependencycheck/utils/ForbiddenException.html">ForbiddenException</a> {
-<a class="jxr_linenumber" name="L722" href="#L722">722</a>         <strong class="jxr_keyword">try</strong> {
-<a class="jxr_linenumber" name="L723" href="#L723">723</a>             <strong class="jxr_keyword">final</strong> String theProtocol = url.getProtocol();
-<a class="jxr_linenumber" name="L724" href="#L724">724</a>             <strong class="jxr_keyword">if</strong> (!(<span class="jxr_string">"http"</span>.equals(theProtocol) || <span class="jxr_string">"https"</span>.equals(theProtocol))) {
-<a class="jxr_linenumber" name="L725" href="#L725">725</a>                 <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a href="../../../../org/owasp/dependencycheck/utils/DownloadFailedException.html">DownloadFailedException</a>(<span class="jxr_string">"Unsupported protocol in the URL; only http and https are supported"</span>);
-<a class="jxr_linenumber" name="L726" href="#L726">726</a>             }
-<a class="jxr_linenumber" name="L727" href="#L727">727</a>             <strong class="jxr_keyword">final</strong> BasicClassicHttpRequest req = <strong class="jxr_keyword">new</strong> BasicClassicHttpRequest(Method.GET, url.toURI());
-<a class="jxr_linenumber" name="L728" href="#L728">728</a>             <strong class="jxr_keyword">for</strong> (Header h : hdr) {
-<a class="jxr_linenumber" name="L729" href="#L729">729</a>                 req.addHeader(h);
-<a class="jxr_linenumber" name="L730" href="#L730">730</a>             }
-<a class="jxr_linenumber" name="L731" href="#L731">731</a>             <strong class="jxr_keyword">final</strong> HttpClientContext context = getPreEmptiveAuthContext();
-<a class="jxr_linenumber" name="L732" href="#L732">732</a>             <strong class="jxr_keyword">return</strong> client.execute(req, context, handler);
-<a class="jxr_linenumber" name="L733" href="#L733">733</a>         } <strong class="jxr_keyword">catch</strong> (HttpResponseException hre) {
-<a class="jxr_linenumber" name="L734" href="#L734">734</a>             <strong class="jxr_keyword">final</strong> String messageFormat = <span class="jxr_string">"%s - Server status: %d - Server reason: %s"</span>;
-<a class="jxr_linenumber" name="L735" href="#L735">735</a>             <strong class="jxr_keyword">switch</strong> (hre.getStatusCode()) {
-<a class="jxr_linenumber" name="L736" href="#L736">736</a>                 <strong class="jxr_keyword">case</strong> 403:
-<a class="jxr_linenumber" name="L737" href="#L737">737</a>                     <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a href="../../../../org/owasp/dependencycheck/utils/ForbiddenException.html">ForbiddenException</a>(String.format(messageFormat, url, hre.getStatusCode(),
-<a class="jxr_linenumber" name="L738" href="#L738">738</a>                             hre.getReasonPhrase()));
-<a class="jxr_linenumber" name="L739" href="#L739">739</a>                 <strong class="jxr_keyword">case</strong> 404:
-<a class="jxr_linenumber" name="L740" href="#L740">740</a>                     <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a href="../../../../org/owasp/dependencycheck/utils/ResourceNotFoundException.html">ResourceNotFoundException</a>(String.format(messageFormat, url, hre.getStatusCode(), hre.getReasonPhrase()));
-<a class="jxr_linenumber" name="L741" href="#L741">741</a>                 <strong class="jxr_keyword">case</strong> 429:
-<a class="jxr_linenumber" name="L742" href="#L742">742</a>                     <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a href="../../../../org/owasp/dependencycheck/utils/TooManyRequestsException.html">TooManyRequestsException</a>(String.format(messageFormat, url, hre.getStatusCode(), hre.getReasonPhrase()));
-<a class="jxr_linenumber" name="L743" href="#L743">743</a>                 <strong class="jxr_keyword">default</strong>:
-<a class="jxr_linenumber" name="L744" href="#L744">744</a>                     <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> IOException(String.format(messageFormat, url, hre.getStatusCode(), hre.getReasonPhrase()));
-<a class="jxr_linenumber" name="L745" href="#L745">745</a>             }
-<a class="jxr_linenumber" name="L746" href="#L746">746</a>         } <strong class="jxr_keyword">catch</strong> (RuntimeException | URISyntaxException ex) {
-<a class="jxr_linenumber" name="L747" href="#L747">747</a>             <strong class="jxr_keyword">final</strong> String msg = format(<span class="jxr_string">"Download failed, unable to retrieve and parse '%s'; %s"</span>, url, ex.getMessage());
-<a class="jxr_linenumber" name="L748" href="#L748">748</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> IOException(msg, ex);
-<a class="jxr_linenumber" name="L749" href="#L749">749</a>         }
-<a class="jxr_linenumber" name="L750" href="#L750">750</a>     }
-<a class="jxr_linenumber" name="L751" href="#L751">751</a> 
-<a class="jxr_linenumber" name="L752" href="#L752">752</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">class</strong> <a href="../../../../org/owasp/dependencycheck/utils/Downloader.html">SelectiveProxySelector</a> <strong class="jxr_keyword">extends</strong> ProxySelector {
-<a class="jxr_linenumber" name="L753" href="#L753">753</a> 
-<a class="jxr_linenumber" name="L754" href="#L754">754</a>         <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L755" href="#L755">755</a> <em class="jxr_javadoccomment">         * The suffix-match entries from the nonProxyHosts (those starting with a {@code *}).</em>
-<a class="jxr_linenumber" name="L756" href="#L756">756</a> <em class="jxr_javadoccomment">         */</em>
-<a class="jxr_linenumber" name="L757" href="#L757">757</a>         <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> List&lt;String&gt; suffixMatch = <strong class="jxr_keyword">new</strong> ArrayList&lt;&gt;();
-<a class="jxr_linenumber" name="L758" href="#L758">758</a>         <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L759" href="#L759">759</a> <em class="jxr_javadoccomment">         * The full host entries from the nonProxyHosts (those &lt;em&gt;not&lt;/em&gt; starting with a {@code *}).</em>
-<a class="jxr_linenumber" name="L760" href="#L760">760</a> <em class="jxr_javadoccomment">         */</em>
-<a class="jxr_linenumber" name="L761" href="#L761">761</a>         <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> List&lt;String&gt; fullmatch = <strong class="jxr_keyword">new</strong> ArrayList&lt;&gt;();
-<a class="jxr_linenumber" name="L762" href="#L762">762</a>         <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L763" href="#L763">763</a> <em class="jxr_javadoccomment">         * The proxy use when no proxy-exception is found.</em>
-<a class="jxr_linenumber" name="L764" href="#L764">764</a> <em class="jxr_javadoccomment">         */</em>
-<a class="jxr_linenumber" name="L765" href="#L765">765</a>         <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> Proxy configuredProxy;
-<a class="jxr_linenumber" name="L766" href="#L766">766</a> 
-<a class="jxr_linenumber" name="L767" href="#L767">767</a>         <a href="../../../../org/owasp/dependencycheck/utils/Downloader.html">SelectiveProxySelector</a>(Proxy httpHost, String[] nonProxyHostsPatterns) {
-<a class="jxr_linenumber" name="L768" href="#L768">768</a>             <strong class="jxr_keyword">for</strong> (String nonProxyHostPattern : nonProxyHostsPatterns) {
-<a class="jxr_linenumber" name="L769" href="#L769">769</a>                 <strong class="jxr_keyword">if</strong> (nonProxyHostPattern.startsWith(<span class="jxr_string">"*"</span>)) {
-<a class="jxr_linenumber" name="L770" href="#L770">770</a>                     suffixMatch.add(nonProxyHostPattern.substring(1));
-<a class="jxr_linenumber" name="L771" href="#L771">771</a>                 } <strong class="jxr_keyword">else</strong> {
-<a class="jxr_linenumber" name="L772" href="#L772">772</a>                     fullmatch.add(nonProxyHostPattern);
-<a class="jxr_linenumber" name="L773" href="#L773">773</a>                 }
-<a class="jxr_linenumber" name="L774" href="#L774">774</a>             }
-<a class="jxr_linenumber" name="L775" href="#L775">775</a>             <strong class="jxr_keyword">this</strong>.configuredProxy = httpHost;
-<a class="jxr_linenumber" name="L776" href="#L776">776</a>         }
-<a class="jxr_linenumber" name="L777" href="#L777">777</a> 
-<a class="jxr_linenumber" name="L778" href="#L778">778</a>         @Override
-<a class="jxr_linenumber" name="L779" href="#L779">779</a>         <strong class="jxr_keyword">public</strong> List&lt;Proxy&gt; select(URI uri) {
-<a class="jxr_linenumber" name="L780" href="#L780">780</a>             <strong class="jxr_keyword">final</strong> String theHost = uri.getHost();
-<a class="jxr_linenumber" name="L781" href="#L781">781</a>             <strong class="jxr_keyword">if</strong> (fullmatch.contains(theHost)) {
-<a class="jxr_linenumber" name="L782" href="#L782">782</a>                 <strong class="jxr_keyword">return</strong> Collections.singletonList(Proxy.NO_PROXY);
-<a class="jxr_linenumber" name="L783" href="#L783">783</a>             } <strong class="jxr_keyword">else</strong> {
-<a class="jxr_linenumber" name="L784" href="#L784">784</a>                 <strong class="jxr_keyword">for</strong> (String suffix : suffixMatch) {
-<a class="jxr_linenumber" name="L785" href="#L785">785</a>                     <strong class="jxr_keyword">if</strong> (theHost.endsWith(suffix)) {
-<a class="jxr_linenumber" name="L786" href="#L786">786</a>                         <strong class="jxr_keyword">return</strong> Collections.singletonList(Proxy.NO_PROXY);
-<a class="jxr_linenumber" name="L787" href="#L787">787</a>                     }
-<a class="jxr_linenumber" name="L788" href="#L788">788</a>                 }
-<a class="jxr_linenumber" name="L789" href="#L789">789</a>             }
-<a class="jxr_linenumber" name="L790" href="#L790">790</a>             <strong class="jxr_keyword">return</strong> List.of(configuredProxy);
-<a class="jxr_linenumber" name="L791" href="#L791">791</a>         }
-<a class="jxr_linenumber" name="L792" href="#L792">792</a> 
-<a class="jxr_linenumber" name="L793" href="#L793">793</a>         @Override
-<a class="jxr_linenumber" name="L794" href="#L794">794</a>         <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> connectFailed(URI uri, SocketAddress sa, IOException ioe) {
-<a class="jxr_linenumber" name="L795" href="#L795">795</a>             <em class="jxr_comment">// nothing to be done for this single proxy proxy-selector</em>
-<a class="jxr_linenumber" name="L796" href="#L796">796</a>         }
-<a class="jxr_linenumber" name="L797" href="#L797">797</a>     }
-<a class="jxr_linenumber" name="L798" href="#L798">798</a> }
+<a class="jxr_linenumber" name="L662" href="#L662">662</a> <em class="jxr_javadoccomment">     * @param useProxy          Whether to use the configured proxy for the connection</em>
+<a class="jxr_linenumber" name="L663" href="#L663">663</a> <em class="jxr_javadoccomment">     * @param &lt;T&gt;               The return-type for the responseHandler</em>
+<a class="jxr_linenumber" name="L664" href="#L664">664</a> <em class="jxr_javadoccomment">     * @return The response handler result</em>
+<a class="jxr_linenumber" name="L665" href="#L665">665</a> <em class="jxr_javadoccomment">     * @throws IOException               on I/O Exceptions</em>
+<a class="jxr_linenumber" name="L666" href="#L666">666</a> <em class="jxr_javadoccomment">     * @throws TooManyRequestsException  When HTTP status 429 is encountered</em>
+<a class="jxr_linenumber" name="L667" href="#L667">667</a> <em class="jxr_javadoccomment">     * @throws ResourceNotFoundException When HTTP status 404 is encountered</em>
+<a class="jxr_linenumber" name="L668" href="#L668">668</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L669" href="#L669">669</a>     <strong class="jxr_keyword">public</strong> &lt;T&gt; T fetchAndHandle(@NonNull URL url, @NonNull HttpClientResponseHandler&lt;T&gt; handler, @NonNull List&lt;Header&gt; hdr, <strong class="jxr_keyword">boolean</strong> useProxy)
+<a class="jxr_linenumber" name="L670" href="#L670">670</a>             <strong class="jxr_keyword">throws</strong> IOException, TooManyRequestsException, ResourceNotFoundException, URISyntaxException {
+<a class="jxr_linenumber" name="L671" href="#L671">671</a>         <strong class="jxr_keyword">final</strong> T data;
+<a class="jxr_linenumber" name="L672" href="#L672">672</a>         <strong class="jxr_keyword">if</strong> (<span class="jxr_string">"file"</span>.equals(url.getProtocol())) {
+<a class="jxr_linenumber" name="L673" href="#L673">673</a>             <strong class="jxr_keyword">final</strong> Path p = Paths.get(url.toURI());
+<a class="jxr_linenumber" name="L674" href="#L674">674</a>             <strong class="jxr_keyword">try</strong> (InputStream is = Files.newInputStream(p)) {
+<a class="jxr_linenumber" name="L675" href="#L675">675</a>                 <strong class="jxr_keyword">final</strong> HttpEntity dummyEntity = <strong class="jxr_keyword">new</strong> BasicHttpEntity(is, ContentType.APPLICATION_JSON);
+<a class="jxr_linenumber" name="L676" href="#L676">676</a>                 <strong class="jxr_keyword">final</strong> ClassicHttpResponse dummyResponse = <strong class="jxr_keyword">new</strong> BasicClassicHttpResponse(200);
+<a class="jxr_linenumber" name="L677" href="#L677">677</a>                 dummyResponse.setEntity(dummyEntity);
+<a class="jxr_linenumber" name="L678" href="#L678">678</a>                 data = handler.handleResponse(dummyResponse);
+<a class="jxr_linenumber" name="L679" href="#L679">679</a>             } <strong class="jxr_keyword">catch</strong> (HttpException e) {
+<a class="jxr_linenumber" name="L680" href="#L680">680</a>                 <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> IllegalStateException(<span class="jxr_string">"HttpException encountered emulating a HTTP response from a file"</span>, e);
+<a class="jxr_linenumber" name="L681" href="#L681">681</a>             }
+<a class="jxr_linenumber" name="L682" href="#L682">682</a>         } <strong class="jxr_keyword">else</strong> {
+<a class="jxr_linenumber" name="L683" href="#L683">683</a>             <strong class="jxr_keyword">try</strong> (CloseableHttpClient hc = useProxy ? httpClientBuilder.build() : httpClientBuilderExplicitNoproxy.build()) {
+<a class="jxr_linenumber" name="L684" href="#L684">684</a>                 <strong class="jxr_keyword">return</strong> fetchAndHandle(hc, url, handler, hdr);
+<a class="jxr_linenumber" name="L685" href="#L685">685</a>             }
+<a class="jxr_linenumber" name="L686" href="#L686">686</a>         }
+<a class="jxr_linenumber" name="L687" href="#L687">687</a>         <strong class="jxr_keyword">return</strong> data;
+<a class="jxr_linenumber" name="L688" href="#L688">688</a>     }
+<a class="jxr_linenumber" name="L689" href="#L689">689</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L690" href="#L690">690</a> <em class="jxr_javadoccomment">     * Download a resource from the given URL and have its content handled by the given ResponseHandler.</em>
+<a class="jxr_linenumber" name="L691" href="#L691">691</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L692" href="#L692">692</a> <em class="jxr_javadoccomment">     * @param client            The HTTP Client to reuse for the request</em>
+<a class="jxr_linenumber" name="L693" href="#L693">693</a> <em class="jxr_javadoccomment">     * @param url               The url of the resource</em>
+<a class="jxr_linenumber" name="L694" href="#L694">694</a> <em class="jxr_javadoccomment">     * @param handler   The responsehandler to handle the response</em>
+<a class="jxr_linenumber" name="L695" href="#L695">695</a> <em class="jxr_javadoccomment">     * @param hdr Additional headers to add to the HTTP request</em>
+<a class="jxr_linenumber" name="L696" href="#L696">696</a> <em class="jxr_javadoccomment">     * @param &lt;T&gt;               The return-type for the responseHandler</em>
+<a class="jxr_linenumber" name="L697" href="#L697">697</a> <em class="jxr_javadoccomment">     * @return The response handler result</em>
+<a class="jxr_linenumber" name="L698" href="#L698">698</a> <em class="jxr_javadoccomment">     * @throws IOException               on I/O Exceptions</em>
+<a class="jxr_linenumber" name="L699" href="#L699">699</a> <em class="jxr_javadoccomment">     * @throws TooManyRequestsException  When HTTP status 429 is encountered</em>
+<a class="jxr_linenumber" name="L700" href="#L700">700</a> <em class="jxr_javadoccomment">     * @throws ResourceNotFoundException When HTTP status 404 is encountered</em>
+<a class="jxr_linenumber" name="L701" href="#L701">701</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L702" href="#L702">702</a>     <strong class="jxr_keyword">public</strong> &lt;T&gt; T fetchAndHandle(@NonNull CloseableHttpClient client, @NonNull URL url, @NonNull HttpClientResponseHandler&lt;T&gt; handler,
+<a class="jxr_linenumber" name="L703" href="#L703">703</a>                                 @NonNull List&lt;Header&gt; hdr) <strong class="jxr_keyword">throws</strong> IOException, TooManyRequestsException, ResourceNotFoundException {
+<a class="jxr_linenumber" name="L704" href="#L704">704</a>         <strong class="jxr_keyword">try</strong> {
+<a class="jxr_linenumber" name="L705" href="#L705">705</a>             <strong class="jxr_keyword">final</strong> String theProtocol = url.getProtocol();
+<a class="jxr_linenumber" name="L706" href="#L706">706</a>             <strong class="jxr_keyword">if</strong> (!(<span class="jxr_string">"http"</span>.equals(theProtocol) || <span class="jxr_string">"https"</span>.equals(theProtocol))) {
+<a class="jxr_linenumber" name="L707" href="#L707">707</a>                 <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a href="../../../../org/owasp/dependencycheck/utils/DownloadFailedException.html">DownloadFailedException</a>(<span class="jxr_string">"Unsupported protocol in the URL; only http and https are supported"</span>);
+<a class="jxr_linenumber" name="L708" href="#L708">708</a>             }
+<a class="jxr_linenumber" name="L709" href="#L709">709</a>             <strong class="jxr_keyword">final</strong> BasicClassicHttpRequest req = <strong class="jxr_keyword">new</strong> BasicClassicHttpRequest(Method.GET, url.toURI());
+<a class="jxr_linenumber" name="L710" href="#L710">710</a>             <strong class="jxr_keyword">for</strong> (Header h : hdr) {
+<a class="jxr_linenumber" name="L711" href="#L711">711</a>                 req.addHeader(h);
+<a class="jxr_linenumber" name="L712" href="#L712">712</a>             }
+<a class="jxr_linenumber" name="L713" href="#L713">713</a>             <strong class="jxr_keyword">final</strong> HttpClientContext context = getPreEmptiveAuthContext();
+<a class="jxr_linenumber" name="L714" href="#L714">714</a>             <strong class="jxr_keyword">return</strong> client.execute(req, context, handler);
+<a class="jxr_linenumber" name="L715" href="#L715">715</a>         } <strong class="jxr_keyword">catch</strong> (HttpResponseException hre) {
+<a class="jxr_linenumber" name="L716" href="#L716">716</a>             <strong class="jxr_keyword">final</strong> String messageFormat = <span class="jxr_string">"%s - Server status: %d - Server reason: %s"</span>;
+<a class="jxr_linenumber" name="L717" href="#L717">717</a>             <strong class="jxr_keyword">switch</strong> (hre.getStatusCode()) {
+<a class="jxr_linenumber" name="L718" href="#L718">718</a>                 <strong class="jxr_keyword">case</strong> 403:
+<a class="jxr_linenumber" name="L719" href="#L719">719</a>                     <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a href="../../../../org/owasp/dependencycheck/utils/ForbiddenException.html">ForbiddenException</a>(String.format(messageFormat, url, hre.getStatusCode(),
+<a class="jxr_linenumber" name="L720" href="#L720">720</a>                             hre.getReasonPhrase()));
+<a class="jxr_linenumber" name="L721" href="#L721">721</a>                 <strong class="jxr_keyword">case</strong> 404:
+<a class="jxr_linenumber" name="L722" href="#L722">722</a>                     <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a href="../../../../org/owasp/dependencycheck/utils/ResourceNotFoundException.html">ResourceNotFoundException</a>(String.format(messageFormat, url, hre.getStatusCode(), hre.getReasonPhrase()));
+<a class="jxr_linenumber" name="L723" href="#L723">723</a>                 <strong class="jxr_keyword">case</strong> 429:
+<a class="jxr_linenumber" name="L724" href="#L724">724</a>                     <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a href="../../../../org/owasp/dependencycheck/utils/TooManyRequestsException.html">TooManyRequestsException</a>(String.format(messageFormat, url, hre.getStatusCode(), hre.getReasonPhrase()));
+<a class="jxr_linenumber" name="L725" href="#L725">725</a>                 <strong class="jxr_keyword">default</strong>:
+<a class="jxr_linenumber" name="L726" href="#L726">726</a>                     <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> IOException(String.format(messageFormat, url, hre.getStatusCode(), hre.getReasonPhrase()));
+<a class="jxr_linenumber" name="L727" href="#L727">727</a>             }
+<a class="jxr_linenumber" name="L728" href="#L728">728</a>         } <strong class="jxr_keyword">catch</strong> (RuntimeException | URISyntaxException ex) {
+<a class="jxr_linenumber" name="L729" href="#L729">729</a>             <strong class="jxr_keyword">final</strong> String msg = format(<span class="jxr_string">"Download failed, unable to retrieve and parse '%s'; %s"</span>, url, ex.getMessage());
+<a class="jxr_linenumber" name="L730" href="#L730">730</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> IOException(msg, ex);
+<a class="jxr_linenumber" name="L731" href="#L731">731</a>         }
+<a class="jxr_linenumber" name="L732" href="#L732">732</a>     }
+<a class="jxr_linenumber" name="L733" href="#L733">733</a> 
+<a class="jxr_linenumber" name="L734" href="#L734">734</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">class</strong> <a href="../../../../org/owasp/dependencycheck/utils/Downloader.html">SelectiveProxySelector</a> <strong class="jxr_keyword">extends</strong> ProxySelector {
+<a class="jxr_linenumber" name="L735" href="#L735">735</a> 
+<a class="jxr_linenumber" name="L736" href="#L736">736</a>         <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L737" href="#L737">737</a> <em class="jxr_javadoccomment">         * The suffix-match entries from the nonProxyHosts (those starting with a {@code *}).</em>
+<a class="jxr_linenumber" name="L738" href="#L738">738</a> <em class="jxr_javadoccomment">         */</em>
+<a class="jxr_linenumber" name="L739" href="#L739">739</a>         <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> List&lt;String&gt; suffixMatch = <strong class="jxr_keyword">new</strong> ArrayList&lt;&gt;();
+<a class="jxr_linenumber" name="L740" href="#L740">740</a>         <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L741" href="#L741">741</a> <em class="jxr_javadoccomment">         * The full host entries from the nonProxyHosts (those &lt;em&gt;not&lt;/em&gt; starting with a {@code *}).</em>
+<a class="jxr_linenumber" name="L742" href="#L742">742</a> <em class="jxr_javadoccomment">         */</em>
+<a class="jxr_linenumber" name="L743" href="#L743">743</a>         <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> List&lt;String&gt; fullmatch = <strong class="jxr_keyword">new</strong> ArrayList&lt;&gt;();
+<a class="jxr_linenumber" name="L744" href="#L744">744</a>         <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L745" href="#L745">745</a> <em class="jxr_javadoccomment">         * The proxy use when no proxy-exception is found.</em>
+<a class="jxr_linenumber" name="L746" href="#L746">746</a> <em class="jxr_javadoccomment">         */</em>
+<a class="jxr_linenumber" name="L747" href="#L747">747</a>         <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> Proxy configuredProxy;
+<a class="jxr_linenumber" name="L748" href="#L748">748</a> 
+<a class="jxr_linenumber" name="L749" href="#L749">749</a>         <a href="../../../../org/owasp/dependencycheck/utils/Downloader.html">SelectiveProxySelector</a>(Proxy httpHost, String[] nonProxyHostsPatterns) {
+<a class="jxr_linenumber" name="L750" href="#L750">750</a>             <strong class="jxr_keyword">for</strong> (String nonProxyHostPattern : nonProxyHostsPatterns) {
+<a class="jxr_linenumber" name="L751" href="#L751">751</a>                 <strong class="jxr_keyword">if</strong> (nonProxyHostPattern.startsWith(<span class="jxr_string">"*"</span>)) {
+<a class="jxr_linenumber" name="L752" href="#L752">752</a>                     suffixMatch.add(nonProxyHostPattern.substring(1));
+<a class="jxr_linenumber" name="L753" href="#L753">753</a>                 } <strong class="jxr_keyword">else</strong> {
+<a class="jxr_linenumber" name="L754" href="#L754">754</a>                     fullmatch.add(nonProxyHostPattern);
+<a class="jxr_linenumber" name="L755" href="#L755">755</a>                 }
+<a class="jxr_linenumber" name="L756" href="#L756">756</a>             }
+<a class="jxr_linenumber" name="L757" href="#L757">757</a>             <strong class="jxr_keyword">this</strong>.configuredProxy = httpHost;
+<a class="jxr_linenumber" name="L758" href="#L758">758</a>         }
+<a class="jxr_linenumber" name="L759" href="#L759">759</a> 
+<a class="jxr_linenumber" name="L760" href="#L760">760</a>         @Override
+<a class="jxr_linenumber" name="L761" href="#L761">761</a>         <strong class="jxr_keyword">public</strong> List&lt;Proxy&gt; select(URI uri) {
+<a class="jxr_linenumber" name="L762" href="#L762">762</a>             <strong class="jxr_keyword">final</strong> String theHost = uri.getHost();
+<a class="jxr_linenumber" name="L763" href="#L763">763</a>             <strong class="jxr_keyword">if</strong> (fullmatch.contains(theHost)) {
+<a class="jxr_linenumber" name="L764" href="#L764">764</a>                 <strong class="jxr_keyword">return</strong> Collections.singletonList(Proxy.NO_PROXY);
+<a class="jxr_linenumber" name="L765" href="#L765">765</a>             } <strong class="jxr_keyword">else</strong> {
+<a class="jxr_linenumber" name="L766" href="#L766">766</a>                 <strong class="jxr_keyword">for</strong> (String suffix : suffixMatch) {
+<a class="jxr_linenumber" name="L767" href="#L767">767</a>                     <strong class="jxr_keyword">if</strong> (theHost.endsWith(suffix)) {
+<a class="jxr_linenumber" name="L768" href="#L768">768</a>                         <strong class="jxr_keyword">return</strong> Collections.singletonList(Proxy.NO_PROXY);
+<a class="jxr_linenumber" name="L769" href="#L769">769</a>                     }
+<a class="jxr_linenumber" name="L770" href="#L770">770</a>                 }
+<a class="jxr_linenumber" name="L771" href="#L771">771</a>             }
+<a class="jxr_linenumber" name="L772" href="#L772">772</a>             <strong class="jxr_keyword">return</strong> List.of(configuredProxy);
+<a class="jxr_linenumber" name="L773" href="#L773">773</a>         }
+<a class="jxr_linenumber" name="L774" href="#L774">774</a> 
+<a class="jxr_linenumber" name="L775" href="#L775">775</a>         @Override
+<a class="jxr_linenumber" name="L776" href="#L776">776</a>         <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> connectFailed(URI uri, SocketAddress sa, IOException ioe) {
+<a class="jxr_linenumber" name="L777" href="#L777">777</a>             <em class="jxr_comment">// nothing to be done for this single proxy proxy-selector</em>
+<a class="jxr_linenumber" name="L778" href="#L778">778</a>         }
+<a class="jxr_linenumber" name="L779" href="#L779">779</a>     }
+<a class="jxr_linenumber" name="L780" href="#L780">780</a> }
 </pre>
 <hr/>
 <div id="footer">Copyright &#169; 2012&#x2013;2026 <a href="https://www.owasp.org">OWASP</a>. All rights reserved.</div>

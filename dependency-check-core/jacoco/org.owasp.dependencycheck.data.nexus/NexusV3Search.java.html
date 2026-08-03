@@ -61,6 +61,10 @@ import java.util.stream.Collectors;
  */
 @ThreadSafe
 public class NexusV3Search implements NexusSearch {
+    /**
+     * Used for logging.
+     */
+<span class="nc" id="L67">    private static final Logger LOGGER = LoggerFactory.getLogger(NexusV3Search.class);</span>
 
     /**
      * By default, NexusV3Search accepts only classifier-less artifacts.
@@ -68,7 +72,7 @@ public class NexusV3Search implements NexusSearch {
      * This prevents, among others, sha1-collisions for empty jars on empty javadoc/sources jars.
      * See e.g. issues #5559 and #5118
      */
-<span class="nc" id="L71">    private final Set&lt;String&gt; acceptedClassifiers = new HashSet&lt;&gt;();</span>
+<span class="nc" id="L75">    private final Set&lt;String&gt; acceptedClassifiers = new HashSet&lt;&gt;();</span>
 
     /**
      * The root URL for the Nexus repository service.
@@ -79,14 +83,6 @@ public class NexusV3Search implements NexusSearch {
      * Whether to use the Proxy when making requests.
      */
     private final boolean useProxy;
-    /**
-     * The configured settings.
-     */
-    private final Settings settings;
-    /**
-     * Used for logging.
-     */
-<span class="nc" id="L89">    private static final Logger LOGGER = LoggerFactory.getLogger(NexusV3Search.class);</span>
 
     /**
      * Creates a NexusV3Search for the given repository URL.
@@ -96,70 +92,69 @@ public class NexusV3Search implements NexusSearch {
      * @throws MalformedURLException thrown if the configured URL is
      *                               invalid
      */
-<span class="nc" id="L99">    public NexusV3Search(Settings settings, boolean useProxy) throws MalformedURLException {</span>
-<span class="nc" id="L100">        this.settings = settings;</span>
-<span class="nc" id="L101">        this.useProxy = useProxy;</span>
-<span class="nc" id="L102">        this.acceptedClassifiers.add(null);</span>
-<span class="nc" id="L103">        final String searchUrl = settings.getString(Settings.KEYS.ANALYZER_NEXUS_URL);</span>
-<span class="nc" id="L104">        LOGGER.debug(&quot;Nexus Search URL: {}&quot;, searchUrl);</span>
-<span class="nc" id="L105">        this.rootURL = new URL(searchUrl);</span>
+<span class="nc" id="L95">    public NexusV3Search(Settings settings, boolean useProxy) throws MalformedURLException {</span>
+<span class="nc" id="L96">        this.useProxy = useProxy;</span>
+<span class="nc" id="L97">        this.acceptedClassifiers.add(null);</span>
+<span class="nc" id="L98">        final String searchUrl = settings.getString(Settings.KEYS.ANALYZER_NEXUS_URL);</span>
+<span class="nc" id="L99">        LOGGER.debug(&quot;Nexus Search URL: {}&quot;, searchUrl);</span>
+<span class="nc" id="L100">        this.rootURL = new URL(searchUrl);</span>
 
-<span class="nc" id="L107">    }</span>
+<span class="nc" id="L102">    }</span>
 
     @Override
     public MavenArtifact searchSha1(String sha1) throws IOException {
-<span class="nc bnc" id="L111" title="All 4 branches missed.">        if (null == sha1 || !sha1.matches(&quot;^[0-9A-Fa-f]{40}$&quot;)) {</span>
-<span class="nc" id="L112">            throw new IllegalArgumentException(&quot;Invalid SHA1 format&quot;);</span>
+<span class="nc bnc" id="L106" title="All 4 branches missed.">        if (null == sha1 || !sha1.matches(&quot;^[0-9A-Fa-f]{40}$&quot;)) {</span>
+<span class="nc" id="L107">            throw new IllegalArgumentException(&quot;Invalid SHA1 format&quot;);</span>
         }
 
-<span class="nc" id="L115">        final List&lt;MavenArtifact&gt; collectedMatchingArtifacts = new ArrayList&lt;&gt;(1);</span>
-<span class="nc" id="L116">        try (CloseableHttpClient client = Downloader.getInstance().getHttpClient(useProxy)) {</span>
-<span class="nc" id="L117">            String continuationToken = retrievePageAndAddMatchingArtifact(client, collectedMatchingArtifacts, sha1, null);</span>
-<span class="nc bnc" id="L118" title="All 4 branches missed.">            while (continuationToken != null &amp;&amp; collectedMatchingArtifacts.isEmpty()) {</span>
-<span class="nc" id="L119">                continuationToken = retrievePageAndAddMatchingArtifact(client, collectedMatchingArtifacts, sha1, continuationToken);</span>
+<span class="nc" id="L110">        final List&lt;MavenArtifact&gt; collectedMatchingArtifacts = new ArrayList&lt;&gt;(1);</span>
+<span class="nc" id="L111">        try (CloseableHttpClient client = Downloader.getInstance().getHttpClient(useProxy)) {</span>
+<span class="nc" id="L112">            String continuationToken = retrievePageAndAddMatchingArtifact(client, collectedMatchingArtifacts, sha1, null);</span>
+<span class="nc bnc" id="L113" title="All 4 branches missed.">            while (continuationToken != null &amp;&amp; collectedMatchingArtifacts.isEmpty()) {</span>
+<span class="nc" id="L114">                continuationToken = retrievePageAndAddMatchingArtifact(client, collectedMatchingArtifacts, sha1, continuationToken);</span>
             }
         }
-<span class="nc bnc" id="L122" title="All 2 branches missed.">        if (collectedMatchingArtifacts.isEmpty()) {</span>
-<span class="nc" id="L123">            throw new FileNotFoundException(&quot;Artifact not found in Nexus&quot;);</span>
+<span class="nc bnc" id="L117" title="All 2 branches missed.">        if (collectedMatchingArtifacts.isEmpty()) {</span>
+<span class="nc" id="L118">            throw new FileNotFoundException(&quot;Artifact not found in Nexus&quot;);</span>
         } else {
-<span class="nc" id="L125">            return collectedMatchingArtifacts.get(0);</span>
+<span class="nc" id="L120">            return collectedMatchingArtifacts.get(0);</span>
         }
     }
 
     private String retrievePageAndAddMatchingArtifact(CloseableHttpClient client, List&lt;MavenArtifact&gt; collectedMatchingArtifacts, String sha1,
                                                       @Nullable String continuationToken) throws IOException {
         final URL url;
-<span class="nc" id="L132">        LOGGER.debug(&quot;Search with continuation token {}&quot;, continuationToken);</span>
-<span class="nc bnc" id="L133" title="All 2 branches missed.">        if (continuationToken == null) {</span>
-<span class="nc" id="L134">            url = new URL(rootURL, String.format(&quot;v1/search/?sha1=%s&quot;,</span>
-<span class="nc" id="L135">                    sha1.toLowerCase()));</span>
+<span class="nc" id="L127">        LOGGER.debug(&quot;Search with continuation token {}&quot;, continuationToken);</span>
+<span class="nc bnc" id="L128" title="All 2 branches missed.">        if (continuationToken == null) {</span>
+<span class="nc" id="L129">            url = new URL(rootURL, String.format(&quot;v1/search/?sha1=%s&quot;,</span>
+<span class="nc" id="L130">                    sha1.toLowerCase()));</span>
         } else {
-<span class="nc" id="L137">            url = new URL(rootURL, String.format(&quot;v1/search/?sha1=%s&amp;continuationToken=%s&quot;,</span>
-<span class="nc" id="L138">                    sha1.toLowerCase(), continuationToken));</span>
+<span class="nc" id="L132">            url = new URL(rootURL, String.format(&quot;v1/search/?sha1=%s&amp;continuationToken=%s&quot;,</span>
+<span class="nc" id="L133">                    sha1.toLowerCase(), continuationToken));</span>
         }
 
-<span class="nc" id="L141">        LOGGER.debug(&quot;Searching Nexus url {}&quot;, url);</span>
+<span class="nc" id="L136">        LOGGER.debug(&quot;Searching Nexus url {}&quot;, url);</span>
         // Determine if we need to use a proxy. The rules:
         // 1) If the proxy is set, AND the setting is set to true, use the proxy
         // 2) Otherwise, don't use the proxy (either the proxy isn't configured,
         // or proxy is specifically set to false
-<span class="nc" id="L146">        final NexusV3SearchResponseHandler handler = new NexusV3SearchResponseHandler(collectedMatchingArtifacts, sha1, acceptedClassifiers);</span>
+<span class="nc" id="L141">        final NexusV3SearchResponseHandler handler = new NexusV3SearchResponseHandler(collectedMatchingArtifacts, sha1, acceptedClassifiers);</span>
         try {
-<span class="nc" id="L148">            return Downloader.getInstance().fetchAndHandle(client, url, handler, List.of(new BasicHeader(HttpHeaders.ACCEPT,</span>
+<span class="nc" id="L143">            return Downloader.getInstance().fetchAndHandle(client, url, handler, List.of(new BasicHeader(HttpHeaders.ACCEPT,</span>
                             ContentType.APPLICATION_JSON)));
-<span class="nc" id="L150">        } catch (TooManyRequestsException | ResourceNotFoundException | DownloadFailedException | ForbiddenException e) {</span>
-<span class="nc bnc" id="L151" title="All 2 branches missed.">            if (LOGGER.isDebugEnabled()) {</span>
-<span class="nc" id="L152">                int responseCode = -1;</span>
-<span class="nc" id="L153">                String responseMessage = &quot;&quot;;</span>
-<span class="nc bnc" id="L154" title="All 2 branches missed.">                if (e.getCause() instanceof HttpResponseException) {</span>
-<span class="nc" id="L155">                    final HttpResponseException cause = (HttpResponseException) e.getCause();</span>
-<span class="nc" id="L156">                    responseCode = cause.getStatusCode();</span>
-<span class="nc" id="L157">                    responseMessage = cause.getReasonPhrase();</span>
+<span class="nc" id="L145">        } catch (TooManyRequestsException | ResourceNotFoundException | DownloadFailedException | ForbiddenException e) {</span>
+<span class="nc bnc" id="L146" title="All 2 branches missed.">            if (LOGGER.isDebugEnabled()) {</span>
+<span class="nc" id="L147">                int responseCode = -1;</span>
+<span class="nc" id="L148">                String responseMessage = &quot;&quot;;</span>
+<span class="nc bnc" id="L149" title="All 2 branches missed.">                if (e.getCause() instanceof HttpResponseException) {</span>
+<span class="nc" id="L150">                    final HttpResponseException cause = (HttpResponseException) e.getCause();</span>
+<span class="nc" id="L151">                    responseCode = cause.getStatusCode();</span>
+<span class="nc" id="L152">                    responseMessage = cause.getReasonPhrase();</span>
                 }
-<span class="nc" id="L159">                LOGGER.debug(&quot;Could not connect to Nexus received response code: {} {}&quot;,</span>
-<span class="nc" id="L160">                        responseCode, responseMessage);</span>
+<span class="nc" id="L154">                LOGGER.debug(&quot;Could not connect to Nexus received response code: {} {}&quot;,</span>
+<span class="nc" id="L155">                        responseCode, responseMessage);</span>
             }
-<span class="nc" id="L162">            throw new IOException(&quot;Could not connect to Nexus&quot;, e);</span>
+<span class="nc" id="L157">            throw new IOException(&quot;Could not connect to Nexus&quot;, e);</span>
         }
     }
 
@@ -178,92 +173,92 @@ public class NexusV3Search implements NexusSearch {
          */
         private final Set&lt;String&gt; acceptedClassifiers;
 
-<span class="nc" id="L181">        private NexusV3SearchResponseHandler(List&lt;MavenArtifact&gt; matchingArtifacts, String sha1, Set&lt;String&gt; acceptedClassifiers) {</span>
-<span class="nc" id="L182">            this.matchingArtifacts = matchingArtifacts;</span>
-<span class="nc" id="L183">            this.sha1 = sha1;</span>
-<span class="nc" id="L184">            this.acceptedClassifiers = acceptedClassifiers;</span>
-<span class="nc" id="L185">        }</span>
+<span class="nc" id="L176">        private NexusV3SearchResponseHandler(List&lt;MavenArtifact&gt; matchingArtifacts, String sha1, Set&lt;String&gt; acceptedClassifiers) {</span>
+<span class="nc" id="L177">            this.matchingArtifacts = matchingArtifacts;</span>
+<span class="nc" id="L178">            this.sha1 = sha1;</span>
+<span class="nc" id="L179">            this.acceptedClassifiers = acceptedClassifiers;</span>
+<span class="nc" id="L180">        }</span>
 
         @Override
         public @Nullable String handleEntity(HttpEntity entity) throws IOException {
-<span class="nc" id="L189">            try (InputStream in = entity.getContent();</span>
-<span class="nc" id="L190">                 InputStreamReader isReader = new InputStreamReader(in, StandardCharsets.UTF_8);</span>
-<span class="nc" id="L191">                 BufferedReader reader = new BufferedReader(isReader);</span>
+<span class="nc" id="L184">            try (InputStream in = entity.getContent();</span>
+<span class="nc" id="L185">                 InputStreamReader isReader = new InputStreamReader(in, StandardCharsets.UTF_8);</span>
+<span class="nc" id="L186">                 BufferedReader reader = new BufferedReader(isReader);</span>
             ) {
-<span class="nc" id="L193">                final String jsonString = reader.lines().collect(Collectors.joining(&quot;\n&quot;));</span>
-<span class="nc" id="L194">                LOGGER.debug(&quot;JSON String was &gt;&gt;&gt;{}&lt;&lt;&lt;&quot;, jsonString);</span>
+<span class="nc" id="L188">                final String jsonString = reader.lines().collect(Collectors.joining(&quot;\n&quot;));</span>
+<span class="nc" id="L189">                LOGGER.debug(&quot;JSON String was &gt;&gt;&gt;{}&lt;&lt;&lt;&quot;, jsonString);</span>
                 final JsonObject jsonResponse;
                 try (
-<span class="nc" id="L197">                        StringReader stringReader = new StringReader(jsonString);</span>
-<span class="nc" id="L198">                        JsonReader jsonReader = Json.createReader(stringReader)</span>
+<span class="nc" id="L192">                        StringReader stringReader = new StringReader(jsonString);</span>
+<span class="nc" id="L193">                        JsonReader jsonReader = Json.createReader(stringReader)</span>
                 ) {
-<span class="nc" id="L200">                    jsonResponse = jsonReader.readObject();</span>
+<span class="nc" id="L195">                    jsonResponse = jsonReader.readObject();</span>
                 }
-<span class="nc" id="L202">                LOGGER.debug(&quot;Response: {}&quot;, jsonResponse);</span>
-<span class="nc" id="L203">                final JsonArray components = jsonResponse.getJsonArray(&quot;items&quot;);</span>
-<span class="nc" id="L204">                LOGGER.debug(&quot;Items: {}&quot;, components);</span>
-<span class="nc" id="L205">                final String continuationToken = jsonResponse.getString(&quot;continuationToken&quot;, null);</span>
-<span class="nc" id="L206">                boolean found = false;</span>
-<span class="nc bnc" id="L207" title="All 4 branches missed.">                for (int i = 0; i &lt; components.size() &amp;&amp; !found; i++) {</span>
-<span class="nc" id="L208">                    boolean jarFound = false;</span>
-<span class="nc" id="L209">                    boolean pomFound = false;</span>
-<span class="nc" id="L210">                    String downloadUrl = null;</span>
-<span class="nc" id="L211">                    String groupId = null;</span>
-<span class="nc" id="L212">                    String artifactId = null;</span>
-<span class="nc" id="L213">                    String version = null;</span>
-<span class="nc" id="L214">                    String pomUrl = null;</span>
+<span class="nc" id="L197">                LOGGER.debug(&quot;Response: {}&quot;, jsonResponse);</span>
+<span class="nc" id="L198">                final JsonArray components = jsonResponse.getJsonArray(&quot;items&quot;);</span>
+<span class="nc" id="L199">                LOGGER.debug(&quot;Items: {}&quot;, components);</span>
+<span class="nc" id="L200">                final String continuationToken = jsonResponse.getString(&quot;continuationToken&quot;, null);</span>
+<span class="nc" id="L201">                boolean found = false;</span>
+<span class="nc bnc" id="L202" title="All 4 branches missed.">                for (int i = 0; i &lt; components.size() &amp;&amp; !found; i++) {</span>
+<span class="nc" id="L203">                    boolean jarFound = false;</span>
+<span class="nc" id="L204">                    boolean pomFound = false;</span>
+<span class="nc" id="L205">                    String downloadUrl = null;</span>
+<span class="nc" id="L206">                    String groupId = null;</span>
+<span class="nc" id="L207">                    String artifactId = null;</span>
+<span class="nc" id="L208">                    String version = null;</span>
+<span class="nc" id="L209">                    String pomUrl = null;</span>
 
-<span class="nc" id="L216">                    final JsonObject component = components.getJsonObject(i);</span>
+<span class="nc" id="L211">                    final JsonObject component = components.getJsonObject(i);</span>
 
-<span class="nc" id="L218">                    final String format = component.getString(&quot;format&quot;, &quot;unknown&quot;);</span>
-<span class="nc bnc" id="L219" title="All 2 branches missed.">                    if (&quot;maven2&quot;.equals(format)) {</span>
-<span class="nc" id="L220">                        LOGGER.debug(&quot;Checking Maven2 artifact for {}&quot;, component);</span>
-<span class="nc" id="L221">                        final JsonArray assets = component.getJsonArray(&quot;assets&quot;);</span>
-<span class="nc bnc" id="L222" title="All 4 branches missed.">                        for (int j = 0; !found &amp;&amp; j &lt; assets.size(); j++) {</span>
-<span class="nc" id="L223">                            final JsonObject asset = assets.getJsonObject(j);</span>
-<span class="nc" id="L224">                            LOGGER.debug(&quot;Checking {}&quot;, asset);</span>
-<span class="nc" id="L225">                            final JsonObject checksums = asset.getJsonObject(&quot;checksum&quot;);</span>
-<span class="nc" id="L226">                            final JsonObject maven2 = asset.getJsonObject(&quot;maven2&quot;);</span>
-<span class="nc bnc" id="L227" title="All 2 branches missed.">                            if (maven2 != null) {</span>
+<span class="nc" id="L213">                    final String format = component.getString(&quot;format&quot;, &quot;unknown&quot;);</span>
+<span class="nc bnc" id="L214" title="All 2 branches missed.">                    if (&quot;maven2&quot;.equals(format)) {</span>
+<span class="nc" id="L215">                        LOGGER.debug(&quot;Checking Maven2 artifact for {}&quot;, component);</span>
+<span class="nc" id="L216">                        final JsonArray assets = component.getJsonArray(&quot;assets&quot;);</span>
+<span class="nc bnc" id="L217" title="All 4 branches missed.">                        for (int j = 0; !found &amp;&amp; j &lt; assets.size(); j++) {</span>
+<span class="nc" id="L218">                            final JsonObject asset = assets.getJsonObject(j);</span>
+<span class="nc" id="L219">                            LOGGER.debug(&quot;Checking {}&quot;, asset);</span>
+<span class="nc" id="L220">                            final JsonObject checksums = asset.getJsonObject(&quot;checksum&quot;);</span>
+<span class="nc" id="L221">                            final JsonObject maven2 = asset.getJsonObject(&quot;maven2&quot;);</span>
+<span class="nc bnc" id="L222" title="All 2 branches missed.">                            if (maven2 != null) {</span>
                                 // logical names for the jar acceptance routine
-<span class="nc bnc" id="L229" title="All 4 branches missed.">                                final boolean shaMatch = checksums != null &amp;&amp; sha1.equals(checksums.getString(&quot;sha1&quot;, null));</span>
-<span class="nc" id="L230">                                final boolean hasAcceptedClassifier = acceptedClassifiers.contains(maven2.getString(&quot;classifier&quot;, null));</span>
-<span class="nc" id="L231">                                final boolean isAJar = &quot;jar&quot;.equals(maven2.getString(&quot;extension&quot;, null));</span>
-<span class="nc" id="L232">                                LOGGER.debug(&quot;shaMatch {}&quot;, shaMatch);</span>
-<span class="nc" id="L233">                                LOGGER.debug(&quot;hasAcceptedClassifier {}&quot;, hasAcceptedClassifier);</span>
-<span class="nc" id="L234">                                LOGGER.debug(&quot;isAJar {}&quot;, isAJar);</span>
-<span class="nc bnc" id="L235" title="All 6 branches missed.">                                if (</span>
+<span class="nc bnc" id="L224" title="All 4 branches missed.">                                final boolean shaMatch = checksums != null &amp;&amp; sha1.equals(checksums.getString(&quot;sha1&quot;, null));</span>
+<span class="nc" id="L225">                                final boolean hasAcceptedClassifier = acceptedClassifiers.contains(maven2.getString(&quot;classifier&quot;, null));</span>
+<span class="nc" id="L226">                                final boolean isAJar = &quot;jar&quot;.equals(maven2.getString(&quot;extension&quot;, null));</span>
+<span class="nc" id="L227">                                LOGGER.debug(&quot;shaMatch {}&quot;, shaMatch);</span>
+<span class="nc" id="L228">                                LOGGER.debug(&quot;hasAcceptedClassifier {}&quot;, hasAcceptedClassifier);</span>
+<span class="nc" id="L229">                                LOGGER.debug(&quot;isAJar {}&quot;, isAJar);</span>
+<span class="nc bnc" id="L230" title="All 6 branches missed.">                                if (</span>
                                         isAJar
                                         &amp;&amp; hasAcceptedClassifier
                                         &amp;&amp; shaMatch
                                 ) {
-<span class="nc" id="L240">                                    downloadUrl = asset.getString(&quot;downloadUrl&quot;);</span>
-<span class="nc" id="L241">                                    groupId = maven2.getString(&quot;groupId&quot;);</span>
-<span class="nc" id="L242">                                    artifactId = maven2.getString(&quot;artifactId&quot;);</span>
-<span class="nc" id="L243">                                    version = maven2.getString(&quot;version&quot;);</span>
+<span class="nc" id="L235">                                    downloadUrl = asset.getString(&quot;downloadUrl&quot;);</span>
+<span class="nc" id="L236">                                    groupId = maven2.getString(&quot;groupId&quot;);</span>
+<span class="nc" id="L237">                                    artifactId = maven2.getString(&quot;artifactId&quot;);</span>
+<span class="nc" id="L238">                                    version = maven2.getString(&quot;version&quot;);</span>
 
-<span class="nc" id="L245">                                    jarFound = true;</span>
-<span class="nc bnc" id="L246" title="All 2 branches missed.">                                } else if (&quot;pom&quot;.equals(maven2.getString(&quot;extension&quot;))) {</span>
-<span class="nc" id="L247">                                    LOGGER.debug(&quot;pom found {}&quot;, asset);</span>
-<span class="nc" id="L248">                                    pomFound = true;</span>
-<span class="nc" id="L249">                                    pomUrl = asset.getString(&quot;downloadUrl&quot;);</span>
+<span class="nc" id="L240">                                    jarFound = true;</span>
+<span class="nc bnc" id="L241" title="All 2 branches missed.">                                } else if (&quot;pom&quot;.equals(maven2.getString(&quot;extension&quot;))) {</span>
+<span class="nc" id="L242">                                    LOGGER.debug(&quot;pom found {}&quot;, asset);</span>
+<span class="nc" id="L243">                                    pomFound = true;</span>
+<span class="nc" id="L244">                                    pomUrl = asset.getString(&quot;downloadUrl&quot;);</span>
                                 }
                             }
-<span class="nc bnc" id="L252" title="All 4 branches missed.">                            if (pomFound &amp;&amp; jarFound) {</span>
-<span class="nc" id="L253">                                found = true;</span>
+<span class="nc bnc" id="L247" title="All 4 branches missed.">                            if (pomFound &amp;&amp; jarFound) {</span>
+<span class="nc" id="L248">                                found = true;</span>
                             }
                         }
-<span class="nc bnc" id="L256" title="All 2 branches missed.">                        if (found) {</span>
-<span class="nc" id="L257">                            matchingArtifacts.add(new MavenArtifact(groupId, artifactId, version, downloadUrl, pomUrl));</span>
-<span class="nc bnc" id="L258" title="All 2 branches missed.">                        } else if (jarFound) {</span>
-<span class="nc" id="L259">                            final MavenArtifact ma = new MavenArtifact(groupId, artifactId, version, downloadUrl);</span>
-<span class="nc" id="L260">                            ma.setPomUrl(MavenArtifact.derivePomUrl(artifactId, version, downloadUrl));</span>
-<span class="nc" id="L261">                            matchingArtifacts.add(ma);</span>
-<span class="nc" id="L262">                            found = true;</span>
+<span class="nc bnc" id="L251" title="All 2 branches missed.">                        if (found) {</span>
+<span class="nc" id="L252">                            matchingArtifacts.add(new MavenArtifact(groupId, artifactId, version, downloadUrl, pomUrl));</span>
+<span class="nc bnc" id="L253" title="All 2 branches missed.">                        } else if (jarFound) {</span>
+<span class="nc" id="L254">                            final MavenArtifact ma = new MavenArtifact(groupId, artifactId, version, downloadUrl);</span>
+<span class="nc" id="L255">                            ma.setPomUrl(MavenArtifact.derivePomUrl(artifactId, version, downloadUrl));</span>
+<span class="nc" id="L256">                            matchingArtifacts.add(ma);</span>
+<span class="nc" id="L257">                            found = true;</span>
                         }
                     }
                 }
-<span class="nc" id="L266">                return continuationToken;</span>
+<span class="nc" id="L261">                return continuationToken;</span>
             }
         }
     }
@@ -271,18 +266,18 @@ public class NexusV3Search implements NexusSearch {
     @Override
     public boolean preflightRequest() {
         try {
-<span class="nc" id="L274">            final URL url = new URL(rootURL, &quot;v1/status&quot;);</span>
-<span class="nc" id="L275">            final String response = Downloader.getInstance().fetchContent(url, useProxy, StandardCharsets.UTF_8);</span>
-<span class="nc bnc" id="L276" title="All 4 branches missed.">            if (response == null || !response.isEmpty()) {</span>
-<span class="nc bnc" id="L277" title="All 2 branches missed.">                LOGGER.warn(&quot;Expected empty OK response (content-length 0), got {}&quot;, response == null ? &quot;null&quot; : response.length());</span>
-<span class="nc" id="L278">                return false;</span>
+<span class="nc" id="L269">            final URL url = new URL(rootURL, &quot;v1/status&quot;);</span>
+<span class="nc" id="L270">            final String response = Downloader.getInstance().fetchContent(url, useProxy, StandardCharsets.UTF_8);</span>
+<span class="nc bnc" id="L271" title="All 4 branches missed.">            if (response == null || !response.isEmpty()) {</span>
+<span class="nc bnc" id="L272" title="All 2 branches missed.">                LOGGER.warn(&quot;Expected empty OK response (content-length 0), got {}&quot;, response == null ? &quot;null&quot; : response.length());</span>
+<span class="nc" id="L273">                return false;</span>
             }
-<span class="nc" id="L280">        } catch (IOException | TooManyRequestsException | ResourceNotFoundException e) {</span>
-<span class="nc" id="L281">            LOGGER.warn(&quot;Pre-flight request to Nexus failed: &quot;, e);</span>
-<span class="nc" id="L282">            return false;</span>
-<span class="nc" id="L283">        }</span>
-<span class="nc" id="L284">        return true;</span>
+<span class="nc" id="L275">        } catch (IOException | TooManyRequestsException | ResourceNotFoundException e) {</span>
+<span class="nc" id="L276">            LOGGER.warn(&quot;Pre-flight request to Nexus failed: &quot;, e);</span>
+<span class="nc" id="L277">            return false;</span>
+<span class="nc" id="L278">        }</span>
+<span class="nc" id="L279">        return true;</span>
     }
 
 }
-</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.14.202510111229</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.15.202606040825</span></div></body></html>

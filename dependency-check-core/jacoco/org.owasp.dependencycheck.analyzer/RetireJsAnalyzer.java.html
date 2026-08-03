@@ -20,10 +20,12 @@ package org.owasp.dependencycheck.analyzer;
 import com.esotericsoftware.minlog.Log;
 import com.github.packageurl.MalformedPackageURLException;
 import com.github.packageurl.PackageURLBuilder;
+import com.google.common.annotations.VisibleForTesting;
 import com.h3xstream.retirejs.repo.JsLibraryResult;
 import com.h3xstream.retirejs.repo.ScannerFacade;
 import com.h3xstream.retirejs.repo.VulnerabilitiesRepository;
 import com.h3xstream.retirejs.repo.VulnerabilitiesRepositoryLoader;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.validator.routines.UrlValidator;
 import org.json.JSONException;
@@ -58,18 +60,17 @@ import java.io.FileFilter;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
 import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.OptionalInt;
 import java.util.Set;
 import java.util.stream.Collectors;
-
-import org.apache.commons.io.IOUtils;
 
 import static org.owasp.dependencycheck.analyzer.RetireJsLibrary.KnownIdentifierTypes.CVE;
 import static org.owasp.dependencycheck.analyzer.RetireJsLibrary.KnownIdentifierTypes.GITHUB_SECURITY_ADVISORY;
@@ -88,7 +89,7 @@ import static org.owasp.dependencycheck.analyzer.RetireJsLibrary.KnownIdentifier
  * @author Steve Springett
  */
 @ThreadSafe
-<span class="fc" id="L91">public class RetireJsAnalyzer extends AbstractFileTypeAnalyzer {</span>
+<span class="fc" id="L92">public class RetireJsAnalyzer extends AbstractFileTypeAnalyzer {</span>
 
     /**
      * A descriptor for the type of dependencies processed or added by this
@@ -98,7 +99,7 @@ import static org.owasp.dependencycheck.analyzer.RetireJsLibrary.KnownIdentifier
     /**
      * The logger.
      */
-<span class="fc" id="L101">    private static final Logger LOGGER = LoggerFactory.getLogger(RetireJsAnalyzer.class);</span>
+<span class="fc" id="L102">    private static final Logger LOGGER = LoggerFactory.getLogger(RetireJsAnalyzer.class);</span>
     /**
      * The name of the analyzer.
      */
@@ -106,15 +107,15 @@ import static org.owasp.dependencycheck.analyzer.RetireJsLibrary.KnownIdentifier
     /**
      * The phase that this analyzer is intended to run in.
      */
-<span class="fc" id="L109">    private static final AnalysisPhase ANALYSIS_PHASE = AnalysisPhase.FINDING_ANALYSIS;</span>
+<span class="fc" id="L110">    private static final AnalysisPhase ANALYSIS_PHASE = AnalysisPhase.FINDING_ANALYSIS;</span>
     /**
      * The set of file extensions supported by this analyzer.
      */
-<span class="fc" id="L113">    private static final String[] EXTENSIONS = {&quot;js&quot;};</span>
+<span class="fc" id="L114">    private static final String[] EXTENSIONS = {&quot;js&quot;};</span>
     /**
      * The file filter used to determine which files this analyzer supports.
      */
-<span class="fc" id="L117">    private static final FileFilter FILTER = FileFilterBuilder.newInstance().addExtensions(EXTENSIONS).build();</span>
+<span class="fc" id="L118">    private static final FileFilter FILTER = FileFilterBuilder.newInstance().addExtensions(EXTENSIONS).build();</span>
     /**
      * An instance of the local VulnerabilitiesRepository
      */
@@ -124,7 +125,7 @@ import static org.owasp.dependencycheck.analyzer.RetireJsLibrary.KnownIdentifier
      * that this could be used to filter out a companies custom files by filter
      * on their own copyright statements.
      */
-<span class="fc" id="L127">    private String[] filters = null;</span>
+<span class="fc" id="L128">    private String[] filters = null;</span>
 
     /**
      * Returns the FileFilter.
@@ -133,7 +134,7 @@ import static org.owasp.dependencycheck.analyzer.RetireJsLibrary.KnownIdentifier
      */
     @Override
     protected FileFilter getFileFilter() {
-<span class="fc" id="L136">        return FILTER;</span>
+<span class="fc" id="L137">        return FILTER;</span>
     }
 
     /**
@@ -146,20 +147,20 @@ import static org.owasp.dependencycheck.analyzer.RetireJsLibrary.KnownIdentifier
     @Override
     public boolean accept(File pathname) {
         try {
-<span class="fc" id="L149">            final boolean accepted = super.accept(pathname);</span>
-<span class="fc bfc" id="L150" title="All 4 branches covered.">            if (accepted &amp;&amp; !pathname.exists()) {</span>
+<span class="fc" id="L150">            final boolean accepted = super.accept(pathname);</span>
+<span class="fc bfc" id="L151" title="All 4 branches covered.">            if (accepted &amp;&amp; !pathname.exists()) {</span>
                 //file may not yet have been extracted from an archive
-<span class="fc" id="L152">                super.setFilesMatched(true);</span>
-<span class="fc" id="L153">                return true;</span>
+<span class="fc" id="L153">                super.setFilesMatched(true);</span>
+<span class="fc" id="L154">                return true;</span>
             }
-<span class="fc bfc" id="L155" title="All 6 branches covered.">            if (accepted &amp;&amp; filters != null &amp;&amp; FileContentSearch.contains(pathname, filters)) {</span>
-<span class="fc" id="L156">                return false;</span>
+<span class="fc bfc" id="L156" title="All 6 branches covered.">            if (accepted &amp;&amp; filters != null &amp;&amp; FileContentSearch.contains(pathname, filters)) {</span>
+<span class="fc" id="L157">                return false;</span>
             }
-<span class="fc" id="L158">            return accepted;</span>
-<span class="nc" id="L159">        } catch (IOException ex) {</span>
-<span class="nc" id="L160">            LOGGER.warn(&quot;Error testing file {}&quot;, pathname, ex);</span>
+<span class="fc" id="L159">            return accepted;</span>
+<span class="nc" id="L160">        } catch (IOException ex) {</span>
+<span class="nc" id="L161">            LOGGER.warn(&quot;Error testing file {}&quot;, pathname, ex);</span>
         }
-<span class="nc" id="L162">        return false;</span>
+<span class="nc" id="L163">        return false;</span>
     }
 
     /**
@@ -169,11 +170,11 @@ import static org.owasp.dependencycheck.analyzer.RetireJsLibrary.KnownIdentifier
      */
     @Override
     public void initialize(Settings settings) {
-<span class="fc" id="L172">        super.initialize(settings);</span>
-<span class="fc bfc" id="L173" title="All 2 branches covered.">        if (this.isEnabled()) {</span>
-<span class="fc" id="L174">            this.filters = settings.getArray(Settings.KEYS.ANALYZER_RETIREJS_FILTERS);</span>
+<span class="fc" id="L173">        super.initialize(settings);</span>
+<span class="fc bfc" id="L174" title="All 2 branches covered.">        if (this.isEnabled()) {</span>
+<span class="fc" id="L175">            this.filters = settings.getArray(Settings.KEYS.ANALYZER_RETIREJS_FILTERS);</span>
         }
-<span class="fc" id="L176">    }</span>
+<span class="fc" id="L177">    }</span>
 
     /**
      * {@inheritDoc}
@@ -191,59 +192,43 @@ import static org.owasp.dependencycheck.analyzer.RetireJsLibrary.KnownIdentifier
         //
         // This logging is suppressed because it isn't particularly useful, and
         // it aligns with other analyzers that don't log such information.
-<span class="fc" id="L194">        Log.set(Log.LEVEL_WARN);</span>
+<span class="fc" id="L195">        Log.set(Log.LEVEL_WARN);</span>
 
-<span class="fc" id="L196">        File repoFile = null;</span>
-<span class="fc" id="L197">        boolean repoEmpty = false;</span>
-        try {
-<span class="fc" id="L199">            final String configuredUrl = getSettings().getString(Settings.KEYS.ANALYZER_RETIREJS_REPO_JS_URL, RetireJSDataSource.DEFAULT_JS_URL);</span>
-<span class="fc" id="L200">            final URL url = new URL(configuredUrl);</span>
-<span class="fc" id="L201">            final File filepath = new File(url.getPath());</span>
-<span class="fc" id="L202">            repoFile = new File(getSettings().getDataDirectory(), filepath.getName());</span>
-<span class="pc bpc" id="L203" title="1 of 4 branches missed.">            if (!repoFile.isFile() || repoFile.length() &lt;= 1L) {</span>
-<span class="fc" id="L204">                LOGGER.warn(&quot;Retire JS repository is empty or missing - attempting to force the update&quot;);</span>
-<span class="fc" id="L205">                repoEmpty = true;</span>
-<span class="fc" id="L206">                getSettings().setBoolean(Settings.KEYS.ANALYZER_RETIREJS_FORCEUPDATE, true);</span>
-            }
-<span class="nc" id="L208">        } catch (IOException ex) {</span>
-<span class="nc" id="L209">            this.setEnabled(false);</span>
-<span class="nc" id="L210">            throw new InitializationException(&quot;Failed to initialize the RetireJS&quot;, ex);</span>
-<span class="fc" id="L211">        }</span>
+<span class="fc" id="L197">        File repoFile = tryRemoteFetchIfConfigured(engine);</span>
 
-<span class="fc" id="L213">        final boolean autoupdate = getSettings().getBoolean(Settings.KEYS.AUTO_UPDATE, true);</span>
-<span class="fc" id="L214">        final boolean forceupdate = getSettings().getBoolean(Settings.KEYS.ANALYZER_RETIREJS_FORCEUPDATE, false);</span>
-<span class="pc bpc" id="L215" title="4 of 8 branches missed.">        if ((!autoupdate &amp;&amp; forceupdate) || (autoupdate &amp;&amp; repoEmpty)) {</span>
-<span class="fc" id="L216">            final RetireJSDataSource ds = new RetireJSDataSource();</span>
-            try {
-<span class="fc" id="L218">                ds.update(engine);</span>
-<span class="nc" id="L219">            } catch (UpdateException ex) {</span>
-<span class="nc" id="L220">                throw new InitializationException(&quot;Unable to initialize the Retire JS repository&quot;, ex);</span>
-<span class="fc" id="L221">            }</span>
-        }
-
-        //several users are reporting that the retire js repository is getting corrupted.
-<span class="fc" id="L225">        try (WriteLock ignored = new WriteLock(getSettings(), true, repoFile.getName() + &quot;.lock&quot;)) {</span>
-<span class="fc" id="L226">            final File temp = getSettings().getTempDirectory();</span>
-<span class="fc" id="L227">            final File tempRepo = new File(temp, repoFile.getName());</span>
-<span class="fc" id="L228">            LOGGER.debug(&quot;copying retireJs repo {} to {}&quot;, repoFile.toPath(), tempRepo.toPath());</span>
-<span class="fc" id="L229">            Files.copy(repoFile.toPath(), tempRepo.toPath());</span>
-<span class="fc" id="L230">            repoFile = tempRepo;</span>
-<span class="nc" id="L231">        } catch (WriteLockException | IOException ex) {</span>
-<span class="nc" id="L232">            this.setEnabled(false);</span>
-<span class="nc" id="L233">            throw new InitializationException(&quot;Failed to copy the RetireJS repo&quot;, ex);</span>
-<span class="fc" id="L234">        }</span>
-<span class="fc" id="L235">        try (FileInputStream in = new FileInputStream(repoFile)) {</span>
-<span class="fc" id="L236">            this.jsRepository = new VulnerabilitiesRepositoryLoader().loadFromInputStream(in);</span>
-<span class="nc" id="L237">        } catch (JSONException ex) {</span>
-<span class="nc" id="L238">            this.setEnabled(false);</span>
-<span class="nc" id="L239">            throw new InitializationException(&quot;Failed to initialize the RetireJS repo: `&quot; + repoFile</span>
+<span class="fc" id="L199">        try (WriteLock ignored = new WriteLock(getSettings(), true, repoFile.getName() + &quot;.lock&quot;)) {</span>
+<span class="fc" id="L200">            final File temp = getSettings().getTempDirectory();</span>
+<span class="fc" id="L201">            final File tempRepo = new File(temp, repoFile.getName());</span>
+<span class="fc" id="L202">            LOGGER.debug(&quot;copying RetireJS repo {} to {}&quot;, repoFile.toPath(), tempRepo.toPath());</span>
+<span class="fc" id="L203">            Files.copy(repoFile.toPath(), tempRepo.toPath(), StandardCopyOption.REPLACE_EXISTING);</span>
+<span class="fc" id="L204">            repoFile = tempRepo;</span>
+<span class="nc" id="L205">        } catch (WriteLockException | IOException ex) {</span>
+<span class="nc" id="L206">            this.setEnabled(false);</span>
+<span class="nc" id="L207">            throw new InitializationException(&quot;Failed to copy the RetireJS repo&quot;, ex);</span>
+<span class="fc" id="L208">        }</span>
+<span class="fc" id="L209">        try (FileInputStream in = new FileInputStream(repoFile)) {</span>
+<span class="fc" id="L210">            this.jsRepository = new VulnerabilitiesRepositoryLoader().loadFromInputStream(in);</span>
+<span class="fc" id="L211">        } catch (JSONException ex) {</span>
+<span class="fc" id="L212">            this.setEnabled(false);</span>
+<span class="fc" id="L213">            throw new InitializationException(&quot;Failed to initialize the RetireJS repo: `&quot; + repoFile</span>
                     + &quot;` appears to be malformed. Please delete the file or run the dependency-check purge &quot;
                     + &quot;command and re-try running dependency-check.&quot;, ex);
-<span class="nc" id="L242">        } catch (IOException ex) {</span>
-<span class="nc" id="L243">            this.setEnabled(false);</span>
-<span class="nc" id="L244">            throw new InitializationException(&quot;Failed to initialize the RetireJS repo&quot;, ex);</span>
-<span class="fc" id="L245">        }</span>
-<span class="fc" id="L246">    }</span>
+<span class="nc" id="L216">        } catch (IOException ex) {</span>
+<span class="nc" id="L217">            this.setEnabled(false);</span>
+<span class="nc" id="L218">            throw new InitializationException(&quot;Failed to initialize the RetireJS repo&quot;, ex);</span>
+<span class="fc" id="L219">        }</span>
+<span class="fc" id="L220">    }</span>
+
+    private File tryRemoteFetchIfConfigured(Engine engine) throws InitializationException {
+<span class="fc" id="L223">        RetireJSDataSource ds = new RetireJSDataSource();</span>
+        try {
+<span class="fc" id="L225">            ds.update(engine);</span>
+<span class="fc" id="L226">            return ds.validatedRepoFile();</span>
+<span class="fc" id="L227">        } catch (UpdateException ex) {</span>
+<span class="fc" id="L228">            this.setEnabled(false);</span>
+<span class="fc" id="L229">            throw new InitializationException(&quot;Failed to initialize the RetireJS repo&quot;, ex);</span>
+        }
+    }
 
     /**
      * Returns the name of the analyzer.
@@ -252,7 +237,7 @@ import static org.owasp.dependencycheck.analyzer.RetireJsLibrary.KnownIdentifier
      */
     @Override
     public String getName() {
-<span class="fc" id="L255">        return ANALYZER_NAME;</span>
+<span class="fc" id="L240">        return ANALYZER_NAME;</span>
     }
 
     /**
@@ -262,7 +247,7 @@ import static org.owasp.dependencycheck.analyzer.RetireJsLibrary.KnownIdentifier
      */
     @Override
     public AnalysisPhase getAnalysisPhase() {
-<span class="fc" id="L265">        return ANALYSIS_PHASE;</span>
+<span class="fc" id="L250">        return ANALYSIS_PHASE;</span>
     }
 
     /**
@@ -273,7 +258,7 @@ import static org.owasp.dependencycheck.analyzer.RetireJsLibrary.KnownIdentifier
      */
     @Override
     protected String getAnalyzerEnabledSettingKey() {
-<span class="fc" id="L276">        return Settings.KEYS.ANALYZER_RETIREJS_ENABLED;</span>
+<span class="fc" id="L261">        return Settings.KEYS.ANALYZER_RETIREJS_ENABLED;</span>
     }
 
     /**
@@ -285,97 +270,103 @@ import static org.owasp.dependencycheck.analyzer.RetireJsLibrary.KnownIdentifier
      */
     @Override
     public void analyzeDependency(Dependency dependency, Engine engine) throws AnalysisException {
-<span class="pc bpc" id="L288" title="1 of 2 branches missed.">        if (dependency.isVirtual()) {</span>
-<span class="nc" id="L289">            return;</span>
+<span class="pc bpc" id="L273" title="1 of 2 branches missed.">        if (dependency.isVirtual()) {</span>
+<span class="nc" id="L274">            return;</span>
         }
-<span class="fc" id="L291">        try (InputStream fis = new FileInputStream(dependency.getActualFile())) {</span>
-<span class="fc" id="L292">            final List&lt;RetireJsLibrary&gt; vulnerableLibraries = new ScannerFacade(jsRepository)</span>
-<span class="fc" id="L293">                    .scanScript(dependency.getActualFile().getAbsolutePath(), IOUtils.toByteArray(fis), 0)</span>
-<span class="fc" id="L294">                    .stream().map(RetireJsLibrary::adapt).collect(Collectors.toList());</span>
+<span class="fc" id="L276">        try (InputStream fis = new FileInputStream(dependency.getActualFile())) {</span>
+<span class="fc" id="L277">            final List&lt;RetireJsLibrary&gt; vulnerableLibraries = new ScannerFacade(jsRepository)</span>
+<span class="fc" id="L278">                    .scanScript(dependency.getActualFile().getAbsolutePath(), IOUtils.toByteArray(fis), 0)</span>
+<span class="fc" id="L279">                    .stream().map(RetireJsLibrary::adapt).collect(Collectors.toList());</span>
 
-<span class="fc bfc" id="L296" title="All 4 branches covered.">            if (vulnerableLibraries.isEmpty() &amp;&amp; getSettings().getBoolean(Settings.KEYS.ANALYZER_RETIREJS_FILTER_NON_VULNERABLE, false)) {</span>
-<span class="fc" id="L297">                engine.removeDependency(dependency);</span>
-<span class="fc" id="L298">                return;</span>
+<span class="fc bfc" id="L281" title="All 4 branches covered.">            if (vulnerableLibraries.isEmpty() &amp;&amp; getSettings().getBoolean(Settings.KEYS.ANALYZER_RETIREJS_FILTER_NON_VULNERABLE, false)) {</span>
+<span class="fc" id="L282">                engine.removeDependency(dependency);</span>
+<span class="fc" id="L283">                return;</span>
             }
 
-<span class="fc bfc" id="L301" title="All 2 branches covered.">            for (RetireJsLibrary lib : vulnerableLibraries) {</span>
-<span class="fc" id="L302">                dependency.setName(lib.libraryName());</span>
-<span class="fc" id="L303">                dependency.setVersion(lib.version());</span>
-<span class="fc" id="L304">                dependency.addSoftwareIdentifier(lib.identifier());</span>
-<span class="fc" id="L305">                dependency.addEvidence(EvidenceType.VERSION, &quot;RetireJS&quot;, &quot;version&quot;, lib.version(), Confidence.HIGH);</span>
-<span class="fc" id="L306">                dependency.addEvidence(EvidenceType.PRODUCT, &quot;RetireJS&quot;, &quot;name&quot;, lib.libraryName(), Confidence.HIGH);</span>
-<span class="fc" id="L307">                dependency.addEvidence(EvidenceType.VENDOR, &quot;RetireJS&quot;, &quot;name&quot;, lib.libraryName(), Confidence.HIGH);</span>
-<span class="fc" id="L308">                dependency.addVulnerabilities(lib.vulnerabilities(cve -&gt; engine.getDatabase().getVulnerability(cve)));</span>
-<span class="fc" id="L309">            }</span>
-<span class="pc" id="L310">        } catch (StackOverflowError ex) {</span>
-<span class="nc" id="L311">            final String msg = String.format(&quot;An error occurred trying to analyze %s. &quot;</span>
+<span class="fc bfc" id="L286" title="All 2 branches covered.">            for (RetireJsLibrary lib : vulnerableLibraries) {</span>
+<span class="fc" id="L287">                dependency.setName(lib.libraryName());</span>
+<span class="fc" id="L288">                dependency.setVersion(lib.version());</span>
+<span class="fc" id="L289">                dependency.addSoftwareIdentifier(lib.identifier());</span>
+<span class="fc" id="L290">                dependency.addEvidence(EvidenceType.VERSION, &quot;RetireJS&quot;, &quot;version&quot;, lib.version(), Confidence.HIGH);</span>
+<span class="fc" id="L291">                dependency.addEvidence(EvidenceType.PRODUCT, &quot;RetireJS&quot;, &quot;name&quot;, lib.libraryName(), Confidence.HIGH);</span>
+<span class="fc" id="L292">                dependency.addEvidence(EvidenceType.VENDOR, &quot;RetireJS&quot;, &quot;name&quot;, lib.libraryName(), Confidence.HIGH);</span>
+<span class="fc" id="L293">                dependency.addVulnerabilities(lib.vulnerabilities(cve -&gt; engine.getDatabase().getVulnerability(cve)));</span>
+<span class="fc" id="L294">            }</span>
+<span class="pc" id="L295">        } catch (StackOverflowError ex) {</span>
+<span class="nc" id="L296">            final String msg = String.format(&quot;An error occurred trying to analyze %s. &quot;</span>
                             + &quot;To resolve this error please try increasing the Java stack size to &quot;
                             + &quot;8mb and re-run dependency-check:%n%n&quot;
                             + &quot;(win) : set JAVA_OPTS=\&quot;-Xss8m\&quot;%n&quot;
                             + &quot;(*nix): export JAVA_OPTS=\&quot;-Xss8m\&quot;%n%n&quot;,
-<span class="nc" id="L316">                    dependency.getDisplayFileName());</span>
-<span class="nc" id="L317">            throw new AnalysisException(msg, ex);</span>
-<span class="nc" id="L318">        } catch (IOException | DatabaseException e) {</span>
-<span class="nc" id="L319">            throw new AnalysisException(e);</span>
-<span class="fc" id="L320">        }</span>
-<span class="fc" id="L321">    }</span>
+<span class="nc" id="L301">                    dependency.getDisplayFileName());</span>
+<span class="nc" id="L302">            throw new AnalysisException(msg, ex);</span>
+<span class="nc" id="L303">        } catch (IOException | DatabaseException e) {</span>
+<span class="nc" id="L304">            throw new AnalysisException(e);</span>
+<span class="fc" id="L305">        }</span>
+<span class="fc" id="L306">    }</span>
 
     @Override
     protected void closeAnalyzer() throws Exception {
-<span class="fc" id="L325">        Log.set(Log.LEVEL_INFO);</span>
-<span class="fc" id="L326">    }</span>
+<span class="fc" id="L310">        Log.set(Log.LEVEL_INFO);</span>
+<span class="fc" id="L311">    }</span>
+
+    @SuppressWarnings(&quot;SameParameterValue&quot;)
+    @VisibleForTesting
+    OptionalInt knownLibraryCountFor(String fileName) {
+<span class="pc bpc" id="L316" title="1 of 2 branches missed.">        return jsRepository == null ? OptionalInt.empty() : OptionalInt.of(jsRepository.findByFilename(fileName).size());</span>
+    }
 }
 
 class RetireJsLibrary {
-<span class="fc" id="L330">    private static final Logger LOGGER = LoggerFactory.getLogger(RetireJsLibrary.class);</span>
+<span class="fc" id="L321">    private static final Logger LOGGER = LoggerFactory.getLogger(RetireJsLibrary.class);</span>
 
     private final JsLibraryResult result;
 
-<span class="fc" id="L334">    private RetireJsLibrary(JsLibraryResult result) {</span>
-<span class="fc" id="L335">        this.result = result;</span>
-<span class="fc" id="L336">    }</span>
+<span class="fc" id="L325">    private RetireJsLibrary(JsLibraryResult result) {</span>
+<span class="fc" id="L326">        this.result = result;</span>
+<span class="fc" id="L327">    }</span>
 
     static RetireJsLibrary adapt(JsLibraryResult result) {
-<span class="fc" id="L339">        return new RetireJsLibrary(result);</span>
+<span class="fc" id="L330">        return new RetireJsLibrary(result);</span>
     }
 
     String libraryName() {
-<span class="fc" id="L343">        return result.getLibrary().getName();</span>
+<span class="fc" id="L334">        return result.getLibrary().getName();</span>
     }
 
     String version() {
-<span class="fc" id="L347">        return result.getDetectedVersion();</span>
+<span class="fc" id="L338">        return result.getDetectedVersion();</span>
     }
 
     Identifier identifier() {
         try {
-<span class="fc" id="L352">            return new PurlIdentifier(</span>
-<span class="fc" id="L353">                    PackageURLBuilder.aPackageURL()</span>
-<span class="fc" id="L354">                            .withType(&quot;javascript&quot;)</span>
-<span class="fc" id="L355">                            .withName(libraryName())</span>
-<span class="fc" id="L356">                            .withVersion(version())</span>
-<span class="fc" id="L357">                            .build(),</span>
+<span class="fc" id="L343">            return new PurlIdentifier(</span>
+<span class="fc" id="L344">                    PackageURLBuilder.aPackageURL()</span>
+<span class="fc" id="L345">                            .withType(&quot;javascript&quot;)</span>
+<span class="fc" id="L346">                            .withName(libraryName())</span>
+<span class="fc" id="L347">                            .withVersion(version())</span>
+<span class="fc" id="L348">                            .build(),</span>
                     Confidence.HIGHEST);
-<span class="nc" id="L359">        } catch (MalformedPackageURLException ex) {</span>
-<span class="nc" id="L360">            LOGGER.debug(&quot;Unable to build package url for retireJS; using generic identifier&quot;, ex);</span>
-<span class="nc" id="L361">            return new GenericIdentifier(String.format(&quot;javascript:%s@%s&quot;, libraryName(), version()), Confidence.HIGHEST);</span>
+<span class="nc" id="L350">        } catch (MalformedPackageURLException ex) {</span>
+<span class="nc" id="L351">            LOGGER.debug(&quot;Unable to build package url for retireJS; using generic identifier&quot;, ex);</span>
+<span class="nc" id="L352">            return new GenericIdentifier(String.format(&quot;javascript:%s@%s&quot;, libraryName(), version()), Confidence.HIGHEST);</span>
         }
     }
 
     List&lt;Vulnerability&gt; vulnerabilities(KnownCveProvider knownCveProvider) {
-<span class="fc" id="L366">        List&lt;Vulnerability&gt; vulns = new RetireJsVulnerabilityIdentifiers(result.getVuln().getIdentifiers())</span>
-<span class="fc" id="L367">                .toVulnerabilities(knownCveProvider, result.getVuln().getSeverity());</span>
+<span class="fc" id="L357">        List&lt;Vulnerability&gt; vulns = new RetireJsVulnerabilityIdentifiers(result.getVuln().getIdentifiers())</span>
+<span class="fc" id="L358">                .toVulnerabilities(knownCveProvider, result.getVuln().getSeverity());</span>
 
-<span class="fc bfc" id="L369" title="All 2 branches covered.">        for (Vulnerability vuln : vulns) {</span>
-<span class="fc" id="L370">            vuln.addReferences(infoReferences());</span>
-<span class="fc" id="L371">        }</span>
-<span class="fc" id="L372">        return vulns;</span>
+<span class="fc bfc" id="L360" title="All 2 branches covered.">        for (Vulnerability vuln : vulns) {</span>
+<span class="fc" id="L361">            vuln.addReferences(infoReferences());</span>
+<span class="fc" id="L362">        }</span>
+<span class="fc" id="L363">        return vulns;</span>
     }
 
     private @NonNull Set&lt;Reference&gt; infoReferences() {
-<span class="fc" id="L376">        return result.getVuln().getInfo().stream()</span>
-<span class="fc bfc" id="L377" title="All 2 branches covered.">                .map(info -&gt; new Reference(info, &quot;info&quot;, UrlValidator.getInstance().isValid(info) ? info : null))</span>
-<span class="fc" id="L378">                .collect(Collectors.toSet());</span>
+<span class="fc" id="L367">        return result.getVuln().getInfo().stream()</span>
+<span class="fc bfc" id="L368" title="All 2 branches covered.">                .map(info -&gt; new Reference(info, &quot;info&quot;, UrlValidator.getInstance().isValid(info) ? info : null))</span>
+<span class="fc" id="L369">                .collect(Collectors.toSet());</span>
     }
 
     @SuppressWarnings(&quot;OptionalUsedAsFieldOrParameterType&quot;)
@@ -391,81 +382,81 @@ class RetireJsLibrary {
         private final Map&lt;String, String&gt; secondaryNameIds;
         private final Optional&lt;String&gt; summary;
 
-<span class="fc" id="L394">        RetireJsVulnerabilityIdentifiers(Map&lt;String, List&lt;String&gt;&gt; rawIdentifiers) {</span>
+<span class="fc" id="L385">        RetireJsVulnerabilityIdentifiers(Map&lt;String, List&lt;String&gt;&gt; rawIdentifiers) {</span>
             // CVE identifiers can be a list
-<span class="fc" id="L396">            this.cveIds = Optional.ofNullable(rawIdentifiers.get(CVE)).orElse(List.of()).stream()</span>
-<span class="fc" id="L397">                    .map(StringUtils::trimToNull)</span>
-<span class="fc" id="L398">                    .filter(StringUtils::isNotEmpty)</span>
-<span class="fc" id="L399">                    .collect(Collectors.toList());</span>
+<span class="fc" id="L387">            this.cveIds = Optional.ofNullable(rawIdentifiers.get(CVE)).orElse(List.of()).stream()</span>
+<span class="fc" id="L388">                    .map(StringUtils::trimToNull)</span>
+<span class="fc" id="L389">                    .filter(StringUtils::isNotEmpty)</span>
+<span class="fc" id="L390">                    .collect(Collectors.toList());</span>
 
             // Other identifiers are only supported by the underlying schema as single items, so we get the first
-<span class="fc" id="L402">            this.ghsaId = singleItem(rawIdentifiers.get(GITHUB_SECURITY_ADVISORY));</span>
-<span class="fc" id="L403">            this.secondaryNameIds = SECONDARY_NAME_TYPES.stream()</span>
-<span class="fc" id="L404">                    .flatMap(type -&gt; singleEntry(type, rawIdentifiers.get(type)).stream())</span>
-<span class="pc" id="L405">                    .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (a, b) -&gt; a, LinkedHashMap::new));</span>
+<span class="fc" id="L393">            this.ghsaId = singleItem(rawIdentifiers.get(GITHUB_SECURITY_ADVISORY));</span>
+<span class="fc" id="L394">            this.secondaryNameIds = SECONDARY_NAME_TYPES.stream()</span>
+<span class="fc" id="L395">                    .flatMap(type -&gt; singleEntry(type, rawIdentifiers.get(type)).stream())</span>
+<span class="pc" id="L396">                    .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (a, b) -&gt; a, LinkedHashMap::new));</span>
 
             // Summary is sometimes present; and can be a fallback vulnerability name as well as description
-<span class="fc" id="L408">            this.summary = singleItem(rawIdentifiers.get(SUMMARY));</span>
-<span class="fc" id="L409">        }</span>
+<span class="fc" id="L399">            this.summary = singleItem(rawIdentifiers.get(SUMMARY));</span>
+<span class="fc" id="L400">        }</span>
 
         List&lt;Vulnerability&gt; toVulnerabilities(KnownCveProvider cveProvider, String severity) {
             // Prefer CVEs; and see if we already know about them from the NVD.
             // RetireJS can map multiple CVEs, so create 'N' vulns
-<span class="fc" id="L414">            List&lt;Vulnerability&gt; discoveredVulnerabilities = cveIds.stream()</span>
-<span class="fc" id="L415">                    .map(cveId -&gt; cveProvider.optional(cveId).orElseGet(() -&gt; retireJsVulnFor(cveId)))</span>
-<span class="fc" id="L416">                    .collect(Collectors.toList());</span>
+<span class="fc" id="L405">            List&lt;Vulnerability&gt; discoveredVulnerabilities = cveIds.stream()</span>
+<span class="fc" id="L406">                    .map(cveId -&gt; cveProvider.optional(cveId).orElseGet(() -&gt; retireJsVulnFor(cveId)))</span>
+<span class="fc" id="L407">                    .collect(Collectors.toList());</span>
 
             // We try and index off CVEs that we can find existing from NVD; else create a single new one
             // with the best canonical name we can determine from identifiers
-<span class="fc bfc" id="L420" title="All 2 branches covered.">            if (discoveredVulnerabilities.isEmpty()) {</span>
-<span class="fc" id="L421">                discoveredVulnerabilities.add(retireJsVulnFor(vulnerabilityName()));</span>
+<span class="fc bfc" id="L411" title="All 2 branches covered.">            if (discoveredVulnerabilities.isEmpty()) {</span>
+<span class="fc" id="L412">                discoveredVulnerabilities.add(retireJsVulnFor(vulnerabilityName()));</span>
             }
 
             // For vulnerabilities not referenced externally; populate description and references from identifiers
-<span class="fc" id="L425">            discoveredVulnerabilities.stream()</span>
-<span class="fc" id="L426">                    .filter(vuln -&gt; Vulnerability.Source.RETIREJS.equals(vuln.getSource()))</span>
-<span class="fc" id="L427">                    .forEach(vuln -&gt; {</span>
-<span class="fc" id="L428">                        vuln.setUnscoredSeverity(severity);</span>
-<span class="fc" id="L429">                        summary.ifPresent(vuln::setDescription);</span>
-<span class="fc" id="L430">                        vuln.addReferences(references());</span>
-<span class="fc" id="L431">                    });</span>
-<span class="fc" id="L432">            return discoveredVulnerabilities;</span>
+<span class="fc" id="L416">            discoveredVulnerabilities.stream()</span>
+<span class="fc" id="L417">                    .filter(vuln -&gt; Vulnerability.Source.RETIREJS.equals(vuln.getSource()))</span>
+<span class="fc" id="L418">                    .forEach(vuln -&gt; {</span>
+<span class="fc" id="L419">                        vuln.setUnscoredSeverity(severity);</span>
+<span class="fc" id="L420">                        summary.ifPresent(vuln::setDescription);</span>
+<span class="fc" id="L421">                        vuln.addReferences(references());</span>
+<span class="fc" id="L422">                    });</span>
+<span class="fc" id="L423">            return discoveredVulnerabilities;</span>
         }
 
         private Vulnerability retireJsVulnFor(String name) {
-<span class="fc" id="L436">            final Vulnerability vuln = new Vulnerability(name);</span>
-<span class="fc" id="L437">            vuln.setSource(Vulnerability.Source.RETIREJS);</span>
-<span class="fc" id="L438">            return vuln;</span>
+<span class="fc" id="L427">            final Vulnerability vuln = new Vulnerability(name);</span>
+<span class="fc" id="L428">            vuln.setSource(Vulnerability.Source.RETIREJS);</span>
+<span class="fc" id="L429">            return vuln;</span>
         }
 
 
         private @NonNull String vulnerabilityName() {
-<span class="pc bpc" id="L443" title="1 of 2 branches missed.">            if (!cveIds.isEmpty()) {</span>
-<span class="nc" id="L444">                throw new IllegalStateException(&quot;vulnerability names for RetireJS vulnerabilities should be taken from the CVE ID&quot;);</span>
+<span class="pc bpc" id="L434" title="1 of 2 branches missed.">            if (!cveIds.isEmpty()) {</span>
+<span class="nc" id="L435">                throw new IllegalStateException(&quot;vulnerability names for RetireJS vulnerabilities should be taken from the CVE ID&quot;);</span>
             }
 
             // Use the GHSA as a universal identifier if present; otherwise create a vuln name that is library
             // contextual, as we don't know we have a globally unique ID.
-<span class="fc" id="L449">            return ghsaId</span>
-<span class="fc" id="L450">                    .or(() -&gt; secondaryNameIds.entrySet().stream().findFirst().map(e -&gt; libraryContextualName(e.getKey(), e.getValue())))</span>
-<span class="fc" id="L451">                    .or(() -&gt; summary.filter(this::isSmallSingleLine))</span>
-<span class="fc" id="L452">                    .orElseGet(() -&gt; &quot;Vulnerability in &quot; + libraryName());</span>
+<span class="fc" id="L440">            return ghsaId</span>
+<span class="fc" id="L441">                    .or(() -&gt; secondaryNameIds.entrySet().stream().findFirst().map(e -&gt; libraryContextualName(e.getKey(), e.getValue())))</span>
+<span class="fc" id="L442">                    .or(() -&gt; summary.filter(this::isSmallSingleLine))</span>
+<span class="fc" id="L443">                    .orElseGet(() -&gt; &quot;Vulnerability in &quot; + libraryName());</span>
         }
 
         private String libraryContextualName(String type, String id) {
-<span class="fc" id="L456">            return String.format(&quot;%s %s: %s&quot;, libraryName(), type, id);</span>
+<span class="fc" id="L447">            return String.format(&quot;%s %s: %s&quot;, libraryName(), type, id);</span>
         }
 
         private boolean isSmallSingleLine(String value) {
-<span class="fc bfc" id="L460" title="All 4 branches covered.">            return value.length() &lt;= MAX_NAME_LENGTH &amp;&amp; value.lines().limit(2).count() == 1;</span>
+<span class="fc bfc" id="L451" title="All 4 branches covered.">            return value.length() &lt;= MAX_NAME_LENGTH &amp;&amp; value.lines().limit(2).count() == 1;</span>
         }
 
         private Set&lt;Reference&gt; references() {
-<span class="fc" id="L464">            Set&lt;Reference&gt; references = new HashSet&lt;&gt;();</span>
+<span class="fc" id="L455">            Set&lt;Reference&gt; references = new HashSet&lt;&gt;();</span>
             // RetireJS identifiers are never URLs
-<span class="fc" id="L466">            ghsaId.ifPresent(id -&gt; references.add(new Reference(id, &quot;ghsaId&quot;, null)));</span>
-<span class="fc" id="L467">            secondaryNameIds.forEach((type, id) -&gt; references.add(new Reference(id, type, null)));</span>
-<span class="fc" id="L468">            return references;</span>
+<span class="fc" id="L457">            ghsaId.ifPresent(id -&gt; references.add(new Reference(id, &quot;ghsaId&quot;, null)));</span>
+<span class="fc" id="L458">            secondaryNameIds.forEach((type, id) -&gt; references.add(new Reference(id, type, null)));</span>
+<span class="fc" id="L459">            return references;</span>
         }
     }
 
@@ -474,7 +465,7 @@ class RetireJsLibrary {
         @Nullable Vulnerability lookup(String cve);
 
         default @NonNull Optional&lt;Vulnerability&gt; optional(String cve) {
-<span class="fc" id="L477">            return Optional.ofNullable(lookup(cve));</span>
+<span class="fc" id="L468">            return Optional.ofNullable(lookup(cve));</span>
         }
     }
 
@@ -490,17 +481,17 @@ class RetireJsLibrary {
     interface KnownIdentifierTypes {
         String CVE = &quot;CVE&quot;;
         String GITHUB_SECURITY_ADVISORY = &quot;githubID&quot;;
-<span class="fc" id="L493">        List&lt;String&gt; SECONDARY_NAME_TYPES = List.of(&quot;issue&quot;, &quot;bug&quot;, &quot;PR&quot;);</span>
+<span class="fc" id="L484">        List&lt;String&gt; SECONDARY_NAME_TYPES = List.of(&quot;issue&quot;, &quot;bug&quot;, &quot;PR&quot;);</span>
         String SUMMARY = &quot;summary&quot;;
 
         static @NonNull Optional&lt;String&gt; singleItem(@Nullable List&lt;String&gt; identifiers) {
-<span class="fc" id="L497">            return Optional.ofNullable(identifiers)</span>
-<span class="fc" id="L498">                    .flatMap(s -&gt; s.stream().map(StringUtils::trimToNull).filter(Objects::nonNull).findFirst());</span>
+<span class="fc" id="L488">            return Optional.ofNullable(identifiers)</span>
+<span class="fc" id="L489">                    .flatMap(s -&gt; s.stream().map(StringUtils::trimToNull).filter(Objects::nonNull).findFirst());</span>
         }
 
         static @NonNull Optional&lt;Map.Entry&lt;String, String&gt;&gt; singleEntry(@NonNull String type, @Nullable List&lt;String&gt; identifiers) {
-<span class="fc" id="L502">            return singleItem(identifiers).map(id -&gt; Map.entry(type, id));</span>
+<span class="fc" id="L493">            return singleItem(identifiers).map(id -&gt; Map.entry(type, id));</span>
         }
     }
 }
-</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.14.202510111229</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.15.202606040825</span></div></body></html>

@@ -47,13 +47,15 @@ import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.owasp.dependencycheck.utils.FileUtils.existsWithContent;
+
 @ThreadSafe
-<span class="fc" id="L51">public class PnpmAuditAnalyzer extends AbstractNpmAnalyzer {</span>
+<span class="fc" id="L53">public class PnpmAuditAnalyzer extends AbstractNpmAnalyzer {</span>
 
     /**
      * The logger.
      */
-<span class="fc" id="L56">    private static final Logger LOGGER = LoggerFactory.getLogger(PnpmAuditAnalyzer.class);</span>
+<span class="fc" id="L58">    private static final Logger LOGGER = LoggerFactory.getLogger(PnpmAuditAnalyzer.class);</span>
 
     /**
      * The file name to scan.
@@ -68,8 +70,8 @@ import java.util.List;
     /**
      * Filter that detects files named &quot;pnpm-lock.yaml&quot;
      */
-<span class="fc" id="L71">    private static final FileFilter LOCK_FILE_FILTER = FileFilterBuilder.newInstance()</span>
-<span class="fc" id="L72">            .addFilenames(PNPM_PACKAGE_LOCK).build();</span>
+<span class="fc" id="L73">    private static final FileFilter LOCK_FILE_FILTER = FileFilterBuilder.newInstance()</span>
+<span class="fc" id="L74">            .addFilenames(PNPM_PACKAGE_LOCK).build();</span>
 
     /**
      * The path to the `pnpm` executable.
@@ -86,41 +88,41 @@ import java.util.List;
      */
     @Override
     protected void analyzeDependency(Dependency dependency, Engine engine) throws AnalysisException {
-<span class="nc bnc" id="L89" title="All 2 branches missed.">        if (dependency.getDisplayFileName().equals(dependency.getFileName())) {</span>
-<span class="nc" id="L90">            engine.removeDependency(dependency);</span>
+<span class="nc bnc" id="L91" title="All 2 branches missed.">        if (dependency.getDisplayFileName().equals(dependency.getFileName())) {</span>
+<span class="nc" id="L92">            engine.removeDependency(dependency);</span>
         }
-<span class="nc" id="L92">        final File packageLock = dependency.getActualFile();</span>
-<span class="nc bnc" id="L93" title="All 6 branches missed.">        if (!packageLock.isFile() || packageLock.length() == 0 || !shouldProcess(packageLock)) {</span>
-<span class="nc" id="L94">            return;</span>
+<span class="nc" id="L94">        final File packageLock = dependency.getActualFile();</span>
+<span class="nc bnc" id="L95" title="All 4 branches missed.">        if (!existsWithContent(packageLock) || !shouldProcess(packageLock)) {</span>
+<span class="nc" id="L96">            return;</span>
         }
         final List&lt;Advisory&gt; advisories;
-<span class="nc" id="L97">        final MultiValuedMap&lt;String, String&gt; dependencyMap = new HashSetValuedHashMap&lt;&gt;();</span>
-<span class="nc" id="L98">        advisories = analyzePackage(packageLock, dependency);</span>
+<span class="nc" id="L99">        final MultiValuedMap&lt;String, String&gt; dependencyMap = new HashSetValuedHashMap&lt;&gt;();</span>
+<span class="nc" id="L100">        advisories = analyzePackage(packageLock, dependency);</span>
         try {
-<span class="nc" id="L100">            processResults(advisories, engine, dependency, dependencyMap);</span>
-<span class="nc" id="L101">        } catch (CpeValidationException ex) {</span>
-<span class="nc" id="L102">            throw new UnexpectedAnalysisException(ex);</span>
-<span class="nc" id="L103">        }</span>
-<span class="nc" id="L104">    }</span>
+<span class="nc" id="L102">            processResults(advisories, engine, dependency, dependencyMap);</span>
+<span class="nc" id="L103">        } catch (CpeValidationException ex) {</span>
+<span class="nc" id="L104">            throw new UnexpectedAnalysisException(ex);</span>
+<span class="nc" id="L105">        }</span>
+<span class="nc" id="L106">    }</span>
 
     @Override
     protected String getAnalyzerEnabledSettingKey() {
-<span class="fc" id="L108">        return Settings.KEYS.ANALYZER_PNPM_AUDIT_ENABLED;</span>
+<span class="fc" id="L110">        return Settings.KEYS.ANALYZER_PNPM_AUDIT_ENABLED;</span>
     }
 
     @Override
     protected FileFilter getFileFilter() {
-<span class="fc" id="L113">        return LOCK_FILE_FILTER;</span>
+<span class="fc" id="L115">        return LOCK_FILE_FILTER;</span>
     }
 
     @Override
     public String getName() {
-<span class="fc" id="L118">        return &quot;Pnpm Audit Analyzer&quot;;</span>
+<span class="fc" id="L120">        return &quot;Pnpm Audit Analyzer&quot;;</span>
     }
 
     @Override
     public AnalysisPhase getAnalysisPhase() {
-<span class="fc" id="L123">        return AnalysisPhase.FINDING_ANALYSIS;</span>
+<span class="fc" id="L125">        return AnalysisPhase.FINDING_ANALYSIS;</span>
     }
 
     /**
@@ -131,39 +133,39 @@ import java.util.List;
      */
     @Override
     protected void prepareFileTypeAnalyzer(Engine engine) throws InitializationException {
-<span class="nc" id="L134">        super.prepareFileTypeAnalyzer(engine);</span>
-<span class="nc bnc" id="L135" title="All 2 branches missed.">        if (!isEnabled()) {</span>
-<span class="nc" id="L136">            LOGGER.debug(&quot;{} Analyzer is disabled skipping pnpm executable check&quot;, getName());</span>
-<span class="nc" id="L137">            return;</span>
+<span class="nc" id="L136">        super.prepareFileTypeAnalyzer(engine);</span>
+<span class="nc bnc" id="L137" title="All 2 branches missed.">        if (!isEnabled()) {</span>
+<span class="nc" id="L138">            LOGGER.debug(&quot;{} Analyzer is disabled skipping pnpm executable check&quot;, getName());</span>
+<span class="nc" id="L139">            return;</span>
         }
-<span class="nc" id="L139">        final List&lt;String&gt; args = new ArrayList&lt;&gt;();</span>
-<span class="nc" id="L140">        args.add(getPnpm());</span>
-<span class="nc" id="L141">        args.add(&quot;--help&quot;);</span>
-<span class="nc" id="L142">        final ProcessBuilder builder = new ProcessBuilder(args);</span>
-<span class="nc" id="L143">        LOGGER.debug(&quot;Launching: {}&quot;, args);</span>
+<span class="nc" id="L141">        final List&lt;String&gt; args = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L142">        args.add(getPnpm());</span>
+<span class="nc" id="L143">        args.add(&quot;--help&quot;);</span>
+<span class="nc" id="L144">        final ProcessBuilder builder = new ProcessBuilder(args);</span>
+<span class="nc" id="L145">        LOGGER.debug(&quot;Launching: {}&quot;, args);</span>
         try {
-<span class="nc" id="L145">            final Process process = builder.start();</span>
-<span class="nc" id="L146">            try (ProcessReader processReader = new ProcessReader(process)) {</span>
-<span class="nc" id="L147">                processReader.readAll();</span>
-<span class="nc" id="L148">                final int exitValue = process.waitFor();</span>
-<span class="nc" id="L149">                final int expectedExitValue = 0;</span>
-<span class="nc" id="L150">                final int executableNotFoundExitValue = 127;</span>
-<span class="nc bnc" id="L151" title="All 2 branches missed.">                switch (exitValue) {</span>
+<span class="nc" id="L147">            final Process process = builder.start();</span>
+<span class="nc" id="L148">            try (ProcessReader processReader = new ProcessReader(process)) {</span>
+<span class="nc" id="L149">                processReader.readAll();</span>
+<span class="nc" id="L150">                final int exitValue = process.waitFor();</span>
+<span class="nc" id="L151">                final int expectedExitValue = 0;</span>
+<span class="nc" id="L152">                final int executableNotFoundExitValue = 127;</span>
+<span class="nc bnc" id="L153" title="All 2 branches missed.">                switch (exitValue) {</span>
                     case expectedExitValue:
-<span class="nc" id="L153">                        LOGGER.debug(&quot;{} is enabled.&quot;, getName());</span>
-<span class="nc" id="L154">                        break;</span>
+<span class="nc" id="L155">                        LOGGER.debug(&quot;{} is enabled.&quot;, getName());</span>
+<span class="nc" id="L156">                        break;</span>
                     case executableNotFoundExitValue:
                     default:
-<span class="nc" id="L157">                        this.setEnabled(false);</span>
-<span class="nc" id="L158">                        LOGGER.warn(&quot;The {} has been disabled. Pnpm executable was not found.&quot;, getName());</span>
+<span class="nc" id="L159">                        this.setEnabled(false);</span>
+<span class="nc" id="L160">                        LOGGER.warn(&quot;The {} has been disabled. Pnpm executable was not found.&quot;, getName());</span>
                 }
             }
-<span class="nc" id="L161">        } catch (Exception ex) {</span>
-<span class="nc" id="L162">            this.setEnabled(false);</span>
-<span class="nc" id="L163">            LOGGER.warn(&quot;The {} has been disabled. Pnpm executable was not found.&quot;, getName());</span>
-<span class="nc" id="L164">            throw new InitializationException(&quot;Unable to read pnpm audit output.&quot;, ex);</span>
-<span class="nc" id="L165">        }</span>
-<span class="nc" id="L166">    }</span>
+<span class="nc" id="L163">        } catch (Exception ex) {</span>
+<span class="nc" id="L164">            this.setEnabled(false);</span>
+<span class="nc" id="L165">            LOGGER.warn(&quot;The {} has been disabled. Pnpm executable was not found.&quot;, getName());</span>
+<span class="nc" id="L166">            throw new InitializationException(&quot;Unable to read pnpm audit output.&quot;, ex);</span>
+<span class="nc" id="L167">        }</span>
+<span class="nc" id="L168">    }</span>
 
     /**
      * Attempts to determine the path to `pnpm`.
@@ -172,79 +174,79 @@ import java.util.List;
      */
     private String getPnpm() {
         final String value;
-<span class="nc" id="L175">        synchronized (this) {</span>
-<span class="nc bnc" id="L176" title="All 2 branches missed.">            if (pnpmPath == null) {</span>
-<span class="nc" id="L177">                final String path = getSettings().getString(Settings.KEYS.ANALYZER_PNPM_PATH);</span>
-<span class="nc bnc" id="L178" title="All 2 branches missed.">                if (path == null) {</span>
-<span class="nc" id="L179">                    pnpmPath = &quot;pnpm&quot;;</span>
+<span class="nc" id="L177">        synchronized (this) {</span>
+<span class="nc bnc" id="L178" title="All 2 branches missed.">            if (pnpmPath == null) {</span>
+<span class="nc" id="L179">                final String path = getSettings().getString(Settings.KEYS.ANALYZER_PNPM_PATH);</span>
+<span class="nc bnc" id="L180" title="All 2 branches missed.">                if (path == null) {</span>
+<span class="nc" id="L181">                    pnpmPath = &quot;pnpm&quot;;</span>
                 } else {
-<span class="nc" id="L181">                    final File pnpmFile = new File(path);</span>
-<span class="nc bnc" id="L182" title="All 2 branches missed.">                    if (pnpmFile.isFile()) {</span>
-<span class="nc" id="L183">                        pnpmPath = pnpmFile.getAbsolutePath();</span>
+<span class="nc" id="L183">                    final File pnpmFile = new File(path);</span>
+<span class="nc bnc" id="L184" title="All 2 branches missed.">                    if (pnpmFile.isFile()) {</span>
+<span class="nc" id="L185">                        pnpmPath = pnpmFile.getAbsolutePath();</span>
                     } else {
-<span class="nc" id="L185">                        LOGGER.warn(&quot;Provided path to `pnpm` executable is invalid.&quot;);</span>
-<span class="nc" id="L186">                        pnpmPath = &quot;pnpm&quot;;</span>
+<span class="nc" id="L187">                        LOGGER.warn(&quot;Provided path to `pnpm` executable is invalid.&quot;);</span>
+<span class="nc" id="L188">                        pnpmPath = &quot;pnpm&quot;;</span>
                     }
                 }
             }
-<span class="nc" id="L190">            value = pnpmPath;</span>
-<span class="nc" id="L191">        }</span>
-<span class="nc" id="L192">        return value;</span>
+<span class="nc" id="L192">            value = pnpmPath;</span>
+<span class="nc" id="L193">        }</span>
+<span class="nc" id="L194">        return value;</span>
     }
 
     private JSONObject fetchPnpmAuditJson(Dependency dependency, boolean skipDevDependencies) throws AnalysisException {
-<span class="nc" id="L196">        final File folder = dependency.getActualFile().getParentFile();</span>
-<span class="nc bnc" id="L197" title="All 2 branches missed.">        if (!folder.isDirectory()) {</span>
-<span class="nc" id="L198">            throw new AnalysisException(String.format(&quot;%s should have been a directory.&quot;, folder.getAbsolutePath()));</span>
+<span class="nc" id="L198">        final File folder = dependency.getActualFile().getParentFile();</span>
+<span class="nc bnc" id="L199" title="All 2 branches missed.">        if (!folder.isDirectory()) {</span>
+<span class="nc" id="L200">            throw new AnalysisException(String.format(&quot;%s should have been a directory.&quot;, folder.getAbsolutePath()));</span>
         }
         try {
-<span class="nc" id="L201">            final List&lt;String&gt; args = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L203">            final List&lt;String&gt; args = new ArrayList&lt;&gt;();</span>
 
-<span class="nc" id="L203">            args.add(getPnpm());</span>
-<span class="nc" id="L204">            args.add(&quot;audit&quot;);</span>
-<span class="nc bnc" id="L205" title="All 2 branches missed.">            if (skipDevDependencies) {</span>
-<span class="nc" id="L206">                args.add(&quot;--prod&quot;);</span>
+<span class="nc" id="L205">            args.add(getPnpm());</span>
+<span class="nc" id="L206">            args.add(&quot;audit&quot;);</span>
+<span class="nc bnc" id="L207" title="All 2 branches missed.">            if (skipDevDependencies) {</span>
+<span class="nc" id="L208">                args.add(&quot;--prod&quot;);</span>
             }
             // pnpm audit returns a json compliant with NpmAuditParser
-<span class="nc" id="L209">            args.add(&quot;--json&quot;);</span>
+<span class="nc" id="L211">            args.add(&quot;--json&quot;);</span>
             // ensure we are using the right registry despite .npmrc, but allow override
-<span class="nc" id="L211">            args.add(&quot;--registry&quot;);</span>
-<span class="nc" id="L212">            args.add(getSettings().getString(Settings.KEYS.ANALYZER_PNPM_AUDIT_REGISTRY, DEFAULT_REGISTRY));</span>
-<span class="nc" id="L213">            final ProcessBuilder builder = new ProcessBuilder(args);</span>
-<span class="nc" id="L214">            builder.directory(folder);</span>
+<span class="nc" id="L213">            args.add(&quot;--registry&quot;);</span>
+<span class="nc" id="L214">            args.add(getSettings().getString(Settings.KEYS.ANALYZER_PNPM_AUDIT_REGISTRY, DEFAULT_REGISTRY));</span>
+<span class="nc" id="L215">            final ProcessBuilder builder = new ProcessBuilder(args);</span>
+<span class="nc" id="L216">            builder.directory(folder);</span>
             // Workaround 64k limitation of InputStream, redirect stdout to a file that we will read later
             // instead of reading directly stdout from Process's InputStream which is topped at 64k
-<span class="nc" id="L217">            final File tmpFile = File.createTempFile(&quot;pnpm_audit&quot;, null);</span>
-<span class="nc" id="L218">            builder.redirectOutput(tmpFile);</span>
-<span class="nc" id="L219">            LOGGER.debug(&quot;Launching: {}&quot;, args);</span>
-<span class="nc" id="L220">            final Process process = builder.start();</span>
-<span class="nc" id="L221">            try (ProcessReader processReader = new ProcessReader(process)) {</span>
-<span class="nc" id="L222">                processReader.readAll();</span>
-<span class="nc" id="L223">                final String errOutput = processReader.getError();</span>
-<span class="nc bnc" id="L224" title="All 2 branches missed.">                if (!StringUtils.isBlank(errOutput)) {</span>
-<span class="nc" id="L225">                    LOGGER.error(&quot;Process error output: {}&quot;, errOutput);</span>
+<span class="nc" id="L219">            final File tmpFile = File.createTempFile(&quot;pnpm_audit&quot;, null);</span>
+<span class="nc" id="L220">            builder.redirectOutput(tmpFile);</span>
+<span class="nc" id="L221">            LOGGER.debug(&quot;Launching: {}&quot;, args);</span>
+<span class="nc" id="L222">            final Process process = builder.start();</span>
+<span class="nc" id="L223">            try (ProcessReader processReader = new ProcessReader(process)) {</span>
+<span class="nc" id="L224">                processReader.readAll();</span>
+<span class="nc" id="L225">                final String errOutput = processReader.getError();</span>
+<span class="nc bnc" id="L226" title="All 2 branches missed.">                if (!StringUtils.isBlank(errOutput)) {</span>
+<span class="nc" id="L227">                    LOGGER.error(&quot;Process error output: {}&quot;, errOutput);</span>
                 }
-<span class="nc" id="L227">                String verboseJson = new String(Files.readAllBytes(tmpFile.toPath()), StandardCharsets.UTF_8);</span>
+<span class="nc" id="L229">                String verboseJson = new String(Files.readAllBytes(tmpFile.toPath()), StandardCharsets.UTF_8);</span>
                 // Workaround implicit creation of .pnpm-debug.log, see https://github.com/pnpm/pnpm/issues/3832
                 // affects usage of docker container to analyze mounted directories without privileges
-<span class="nc bnc" id="L230" title="All 2 branches missed.">                if (verboseJson.contains(&quot;EACCES: permission denied, open 'node_modules/.pnpm-debug.log'&quot;)) {</span>
-<span class="nc" id="L231">                    verboseJson = verboseJson.substring(0, verboseJson.indexOf(&quot;EACCES: permission denied, open 'node_modules/.pnpm-debug.log'&quot;));</span>
+<span class="nc bnc" id="L232" title="All 2 branches missed.">                if (verboseJson.contains(&quot;EACCES: permission denied, open 'node_modules/.pnpm-debug.log'&quot;)) {</span>
+<span class="nc" id="L233">                    verboseJson = verboseJson.substring(0, verboseJson.indexOf(&quot;EACCES: permission denied, open 'node_modules/.pnpm-debug.log'&quot;));</span>
                 }
-<span class="nc" id="L233">                LOGGER.debug(&quot;Audit report: {}&quot;, verboseJson);</span>
-<span class="nc" id="L234">                return new JSONObject(verboseJson);</span>
-<span class="nc" id="L235">            } catch (InterruptedException ex) {</span>
-<span class="nc" id="L236">                Thread.currentThread().interrupt();</span>
-<span class="nc" id="L237">                throw new AnalysisException(&quot;Pnpm audit process was interrupted.&quot;, ex);</span>
-<span class="nc" id="L238">            } catch (JSONException e) {</span>
-<span class="nc" id="L239">                Thread.currentThread().interrupt();</span>
-<span class="nc" id="L240">                throw new AnalysisException(&quot;Pnpm audit returned an invalid response.&quot;, e);</span>
+<span class="nc" id="L235">                LOGGER.debug(&quot;Audit report: {}&quot;, verboseJson);</span>
+<span class="nc" id="L236">                return new JSONObject(verboseJson);</span>
+<span class="nc" id="L237">            } catch (InterruptedException ex) {</span>
+<span class="nc" id="L238">                Thread.currentThread().interrupt();</span>
+<span class="nc" id="L239">                throw new AnalysisException(&quot;Pnpm audit process was interrupted.&quot;, ex);</span>
+<span class="nc" id="L240">            } catch (JSONException e) {</span>
+<span class="nc" id="L241">                Thread.currentThread().interrupt();</span>
+<span class="nc" id="L242">                throw new AnalysisException(&quot;Pnpm audit returned an invalid response.&quot;, e);</span>
             } finally {
-<span class="nc bnc" id="L242" title="All 2 branches missed.">                if (!tmpFile.delete()) {</span>
-<span class="nc" id="L243">                    LOGGER.debug(&quot;Unable to delete temp file: {}&quot;, tmpFile);</span>
+<span class="nc bnc" id="L244" title="All 2 branches missed.">                if (!tmpFile.delete()) {</span>
+<span class="nc" id="L245">                    LOGGER.debug(&quot;Unable to delete temp file: {}&quot;, tmpFile);</span>
                 }
             }
-<span class="nc" id="L246">        } catch (IOException ioe) {</span>
-<span class="nc" id="L247">            throw new AnalysisException(&quot;pnpm audit failure; this error can be ignored if you are not analyzing projects with a pnpm lockfile.&quot;, ioe);</span>
+<span class="nc" id="L248">        } catch (IOException ioe) {</span>
+<span class="nc" id="L249">            throw new AnalysisException(&quot;pnpm audit failure; this error can be ignored if you are not analyzing projects with a pnpm lockfile.&quot;, ioe);</span>
         }
     }
 
@@ -264,26 +266,26 @@ import java.util.List;
             Dependency dependency)
             throws AnalysisException {
         try {
-<span class="nc" id="L267">            final boolean skipDevDependencies = getSettings().getBoolean(Settings.KEYS.ANALYZER_NODE_AUDIT_SKIPDEV, false);</span>
+<span class="nc" id="L269">            final boolean skipDevDependencies = getSettings().getBoolean(Settings.KEYS.ANALYZER_NODE_AUDIT_SKIPDEV, false);</span>
 
             // Use pnpm directly to fetch audit.json
             // Retrieves the contents of package-lock.json from the Dependency
-<span class="nc" id="L271">            final JSONObject auditJson = fetchPnpmAuditJson(dependency, skipDevDependencies);</span>
+<span class="nc" id="L273">            final JSONObject auditJson = fetchPnpmAuditJson(dependency, skipDevDependencies);</span>
             // Submits the package payload to the nsp check service
-<span class="nc" id="L273">            return getAuditParser().parse(auditJson);</span>
+<span class="nc" id="L275">            return getAuditParser().parse(auditJson);</span>
 
-<span class="nc" id="L275">        } catch (JSONException e) {</span>
-<span class="nc" id="L276">            throw new AnalysisException(String.format(&quot;Failed to parse %s file from the NPM Audit API &quot;</span>
-<span class="nc" id="L277">                    + &quot;(PnpmAuditAnalyzer).&quot;, lockFile.getPath()), e);</span>
-<span class="nc" id="L278">        } catch (SearchException ex) {</span>
-<span class="nc" id="L279">            LOGGER.error(&quot;PnpmAuditAnalyzer failed on {}&quot;, dependency.getActualFilePath());</span>
-<span class="nc" id="L280">            throw ex;</span>
+<span class="nc" id="L277">        } catch (JSONException e) {</span>
+<span class="nc" id="L278">            throw new AnalysisException(String.format(&quot;Failed to parse %s file from the NPM Audit API &quot;</span>
+<span class="nc" id="L279">                    + &quot;(PnpmAuditAnalyzer).&quot;, lockFile.getPath()), e);</span>
+<span class="nc" id="L280">        } catch (SearchException ex) {</span>
+<span class="nc" id="L281">            LOGGER.error(&quot;PnpmAuditAnalyzer failed on {}&quot;, dependency.getActualFilePath());</span>
+<span class="nc" id="L282">            throw ex;</span>
         }
     }
 
     @NonNull
     private NpmAuditParser getAuditParser() {
-<span class="nc" id="L286">        return new NpmAuditParser();</span>
+<span class="nc" id="L288">        return new NpmAuditParser();</span>
     }
 }
-</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.14.202510111229</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.15.202606040825</span></div></body></html>

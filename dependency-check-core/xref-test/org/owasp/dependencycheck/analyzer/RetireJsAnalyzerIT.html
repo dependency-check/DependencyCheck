@@ -159,67 +159,79 @@
 <a class="jxr_linenumber" name="L151" href="#L151">151</a>                         <span class="jxr_string">"CVE-2022-25869"</span>,
 <a class="jxr_linenumber" name="L152" href="#L152">152</a>                         <span class="jxr_string">"CVE-2024-8373"</span>,
 <a class="jxr_linenumber" name="L153" href="#L153">153</a>                         <span class="jxr_string">"CVE-2025-0716"</span>,
-<a class="jxr_linenumber" name="L154" href="#L154">154</a>                         <span class="jxr_string">"CVE-2025-2336"</span>,
-<a class="jxr_linenumber" name="L155" href="#L155">155</a>                         <span class="jxr_string">"DOS in $sanitize"</span>,
-<a class="jxr_linenumber" name="L156" href="#L156">156</a>                         <span class="jxr_string">"GHSA-28hp-fgcr-2r4h"</span>,
-<a class="jxr_linenumber" name="L157" href="#L157">157</a>                         <span class="jxr_string">"GHSA-5cp4-xmrw-59wf"</span>,
-<a class="jxr_linenumber" name="L158" href="#L158">158</a>                         <span class="jxr_string">"The attribute usemap can be used as a security exploit"</span>,
-<a class="jxr_linenumber" name="L159" href="#L159">159</a>                         <span class="jxr_string">"Universal CSP bypass via add-on in Firefox"</span>,
-<a class="jxr_linenumber" name="L160" href="#L160">160</a>                         <span class="jxr_string">"XSS in $sanitize in Safari/Firefox"</span>
-<a class="jxr_linenumber" name="L161" href="#L161">161</a>                 ));
-<a class="jxr_linenumber" name="L162" href="#L162">162</a>     }
-<a class="jxr_linenumber" name="L163" href="#L163">163</a> 
-<a class="jxr_linenumber" name="L164" href="#L164">164</a>     @Test
-<a class="jxr_linenumber" name="L165" href="#L165">165</a>     <strong class="jxr_keyword">void</strong> testEmber() <strong class="jxr_keyword">throws</strong> Exception {
-<a class="jxr_linenumber" name="L166" href="#L166">166</a>         File file = BaseTest.getResourceAsFile(<strong class="jxr_keyword">this</strong>, <span class="jxr_string">"javascript/ember.safe.js"</span>);
-<a class="jxr_linenumber" name="L167" href="#L167">167</a>         Dependency dependency = <strong class="jxr_keyword">new</strong> Dependency(file);
-<a class="jxr_linenumber" name="L168" href="#L168">168</a>         analyzer.analyze(dependency, engine);
-<a class="jxr_linenumber" name="L169" href="#L169">169</a> 
-<a class="jxr_linenumber" name="L170" href="#L170">170</a>         assertEquals(<span class="jxr_string">"ember"</span>, dependency.getName());
-<a class="jxr_linenumber" name="L171" href="#L171">171</a>         assertEquals(<span class="jxr_string">"1.3.0"</span>, dependency.getVersion());
-<a class="jxr_linenumber" name="L172" href="#L172">172</a> 
-<a class="jxr_linenumber" name="L173" href="#L173">173</a>         assertEquals(1, dependency.getEvidence(EvidenceType.PRODUCT).size());
-<a class="jxr_linenumber" name="L174" href="#L174">174</a>         Evidence product = dependency.getEvidence(EvidenceType.PRODUCT).iterator().next();
-<a class="jxr_linenumber" name="L175" href="#L175">175</a>         assertEquals(<span class="jxr_string">"name"</span>, product.getName());
-<a class="jxr_linenumber" name="L176" href="#L176">176</a>         assertEquals(<span class="jxr_string">"ember"</span>, product.getValue());
-<a class="jxr_linenumber" name="L177" href="#L177">177</a> 
-<a class="jxr_linenumber" name="L178" href="#L178">178</a>         assertEquals(1, dependency.getEvidence(EvidenceType.VERSION).size());
-<a class="jxr_linenumber" name="L179" href="#L179">179</a>         Evidence version = dependency.getEvidence(EvidenceType.VERSION).iterator().next();
-<a class="jxr_linenumber" name="L180" href="#L180">180</a>         assertEquals(<span class="jxr_string">"version"</span>, version.getName());
-<a class="jxr_linenumber" name="L181" href="#L181">181</a>         assertEquals(<span class="jxr_string">"1.3.0"</span>, version.getValue());
-<a class="jxr_linenumber" name="L182" href="#L182">182</a> 
-<a class="jxr_linenumber" name="L183" href="#L183">183</a>         assertThat(dependency.getVulnerabilities().stream().map(Vulnerability::getName).sorted().collect(Collectors.toList()),
-<a class="jxr_linenumber" name="L184" href="#L184">184</a>                 containsInRelativeOrder(<span class="jxr_string">"CVE-2014-0013"</span>, <span class="jxr_string">"CVE-2014-0014"</span>, <span class="jxr_string">"CVE-2014-0046"</span>));
-<a class="jxr_linenumber" name="L185" href="#L185">185</a>     }
-<a class="jxr_linenumber" name="L186" href="#L186">186</a> 
-<a class="jxr_linenumber" name="L187" href="#L187">187</a>     @Test
-<a class="jxr_linenumber" name="L188" href="#L188">188</a>     <strong class="jxr_keyword">void</strong> testDOMPurify() <strong class="jxr_keyword">throws</strong> Exception {
-<a class="jxr_linenumber" name="L189" href="#L189">189</a>         File file = BaseTest.getResourceAsFile(<strong class="jxr_keyword">this</strong>, <span class="jxr_string">"javascript/dompurify.safe.js"</span>);
-<a class="jxr_linenumber" name="L190" href="#L190">190</a>         Dependency dependency = <strong class="jxr_keyword">new</strong> Dependency(file);
-<a class="jxr_linenumber" name="L191" href="#L191">191</a>         analyzer.analyze(dependency, engine);
-<a class="jxr_linenumber" name="L192" href="#L192">192</a> 
-<a class="jxr_linenumber" name="L193" href="#L193">193</a>         assertEquals(<span class="jxr_string">"DOMPurify"</span>, dependency.getName());
-<a class="jxr_linenumber" name="L194" href="#L194">194</a>         assertEquals(<span class="jxr_string">"3.3.1"</span>, dependency.getVersion());
-<a class="jxr_linenumber" name="L195" href="#L195">195</a> 
-<a class="jxr_linenumber" name="L196" href="#L196">196</a>         assertEquals(1, dependency.getEvidence(EvidenceType.PRODUCT).size());
-<a class="jxr_linenumber" name="L197" href="#L197">197</a>         Evidence product = dependency.getEvidence(EvidenceType.PRODUCT).iterator().next();
-<a class="jxr_linenumber" name="L198" href="#L198">198</a>         assertEquals(<span class="jxr_string">"name"</span>, product.getName());
-<a class="jxr_linenumber" name="L199" href="#L199">199</a>         assertEquals(<span class="jxr_string">"DOMPurify"</span>, product.getValue());
-<a class="jxr_linenumber" name="L200" href="#L200">200</a> 
-<a class="jxr_linenumber" name="L201" href="#L201">201</a>         assertEquals(1, dependency.getEvidence(EvidenceType.VERSION).size());
-<a class="jxr_linenumber" name="L202" href="#L202">202</a>         Evidence version = dependency.getEvidence(EvidenceType.VERSION).iterator().next();
-<a class="jxr_linenumber" name="L203" href="#L203">203</a>         assertEquals(<span class="jxr_string">"version"</span>, version.getName());
-<a class="jxr_linenumber" name="L204" href="#L204">204</a>         assertEquals(<span class="jxr_string">"3.3.1"</span>, version.getValue());
-<a class="jxr_linenumber" name="L205" href="#L205">205</a> 
-<a class="jxr_linenumber" name="L206" href="#L206">206</a>         assertThat(dependency.getVulnerabilities().stream().map(Vulnerability::getName).sorted().collect(Collectors.toList()),
-<a class="jxr_linenumber" name="L207" href="#L207">207</a>                 containsInRelativeOrder(
-<a class="jxr_linenumber" name="L208" href="#L208">208</a>                         <span class="jxr_string">"CVE-2026-0540"</span>,
-<a class="jxr_linenumber" name="L209" href="#L209">209</a>                         <span class="jxr_string">"GHSA-cj63-jhhr-wcxv"</span>,
-<a class="jxr_linenumber" name="L210" href="#L210">210</a>                         <span class="jxr_string">"GHSA-cjmm-f4jc-qw8r"</span>,
-<a class="jxr_linenumber" name="L211" href="#L211">211</a>                         <span class="jxr_string">"GHSA-h8r8-wccr-v5f2"</span>
-<a class="jxr_linenumber" name="L212" href="#L212">212</a>                 ));
-<a class="jxr_linenumber" name="L213" href="#L213">213</a>     }
-<a class="jxr_linenumber" name="L214" href="#L214">214</a> }
+<a class="jxr_linenumber" name="L154" href="#L154">154</a>                         <span class="jxr_string">"DOS in $sanitize"</span>,
+<a class="jxr_linenumber" name="L155" href="#L155">155</a>                         <span class="jxr_string">"GHSA-28hp-fgcr-2r4h"</span>,
+<a class="jxr_linenumber" name="L156" href="#L156">156</a>                         <span class="jxr_string">"GHSA-5cp4-xmrw-59wf"</span>,
+<a class="jxr_linenumber" name="L157" href="#L157">157</a>                         <span class="jxr_string">"The attribute usemap can be used as a security exploit"</span>,
+<a class="jxr_linenumber" name="L158" href="#L158">158</a>                         <span class="jxr_string">"Universal CSP bypass via add-on in Firefox"</span>,
+<a class="jxr_linenumber" name="L159" href="#L159">159</a>                         <span class="jxr_string">"XSS in $sanitize in Safari/Firefox"</span>
+<a class="jxr_linenumber" name="L160" href="#L160">160</a>                 ));
+<a class="jxr_linenumber" name="L161" href="#L161">161</a>     }
+<a class="jxr_linenumber" name="L162" href="#L162">162</a> 
+<a class="jxr_linenumber" name="L163" href="#L163">163</a>     @Test
+<a class="jxr_linenumber" name="L164" href="#L164">164</a>     <strong class="jxr_keyword">void</strong> testEmber() <strong class="jxr_keyword">throws</strong> Exception {
+<a class="jxr_linenumber" name="L165" href="#L165">165</a>         File file = BaseTest.getResourceAsFile(<strong class="jxr_keyword">this</strong>, <span class="jxr_string">"javascript/ember.safe.js"</span>);
+<a class="jxr_linenumber" name="L166" href="#L166">166</a>         Dependency dependency = <strong class="jxr_keyword">new</strong> Dependency(file);
+<a class="jxr_linenumber" name="L167" href="#L167">167</a>         analyzer.analyze(dependency, engine);
+<a class="jxr_linenumber" name="L168" href="#L168">168</a> 
+<a class="jxr_linenumber" name="L169" href="#L169">169</a>         assertEquals(<span class="jxr_string">"ember"</span>, dependency.getName());
+<a class="jxr_linenumber" name="L170" href="#L170">170</a>         assertEquals(<span class="jxr_string">"1.3.0"</span>, dependency.getVersion());
+<a class="jxr_linenumber" name="L171" href="#L171">171</a> 
+<a class="jxr_linenumber" name="L172" href="#L172">172</a>         assertEquals(1, dependency.getEvidence(EvidenceType.PRODUCT).size());
+<a class="jxr_linenumber" name="L173" href="#L173">173</a>         Evidence product = dependency.getEvidence(EvidenceType.PRODUCT).iterator().next();
+<a class="jxr_linenumber" name="L174" href="#L174">174</a>         assertEquals(<span class="jxr_string">"name"</span>, product.getName());
+<a class="jxr_linenumber" name="L175" href="#L175">175</a>         assertEquals(<span class="jxr_string">"ember"</span>, product.getValue());
+<a class="jxr_linenumber" name="L176" href="#L176">176</a> 
+<a class="jxr_linenumber" name="L177" href="#L177">177</a>         assertEquals(1, dependency.getEvidence(EvidenceType.VERSION).size());
+<a class="jxr_linenumber" name="L178" href="#L178">178</a>         Evidence version = dependency.getEvidence(EvidenceType.VERSION).iterator().next();
+<a class="jxr_linenumber" name="L179" href="#L179">179</a>         assertEquals(<span class="jxr_string">"version"</span>, version.getName());
+<a class="jxr_linenumber" name="L180" href="#L180">180</a>         assertEquals(<span class="jxr_string">"1.3.0"</span>, version.getValue());
+<a class="jxr_linenumber" name="L181" href="#L181">181</a> 
+<a class="jxr_linenumber" name="L182" href="#L182">182</a>         assertThat(dependency.getVulnerabilities().stream().map(Vulnerability::getName).sorted().collect(Collectors.toList()),
+<a class="jxr_linenumber" name="L183" href="#L183">183</a>                 containsInRelativeOrder(<span class="jxr_string">"CVE-2014-0013"</span>, <span class="jxr_string">"CVE-2014-0014"</span>, <span class="jxr_string">"CVE-2014-0046"</span>));
+<a class="jxr_linenumber" name="L184" href="#L184">184</a>     }
+<a class="jxr_linenumber" name="L185" href="#L185">185</a> 
+<a class="jxr_linenumber" name="L186" href="#L186">186</a>     @Test
+<a class="jxr_linenumber" name="L187" href="#L187">187</a>     <strong class="jxr_keyword">void</strong> testDOMPurify() <strong class="jxr_keyword">throws</strong> Exception {
+<a class="jxr_linenumber" name="L188" href="#L188">188</a>         File file = BaseTest.getResourceAsFile(<strong class="jxr_keyword">this</strong>, <span class="jxr_string">"javascript/dompurify.safe.js"</span>);
+<a class="jxr_linenumber" name="L189" href="#L189">189</a>         Dependency dependency = <strong class="jxr_keyword">new</strong> Dependency(file);
+<a class="jxr_linenumber" name="L190" href="#L190">190</a>         analyzer.analyze(dependency, engine);
+<a class="jxr_linenumber" name="L191" href="#L191">191</a> 
+<a class="jxr_linenumber" name="L192" href="#L192">192</a>         assertEquals(<span class="jxr_string">"DOMPurify"</span>, dependency.getName());
+<a class="jxr_linenumber" name="L193" href="#L193">193</a>         assertEquals(<span class="jxr_string">"3.3.1"</span>, dependency.getVersion());
+<a class="jxr_linenumber" name="L194" href="#L194">194</a> 
+<a class="jxr_linenumber" name="L195" href="#L195">195</a>         assertEquals(1, dependency.getEvidence(EvidenceType.PRODUCT).size());
+<a class="jxr_linenumber" name="L196" href="#L196">196</a>         Evidence product = dependency.getEvidence(EvidenceType.PRODUCT).iterator().next();
+<a class="jxr_linenumber" name="L197" href="#L197">197</a>         assertEquals(<span class="jxr_string">"name"</span>, product.getName());
+<a class="jxr_linenumber" name="L198" href="#L198">198</a>         assertEquals(<span class="jxr_string">"DOMPurify"</span>, product.getValue());
+<a class="jxr_linenumber" name="L199" href="#L199">199</a> 
+<a class="jxr_linenumber" name="L200" href="#L200">200</a>         assertEquals(1, dependency.getEvidence(EvidenceType.VERSION).size());
+<a class="jxr_linenumber" name="L201" href="#L201">201</a>         Evidence version = dependency.getEvidence(EvidenceType.VERSION).iterator().next();
+<a class="jxr_linenumber" name="L202" href="#L202">202</a>         assertEquals(<span class="jxr_string">"version"</span>, version.getName());
+<a class="jxr_linenumber" name="L203" href="#L203">203</a>         assertEquals(<span class="jxr_string">"3.3.1"</span>, version.getValue());
+<a class="jxr_linenumber" name="L204" href="#L204">204</a> 
+<a class="jxr_linenumber" name="L205" href="#L205">205</a>         assertThat(dependency.getVulnerabilities().stream().map(Vulnerability::getName).sorted().collect(Collectors.toList()),
+<a class="jxr_linenumber" name="L206" href="#L206">206</a>                 containsInRelativeOrder(
+<a class="jxr_linenumber" name="L207" href="#L207">207</a>                         <span class="jxr_string">"CVE-2026-0540"</span>,
+<a class="jxr_linenumber" name="L208" href="#L208">208</a>                         <span class="jxr_string">"CVE-2026-41238"</span>,
+<a class="jxr_linenumber" name="L209" href="#L209">209</a>                         <span class="jxr_string">"CVE-2026-41239"</span>,
+<a class="jxr_linenumber" name="L210" href="#L210">210</a>                         <span class="jxr_string">"CVE-2026-41240"</span>,
+<a class="jxr_linenumber" name="L211" href="#L211">211</a>                         <span class="jxr_string">"CVE-2026-49458"</span>,
+<a class="jxr_linenumber" name="L212" href="#L212">212</a>                         <span class="jxr_string">"CVE-2026-49459"</span>,
+<a class="jxr_linenumber" name="L213" href="#L213">213</a>                         <span class="jxr_string">"CVE-2026-49978"</span>,
+<a class="jxr_linenumber" name="L214" href="#L214">214</a>                         <span class="jxr_string">"CVE-2026-65898"</span>,
+<a class="jxr_linenumber" name="L215" href="#L215">215</a>                         <span class="jxr_string">"CVE-2026-65899"</span>,
+<a class="jxr_linenumber" name="L216" href="#L216">216</a>                         <span class="jxr_string">"CVE-2026-65900"</span>,
+<a class="jxr_linenumber" name="L217" href="#L217">217</a>                         <span class="jxr_string">"CVE-2026-65901"</span>,
+<a class="jxr_linenumber" name="L218" href="#L218">218</a>                         <span class="jxr_string">"CVE-2026-65902"</span>,
+<a class="jxr_linenumber" name="L219" href="#L219">219</a>                         <span class="jxr_string">"CVE-2026-65903"</span>,
+<a class="jxr_linenumber" name="L220" href="#L220">220</a>                         <span class="jxr_string">"CVE-2026-65912"</span>,
+<a class="jxr_linenumber" name="L221" href="#L221">221</a>                         <span class="jxr_string">"CVE-2026-65913"</span>,
+<a class="jxr_linenumber" name="L222" href="#L222">222</a>                         <span class="jxr_string">"CVE-2026-65914"</span>,
+<a class="jxr_linenumber" name="L223" href="#L223">223</a>                         <span class="jxr_string">"CVE-2026-66010"</span>
+<a class="jxr_linenumber" name="L224" href="#L224">224</a>                 ));
+<a class="jxr_linenumber" name="L225" href="#L225">225</a>     }
+<a class="jxr_linenumber" name="L226" href="#L226">226</a> }
 </pre>
 <hr/>
 <div id="footer">Copyright &#169; 2012&#x2013;2026 <a href="https://www.owasp.org">OWASP</a>. All rights reserved.</div>

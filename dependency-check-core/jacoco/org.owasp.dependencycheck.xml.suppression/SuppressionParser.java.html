@@ -129,15 +129,15 @@ import static org.owasp.dependencycheck.utils.AutoCloseableInputSource.fromResou
 <span class="nc" id="L129">        } catch (ParserConfigurationException | IOException ex) {</span>
 <span class="nc" id="L130">            LOGGER.debug(&quot;&quot;, ex);</span>
 <span class="nc" id="L131">            throw new SuppressionParseException(ex);</span>
-<span class="nc" id="L132">        } catch (SAXException ex) {</span>
-<span class="nc bnc" id="L133" title="All 2 branches missed.">            if (ex.getMessage().contains(&quot;Cannot find the declaration of element 'suppressions'.&quot;)) {</span>
+<span class="fc" id="L132">        } catch (SAXException ex) {</span>
+<span class="pc bpc" id="L133" title="1 of 2 branches missed.">            if (ex.getMessage().contains(&quot;Cannot find the declaration of element 'suppressions'.&quot;)) {</span>
 <span class="nc" id="L134">                throw ex;</span>
             } else {
-<span class="nc" id="L136">                LOGGER.debug(&quot;&quot;, ex);</span>
-<span class="nc" id="L137">                throw new SuppressionParseException(ex);</span>
+<span class="fc" id="L136">                LOGGER.debug(&quot;&quot;, ex);</span>
+<span class="fc" id="L137">                throw new SuppressionParseException(ex);</span>
             }
         }
     }
 
 }
-</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.14.202510111229</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.15.202606040825</span></div></body></html>

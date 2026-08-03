@@ -26,31 +26,31 @@
 <a class="jxr_linenumber" name="L18" href="#L18">18</a>  <strong class="jxr_keyword">package</strong> org.owasp.dependencycheck.data.nvdcve;
 <a class="jxr_linenumber" name="L19" href="#L19">19</a>  
 <a class="jxr_linenumber" name="L20" href="#L20">20</a>  <strong class="jxr_keyword">import</strong> com.google.common.io.Resources;
-<a class="jxr_linenumber" name="L21" href="#L21">21</a>  <strong class="jxr_keyword">import</strong> java.io.File;
-<a class="jxr_linenumber" name="L22" href="#L22">22</a>  <strong class="jxr_keyword">import</strong> java.io.IOException;
-<a class="jxr_linenumber" name="L23" href="#L23">23</a>  <strong class="jxr_keyword">import</strong> java.io.InputStream;
-<a class="jxr_linenumber" name="L24" href="#L24">24</a>  <strong class="jxr_keyword">import</strong> java.net.URL;
-<a class="jxr_linenumber" name="L25" href="#L25">25</a>  <strong class="jxr_keyword">import</strong> java.nio.charset.StandardCharsets;
-<a class="jxr_linenumber" name="L26" href="#L26">26</a>  <strong class="jxr_keyword">import</strong> java.sql.PreparedStatement;
-<a class="jxr_linenumber" name="L27" href="#L27">27</a>  <strong class="jxr_keyword">import</strong> java.sql.Connection;
-<a class="jxr_linenumber" name="L28" href="#L28">28</a>  <strong class="jxr_keyword">import</strong> java.sql.Driver;
-<a class="jxr_linenumber" name="L29" href="#L29">29</a>  <strong class="jxr_keyword">import</strong> java.sql.DriverManager;
-<a class="jxr_linenumber" name="L30" href="#L30">30</a>  <strong class="jxr_keyword">import</strong> java.sql.ResultSet;
-<a class="jxr_linenumber" name="L31" href="#L31">31</a>  <strong class="jxr_keyword">import</strong> java.sql.SQLException;
-<a class="jxr_linenumber" name="L32" href="#L32">32</a>  <strong class="jxr_keyword">import</strong> java.sql.Statement;
-<a class="jxr_linenumber" name="L33" href="#L33">33</a>  <strong class="jxr_keyword">import</strong> java.util.Locale;
-<a class="jxr_linenumber" name="L34" href="#L34">34</a>  <strong class="jxr_keyword">import</strong> java.util.ResourceBundle;
-<a class="jxr_linenumber" name="L35" href="#L35">35</a>  <strong class="jxr_keyword">import</strong> javax.annotation.concurrent.ThreadSafe;
-<a class="jxr_linenumber" name="L36" href="#L36">36</a>  <strong class="jxr_keyword">import</strong> org.anarres.jdiagnostics.DefaultQuery;
-<a class="jxr_linenumber" name="L37" href="#L37">37</a>  <strong class="jxr_keyword">import</strong> org.apache.commons.dbcp2.BasicDataSource;
-<a class="jxr_linenumber" name="L38" href="#L38">38</a>  <strong class="jxr_keyword">import</strong> org.apache.commons.io.IOUtils;
-<a class="jxr_linenumber" name="L39" href="#L39">39</a>  <strong class="jxr_keyword">import</strong> org.owasp.dependencycheck.utils.DBUtils;
-<a class="jxr_linenumber" name="L40" href="#L40">40</a>  <strong class="jxr_keyword">import</strong> org.owasp.dependencycheck.utils.DependencyVersion;
-<a class="jxr_linenumber" name="L41" href="#L41">41</a>  <strong class="jxr_keyword">import</strong> org.owasp.dependencycheck.utils.DependencyVersionUtil;
-<a class="jxr_linenumber" name="L42" href="#L42">42</a>  <strong class="jxr_keyword">import</strong> org.owasp.dependencycheck.utils.FileUtils;
-<a class="jxr_linenumber" name="L43" href="#L43">43</a>  <strong class="jxr_keyword">import</strong> org.owasp.dependencycheck.utils.Settings;
-<a class="jxr_linenumber" name="L44" href="#L44">44</a>  <strong class="jxr_keyword">import</strong> org.slf4j.Logger;
-<a class="jxr_linenumber" name="L45" href="#L45">45</a>  <strong class="jxr_keyword">import</strong> org.slf4j.LoggerFactory;
+<a class="jxr_linenumber" name="L21" href="#L21">21</a>  <strong class="jxr_keyword">import</strong> org.apache.commons.dbcp2.BasicDataSource;
+<a class="jxr_linenumber" name="L22" href="#L22">22</a>  <strong class="jxr_keyword">import</strong> org.apache.commons.io.IOUtils;
+<a class="jxr_linenumber" name="L23" href="#L23">23</a>  <strong class="jxr_keyword">import</strong> org.owasp.dependencycheck.utils.DBUtils;
+<a class="jxr_linenumber" name="L24" href="#L24">24</a>  <strong class="jxr_keyword">import</strong> org.owasp.dependencycheck.utils.DependencyVersion;
+<a class="jxr_linenumber" name="L25" href="#L25">25</a>  <strong class="jxr_keyword">import</strong> org.owasp.dependencycheck.utils.DependencyVersionUtil;
+<a class="jxr_linenumber" name="L26" href="#L26">26</a>  <strong class="jxr_keyword">import</strong> org.owasp.dependencycheck.utils.FileUtils;
+<a class="jxr_linenumber" name="L27" href="#L27">27</a>  <strong class="jxr_keyword">import</strong> org.owasp.dependencycheck.utils.Settings;
+<a class="jxr_linenumber" name="L28" href="#L28">28</a>  <strong class="jxr_keyword">import</strong> org.slf4j.Logger;
+<a class="jxr_linenumber" name="L29" href="#L29">29</a>  <strong class="jxr_keyword">import</strong> org.slf4j.LoggerFactory;
+<a class="jxr_linenumber" name="L30" href="#L30">30</a>  
+<a class="jxr_linenumber" name="L31" href="#L31">31</a>  <strong class="jxr_keyword">import</strong> javax.annotation.concurrent.ThreadSafe;
+<a class="jxr_linenumber" name="L32" href="#L32">32</a>  <strong class="jxr_keyword">import</strong> java.io.File;
+<a class="jxr_linenumber" name="L33" href="#L33">33</a>  <strong class="jxr_keyword">import</strong> java.io.IOException;
+<a class="jxr_linenumber" name="L34" href="#L34">34</a>  <strong class="jxr_keyword">import</strong> java.io.InputStream;
+<a class="jxr_linenumber" name="L35" href="#L35">35</a>  <strong class="jxr_keyword">import</strong> java.net.URL;
+<a class="jxr_linenumber" name="L36" href="#L36">36</a>  <strong class="jxr_keyword">import</strong> java.nio.charset.StandardCharsets;
+<a class="jxr_linenumber" name="L37" href="#L37">37</a>  <strong class="jxr_keyword">import</strong> java.sql.Connection;
+<a class="jxr_linenumber" name="L38" href="#L38">38</a>  <strong class="jxr_keyword">import</strong> java.sql.Driver;
+<a class="jxr_linenumber" name="L39" href="#L39">39</a>  <strong class="jxr_keyword">import</strong> java.sql.DriverManager;
+<a class="jxr_linenumber" name="L40" href="#L40">40</a>  <strong class="jxr_keyword">import</strong> java.sql.PreparedStatement;
+<a class="jxr_linenumber" name="L41" href="#L41">41</a>  <strong class="jxr_keyword">import</strong> java.sql.ResultSet;
+<a class="jxr_linenumber" name="L42" href="#L42">42</a>  <strong class="jxr_keyword">import</strong> java.sql.SQLException;
+<a class="jxr_linenumber" name="L43" href="#L43">43</a>  <strong class="jxr_keyword">import</strong> java.sql.Statement;
+<a class="jxr_linenumber" name="L44" href="#L44">44</a>  <strong class="jxr_keyword">import</strong> java.util.Locale;
+<a class="jxr_linenumber" name="L45" href="#L45">45</a>  <strong class="jxr_keyword">import</strong> java.util.ResourceBundle;
 <a class="jxr_linenumber" name="L46" href="#L46">46</a>  
 <a class="jxr_linenumber" name="L47" href="#L47">47</a>  <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L48" href="#L48">48</a>  <em class="jxr_javadoccomment"> * Loads the configured database driver and returns the database connection. If</em>
@@ -394,199 +394,197 @@
 <a class="jxr_linenumber" name="L386" href="#L386">386</a>             }
 <a class="jxr_linenumber" name="L387" href="#L387">387</a>         } <strong class="jxr_keyword">catch</strong> (IOException ex) {
 <a class="jxr_linenumber" name="L388" href="#L388">388</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a href="../../../../../org/owasp/dependencycheck/data/nvdcve/DatabaseException.html">DatabaseException</a>(<span class="jxr_string">"Unable to create database schema"</span>, ex);
-<a class="jxr_linenumber" name="L389" href="#L389">389</a>         } <strong class="jxr_keyword">catch</strong> (LinkageError ex) {
-<a class="jxr_linenumber" name="L390" href="#L390">390</a>             LOGGER.debug(<strong class="jxr_keyword">new</strong> DefaultQuery(ex).call().toString());
-<a class="jxr_linenumber" name="L391" href="#L391">391</a>         }
-<a class="jxr_linenumber" name="L392" href="#L392">392</a>     }
-<a class="jxr_linenumber" name="L393" href="#L393">393</a> 
-<a class="jxr_linenumber" name="L394" href="#L394">394</a>     <strong class="jxr_keyword">private</strong> String getResource(String resource) <strong class="jxr_keyword">throws</strong> IOException {
-<a class="jxr_linenumber" name="L395" href="#L395">395</a>         String dbStructure;
-<a class="jxr_linenumber" name="L396" href="#L396">396</a>         <strong class="jxr_keyword">try</strong> {
-<a class="jxr_linenumber" name="L397" href="#L397">397</a>             <strong class="jxr_keyword">final</strong> URL url = Resources.getResource(resource);
-<a class="jxr_linenumber" name="L398" href="#L398">398</a>             dbStructure = Resources.toString(url, StandardCharsets.UTF_8);
-<a class="jxr_linenumber" name="L399" href="#L399">399</a>         } <strong class="jxr_keyword">catch</strong> (IllegalArgumentException ex) {
-<a class="jxr_linenumber" name="L400" href="#L400">400</a>             LOGGER.debug(<span class="jxr_string">"Resources.getResource(String) failed to find the DB Structure Resource"</span>, ex);
-<a class="jxr_linenumber" name="L401" href="#L401">401</a>             <strong class="jxr_keyword">try</strong> (InputStream is = FileUtils.getResourceAsStream(resource)) {
-<a class="jxr_linenumber" name="L402" href="#L402">402</a>                 dbStructure = IOUtils.toString(is, StandardCharsets.UTF_8);
-<a class="jxr_linenumber" name="L403" href="#L403">403</a>             }
-<a class="jxr_linenumber" name="L404" href="#L404">404</a>         }
-<a class="jxr_linenumber" name="L405" href="#L405">405</a>         <strong class="jxr_keyword">return</strong> dbStructure;
-<a class="jxr_linenumber" name="L406" href="#L406">406</a>     }
-<a class="jxr_linenumber" name="L407" href="#L407">407</a> 
-<a class="jxr_linenumber" name="L408" href="#L408">408</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L409" href="#L409">409</a> <em class="jxr_javadoccomment">     * Updates the database schema by loading the upgrade script for the version</em>
-<a class="jxr_linenumber" name="L410" href="#L410">410</a> <em class="jxr_javadoccomment">     * specified. The intended use is that if the current schema version is 2.9</em>
-<a class="jxr_linenumber" name="L411" href="#L411">411</a> <em class="jxr_javadoccomment">     * then we would call updateSchema(conn, "2.9"). This would load the</em>
-<a class="jxr_linenumber" name="L412" href="#L412">412</a> <em class="jxr_javadoccomment">     * upgrade_2.9.sql file and execute it against the database. The upgrade</em>
-<a class="jxr_linenumber" name="L413" href="#L413">413</a> <em class="jxr_javadoccomment">     * script must update the 'version' in the properties table.</em>
-<a class="jxr_linenumber" name="L414" href="#L414">414</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L415" href="#L415">415</a> <em class="jxr_javadoccomment">     * @param conn the database connection object</em>
-<a class="jxr_linenumber" name="L416" href="#L416">416</a> <em class="jxr_javadoccomment">     * @param appExpectedVersion the schema version that the application expects</em>
-<a class="jxr_linenumber" name="L417" href="#L417">417</a> <em class="jxr_javadoccomment">     * @param currentDbVersion the current schema version of the database</em>
-<a class="jxr_linenumber" name="L418" href="#L418">418</a> <em class="jxr_javadoccomment">     * @throws DatabaseException thrown if there is an exception upgrading the</em>
-<a class="jxr_linenumber" name="L419" href="#L419">419</a> <em class="jxr_javadoccomment">     * database schema</em>
-<a class="jxr_linenumber" name="L420" href="#L420">420</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L421" href="#L421">421</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> updateSchema(Connection conn, <a href="../../../../../org/owasp/dependencycheck/utils/DependencyVersion.html">DependencyVersion</a> appExpectedVersion, <a href="../../../../../org/owasp/dependencycheck/utils/DependencyVersion.html">DependencyVersion</a> currentDbVersion)
-<a class="jxr_linenumber" name="L422" href="#L422">422</a>             <strong class="jxr_keyword">throws</strong> <a href="../../../../../org/owasp/dependencycheck/data/nvdcve/DatabaseException.html">DatabaseException</a> {
-<a class="jxr_linenumber" name="L423" href="#L423">423</a> 
-<a class="jxr_linenumber" name="L424" href="#L424">424</a>         <strong class="jxr_keyword">if</strong> (connectionString.startsWith(<span class="jxr_string">"jdbc:h2:file:"</span>)) {
-<a class="jxr_linenumber" name="L425" href="#L425">425</a>             LOGGER.debug(<span class="jxr_string">"Updating database structure"</span>);
-<a class="jxr_linenumber" name="L426" href="#L426">426</a>             <strong class="jxr_keyword">final</strong> String updateFile = String.format(DB_STRUCTURE_UPDATE_RESOURCE, currentDbVersion.toString());
-<a class="jxr_linenumber" name="L427" href="#L427">427</a>             <strong class="jxr_keyword">if</strong> (<span class="jxr_string">"data/upgrade_4.2.sql"</span>.equals(updateFile) &amp;&amp; !FileUtils.getResourceAsFile(updateFile).exists()) {
-<a class="jxr_linenumber" name="L428" href="#L428">428</a>                 <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a href="../../../../../org/owasp/dependencycheck/data/nvdcve/DatabaseException.html">DatabaseException</a>(<span class="jxr_string">"unable to upgrade the database schema - please run the dependency-check "</span>
-<a class="jxr_linenumber" name="L429" href="#L429">429</a>                         + <span class="jxr_string">"purge command to remove the existing database"</span>);
-<a class="jxr_linenumber" name="L430" href="#L430">430</a>             }
-<a class="jxr_linenumber" name="L431" href="#L431">431</a>             <strong class="jxr_keyword">try</strong> {
-<a class="jxr_linenumber" name="L432" href="#L432">432</a>                 <strong class="jxr_keyword">final</strong> String dbStructureUpdate = getResource(updateFile);
-<a class="jxr_linenumber" name="L433" href="#L433">433</a>                 Statement statement = <strong class="jxr_keyword">null</strong>;
-<a class="jxr_linenumber" name="L434" href="#L434">434</a>                 <strong class="jxr_keyword">try</strong> {
-<a class="jxr_linenumber" name="L435" href="#L435">435</a>                     statement = conn.createStatement();
-<a class="jxr_linenumber" name="L436" href="#L436">436</a>                     statement.execute(dbStructureUpdate);
-<a class="jxr_linenumber" name="L437" href="#L437">437</a>                 } <strong class="jxr_keyword">catch</strong> (SQLException ex) {
-<a class="jxr_linenumber" name="L438" href="#L438">438</a>                     <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a href="../../../../../org/owasp/dependencycheck/data/nvdcve/DatabaseException.html">DatabaseException</a>(String.format(<span class="jxr_string">"Unable to upgrade the database schema from %s to %s"</span>,
-<a class="jxr_linenumber" name="L439" href="#L439">439</a>                             currentDbVersion, appExpectedVersion.toString()), ex);
-<a class="jxr_linenumber" name="L440" href="#L440">440</a>                 } <strong class="jxr_keyword">finally</strong> {
-<a class="jxr_linenumber" name="L441" href="#L441">441</a>                     DBUtils.closeStatement(statement);
-<a class="jxr_linenumber" name="L442" href="#L442">442</a>                 }
-<a class="jxr_linenumber" name="L443" href="#L443">443</a>             } <strong class="jxr_keyword">catch</strong> (IllegalArgumentException | IOException ex) {
-<a class="jxr_linenumber" name="L444" href="#L444">444</a>                 <strong class="jxr_keyword">final</strong> String msg = String.format(<span class="jxr_string">"Upgrade SQL file does not exist: %s"</span>, updateFile);
-<a class="jxr_linenumber" name="L445" href="#L445">445</a>                 <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a href="../../../../../org/owasp/dependencycheck/data/nvdcve/DatabaseException.html">DatabaseException</a>(msg, ex);
-<a class="jxr_linenumber" name="L446" href="#L446">446</a>             }
-<a class="jxr_linenumber" name="L447" href="#L447">447</a>         } <strong class="jxr_keyword">else</strong> {
-<a class="jxr_linenumber" name="L448" href="#L448">448</a>             <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> e0 = Integer.parseInt(appExpectedVersion.getVersionParts().get(0));
-<a class="jxr_linenumber" name="L449" href="#L449">449</a>             <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> c0 = Integer.parseInt(currentDbVersion.getVersionParts().get(0));
-<a class="jxr_linenumber" name="L450" href="#L450">450</a>             <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> e1 = Integer.parseInt(appExpectedVersion.getVersionParts().get(1));
-<a class="jxr_linenumber" name="L451" href="#L451">451</a>             <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> c1 = Integer.parseInt(currentDbVersion.getVersionParts().get(1));
-<a class="jxr_linenumber" name="L452" href="#L452">452</a>             <em class="jxr_comment">//CSOFF: EmptyBlock</em>
-<a class="jxr_linenumber" name="L453" href="#L453">453</a>             <strong class="jxr_keyword">if</strong> (e0 == c0 &amp;&amp; e1 &lt; c1) {
-<a class="jxr_linenumber" name="L454" href="#L454">454</a>                 LOGGER.warn(<span class="jxr_string">"A new version of dependency-check is available; consider upgrading"</span>);
-<a class="jxr_linenumber" name="L455" href="#L455">455</a>                 settings.setBoolean(Settings.KEYS.AUTO_UPDATE, false);
-<a class="jxr_linenumber" name="L456" href="#L456">456</a>             } <strong class="jxr_keyword">else</strong> <strong class="jxr_keyword">if</strong> (e0 == c0 &amp;&amp; e1 == c1) {
-<a class="jxr_linenumber" name="L457" href="#L457">457</a>                 <em class="jxr_comment">//do nothing - not sure how we got here, but just in case...</em>
-<a class="jxr_linenumber" name="L458" href="#L458">458</a>             } <strong class="jxr_keyword">else</strong> {
-<a class="jxr_linenumber" name="L459" href="#L459">459</a>                 LOGGER.error(<span class="jxr_string">"The database schema must be upgraded to use this version of dependency-check. Please see {} for more information."</span>,
-<a class="jxr_linenumber" name="L460" href="#L460">460</a>                         UPGRADE_HELP_URL);
-<a class="jxr_linenumber" name="L461" href="#L461">461</a>                 <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a href="../../../../../org/owasp/dependencycheck/data/nvdcve/DatabaseException.html">DatabaseException</a>(<span class="jxr_string">"Database schema is out of date"</span>);
-<a class="jxr_linenumber" name="L462" href="#L462">462</a>             }
-<a class="jxr_linenumber" name="L463" href="#L463">463</a>             <em class="jxr_comment">//CSON: EmptyBlock</em>
-<a class="jxr_linenumber" name="L464" href="#L464">464</a>         }
-<a class="jxr_linenumber" name="L465" href="#L465">465</a>     }
-<a class="jxr_linenumber" name="L466" href="#L466">466</a> 
-<a class="jxr_linenumber" name="L467" href="#L467">467</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L468" href="#L468">468</a> <em class="jxr_javadoccomment">     * Returns a resource bundle containing the SQL Statements needed for the</em>
-<a class="jxr_linenumber" name="L469" href="#L469">469</a> <em class="jxr_javadoccomment">     * database engine being used.</em>
-<a class="jxr_linenumber" name="L470" href="#L470">470</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L471" href="#L471">471</a> <em class="jxr_javadoccomment">     * @return a resource bundle containing the SQL Statements</em>
-<a class="jxr_linenumber" name="L472" href="#L472">472</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L473" href="#L473">473</a>     <strong class="jxr_keyword">public</strong> ResourceBundle getSqlStatements() {
-<a class="jxr_linenumber" name="L474" href="#L474">474</a>         <strong class="jxr_keyword">final</strong> ResourceBundle statementBundle = getDatabaseProductName() != <strong class="jxr_keyword">null</strong>
-<a class="jxr_linenumber" name="L475" href="#L475">475</a>                 ? ResourceBundle.getBundle(<span class="jxr_string">"data/dbStatements"</span>, <strong class="jxr_keyword">new</strong> Locale(getDatabaseProductName()))
-<a class="jxr_linenumber" name="L476" href="#L476">476</a>                 : ResourceBundle.getBundle(<span class="jxr_string">"data/dbStatements"</span>);
-<a class="jxr_linenumber" name="L477" href="#L477">477</a>         <strong class="jxr_keyword">return</strong> statementBundle;
-<a class="jxr_linenumber" name="L478" href="#L478">478</a>     }
-<a class="jxr_linenumber" name="L479" href="#L479">479</a> 
-<a class="jxr_linenumber" name="L480" href="#L480">480</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L481" href="#L481">481</a> <em class="jxr_javadoccomment">     * Uses the provided connection to check the specified schema version within</em>
-<a class="jxr_linenumber" name="L482" href="#L482">482</a> <em class="jxr_javadoccomment">     * the database.</em>
-<a class="jxr_linenumber" name="L483" href="#L483">483</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L484" href="#L484">484</a> <em class="jxr_javadoccomment">     * @param conn the database connection object</em>
-<a class="jxr_linenumber" name="L485" href="#L485">485</a> <em class="jxr_javadoccomment">     * @throws DatabaseException thrown if the schema version is not compatible</em>
-<a class="jxr_linenumber" name="L486" href="#L486">486</a> <em class="jxr_javadoccomment">     * with this version of dependency-check</em>
-<a class="jxr_linenumber" name="L487" href="#L487">487</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L488" href="#L488">488</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> ensureSchemaVersion(Connection conn) <strong class="jxr_keyword">throws</strong> DatabaseException {
-<a class="jxr_linenumber" name="L489" href="#L489">489</a>         ResultSet rs = <strong class="jxr_keyword">null</strong>;
-<a class="jxr_linenumber" name="L490" href="#L490">490</a>         PreparedStatement ps = <strong class="jxr_keyword">null</strong>;
-<a class="jxr_linenumber" name="L491" href="#L491">491</a>         <strong class="jxr_keyword">final</strong> ResourceBundle statementBundle = getSqlStatements();
-<a class="jxr_linenumber" name="L492" href="#L492">492</a>         <strong class="jxr_keyword">final</strong> String sql = statementBundle.getString(<span class="jxr_string">"SELECT_SCHEMA_VERSION"</span>);
-<a class="jxr_linenumber" name="L493" href="#L493">493</a>         <strong class="jxr_keyword">try</strong> {
-<a class="jxr_linenumber" name="L494" href="#L494">494</a>             ps = conn.prepareStatement(sql);
-<a class="jxr_linenumber" name="L495" href="#L495">495</a>             rs = ps.executeQuery();
-<a class="jxr_linenumber" name="L496" href="#L496">496</a>             <strong class="jxr_keyword">if</strong> (rs.next()) {
-<a class="jxr_linenumber" name="L497" href="#L497">497</a>                 <strong class="jxr_keyword">final</strong> String dbSchemaVersion = settings.getString(Settings.KEYS.DB_VERSION);
-<a class="jxr_linenumber" name="L498" href="#L498">498</a>                 <strong class="jxr_keyword">final</strong> <a href="../../../../../org/owasp/dependencycheck/utils/DependencyVersion.html">DependencyVersion</a> appDbVersion = DependencyVersionUtil.parseVersion(dbSchemaVersion);
-<a class="jxr_linenumber" name="L499" href="#L499">499</a>                 <strong class="jxr_keyword">if</strong> (appDbVersion == <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="L500" href="#L500">500</a>                     <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a href="../../../../../org/owasp/dependencycheck/data/nvdcve/DatabaseException.html">DatabaseException</a>(<span class="jxr_string">"Invalid application database schema"</span>);
-<a class="jxr_linenumber" name="L501" href="#L501">501</a>                 }
-<a class="jxr_linenumber" name="L502" href="#L502">502</a>                 <strong class="jxr_keyword">final</strong> <a href="../../../../../org/owasp/dependencycheck/utils/DependencyVersion.html">DependencyVersion</a> db = DependencyVersionUtil.parseVersion(rs.getString(1));
-<a class="jxr_linenumber" name="L503" href="#L503">503</a>                 <strong class="jxr_keyword">if</strong> (db == <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="L504" href="#L504">504</a>                     <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a href="../../../../../org/owasp/dependencycheck/data/nvdcve/DatabaseException.html">DatabaseException</a>(<span class="jxr_string">"Invalid database schema"</span>);
-<a class="jxr_linenumber" name="L505" href="#L505">505</a>                 }
-<a class="jxr_linenumber" name="L506" href="#L506">506</a>                 LOGGER.debug(<span class="jxr_string">"DC Schema: {}"</span>, appDbVersion);
-<a class="jxr_linenumber" name="L507" href="#L507">507</a>                 LOGGER.debug(<span class="jxr_string">"DB Schema: {}"</span>, db);
-<a class="jxr_linenumber" name="L508" href="#L508">508</a>                 <strong class="jxr_keyword">if</strong> (appDbVersion.compareTo(db) &gt; 0) {
-<a class="jxr_linenumber" name="L509" href="#L509">509</a>                     <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">boolean</strong> autoUpdate = settings.getBoolean(Settings.KEYS.AUTO_UPDATE, <strong class="jxr_keyword">true</strong>);
-<a class="jxr_linenumber" name="L510" href="#L510">510</a>                     <strong class="jxr_keyword">if</strong> (autoUpdate) {
-<a class="jxr_linenumber" name="L511" href="#L511">511</a>                         updateSchema(conn, appDbVersion, db);
-<a class="jxr_linenumber" name="L512" href="#L512">512</a>                         <strong class="jxr_keyword">if</strong> (++callDepth &lt; 10) {
-<a class="jxr_linenumber" name="L513" href="#L513">513</a>                             ensureSchemaVersion(conn);
-<a class="jxr_linenumber" name="L514" href="#L514">514</a>                         }
-<a class="jxr_linenumber" name="L515" href="#L515">515</a>                     } <strong class="jxr_keyword">else</strong> {
-<a class="jxr_linenumber" name="L516" href="#L516">516</a>                         <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a href="../../../../../org/owasp/dependencycheck/data/nvdcve/DatabaseException.html">DatabaseException</a>(<span class="jxr_string">"Old database schema identified - please execute "</span>
-<a class="jxr_linenumber" name="L517" href="#L517">517</a>                                 + <span class="jxr_string">"dependency-check without the no-update configuration to continue"</span>);
-<a class="jxr_linenumber" name="L518" href="#L518">518</a>                     }
-<a class="jxr_linenumber" name="L519" href="#L519">519</a>                 }
-<a class="jxr_linenumber" name="L520" href="#L520">520</a>             } <strong class="jxr_keyword">else</strong> {
-<a class="jxr_linenumber" name="L521" href="#L521">521</a>                 <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a href="../../../../../org/owasp/dependencycheck/data/nvdcve/DatabaseException.html">DatabaseException</a>(<span class="jxr_string">"Database schema is missing"</span>);
-<a class="jxr_linenumber" name="L522" href="#L522">522</a>             }
-<a class="jxr_linenumber" name="L523" href="#L523">523</a>         } <strong class="jxr_keyword">catch</strong> (SQLException ex) {
-<a class="jxr_linenumber" name="L524" href="#L524">524</a>             LOGGER.debug(<span class="jxr_string">""</span>, ex);
-<a class="jxr_linenumber" name="L525" href="#L525">525</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a href="../../../../../org/owasp/dependencycheck/data/nvdcve/DatabaseException.html">DatabaseException</a>(<span class="jxr_string">"Unable to check the database schema version"</span>, ex);
-<a class="jxr_linenumber" name="L526" href="#L526">526</a>         } <strong class="jxr_keyword">finally</strong> {
-<a class="jxr_linenumber" name="L527" href="#L527">527</a>             DBUtils.closeResultSet(rs);
-<a class="jxr_linenumber" name="L528" href="#L528">528</a>             DBUtils.closeStatement(ps);
-<a class="jxr_linenumber" name="L529" href="#L529">529</a>         }
-<a class="jxr_linenumber" name="L530" href="#L530">530</a>     }
-<a class="jxr_linenumber" name="L531" href="#L531">531</a> 
-<a class="jxr_linenumber" name="L532" href="#L532">532</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L533" href="#L533">533</a> <em class="jxr_javadoccomment">     * Opens the database connection pool.</em>
-<a class="jxr_linenumber" name="L534" href="#L534">534</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L535" href="#L535">535</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> open() {
-<a class="jxr_linenumber" name="L536" href="#L536">536</a>         connectionPool = <strong class="jxr_keyword">new</strong> BasicDataSource();
-<a class="jxr_linenumber" name="L537" href="#L537">537</a>         <strong class="jxr_keyword">if</strong> (driver != <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="L538" href="#L538">538</a>             connectionPool.setDriver(driver);
-<a class="jxr_linenumber" name="L539" href="#L539">539</a>         }
-<a class="jxr_linenumber" name="L540" href="#L540">540</a>         connectionPool.setUrl(connectionString);
-<a class="jxr_linenumber" name="L541" href="#L541">541</a>         connectionPool.setUsername(userName);
-<a class="jxr_linenumber" name="L542" href="#L542">542</a>         connectionPool.setPassword(password);
-<a class="jxr_linenumber" name="L543" href="#L543">543</a>     }
-<a class="jxr_linenumber" name="L544" href="#L544">544</a> 
-<a class="jxr_linenumber" name="L545" href="#L545">545</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L546" href="#L546">546</a> <em class="jxr_javadoccomment">     * Closes the database connection pool.</em>
-<a class="jxr_linenumber" name="L547" href="#L547">547</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L548" href="#L548">548</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> close() {
-<a class="jxr_linenumber" name="L549" href="#L549">549</a>         <strong class="jxr_keyword">try</strong> {
-<a class="jxr_linenumber" name="L550" href="#L550">550</a>             connectionPool.close();
-<a class="jxr_linenumber" name="L551" href="#L551">551</a>         } <strong class="jxr_keyword">catch</strong> (SQLException ex) {
-<a class="jxr_linenumber" name="L552" href="#L552">552</a>             LOGGER.debug(<span class="jxr_string">"Error closing the connection pool"</span>, ex);
-<a class="jxr_linenumber" name="L553" href="#L553">553</a>         }
-<a class="jxr_linenumber" name="L554" href="#L554">554</a>         connectionPool = <strong class="jxr_keyword">null</strong>;
-<a class="jxr_linenumber" name="L555" href="#L555">555</a>     }
-<a class="jxr_linenumber" name="L556" href="#L556">556</a> 
-<a class="jxr_linenumber" name="L557" href="#L557">557</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L558" href="#L558">558</a> <em class="jxr_javadoccomment">     * Returns if the connection pool is open.</em>
-<a class="jxr_linenumber" name="L559" href="#L559">559</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L560" href="#L560">560</a> <em class="jxr_javadoccomment">     * @return if the connection pool is open</em>
-<a class="jxr_linenumber" name="L561" href="#L561">561</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L562" href="#L562">562</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">boolean</strong> isOpen() {
-<a class="jxr_linenumber" name="L563" href="#L563">563</a>         <strong class="jxr_keyword">return</strong> connectionPool != <strong class="jxr_keyword">null</strong>;
-<a class="jxr_linenumber" name="L564" href="#L564">564</a>     }
-<a class="jxr_linenumber" name="L565" href="#L565">565</a> 
-<a class="jxr_linenumber" name="L566" href="#L566">566</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L567" href="#L567">567</a> <em class="jxr_javadoccomment">     * Constructs a new database connection object per the database</em>
-<a class="jxr_linenumber" name="L568" href="#L568">568</a> <em class="jxr_javadoccomment">     * configuration.</em>
-<a class="jxr_linenumber" name="L569" href="#L569">569</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L570" href="#L570">570</a> <em class="jxr_javadoccomment">     * @return a database connection object</em>
-<a class="jxr_linenumber" name="L571" href="#L571">571</a> <em class="jxr_javadoccomment">     * @throws DatabaseException thrown if there is an exception obtaining the</em>
-<a class="jxr_linenumber" name="L572" href="#L572">572</a> <em class="jxr_javadoccomment">     * database connection</em>
-<a class="jxr_linenumber" name="L573" href="#L573">573</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L574" href="#L574">574</a>     <strong class="jxr_keyword">public</strong> Connection getConnection() <strong class="jxr_keyword">throws</strong> DatabaseException {
-<a class="jxr_linenumber" name="L575" href="#L575">575</a>         <strong class="jxr_keyword">try</strong> {
-<a class="jxr_linenumber" name="L576" href="#L576">576</a>             <strong class="jxr_keyword">return</strong> connectionPool.getConnection();
-<a class="jxr_linenumber" name="L577" href="#L577">577</a>         } <strong class="jxr_keyword">catch</strong> (SQLException ex) {
-<a class="jxr_linenumber" name="L578" href="#L578">578</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a href="../../../../../org/owasp/dependencycheck/data/nvdcve/DatabaseException.html">DatabaseException</a>(<span class="jxr_string">"Error connecting to the database"</span>, ex);
-<a class="jxr_linenumber" name="L579" href="#L579">579</a>         }
-<a class="jxr_linenumber" name="L580" href="#L580">580</a>     }
-<a class="jxr_linenumber" name="L581" href="#L581">581</a> }
+<a class="jxr_linenumber" name="L389" href="#L389">389</a>         }
+<a class="jxr_linenumber" name="L390" href="#L390">390</a>     }
+<a class="jxr_linenumber" name="L391" href="#L391">391</a> 
+<a class="jxr_linenumber" name="L392" href="#L392">392</a>     <strong class="jxr_keyword">private</strong> String getResource(String resource) <strong class="jxr_keyword">throws</strong> IOException {
+<a class="jxr_linenumber" name="L393" href="#L393">393</a>         String dbStructure;
+<a class="jxr_linenumber" name="L394" href="#L394">394</a>         <strong class="jxr_keyword">try</strong> {
+<a class="jxr_linenumber" name="L395" href="#L395">395</a>             <strong class="jxr_keyword">final</strong> URL url = Resources.getResource(resource);
+<a class="jxr_linenumber" name="L396" href="#L396">396</a>             dbStructure = Resources.toString(url, StandardCharsets.UTF_8);
+<a class="jxr_linenumber" name="L397" href="#L397">397</a>         } <strong class="jxr_keyword">catch</strong> (IllegalArgumentException ex) {
+<a class="jxr_linenumber" name="L398" href="#L398">398</a>             LOGGER.debug(<span class="jxr_string">"Resources.getResource(String) failed to find the DB Structure Resource"</span>, ex);
+<a class="jxr_linenumber" name="L399" href="#L399">399</a>             <strong class="jxr_keyword">try</strong> (InputStream is = FileUtils.getResourceAsStream(resource)) {
+<a class="jxr_linenumber" name="L400" href="#L400">400</a>                 dbStructure = IOUtils.toString(is, StandardCharsets.UTF_8);
+<a class="jxr_linenumber" name="L401" href="#L401">401</a>             }
+<a class="jxr_linenumber" name="L402" href="#L402">402</a>         }
+<a class="jxr_linenumber" name="L403" href="#L403">403</a>         <strong class="jxr_keyword">return</strong> dbStructure;
+<a class="jxr_linenumber" name="L404" href="#L404">404</a>     }
+<a class="jxr_linenumber" name="L405" href="#L405">405</a> 
+<a class="jxr_linenumber" name="L406" href="#L406">406</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L407" href="#L407">407</a> <em class="jxr_javadoccomment">     * Updates the database schema by loading the upgrade script for the version</em>
+<a class="jxr_linenumber" name="L408" href="#L408">408</a> <em class="jxr_javadoccomment">     * specified. The intended use is that if the current schema version is 2.9</em>
+<a class="jxr_linenumber" name="L409" href="#L409">409</a> <em class="jxr_javadoccomment">     * then we would call updateSchema(conn, "2.9"). This would load the</em>
+<a class="jxr_linenumber" name="L410" href="#L410">410</a> <em class="jxr_javadoccomment">     * upgrade_2.9.sql file and execute it against the database. The upgrade</em>
+<a class="jxr_linenumber" name="L411" href="#L411">411</a> <em class="jxr_javadoccomment">     * script must update the 'version' in the properties table.</em>
+<a class="jxr_linenumber" name="L412" href="#L412">412</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L413" href="#L413">413</a> <em class="jxr_javadoccomment">     * @param conn the database connection object</em>
+<a class="jxr_linenumber" name="L414" href="#L414">414</a> <em class="jxr_javadoccomment">     * @param appExpectedVersion the schema version that the application expects</em>
+<a class="jxr_linenumber" name="L415" href="#L415">415</a> <em class="jxr_javadoccomment">     * @param currentDbVersion the current schema version of the database</em>
+<a class="jxr_linenumber" name="L416" href="#L416">416</a> <em class="jxr_javadoccomment">     * @throws DatabaseException thrown if there is an exception upgrading the</em>
+<a class="jxr_linenumber" name="L417" href="#L417">417</a> <em class="jxr_javadoccomment">     * database schema</em>
+<a class="jxr_linenumber" name="L418" href="#L418">418</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L419" href="#L419">419</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> updateSchema(Connection conn, <a href="../../../../../org/owasp/dependencycheck/utils/DependencyVersion.html">DependencyVersion</a> appExpectedVersion, <a href="../../../../../org/owasp/dependencycheck/utils/DependencyVersion.html">DependencyVersion</a> currentDbVersion)
+<a class="jxr_linenumber" name="L420" href="#L420">420</a>             <strong class="jxr_keyword">throws</strong> <a href="../../../../../org/owasp/dependencycheck/data/nvdcve/DatabaseException.html">DatabaseException</a> {
+<a class="jxr_linenumber" name="L421" href="#L421">421</a> 
+<a class="jxr_linenumber" name="L422" href="#L422">422</a>         <strong class="jxr_keyword">if</strong> (connectionString.startsWith(<span class="jxr_string">"jdbc:h2:file:"</span>)) {
+<a class="jxr_linenumber" name="L423" href="#L423">423</a>             LOGGER.debug(<span class="jxr_string">"Updating database structure"</span>);
+<a class="jxr_linenumber" name="L424" href="#L424">424</a>             <strong class="jxr_keyword">final</strong> String updateFile = String.format(DB_STRUCTURE_UPDATE_RESOURCE, currentDbVersion.toString());
+<a class="jxr_linenumber" name="L425" href="#L425">425</a>             <strong class="jxr_keyword">if</strong> (<span class="jxr_string">"data/upgrade_4.2.sql"</span>.equals(updateFile) &amp;&amp; !FileUtils.getResourceAsFile(updateFile).exists()) {
+<a class="jxr_linenumber" name="L426" href="#L426">426</a>                 <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a href="../../../../../org/owasp/dependencycheck/data/nvdcve/DatabaseException.html">DatabaseException</a>(<span class="jxr_string">"unable to upgrade the database schema - please run the dependency-check "</span>
+<a class="jxr_linenumber" name="L427" href="#L427">427</a>                         + <span class="jxr_string">"purge command to remove the existing database"</span>);
+<a class="jxr_linenumber" name="L428" href="#L428">428</a>             }
+<a class="jxr_linenumber" name="L429" href="#L429">429</a>             <strong class="jxr_keyword">try</strong> {
+<a class="jxr_linenumber" name="L430" href="#L430">430</a>                 <strong class="jxr_keyword">final</strong> String dbStructureUpdate = getResource(updateFile);
+<a class="jxr_linenumber" name="L431" href="#L431">431</a>                 Statement statement = <strong class="jxr_keyword">null</strong>;
+<a class="jxr_linenumber" name="L432" href="#L432">432</a>                 <strong class="jxr_keyword">try</strong> {
+<a class="jxr_linenumber" name="L433" href="#L433">433</a>                     statement = conn.createStatement();
+<a class="jxr_linenumber" name="L434" href="#L434">434</a>                     statement.execute(dbStructureUpdate);
+<a class="jxr_linenumber" name="L435" href="#L435">435</a>                 } <strong class="jxr_keyword">catch</strong> (SQLException ex) {
+<a class="jxr_linenumber" name="L436" href="#L436">436</a>                     <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a href="../../../../../org/owasp/dependencycheck/data/nvdcve/DatabaseException.html">DatabaseException</a>(String.format(<span class="jxr_string">"Unable to upgrade the database schema from %s to %s"</span>,
+<a class="jxr_linenumber" name="L437" href="#L437">437</a>                             currentDbVersion, appExpectedVersion.toString()), ex);
+<a class="jxr_linenumber" name="L438" href="#L438">438</a>                 } <strong class="jxr_keyword">finally</strong> {
+<a class="jxr_linenumber" name="L439" href="#L439">439</a>                     DBUtils.closeStatement(statement);
+<a class="jxr_linenumber" name="L440" href="#L440">440</a>                 }
+<a class="jxr_linenumber" name="L441" href="#L441">441</a>             } <strong class="jxr_keyword">catch</strong> (IllegalArgumentException | IOException ex) {
+<a class="jxr_linenumber" name="L442" href="#L442">442</a>                 <strong class="jxr_keyword">final</strong> String msg = String.format(<span class="jxr_string">"Upgrade SQL file does not exist: %s"</span>, updateFile);
+<a class="jxr_linenumber" name="L443" href="#L443">443</a>                 <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a href="../../../../../org/owasp/dependencycheck/data/nvdcve/DatabaseException.html">DatabaseException</a>(msg, ex);
+<a class="jxr_linenumber" name="L444" href="#L444">444</a>             }
+<a class="jxr_linenumber" name="L445" href="#L445">445</a>         } <strong class="jxr_keyword">else</strong> {
+<a class="jxr_linenumber" name="L446" href="#L446">446</a>             <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> e0 = Integer.parseInt(appExpectedVersion.getVersionParts().get(0));
+<a class="jxr_linenumber" name="L447" href="#L447">447</a>             <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> c0 = Integer.parseInt(currentDbVersion.getVersionParts().get(0));
+<a class="jxr_linenumber" name="L448" href="#L448">448</a>             <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> e1 = Integer.parseInt(appExpectedVersion.getVersionParts().get(1));
+<a class="jxr_linenumber" name="L449" href="#L449">449</a>             <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> c1 = Integer.parseInt(currentDbVersion.getVersionParts().get(1));
+<a class="jxr_linenumber" name="L450" href="#L450">450</a>             <em class="jxr_comment">//CSOFF: EmptyBlock</em>
+<a class="jxr_linenumber" name="L451" href="#L451">451</a>             <strong class="jxr_keyword">if</strong> (e0 == c0 &amp;&amp; e1 &lt; c1) {
+<a class="jxr_linenumber" name="L452" href="#L452">452</a>                 LOGGER.warn(<span class="jxr_string">"A new version of dependency-check is available; consider upgrading"</span>);
+<a class="jxr_linenumber" name="L453" href="#L453">453</a>                 settings.setBoolean(Settings.KEYS.AUTO_UPDATE, false);
+<a class="jxr_linenumber" name="L454" href="#L454">454</a>             } <strong class="jxr_keyword">else</strong> <strong class="jxr_keyword">if</strong> (e0 == c0 &amp;&amp; e1 == c1) {
+<a class="jxr_linenumber" name="L455" href="#L455">455</a>                 <em class="jxr_comment">//do nothing - not sure how we got here, but just in case...</em>
+<a class="jxr_linenumber" name="L456" href="#L456">456</a>             } <strong class="jxr_keyword">else</strong> {
+<a class="jxr_linenumber" name="L457" href="#L457">457</a>                 LOGGER.error(<span class="jxr_string">"The database schema must be upgraded to use this version of dependency-check. Please see {} for more information."</span>,
+<a class="jxr_linenumber" name="L458" href="#L458">458</a>                         UPGRADE_HELP_URL);
+<a class="jxr_linenumber" name="L459" href="#L459">459</a>                 <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a href="../../../../../org/owasp/dependencycheck/data/nvdcve/DatabaseException.html">DatabaseException</a>(<span class="jxr_string">"Database schema is out of date"</span>);
+<a class="jxr_linenumber" name="L460" href="#L460">460</a>             }
+<a class="jxr_linenumber" name="L461" href="#L461">461</a>             <em class="jxr_comment">//CSON: EmptyBlock</em>
+<a class="jxr_linenumber" name="L462" href="#L462">462</a>         }
+<a class="jxr_linenumber" name="L463" href="#L463">463</a>     }
+<a class="jxr_linenumber" name="L464" href="#L464">464</a> 
+<a class="jxr_linenumber" name="L465" href="#L465">465</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L466" href="#L466">466</a> <em class="jxr_javadoccomment">     * Returns a resource bundle containing the SQL Statements needed for the</em>
+<a class="jxr_linenumber" name="L467" href="#L467">467</a> <em class="jxr_javadoccomment">     * database engine being used.</em>
+<a class="jxr_linenumber" name="L468" href="#L468">468</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L469" href="#L469">469</a> <em class="jxr_javadoccomment">     * @return a resource bundle containing the SQL Statements</em>
+<a class="jxr_linenumber" name="L470" href="#L470">470</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L471" href="#L471">471</a>     <strong class="jxr_keyword">public</strong> ResourceBundle getSqlStatements() {
+<a class="jxr_linenumber" name="L472" href="#L472">472</a>         <strong class="jxr_keyword">final</strong> ResourceBundle statementBundle = getDatabaseProductName() != <strong class="jxr_keyword">null</strong>
+<a class="jxr_linenumber" name="L473" href="#L473">473</a>                 ? ResourceBundle.getBundle(<span class="jxr_string">"data/dbStatements"</span>, <strong class="jxr_keyword">new</strong> Locale(getDatabaseProductName()))
+<a class="jxr_linenumber" name="L474" href="#L474">474</a>                 : ResourceBundle.getBundle(<span class="jxr_string">"data/dbStatements"</span>);
+<a class="jxr_linenumber" name="L475" href="#L475">475</a>         <strong class="jxr_keyword">return</strong> statementBundle;
+<a class="jxr_linenumber" name="L476" href="#L476">476</a>     }
+<a class="jxr_linenumber" name="L477" href="#L477">477</a> 
+<a class="jxr_linenumber" name="L478" href="#L478">478</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L479" href="#L479">479</a> <em class="jxr_javadoccomment">     * Uses the provided connection to check the specified schema version within</em>
+<a class="jxr_linenumber" name="L480" href="#L480">480</a> <em class="jxr_javadoccomment">     * the database.</em>
+<a class="jxr_linenumber" name="L481" href="#L481">481</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L482" href="#L482">482</a> <em class="jxr_javadoccomment">     * @param conn the database connection object</em>
+<a class="jxr_linenumber" name="L483" href="#L483">483</a> <em class="jxr_javadoccomment">     * @throws DatabaseException thrown if the schema version is not compatible</em>
+<a class="jxr_linenumber" name="L484" href="#L484">484</a> <em class="jxr_javadoccomment">     * with this version of dependency-check</em>
+<a class="jxr_linenumber" name="L485" href="#L485">485</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L486" href="#L486">486</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> ensureSchemaVersion(Connection conn) <strong class="jxr_keyword">throws</strong> DatabaseException {
+<a class="jxr_linenumber" name="L487" href="#L487">487</a>         ResultSet rs = <strong class="jxr_keyword">null</strong>;
+<a class="jxr_linenumber" name="L488" href="#L488">488</a>         PreparedStatement ps = <strong class="jxr_keyword">null</strong>;
+<a class="jxr_linenumber" name="L489" href="#L489">489</a>         <strong class="jxr_keyword">final</strong> ResourceBundle statementBundle = getSqlStatements();
+<a class="jxr_linenumber" name="L490" href="#L490">490</a>         <strong class="jxr_keyword">final</strong> String sql = statementBundle.getString(<span class="jxr_string">"SELECT_SCHEMA_VERSION"</span>);
+<a class="jxr_linenumber" name="L491" href="#L491">491</a>         <strong class="jxr_keyword">try</strong> {
+<a class="jxr_linenumber" name="L492" href="#L492">492</a>             ps = conn.prepareStatement(sql);
+<a class="jxr_linenumber" name="L493" href="#L493">493</a>             rs = ps.executeQuery();
+<a class="jxr_linenumber" name="L494" href="#L494">494</a>             <strong class="jxr_keyword">if</strong> (rs.next()) {
+<a class="jxr_linenumber" name="L495" href="#L495">495</a>                 <strong class="jxr_keyword">final</strong> String dbSchemaVersion = settings.getString(Settings.KEYS.DB_VERSION);
+<a class="jxr_linenumber" name="L496" href="#L496">496</a>                 <strong class="jxr_keyword">final</strong> <a href="../../../../../org/owasp/dependencycheck/utils/DependencyVersion.html">DependencyVersion</a> appDbVersion = DependencyVersionUtil.parseVersion(dbSchemaVersion);
+<a class="jxr_linenumber" name="L497" href="#L497">497</a>                 <strong class="jxr_keyword">if</strong> (appDbVersion == <strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="L498" href="#L498">498</a>                     <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a href="../../../../../org/owasp/dependencycheck/data/nvdcve/DatabaseException.html">DatabaseException</a>(<span class="jxr_string">"Invalid application database schema"</span>);
+<a class="jxr_linenumber" name="L499" href="#L499">499</a>                 }
+<a class="jxr_linenumber" name="L500" href="#L500">500</a>                 <strong class="jxr_keyword">final</strong> <a href="../../../../../org/owasp/dependencycheck/utils/DependencyVersion.html">DependencyVersion</a> db = DependencyVersionUtil.parseVersion(rs.getString(1));
+<a class="jxr_linenumber" name="L501" href="#L501">501</a>                 <strong class="jxr_keyword">if</strong> (db == <strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="L502" href="#L502">502</a>                     <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a href="../../../../../org/owasp/dependencycheck/data/nvdcve/DatabaseException.html">DatabaseException</a>(<span class="jxr_string">"Invalid database schema"</span>);
+<a class="jxr_linenumber" name="L503" href="#L503">503</a>                 }
+<a class="jxr_linenumber" name="L504" href="#L504">504</a>                 LOGGER.debug(<span class="jxr_string">"DC Schema: {}"</span>, appDbVersion);
+<a class="jxr_linenumber" name="L505" href="#L505">505</a>                 LOGGER.debug(<span class="jxr_string">"DB Schema: {}"</span>, db);
+<a class="jxr_linenumber" name="L506" href="#L506">506</a>                 <strong class="jxr_keyword">if</strong> (appDbVersion.compareTo(db) &gt; 0) {
+<a class="jxr_linenumber" name="L507" href="#L507">507</a>                     <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">boolean</strong> autoUpdate = settings.getBoolean(Settings.KEYS.AUTO_UPDATE, <strong class="jxr_keyword">true</strong>);
+<a class="jxr_linenumber" name="L508" href="#L508">508</a>                     <strong class="jxr_keyword">if</strong> (autoUpdate) {
+<a class="jxr_linenumber" name="L509" href="#L509">509</a>                         updateSchema(conn, appDbVersion, db);
+<a class="jxr_linenumber" name="L510" href="#L510">510</a>                         <strong class="jxr_keyword">if</strong> (++callDepth &lt; 10) {
+<a class="jxr_linenumber" name="L511" href="#L511">511</a>                             ensureSchemaVersion(conn);
+<a class="jxr_linenumber" name="L512" href="#L512">512</a>                         }
+<a class="jxr_linenumber" name="L513" href="#L513">513</a>                     } <strong class="jxr_keyword">else</strong> {
+<a class="jxr_linenumber" name="L514" href="#L514">514</a>                         <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a href="../../../../../org/owasp/dependencycheck/data/nvdcve/DatabaseException.html">DatabaseException</a>(<span class="jxr_string">"Old database schema identified - please execute "</span>
+<a class="jxr_linenumber" name="L515" href="#L515">515</a>                                 + <span class="jxr_string">"dependency-check without the no-update configuration to continue"</span>);
+<a class="jxr_linenumber" name="L516" href="#L516">516</a>                     }
+<a class="jxr_linenumber" name="L517" href="#L517">517</a>                 }
+<a class="jxr_linenumber" name="L518" href="#L518">518</a>             } <strong class="jxr_keyword">else</strong> {
+<a class="jxr_linenumber" name="L519" href="#L519">519</a>                 <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a href="../../../../../org/owasp/dependencycheck/data/nvdcve/DatabaseException.html">DatabaseException</a>(<span class="jxr_string">"Database schema is missing"</span>);
+<a class="jxr_linenumber" name="L520" href="#L520">520</a>             }
+<a class="jxr_linenumber" name="L521" href="#L521">521</a>         } <strong class="jxr_keyword">catch</strong> (SQLException ex) {
+<a class="jxr_linenumber" name="L522" href="#L522">522</a>             LOGGER.debug(<span class="jxr_string">""</span>, ex);
+<a class="jxr_linenumber" name="L523" href="#L523">523</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a href="../../../../../org/owasp/dependencycheck/data/nvdcve/DatabaseException.html">DatabaseException</a>(<span class="jxr_string">"Unable to check the database schema version"</span>, ex);
+<a class="jxr_linenumber" name="L524" href="#L524">524</a>         } <strong class="jxr_keyword">finally</strong> {
+<a class="jxr_linenumber" name="L525" href="#L525">525</a>             DBUtils.closeResultSet(rs);
+<a class="jxr_linenumber" name="L526" href="#L526">526</a>             DBUtils.closeStatement(ps);
+<a class="jxr_linenumber" name="L527" href="#L527">527</a>         }
+<a class="jxr_linenumber" name="L528" href="#L528">528</a>     }
+<a class="jxr_linenumber" name="L529" href="#L529">529</a> 
+<a class="jxr_linenumber" name="L530" href="#L530">530</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L531" href="#L531">531</a> <em class="jxr_javadoccomment">     * Opens the database connection pool.</em>
+<a class="jxr_linenumber" name="L532" href="#L532">532</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L533" href="#L533">533</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> open() {
+<a class="jxr_linenumber" name="L534" href="#L534">534</a>         connectionPool = <strong class="jxr_keyword">new</strong> BasicDataSource();
+<a class="jxr_linenumber" name="L535" href="#L535">535</a>         <strong class="jxr_keyword">if</strong> (driver != <strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="L536" href="#L536">536</a>             connectionPool.setDriver(driver);
+<a class="jxr_linenumber" name="L537" href="#L537">537</a>         }
+<a class="jxr_linenumber" name="L538" href="#L538">538</a>         connectionPool.setUrl(connectionString);
+<a class="jxr_linenumber" name="L539" href="#L539">539</a>         connectionPool.setUsername(userName);
+<a class="jxr_linenumber" name="L540" href="#L540">540</a>         connectionPool.setPassword(password);
+<a class="jxr_linenumber" name="L541" href="#L541">541</a>     }
+<a class="jxr_linenumber" name="L542" href="#L542">542</a> 
+<a class="jxr_linenumber" name="L543" href="#L543">543</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L544" href="#L544">544</a> <em class="jxr_javadoccomment">     * Closes the database connection pool.</em>
+<a class="jxr_linenumber" name="L545" href="#L545">545</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L546" href="#L546">546</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> close() {
+<a class="jxr_linenumber" name="L547" href="#L547">547</a>         <strong class="jxr_keyword">try</strong> {
+<a class="jxr_linenumber" name="L548" href="#L548">548</a>             connectionPool.close();
+<a class="jxr_linenumber" name="L549" href="#L549">549</a>         } <strong class="jxr_keyword">catch</strong> (SQLException ex) {
+<a class="jxr_linenumber" name="L550" href="#L550">550</a>             LOGGER.debug(<span class="jxr_string">"Error closing the connection pool"</span>, ex);
+<a class="jxr_linenumber" name="L551" href="#L551">551</a>         }
+<a class="jxr_linenumber" name="L552" href="#L552">552</a>         connectionPool = <strong class="jxr_keyword">null</strong>;
+<a class="jxr_linenumber" name="L553" href="#L553">553</a>     }
+<a class="jxr_linenumber" name="L554" href="#L554">554</a> 
+<a class="jxr_linenumber" name="L555" href="#L555">555</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L556" href="#L556">556</a> <em class="jxr_javadoccomment">     * Returns if the connection pool is open.</em>
+<a class="jxr_linenumber" name="L557" href="#L557">557</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L558" href="#L558">558</a> <em class="jxr_javadoccomment">     * @return if the connection pool is open</em>
+<a class="jxr_linenumber" name="L559" href="#L559">559</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L560" href="#L560">560</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">boolean</strong> isOpen() {
+<a class="jxr_linenumber" name="L561" href="#L561">561</a>         <strong class="jxr_keyword">return</strong> connectionPool != <strong class="jxr_keyword">null</strong>;
+<a class="jxr_linenumber" name="L562" href="#L562">562</a>     }
+<a class="jxr_linenumber" name="L563" href="#L563">563</a> 
+<a class="jxr_linenumber" name="L564" href="#L564">564</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L565" href="#L565">565</a> <em class="jxr_javadoccomment">     * Constructs a new database connection object per the database</em>
+<a class="jxr_linenumber" name="L566" href="#L566">566</a> <em class="jxr_javadoccomment">     * configuration.</em>
+<a class="jxr_linenumber" name="L567" href="#L567">567</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L568" href="#L568">568</a> <em class="jxr_javadoccomment">     * @return a database connection object</em>
+<a class="jxr_linenumber" name="L569" href="#L569">569</a> <em class="jxr_javadoccomment">     * @throws DatabaseException thrown if there is an exception obtaining the</em>
+<a class="jxr_linenumber" name="L570" href="#L570">570</a> <em class="jxr_javadoccomment">     * database connection</em>
+<a class="jxr_linenumber" name="L571" href="#L571">571</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L572" href="#L572">572</a>     <strong class="jxr_keyword">public</strong> Connection getConnection() <strong class="jxr_keyword">throws</strong> DatabaseException {
+<a class="jxr_linenumber" name="L573" href="#L573">573</a>         <strong class="jxr_keyword">try</strong> {
+<a class="jxr_linenumber" name="L574" href="#L574">574</a>             <strong class="jxr_keyword">return</strong> connectionPool.getConnection();
+<a class="jxr_linenumber" name="L575" href="#L575">575</a>         } <strong class="jxr_keyword">catch</strong> (SQLException ex) {
+<a class="jxr_linenumber" name="L576" href="#L576">576</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a href="../../../../../org/owasp/dependencycheck/data/nvdcve/DatabaseException.html">DatabaseException</a>(<span class="jxr_string">"Error connecting to the database"</span>, ex);
+<a class="jxr_linenumber" name="L577" href="#L577">577</a>         }
+<a class="jxr_linenumber" name="L578" href="#L578">578</a>     }
+<a class="jxr_linenumber" name="L579" href="#L579">579</a> }
 </pre>
 <hr/>
 <div id="footer">Copyright &#169; 2012&#x2013;2026 <a href="https://www.owasp.org">OWASP</a>. All rights reserved.</div>
