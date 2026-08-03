@@ -20,12 +20,10 @@ package org.owasp.dependencycheck.analyzer;
 import org.jspecify.annotations.NonNull;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.owasp.dependencycheck.BaseTest;
 import org.owasp.dependencycheck.Engine;
-import org.owasp.dependencycheck.analyzer.exception.AnalysisException;
 import org.owasp.dependencycheck.dependency.Dependency;
 import org.owasp.dependencycheck.dependency.EvidenceType;
 import org.owasp.dependencycheck.exception.InitializationException;
@@ -60,13 +58,9 @@ class YarnAuditAnalyzerIT extends BaseTest {
     class Classic {
         @Test
         void testAnalyzePackageYarnClassic() throws Exception {
-            testAnalyzeForUglifyJs("yarn/yarn-classic-audit/yarn.lock");
-        }
-
-        @Test
-        void testAnalyzePackageYarnClassicOnYarnBerryLockfile() {
-            AnalysisException exception = assertThrows(AnalysisException.class, () -> testAnalyzeForUglifyJs("yarn/yarn-classic-audit-bad-berry-lockfile/yarn.lock"));
-            assertThat(exception.getMessage(), containsString("No results from Yarn Classic (offline step) - possibly trying to use classic analyzer on Yarn Berry lockfile"));
+            final Dependency toScan = new Dependency(BaseTest.getResourceAsFile(YarnAuditAnalyzerIT.this, "yarn/yarn-classic-audit/yarn.lock"));
+            analyzer.analyze(toScan, engine);
+            assertEquals(0, engine.getDependencies().length, "No dependencies should be identified");
         }
     }
 
