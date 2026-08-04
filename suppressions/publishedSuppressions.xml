@@ -398,17 +398,10 @@
 </suppress>
 <suppress base="true">
     <notes><![CDATA[
-    FP per issue #5459
+    FP per issue #5459, #5460
     ]]></notes>
     <packageUrl regex="true">^pkg:maven/com\.oracle\.database\.nls/orai18n@.*$</packageUrl>
-    <cpe regex="true">cpe:/a:oracle:database(:.*)?$</cpe>
-</suppress>
-<suppress base="true">
-    <notes><![CDATA[
-    FP per issue #5460
-    ]]></notes>
-    <packageUrl regex="true">^pkg:maven/com\.oracle\.database\.nls/orai18n@.*$</packageUrl>
-    <cpe regex="true">cpe:/a:oracle:oracle_database(:.*)?$</cpe>
+    <cpe regex="true">cpe:/a:oracle:(oracle_)?database(:.*)?$</cpe>
 </suppress>
 <suppress base="true">
     <notes><![CDATA[
@@ -475,16 +468,16 @@
 </suppress>
 <suppress base="true">
     <notes><![CDATA[
-    FP per issue #5592
+    FP per issue #5592, #7806
     ]]></notes>
-    <packageUrl regex="true">^pkg:maven/javax\.resource/connector@.*$</packageUrl>
+    <packageUrl regex="true">^pkg:maven/javax\.resource/connector.*@.*$</packageUrl>
     <cpe regex="true">cpe:/a:sun:j2ee(:.*)?$</cpe>
 </suppress>
 <suppress base="true">
     <notes><![CDATA[
-    FP per issue #5615
+    FP per issue #5615, #8666
     ]]></notes>
-    <packageUrl regex="true">^pkg:maven/org\.springframework\.cloud/spring-cloud-sleuth-autoconfigure@.*$</packageUrl>
+    <packageUrl regex="true">^pkg:maven/org\.springframework\.cloud/.*autoconfig.*@.*$</packageUrl>
     <cpe regex="true">cpe:/a:vmware:spring_cloud_config(:.*)?$</cpe>
 </suppress>
 <suppress base="true">
@@ -947,7 +940,7 @@
     <notes><![CDATA[
     FP per issue #6613
     ]]></notes>
-    <packageUrl regex="true">^pkg:maven/org\.springframework\.batch\.extensions/spring-batch-excel@.*$</packageUrl>
+    <packageUrl regex="true">^pkg:maven/org\.springframework\.batch\.extensions/.*@.*$</packageUrl>
     <cpe regex="true">cpe:/a:pivotal_software:spring_batch(:.*)?$</cpe>
 </suppress>
 <suppress base="true">
@@ -1721,13 +1714,6 @@
 </suppress>
 <suppress base="true">
     <notes><![CDATA[
-    FP per issue #7806
-    ]]></notes>
-    <packageUrl regex="true">^pkg:maven/javax\.resource/connector-api@.*$</packageUrl>
-    <cpe regex="true">cpe:/a:sun:j2ee(:.*)?$</cpe>
-</suppress>
-<suppress base="true">
-    <notes><![CDATA[
     FP per issue #7798
     ]]></notes>
     <packageUrl regex="true">^pkg:maven/io\.quarkus/quarkus-hibernate-validator@.*$</packageUrl>
@@ -1916,10 +1902,10 @@
 </suppress>
 <suppress base="true">
     <notes><![CDATA[
-    FP per issue #8257
+    FP per issue #8257, #8701
     ]]></notes>
-    <packageUrl regex="true">^pkg:maven/net\.java\.dev\.jna/jna-jpms@.*$</packageUrl>
-    <cpe regex="true">cpe:/a:oracle:java_se(:.*)?$</cpe>
+    <packageUrl regex="true">^pkg:maven/net\.java\.dev\.jna/.*@.*$</packageUrl>
+    <cpe regex="true">cpe:/a:(oracle|sun):java_se(:.*)?$</cpe>
 </suppress>
 <suppress base="true">
     <notes><![CDATA[
@@ -2124,16 +2110,9 @@
 </suppress>
 <suppress base="true">
     <notes><![CDATA[
-    FP per issue #8650
+    FP per issue #8650, #8651
     ]]></notes>
-    <packageUrl regex="true">^pkg:maven/org\.springframework\.boot/spring-boot-batch-jdbc@.*$</packageUrl>
-    <cpe regex="true">cpe:/a:pivotal_software:spring_batch(:.*)?$</cpe>
-</suppress>
-<suppress base="true">
-    <notes><![CDATA[
-    FP per issue #8651
-    ]]></notes>
-    <packageUrl regex="true">^pkg:maven/org\.springframework\.boot/spring-boot-starter-batch-jdbc@.*$</packageUrl>
+    <packageUrl regex="true">^pkg:maven/org\.springframework\.boot/.*@.*$</packageUrl>
     <cpe regex="true">cpe:/a:pivotal_software:spring_batch(:.*)?$</cpe>
 </suppress>
 <suppress base="true">
@@ -2166,13 +2145,6 @@
 </suppress>
 <suppress base="true">
     <notes><![CDATA[
-    FP per issue #8666
-    ]]></notes>
-    <packageUrl regex="true">^pkg:maven/org\.springframework\.cloud/spring-cloud-kubernetes-client-autoconfig@.*$</packageUrl>
-    <cpe regex="true">cpe:/a:vmware:spring_cloud_config(:.*)?$</cpe>
-</suppress>
-<suppress base="true">
-    <notes><![CDATA[
     FP per issue #8672
     ]]></notes>
     <packageUrl regex="true">^pkg:gem/rails-html-sanitizer@.*$</packageUrl>
@@ -2198,13 +2170,5 @@
     ]]></notes>
     <packageUrl regex="true">^pkg:maven/org\.jruby\.rack/jruby-rack@.*$</packageUrl>
     <cpe regex="true">cpe:/a:gmail-servlet_project:gmail-servlet(:.*)?$</cpe>
-</suppress>
-
-<suppress base="true">
-    <notes><![CDATA[
-    FP per issue #8701
-    ]]></notes>
-    <packageUrl regex="true">^pkg:maven/net\.java\.dev\.jna/jna-jpms@.*$</packageUrl>
-    <cpe regex="true">cpe:/a:sun:java_se(:.*)?$</cpe>
 </suppress>
 </suppressions>
