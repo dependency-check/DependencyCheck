@@ -1902,10 +1902,12 @@
 </suppress>
 <suppress base="true">
     <notes><![CDATA[
-    FP per issue #8257, #8701
+    FP per issue #8257, #8701, #8718, #8719, #8720, #8721, #8722, #8723
     ]]></notes>
-    <packageUrl regex="true">^pkg:maven/net\.java\.dev\.jna/.*@.*$</packageUrl>
-    <cpe regex="true">cpe:/a:(oracle|sun):java_se(:.*)?$</cpe>
+    <packageUrl regex="true">^pkg:maven/.*@.*$</packageUrl>
+    <cpe regex="true">cpe:/a:oracle:java_se(:.*)?$</cpe>
+    <cpe regex="true">cpe:/a:sun:java_se(:.*)?$</cpe>
+    <cpe regex="true">cpe:/a:sun:java_system_web_server(:.*)?$</cpe>
 </suppress>
 <suppress base="true">
     <notes><![CDATA[
