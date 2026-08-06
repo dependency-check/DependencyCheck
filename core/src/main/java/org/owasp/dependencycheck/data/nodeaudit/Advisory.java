@@ -18,11 +18,11 @@
 package org.owasp.dependencycheck.data.nodeaudit;
 
 
-
 import io.github.jeremylong.openvulnerability.client.nvd.CvssV3;
+
+import javax.annotation.concurrent.ThreadSafe;
 import java.io.Serializable;
 import java.util.List;
-import javax.annotation.concurrent.ThreadSafe;
 
 /**
  * The response from NPM Audit API will respond with 0 or more advisories. This
@@ -256,6 +256,28 @@ public class Advisory implements Serializable {
 
     public void setCwes(List<String> cwes) {
         this.cwes = cwes;
+    }
+
+    /**
+     * Extracts the GHSA identifier from a GitHub advisory URL such as
+     * `https://github.com/advisories/GHSA-c9f4-xj24-8jqx`. Audit tooling
+     * reports advisories with such URLs rather than a discrete GHSA
+     * identifier.
+     *
+     * @param url the advisory URL
+     * @return the GHSA identifier; or null if the URL does not reference a
+     * GHSA
+     */
+    public static String ghsaIdFromUrl(String url) {
+        if (url == null || url.isEmpty()) {
+            return null;
+        }
+        final int lastSlashIndex = url.lastIndexOf('/');
+        if (lastSlashIndex == -1 || lastSlashIndex == url.length() - 1) {
+            return null;
+        }
+        final String id = url.substring(lastSlashIndex + 1);
+        return id.startsWith("GHSA-") ? id : null;
     }
 
     public String getGhsaId() {

@@ -286,7 +286,7 @@ public class YarnAuditAnalyzer extends AbstractNpmAnalyzer {
             final var moduleName = advisoryJson.optString("value", null);
             final var id = object.get("ID");
             final var url = object.optString("URL", null);
-            final var ghsaId = extractGhsaId(url);
+            final var ghsaId = Advisory.ghsaIdFromUrl(url);
             final var issue = object.optString("Issue", null);
             final var severity = object.optString("Severity", null);
             final var vulnerableVersions = object.optString("Vulnerable Versions", null);
@@ -312,16 +312,5 @@ public class YarnAuditAnalyzer extends AbstractNpmAnalyzer {
             }
         }
         return advisories;
-    }
-
-    private static String extractGhsaId(String url) {
-        if (url == null || url.isEmpty()) {
-            return null;
-        }
-        final int lastSlashIndex = url.lastIndexOf('/');
-        if (lastSlashIndex == -1 || lastSlashIndex == url.length() - 1) {
-            return null;
-        }
-        return url.substring(lastSlashIndex + 1);
     }
 }
