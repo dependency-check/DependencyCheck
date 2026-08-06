@@ -28,7 +28,7 @@ RUN apk upgrade --no-cache                                                      
     apk add --no-cache --virtual .build-deps curl                                                    && \
     apk add --no-cache git ruby npm                                                                  && \
     gem install --no-document bundler-audit                                                          && \
-    npm install --global --ignore-scripts corepack                                                   && \
+    npm install --global --ignore-scripts corepack && corepack enable npm                            && \
     unzip dependency-check-${VERSION}-release.zip -d /usr/share/                                     && \
     rm dependency-check-${VERSION}-release.zip                                                       && \
     cd /usr/share/dependency-check/plugins                                                           && \
@@ -50,7 +50,7 @@ USER ${UID}
 
 ### Cache pieces needed for the specific run user
 RUN bundle audit update                                                                              && \
-    corepack prepare pnpm@latest yarn@latest --activate                                              && \
+    corepack prepare npm@latest pnpm@latest yarn@latest --activate                                   && \
     printf "enableTelemetry: false\nenableScripts: false\n" >> ${HOME}/.yarnrc.yml                   && \
     rm -rf /tmp/*
 
