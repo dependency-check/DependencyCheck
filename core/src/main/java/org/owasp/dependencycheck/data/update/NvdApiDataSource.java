@@ -23,6 +23,26 @@ import io.github.jeremylong.openvulnerability.client.nvd.DefCveItem;
 import io.github.jeremylong.openvulnerability.client.nvd.NvdApiException;
 import io.github.jeremylong.openvulnerability.client.nvd.NvdCveClient;
 import io.github.jeremylong.openvulnerability.client.nvd.NvdCveClientBuilder;
+import org.apache.commons.lang3.StringUtils;
+import org.jspecify.annotations.NonNull;
+import org.owasp.dependencycheck.Engine;
+import org.owasp.dependencycheck.data.nvdcve.CveDB;
+import org.owasp.dependencycheck.data.nvdcve.DatabaseException;
+import org.owasp.dependencycheck.data.nvdcve.DatabaseProperties;
+import org.owasp.dependencycheck.data.update.exception.UpdateException;
+import org.owasp.dependencycheck.data.update.nvd.api.DownloadTask;
+import org.owasp.dependencycheck.data.update.nvd.api.NvdApiProcessor;
+import org.owasp.dependencycheck.utils.DateUtil;
+import org.owasp.dependencycheck.utils.DownloadFailedException;
+import org.owasp.dependencycheck.utils.Downloader;
+import org.owasp.dependencycheck.utils.InvalidSettingException;
+import org.owasp.dependencycheck.utils.Pair;
+import org.owasp.dependencycheck.utils.ResourceNotFoundException;
+import org.owasp.dependencycheck.utils.Settings;
+import org.owasp.dependencycheck.utils.TooManyRequestsException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -54,25 +74,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.function.Function;
 import java.util.zip.GZIPOutputStream;
-
-import org.jspecify.annotations.NonNull;
-import org.owasp.dependencycheck.Engine;
-import org.owasp.dependencycheck.data.nvdcve.CveDB;
-import org.owasp.dependencycheck.data.nvdcve.DatabaseException;
-import org.owasp.dependencycheck.data.nvdcve.DatabaseProperties;
-import org.owasp.dependencycheck.data.update.exception.UpdateException;
-import org.owasp.dependencycheck.data.update.nvd.api.DownloadTask;
-import org.owasp.dependencycheck.data.update.nvd.api.NvdApiProcessor;
-import org.owasp.dependencycheck.utils.DateUtil;
-import org.owasp.dependencycheck.utils.DownloadFailedException;
-import org.owasp.dependencycheck.utils.Downloader;
-import org.owasp.dependencycheck.utils.InvalidSettingException;
-import org.owasp.dependencycheck.utils.Pair;
-import org.owasp.dependencycheck.utils.ResourceNotFoundException;
-import org.owasp.dependencycheck.utils.Settings;
-import org.owasp.dependencycheck.utils.TooManyRequestsException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
@@ -301,7 +302,7 @@ public class NvdApiDataSource implements CachedWebDataSource {
             builder.withLastModifiedFilter(lastModifiedRequest, end);
         }
         final String key = settings.getString(Settings.KEYS.NVD_API_KEY);
-        if (key != null) {
+        if (StringUtils.isNotBlank(key)) {
             //using a higher delay as the system may not be able to process these faster.
             builder.withApiKey(key)
                     .withrequestsPerThirtySeconds(settings.getInt(Settings.KEYS.NVD_API_REQUESTS_PER_30_SECONDS_WITH_API_KEY, 50));

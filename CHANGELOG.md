@@ -1,5 +1,7 @@
 # Change Log
 
+For versions 13.0.0 and above, please see the the [GitHub Releases page](https://github.com/dependency-check/DependencyCheck/releases) for the change log.
+
 ## [Version 12.2.2](https://github.com/dependency-check/DependencyCheck/releases/tag/v12.2.2) (2026-05-03)
 
 **NOTE**: The database schema was updated to fix [#8466](https://github.com/dependency-check/DependencyCheck/pull/8466) - if using an external database the update scripts must be run!

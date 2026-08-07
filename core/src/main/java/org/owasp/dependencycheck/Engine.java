@@ -24,15 +24,17 @@ import org.jspecify.annotations.Nullable;
 import org.owasp.dependencycheck.analyzer.AnalysisPhase;
 import org.owasp.dependencycheck.analyzer.Analyzer;
 import org.owasp.dependencycheck.analyzer.AnalyzerService;
+import org.owasp.dependencycheck.analyzer.DependencyBundlingAnalyzer;
 import org.owasp.dependencycheck.analyzer.FileTypeAnalyzer;
-import org.owasp.dependencycheck.data.nvdcve.DatabaseManager;
 import org.owasp.dependencycheck.data.nvdcve.CveDB;
 import org.owasp.dependencycheck.data.nvdcve.DatabaseException;
+import org.owasp.dependencycheck.data.nvdcve.DatabaseManager;
 import org.owasp.dependencycheck.data.nvdcve.DatabaseProperties;
 import org.owasp.dependencycheck.data.update.CachedWebDataSource;
 import org.owasp.dependencycheck.data.update.UpdateService;
 import org.owasp.dependencycheck.data.update.exception.UpdateException;
 import org.owasp.dependencycheck.dependency.Dependency;
+import org.owasp.dependencycheck.dependency.naming.Identifier;
 import org.owasp.dependencycheck.exception.ExceptionCollection;
 import org.owasp.dependencycheck.exception.InitializationException;
 import org.owasp.dependencycheck.exception.NoDataException;
@@ -69,23 +71,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
-import static org.owasp.dependencycheck.analyzer.AnalysisPhase.FINAL;
-import static org.owasp.dependencycheck.analyzer.AnalysisPhase.FINDING_ANALYSIS;
-import static org.owasp.dependencycheck.analyzer.AnalysisPhase.FINDING_ANALYSIS_PHASE2;
-import static org.owasp.dependencycheck.analyzer.AnalysisPhase.IDENTIFIER_ANALYSIS;
-import static org.owasp.dependencycheck.analyzer.AnalysisPhase.INFORMATION_COLLECTION;
-import static org.owasp.dependencycheck.analyzer.AnalysisPhase.INFORMATION_COLLECTION2;
-import static org.owasp.dependencycheck.analyzer.AnalysisPhase.INITIAL;
-import static org.owasp.dependencycheck.analyzer.AnalysisPhase.POST_FINDING_ANALYSIS;
-import static org.owasp.dependencycheck.analyzer.AnalysisPhase.POST_IDENTIFIER_ANALYSIS;
-import static org.owasp.dependencycheck.analyzer.AnalysisPhase.POST_INFORMATION_COLLECTION1;
-import static org.owasp.dependencycheck.analyzer.AnalysisPhase.POST_INFORMATION_COLLECTION2;
-import static org.owasp.dependencycheck.analyzer.AnalysisPhase.POST_INFORMATION_COLLECTION3;
-import static org.owasp.dependencycheck.analyzer.AnalysisPhase.PRE_FINDING_ANALYSIS;
-import static org.owasp.dependencycheck.analyzer.AnalysisPhase.PRE_IDENTIFIER_ANALYSIS;
-import static org.owasp.dependencycheck.analyzer.AnalysisPhase.PRE_INFORMATION_COLLECTION;
-import org.owasp.dependencycheck.analyzer.DependencyBundlingAnalyzer;
-import org.owasp.dependencycheck.dependency.naming.Identifier;
+import static org.owasp.dependencycheck.analyzer.AnalysisPhase.*;
 
 /**
  * Scans files, directories, etc. for Dependencies. Analyzers are loaded and
@@ -895,13 +881,13 @@ public class Engine implements FileFilter, AutoCloseable {
                 }
                 database.close();
                 database = null;
-                if (updateException != null) {
-                    throw updateException;
-                }
                 LOGGER.info("Check for updates complete ({} ms)", System.currentTimeMillis() - updateStart);
                 if (remainOpen) {
                     //lock is not needed as we already have the lock held
                     openDatabase(true, false);
+                }
+                if (updateException != null) {
+                    throw updateException;
                 }
 
                 return dbUpdatesMade;
@@ -1162,22 +1148,6 @@ public class Engine implements FileFilter, AutoCloseable {
         throw new ExceptionCollection(exceptions, true);
     }
 
-    /**
-     * Writes the report to the given output directory.
-     *
-     * @param applicationName the name of the application/project
-     * @param outputDir the path to the output directory (can include the full
-     * file name if the format is not ALL)
-     * @param format the report format (see {@link ReportGenerator.Format})
-     * @throws ReportException thrown if there is an error generating the report
-     * @deprecated use
-     * {@link #writeReports(java.lang.String, java.io.File, java.lang.String, org.owasp.dependencycheck.exception.ExceptionCollection)}
-     */
-    @Deprecated
-    public void writeReports(String applicationName, File outputDir, String format) throws ReportException {
-        writeReports(applicationName, null, null, null, outputDir, format, null);
-    }
-
     //CSOFF: LineLength
     /**
      * Writes the report to the given output directory.
@@ -1195,28 +1165,6 @@ public class Engine implements FileFilter, AutoCloseable {
     }
     //CSON: LineLength
 
-    /**
-     * Writes the report to the given output directory.
-     *
-     * @param applicationName the name of the application/project
-     * @param groupId the Maven groupId
-     * @param artifactId the Maven artifactId
-     * @param version the Maven version
-     * @param outputDir the path to the output directory (can include the full
-     * file name if the format is not ALL)
-     * @param format the report format (see {@link ReportGenerator.Format})
-     * @throws ReportException thrown if there is an error generating the report
-     * @deprecated use
-     * {@link #writeReports(String, String, String, String, File, String, ExceptionCollection)}
-     */
-    @Deprecated
-    public synchronized void writeReports(String applicationName, @Nullable final String groupId,
-            @Nullable final String artifactId, @Nullable final String version,
-            @NonNull final File outputDir, String format) throws ReportException {
-        writeReports(applicationName, groupId, artifactId, version, outputDir, format, null);
-    }
-
-    //CSOFF: LineLength
     /**
      * Writes the report to the given output directory.
      *
@@ -1249,10 +1197,9 @@ public class Engine implements FileFilter, AutoCloseable {
             throw new ReportException(msg, ex);
         }
     }
-    //CSON: LineLength
 
     private boolean identifiersMatch(Set<Identifier> left, Set<Identifier> right) {
-        if (left != null && right != null && left.size() > 0 && left.size() == right.size()) {
+        if (left != null && right != null && !left.isEmpty() && left.size() == right.size()) {
             int count = 0;
             for (Identifier l : left) {
                 for (Identifier r : right) {

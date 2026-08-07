@@ -17,12 +17,6 @@
  */
 package org.owasp.dependencycheck.agent;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-import javax.annotation.concurrent.NotThreadSafe;
 import org.owasp.dependencycheck.Engine;
 import org.owasp.dependencycheck.data.nvdcve.DatabaseException;
 import org.owasp.dependencycheck.data.update.exception.UpdateException;
@@ -38,6 +32,13 @@ import org.owasp.dependencycheck.utils.SeverityUtil;
 import org.owasp.dependencycheck.utils.scarf.TelemetryCollector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.annotation.concurrent.NotThreadSafe;
+import java.io.File;
+import java.io.IOException;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * This class provides a way to easily conduct a scan solely based on existing
@@ -432,31 +433,6 @@ public class DependencyCheckScanAgent {
      */
     public void setProxyServer(String proxyServer) {
         this.proxyServer = proxyServer;
-    }
-
-    /**
-     * Get the value of proxyServer.
-     *
-     * @return the value of proxyServer
-     * @deprecated use
-     * {@link org.owasp.dependencycheck.agent.DependencyCheckScanAgent#getProxyServer()}
-     * instead
-     */
-    @Deprecated
-    public String getProxyUrl() {
-        return proxyServer;
-    }
-
-    /**
-     * Set the value of proxyServer.
-     *
-     * @param proxyUrl new value of proxyServer
-     * @deprecated use {@link org.owasp.dependencycheck.agent.DependencyCheckScanAgent#setProxyServer(java.lang.String)
-     * } instead
-     */
-    @Deprecated
-    public void setProxyUrl(String proxyUrl) {
-        this.proxyServer = proxyUrl;
     }
 
     /**

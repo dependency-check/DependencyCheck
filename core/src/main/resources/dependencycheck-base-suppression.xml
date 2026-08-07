@@ -1899,13 +1899,13 @@
     </suppress>
     <suppress base="true">
         <notes><![CDATA[
-        JRK False Positives
+        JDK False Positives
         ]]></notes>
         <filePath regex="true">.*(\.(jar|ear|war|pom)|pom\.xml)</filePath>
         <cpe>cpe:/a:sun:java:</cpe>
+        <cpe>cpe:/a:sun:java_se:</cpe>
         <cpe>cpe:/a:sun:jdk:</cpe>
         <cpe>cpe:/a:sun:j2se:</cpe>
-        <cpe>cpe:/a:sun:j_se:</cpe>
     </suppress>
     <suppress base="true">
         <notes><![CDATA[
@@ -4887,7 +4887,6 @@
         <packageUrl regex="true">^pkg:maven/com\.apollographql\.apollo/.*$</packageUrl>
         <cpe regex="true">cpe:/a:apollo(_project)?:apollo.*</cpe>
     </suppress>
-    <!-- generated suppressions added to main in 8.1.1 -->
     <suppress base="true">
         <notes><![CDATA[
         FP per issue #5373
@@ -4944,8 +4943,6 @@
         <packageUrl regex="true">^pkg:(?!golang/github.com/ecnepsnai/web).*$</packageUrl>
         <cpe regex="true">cpe:/a:web(_project)?:web.*</cpe>
     </suppress>
-    
-    <!-- begin generated suppressions added to main in 8.4.0 -->
     <suppress base="true">
         <notes><![CDATA[
         FP per issue #5593
@@ -5090,7 +5087,6 @@
         <packageUrl regex="true">^pkg:maven/io\.netty\.incubator/netty-incubator-codec-classes-quic@.*$</packageUrl>
         <cpe regex="true">cpe:/a:quic(_project)?:quic.*</cpe>
     </suppress>
-    <!-- end generated suppressions added to main in 8.4.0 -->
     <suppress base="true">
         <notes><![CDATA[
             FP per #4321, #7444, #7740, 8016
@@ -5100,7 +5096,6 @@
         <packageUrl regex="true">^pkg:(pypi|nuget|generic|npm|composer)/.*[rR]edis.*@.*$</packageUrl>
         <cpe>cpe:/a:redis:redis:</cpe>
     </suppress>
-    <!-- generated suppression 8.4.0 up to 9.1.0 -->
     <suppress base="true">
         <notes><![CDATA[
    FP per issue #5910
@@ -5178,8 +5173,6 @@
         <packageUrl regex="true">^pkg:maven/io\.ktor/ktor-server-metrics-micrometer-jvm@.*$</packageUrl>
         <cpe regex="true">cpe:/a:csm_server(_project)?:csm_server.*</cpe>
     </suppress>
-    <!-- end of genereated suppressions that will be included in 9.1.1 -->
-
     <suppress base="true">
         <notes><![CDATA[
         FP per issue #6696

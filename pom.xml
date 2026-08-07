@@ -20,7 +20,7 @@ Copyright (c) 2012 - Jeremy Long
 
     <groupId>org.owasp</groupId>
     <artifactId>dependency-check-parent</artifactId>
-    <version>13.0.0-SNAPSHOT</version>
+    <version>13.0.1-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <modules>
@@ -113,7 +113,7 @@ Copyright (c) 2012 - Jeremy Long
     <properties>
         <maven.compiler.release>11</maven.compiler.release>
         <!--reproducible build-->
-        <project.build.outputTimestamp>2026-05-03T10:20:35Z</project.build.outputTimestamp>
+        <project.build.outputTimestamp>2026-08-03T10:02:24Z</project.build.outputTimestamp>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
@@ -128,16 +128,16 @@ Copyright (c) 2012 - Jeremy Long
 
         <!-- upgrading slf4j and logback can cause issues ;) https://github.com/dependency-check/DependencyCheck/issues/4846 -->
         <slf4j.version>2.0.18</slf4j.version>
-        <logback.version>1.5.32</logback.version>
+        <logback.version>1.5.34</logback.version>
 
         <apache.lucene.version>9.12.3</apache.lucene.version>
         <!-- Driver versions as properties for ease of extraction for reuse in Docker builds -->
         <driver.h2database.version>2.4.240</driver.h2database.version>
-        <driver.postgresql.version>42.7.11</driver.postgresql.version>
-        <driver.mysql.version>9.7.0</driver.mysql.version>
+        <driver.postgresql.version>42.7.13</driver.postgresql.version>
+        <driver.mysql.version>26.7.0</driver.mysql.version>
 
         <apache.ant.version>1.10.17</apache.ant.version>
-        <httpcomponents.client.version>5.6.2</httpcomponents.client.version>
+        <httpcomponents.client.version>5.6.3</httpcomponents.client.version>
         <httpcomponents.core.version>5.4.3</httpcomponents.core.version>
         <junit.version>5.14.4</junit.version>
 
@@ -322,12 +322,12 @@ Copyright (c) 2012 - Jeremy Long
                 <plugin>
                     <groupId>org.codehaus.gmavenplus</groupId>
                     <artifactId>gmavenplus-plugin</artifactId>
-                    <version>5.0.0</version>
+                    <version>5.1.0</version>
                     <dependencies>
                         <dependency>
                             <groupId>org.apache.groovy</groupId>
                             <artifactId>groovy-ant</artifactId>
-                            <version>5.0.6</version>
+                            <version>5.0.8</version>
                             <scope>runtime</scope>
                         </dependency>
                     </dependencies>
@@ -912,7 +912,7 @@ Copyright (c) 2012 - Jeremy Long
             <dependency>
                 <groupId>io.github.jeremylong</groupId>
                 <artifactId>open-vulnerability-clients</artifactId>
-                <version>9.0.5</version>
+                <version>9.0.6</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.commons</groupId>
@@ -942,7 +942,7 @@ Copyright (c) 2012 - Jeremy Long
             <dependency>
                 <groupId>commons-validator</groupId>
                 <artifactId>commons-validator</artifactId>
-                <version>1.10.1</version>
+                <version>1.11.0</version>
                 <exclusions>
                     <!-- Unnecessary capabilities -->
                     <exclusion>
@@ -999,7 +999,7 @@ Copyright (c) 2012 - Jeremy Long
             <dependency>
                 <groupId>org.jspecify</groupId>
                 <artifactId>jspecify</artifactId>
-                <version>1.0.0</version>
+                <version>1.0.1</version>
                 <optional>true</optional>
             </dependency>
             <dependency>
@@ -1015,7 +1015,7 @@ Copyright (c) 2012 - Jeremy Long
             <dependency>
                 <groupId>com.fasterxml.jackson</groupId>
                 <artifactId>jackson-bom</artifactId>
-                <version>2.22.0</version>
+                <version>2.22.1</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -1098,7 +1098,7 @@ Copyright (c) 2012 - Jeremy Long
             <dependency>
                 <groupId>commons-codec</groupId>
                 <artifactId>commons-codec</artifactId>
-                <version>1.22.0</version>
+                <version>1.22.1</version>
             </dependency>
             <dependency>
                 <groupId>com.h3xstream.retirejs</groupId>
@@ -1115,7 +1115,7 @@ Copyright (c) 2012 - Jeremy Long
             <dependency>
                 <groupId>org.json</groupId>
                 <artifactId>json</artifactId>
-                <version>20260522</version>
+                <version>20260719</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.commons</groupId>
@@ -1141,7 +1141,7 @@ Copyright (c) 2012 - Jeremy Long
             <dependency>
                 <groupId>org.jsoup</groupId>
                 <artifactId>jsoup</artifactId>
-                <version>1.22.2</version>
+                <version>1.23.1</version>
             </dependency>
             <dependency>
                 <groupId>org.slf4j</groupId>

@@ -191,7 +191,7 @@ Tests cases require:
 * dotnet core version 8.0
 * Go: `go version` 1.12 and higher
 * Ruby [bundler-audit](https://github.com/rubysec/bundler-audit#install)
-* [Yarn](https://classic.yarnpkg.com/en/docs/install/)
+* [Yarn](https://yarnpkg.com/getting-started/install)
 * [pnpm](https://pnpm.io/installation)
 
 ## Development Usage

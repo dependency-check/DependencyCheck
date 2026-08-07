@@ -61,6 +61,10 @@ import java.util.stream.Collectors;
  */
 @ThreadSafe
 public class NexusV3Search implements NexusSearch {
+    /**
+     * Used for logging.
+     */
+    private static final Logger LOGGER = LoggerFactory.getLogger(NexusV3Search.class);
 
     /**
      * By default, NexusV3Search accepts only classifier-less artifacts.
@@ -79,14 +83,6 @@ public class NexusV3Search implements NexusSearch {
      * Whether to use the Proxy when making requests.
      */
     private final boolean useProxy;
-    /**
-     * The configured settings.
-     */
-    private final Settings settings;
-    /**
-     * Used for logging.
-     */
-    private static final Logger LOGGER = LoggerFactory.getLogger(NexusV3Search.class);
 
     /**
      * Creates a NexusV3Search for the given repository URL.
@@ -97,7 +93,6 @@ public class NexusV3Search implements NexusSearch {
      *                               invalid
      */
     public NexusV3Search(Settings settings, boolean useProxy) throws MalformedURLException {
-        this.settings = settings;
         this.useProxy = useProxy;
         this.acceptedClassifiers.add(null);
         final String searchUrl = settings.getString(Settings.KEYS.ANALYZER_NEXUS_URL);

@@ -50,7 +50,7 @@ USER ${UID}
 
 ### Cache pieces needed for the specific run user
 RUN bundle audit update                                                                              && \
-    corepack prepare pnpm@latest yarn@latest yarn@1 --activate                                       && \
+    corepack prepare pnpm@latest yarn@latest --activate                                              && \
     printf "enableTelemetry: false\nenableScripts: false\n" >> ${HOME}/.yarnrc.yml                   && \
     rm -rf /tmp/*
 

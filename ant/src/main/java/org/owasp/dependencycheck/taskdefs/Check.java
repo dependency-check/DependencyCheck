@@ -1006,20 +1006,6 @@ public class Check extends Update {
     }
 
     /**
-     * Set the value of retirejsFilterNonVulnerable.
-     *
-     * @param retireJsFilterNonVulnerable new value of
-     * retirejsFilterNonVulnerable
-     * @deprecated Use {@link #setRetireJsFilterNonVulnerable(Boolean)} instead.
-     */
-    @Deprecated
-    public void setRetirejsFilterNonVulnerable(Boolean retireJsFilterNonVulnerable) {
-        log("'retirejsFilterNonVulnerable' is deprecated and may be removed in the next major release, please migrate to 'retireJsFilterNonVulnerable'",
-                Project.MSG_WARN);
-        this.retireJsFilterNonVulnerable = retireJsFilterNonVulnerable;
-    }
-
-    /**
      * Set the value of retireJsFilterNonVulnerable.
      *
      * @param retireJsFilterNonVulnerable new value of
@@ -1029,21 +1015,6 @@ public class Check extends Update {
         this.retireJsFilterNonVulnerable = retireJsFilterNonVulnerable;
     }
 
-    /**
-     * Add a regular expression to the set of retire JS content filters.
-     * <p>
-     * This is called by Ant.
-     *
-     * @param retireJsFilter the regular expression used to filter based on file
-     * content
-     * @deprecated Use {@link #addConfiguredRetireJsFilter(RetirejsFilter)} instead.
-     */
-    @Deprecated
-    public void addConfiguredRetirejsFilter(final RetirejsFilter retireJsFilter) {
-        log("'retirejsFilter' is deprecated and may be removed in the next major release, please migrate to 'retireJsFilter'",
-                Project.MSG_WARN);
-        retireJsFilters.add(retireJsFilter.getRegex());
-    }
 
     /**
      * Add a regular expression to the set of retire JS content filters.
@@ -1256,38 +1227,12 @@ public class Check extends Update {
     }
 
     /**
-     * Set value of {@link #ossIndexAnalyzerEnabled}.
-     *
-     * @param ossIndexAnalyzerEnabled new value of ossIndexAnalyzerEnabled
-     * @deprecated Use {@link #setOssIndexAnalyzerEnabled(Boolean)} instead.
-     */
-    @Deprecated
-    public void setOssindexAnalyzerEnabled(Boolean ossIndexAnalyzerEnabled) {
-        log("'ossindexAnalyzerEnabled' is deprecated and may be removed in the next major release, please migrate to 'ossIndexAnalyzerEnabled'",
-                Project.MSG_WARN);
-        this.ossIndexAnalyzerEnabled = ossIndexAnalyzerEnabled;
-    }
-
-    /**
      * Set value of ossIndexAnalyzerEnabled.
      *
      * @param ossIndexAnalyzerEnabled new value of ossIndexAnalyzerEnabled
      */
     public void setOssIndexAnalyzerEnabled(Boolean ossIndexAnalyzerEnabled) {
         this.ossIndexAnalyzerEnabled = ossIndexAnalyzerEnabled;
-    }
-
-    /**
-     * Set value of {@link #ossIndexAnalyzerUseCache}.
-     *
-     * @param ossIndexAnalyzerUseCache new value of ossIndexAnalyzerUseCache
-     * @deprecated Use {@link #setOssIndexAnalyzerUseCache(Boolean)} instead.
-     */
-    @Deprecated
-    public void setOssindexAnalyzerUseCache(Boolean ossIndexAnalyzerUseCache) {
-        log("'ossindexAnalyzerUseCache' is deprecated and may be removed in the next major release, please migrate to 'ossIndexAnalyzerUseCache'",
-                Project.MSG_WARN);
-        this.ossIndexAnalyzerUseCache = ossIndexAnalyzerUseCache;
     }
 
     /**
@@ -1309,19 +1254,6 @@ public class Check extends Update {
     }
 
     /**
-     * Set value of {@link #ossIndexAnalyzerUrl}.
-     *
-     * @param ossIndexAnalyzerUrl new value of ossIndexAnalyzerUrl
-     * @deprecated Use {@link #setOssIndexAnalyzerUrl(String)} instead.
-     */
-    @Deprecated
-    public void setOssindexAnalyzerUrl(String ossIndexAnalyzerUrl) {
-        log("'ossindexAnalyzerUrl' is deprecated and may be removed in the next major release, please migrate to 'ossIndexAnalyzerUrl'",
-                Project.MSG_WARN);
-        this.ossIndexAnalyzerUrl = ossIndexAnalyzerUrl;
-    }
-
-    /**
      * Set value of ossIndexAnalyzerUrl.
      *
      * @param ossIndexAnalyzerUrl new value of ossIndexAnalyzerUrl
@@ -1331,38 +1263,12 @@ public class Check extends Update {
     }
 
     /**
-     * Set value of {@link #ossIndexAnalyzerUsername}.
-     *
-     * @param ossIndexAnalyzerUsername new value of ossIndexAnalyzerUsername
-     * @deprecated Use {@link #setOssIndexAnalyzerUsername(String)} instead.
-     */
-    @Deprecated
-    public void setOssindexAnalyzerUsername(String ossIndexAnalyzerUsername) {
-        log("'ossindexAnalyzerUsername' is deprecated and may be removed in the next major release, please migrate to 'ossIndexAnalyzerUsername'",
-                Project.MSG_WARN);
-        this.ossIndexAnalyzerUsername = ossIndexAnalyzerUsername;
-    }
-
-    /**
      * Set value of ossIndexAnalyzerUsername.
      *
      * @param ossIndexAnalyzerUsername new value of ossIndexAnalyzerUsername
      */
     public void setOssIndexAnalyzerUsername(String ossIndexAnalyzerUsername) {
         this.ossIndexAnalyzerUsername = ossIndexAnalyzerUsername;
-    }
-
-    /**
-     * Set value of {@link #ossIndexAnalyzerPassword}.
-     *
-     * @param ossIndexAnalyzerPassword new value of ossIndexAnalyzerPassword
-     * @deprecated Use {@link #setOssIndexAnalyzerPassword(String)} instead.
-     */
-    @Deprecated
-    public void setOssindexAnalyzerPassword(String ossIndexAnalyzerPassword) {
-        log("'ossindexAnalyzerPassword' is deprecated and may be removed in the next major release, please migrate to 'ossIndexAnalyzerPassword'",
-                Project.MSG_WARN);
-        this.ossIndexAnalyzerPassword = ossIndexAnalyzerPassword;
     }
 
     /**

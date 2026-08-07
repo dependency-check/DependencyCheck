@@ -585,13 +585,6 @@ public final class CliParser {
         //not a real option - but enables java debugging via the shell script
         options.addOption(newOption("debug",
                 "Used to enable java debugging of the cli via dependency-check.sh."));
-        options.addOption(newOption(ARGUMENT.DISABLE_RETIREJS_DEPRECATED, "Disable the RetireJS Analyzer."));
-        options.addOption(newOption(ARGUMENT.RETIREJS_FILTER_NON_VULNERABLE_DEPRECATED, "Specifies that the Retire JS "
-                + "Analyzer should filter out non-vulnerable JS files from the report."));
-        options.addOption(newOptionWithArg(ARGUMENT.RETIREJS_FILTERS_DEPRECATED, "pattern",
-                "Specify Retire JS content filter used to exclude files from analysis based on their content; "
-                        + "most commonly used to exclude based on your applications own copyright line. This "
-                        + "option can be specified multiple times."));
     }
 
     /**
@@ -844,8 +837,7 @@ public final class CliParser {
      * @return the retireJS filters
      */
     public String[] getRetireJsFilters() {
-        final String[] values = line.getOptionValues(ARGUMENT.RETIRE_JS_FILTERS);
-        return values != null ? values : line.getOptionValues(ARGUMENT.RETIREJS_FILTERS_DEPRECATED);
+        return line.getOptionValues(ARGUMENT.RETIRE_JS_FILTERS);
     }
 
     /**
@@ -858,8 +850,7 @@ public final class CliParser {
     @SuppressFBWarnings(justification = "Accepting that this is a bad practice - but made more sense in this use case",
             value = {"NP_BOOLEAN_RETURN_NULL"})
     public Boolean isRetireJsFilterNonVulnerable() {
-        return (line != null && (line.hasOption(ARGUMENT.RETIRE_JS_FILTER_NON_VULNERABLE)
-                || line.hasOption(ARGUMENT.RETIREJS_FILTER_NON_VULNERABLE_DEPRECATED))) ? true : null;
+        return line != null && line.hasOption(ARGUMENT.RETIRE_JS_FILTER_NON_VULNERABLE) ? true : null;
     }
 
     /**
@@ -1528,12 +1519,6 @@ public final class CliParser {
         public static final String DISABLE_NODE_AUDIT_SKIPDEV = "nodeAuditSkipDevDependencies";
         /**
          * Disables the RetireJS Analyzer.
-         * @deprecated Use {@link #DISABLE_RETIRE_JS} instead.
-         */
-        @Deprecated
-        public static final String DISABLE_RETIREJS_DEPRECATED = "disableRetireJS";
-        /**
-         * Disables the RetireJS Analyzer.
          */
         public static final String DISABLE_RETIRE_JS = "disableRetireJs";
         /**
@@ -1633,21 +1618,9 @@ public final class CliParser {
          */
         public static final String RETIRED = "enableRetired";
         /**
-         * The CLI argument for the retire js content filters.
-         * @deprecated Use {@link #RETIRE_JS_FILTERS} instead.
-         */
-        @Deprecated
-        public static final String RETIREJS_FILTERS_DEPRECATED = "retirejsFilter";
-        /**
          * The CLI argument for the retire JS content filters.
          */
         public static final String RETIRE_JS_FILTERS = "retireJsFilter";
-        /**
-         * The CLI argument for the retire js content filters.
-         * @deprecated Use {@link #RETIRE_JS_FILTER_NON_VULNERABLE} instead.
-         */
-        @Deprecated
-        public static final String RETIREJS_FILTER_NON_VULNERABLE_DEPRECATED = "retirejsFilterNonVulnerable";
         /**
          * The CLI argument for the retire JS content filter for non-vulnerable.
          */
