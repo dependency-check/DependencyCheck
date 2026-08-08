@@ -35,8 +35,12 @@ import us.springett.parsers.cpe.CpeParser;
 import us.springett.parsers.cpe.exceptions.CpeValidationException;
 
 import java.io.File;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
+import java.util.TimeZone;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -415,6 +419,16 @@ class SuppressionRuleTest extends BaseTest {
         assertEquals(0, dependency.getVulnerabilities().size(),
                 "A cvssBelow of 5.0 and 7.0 will suppress a vulnerability with a score of 6.0");
         assertEquals(1, dependency.getSuppressedVulnerabilities().size());
+    }
+
+    @Test
+    void testToStringExpiryFormatting() {
+        ZonedDateTime time = ZonedDateTime.of(2024, 6, 1, 12, 0, 0, 0, ZoneId.of("Asia/Singapore"));
+        SuppressionRule rule = new SuppressionRule();
+        Calendar until = Calendar.getInstance(TimeZone.getTimeZone(time.getZone()));
+        until.setTimeInMillis(time.toInstant().toEpochMilli());
+        rule.setUntil(until);
+        assertTrue(rule.toString().contains("until=2024-06-01T12:00:00+08:00"));
     }
 
     @Test
