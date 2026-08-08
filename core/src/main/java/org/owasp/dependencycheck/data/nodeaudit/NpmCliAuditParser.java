@@ -115,7 +115,7 @@ public class NpmCliAuditParser {
         if (jsonCvss != null) {
             final double baseScore = jsonCvss.optDouble("score", -1.0);
             final String vector = jsonCvss.optString("vectorString", null);
-            if (baseScore > 0.0 && vector != null && !"null".equals(vector)) {
+if (baseScore >= 0.0 && vector != null && !"null".equals(vector)) {
                 if (vector.startsWith("CVSS:3")) {
                     try {
                         final CvssV3 cvss = CvssUtil.vectorToCvssV3(vector, baseScore);
