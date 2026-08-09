@@ -2907,14 +2907,9 @@ public abstract class BaseDependencyCheckMojo extends AbstractMojo implements Ma
                         || unscoredCvss >= failBuildOnCVSS
                 ) {
                     String name = v.getName();
-                    if (cvssV4 >= 0.0) {
-                        name += "(" + cvssV4 + ")";
-                    } else if (cvssV3 >= 0.0) {
-                        name += "(" + cvssV3 + ")";
-                    } else if (cvssV2 >= 0.0) {
-                        name += "(" + cvssV2 + ")";
-                    } else if (unscoredCvss >= 0.0) {
-                        name += "(" + unscoredCvss + ")";
+                    final double reportedScore = scoreToReport(cvssV2, cvssV3, cvssV4, unscoredCvss, failBuildOnCVSS);
+                    if (reportedScore >= 0.0) {
+                        name += "(" + reportedScore + ")";
                     }
                     if (addName) {
                         addName = false;
@@ -2941,6 +2936,44 @@ public abstract class BaseDependencyCheckMojo extends AbstractMojo implements Ma
             }
             throw new MojoFailureException(msg);
         }
+    }
+
+    /**
+     * Determines the CVSS score to display for a vulnerability listed by
+     * {@link #checkForFailure(org.owasp.dependencycheck.dependency.Dependency[])}.
+     * <p>
+     * The build is failed when <em>any</em> of the CVSS scores of a vulnerability reaches the
+     * configured threshold, so the score that actually reached it is the one to display; showing
+     * the score of the newest CVSS version instead quotes a score below the threshold that the
+     * failure message itself states. When no threshold applies the newest CVSS version is used.
+     *
+     * @param cvssV2 the CVSS v2 base score, or -1 when the vulnerability has no v2 score
+     * @param cvssV3 the CVSS v3 base score, or -1 when the vulnerability has no v3 score
+     * @param cvssV4 the CVSS v4 base score, or -1 when the vulnerability has no v4 score
+     * @param unscoredCvss the score estimated from an unscored severity, or -1 when not applicable
+     * @param threshold the configured failBuildOnCVSS threshold
+     * @return the score to display, or -1 when the vulnerability carries no score at all
+     */
+    static double scoreToReport(double cvssV2, double cvssV3, double cvssV4, double unscoredCvss, float threshold) {
+        if (threshold > 0.0) {
+            if (cvssV4 >= threshold) {
+                return cvssV4;
+            } else if (cvssV3 >= threshold) {
+                return cvssV3;
+            } else if (cvssV2 >= threshold) {
+                return cvssV2;
+            } else if (unscoredCvss >= threshold) {
+                return unscoredCvss;
+            }
+        }
+        if (cvssV4 >= 0.0) {
+            return cvssV4;
+        } else if (cvssV3 >= 0.0) {
+            return cvssV3;
+        } else if (cvssV2 >= 0.0) {
+            return cvssV2;
+        }
+        return unscoredCvss;
     }
 
     /**
