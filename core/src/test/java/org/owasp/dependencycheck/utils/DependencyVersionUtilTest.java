@@ -61,6 +61,28 @@ class DependencyVersionUtilTest extends BaseTest {
     }
 
     /**
+     * Test of parseVersion method, of class DependencyVersionUtil, for versions
+     * that consist of a number directly followed by a single letter and no
+     * period - the scheme used by libjpeg (8a, 9d, 9e).
+     *
+     * See https://github.com/dependency-check/DependencyCheck/issues/4139
+     */
+    @Test
+    void testParseVersion_singleLetterSuffixWithoutPeriod() {
+        final String[] names = {"9e", "9d", "8a", "libjpeg-9e", "jpegsr9e"};
+        final String[] expected = {"9e", "9d", "8a", "9e", "9e"};
+
+        for (int i = 0; i < names.length; i++) {
+            final DependencyVersion version = DependencyVersionUtil.parseVersion(names[i]);
+            String result = null;
+            if (version != null) {
+                result = version.toString();
+            }
+            assertEquals(expected[i], result, "Failed extraction on \"" + names[i] + "\".");
+        }
+    }
+
+    /**
      * Test of parseVersion method, of class DependencyVersionUtil.
      */
     @Test
