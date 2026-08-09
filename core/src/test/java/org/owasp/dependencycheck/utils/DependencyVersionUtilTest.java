@@ -21,6 +21,7 @@ import org.junit.jupiter.api.Test;
 import org.owasp.dependencycheck.BaseTest;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 /**
@@ -80,6 +81,23 @@ class DependencyVersionUtilTest extends BaseTest {
             }
             assertEquals(expected[i], result, "Failed extraction on \"" + names[i] + "\".");
         }
+    }
+
+    /**
+     * The user visible consequence of dropping the suffix: 8a and 8b both collapse onto "8", so
+     * the version CPEAnalyzer derives from the evidence compares equal to the version of a CPE
+     * for a different release. Its exact match is
+     * {@code parseVersion(evidence).equals(parseVersion(cpe.getVersion()))}, so a dependency at
+     * 8a matched the CPE of 8b, and the identified version printed in the report was "8".
+     */
+    @Test
+    void testParseVersion_singleLetterReleasesAreNotConflated() {
+        final DependencyVersion evidence = DependencyVersionUtil.parseVersion("libjpeg-turbo-8a.tar.gz", true);
+
+        assertEquals("8a", evidence.toString());
+        assertEquals(DependencyVersionUtil.parseVersion("8a"), evidence);
+        assertNotEquals(DependencyVersionUtil.parseVersion("8b"), evidence);
+        assertNotEquals(DependencyVersionUtil.parseVersion("9e"), DependencyVersionUtil.parseVersion("9d"));
     }
 
     /**
