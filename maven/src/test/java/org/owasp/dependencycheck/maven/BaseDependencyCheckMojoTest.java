@@ -91,6 +91,48 @@ class BaseDependencyCheckMojoTest extends BaseTest {
     }
 
     /**
+     * The build is failed when <em>any</em> of the CVSS scores of a vulnerability reaches the
+     * configured threshold, so the score printed in the failure message must be the score that
+     * actually reached it. Reporting the score of the newest CVSS version instead quotes a score
+     * below the threshold that the very same message states.
+     *
+     * See https://github.com/dependency-check/DependencyCheck/issues/5658
+     */
+    @Test
+    void should_scoreToReport_return_the_score_that_reached_the_threshold() {
+        // CVE-2021-42550 from the issue: CVSSv2 8.5 fails the build at a threshold of 7.0,
+        // while CVSSv3 is only 6.6.
+        assertEquals(8.5, BaseDependencyCheckMojo.scoreToReport(8.5, 6.6, -1, -1, 7.0f));
+        // the newest version is used when it is the one that reached the threshold
+        assertEquals(9.1, BaseDependencyCheckMojo.scoreToReport(4.0, 9.1, -1, -1, 7.0f));
+        assertEquals(9.4, BaseDependencyCheckMojo.scoreToReport(4.0, 6.6, 9.4, -1, 7.0f));
+        // an estimated score for an unscored severity is reported when it reached the threshold
+        assertEquals(8.0, BaseDependencyCheckMojo.scoreToReport(-1, -1, -1, 8.0, 7.0f));
+    }
+
+    /**
+     * With no threshold in play (failBuildOnCVSS &lt;= 0 reports every vulnerability) the newest
+     * CVSS version is still the one to show; this guards the behaviour the change must not alter.
+     */
+    @Test
+    void should_scoreToReport_prefer_the_newest_cvss_version_without_a_threshold() {
+        assertEquals(6.6, BaseDependencyCheckMojo.scoreToReport(8.5, 6.6, -1, -1, 0.0f));
+        assertEquals(4.0, BaseDependencyCheckMojo.scoreToReport(8.5, 6.6, 4.0, -1, 0.0f));
+        assertEquals(8.5, BaseDependencyCheckMojo.scoreToReport(8.5, -1, -1, -1, 0.0f));
+        // nothing scored at all - nothing to display
+        assertEquals(-1.0, BaseDependencyCheckMojo.scoreToReport(-1, -1, -1, -1, 7.0f));
+    }
+
+    /**
+     * A vulnerability below the threshold is never listed by checkForFailure, but the helper is
+     * still expected to fall back to the newest version rather than to invent a score.
+     */
+    @Test
+    void should_scoreToReport_fall_back_when_nothing_reached_the_threshold() {
+        assertEquals(6.6, BaseDependencyCheckMojo.scoreToReport(5.0, 6.6, -1, -1, 9.0f));
+    }
+
+    /**
      * Implementation of ODC Mojo for testing.
      */
     public static class BaseDependencyCheckMojoImpl extends BaseDependencyCheckMojo {
