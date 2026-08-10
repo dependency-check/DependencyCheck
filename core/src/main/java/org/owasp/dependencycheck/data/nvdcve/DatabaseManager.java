@@ -18,8 +18,9 @@
 package org.owasp.dependencycheck.data.nvdcve;
 
 import com.google.common.io.Resources;
-import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.commons.io.IOUtils;
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
 import org.owasp.dependencycheck.utils.DBUtils;
 import org.owasp.dependencycheck.utils.DependencyVersion;
 import org.owasp.dependencycheck.utils.DependencyVersionUtil;
@@ -111,7 +112,7 @@ public final class DatabaseManager {
     /**
      * The database connection pool.
      */
-    private BasicDataSource connectionPool;
+    private HikariDataSource connectionPool;
 
     /**
      * Private constructor for this factory class; no instance is ever needed.
@@ -531,23 +532,26 @@ public final class DatabaseManager {
      * Opens the database connection pool.
      */
     public void open() {
-        connectionPool = new BasicDataSource();
-        if (driver != null) {
-            connectionPool.setDriver(driver);
-        }
-        connectionPool.setUrl(connectionString);
-        connectionPool.setUsername(userName);
-        connectionPool.setPassword(password);
+        final HikariConfig config = new HikariConfig();
+        config.setJdbcUrl(connectionString);
+        config.setUsername(userName);
+        config.setPassword(password);
+        config.setMaximumPoolSize(1);
+        config.setMinimumIdle(1);
+        config.setInitializationFailTimeout(-1);
+        connectionPool = new HikariDataSource(config);
     }
 
     /**
      * Closes the database connection pool.
      */
     public void close() {
-        try {
-            connectionPool.close();
-        } catch (SQLException ex) {
-            LOGGER.debug("Error closing the connection pool", ex);
+        if (connectionPool != null) {
+            try {
+                connectionPool.close();
+            } catch (RuntimeException ex) {
+                LOGGER.debug("Error closing the connection pool", ex);
+            }
         }
         connectionPool = null;
     }

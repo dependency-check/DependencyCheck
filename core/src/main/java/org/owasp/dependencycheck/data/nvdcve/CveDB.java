@@ -1094,18 +1094,33 @@ public final class CveDB implements AutoCloseable {
     public void updateVulnerability(DefCveItem cve, String baseEcosystem) {
         clearCache();
         final String cveId = cve.getCve().getId();
-        try {
-            if (cve.getCve().getVulnStatus() != null && cve.getCve().getVulnStatus().toUpperCase().startsWith("REJECT")) {
-                deleteVulnerability(cveId);
-            } else {
-                if (cveItemConverter.testCveCpeStartWithFilter(cve)) {
+        try (Connection conn = databaseManager.getConnection()) {
+            final boolean autoCommit = conn.getAutoCommit();
+            if (autoCommit) {
+                conn.setAutoCommit(false);
+            }
+            try {
+                if (cve.getCve().getVulnStatus() != null && cve.getCve().getVulnStatus().toUpperCase().startsWith("REJECT")) {
+                    deleteVulnerability(conn, cveId);
+                } else if (cveItemConverter.testCveCpeStartWithFilter(cve)) {
                     final String description = cveItemConverter.extractDescription(cve);
-                    final int vulnerabilityId = updateOrInsertVulnerability(cve, description);
-                    updateVulnerabilityInsertCwe(vulnerabilityId, cve);
-                    updateVulnerabilityInsertReferences(vulnerabilityId, cve);
+                    final int vulnerabilityId = updateOrInsertVulnerability(conn, cve, description);
+                    updateVulnerabilityInsertCwe(conn, vulnerabilityId, cve);
+                    updateVulnerabilityInsertReferences(conn, vulnerabilityId, cve);
 
                     final List<VulnerableSoftware> software = parseCpes(cve);
-                    updateVulnerabilityInsertSoftware(vulnerabilityId, cveId, software, baseEcosystem);
+                    updateVulnerabilityInsertSoftware(conn, vulnerabilityId, cveId, software, baseEcosystem);
+                }
+                conn.commit();
+            } catch (SQLException | CpeValidationException ex) {
+                rollbackTransaction(conn, cveId);
+                throw ex;
+            } catch (RuntimeException ex) {
+                rollbackTransaction(conn, cveId);
+                throw ex;
+            } finally {
+                if (autoCommit) {
+                    conn.setAutoCommit(true);
                 }
             }
         } catch (SQLException ex) {
@@ -1116,6 +1131,20 @@ public final class CveDB implements AutoCloseable {
             final String msg = String.format("Error parsing CPE entry from '%s'; %s", cveId, ex.getMessage());
             LOGGER.debug(msg, ex);
             throw new DatabaseException(msg);
+        }
+    }
+
+    /**
+     * Rolls back the current transaction and logs failures while preserving the original exception flow.
+     *
+     * @param conn the active connection
+     * @param cveId the CVE id being processed
+     */
+    private void rollbackTransaction(Connection conn, String cveId) {
+        try {
+            conn.rollback();
+        } catch (SQLException rollbackEx) {
+            LOGGER.warn("Rollback failed while updating '{}'", cveId, rollbackEx);
         }
     }
 
@@ -1170,12 +1199,12 @@ public final class CveDB implements AutoCloseable {
      * @param description the description of the CVE entry
      * @return the vulnerability ID
      */
-    private int updateOrInsertVulnerability(DefCveItem cve, String description) {
+    private int updateOrInsertVulnerability(Connection conn, DefCveItem cve, String description) {
         if (CpeEcosystemCache.isEmpty()) {
             loadCpeEcosystemCache();
         }
         final int vulnerabilityId;
-        try (Connection conn = databaseManager.getConnection(); PreparedStatement callUpdate = getPreparedStatement(conn, UPDATE_VULNERABILITY)) {
+        try (PreparedStatement callUpdate = getPreparedStatement(conn, UPDATE_VULNERABILITY)) {
 //            String 1.cve, String 2.description, String 3.v2Severity, Float 4.v2ExploitabilityScore,
 //            Float 5.v2ImpactScore, Boolean 6.v2AcInsufInfo, Boolean 7.v2ObtainAllPrivilege,
 //            Boolean 8.v2ObtainUserPrivilege, Boolean 9.v2ObtainOtherPrivilege, Boolean 10.v2UserInteractionRequired,
@@ -1417,10 +1446,9 @@ public final class CveDB implements AutoCloseable {
      * @param cve the CVE entry that contains the CWE entries to insert
      * @throws SQLException thrown if there is an error inserting the data
      */
-    private void updateVulnerabilityInsertCwe(int vulnerabilityId, DefCveItem cve) throws SQLException {
+    private void updateVulnerabilityInsertCwe(Connection conn, int vulnerabilityId, DefCveItem cve) throws SQLException {
         if (cve.getCve() != null && cve.getCve().getWeaknesses() != null) {
-            try (Connection conn = databaseManager.getConnection();
-                    PreparedStatement insertCWE = getPreparedStatement(conn, INSERT_CWE, vulnerabilityId)) {
+            try (PreparedStatement insertCWE = getPreparedStatement(conn, INSERT_CWE, vulnerabilityId)) {
                 for (Weakness weakness : cve.getCve().getWeaknesses()) {
                     for (LangString desc : weakness.getDescription()) {
                         if ("en".equals(desc.getLang())) {
@@ -1448,9 +1476,8 @@ public final class CveDB implements AutoCloseable {
      * @throws SQLException thrown if there is an error deleting the
      * vulnerability
      */
-    private void deleteVulnerability(String cve) throws SQLException {
-        try (Connection conn = databaseManager.getConnection();
-                PreparedStatement deleteVulnerability = getPreparedStatement(conn, DELETE_VULNERABILITY, cve)) {
+    private void deleteVulnerability(Connection conn, String cve) throws SQLException {
+        try (PreparedStatement deleteVulnerability = getPreparedStatement(conn, DELETE_VULNERABILITY, cve)) {
             deleteVulnerability.executeUpdate();
         }
     }
@@ -1516,10 +1543,10 @@ public final class CveDB implements AutoCloseable {
      * @throws DatabaseException thrown if there is an error inserting the data
      * @throws SQLException thrown if there is an error inserting the data
      */
-    private void updateVulnerabilityInsertSoftware(int vulnerabilityId, String cveId,
+    private void updateVulnerabilityInsertSoftware(Connection conn, int vulnerabilityId, String cveId,
             List<VulnerableSoftware> software, String baseEcosystem)
             throws DatabaseException, SQLException {
-        try (Connection conn = databaseManager.getConnection(); PreparedStatement insertSoftware = getPreparedStatement(conn, INSERT_SOFTWARE)) {
+        try (PreparedStatement insertSoftware = getPreparedStatement(conn, INSERT_SOFTWARE)) {
             for (VulnerableSoftware parsedCpe : software) {
                 insertSoftware.setInt(1, vulnerabilityId);
                 insertSoftware.setString(2, parsedCpe.getPart().getAbbreviation());
@@ -1572,8 +1599,8 @@ public final class CveDB implements AutoCloseable {
      * @param cve the CVE entry that contains the list of references
      * @throws SQLException thrown if there is an error inserting the data
      */
-    private void updateVulnerabilityInsertReferences(int vulnerabilityId, DefCveItem cve) throws SQLException {
-        try (Connection conn = databaseManager.getConnection(); PreparedStatement insertReference = getPreparedStatement(conn, INSERT_REFERENCE)) {
+    private void updateVulnerabilityInsertReferences(Connection conn, int vulnerabilityId, DefCveItem cve) throws SQLException {
+        try (PreparedStatement insertReference = getPreparedStatement(conn, INSERT_REFERENCE)) {
             if (cve.getCve().getReferences() != null) {
                 for (Reference r : cve.getCve().getReferences()) {
                     insertReference.setInt(1, vulnerabilityId);

@@ -31,7 +31,7 @@ Create the dependency-check-report.html in the target directory.
         <plugins>
             ...
             <plugin>
-              <groupId>org.owasp</groupId>
+              <groupId>newsome-solutions.owasp</groupId>
               <artifactId>dependency-check-maven</artifactId>
               <version>${project.version}</version>
               <executions>
@@ -61,7 +61,7 @@ Create an aggregated dependency-check report within the site.
         <plugins>
             ...
             <plugin>
-                <groupId>org.owasp</groupId>
+                <groupId>newsome-solutions.owasp</groupId>
                 <artifactId>dependency-check-maven</artifactId>
                 <version>${project.version}</version>
                 <reportSets>
@@ -91,7 +91,7 @@ Create the dependency-check-report.html and fail the build for CVSS greater than
         <plugins>
             ...
             <plugin>
-              <groupId>org.owasp</groupId>
+              <groupId>newsome-solutions.owasp</groupId>
               <artifactId>dependency-check-maven</artifactId>
               <version>${project.version}</version>
               <configuration>
@@ -124,7 +124,7 @@ Create the dependency-check-report.html and skip artifacts not bundled in distri
         <plugins>
             ...
             <plugin>
-                <groupId>org.owasp</groupId>
+                <groupId>newsome-solutions.owasp</groupId>
                 <artifactId>dependency-check-maven</artifactId>
                 <version>${project.version}</version>
                 <configuration>
@@ -158,7 +158,7 @@ and META files must also be mirrored; see https://nvd.nist.gov/vuln/data-feeds#J
         <plugins>
             ...
             <plugin>
-                <groupId>org.owasp</groupId>
+                <groupId>newsome-solutions.owasp</groupId>
                 <artifactId>dependency-check-maven</artifactId>
                 <version>${project.version}</version>
                 <configuration>
@@ -191,7 +191,7 @@ Update the local cache of the NVD data from NIST without analyzing the dependenc
         <plugins>
             ...
             <plugin>
-                <groupId>org.owasp</groupId>
+                <groupId>newsome-solutions.owasp</groupId>
                 <artifactId>dependency-check-maven</artifactId>
                 <version>${project.version}</version>
                 <executions>
@@ -221,7 +221,7 @@ Suppress false positives using multiple suppression files (E.g. a company-wide s
         <plugins>
             ...
             <plugin>
-                <groupId>org.owasp</groupId>
+                <groupId>newsome-solutions.owasp</groupId>
                 <artifactId>dependency-check-maven</artifactId>
                 <version>${project.version}</version>
                 <configuration>

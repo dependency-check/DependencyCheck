@@ -1094,6 +1094,13 @@ public abstract class BaseDependencyCheckMojo extends AbstractMojo implements Ma
     private Integer nvdApiResultsPerPage;
 
     /**
+     * The number of worker threads used to process NVD API pages into the database.
+     */
+    @SuppressWarnings("CanBeFinal")
+    @Parameter(property = "nvdApiProcessingThreads")
+    private Integer nvdApiProcessingThreads;
+
+    /**
      * The path to dotnet core.
      */
     @SuppressWarnings("CanBeFinal")
@@ -2483,6 +2490,7 @@ public abstract class BaseDependencyCheckMojo extends AbstractMojo implements Ma
         settings.setStringIfNotNull(Settings.KEYS.NVD_API_ENDPOINT, nvdApiEndpoint);
         settings.setIntIfNotNull(Settings.KEYS.NVD_API_DELAY, nvdApiDelay);
         settings.setIntIfNotNull(Settings.KEYS.NVD_API_RESULTS_PER_PAGE, nvdApiResultsPerPage);
+        settings.setIntIfNotNull(Settings.KEYS.NVD_API_PROCESSING_THREAD_POOL_SIZE, nvdApiProcessingThreads);
         settings.setStringIfNotEmpty(Settings.KEYS.NVD_API_DATAFEED_URL, nvdDatafeedUrl);
         settings.setIntIfNotNull(Settings.KEYS.NVD_API_VALID_FOR_HOURS, nvdValidForHours);
         settings.setIntIfNotNull(Settings.KEYS.NVD_API_MAX_RETRY_COUNT, nvdMaxRetryCount);

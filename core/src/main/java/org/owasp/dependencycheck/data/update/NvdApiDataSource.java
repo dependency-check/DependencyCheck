@@ -335,7 +335,8 @@ public class NvdApiDataSource implements CachedWebDataSource {
 
         ExecutorService processingExecutorService = null;
         try {
-            processingExecutorService = Executors.newFixedThreadPool(PROCESSING_THREAD_POOL_SIZE);
+            final int processingThreadCount = resolveNvdApiProcessingThreadCount();
+            processingExecutorService = Executors.newFixedThreadPool(processingThreadCount);
             final List<Future<NvdApiProcessor>> submitted = new ArrayList<>();
             int max = -1;
             int ctr = 0;
@@ -416,6 +417,20 @@ public class NvdApiDataSource implements CachedWebDataSource {
                 processingExecutorService.shutdownNow();
             }
         }
+    }
+
+    /**
+     * Resolves the number of processing threads to use for NVD API page persistence.
+     * A value of {@code <= 0} uses an adaptive default based on DB backend type.
+     *
+     * @return the processing thread count
+     */
+    private int resolveNvdApiProcessingThreadCount() {
+        final int configured = settings.getInt(Settings.KEYS.NVD_API_PROCESSING_THREAD_POOL_SIZE, 0);
+        if (configured > 0) {
+            return configured;
+        }
+        return PROCESSING_THREAD_POOL_SIZE;
     }
 
     /**

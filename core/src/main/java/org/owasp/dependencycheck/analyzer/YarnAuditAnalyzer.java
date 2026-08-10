@@ -41,8 +41,11 @@ import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
 import static org.owasp.dependencycheck.utils.FileUtils.existsWithContent;
@@ -72,6 +75,13 @@ public class YarnAuditAnalyzer extends AbstractNpmAnalyzer {
      * The path to the `yarn` executable.
      */
     private String yarnPath;
+
+    private static final String PACKAGE_JSON_FILE_NAME = "package.json";
+
+    private static final String NODE_OPTIONS_ENV = "NODE_OPTIONS";
+    private static final String YARN_IGNORE_PATH_ENV = "YARN_IGNORE_PATH";
+    private static final String COREPACK_EXECUTABLE = "corepack";
+    private static final Pattern PACKAGE_MANAGER_PATTERN = Pattern.compile("\\\"packageManager\\\"\\s*:\\s*\\\"yarn@([^\\\"]+)\\\"");
 
     @Override
     protected String getAnalyzerEnabledSettingKey() {
@@ -103,6 +113,7 @@ public class YarnAuditAnalyzer extends AbstractNpmAnalyzer {
         List<String> args = List.of(yarnPath, "--version");
         final ProcessBuilder builder = new ProcessBuilder(args);
         builder.directory(dependencyDirectory);
+        builder.environment().remove(NODE_OPTIONS_ENV);
         try {
             final Process process = builder.start();
             try (ProcessReader processReader = new ProcessReader(process)) {
@@ -115,12 +126,49 @@ public class YarnAuditAnalyzer extends AbstractNpmAnalyzer {
                 if (StringUtils.isBlank(yarnVersion)) {
                     throw new IllegalStateException("Unable to determine yarn version, blank output.");
                 }
-                return Semver.coerce(yarnVersion);
+                final Semver runtimeVersion = Semver.coerce(yarnVersion);
+                final String declaredPackageManager = readDeclaredYarnPackageManagerVersion(dependencyDirectory);
+                if (declaredPackageManager == null) {
+                    return runtimeVersion;
+                }
+
+                final Semver declaredVersion = Semver.coerce(declaredPackageManager);
+                if (declaredVersion.getMajor() < YARN_BERRY_MAJOR_VERSION_MIN) {
+                    // Respect fixture/package intent even if an ancestor config forces a different runtime.
+                    return declaredVersion;
+                }
+
+                if (runtimeVersion.compareTo(declaredVersion) < 0) {
+                    throw new IllegalStateException(String.format(
+                            "Unable to determine yarn version, unexpected response (exit value 1, output: %s, error: Declared packageManager yarn@%s requires a newer yarn runtime)",
+                            runtimeVersion,
+                            declaredPackageManager
+                    ));
+                }
+                return runtimeVersion;
             }
         }  catch (SemverException e) {
             throw new IllegalStateException("Invalid version string format", e);
         } catch (Exception ex) {
             throw new IllegalStateException("Unable to determine yarn version.", ex);
+        }
+    }
+
+    private String readDeclaredYarnPackageManagerVersion(File dependencyDirectory) {
+        final Path packageJsonPath = dependencyDirectory.toPath().resolve(PACKAGE_JSON_FILE_NAME);
+        if (!Files.isRegularFile(packageJsonPath)) {
+            return null;
+        }
+        try {
+            final String packageJsonContent = Files.readString(packageJsonPath);
+            final Matcher matcher = PACKAGE_MANAGER_PATTERN.matcher(packageJsonContent);
+            if (!matcher.find()) {
+                return null;
+            }
+            return StringUtils.trimToNull(matcher.group(1));
+        } catch (IOException e) {
+            LOGGER.debug("Unable to read package manager from {}", packageJsonPath, e);
+            return null;
         }
     }
 
@@ -175,26 +223,40 @@ public class YarnAuditAnalyzer extends AbstractNpmAnalyzer {
      * @param builder a reference to the process builder
      * @return returns the standard out from the process
      */
-    private String startAndReadStdoutToString(ProcessBuilder builder) throws AnalysisException {
+    private ProcessOutput startAndReadProcessOutput(ProcessBuilder builder) throws AnalysisException {
         try {
             final File tmpFile = getSettings().getTempFile("yarn_audit", "json");
             builder.redirectOutput(tmpFile);
             final Process process = builder.start();
             try (ProcessReader processReader = new ProcessReader(process)) {
                 processReader.readAll();
+                final int exitValue = process.waitFor();
                 final String errOutput = processReader.getError();
+                final String output = Files.readString(tmpFile.toPath());
 
                 if (!StringUtils.isBlank(errOutput)) {
                     LOGGER.debug("Process Error Out: {}", errOutput);
-                    LOGGER.debug("Process Out: {}", processReader.getOutput());
+                    LOGGER.debug("Process Out: {}", output);
                 }
-                return Files.readString(tmpFile.toPath());
+                return new ProcessOutput(output, errOutput, exitValue);
             } catch (InterruptedException ex) {
                 Thread.currentThread().interrupt();
                 throw new AnalysisException("Yarn audit process was interrupted.", ex);
             }
         } catch (IOException ioe) {
             throw new AnalysisException("yarn audit failure; this error can be ignored if you are not analyzing projects with a yarn lockfile.", ioe);
+        }
+    }
+
+    private static final class ProcessOutput {
+        private final String output;
+        private final String error;
+        private final int exitValue;
+
+        private ProcessOutput(String output, String error, int exitValue) {
+            this.output = output;
+            this.error = error;
+            this.exitValue = exitValue;
         }
     }
 
@@ -245,8 +307,17 @@ public class YarnAuditAnalyzer extends AbstractNpmAnalyzer {
 
     private List<JSONObject> fetchYarnAdvisories(Dependency dependency, boolean skipDevDependencies) throws AnalysisException {
         final List<String> args = new ArrayList<>();
+        final File dependencyDirectory = getDependencyDirectory(dependency.getActualFile());
+        final String declaredPackageManager = readDeclaredYarnPackageManagerVersion(dependencyDirectory);
+        final Semver declaredVersion = declaredPackageManager == null ? null : Semver.coerce(declaredPackageManager);
+        final boolean useCorepack = declaredVersion != null && declaredVersion.getMajor() >= YARN_BERRY_MAJOR_VERSION_MIN;
 
-        args.add(yarnPath);
+        if (useCorepack) {
+            args.add(COREPACK_EXECUTABLE);
+            args.add("yarn");
+        } else {
+            args.add(yarnPath);
+        }
         args.add("npm");
         args.add("audit");
         if (skipDevDependencies) {
@@ -258,18 +329,36 @@ public class YarnAuditAnalyzer extends AbstractNpmAnalyzer {
         args.add("--no-deprecations");
         args.add("--json");
         final ProcessBuilder builder = new ProcessBuilder(args);
-        builder.directory(getDependencyDirectory(dependency.getActualFile()));
+        builder.directory(dependencyDirectory);
+        builder.environment().remove(NODE_OPTIONS_ENV);
+        if (useCorepack) {
+            builder.environment().put(YARN_IGNORE_PATH_ENV, "1");
+        }
 
-        final String advisoriesJsons = startAndReadStdoutToString(builder);
+        final ProcessOutput processOutput = startAndReadProcessOutput(builder);
+        final String advisoriesJsons = processOutput.output;
 
         LOGGER.debug("Advisories JSON: {}", advisoriesJsons);
         final String[] advisoriesJsonArray = Stream.of(advisoriesJsons.split("\n"))
+                .map(String::trim)
                 .filter(s -> !s.isBlank())
+                .filter(s -> s.startsWith("{") && s.endsWith("}"))
                 .toArray(String[]::new);
         try {
             final List<JSONObject> advisories = new ArrayList<>();
             for (String advisoriesJson : advisoriesJsonArray) {
-                advisories.add(new JSONObject(advisoriesJson));
+                final JSONObject advisoryCandidate = new JSONObject(advisoriesJson);
+                if (advisoryCandidate.has("children") && advisoryCandidate.opt("children") instanceof JSONObject) {
+                    advisories.add(advisoryCandidate);
+                }
+            }
+
+                if (processOutput.exitValue != 0 && advisories.isEmpty()) {
+                throw new AnalysisException(String.format(
+                        "Yarn audit command failed (exit value %s): %s",
+                        processOutput.exitValue,
+                        StringUtils.defaultIfBlank(processOutput.error, advisoriesJsons)
+                ));
             }
 
             return advisories;

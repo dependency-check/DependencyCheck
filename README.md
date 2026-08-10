@@ -155,7 +155,7 @@ The dependency-check plugin can be configured using the following:
         <plugins>
             ...
             <plugin>
-              <groupId>org.owasp</groupId>
+              <groupId>newsome-solutions.owasp</groupId>
               <artifactId>dependency-check-maven</artifactId>
               <executions>
                   <execution>
@@ -191,8 +191,14 @@ Tests cases require:
 * dotnet core version 8.0
 * Go: `go version` 1.12 and higher
 * Ruby [bundler-audit](https://github.com/rubysec/bundler-audit#install)
-* [Yarn](https://yarnpkg.com/getting-started/install)
+* [Yarn](https://yarnpkg.com/getting-started/install) - see note below
 * [pnpm](https://pnpm.io/installation)
+
+> Yarn can be installed using the following commands:
+> ```
+> corepack enable
+> corepack use yarn@v4
+> ```
 
 ## Development Usage
 
