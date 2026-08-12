@@ -1774,21 +1774,27 @@ public final class CveDB implements AutoCloseable {
                 PreparedStatement psEcosystem = getPreparedStatement(conn, UPDATE_ECOSYSTEM);
                 PreparedStatement psEcosystem2 = getPreparedStatement(conn, UPDATE_ECOSYSTEM2)) {
             if (psEcosystem != null) {
+                final long ecosystemStart = System.currentTimeMillis();
                 final int count = psEcosystem.executeUpdate();
                 if (count > 0) {
-                    LOGGER.info("Updated the CPE ecosystem on {} NVD records", count);
+                    LOGGER.info("Updated the CPE ecosystem on {} NVD records ({} ms)", count,
+                            System.currentTimeMillis() - ecosystemStart);
                 }
             }
             if (psEcosystem2 != null) {
+                final long ecosystemStart = System.currentTimeMillis();
                 final int count = psEcosystem2.executeUpdate();
                 if (count > 0) {
-                    LOGGER.info("Removed the CPE ecosystem on {} NVD records", count);
+                    LOGGER.info("Removed the CPE ecosystem on {} NVD records ({} ms)", count,
+                            System.currentTimeMillis() - ecosystemStart);
                 }
             }
             if (psOrphans != null) {
+                final long orphanStart = System.currentTimeMillis();
                 final int count = psOrphans.executeUpdate();
                 if (count > 0) {
-                    LOGGER.info("Cleaned up {} orphaned NVD records", count);
+                    LOGGER.info("Cleaned up {} orphaned NVD records ({} ms)", count,
+                            System.currentTimeMillis() - orphanStart);
                 }
             }
             final long millis = System.currentTimeMillis() - start;
