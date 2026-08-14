@@ -2196,3 +2196,10 @@
     <packageUrl regex="true">^pkg:maven/io\.opentelemetry\.semconv/opentelemetry-semconv-incubating@.*$</packageUrl>
     <cpe regex="true">cpe:/a:opentelemetry:opentelemetry(:.*)?$</cpe>
 </suppress>
+<suppress base="true">
+    <notes><![CDATA[
+    FP per issue #8750
+    ]]></notes>
+    <packageUrl regex="true">^pkg:maven/org\.springframework\.cloud/spring-cloud-vault-config@.*$</packageUrl>
+    <cpe regex="true">cpe:/a:vmware:spring_cloud_config(:.*)?$</cpe>
+</suppress>
