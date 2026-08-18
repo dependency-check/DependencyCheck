@@ -1226,10 +1226,15 @@
 </suppress>
 <suppress base="true">
     <notes><![CDATA[
-    FP per issue #7047
+    FP per issues #8738, #8739 and #8740; supersedes #7047 and #7804.
+    Apache Tomcat's Jasper JSP/EL engines repackaged for Jetty; renamed upstream with a "mortbay-" prefix.
     ]]></notes>
-    <packageUrl regex="true">^pkg:maven/org\.mortbay\.jasper/apache-el@.*$</packageUrl>
+    <packageUrl regex="true">^pkg:maven/org\.mortbay\.jasper/(mortbay-)?apache-(el|jsp)@.*$</packageUrl>
     <cpe regex="true">cpe:/a:eclipse:jetty(:.*)?$</cpe>
+    <cpe regex="true">cpe:/a:jetty:jetty(:.*)?$</cpe>
+    <cpe regex="true">cpe:/a:mortbay:jetty(:.*)?$</cpe>
+    <cpe regex="true">cpe:/a:mortbay_jetty:jetty(:.*)?$</cpe>
+    <cpe regex="true">cpe:/a:apache:tomcat(:.*)?$</cpe>
 </suppress>
 <suppress base="true">
     <notes><![CDATA[
@@ -1713,13 +1718,6 @@
     ]]></notes>
     <packageUrl regex="true">^pkg:maven/io\.quarkus/quarkus-hibernate-validator@.*$</packageUrl>
     <cpe regex="true">cpe:/a:hibernate:hibernate-validator(:.*)?$</cpe>
-</suppress>
-<suppress base="true">
-    <notes><![CDATA[
-    FP per issue #7804
-    ]]></notes>
-    <packageUrl regex="true">^pkg:maven/org\.mortbay\.jasper/apache-jsp@.*$</packageUrl>
-    <cpe regex="true">cpe:/a:apache:tomcat(:.*)?$</cpe>
 </suppress>
 <suppress base="true">
     <notes><![CDATA[
