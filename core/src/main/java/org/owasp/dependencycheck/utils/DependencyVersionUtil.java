@@ -45,7 +45,7 @@ public final class DependencyVersionUtil {
      * version number using the previous regex.
      */
     private static final Pattern RX_SINGLE_VERSION = Pattern.compile(
-            "\\d+(\\.\\d+){0,6}([._-]?(snapshot|release|final|alpha|beta|rc$|[a-zA-Z]{1,3}[_-]?\\d{1,8}))?");
+            "\\d+(\\.\\d+){0,6}([._-]?(snapshot|release|final|alpha|beta|rc$|[a-zA-Z]{1,3}[_-]?\\d{1,8}|[a-zA-Z]\\b))?");
 
     /**
      * Regular expression to extract the part before the version numbers if
