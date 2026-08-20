@@ -2915,33 +2915,45 @@ public abstract class BaseDependencyCheckMojo extends AbstractMojo implements Ma
                 final boolean useUnscored = cvssV2 == -1 && cvssV3 == -1 && cvssV4 == -1;
                 final double unscoredCvss = (useUnscored && v.getUnscoredSeverity() != null) ? SeverityUtil.estimateCvssV2(v.getUnscoredSeverity()) : -1;
 
-                if (failBuildOnCVSS <= 0.0
-                        || cvssV2 >= failBuildOnCVSS
-                        || cvssV3 >= failBuildOnCVSS
-                        || cvssV4 >= failBuildOnCVSS
-                        || unscoredCvss >= failBuildOnCVSS
-                ) {
-                    String name = v.getName();
-                    if (cvssV4 >= 0.0) {
-                        name += "(" + cvssV4 + ")";
-                    } else if (cvssV3 >= 0.0) {
-                        name += "(" + cvssV3 + ")";
-                    } else if (cvssV2 >= 0.0) {
-                        name += "(" + cvssV2 + ")";
-                    } else if (unscoredCvss >= 0.0) {
-                        name += "(" + unscoredCvss + ")";
-                    }
-                    if (addName) {
-                        addName = false;
-                        ids.append(NEW_LINE).append(d.getFileName()).append(" (")
-                                .append(Stream.concat(d.getSoftwareIdentifiers().stream(), d.getVulnerableSoftwareIdentifiers().stream())
-                                        .map(Identifier::getValue)
-                                        .collect(Collectors.joining(", ")))
-                                .append("): ")
-                                .append(name);
+                // the score to display is the one that reached the threshold, so it is picked by
+                // the same comparison that decides whether the vulnerability fails the build
+                final double reportedScore;
+                if (failBuildOnCVSS > 0.0) {
+                    if (cvssV4 >= failBuildOnCVSS) {
+                        reportedScore = cvssV4;
+                    } else if (cvssV3 >= failBuildOnCVSS) {
+                        reportedScore = cvssV3;
+                    } else if (cvssV2 >= failBuildOnCVSS) {
+                        reportedScore = cvssV2;
+                    } else if (unscoredCvss >= failBuildOnCVSS) {
+                        reportedScore = unscoredCvss;
                     } else {
-                        ids.append(", ").append(name);
+                        continue;
                     }
+                } else if (cvssV4 >= 0.0) {
+                    reportedScore = cvssV4;
+                } else if (cvssV3 >= 0.0) {
+                    reportedScore = cvssV3;
+                } else if (cvssV2 >= 0.0) {
+                    reportedScore = cvssV2;
+                } else {
+                    reportedScore = unscoredCvss;
+                }
+
+                String name = v.getName();
+                if (reportedScore >= 0.0) {
+                    name += "(" + reportedScore + ")";
+                }
+                if (addName) {
+                    addName = false;
+                    ids.append(NEW_LINE).append(d.getFileName()).append(" (")
+                            .append(Stream.concat(d.getSoftwareIdentifiers().stream(), d.getVulnerableSoftwareIdentifiers().stream())
+                                    .map(Identifier::getValue)
+                                    .collect(Collectors.joining(", ")))
+                            .append("): ")
+                            .append(name);
+                } else {
+                    ids.append(", ").append(name);
                 }
             }
         }

@@ -17,8 +17,7 @@
  */
 package org.owasp.dependencycheck.xml.suppression;
 
-import org.apache.commons.lang3.Strings;
-import org.apache.commons.lang3.time.DateFormatUtils;
+import org.h2.util.StringUtils;
 import org.jspecify.annotations.NonNull;
 import org.owasp.dependencycheck.dependency.Dependency;
 import org.owasp.dependencycheck.dependency.Vulnerability;
@@ -31,6 +30,7 @@ import us.springett.parsers.cpe.Cpe;
 import us.springett.parsers.cpe.exceptions.CpeEncodingException;
 
 import javax.annotation.concurrent.NotThreadSafe;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashSet;
@@ -727,8 +727,9 @@ public class SuppressionRule {
 
     private static boolean cpe22UriPrefixMatches(PropertyType suppressionEntry, String cpe22Uri) {
         String candidate = cpe22Uri + cpePartMatchingSuffixFor(suppressionEntry);
-        return (suppressionEntry.isCaseSensitive() ? Strings.CS : Strings.CI)
-                .startsWith(candidate, suppressionEntry.getValue());
+        return suppressionEntry.isCaseSensitive()
+                ? candidate.startsWith(suppressionEntry.getValue())
+                : StringUtils.startsWithIgnoringCase(candidate, suppressionEntry.getValue());
     }
 
     /**
@@ -753,7 +754,7 @@ public class SuppressionRule {
         final StringBuilder sb = new StringBuilder(64);
         sb.append("SuppressionRule{");
         if (until != null) {
-            final String dt = DateFormatUtils.ISO_8601_EXTENDED_DATETIME_TIME_ZONE_FORMAT.format(until);
+            final String dt = DateTimeFormatter.ISO_DATE_TIME.format(until.toInstant().atZone(until.getTimeZone().toZoneId()));
             sb.append("until=").append(dt).append(',');
         }
         if (filePath != null) {
