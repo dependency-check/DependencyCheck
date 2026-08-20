@@ -89,38 +89,49 @@ public class NvdApiProcessor implements Callable<NvdApiProcessor> {
 
     @Override
     public NvdApiProcessor call() throws Exception {
+        final long processingStart = System.currentTimeMillis();
+        final long preProcessingMillis = processingStart - startTime;
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug("Starting NVD batch {} after {}ms", jsonFile.getName(), preProcessingMillis);
+        }
+        int processed = 0;
         if (jsonFile.getName().endsWith(".jsonarray.gz")) {
             try (InputStream fis = Files.newInputStream(jsonFile.toPath());
                  InputStream is = new BufferedInputStream(new GZIPInputStream(fis));
                  CveItemSource<DefCveItem> itemSource = new JsonArrayCveItemSource(is)) {
-                updateCveDb(itemSource);
+                processed = updateCveDb(itemSource);
             }
         } else if (jsonFile.getName().endsWith(".gz")) {
             try (InputStream fis = Files.newInputStream(jsonFile.toPath());
                  InputStream is = new BufferedInputStream(new GZIPInputStream(fis));
                  CveItemSource<DefCveItem> itemSource = new CveApiJson20CveItemSource(is)) {
-                updateCveDb(itemSource);
+                processed = updateCveDb(itemSource);
             }
         } else {
             try (InputStream fis = Files.newInputStream(jsonFile.toPath());
                  InputStream is = new BufferedInputStream(fis);
                  CveItemSource<DefCveItem> itemSource = new JsonArrayCveItemSource(is)) {
-                updateCveDb(itemSource);
+                processed = updateCveDb(itemSource);
             }
         }
         endTime = System.currentTimeMillis();
+        LOGGER.info("Completed NVD batch {} with {} CVEs in {}ms total ({}ms before processing, {}ms active processing)",
+                jsonFile.getName(), processed, endTime - startTime, preProcessingMillis, endTime - processingStart);
         return this;
     }
 
-    private void updateCveDb(CveItemSource<DefCveItem> itemSource) throws IOException {
+    private int updateCveDb(CveItemSource<DefCveItem> itemSource) throws IOException {
+        int processed = 0;
         while (itemSource.hasNext()) {
             final DefCveItem entry = itemSource.next();
             try {
                 cveDB.updateVulnerability(entry, mapper.getEcosystem(entry));
+                processed += 1;
             } catch (Exception ex) {
                 LOGGER.error("Failed to process " + entry.getCve().getId(), ex);
             }
         }
+        return processed;
     }
 
     /**

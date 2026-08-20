@@ -175,6 +175,10 @@ public class Update extends Purge {
      */
     private String databasePassword;
     /**
+     * The maximum size of the database connection pool.
+     */
+    private Integer databaseConnectionPoolSize;
+    /**
      * The number of hours to wait before re-checking hosted suppressions file
      * for updates.
      */
@@ -431,6 +435,15 @@ public class Update extends Purge {
     }
 
     /**
+     * Set the maximum size of the database connection pool.
+     *
+     * @param databaseConnectionPoolSize new value of databaseConnectionPoolSize
+     */
+    public void setDatabaseConnectionPoolSize(Integer databaseConnectionPoolSize) {
+        this.databaseConnectionPoolSize = databaseConnectionPoolSize;
+    }
+
+    /**
      * Set the value of hostedSuppressionsValidForHours.
      *
      * @param hostedSuppressionsValidForHours new value of
@@ -643,6 +656,7 @@ public class Update extends Purge {
         getSettings().setStringIfNotEmpty(Settings.KEYS.DB_CONNECTION_STRING, connectionString);
         getSettings().setStringIfNotEmpty(Settings.KEYS.DB_USER, databaseUser);
         getSettings().setStringIfNotEmpty(Settings.KEYS.DB_PASSWORD, databasePassword);
+        getSettings().setIntIfNotNull(Settings.KEYS.DB_CONNECTION_POOL_SIZE, databaseConnectionPoolSize);
 
         getSettings().setStringIfNotEmpty(Settings.KEYS.KEV_URL, knownExploitedUrl);
         getSettings().setStringIfNotEmpty(Settings.KEYS.KEV_USER, knownExploitedUser);

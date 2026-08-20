@@ -87,11 +87,20 @@ public class DownloadTask implements Callable<Future<NvdApiProcessor>> {
             final File outputFile = settings.getTempFile("nvd-datafeed-", "json.gz");
             Downloader.getInstance().fetchFile(u, outputFile, true, Settings.KEYS.NVD_API_DATAFEED_USER, Settings.KEYS.NVD_API_DATAFEED_PASSWORD,
                     Settings.KEYS.NVD_API_DATAFEED_BEARER_TOKEN);
+            if (LOGGER.isDebugEnabled()) {
+                LOGGER.debug("Downloaded NVD cache from {} to {} in {}ms", url, outputFile.getName(),
+                        System.currentTimeMillis() - startDownload);
+            }
             if (this.processorService == null) {
                 return null;
             }
+            final long submitStart = System.currentTimeMillis();
             final NvdApiProcessor task = new NvdApiProcessor(cveDB, outputFile, startDownload);
             final Future<NvdApiProcessor> val = this.processorService.submit(task);
+            if (LOGGER.isDebugEnabled()) {
+                LOGGER.debug("Submitted downloaded NVD cache {} for processing in {}ms", url,
+                        System.currentTimeMillis() - submitStart);
+            }
             return val;
         } catch (Throwable ex) {
             LOGGER.error("Error downloading NVD CVE - {} Reason: {}", url, ex.getMessage());

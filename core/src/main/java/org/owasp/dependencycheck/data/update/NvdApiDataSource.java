@@ -245,7 +245,7 @@ public class NvdApiDataSource implements CachedWebDataSource {
         //complete processing
         for (Future<NvdApiProcessor> future : processFutures) {
             try {
-                final NvdApiProcessor task = future.get();
+                future.get();
             } catch (InterruptedException ex) {
                 LOGGER.debug("Thread was interrupted during processing", ex);
                 Thread.currentThread().interrupt();
@@ -337,6 +337,7 @@ public class NvdApiDataSource implements CachedWebDataSource {
         try {
             final int processingThreadCount = resolveNvdApiProcessingThreadCount();
             processingExecutorService = Executors.newFixedThreadPool(processingThreadCount);
+            logProcessingConcurrency(processingThreadCount);
             final List<Future<NvdApiProcessor>> submitted = new ArrayList<>();
             int max = -1;
             int ctr = 0;
@@ -351,10 +352,18 @@ public class NvdApiDataSource implements CachedWebDataSource {
                         final ObjectMapper objectMapper = new ObjectMapper();
                         objectMapper.registerModule(new JavaTimeModule());
                         final File outputFile = settings.getTempFile("nvd-data-", ".jsonarray.gz");
-                        try (FileOutputStream fos = new FileOutputStream(outputFile); GZIPOutputStream out = new GZIPOutputStream(fos);) {
+                        final long pageStart = System.currentTimeMillis();
+                        try (FileOutputStream fos = new FileOutputStream(outputFile); GZIPOutputStream out = new GZIPOutputStream(fos)) {
                             objectMapper.writeValue(out, items);
+                            final long submitStart = System.currentTimeMillis();
                             final Future<NvdApiProcessor> f = processingExecutorService.submit(new NvdApiProcessor(cveDb, outputFile));
                             submitted.add(f);
+                            if (LOGGER.isDebugEnabled()) {
+                                final int page = ctr + 1;
+                                LOGGER.debug("Queued NVD API page {} with {} records for processing in {}ms (write={}ms, submit={}ms)",
+                                        page, items.size(), System.currentTimeMillis() - pageStart,
+                                        submitStart - pageStart, System.currentTimeMillis() - submitStart);
+                            }
                         }
                         ctr += 1;
                         if ((ctr % 5) == 0) {
@@ -431,6 +440,16 @@ public class NvdApiDataSource implements CachedWebDataSource {
             return configured;
         }
         return PROCESSING_THREAD_POOL_SIZE;
+    }
+
+    private void logProcessingConcurrency(int processingThreadCount) {
+        int connectionPoolSize = Math.max(settings.getInt(Settings.KEYS.DB_CONNECTION_POOL_SIZE, 1), 1);
+        LOGGER.debug("NVD API processing threads: {}, DB connection pool size: {}", processingThreadCount, connectionPoolSize);
+        if (processingThreadCount > connectionPoolSize) {
+            LOGGER.debug("Processing threads exceed the DB connection pool; tasks may block waiting for a connection. "
+                    + "Consider setting {} to at least {} for update runs.",
+                    Settings.KEYS.DB_CONNECTION_POOL_SIZE, processingThreadCount);
+        }
     }
 
     /**

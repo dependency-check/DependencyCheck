@@ -89,6 +89,10 @@ public final class DatabaseManager {
      */
     private String password = null;
     /**
+     * The maximum size of the database connection pool when none has been configured.
+     */
+    private static final int DEFAULT_CONNECTION_POOL_SIZE = 1;
+    /**
      * Counter to ensure that calls to ensureSchemaVersion does not end up in an
      * endless loop.
      */
@@ -536,10 +540,29 @@ public final class DatabaseManager {
         config.setJdbcUrl(connectionString);
         config.setUsername(userName);
         config.setPassword(password);
-        config.setMaximumPoolSize(1);
+        config.setMaximumPoolSize(getConnectionPoolSize());
         config.setMinimumIdle(1);
         config.setInitializationFailTimeout(-1);
         connectionPool = new HikariDataSource(config);
+    }
+
+    /**
+     * Returns the configured connection pool size.
+     *
+     * @return the configured pool size, or the default when the setting is absent or invalid
+     */
+    private int getConnectionPoolSize() {
+        try {
+            final int configured = settings.getInt(Settings.KEYS.DB_CONNECTION_POOL_SIZE, DEFAULT_CONNECTION_POOL_SIZE);
+            if (configured > 0) {
+                LOGGER.debug("Database connection pool size: {}", configured);
+                return configured;
+            }
+            LOGGER.warn("Invalid database connection pool size ({}); using {}", configured, DEFAULT_CONNECTION_POOL_SIZE);
+        } catch (RuntimeException ex) {
+            LOGGER.warn("Unable to read database connection pool size; using {}", DEFAULT_CONNECTION_POOL_SIZE, ex);
+        }
+        return DEFAULT_CONNECTION_POOL_SIZE;
     }
 
     /**

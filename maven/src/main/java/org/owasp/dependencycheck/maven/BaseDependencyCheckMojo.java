@@ -925,6 +925,12 @@ public abstract class BaseDependencyCheckMojo extends AbstractMojo implements Ma
     @Parameter(property = "databasePassword")
     private String databasePassword;
     /**
+     * The maximum size of the database connection pool.
+     */
+    @SuppressWarnings("CanBeFinal")
+    @Parameter(property = "databaseConnectionPoolSize")
+    private Integer databaseConnectionPoolSize;
+    /**
      * A comma-separated list of file extensions to add to analysis next to jar,
      * zip, ....
      */
@@ -2479,6 +2485,7 @@ public abstract class BaseDependencyCheckMojo extends AbstractMojo implements Ma
         settings.setStringIfNotEmpty(Settings.KEYS.DB_DRIVER_NAME, databaseDriverName);
         settings.setStringIfNotEmpty(Settings.KEYS.DB_DRIVER_PATH, databaseDriverPath);
         settings.setStringIfNotEmpty(Settings.KEYS.DB_CONNECTION_STRING, connectionString);
+        settings.setIntIfNotNull(Settings.KEYS.DB_CONNECTION_POOL_SIZE, databaseConnectionPoolSize);
         if (databaseUser == null && databasePassword == null && serverId != null) {
             configureServerCredentials(serverId, Settings.KEYS.DB_USER, Settings.KEYS.DB_PASSWORD);
         } else {

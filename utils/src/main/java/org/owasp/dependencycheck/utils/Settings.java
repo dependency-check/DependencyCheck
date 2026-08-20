@@ -134,6 +134,10 @@ public final class Settings {
          */
         public static final String DB_PASSWORD = "data.password";
         /**
+         * The maximum number of database connections to keep in the pool.
+         */
+        public static final String DB_CONNECTION_POOL_SIZE = "data.connection_pool.size";
+        /**
          * The base path to use for the data directory (for embedded db and
          * other cached resources from the Internet).
          */
