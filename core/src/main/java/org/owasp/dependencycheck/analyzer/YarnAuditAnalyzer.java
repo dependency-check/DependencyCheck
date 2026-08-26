@@ -59,7 +59,7 @@ public class YarnAuditAnalyzer extends AbstractNpmAnalyzer {
      */
     private static final Logger LOGGER = LoggerFactory.getLogger(YarnAuditAnalyzer.class);
 
-    /***
+    /**
      * Minimum Yarn version supported. Only in Yarn v4 was support for the newer npm audit bulk API added, however 2.4.0
      * added support for `yarn npm audit` via the legacy API (deprecated, likely decommissioned in 2026). package.jsons
      * or environments implying a version lower than this will be ignored.
