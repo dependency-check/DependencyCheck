@@ -263,11 +263,24 @@ public abstract class BaseDependencyCheckMojo extends AbstractMojo implements Ma
     @Parameter(property = "golangModEnabled")
     private Boolean golangModEnabled;
     /**
+     * Sets whether the Golang Vulncheck Analyzer is enabled; this requires `go`
+     * and `govulncheck` to be installed. Default is false.
+     */
+    @SuppressWarnings("CanBeFinal")
+    @Parameter(property = "golangVulncheckEnabled")
+    private Boolean golangVulncheckEnabled;
+    /**
      * Sets the path to `go`.
      */
     @SuppressWarnings("CanBeFinal")
     @Parameter(property = "pathToGo")
     private String pathToGo;
+    /**
+     * Sets the path to `govulncheck`.
+     */
+    @SuppressWarnings("CanBeFinal")
+    @Parameter(property = "pathToGovulncheck")
+    private String pathToGovulncheck;
 
     /**
      * Sets the path to `yarn`.
@@ -2316,8 +2329,10 @@ public abstract class BaseDependencyCheckMojo extends AbstractMojo implements Ma
         settings.setBooleanIfNotNull(Settings.KEYS.ANALYZER_RETIRED_ENABLED, enableRetired);
         settings.setBooleanIfNotNull(Settings.KEYS.ANALYZER_GOLANG_DEP_ENABLED, golangDepEnabled);
         settings.setBooleanIfNotNull(Settings.KEYS.ANALYZER_GOLANG_MOD_ENABLED, golangModEnabled);
+        settings.setBooleanIfNotNull(Settings.KEYS.ANALYZER_GOLANG_VULNCHECK_ENABLED, golangVulncheckEnabled);
         settings.setBooleanIfNotNull(Settings.KEYS.ANALYZER_DART_ENABLED, dartAnalyzerEnabled);
         settings.setStringIfNotNull(Settings.KEYS.ANALYZER_GOLANG_PATH, pathToGo);
+        settings.setStringIfNotNull(Settings.KEYS.ANALYZER_GOLANG_VULNCHECK_PATH, pathToGovulncheck);
         settings.setStringIfNotNull(Settings.KEYS.ANALYZER_YARN_PATH, pathToYarn);
         settings.setStringIfNotNull(Settings.KEYS.ANALYZER_PNPM_PATH, pathToPnpm);
 

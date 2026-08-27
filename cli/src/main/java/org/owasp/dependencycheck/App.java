@@ -523,6 +523,8 @@ public class App {
                 cli.hasOption(CliParser.ARGUMENT.RETIRED));
         settings.setStringIfNotNull(Settings.KEYS.ANALYZER_GOLANG_PATH,
                 cli.getStringArgument(CliParser.ARGUMENT.PATH_TO_GO));
+        settings.setStringIfNotNull(Settings.KEYS.ANALYZER_GOLANG_VULNCHECK_PATH,
+                cli.getStringArgument(CliParser.ARGUMENT.PATH_TO_GOVULNCHECK));
         settings.setStringIfNotNull(Settings.KEYS.ANALYZER_YARN_PATH,
                 cli.getStringArgument(CliParser.ARGUMENT.PATH_TO_YARN));
         settings.setStringIfNotNull(Settings.KEYS.ANALYZER_PNPM_PATH,
@@ -603,6 +605,8 @@ public class App {
                 !cli.isDisabled(CliParser.ARGUMENT.DISABLE_GO_DEP, Settings.KEYS.ANALYZER_GOLANG_DEP_ENABLED));
         settings.setBoolean(Settings.KEYS.ANALYZER_GOLANG_MOD_ENABLED,
                 !cli.isDisabled(CliParser.ARGUMENT.DISABLE_GOLANG_MOD, Settings.KEYS.ANALYZER_GOLANG_MOD_ENABLED));
+        settings.setBooleanIfNotNull(Settings.KEYS.ANALYZER_GOLANG_VULNCHECK_ENABLED,
+                cli.hasOption(CliParser.ARGUMENT.ENABLE_GOLANG_VULNCHECK));
         settings.setBoolean(Settings.KEYS.ANALYZER_DART_ENABLED,
                 !cli.isDisabled(CliParser.ARGUMENT.DISABLE_DART, Settings.KEYS.ANALYZER_DART_ENABLED));
         settings.setBoolean(Settings.KEYS.ANALYZER_NODE_PACKAGE_ENABLED,

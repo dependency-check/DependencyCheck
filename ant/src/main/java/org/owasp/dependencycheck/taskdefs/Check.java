@@ -169,6 +169,15 @@ public class Check extends Update {
      */
     private Boolean golangModEnabled;
     /**
+     * Sets whether the Golang Vulncheck Analyzer is enabled; this requires `go`
+     * and `govulncheck` to be installed. Default is false.
+     */
+    private Boolean golangVulncheckEnabled;
+    /**
+     * Sets the path to `govulncheck`.
+     */
+    private String pathToGovulncheck;
+    /**
      * Sets the path to `go`.
      */
     private String pathToGo;
@@ -1110,6 +1119,24 @@ public class Check extends Update {
     }
 
     /**
+     * Set the value of golangVulncheckEnabled.
+     *
+     * @param golangVulncheckEnabled new value of golangVulncheckEnabled
+     */
+    public void setGolangVulncheckEnabled(Boolean golangVulncheckEnabled) {
+        this.golangVulncheckEnabled = golangVulncheckEnabled;
+    }
+
+    /**
+     * Set the value of pathToGovulncheck.
+     *
+     * @param pathToGovulncheck new value of pathToGovulncheck
+     */
+    public void setPathToGovulncheck(String pathToGovulncheck) {
+        this.pathToGovulncheck = pathToGovulncheck;
+    }
+
+    /**
      * Set the value of dartAnalyzerEnabled.
      *
      * @param dartAnalyzerEnabled new value of dartAnalyzerEnabled
@@ -1506,8 +1533,10 @@ public class Check extends Update {
         getSettings().setArrayIfNotEmpty(Settings.KEYS.ANALYZER_RETIREJS_FILTERS, retireJsFilters);
         getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_GOLANG_DEP_ENABLED, golangDepEnabled);
         getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_GOLANG_MOD_ENABLED, golangModEnabled);
+        getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_GOLANG_VULNCHECK_ENABLED, golangVulncheckEnabled);
         getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_DART_ENABLED, dartAnalyzerEnabled);
         getSettings().setStringIfNotNull(Settings.KEYS.ANALYZER_GOLANG_PATH, pathToGo);
+        getSettings().setStringIfNotNull(Settings.KEYS.ANALYZER_GOLANG_VULNCHECK_PATH, pathToGovulncheck);
         getSettings().setStringIfNotNull(Settings.KEYS.ANALYZER_YARN_PATH, pathToYarn);
         getSettings().setStringIfNotNull(Settings.KEYS.ANALYZER_PNPM_PATH, pathToPnpm);
         getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_MIX_AUDIT_ENABLED, mixAuditAnalyzerEnabled);
