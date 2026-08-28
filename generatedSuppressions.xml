@@ -2222,3 +2222,10 @@
     <packageUrl regex="true">^pkg:maven/io\.opentelemetry\.semconv/opentelemetry-semconv@.*$</packageUrl>
     <cpe regex="true">cpe:/a:opentelemetry:opentelemetry(:.*)?$</cpe>
 </suppress>
+<suppress base="true">
+    <notes><![CDATA[
+    FP per issue #8772
+    ]]></notes>
+    <packageUrl regex="true">^pkg:maven/org\.springframework\.boot/spring-boot-data-mongodb@.*$</packageUrl>
+    <cpe regex="true">cpe:/a:vmware:spring_data_mongodb(:.*)?$</cpe>
+</suppress>
