@@ -34,7 +34,7 @@ jobs:
         with:
           dotnet-version: '8.0.x'
       - name: Set up JDKs
-        uses: actions/setup-java@03ad4de0992f5dab5e18fcb136590ce7c4a0ac95 # v5.6.0
+        uses: actions/setup-java@dd06d9cba3e5552c54d9f8ea23572deb30010f7c # v6.0.0
         with:
           java-version: | # last version takes precedence as default
             ${{ matrix.jdk_test_version }}
@@ -61,22 +61,22 @@ jobs:
           # Command to be sent to SARIF Multitool
           command: 'validate core/target/test-reports/Report.sarif'
       - name: Upload SARIF file
-        uses: github/codeql-action/upload-sarif@e4fba868fa4b1b91e1fdab776edc8cfbe6e9fb81 # v4.37.3
+        uses: github/codeql-action/upload-sarif@cdf488f595d80d6e07e03d4674febd5ab45fa938 # v4.37.9
         with:
           sarif_file: utils/target/spotbugsSarif.json
           category: spotbugs-utils
       - name: Upload SARIF file
-        uses: github/codeql-action/upload-sarif@e4fba868fa4b1b91e1fdab776edc8cfbe6e9fb81 # v4.37.3
+        uses: github/codeql-action/upload-sarif@cdf488f595d80d6e07e03d4674febd5ab45fa938 # v4.37.9
         with:
           sarif_file: cli/target/spotbugsSarif.json
           category: spotbugs-cli
       - name: Upload SARIF file
-        uses: github/codeql-action/upload-sarif@e4fba868fa4b1b91e1fdab776edc8cfbe6e9fb81 # v4.37.3
+        uses: github/codeql-action/upload-sarif@cdf488f595d80d6e07e03d4674febd5ab45fa938 # v4.37.9
         with:
           sarif_file: ant/target/spotbugsSarif.json
           category: spotbugs-ant
       - name: Upload SARIF file
-        uses: github/codeql-action/upload-sarif@e4fba868fa4b1b91e1fdab776edc8cfbe6e9fb81 # v4.37.3
+        uses: github/codeql-action/upload-sarif@cdf488f595d80d6e07e03d4674febd5ab45fa938 # v4.37.9
         with:
           sarif_file: core/target/spotbugsSarif.json
           category: spotbugs-core
@@ -124,7 +124,7 @@ jobs:
         with:
           dotnet-version: '8.0.x'
       - name: Set up JDKs
-        uses: actions/setup-java@03ad4de0992f5dab5e18fcb136590ce7c4a0ac95 # v5.6.0
+        uses: actions/setup-java@dd06d9cba3e5552c54d9f8ea23572deb30010f7c # v6.0.0
         with:
           java-version: | # last version takes precedence as default
             ${{ matrix.jdk_test_version }}
@@ -155,7 +155,7 @@ jobs:
           retention-days: 7
           path: maven/target/it/**/build.log
       - name: Upload SARIF file
-        uses: github/codeql-action/upload-sarif@e4fba868fa4b1b91e1fdab776edc8cfbe6e9fb81 # v4.37.3
+        uses: github/codeql-action/upload-sarif@cdf488f595d80d6e07e03d4674febd5ab45fa938 # v4.37.9
         with:
           sarif_file: maven/target/spotbugsSarif.json
           category: spotbugs-maven
@@ -169,7 +169,7 @@ jobs:
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - name: Set up JDK
-        uses: actions/setup-java@03ad4de0992f5dab5e18fcb136590ce7c4a0ac95 # v5.6.0
+        uses: actions/setup-java@dd06d9cba3e5552c54d9f8ea23572deb30010f7c # v6.0.0
         with:
           java-version: '25'
           distribution: 'zulu'
@@ -181,7 +181,7 @@ jobs:
         run: |
             mvn -V -s settings.xml checkstyle:checkstyle-aggregate --no-transfer-progress --batch-mode -Dstyle.color=always
       - name: Upload SARIF file
-        uses: github/codeql-action/upload-sarif@e4fba868fa4b1b91e1fdab776edc8cfbe6e9fb81 # v4.37.3
+        uses: github/codeql-action/upload-sarif@cdf488f595d80d6e07e03d4674febd5ab45fa938 # v4.37.9
         with:
           sarif_file: target/checkstyle-result.sarif
           category: checkstyle
@@ -197,7 +197,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - name: Set up JDK
-        uses: actions/setup-java@03ad4de0992f5dab5e18fcb136590ce7c4a0ac95 # v5.6.0
+        uses: actions/setup-java@dd06d9cba3e5552c54d9f8ea23572deb30010f7c # v6.0.0
         with:
           java-version: '25'
           distribution: 'zulu'
@@ -211,7 +211,7 @@ jobs:
       - name: Set up Docker
         uses: docker/setup-docker-action@77e84dbf09b47d1e29270283c22f16145aa85ca1 # v5.4.0
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@bb05f3f5519dd87d3ba754cc423b652a5edd6d2c # v4.2.0
+        uses: docker/setup-buildx-action@37fe631027851001ddb9b187196cc803df7f5f0e # v4.3.0
       - name: Build Docker Image
         run: ./docker-build.sh
       - name: build scan target
