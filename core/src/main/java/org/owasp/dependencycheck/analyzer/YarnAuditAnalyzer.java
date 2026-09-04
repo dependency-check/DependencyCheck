@@ -21,6 +21,7 @@ import org.apache.commons.collections4.multimap.HashSetValuedHashMap;
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.jspecify.annotations.NonNull;
 import org.owasp.dependencycheck.Engine;
 import org.owasp.dependencycheck.analyzer.exception.AnalysisException;
 import org.owasp.dependencycheck.analyzer.exception.UnexpectedAnalysisException;
@@ -43,8 +44,11 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Stream;
+import java.util.Map;
+import java.util.stream.Collectors;
 
+import static org.apache.commons.lang3.StringUtils.defaultIfBlank;
+import static org.apache.commons.lang3.SystemUtils.getEnvironmentVariable;
 import static org.owasp.dependencycheck.utils.FileUtils.existsWithContent;
 
 @ThreadSafe
@@ -55,12 +59,19 @@ public class YarnAuditAnalyzer extends AbstractNpmAnalyzer {
      */
     private static final Logger LOGGER = LoggerFactory.getLogger(YarnAuditAnalyzer.class);
 
-    private static final int YARN_BERRY_MAJOR_VERSION_MIN = 2;
+    /**
+     * Minimum Yarn version supported. Only in Yarn v4 was support for the newer npm audit bulk API added, however 2.4.0
+     * added support for `yarn npm audit` via the legacy API (deprecated, likely decommissioned in 2026). package.jsons
+     * or environments implying a version lower than this will be ignored.
+     */
+    private static final String YARN_VERSION_MIN = "2.4.0";
 
     /**
      * The file name to scan.
      */
     public static final String YARN_PACKAGE_LOCK = "yarn.lock";
+    static final String YARN_ENV_IGNORE_PATH = "YARN_IGNORE_PATH";
+    static final String YARN_ENV_ENABLE_TELEMETRY = "YARN_ENABLE_TELEMETRY";
 
     /**
      * Filter that detects files named "yarn.lock"
@@ -101,8 +112,7 @@ public class YarnAuditAnalyzer extends AbstractNpmAnalyzer {
      */
     private Semver getYarnVersion(File dependencyDirectory) {
         List<String> args = List.of(yarnPath, "--version");
-        final ProcessBuilder builder = new ProcessBuilder(args);
-        builder.directory(dependencyDirectory);
+        final ProcessBuilder builder = createYarnBuilder(dependencyDirectory, args);
         try {
             final Process process = builder.start();
             try (ProcessReader processReader = new ProcessReader(process)) {
@@ -199,8 +209,8 @@ public class YarnAuditAnalyzer extends AbstractNpmAnalyzer {
     }
 
     /**
-     * Analyzes the yarn lock file to determine vulnerable dependencies. Uses
-     * yarn audit --offline to generate the payload to be sent to the NPM API.
+     * Analyzes the yarn lock file to determine vulnerable dependencies using the Yarn CLI to talk to the npm audit
+     * bulk API and parsed advisories in simple return format.
      *
      * @param dependency the yarn lock file
      * @param engine the analysis engine
@@ -217,8 +227,8 @@ public class YarnAuditAnalyzer extends AbstractNpmAnalyzer {
         }
         File dependencyDirectory = getDependencyDirectory(packageLock);
         final var yarnVersion = getYarnVersion(dependencyDirectory);
-        if (yarnVersion.getMajor() < YARN_BERRY_MAJOR_VERSION_MIN) {
-            LOGGER.warn("Yarn dependency skipped: {} - Yarn Classic (v{}) is not supported.", dependency.getActualFile(), yarnVersion);
+        if (yarnVersion.isLowerThan(YARN_VERSION_MIN)) {
+            LOGGER.warn("Yarn dependency skipped: {} - Yarn v{} (prior to v{}) is not supported.", dependency.getActualFile(), yarnVersion, YARN_VERSION_MIN);
             return;
         }
 
@@ -229,7 +239,7 @@ public class YarnAuditAnalyzer extends AbstractNpmAnalyzer {
             List<Advisory> advisories = parseAdvisoryJsons(advisoryJsons);
             processResults(advisories, engine, dependency, new HashSetValuedHashMap<>());
         } catch (JSONException e) {
-            throw new AnalysisException("Failed to parse the response from NPM Audit API (YarnAuditAnalyzer).", e);
+            throw new AnalysisException("Failed to parse the advisories from `yarn npm audit` (YarnAuditAnalyzer).", e);
         } catch (CpeValidationException e) {
             throw new UnexpectedAnalysisException(e);
         }
@@ -257,25 +267,25 @@ public class YarnAuditAnalyzer extends AbstractNpmAnalyzer {
         args.add("--recursive");
         args.add("--no-deprecations");
         args.add("--json");
-        final ProcessBuilder builder = new ProcessBuilder(args);
-        builder.directory(getDependencyDirectory(dependency.getActualFile()));
-
-        final String advisoriesJsons = startAndReadStdoutToString(builder);
+        final String advisoriesJsons = startAndReadStdoutToString(createYarnBuilder(getDependencyDirectory(dependency.getActualFile()), args));
 
         LOGGER.debug("Advisories JSON: {}", advisoriesJsons);
-        final String[] advisoriesJsonArray = Stream.of(advisoriesJsons.split("\n"))
+        return advisoriesJsons.lines()
                 .filter(s -> !s.isBlank())
-                .toArray(String[]::new);
-        try {
-            final List<JSONObject> advisories = new ArrayList<>();
-            for (String advisoriesJson : advisoriesJsonArray) {
-                advisories.add(new JSONObject(advisoriesJson));
-            }
+                .map(JSONObject::new)
+                .collect(Collectors.toList());
+    }
 
-            return advisories;
-        } catch (JSONException e) {
-            throw new AnalysisException("Failed to parse the response from NPM Audit API (YarnAuditAnalyzer).", e);
-        }
+    private static @NonNull ProcessBuilder createYarnBuilder(File dependencyDirectory, List<String> args) {
+        final ProcessBuilder builder = new ProcessBuilder(args).directory(dependencyDirectory);
+
+        builder.environment().putAll(Map.of(
+                // Default to disable use of yarnPath
+                YARN_ENV_IGNORE_PATH, defaultIfBlank(getEnvironmentVariable(YARN_ENV_IGNORE_PATH, null), "true"),
+                // Force disable telemetry
+                YARN_ENV_ENABLE_TELEMETRY, "false"
+        ));
+        return builder;
     }
 
     private static List<Advisory> parseAdvisoryJsons(List<JSONObject> advisoryJsons) throws JSONException {
