@@ -919,13 +919,6 @@
 </suppress>
 <suppress base="true">
     <notes><![CDATA[
-    FP per issue #6385
-    ]]></notes>
-    <packageUrl regex="true">^pkg:nuget/MagicFileEncoding@.*$</packageUrl>
-    <cpe regex="true">cpe:/a:file:file(:.*)?$</cpe>
-</suppress>
-<suppress base="true">
-    <notes><![CDATA[
     FP per issue #6376
     ]]></notes>
     <packageUrl regex="true">^pkg:nuget/MongoDB\.Bson@.*$</packageUrl>
@@ -2228,4 +2221,25 @@
     ]]></notes>
     <packageUrl regex="true">^pkg:maven/org\.springframework\.boot/spring-boot-data-mongodb@.*$</packageUrl>
     <cpe regex="true">cpe:/a:vmware:spring_data_mongodb(:.*)?$</cpe>
+</suppress>
+<suppress base="true">
+    <notes><![CDATA[
+    FP per issue #8774
+    ]]></notes>
+    <packageUrl regex="true">^pkg:maven/com\.sun\.xml\.bind\.external/rngom@.*$</packageUrl>
+    <cpe regex="true">cpe:/a:eclipse:glassfish(:.*)?$</cpe>
+</suppress>
+<suppress base="true">
+    <notes><![CDATA[
+    FP per issue #8780
+    ]]></notes>
+    <packageUrl regex="true">^pkg:maven/org\.apache\.camel\.upgrade/camel-upgrade-recipes@.*$</packageUrl>
+    <cpe regex="true">cpe:/a:apache:camel(:.*)?$</cpe>
+</suppress>
+<suppress base="true">
+    <notes><![CDATA[
+    FP per issue #6385, #8781 (curated)
+    ]]></notes>
+    <packageUrl regex="true">^pkg:nuget/.*@.*$</packageUrl>
+    <cpe regex="true">cpe:/a:file(_project)?:file(:.*)?$</cpe>
 </suppress>
