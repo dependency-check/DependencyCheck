@@ -924,13 +924,6 @@
 </suppress>
 <suppress base="true">
     <notes><![CDATA[
-    FP per issue #6385
-    ]]></notes>
-    <packageUrl regex="true">^pkg:nuget/MagicFileEncoding@.*$</packageUrl>
-    <cpe regex="true">cpe:/a:file:file(:.*)?$</cpe>
-</suppress>
-<suppress base="true">
-    <notes><![CDATA[
     FP per issue #6376
     ]]></notes>
     <packageUrl regex="true">^pkg:nuget/MongoDB\.Bson@.*$</packageUrl>
@@ -2250,9 +2243,10 @@
 </suppress>
 <suppress base="true">
     <notes><![CDATA[
-    FP per issue #8781
+    FP per issue #6385, #8781 (curated)
     ]]></notes>
-    <packageUrl regex="true">^pkg:nuget/Karambolo\.Extensions\.Logging\.File@.*$</packageUrl>
-    <cpe regex="true">cpe:/a:file:file(:.*)?$</cpe>
+    <packageUrl regex="true">^pkg:nuget/.*@.*$</packageUrl>
+    <cpe regex="true">cpe:/a:file(_project)?:file(:.*)?$</cpe>
 </suppress>
+
 </suppressions>
