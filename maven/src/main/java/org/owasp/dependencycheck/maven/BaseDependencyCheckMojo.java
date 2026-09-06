@@ -282,6 +282,12 @@ public abstract class BaseDependencyCheckMojo extends AbstractMojo implements Ma
     @Parameter(property = "pathToPnpm")
     private String pathToPnpm;
     /**
+     * Sets the path to `npm`.
+     */
+    @SuppressWarnings("CanBeFinal")
+    @Parameter(property = "pathToNpm")
+    private String pathToNpm;
+    /**
      * Use pom dependency information for snapshot dependencies that are part of
      * the Maven reactor while aggregate scanning a multi-module project.
      */
@@ -545,13 +551,6 @@ public abstract class BaseDependencyCheckMojo extends AbstractMojo implements Ma
     @SuppressWarnings("CanBeFinal")
     @Parameter(property = "nodeAuditAnalyzerEnabled")
     private Boolean nodeAuditAnalyzerEnabled;
-
-    /**
-     * The Node Audit API URL for the Node Audit Analyzer.
-     */
-    @SuppressWarnings("CanBeFinal")
-    @Parameter(property = "nodeAuditAnalyzerUrl")
-    private String nodeAuditAnalyzerUrl;
 
     /**
      * Sets whether or not the Yarn Audit Analyzer should be used.
@@ -2320,6 +2319,7 @@ public abstract class BaseDependencyCheckMojo extends AbstractMojo implements Ma
         settings.setStringIfNotNull(Settings.KEYS.ANALYZER_GOLANG_PATH, pathToGo);
         settings.setStringIfNotNull(Settings.KEYS.ANALYZER_YARN_PATH, pathToYarn);
         settings.setStringIfNotNull(Settings.KEYS.ANALYZER_PNPM_PATH, pathToPnpm);
+        settings.setStringIfNotNull(Settings.KEYS.ANALYZER_NPM_PATH, pathToNpm);
 
         // use global maven proxy if provided and system properties are not set
         final Proxy mavenProxyHttp = getMavenProxy(PROTOCOL_HTTP);
@@ -2423,7 +2423,6 @@ public abstract class BaseDependencyCheckMojo extends AbstractMojo implements Ma
         settings.setBooleanIfNotNull(Settings.KEYS.ANALYZER_CPANFILE_ENABLED, cpanfileAnalyzerEnabled);
         settings.setBooleanIfNotNull(Settings.KEYS.ANALYZER_NODE_PACKAGE_ENABLED, nodeAnalyzerEnabled);
         settings.setBooleanIfNotNull(Settings.KEYS.ANALYZER_NODE_AUDIT_ENABLED, nodeAuditAnalyzerEnabled);
-        settings.setStringIfNotNull(Settings.KEYS.ANALYZER_NODE_AUDIT_URL, nodeAuditAnalyzerUrl);
         settings.setBooleanIfNotNull(Settings.KEYS.ANALYZER_NODE_AUDIT_USE_CACHE, nodeAuditAnalyzerUseCache);
         settings.setBooleanIfNotNull(Settings.KEYS.ANALYZER_NODE_PACKAGE_SKIPDEV, nodePackageSkipDevDependencies);
         settings.setBooleanIfNotNull(Settings.KEYS.ANALYZER_NODE_AUDIT_SKIPDEV, nodeAuditSkipDevDependencies);

@@ -527,6 +527,8 @@ public class App {
                 cli.getStringArgument(CliParser.ARGUMENT.PATH_TO_YARN));
         settings.setStringIfNotNull(Settings.KEYS.ANALYZER_PNPM_PATH,
                 cli.getStringArgument(CliParser.ARGUMENT.PATH_TO_PNPM));
+        settings.setStringIfNotNull(Settings.KEYS.ANALYZER_NPM_PATH,
+                cli.getStringArgument(CliParser.ARGUMENT.PATH_TO_NPM));
         settings.setBooleanIfNotNull(Settings.KEYS.PRETTY_PRINT,
                 cli.hasOption(CliParser.ARGUMENT.PRETTY_PRINT));
         settings.setStringIfNotNull(Settings.KEYS.ANALYZER_RETIREJS_REPO_JS_URL,

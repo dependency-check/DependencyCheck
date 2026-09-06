@@ -476,6 +476,8 @@ public final class CliParser {
                         "The path to the `yarn` executable."))
                 .addOption(newOptionWithArg(ARGUMENT.PATH_TO_PNPM, "path",
                         "The path to the `pnpm` executable."))
+                .addOption(newOptionWithArg(ARGUMENT.PATH_TO_NPM, "path",
+                        "The path to the `npm` executable."))
                 .addOption(newOptionWithArg(ARGUMENT.RETIRE_JS_FILTERS, "pattern",
                         "Specify Retire JS content filter used to exclude files from analysis based on their content; "
                                 + "most commonly used to exclude based on your applications own copyright line. This "
@@ -1348,6 +1350,10 @@ public final class CliParser {
          * The CLI argument name for setting the path to `pnpm`.
          */
         public static final String PATH_TO_PNPM = "pnpm";
+        /**
+         * The CLI argument name for setting the path to `npm`.
+         */
+        public static final String PATH_TO_NPM = "npm";
         /**
          * Disables the Ruby Gemspec Analyzer.
          */

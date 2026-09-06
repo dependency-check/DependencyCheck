@@ -21,28 +21,33 @@ import com.github.packageurl.MalformedPackageURLException;
 import com.github.packageurl.PackageURL;
 import com.github.packageurl.PackageURL.StandardTypes;
 import com.github.packageurl.PackageURLBuilder;
-import org.semver4j.Semver;
-import org.semver4j.SemverException;
+import org.apache.commons.collections4.MultiValuedMap;
+import org.apache.commons.lang3.StringUtils;
 import org.owasp.dependencycheck.Engine;
+import org.owasp.dependencycheck.analyzer.exception.AnalysisException;
+import org.owasp.dependencycheck.analyzer.exception.UnexpectedAnalysisException;
 import org.owasp.dependencycheck.data.nodeaudit.Advisory;
-import org.owasp.dependencycheck.data.nodeaudit.NodeAuditSearch;
+import org.owasp.dependencycheck.data.nvd.ecosystem.Ecosystem;
 import org.owasp.dependencycheck.dependency.Confidence;
 import org.owasp.dependencycheck.dependency.Dependency;
+import org.owasp.dependencycheck.dependency.EvidenceType;
 import org.owasp.dependencycheck.dependency.Vulnerability;
 import org.owasp.dependencycheck.dependency.VulnerableSoftware;
 import org.owasp.dependencycheck.dependency.VulnerableSoftwareBuilder;
+import org.owasp.dependencycheck.dependency.naming.GenericIdentifier;
+import org.owasp.dependencycheck.dependency.naming.Identifier;
+import org.owasp.dependencycheck.dependency.naming.PurlIdentifier;
 import org.owasp.dependencycheck.exception.InitializationException;
+import org.owasp.dependencycheck.utils.Checksum;
 import org.owasp.dependencycheck.utils.InvalidSettingException;
 import org.owasp.dependencycheck.utils.Settings;
+import org.semver4j.Semver;
+import org.semver4j.SemverException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import java.io.File;
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
+import us.springett.parsers.cpe.exceptions.CpeValidationException;
+import us.springett.parsers.cpe.values.Part;
+
 import javax.annotation.concurrent.ThreadSafe;
 import jakarta.json.Json;
 import jakarta.json.JsonArray;
@@ -51,18 +56,13 @@ import jakarta.json.JsonObjectBuilder;
 import jakarta.json.JsonString;
 import jakarta.json.JsonValue;
 import jakarta.json.JsonValue.ValueType;
-import org.apache.commons.collections4.MultiValuedMap;
-import org.apache.commons.lang3.StringUtils;
-import org.owasp.dependencycheck.analyzer.exception.AnalysisException;
-import org.owasp.dependencycheck.analyzer.exception.UnexpectedAnalysisException;
-import org.owasp.dependencycheck.data.nvd.ecosystem.Ecosystem;
-import org.owasp.dependencycheck.dependency.EvidenceType;
-import org.owasp.dependencycheck.dependency.naming.GenericIdentifier;
-import org.owasp.dependencycheck.dependency.naming.Identifier;
-import org.owasp.dependencycheck.dependency.naming.PurlIdentifier;
-import org.owasp.dependencycheck.utils.Checksum;
-import us.springett.parsers.cpe.exceptions.CpeValidationException;
-import us.springett.parsers.cpe.values.Part;
+import java.io.File;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 
 /**
  * An abstract NPM analyzer that contains common methods for concrete
@@ -87,11 +87,6 @@ public abstract class AbstractNpmAnalyzer extends AbstractFileTypeAnalyzer {
      * The file name to scan.
      */
     private static final String PACKAGE_JSON = "package.json";
-
-    /**
-     * The Node Audit Searcher.
-     */
-    private NodeAuditSearch searcher;
 
     /**
      * Determines if the file can be analyzed by the analyzer.
@@ -414,24 +409,16 @@ public abstract class AbstractNpmAnalyzer extends AbstractFileTypeAnalyzer {
             this.setEnabled(false);
             return;
         }
-        if (searcher == null) {
-            LOGGER.debug("Initializing {}", getName());
-            try {
-                searcher = new NodeAuditSearch(getSettings());
-            } catch (MalformedURLException ex) {
-                setEnabled(false);
-                throw new InitializationException("The configured URL to NPM Audit API is malformed", ex);
+        LOGGER.debug("Initializing {}", getName());
+        try {
+            final Settings settings = engine.getSettings();
+            final boolean nodeEnabled = settings.getBoolean(Settings.KEYS.ANALYZER_NODE_PACKAGE_ENABLED);
+            if (!nodeEnabled) {
+                LOGGER.warn("The Node Package Analyzer has been disabled; the resulting report will only "
+                        + "contain the known vulnerable dependency - not a bill of materials for the node project.");
             }
-            try {
-                final Settings settings = engine.getSettings();
-                final boolean nodeEnabled = settings.getBoolean(Settings.KEYS.ANALYZER_NODE_PACKAGE_ENABLED);
-                if (!nodeEnabled) {
-                    LOGGER.warn("The Node Package Analyzer has been disabled; the resulting report will only "
-                            + "contain the known vulnerable dependency - not a bill of materials for the node project.");
-                }
-            } catch (InvalidSettingException ex) {
-                throw new InitializationException("Unable to read configuration settings", ex);
-            }
+        } catch (InvalidSettingException ex) {
+            throw new InitializationException("Unable to read configuration settings", ex);
         }
     }
 
@@ -517,15 +504,6 @@ public abstract class AbstractNpmAnalyzer extends AbstractFileTypeAnalyzer {
         if (!found) {
             dependency.addVulnerability(vuln);
         }
-    }
-
-    /**
-     * Returns the node audit search utility.
-     *
-     * @return the node audit search utility
-     */
-    protected NodeAuditSearch getSearcher() {
-        return searcher;
     }
 
     /**
