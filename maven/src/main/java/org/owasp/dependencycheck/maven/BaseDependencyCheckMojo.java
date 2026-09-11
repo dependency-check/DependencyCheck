@@ -1424,9 +1424,9 @@ public abstract class BaseDependencyCheckMojo extends AbstractMojo implements Ma
     protected ExceptionCollection scanPlugins(MavenProject project, Engine engine, ExceptionCollection exCollection) {
         ExceptionCollection exCol = exCollection;
         final Set<Artifact> plugins = new HashSet<>();
-        final Set<Artifact> buildPlugins = getProject().getPluginArtifacts();
-        final Set<Artifact> reportPlugins = getProject().getReportArtifacts();
-        final Set<Artifact> extensions = getProject().getExtensionArtifacts();
+        final Set<Artifact> buildPlugins = project.getPluginArtifacts();
+        final Set<Artifact> reportPlugins = project.getReportArtifacts();
+        final Set<Artifact> extensions = project.getExtensionArtifacts();
 
         plugins.addAll(buildPlugins);
         plugins.addAll(reportPlugins);
