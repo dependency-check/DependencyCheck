@@ -17,11 +17,16 @@
  */
 package org.owasp.dependencycheck.analyzer;
 
+import org.apache.commons.lang3.SystemUtils;
 import org.jspecify.annotations.NonNull;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.NullSource;
+import org.junit.jupiter.params.provider.ValueSource;
+import org.mockito.MockedStatic;
 import org.owasp.dependencycheck.BaseTest;
 import org.owasp.dependencycheck.Engine;
 import org.owasp.dependencycheck.dependency.Dependency;
@@ -35,6 +40,8 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mockStatic;
+import static org.owasp.dependencycheck.analyzer.YarnAuditAnalyzer.YARN_ENV_IGNORE_PATH;
 
 class YarnAuditAnalyzerIT extends BaseTest {
 
@@ -55,30 +62,61 @@ class YarnAuditAnalyzerIT extends BaseTest {
     }
 
     @Nested
-    class Classic {
+    class YarnUnsupported {
         @Test
-        void testAnalyzePackageYarnClassic() throws Exception {
+        void testYarnClassicUnsupported() throws Exception {
             final Dependency toScan = new Dependency(BaseTest.getResourceAsFile(YarnAuditAnalyzerIT.this, "yarn/yarn-classic-audit/yarn.lock"));
+            analyzer.analyze(toScan, engine);
+            assertEquals(0, engine.getDependencies().length, "No dependencies should be identified");
+        }
+
+        @Test
+        void testYarnBerryUnsupported() throws Exception {
+            final Dependency toScan = new Dependency(BaseTest.getResourceAsFile(YarnAuditAnalyzerIT.this, "yarn/yarn-berry-audit-unsupported/yarn.lock"));
             analyzer.analyze(toScan, engine);
             assertEquals(0, engine.getDependencies().length, "No dependencies should be identified");
         }
     }
 
     @Nested
-    class Berry {
-        @Test
-        void testAnalyzePackage() throws Exception {
-            testAnalyzeForUglifyJs("yarn/yarn-berry-audit/yarn.lock");
-        }
-
+    class YarnConfiguration {
         @Test
         void testAnalyzeWithBadYarnConfiguration() {
             IllegalStateException exception = assertThrows(IllegalStateException.class, () -> testAnalyzeForUglifyJs("yarn/yarn-berry-audit-bad-yarnrc/yarn.lock"));
             assertThat(exception.getMessage(), containsString("Unable to determine yarn version"));
             assertThat(exception.getCause().getMessage(), allOf(
                     containsString("exit value 1"),
-                    containsString("bad-path-to-yarn.js")
+                    containsString("Couldn't parse \"bad-value\" as a boolean")
             ));
+        }
+
+        @ParameterizedTest
+        @NullSource
+        @ValueSource(strings = {" ", "1", "true"})
+        void testAnalyzeIgnoresBadYarnPath(String envValue) throws Exception {
+            try (MockedStatic<SystemUtils> systemMock = mockStatic(SystemUtils.class)) {
+                systemMock.when(() -> SystemUtils.getEnvironmentVariable(YARN_ENV_IGNORE_PATH, null)).thenReturn(envValue);
+
+                final Dependency toScan = new Dependency(BaseTest.getResourceAsFile(YarnAuditAnalyzerIT.this, "yarn/yarn-berry-audit-bad-path/yarn.lock"));
+                analyzer.analyze(toScan, engine);
+                assertEquals(0, engine.getDependencies().length, "No dependency should be identified");
+            }
+        }
+
+        @ParameterizedTest
+        @ValueSource(strings = {"0", "false"})
+        void testAnalyzeAllowsYarnPath(String envValue) {
+            try (MockedStatic<SystemUtils> systemMock = mockStatic(SystemUtils.class)) {
+                systemMock.when(() -> SystemUtils.getEnvironmentVariable(YARN_ENV_IGNORE_PATH, null)).thenReturn(envValue);
+
+                final Dependency toScan = new Dependency(BaseTest.getResourceAsFile(YarnAuditAnalyzerIT.this, "yarn/yarn-berry-audit-bad-path/yarn.lock"));
+                IllegalStateException exception = assertThrows(IllegalStateException.class, () -> analyzer.analyze(toScan, engine));
+                assertThat(exception.getMessage(), containsString("Unable to determine yarn version"));
+                assertThat(exception.getCause().getMessage(), allOf(
+                        containsString("no such file or directory"), // yarnrc yarnPath points to non-existent path so we can detect usage
+                        containsString("does-not-exist/yarn.js")
+                ));
+            }
         }
 
         @Test
@@ -89,6 +127,14 @@ class YarnAuditAnalyzerIT extends BaseTest {
                     containsString("exit value 1"),
                     containsString("4.999.0-bad-version")
             ));
+        }
+    }
+
+    @Nested
+    class SuccessfulAnalysis {
+        @Test
+        void testAnalyzePackage() throws Exception {
+            testAnalyzeForUglifyJs("yarn/yarn-berry-audit/yarn.lock");
         }
 
         @Test
