@@ -74,7 +74,7 @@ public class GolangVulncheckAnalyzer extends AbstractFileTypeAnalyzer {
     /**
      * The phase that this analyzer runs in.
      */
-    private static final AnalysisPhase ANALYSIS_PHASE = AnalysisPhase.PRE_INFORMATION_COLLECTION;
+    private static final AnalysisPhase ANALYSIS_PHASE = AnalysisPhase.INFORMATION_COLLECTION;
 
     /**
      * The file filter for go.mod - govulncheck is run against the module rooted
