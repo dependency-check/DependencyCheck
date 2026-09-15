@@ -418,7 +418,12 @@ public final class Settings {
         public static final String ANALYZER_PNPM_AUDIT_REGISTRY = "analyzer.pnpm.audit.registry";
         /**
          * The properties key for supplying the URL to the Node Audit API.
+         *
+         * @deprecated the Node Audit analyzer now uses the local `npm audit`
+         * command instead of directly submitting payloads to the retired NPM
+         * Audit API; this setting is no longer used.
          */
+        @Deprecated(since = "13.1.0", forRemoval = true)
         public static final String ANALYZER_NODE_AUDIT_URL = "analyzer.node.audit.url";
         /**
          * The properties key for configure whether the Node Audit analyzer
@@ -523,6 +528,10 @@ public final class Settings {
          * The path to pnpm, if available.
          */
         public static final String ANALYZER_PNPM_PATH = "analyzer.pnpm.path";
+        /**
+         * The path to npm, if available.
+         */
+        public static final String ANALYZER_NPM_PATH = "analyzer.npm.path";
         /**
          * The properties key for whether the Golang Dep analyzer is enabled.
          */
