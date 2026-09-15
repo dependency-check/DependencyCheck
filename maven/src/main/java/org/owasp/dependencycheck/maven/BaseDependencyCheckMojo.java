@@ -34,6 +34,7 @@ import org.apache.maven.artifact.versioning.VersionRange;
 import org.apache.maven.doxia.sink.Sink;
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.model.License;
+import org.apache.maven.model.Plugin;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecution;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -1446,7 +1447,7 @@ public abstract class BaseDependencyCheckMojo extends AbstractMojo implements Ma
                         resolved.getGroupId(), resolved.getArtifactId(), null, "jar", resolved.getVersion());
 
                 final String parent = buildReference(resolved.getGroupId(), resolved.getArtifactId(), resolved.getVersion());
-                for (Artifact artifact : resolveArtifactDependencies(pluginRoot, project)) {
+                for (Artifact artifact : resolvePluginDependencies(pluginRoot, project)) {
                     exCol = addPluginToDependencies(project, engine, artifact, parent, exCol);
                 }
             } catch (ArtifactResolutionException | DependencyResolutionException | IllegalArgumentException ex) {
@@ -1530,11 +1531,16 @@ public abstract class BaseDependencyCheckMojo extends AbstractMojo implements Ma
         return includedBy;
     }
 
-    protected Set<Artifact> resolveArtifactDependencies(final org.eclipse.aether.artifact.Artifact rootArtifact, MavenProject project)
+    private Set<Artifact> resolvePluginDependencies(final org.eclipse.aether.artifact.Artifact rootArtifact, MavenProject project)
             throws DependencyResolutionException {
         final CollectRequest collectRequest = new CollectRequest();
         collectRequest.setRoot(new org.eclipse.aether.graph.Dependency(rootArtifact, null));
         collectRequest.setRepositories(project.getRemoteProjectRepositories());
+
+        // Also use dependency overrides in <plugin><dependencies> tags
+        final List<org.eclipse.aether.graph.Dependency> pluginDependencies = getPluginDependencies(rootArtifact, project);
+        collectRequest.setDependencies(pluginDependencies);
+        collectRequest.setManagedDependencies(pluginDependencies);
 
         final DependencyResult dependencyResult = repoSystem.resolveDependencies(
                 session.getRepositorySession(), new DependencyRequest(collectRequest, null));
@@ -1548,6 +1554,19 @@ public abstract class BaseDependencyCheckMojo extends AbstractMojo implements Ma
 
         return artifacts;
 
+    }
+
+    private List<org.eclipse.aether.graph.Dependency> getPluginDependencies(org.eclipse.aether.artifact.Artifact plugin, MavenProject project) {
+        final Plugin projectPlugin = project.getPlugin(plugin.getGroupId() + ":" + plugin.getArtifactId());
+        final List<org.eclipse.aether.graph.Dependency> dependencies = new ArrayList<>();
+
+        if (projectPlugin != null) {
+            for (org.apache.maven.model.Dependency dependency : projectPlugin.getDependencies()) {
+                dependencies.add(RepositoryUtils.toDependency(dependency, session.getRepositorySession().getArtifactTypeRegistry()));
+            }
+        }
+
+        return dependencies;
     }
 
     /**
