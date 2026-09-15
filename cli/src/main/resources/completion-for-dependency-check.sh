@@ -72,12 +72,14 @@ _odc_completions()
             --dotnet
             --enableArtifactory
             --enableExperimental
+            --enableGolangVulncheck
             --enableNexus
             --enableRetired
             --exclude <pattern>
         -f --format <format>
             --failOnCVSS <score>
             --go
+            --govulncheck <path>
         -h --help
             --hints
             --hostedSuppressionsForceUpdate
@@ -130,7 +132,7 @@ _odc_completions()
 
 
     case "${prev}" in
-        -s|--scan|-o|--out|-d|--data|--bundleAudit|--bundleAuditWorkingDirectory|--dbDriverPath|--dotnet|--go|-P|--propertyfile|--suppression|--hint|-l|--log|--yarn)
+        -s|--scan|-o|--out|-d|--data|--bundleAudit|--bundleAuditWorkingDirectory|--dbDriverPath|--dotnet|--go|--govulncheck|-P|--propertyfile|--suppression|--hint|-l|--log|--yarn)
             COMPREPLY=( $(compgen -f -o default -- ${cur}) )
             return 0
             ;;
