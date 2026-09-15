@@ -1,9 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<assembly
-    xmlns="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2
-      http://maven.apache.org/xsd/assembly-1.1.2.xsd">
+<assembly xmlns="http://maven.apache.org/ASSEMBLY/2.2.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/ASSEMBLY/2.2.0 https://maven.apache.org/xsd/assembly-2.2.0.xsd">
     <id>release</id>
     <formats>
         <format>zip</format>
@@ -38,18 +35,10 @@
         </fileSet>
         <fileSet>
             <outputDirectory>dependency-check</outputDirectory>
+            <directory>${license.outputDirectory}</directory>
             <includes>
-                <include>LICENSE*</include>
-                <include>NOTICE*</include>
+                <include>THIRD-PARTY.txt</include>
             </includes>
-        </fileSet>
-        <fileSet>
-            <outputDirectory>dependency-check/licenses</outputDirectory>
-            <directory>${basedir}/src/main/resources/META-INF/licenses</directory>
-        </fileSet>
-        <fileSet>
-            <outputDirectory>dependency-check/licenses</outputDirectory>
-            <directory>${basedir}/../dependency-check-core/src/main/resources/META-INF/licenses</directory>
         </fileSet>
         <fileSet>
             <outputDirectory>dependency-check</outputDirectory>
@@ -57,6 +46,14 @@
             <includes>
                 <include>README.md</include>
                 <include>LICENSE.txt</include>
+                <include>NOTICE.txt</include>
+            </includes>
+        </fileSet>
+        <fileSet>
+            <outputDirectory>dependency-check</outputDirectory>
+            <directory>${project.build.directory}</directory>
+            <includes>
+                <include>sbom.json</include>
             </includes>
         </fileSet>
     </fileSets>

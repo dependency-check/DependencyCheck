@@ -58,6 +58,13 @@ Copyright (c) 2013 - Jeremy Long. All Rights Reserved.
                     <include>NOTICE.txt</include>
                 </includes>
             </resource>
+            <resource>
+                <directory>${license.outputDirectory}</directory>
+                <targetPath>META-INF</targetPath>
+                <includes>
+                    <include>THIRD-PARTY.txt</include>
+                </includes>
+            </resource>
         </resources>
         <testResources>
             <testResource>
@@ -185,6 +192,18 @@ Copyright (c) 2013 - Jeremy Long. All Rights Reserved.
                         </manifest>
                     </archive>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.cyclonedx</groupId>
+                <artifactId>cyclonedx-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>makeBom</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
