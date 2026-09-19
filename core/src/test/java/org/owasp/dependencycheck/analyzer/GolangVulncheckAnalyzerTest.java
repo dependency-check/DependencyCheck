@@ -66,7 +66,7 @@ class GolangVulncheckAnalyzerTest extends BaseTest {
 
     @Test
     void testGetAnalysisPhase() {
-        assertThat(analyzer.getAnalysisPhase(), is(AnalysisPhase.PRE_INFORMATION_COLLECTION));
+        assertThat(analyzer.getAnalysisPhase(), is(AnalysisPhase.INFORMATION_COLLECTION));
     }
 
     @Test
