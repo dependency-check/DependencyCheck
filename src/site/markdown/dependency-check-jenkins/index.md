@@ -13,7 +13,7 @@ Note, not all of the features in the HTML report produced by dependency-check, w
 Copyright & License
 -------------------
 
-Dependency-Check is Copyright (c) 2012-2014 Jeremy Long. All Rights Reserved.
+Dependency-Check is Copyright (c) 2012-2026 OWASP Dependency-Check Contributors. All Rights Reserved.
 
 Dependency-Check Jenkins Plugin is Copyright (c) 2013-2014 Steve Springett. All Rights Reserved.
 

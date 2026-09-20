@@ -117,22 +117,13 @@ Copyright (c) 2012 - Jeremy Long
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
-        <!-- Reporting plugins do not inherit from plugin management, so de-duplicate versions via properties -->
-        <maven-checkstyle-plugin.version>3.6.0</maven-checkstyle-plugin.version>
-        <checkstyle.tool.version>9.3</checkstyle.tool.version>
-        <maven-dependency-plugin.version>3.11.0</maven-dependency-plugin.version>
-        <maven-javadoc-plugin.version>3.12.0</maven-javadoc-plugin.version>
-        <maven-project-info-reports-plugin.version>3.9.0</maven-project-info-reports-plugin.version>
-        <jacoco-maven-plugin.version>0.8.15</jacoco-maven-plugin.version>
-        <spotbugs.maven.plugin.version>4.10.4.0</spotbugs.maven.plugin.version>
-
         <!-- upgrading slf4j and logback can cause issues ;) https://github.com/dependency-check/DependencyCheck/issues/4846 -->
-        <slf4j.version>2.0.18</slf4j.version>
+        <slf4j.version>2.0.19</slf4j.version>
         <logback.version>1.5.34</logback.version>
 
         <apache.lucene.version>9.12.3</apache.lucene.version>
         <!-- Driver versions as properties for ease of extraction for reuse in Docker builds -->
-        <driver.h2database.version>2.4.240</driver.h2database.version>
+        <driver.h2database.version>2.5.250</driver.h2database.version>
         <driver.postgresql.version>42.7.13</driver.postgresql.version>
         <driver.mysql.version>26.7.0</driver.mysql.version>
 
@@ -182,7 +173,7 @@ Copyright (c) 2012 - Jeremy Long
                 <plugin>
                     <groupId>org.jacoco</groupId>
                     <artifactId>jacoco-maven-plugin</artifactId>
-                    <version>${jacoco-maven-plugin.version}</version>
+                    <version>0.8.15</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -197,17 +188,17 @@ Copyright (c) 2012 - Jeremy Long
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>
-                    <version>3.15.0</version>
+                    <version>3.16.0</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-dependency-plugin</artifactId>
-                    <version>${maven-dependency-plugin.version}</version>
+                    <version>3.11.0</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-artifact-plugin</artifactId>
-                    <version>3.6.1</version>
+                    <version>3.7.0</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -217,12 +208,12 @@ Copyright (c) 2012 - Jeremy Long
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-deploy-plugin</artifactId>
-                    <version>3.1.4</version>
+                    <version>3.2.0</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-failsafe-plugin</artifactId>
-                    <version>3.5.6</version>
+                    <version>3.6.0</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -232,7 +223,7 @@ Copyright (c) 2012 - Jeremy Long
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-install-plugin</artifactId>
-                    <version>3.1.4</version>
+                    <version>3.2.0</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -272,7 +263,7 @@ Copyright (c) 2012 - Jeremy Long
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-surefire-plugin</artifactId>
-                    <version>3.5.6</version>
+                    <version>3.6.0</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -287,7 +278,7 @@ Copyright (c) 2012 - Jeremy Long
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-javadoc-plugin</artifactId>
-                    <version>${maven-javadoc-plugin.version}</version>
+                    <version>3.12.0</version>
                     <configuration>
                         <tags>
                             <!-- see https://openjdk.org/jeps/8068562#Implementation
@@ -305,12 +296,12 @@ Copyright (c) 2012 - Jeremy Long
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-checkstyle-plugin</artifactId>
-                    <version>${maven-checkstyle-plugin.version}</version>
+                    <version>3.6.0</version>
                     <dependencies>
                         <dependency>
                             <groupId>com.puppycrawl.tools</groupId>
                             <artifactId>checkstyle</artifactId>
-                            <version>${checkstyle.tool.version}</version>
+                            <version>9.3</version>
                         </dependency>
                     </dependencies>
                 </plugin>
@@ -320,22 +311,9 @@ Copyright (c) 2012 - Jeremy Long
                     <version>3.10.1</version>
                 </plugin>
                 <plugin>
-                    <groupId>org.codehaus.gmavenplus</groupId>
-                    <artifactId>gmavenplus-plugin</artifactId>
-                    <version>5.1.0</version>
-                    <dependencies>
-                        <dependency>
-                            <groupId>org.apache.groovy</groupId>
-                            <artifactId>groovy-ant</artifactId>
-                            <version>5.1.2</version>
-                            <scope>runtime</scope>
-                        </dependency>
-                    </dependencies>
-                </plugin>
-                <plugin>
                     <groupId>org.codehaus.mojo</groupId>
                     <artifactId>versions-maven-plugin</artifactId>
-                    <version>2.21.0</version>
+                    <version>2.22.0</version>
                     <configuration>
                         <ignoredVersions>.*-(alpha|beta|M|rc)[-0-9]+</ignoredVersions>
                     </configuration>
@@ -343,70 +321,6 @@ Copyright (c) 2012 - Jeremy Long
             </plugins>
         </pluginManagement>
         <plugins>
-            <plugin>
-                <groupId>org.codehaus.gmavenplus</groupId>
-                <artifactId>gmavenplus-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>add-dynamic-properties-clean</id>
-                        <phase>pre-clean</phase>
-                        <goals>
-                            <goal>execute</goal>
-                        </goals>
-                        <configuration>
-                            <scripts>
-                                <script><![CDATA[
-                                if ("dependency-check-parent".equals("${project.artifactId}")) {
-                                    relConfig = "src/main/config"
-                                } else {
-                                    relConfig = "../src/main/config"
-                                }
-                                project.properties['odc.config']= project.basedir.absoluteFile.toURI().resolve(relConfig).normalize().toString()
-                                ]]></script>
-                            </scripts>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>add-dynamic-properties-init</id>
-                        <phase>initialize</phase>
-                        <goals>
-                            <goal>execute</goal>
-                        </goals>
-                        <configuration>
-                            <scripts>
-                                <script><![CDATA[
-                                if ("dependency-check-parent".equals("${project.artifactId}")) {
-                                    relConfig = "src/main/config"
-                                } else {
-                                    relConfig = "../src/main/config"
-                                }
-                                project.properties['odc.config']= project.basedir.absoluteFile.toURI().resolve(relConfig).normalize().toString()
-                                ]]></script>
-                            </scripts>
-                        </configuration>
-                    </execution>
-
-                    <execution>
-                        <id>add-dynamic-properties-site</id>
-                        <phase>pre-site</phase>
-                        <goals>
-                            <goal>execute</goal>
-                        </goals>
-                        <configuration>
-                            <scripts>
-                                <script><![CDATA[
-                                if ("dependency-check-parent".equals("${project.artifactId}")) {
-                                    relConfig = "src/main/config"
-                                } else {
-                                    relConfig = "../src/main/config"
-                                }
-                                project.properties['odc.config']= project.basedir.absoluteFile.toURI().resolve(relConfig).normalize().toString()
-                                ]]></script>
-                            </scripts>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -436,7 +350,7 @@ Copyright (c) 2012 - Jeremy Long
             <plugin>
                 <groupId>io.github.git-commit-id</groupId>
                 <artifactId>git-commit-id-maven-plugin</artifactId>
-                <version>10.0.0</version>
+                <version>10.0.1</version>
                 <executions>
                     <execution>
                         <id>git-info</id>
@@ -468,7 +382,7 @@ Copyright (c) 2012 - Jeremy Long
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-artifact-plugin</artifactId>
-                <version>3.6.1</version>
+                <version>3.7.0</version>
                 <executions>
                     <execution>
                         <goals>
@@ -487,7 +401,7 @@ Copyright (c) 2012 - Jeremy Long
                 <artifactId>maven-javadoc-plugin</artifactId>
                 <configuration>
                     <failOnError>false</failOnError>
-                    <bottom>Copyright© 2012-21 Jeremy Long. All Rights Reserved.</bottom>
+                    <bottom>Copyright© 2012-2026 OWASP Dependency-Check Contributors. All Rights Reserved.</bottom>
                     <sourceFileExcludes>
                         <exclude>**/generated-sources/**/*.java</exclude>
                     </sourceFileExcludes>
@@ -501,7 +415,7 @@ Copyright (c) 2012 - Jeremy Long
                     <dependency>
                         <groupId>org.codehaus.mojo</groupId>
                         <artifactId>extra-enforcer-rules</artifactId>
-                        <version>1.12.0</version>
+                        <version>1.12.1</version>
                     </dependency>
                 </dependencies>
                 <inherited>true</inherited>
@@ -674,6 +588,7 @@ Copyright (c) 2012 - Jeremy Long
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-site-plugin</artifactId>
                 <configuration>
+                    <generateReports>false</generateReports>
                     <skipDeploy>true</skipDeploy>
                 </configuration>
             </plugin>
@@ -684,7 +599,7 @@ Copyright (c) 2012 - Jeremy Long
                 <executions>
                     <execution>
                         <id>copy-xsd</id>
-                        <phase>compile</phase>
+                        <phase>pre-site</phase>
                         <goals>
                             <goal>run</goal>
                         </goals>
@@ -749,7 +664,7 @@ Copyright (c) 2012 - Jeremy Long
             <plugin>
                 <groupId>com.github.spotbugs</groupId>
                 <artifactId>spotbugs-maven-plugin</artifactId>
-                <version>${spotbugs.maven.plugin.version}</version>
+                <version>4.10.4.1</version>
                 <executions>
                     <execution>
                         <phase>verify</phase>
@@ -760,153 +675,11 @@ Copyright (c) 2012 - Jeremy Long
                 </executions>
                 <configuration>
                     <sarifOutput>true</sarifOutput>
-                    <excludeFilterFile>${odc.config}/spotbugs_excludes.xml</excludeFilterFile>
+                    <excludeFilterFile>${maven.multiModuleProjectDirectory}/src/main/config/spotbugs_excludes.xml</excludeFilterFile>
                 </configuration>
             </plugin>
         </plugins>
     </build>
-    <reporting>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-dependency-plugin</artifactId>
-                <version>${maven-dependency-plugin.version}</version>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-javadoc-plugin</artifactId>
-                <version>${maven-javadoc-plugin.version}</version>
-                <reportSets>
-                    <reportSet>
-                        <id>default</id>
-                        <reports>
-                            <report>javadoc</report>
-                        </reports>
-                        <configuration>
-                            <failOnError>false</failOnError>
-                            <bottom>Copyright© 2012-25 Jeremy Long. All Rights Reserved.</bottom>
-                            <sourceFileExcludes>
-                                <exclude>**/generated-sources/**/*.java</exclude>
-                            </sourceFileExcludes>
-                            <detectJavaApiLink>false</detectJavaApiLink>
-                        </configuration>
-                    </reportSet>
-                </reportSets>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jxr-plugin</artifactId>
-                <!-- upgrading beyond 2.5 breaks maven site when aggregating for parent due to the ant module test dependency on core -->
-                <version>2.5</version>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-checkstyle-plugin</artifactId>
-                <version>${maven-checkstyle-plugin.version}</version>
-                <configuration>
-                    <enableRulesSummary>false</enableRulesSummary>
-                    <enableFilesSummary>false</enableFilesSummary>
-                    <excludes>**/HelpMojo.java</excludes>
-                    <configLocation>${odc.config}/checkstyle-checks.xml</configLocation>
-                    <headerLocation>${odc.config}/checkstyle-header.txt</headerLocation>
-                    <suppressionsLocation>${odc.config}/checkstyle-suppressions.xml</suppressionsLocation>
-                    <suppressionsFileExpression>checkstyle.suppressions.file</suppressionsFileExpression>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-project-info-reports-plugin</artifactId>
-                <version>${maven-project-info-reports-plugin.version}</version>
-                <reportSets>
-                    <reportSet>
-                        <reports>
-                            <report>summary</report>
-                            <report>issue-management</report>
-                            <report>modules</report>
-                            <report>team</report>
-                            <report>scm</report>
-                            <report>ci-management</report>
-                            <report>licenses</report>
-                        </reports>
-                    </reportSet>
-                </reportSets>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-report-plugin</artifactId>
-                <version>3.5.6</version>
-                <reportSets>
-                    <reportSet>
-                        <reports>
-                            <report>report-only</report>
-                            <report>failsafe-report-only</report>
-                        </reports>
-                    </reportSet>
-                </reportSets>
-            </plugin>
-            <plugin>
-                <groupId>org.jacoco</groupId>
-                <artifactId>jacoco-maven-plugin</artifactId>
-                <version>${jacoco-maven-plugin.version}</version>
-                <configuration>
-                    <dataFileIncludes>
-                        <dataFileInclude>${project.basedir}/target/jacoco.exec</dataFileInclude>
-                    </dataFileIncludes>
-                </configuration>
-                <reportSets>
-                    <reportSet>
-                        <reports>
-                            <report>report</report>
-                        </reports>
-                    </reportSet>
-                </reportSets>
-            </plugin>
-            <plugin>
-                <groupId>com.github.spotbugs</groupId>
-                <artifactId>spotbugs-maven-plugin</artifactId>
-                <version>${spotbugs.maven.plugin.version}</version>
-                <configuration>
-                    <excludeFilterFile>${odc.config}/spotbugs_excludes.xml</excludeFilterFile>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>taglist-maven-plugin</artifactId>
-                <version>3.2.2</version>
-                <configuration>
-                    <tagListOptions>
-                        <tagClasses>
-                            <tagClass>
-                                <displayName>Todo Work</displayName>
-                                <tags>
-                                    <tag>
-                                        <matchString>todo</matchString>
-                                        <matchType>ignoreCase</matchType>
-                                    </tag>
-                                    <tag>
-                                        <matchString>FIXME</matchString>
-                                        <matchType>exact</matchType>
-                                    </tag>
-                                </tags>
-                            </tagClass>
-                        </tagClasses>
-                    </tagListOptions>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>versions-maven-plugin</artifactId>
-                <reportSets>
-                    <reportSet>
-                        <reports>
-                            <report>dependency-updates-report</report>
-                            <report>plugin-updates-report</report>
-                        </reports>
-                    </reportSet>
-                </reportSets>
-            </plugin>
-        </plugins>
-    </reporting>
     <dependencyManagement>
         <dependencies>
             <dependency>
@@ -1141,7 +914,7 @@ Copyright (c) 2012 - Jeremy Long
             <dependency>
                 <groupId>org.jsoup</groupId>
                 <artifactId>jsoup</artifactId>
-                <version>1.23.1</version>
+                <version>1.23.2</version>
             </dependency>
             <dependency>
                 <groupId>org.slf4j</groupId>
@@ -1255,7 +1028,7 @@ Copyright (c) 2012 - Jeremy Long
         <dependency>
             <groupId>com.github.spotbugs</groupId>
             <artifactId>spotbugs-annotations</artifactId>
-            <version>4.10.3</version>
+            <version>4.10.4</version>
             <scope>compile</scope>
             <optional>true</optional>
         </dependency>

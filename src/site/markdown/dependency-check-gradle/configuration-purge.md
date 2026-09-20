@@ -1,5 +1,9 @@
-Tasks
+Gradle Plugin Tasks: Purge
 ====================
+
+Deletes the local copy of the NVD. This is used to force a refresh of the data.
+
+## Tasks
 
 | Task                                                     | Description                                                                     |
 |----------------------------------------------------------|---------------------------------------------------------------------------------|
@@ -8,8 +12,7 @@ Tasks
 | [dependencyCheckUpdate](configuration-update.html)       | Updates the local cache of the NVD data from NIST.                              |
 | dependencyCheckPurge                                     | Deletes the local copy of the NVD. This is used to force a refresh of the data. |
 
-Configuration
-====================
+## Configuration
 
 ```groovy
 buildscript {

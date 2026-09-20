@@ -8,23 +8,27 @@ Related FOSS Projects
 ------------------------
 * [The Victims Project](https://github.com/victims)
 * [Ruby Bundler-Audit](https://github.com/rubysec/bundler-audit)
-* [Retire.js](http://bekk.github.io/retire.js/)
-* [NPM Public Advisories](https://www.npmjs.com/advisories)
+* [Retire.js](https://retirejs.github.io/retire.js/)
+* [Trivy](https://trivy.dev/)
+* [OSV-Scanner](https://google.github.io/osv-scanner/)
 
 Vulnerability Sources
 ------------------------
-The following are sources of vulnerability information. Dependency-check only uses information in the [National Vulnerability
+The following are sources of vulnerability information. Dependency-check primarily uses information in the [National Vulnerability
 Database (NVD)](https://nvd.nist.gov/). The other sources listed below contain vulnerability information that may not be included in the NVD.
 
-* [vFeed](http://www.toolswatch.org/vfeed)
-* [Sonatype Guide OSS Index](https://www.sonatype.com/products/sonatype-guide/oss-index-users)
+* [vFeed](https://vfeed.io/)
+* [OSV](https://osv.dev/)
+* [GitHub Advisory Database](https://github.com/advisories)
+* [Sonatype Guide OSS Index](https://guide.sonatype.com/) (commercial beyond a free use tier)
 
 Related Commercial Products
 ------------------------
 The below list is merely informational. It is not a complete list, nor do the authors of dependency-check endorse any
 of the products listed below.
 
-* [SRC:CLR](https://srcclr.com/)
-* [Sonatype Nexus Intelligence](https://www.sonatype.com/nexus-intelligence) and [Sonatype Nexus Lifecycle](https://www.sonatype.com/nexus-lifecycle)
-* [Palamida](http://www.palamida.com/products/enterpriseedition.html)
-* [Black Duck](https://www.blackducksoftware.com/products/black-duck-suite/code-center)
+* [Aqua Security](https://www.aquasec.com/products/software-supply-chain-security/)
+* [Black Duck](https://www.blackduck.com/software-composition-analysis-tools/black-duck-sca.html)
+* [Revenera SCA](https://www.revenera.com/software-composition-analysis/products/flexnet-code-insight)
+* [Sonatype Intelligence](https://www.sonatype.com/products/intelligence) and [Sonatype Lifecycle](https://www.sonatype.com/products/open-source-security-dependency-management)
+* [Snyk](https://snyk.io/product/open-source-security-management/)

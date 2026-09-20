@@ -30,7 +30,6 @@ Copyright (c) 2013 Jeremy Long. All Rights Reserved.
     <properties>
         <maven.api.version>3.8.1</maven.api.version>
 
-        <version.maven-plugin-plugin>3.16.0</version.maven-plugin-plugin>
         <toolchain.jdk.test.home>${java.home}</toolchain.jdk.test.home>
     </properties>
     <scm>
@@ -149,7 +148,7 @@ Copyright (c) 2013 Jeremy Long. All Rights Reserved.
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-plugin-plugin</artifactId>
-                <version>${version.maven-plugin-plugin}</version>
+                <version>3.16.0</version>
                 <configuration>
                     <goalPrefix>dependency-check</goalPrefix>
                 </configuration>
@@ -167,6 +166,14 @@ Copyright (c) 2013 Jeremy Long. All Rights Reserved.
                         </goals>
                     </execution>
                 </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-site-plugin</artifactId>
+                <configuration>
+                    <!-- Overrides parent config to re-enable for plugin goal report -->
+                    <generateReports>true</generateReports>
+                </configuration>
             </plugin>
         </plugins>
     </build>
@@ -267,7 +274,18 @@ Copyright (c) 2013 Jeremy Long. All Rights Reserved.
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-plugin-report-plugin</artifactId>
-                <version>${version.maven-plugin-plugin}</version>
+                <version>3.16.0</version>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-project-info-reports-plugin</artifactId>
+                <version>3.9.0</version>
+                <reportSets>
+                    <reportSet>
+                        <!-- Don't generate any reports other than ones from the maven-plugin-report-plugin -->
+                        <reports/>
+                    </reportSet>
+                </reportSets>
             </plugin>
         </plugins>
     </reporting>

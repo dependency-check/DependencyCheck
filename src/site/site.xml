@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="ISO-8859-1"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <!--
 This file is part of dependency-check.
 
@@ -16,8 +16,8 @@ limitations under the License.
 
 Copyright (c) 2013 Jeremy Long. All Rights Reserved.
 -->
-<site xmlns="http://maven.apache.org/SITE/2.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-      xsi:schemaLocation="http://maven.apache.org/SITE/2.0.0 https://maven.apache.org/xsd/site-2.0.0.xsd"
+<site xmlns="http://maven.apache.org/SITE/2.1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="http://maven.apache.org/SITE/2.1.0 https://maven.apache.org/xsd/site-2.1.0.xsd"
       name="OWASP Dependency-Check">
     <skin>
         <groupId>org.apache.maven.skins</groupId>
@@ -33,12 +33,6 @@ Copyright (c) 2013 Jeremy Long. All Rights Reserved.
                 <ribbonOrientation>right</ribbonOrientation>
                 <ribbonColor>gray</ribbonColor>
             </gitHub>
-            <twitter>
-                <user>ctxt</user>
-                <showUser>true</showUser>
-                <showFollowers>true</showFollowers>
-            </twitter>
-            <googlePlusOne />
         </fluidoSkin>
     </custom>
     <bannerLeft>
@@ -70,8 +64,8 @@ Copyright (c) 2013 Jeremy Long. All Rights Reserved.
         </head>
         <breadcrumbs>
             <item name="OWASP" href="https://www.owasp.org/"/>
-            <item name="Dependency-Check" href="https://www.owasp.org/index.php/OWASP_Dependency_Check"/>
-            <item name="Documentation" href="./"/>
+            <item name="Dependency-Check" href="https://owasp.org/projects/dependency-check"/>
+            <item name="Documentation" href="index.html"/>
         </breadcrumbs>
 
         <menu name="OWASP Dependency-Check">
@@ -99,6 +93,7 @@ Copyright (c) 2013 Jeremy Long. All Rights Reserved.
                 <item name="Maven Plugin" href="./dependency-check-maven/index.html"/>
                 <item collapse="true" name="Gradle Plugin" href="./dependency-check-gradle/index.html">
                     <item name="Analyze Task" href="./dependency-check-gradle/configuration.html" />
+                    <item name="Aggregate Task" href="./dependency-check-gradle/configuration-aggregate.html" />
                     <item name="Update Task" href="./dependency-check-gradle/configuration-update.html" />
                     <item name="Purge Task" href="./dependency-check-gradle/configuration-purge.html" />
                 </item>
@@ -145,7 +140,6 @@ Copyright (c) 2013 Jeremy Long. All Rights Reserved.
                 </item>
             </item>
         </menu>
-        <menu ref="reports" />
-        <footer><![CDATA[<p>&copy; 2012&ndash;2025 <a href="https://www.owasp.org">OWASP</a></p><img referrerpolicy="no-referrer-when-downgrade" src="https://static.scarf.sh/a.png?x-pxid=90c74bb8-b6d1-4464-a9b6-754067afe126" alt="" width="1" height="1" />]]></footer>
+        <footer><![CDATA[<p>&copy; 2012&ndash;2026 <a href="https://www.owasp.org">OWASP</a></p><img referrerpolicy="no-referrer-when-downgrade" src="https://static.scarf.sh/a.png?x-pxid=90c74bb8-b6d1-4464-a9b6-754067afe126" alt="" width="1" height="1" />]]></footer>
     </body>
 </site>

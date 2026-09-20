@@ -128,15 +128,15 @@ RetireJS Configuration
 If using the [experimental](../analyzers/index.html) RetireJS Analyzer the following configuration options are available
 to control the included JS files
 
-###Example
-<pre>
-    &lt;retirejs&gt;
-        &lt;filters&gt;
-            &lt;filter&gt;Copyright\(c\) Jeremy Long&lt;/filter&gt;
-        &lt;/filters&gt;
-        &lt;filterNonVulnerable&gt;true&lt;/filterNonVulnerable&gt;
-    &lt;/retirejs&gt;
-</pre>
+### Example
+```xml
+<retirejs>
+  <filters>
+    <filter>Copyright\(c\) Jeremy Long</filter>
+  </filters>
+  <filterNonVulnerable>true</filterNonVulnerable>
+</retirejs>
+```
 
 | Property            | Description                                                                                                                                                                                                             | Default Value |
 |---------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------------|
