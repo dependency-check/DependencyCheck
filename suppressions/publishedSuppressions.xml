@@ -2242,4 +2242,11 @@
     <cpe regex="true">cpe:/a:file(_project)?:file(:.*)?$</cpe>
 </suppress>
 
+<suppress base="true">
+    <notes><![CDATA[
+    FP per issue #8811
+    ]]></notes>
+    <packageUrl regex="true">^pkg:maven/eu\.europa\.ec\.joinup\.sd-dss/dss-utils-google-guava@.*$</packageUrl>
+    <cpe regex="true">cpe:/a:google:guava(:.*)?$</cpe>
+</suppress>
 </suppressions>
