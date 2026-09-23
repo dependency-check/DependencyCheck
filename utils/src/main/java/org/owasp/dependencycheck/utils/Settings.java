@@ -516,6 +516,15 @@ public final class Settings {
          */
         public static final String ANALYZER_GOLANG_PATH = "analyzer.golang.path";
         /**
+         * The properties key for whether the Golang govulncheck analyzer is
+         * enabled.
+         */
+        public static final String ANALYZER_GOLANG_VULNCHECK_ENABLED = "analyzer.golang.vulncheck.enabled";
+        /**
+         * The path to govulncheck, if available.
+         */
+        public static final String ANALYZER_GOLANG_VULNCHECK_PATH = "analyzer.golang.vulncheck.path";
+        /**
          * The path to go, if available.
          */
         public static final String ANALYZER_YARN_PATH = "analyzer.yarn.path";

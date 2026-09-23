@@ -472,6 +472,8 @@ public final class CliParser {
                         "The Artifactory URL."))
                 .addOption(newOptionWithArg(ARGUMENT.PATH_TO_GO, "path",
                         "The path to the `go` executable."))
+                .addOption(newOptionWithArg(ARGUMENT.PATH_TO_GOVULNCHECK, "path",
+                        "The path to the `govulncheck` executable."))
                 .addOption(newOptionWithArg(ARGUMENT.PATH_TO_YARN, "path",
                         "The path to the `yarn` executable."))
                 .addOption(newOptionWithArg(ARGUMENT.PATH_TO_PNPM, "path",
@@ -551,6 +553,8 @@ public final class CliParser {
                 .addOption(newOption(ARGUMENT.DISABLE_NODE_AUDIT_SKIPDEV, "Configures the Node Audit Analyzer to skip devDependencies"))
                 .addOption(newOption(ARGUMENT.DISABLE_RETIRE_JS, "Disable the RetireJS Analyzer."))
                 .addOption(newOption(ARGUMENT.ENABLE_NEXUS, "Enable the Nexus Analyzer."))
+                .addOption(newOption(ARGUMENT.ENABLE_GOLANG_VULNCHECK,
+                        "Enable the Golang Vulncheck Analyzer; requires `go` and `govulncheck` to be installed."))
                 .addOption(newOption(ARGUMENT.ARTIFACTORY_ENABLED, "Whether the Artifactory Analyzer should be enabled."))
                 .addOption(newOption(ARGUMENT.PURGE_NVD, "Purges the local NVD data cache"))
                 .addOption(newOption(ARGUMENT.DISABLE_HOSTED_SUPPRESSIONS, "Disable retrieval of the hosted suppressions from the configured URL."))
@@ -1341,6 +1345,10 @@ public final class CliParser {
          */
         public static final String PATH_TO_GO = "go";
         /**
+         * The CLI argument name for setting the path to `govulncheck`.
+         */
+        public static final String PATH_TO_GOVULNCHECK = "govulncheck";
+        /**
          * The CLI argument name for setting the path to `yarn`.
          */
         public static final String PATH_TO_YARN = "yarn";
@@ -1444,6 +1452,10 @@ public final class CliParser {
          * Disables the Nexus Analyzer.
          */
         public static final String ENABLE_NEXUS = "enableNexus";
+        /**
+         * Enables the Golang Vulncheck Analyzer.
+         */
+        public static final String ENABLE_GOLANG_VULNCHECK = "enableGolangVulncheck";
         /**
          * Disables the Sonatype OSS Index Analyzer.
          */
