@@ -260,11 +260,18 @@ public class Engine implements FileFilter, AutoCloseable {
 
     /**
      * Removes the dependency.
+     * <p>
+     * The dependency is matched by identity. {@link List#remove(Object)} would
+     * match with {@link Dependency#equals(Object)}, which walks the evidence of
+     * every dependency ahead of the target in the list. That both removes the
+     * wrong instance when two dependencies happen to be equal, and can throw a
+     * {@link java.util.ConcurrentModificationException} when another analyzer
+     * thread is adding evidence to one of them at the same time (see #8418).
      *
      * @param dependency the dependency to remove.
      */
     public synchronized void removeDependency(@NonNull final Dependency dependency) {
-        dependencies.remove(dependency);
+        dependencies.removeIf(d -> d == dependency);
         dependenciesExternalView = null;
     }
 
