@@ -260,11 +260,10 @@ public class Engine implements FileFilter, AutoCloseable {
 
     /**
      * Removes the dependency.
-     *
      * @param dependency the dependency to remove.
      */
     public synchronized void removeDependency(@NonNull final Dependency dependency) {
-        dependencies.remove(dependency);
+        dependencies.removeIf(d -> d == dependency);
         dependenciesExternalView = null;
     }
 
