@@ -29,7 +29,7 @@ Copyright (c) 2012 Jeremy Long. All Rights Reserved.
     <name>Dependency-Check Core</name>
     <description>dependency-check-core is the engine and reporting tool used to identify and report if there are any known, publicly disclosed vulnerabilities in the scanned project's dependencies. The engine extracts meta-data from the dependencies and uses this to do fuzzy key-word matching against the Common Platfrom Enumeration (CPE), if any CPE identifiers are found the associated Common Vulnerability and Exposure (CVE) entries are added to the generated report.</description>
     <scm>
-        <connection>scm:git:https://github.com/dependency-check/DependencyCheck.git</connection>
+        <connection>scm:git:https://github.com/dependency-check/DependencyCheck</connection>
         <url>https://github.com/dependency-check/DependencyCheck/tree/main/core</url>
         <developerConnection>scm:git:git@github.com/dependency-check/DependencyCheck.git</developerConnection>
         <tag>HEAD</tag>
@@ -353,6 +353,19 @@ Copyright (c) 2012 Jeremy Long. All Rights Reserved.
         <dependency>
             <groupId>org.json</groupId>
             <artifactId>json</artifactId>
+        </dependency>
+        <dependency>
+            <!-- jQuery and the Stupid-Table plugin are inlined into the HTML report from these webjars -->
+            <groupId>org.webjars.npm</groupId>
+            <artifactId>jquery</artifactId>
+            <version>3.7.1</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.webjars.npm</groupId>
+            <artifactId>stupid-table-plugin</artifactId>
+            <version>1.1.3</version>
+            <scope>runtime</scope>
         </dependency>
     </dependencies>
     <profiles>

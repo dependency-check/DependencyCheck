@@ -203,7 +203,7 @@ The repository has some large files due to test resources. The team has tried to
 However, it is recommended that you perform a shallow clone to save yourself time:
 
 ```bash
-git clone --depth 1 https://github.com/dependency-check/DependencyCheck.git
+git clone --depth 1 https://github.com/dependency-check/DependencyCheck
 ```
 
 On *nix
@@ -369,7 +369,7 @@ License
 
 Permission to modify and redistribute is granted under the terms of the Apache 2.0 license. See the [LICENSE.txt](https://raw.githubusercontent.com/dependency-check/DependencyCheck/main/LICENSE.txt) file for the full license.
 
-Dependency-Check makes use of several other open source libraries. Please see the [NOTICE.txt][notices] file for more information.
+This product includes or consumes third party software. Please see the [NOTICE.txt][notices] file for more information.
 
 This product uses the NVD API but is not endorsed or certified by the NVD.
 
