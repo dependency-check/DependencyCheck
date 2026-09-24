@@ -185,6 +185,10 @@ public class Check extends Update {
      */
     private String pathToPnpm;
     /**
+     * The path to `npm`.
+     */
+    private String pathToNpm;
+    /**
      * Additional ZIP File extensions to add analyze. This should be a
      * comma-separated list of file extensions to treat like ZIP files.
      */
@@ -1137,6 +1141,15 @@ public class Check extends Update {
     }
 
     /**
+     * Set the value of pathToNpm.
+     *
+     * @param pathToNpm new value of pathToNpm
+     */
+    public void setPathToNpm(String pathToNpm) {
+        this.pathToNpm = pathToNpm;
+    }
+
+    /**
      * Set the value of pathToGo.
      *
      * @param pathToGo new value of pathToGo
@@ -1510,6 +1523,7 @@ public class Check extends Update {
         getSettings().setStringIfNotNull(Settings.KEYS.ANALYZER_GOLANG_PATH, pathToGo);
         getSettings().setStringIfNotNull(Settings.KEYS.ANALYZER_YARN_PATH, pathToYarn);
         getSettings().setStringIfNotNull(Settings.KEYS.ANALYZER_PNPM_PATH, pathToPnpm);
+        getSettings().setStringIfNotNull(Settings.KEYS.ANALYZER_NPM_PATH, pathToNpm);
         getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_MIX_AUDIT_ENABLED, mixAuditAnalyzerEnabled);
         getSettings().setStringIfNotNull(Settings.KEYS.ANALYZER_MIX_AUDIT_PATH, mixAuditPath);
         getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_NUSPEC_ENABLED, nuspecAnalyzerEnabled);

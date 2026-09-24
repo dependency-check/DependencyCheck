@@ -1,0 +1,119 @@
+{
+  "auditReportVersion": 2,
+  "vulnerabilities": {
+    "ajv": {
+      "name": "ajv",
+      "severity": "moderate",
+      "isDirect": false,
+      "via": [
+        {
+          "source": 1097685,
+          "name": "ajv",
+          "dependency": "ajv",
+          "title": "Prototype Pollution in Ajv",
+          "url": "https://github.com/advisories/GHSA-v88g-cgmw-v5xw",
+          "severity": "moderate",
+          "cwe": [
+            "CWE-915",
+            "CWE-1321"
+          ],
+          "cvss": {
+            "score": 5.6,
+            "vectorString": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:L/I:L/A:L"
+          },
+          "range": "<6.12.3"
+        },
+        {
+          "source": 1113714,
+          "name": "ajv",
+          "dependency": "ajv",
+          "title": "ajv has ReDoS when using `$data` option",
+          "url": "https://github.com/advisories/GHSA-2g4f-4pwh-qvx6",
+          "severity": "moderate",
+          "cwe": [
+            "CWE-400",
+            "CWE-1333"
+          ],
+          "cvss": {
+            "score": 0,
+            "vectorString": null
+          },
+          "range": "<6.14.0"
+        }
+      ],
+      "effects": [
+        "har-validator"
+      ],
+      "range": "<=6.12.6",
+      "nodes": [
+        "node_modules/ajv"
+      ],
+      "fixAvailable": false
+    },
+    "har-validator": {
+      "name": "har-validator",
+      "severity": "moderate",
+      "isDirect": false,
+      "via": [
+        "ajv"
+      ],
+      "effects": [
+        "request"
+      ],
+      "range": "3.3.0 - 5.1.5",
+      "nodes": [
+        "node_modules/har-validator"
+      ],
+      "fixAvailable": false
+    },
+    "uglify-js": {
+      "name": "uglify-js",
+      "severity": "high",
+      "isDirect": false,
+      "via": [
+        {
+          "source": 1091686,
+          "name": "uglify-js",
+          "dependency": "uglify-js",
+          "title": "Regular Expression Denial of Service in uglify-js",
+          "url": "https://github.com/advisories/GHSA-c9f4-xj24-8jqx",
+          "severity": "high",
+          "cwe": [
+            "CWE-1333"
+          ],
+          "cvss": {
+            "score": 7.5,
+            "vectorString": "CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H"
+          },
+          "range": "<2.6.0"
+        }
+      ],
+      "effects": [
+        "swig"
+      ],
+      "range": "<2.6.0",
+      "nodes": [
+        "node_modules/uglify-js"
+      ],
+      "fixAvailable": false
+    }
+  },
+  "metadata": {
+    "vulnerabilities": {
+      "info": 0,
+      "low": 0,
+      "moderate": 3,
+      "high": 1,
+      "critical": 0,
+      "total": 4
+    },
+    "dependencies": {
+      "prod": 233,
+      "dev": 851,
+      "optional": 168,
+      "peer": 0,
+      "peerOptional": 0,
+      "total": 1199
+    }
+  }
+}
