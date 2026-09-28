@@ -40,6 +40,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -69,6 +71,32 @@ class EngineTest extends BaseDBTestCase {
             Dependency secondDwr = instance.scanFile(file);
 
             assertEquals(2, instance.getDependencies().length);
+        }
+    }
+
+    /**
+     * removeDependency must remove the instance it is given, not the first
+     * dependency in the list that happens to be equal to it (#8418).
+     */
+    @Test
+    void testRemoveDependencyRemovesTheGivenInstance() throws DatabaseException {
+        try (Engine instance = new Engine(getSettings())) {
+            final Dependency first = new Dependency();
+            first.setFileName("same.jar");
+            first.setFilePath("same.jar");
+            final Dependency second = new Dependency();
+            second.setFileName("same.jar");
+            second.setFilePath("same.jar");
+            assertEquals(first, second);
+            assertNotSame(first, second);
+
+            instance.addDependency(first);
+            instance.addDependency(second);
+            instance.removeDependency(second);
+
+            final Dependency[] remaining = instance.getDependencies();
+            assertEquals(1, remaining.length);
+            assertSame(first, remaining[0]);
         }
     }
 
