@@ -185,6 +185,10 @@ public class Check extends Update {
      */
     private String pathToPnpm;
     /**
+     * The Pnpm registry url.
+     */
+    private String pnpmAuditRegistry;
+    /**
      * Additional ZIP File extensions to add analyze. This should be a
      * comma-separated list of file extensions to treat like ZIP files.
      */
@@ -1137,6 +1141,15 @@ public class Check extends Update {
     }
 
     /**
+     * Sets the Pnpm registry url.
+     *
+     * @param pnpmAuditRegistry new value of pnpmAuditRegistry
+     */
+    public void setPnpmAuditRegistry(final String pnpmAuditRegistry) {
+        this.pnpmAuditRegistry = pnpmAuditRegistry;
+    }
+
+    /**
      * Set the value of pathToGo.
      *
      * @param pathToGo new value of pathToGo
@@ -1500,6 +1513,7 @@ public class Check extends Update {
         getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_NODE_AUDIT_ENABLED, nodeAuditAnalyzerEnabled);
         getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_YARN_AUDIT_ENABLED, yarnAuditAnalyzerEnabled);
         getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_PNPM_AUDIT_ENABLED, pnpmAuditAnalyzerEnabled);
+        getSettings().setStringIfNotNull(Settings.KEYS.ANALYZER_PNPM_AUDIT_REGISTRY, pnpmAuditRegistry);
         getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_NODE_AUDIT_USE_CACHE, nodeAuditAnalyzerUseCache);
         getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_NODE_AUDIT_SKIPDEV, nodeAuditSkipDevDependencies);
         getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_RETIREJS_FILTER_NON_VULNERABLE, retireJsFilterNonVulnerable);
