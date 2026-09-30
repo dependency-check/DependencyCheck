@@ -2244,3 +2244,10 @@
     <packageUrl regex="true">^pkg:maven/eu\.europa\.ec\.joinup\.sd-dss/dss-utils-google-guava@.*$</packageUrl>
     <cpe regex="true">cpe:/a:google:guava(:.*)?$</cpe>
 </suppress>
+<suppress base="true">
+    <notes><![CDATA[
+    FP per issue #8822
+    ]]></notes>
+    <packageUrl regex="true">^pkg:maven/com\.hazelcast\.jet/hazelcast-jet-mongodb@.*$</packageUrl>
+    <cpe regex="true">cpe:/a:mongodb:mongodb(:.*)?$</cpe>
+</suppress>
