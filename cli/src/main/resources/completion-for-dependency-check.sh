@@ -108,6 +108,7 @@ _odc_completions()
             --proxyserver <server>
             --proxyuser <user>
             --pnpm
+            --pnpmAuditRegistry
             --purge
             --retireJsFilter <pattern>
             --retireJsFilterNonVulnerable
