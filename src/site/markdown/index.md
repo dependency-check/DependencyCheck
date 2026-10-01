@@ -16,7 +16,7 @@ Insecure Libraries](https://www.scribd.com/document/175866686/Aspect-Security-th
 (registration required). The gist of the paper is that we as a development
 community include third party libraries in our applications that contain well
 known published vulnerabilities \(such as those at the
-[National Vulnerability Database](http://web.nvd.nist.gov/view/vuln/search)\).
+[National Vulnerability Database](https://nvd.nist.gov/vuln/search)\).
 
 More information about dependency-check can be found here:
 

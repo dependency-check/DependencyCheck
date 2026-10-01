@@ -32,7 +32,7 @@ Copyright (c) 2012 - Jeremy Long
         <module>archetype</module>
     </modules>
     <name>Dependency-Check</name>
-    <url>https://github.com/dependency-check/DependencyCheck.git</url>
+    <url>https://dependency-check.github.io/DependencyCheck/</url>
     <description>dependency-check is a utility that identifies project dependencies and checks if there are any known, publicly disclosed vulnerabilities. This tool can be part of the solution to the OWASP Top 10 2013: A9 - Using Components with Known Vulnerabilities.</description>
     <inceptionYear>2012</inceptionYear>
 
@@ -91,9 +91,9 @@ Copyright (c) 2012 - Jeremy Long
         </contributor>
     </contributors>
     <scm>
-        <connection>scm:git:https://github.com/dependency-check/DependencyCheck.git</connection>
+        <connection>scm:git:https://github.com/dependency-check/DependencyCheck</connection>
         <url>https://github.com/dependency-check/DependencyCheck</url>
-        <developerConnection>scm:git:https://github.com/dependency-check/DependencyCheck.git</developerConnection>
+        <developerConnection>scm:git:https://github.com/dependency-check/DependencyCheck</developerConnection>
         <tag>HEAD</tag>
     </scm>
     <issueManagement>
@@ -106,8 +106,9 @@ Copyright (c) 2012 - Jeremy Long
     </ciManagement>
     <licenses>
         <license>
-            <name>The Apache Software License, Version 2.0</name>
-            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <name>Apache-2.0</name>
+            <comments>The Apache Software License, Version 2.0</comments>
+            <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
         </license>
     </licenses>
     <properties>
@@ -318,6 +319,27 @@ Copyright (c) 2012 - Jeremy Long
                         <ignoredVersions>.*-(alpha|beta|M|rc)[-0-9]+</ignoredVersions>
                     </configuration>
                 </plugin>
+                <plugin>
+                    <groupId>org.cyclonedx</groupId>
+                    <artifactId>cyclonedx-maven-plugin</artifactId>
+                    <version>2.9.3</version>
+                    <configuration>
+                        <includeProvidedScope>false</includeProvidedScope>
+                        <includeSystemScope>false</includeSystemScope>
+                        <skipNotDeployed>false</skipNotDeployed>
+                        <outputName>${project.artifactId}.cdx</outputName>
+                        <outputFormat>json</outputFormat>
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <!-- default phase is package, which is also where the cli and ant zips are assembled -->
+                            <phase>prepare-package</phase>
+                            <goals>
+                                <goal>makeBom</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
             </plugins>
         </pluginManagement>
         <plugins>
@@ -395,6 +417,11 @@ Copyright (c) 2012 - Jeremy Long
                         </configuration>
                     </execution>
                 </executions>
+            </plugin>
+            <!-- Every module writes a CycloneDX SBOM (see pluginManagement); distributions include it, others publish it to Maven Central. -->
+            <plugin>
+                <groupId>org.cyclonedx</groupId>
+                <artifactId>cyclonedx-maven-plugin</artifactId>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -770,12 +797,6 @@ Copyright (c) 2012 - Jeremy Long
                 <version>5.8.0</version>
             </dependency>
             <dependency>
-                <groupId>org.jspecify</groupId>
-                <artifactId>jspecify</artifactId>
-                <version>1.0.1</version>
-                <optional>true</optional>
-            </dependency>
-            <dependency>
                 <groupId>com.h2database</groupId>
                 <artifactId>h2</artifactId>
                 <version>${driver.h2database.version}</version>
@@ -983,6 +1004,20 @@ Copyright (c) 2012 - Jeremy Long
                     </exclusion>
                 </exclusions>
             </dependency>
+            <dependency>
+                <groupId>org.jspecify</groupId>
+                <artifactId>jspecify</artifactId>
+                <version>1.0.1</version>
+                <!-- Use provided scope to ensure not used at runtime, even from transitive dependencies -->
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>com.github.spotbugs</groupId>
+                <artifactId>spotbugs-annotations</artifactId>
+                <version>4.10.4</version>
+                <!-- Use provided scope to ensure not used at runtime, even from transitive dependencies -->
+                <scope>provided</scope>
+            </dependency>
         </dependencies>
     </dependencyManagement>
     <dependencies>
@@ -1022,15 +1057,12 @@ Copyright (c) 2012 - Jeremy Long
         <dependency>
             <groupId>org.jspecify</groupId>
             <artifactId>jspecify</artifactId>
-            <scope>compile</scope>
-            <optional>true</optional>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.github.spotbugs</groupId>
             <artifactId>spotbugs-annotations</artifactId>
-            <version>4.10.4</version>
-            <scope>compile</scope>
-            <optional>true</optional>
+            <scope>provided</scope>
         </dependency>
         <!-- endregion -->
     </dependencies>
