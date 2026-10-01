@@ -143,7 +143,7 @@ public final class Downloader {
         // Singleton class
         connectionManager = PoolingHttpClientConnectionManagerBuilder.create()
                 .useSystemProperties()
-                .build()
+                .build();
         //TODO: ensure proper closure and eviction policy
         httpClientBuilder = HttpClientBuilder.create()
                 .useSystemProperties()
