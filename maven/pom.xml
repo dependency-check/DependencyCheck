@@ -33,8 +33,8 @@ Copyright (c) 2013 Jeremy Long. All Rights Reserved.
         <toolchain.jdk.test.home>${java.home}</toolchain.jdk.test.home>
     </properties>
     <scm>
-        <connection>scm:git:https://github.com/dependency-check/DependencyCheck.git</connection>
-        <url>https://github.com/dependency-check/DependencyCheck/tree/master/maven</url>
+        <connection>scm:git:https://github.com/dependency-check/DependencyCheck</connection>
+        <url>https://github.com/dependency-check/DependencyCheck/tree/main/maven</url>
         <developerConnection>scm:git:git@github.com/dependency-check/DependencyCheck.git</developerConnection>
         <tag>HEAD</tag>
     </scm>
@@ -76,7 +76,7 @@ Copyright (c) 2013 Jeremy Long. All Rights Reserved.
             <dependency>
                 <groupId>org.apache.maven.plugin-tools</groupId>
                 <artifactId>maven-plugin-annotations</artifactId>
-                <version>3.15.2</version>
+                <version>3.16.0</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.maven.reporting</groupId>
@@ -135,7 +135,7 @@ Copyright (c) 2013 Jeremy Long. All Rights Reserved.
                 <filtering>true</filtering>
             </resource>
             <resource>
-                <directory>${basedir}</directory>
+                <directory>${basedir}/..</directory>
                 <targetPath>META-INF</targetPath>
                 <includes>
                     <include>LICENSE.txt</include>
