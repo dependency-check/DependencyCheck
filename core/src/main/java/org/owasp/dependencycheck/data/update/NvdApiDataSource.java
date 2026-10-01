@@ -72,6 +72,8 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
 import java.util.zip.GZIPOutputStream;
 
@@ -148,13 +150,14 @@ public class NvdApiDataSource implements CachedWebDataSource {
 
                     ExecutorService processingExecutorService = null;
                     ExecutorService downloadExecutorService = null;
+                    final AtomicBoolean cancelled = new AtomicBoolean(false);
                     try {
                         downloadExecutorService = Executors.newFixedThreadPool(downloadPoolSize);
                         processingExecutorService = Executors.newFixedThreadPool(execPoolSize);
 
                         DownloadTask runLast = null;
                         final Set<Future<Future<NvdApiProcessor>>> downloadFutures = new HashSet<>(updateable.size());
-                        runLast = startDownloads(updateable, processingExecutorService, runLast, downloadFutures, downloadExecutorService);
+                        runLast = startDownloads(updateable, processingExecutorService, runLast, downloadFutures, downloadExecutorService, cancelled);
 
                         //complete downloads
                         final Set<Future<NvdApiProcessor>> processFutures = new HashSet<>(updateable.size());
@@ -173,11 +176,14 @@ public class NvdApiDataSource implements CachedWebDataSource {
                         }
 
                     } finally {
-                        if (processingExecutorService != null) {
-                            processingExecutorService.shutdownNow();
-                        }
+                        cancelled.set(true);
                         if (downloadExecutorService != null) {
                             downloadExecutorService.shutdownNow();
+                            awaitTermination(downloadExecutorService);
+                        }
+                        if (processingExecutorService != null) {
+                            processingExecutorService.shutdown();
+                            awaitTermination(processingExecutorService);
                         }
                     }
                     updatesMade = true;
@@ -225,10 +231,11 @@ public class NvdApiDataSource implements CachedWebDataSource {
     }
 
     private DownloadTask startDownloads(final Map<String, String> updateable, ExecutorService processingExecutorService, DownloadTask runLast,
-            final Set<Future<Future<NvdApiProcessor>>> downloadFutures, ExecutorService downloadExecutorService) throws UpdateException {
+            final Set<Future<Future<NvdApiProcessor>>> downloadFutures, ExecutorService downloadExecutorService,
+            AtomicBoolean cancelled) throws UpdateException {
         DownloadTask lastCall = runLast;
         for (Map.Entry<String, String> cve : updateable.entrySet()) {
-            final DownloadTask call = new DownloadTask(cve.getValue(), processingExecutorService, cveDb, settings);
+            final DownloadTask call = new DownloadTask(cve.getValue(), processingExecutorService, cveDb, settings, cancelled);
             if (call.isModified()) {
                 lastCall = call;
             } else {
@@ -334,6 +341,7 @@ public class NvdApiDataSource implements CachedWebDataSource {
         }
 
         ExecutorService processingExecutorService = null;
+        final AtomicBoolean cancelled = new AtomicBoolean(false);
         try {
             processingExecutorService = Executors.newFixedThreadPool(PROCESSING_THREAD_POOL_SIZE);
             final List<Future<NvdApiProcessor>> submitted = new ArrayList<>();
@@ -352,7 +360,8 @@ public class NvdApiDataSource implements CachedWebDataSource {
                         final File outputFile = settings.getTempFile("nvd-data-", ".jsonarray.gz");
                         try (FileOutputStream fos = new FileOutputStream(outputFile); GZIPOutputStream out = new GZIPOutputStream(fos);) {
                             objectMapper.writeValue(out, items);
-                            final Future<NvdApiProcessor> f = processingExecutorService.submit(new NvdApiProcessor(cveDb, outputFile));
+                            final Future<NvdApiProcessor> f = processingExecutorService.submit(
+                                    new NvdApiProcessor(cveDb, outputFile, System.currentTimeMillis(), cancelled));
                             submitted.add(f);
                         }
                         ctr += 1;
@@ -412,9 +421,34 @@ public class NvdApiDataSource implements CachedWebDataSource {
             }
             return updated;
         } finally {
+            cancelled.set(true);
             if (processingExecutorService != null) {
-                processingExecutorService.shutdownNow();
+                processingExecutorService.shutdown();
+                awaitTermination(processingExecutorService);
             }
+        }
+    }
+
+    /**
+     * Waits for a shut down executor to terminate. Processors are not
+     * interrupted, as interrupting H2 file I/O closes the database file; they
+     * stop after the CVE they are writing once the update is cancelled. This
+     * does not return early if the caller is interrupted, since the database
+     * may be closed straight afterwards.
+     *
+     * @param service the executor to wait for
+     */
+    private static void awaitTermination(ExecutorService service) {
+        boolean interrupted = false;
+        while (!service.isTerminated()) {
+            try {
+                service.awaitTermination(1, TimeUnit.MINUTES);
+            } catch (InterruptedException ex) {
+                interrupted = true;
+            }
+        }
+        if (interrupted) {
+            Thread.currentThread().interrupt();
         }
     }
 

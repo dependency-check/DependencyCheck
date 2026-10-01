@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.util.concurrent.Callable;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.zip.GZIPInputStream;
 
 import org.owasp.dependencycheck.data.nvd.ecosystem.CveEcosystemMapper;
@@ -63,6 +64,10 @@ public class NvdApiProcessor implements Callable<NvdApiProcessor> {
      * The end time.
      */
     private long endTime = 0;
+    /**
+     * Set when the update has been stopped and no more CVEs should be written.
+     */
+    private final AtomicBoolean cancelled;
 
     /**
      * Create a new processor to put the NVD data into the database.
@@ -70,11 +75,13 @@ public class NvdApiProcessor implements Callable<NvdApiProcessor> {
      * @param cveDB a reference to the database.
      * @param jsonFile the JSON data file to inject.
      * @param startTime the start time of the update process.
+     * @param cancelled set to <code>true</code> to stop before the next CVE is written.
      */
-    public NvdApiProcessor(final CveDB cveDB, File jsonFile, long startTime) {
+    public NvdApiProcessor(final CveDB cveDB, File jsonFile, long startTime, AtomicBoolean cancelled) {
         this.cveDB = cveDB;
         this.jsonFile = jsonFile;
         this.startTime = startTime;
+        this.cancelled = cancelled;
     }
 
     /**
@@ -84,7 +91,7 @@ public class NvdApiProcessor implements Callable<NvdApiProcessor> {
      * @param jsonFile the JSON data file to inject.
      */
     public NvdApiProcessor(final CveDB cveDB, File jsonFile) {
-        this(cveDB, jsonFile, System.currentTimeMillis());
+        this(cveDB, jsonFile, System.currentTimeMillis(), new AtomicBoolean(false));
     }
 
     @Override
@@ -113,7 +120,7 @@ public class NvdApiProcessor implements Callable<NvdApiProcessor> {
     }
 
     private void updateCveDb(CveItemSource<DefCveItem> itemSource) throws IOException {
-        while (itemSource.hasNext()) {
+        while (itemSource.hasNext() && !cancelled.get()) {
             final DefCveItem entry = itemSource.next();
             try {
                 cveDB.updateVulnerability(entry, mapper.getEcosystem(entry));
