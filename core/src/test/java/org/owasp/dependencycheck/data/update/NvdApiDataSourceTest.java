@@ -17,21 +17,36 @@
  */
 package org.owasp.dependencycheck.data.update;
 
+import com.sun.net.httpserver.HttpExchange;
+import com.sun.net.httpserver.HttpServer;
 import org.hamcrest.Matchers;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
+import org.owasp.dependencycheck.Engine;
+import org.owasp.dependencycheck.data.nvdcve.CveDB;
+import org.owasp.dependencycheck.data.nvdcve.DatabaseProperties;
 import org.owasp.dependencycheck.data.update.exception.UpdateException;
 import org.owasp.dependencycheck.utils.DownloadFailedException;
 import org.owasp.dependencycheck.utils.Downloader;
 import org.owasp.dependencycheck.utils.Settings;
 
+import java.io.IOException;
+import java.io.OutputStream;
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.net.URI;
+import java.nio.charset.StandardCharsets;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
@@ -41,6 +56,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
@@ -215,6 +231,109 @@ class NvdApiDataSourceTest {
 
             assertThat(lastModifieds.values(), everyItem(Matchers.equalTo(ZonedDateTime.of(2013, 1, 1, 12, 0, 0, 0, ZoneOffset.UTC))));
             return lastModifieds;
+        }
+    }
+
+    @Nested
+    class ApiUpdateFailure {
+
+        private static final int PAGE_SIZE = 10;
+
+        private HttpServer server;
+        private Settings settings;
+
+        @BeforeEach
+        void setUp() throws IOException {
+            settings = new Settings();
+            server = HttpServer.create(new InetSocketAddress(InetAddress.getLoopbackAddress(), 0), 0);
+            server.start();
+        }
+
+        @AfterEach
+        void tearDown() {
+            server.stop(0);
+            settings.cleanup(true);
+        }
+
+        /**
+         * The first page is ingested by a background processor; the second
+         * page fails. {@code update()} must not return until the processor
+         * has stopped writing, otherwise the engine closes the database
+         * underneath it (#8622).
+         */
+        @Test
+        void shouldStopProcessingBeforeReturningFromFailedUpdate() throws Exception {
+            final CountDownLatch writeStarted = new CountDownLatch(1);
+            final AtomicInteger inFlight = new AtomicInteger();
+            final AtomicInteger written = new AtomicInteger();
+
+            server.createContext("/", exchange -> {
+                if (exchange.getRequestURI().getQuery().contains("startIndex=0")) {
+                    respond(exchange, 200, page(PAGE_SIZE));
+                } else {
+                    try {
+                        writeStarted.await(10, TimeUnit.SECONDS);
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                    }
+                    respond(exchange, 503, "");
+                }
+            });
+
+            final CveDB cveDb = mock(CveDB.class);
+            when(cveDb.getDatabaseProperties()).thenReturn(mock(DatabaseProperties.class));
+            doAnswer(invocation -> {
+                inFlight.incrementAndGet();
+                try {
+                    writeStarted.countDown();
+                    Thread.sleep(200);
+                    written.incrementAndGet();
+                } finally {
+                    inFlight.decrementAndGet();
+                }
+                return null;
+            }).when(cveDb).updateVulnerability(any(), any());
+
+            assertThrows(UpdateException.class, () -> new NvdApiDataSource().update(engineFor(cveDb)));
+
+            assertEquals(0, inFlight.get(), "a processor was still writing to the database after update() returned");
+            assertTrue(written.get() < PAGE_SIZE, "processing should stop once the update has failed, but wrote " + written.get());
+        }
+
+        private Engine engineFor(CveDB cveDb) {
+            final Engine engine = mock(Engine.class);
+            when(engine.getSettings()).thenReturn(settings);
+            when(engine.getDatabase()).thenReturn(cveDb);
+            settings.setString(Settings.KEYS.NVD_API_ENDPOINT,
+                    "http://localhost:" + server.getAddress().getPort() + "/rest/json/cves/2.0");
+            settings.setInt(Settings.KEYS.NVD_API_RESULTS_PER_PAGE, PAGE_SIZE);
+            settings.setInt(Settings.KEYS.NVD_API_MAX_RETRY_COUNT, 1);
+            return engine;
+        }
+
+        private String page(int count) {
+            final StringBuilder vulns = new StringBuilder();
+            for (int i = 1; i <= count; i++) {
+                if (i > 1) {
+                    vulns.append(',');
+                }
+                vulns.append(String.format("{\"cve\":{\"id\":\"CVE-2099-%04d\",\"sourceIdentifier\":\"test\","
+                        + "\"published\":\"2099-01-01T00:00:00.000\",\"lastModified\":\"2099-01-01T00:00:00.000\","
+                        + "\"vulnStatus\":\"Analyzed\",\"descriptions\":[{\"lang\":\"en\",\"value\":\"test\"}],"
+                        + "\"references\":[]}}", i));
+            }
+            return String.format("{\"resultsPerPage\":%d,\"startIndex\":0,\"totalResults\":%d,\"format\":\"NVD_CVE\","
+                    + "\"version\":\"2.0\",\"timestamp\":\"2099-01-01T00:00:00.000\",\"vulnerabilities\":[%s]}",
+                    count, count * 2, vulns);
+        }
+
+        private void respond(HttpExchange exchange, int status, String body) throws IOException {
+            final byte[] bytes = body.getBytes(StandardCharsets.UTF_8);
+            exchange.getResponseHeaders().add("Content-Type", "application/json");
+            exchange.sendResponseHeaders(status, bytes.length == 0 ? -1 : bytes.length);
+            try (OutputStream out = exchange.getResponseBody()) {
+                out.write(bytes);
+            }
         }
     }
 }
