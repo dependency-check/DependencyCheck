@@ -18,8 +18,12 @@
 package org.owasp.dependencycheck.analyzer;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.owasp.dependencycheck.BaseTest;
+import org.owasp.dependencycheck.dependency.Confidence;
 import org.owasp.dependencycheck.dependency.Dependency;
+import org.owasp.dependencycheck.dependency.Evidence;
 import org.owasp.dependencycheck.dependency.EvidenceType;
 
 import java.io.File;
@@ -33,6 +37,20 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * @author Jeremy Long
  */
 class FileNameAnalyzerTest extends BaseTest {
+
+    @ParameterizedTest
+    @ValueSource(strings = {"alpha10", "beta2"})
+    void testNumberedPrereleaseVersionEvidence(String qualifier) throws Exception {
+        final Dependency dependency = new Dependency(new File("library-1.3.0-" + qualifier + ".jar"), true);
+        final FileNameAnalyzer analyzer = new FileNameAnalyzer();
+
+        analyzer.analyzeDependency(dependency, null);
+
+        assertTrue(dependency.contains(EvidenceType.VERSION,
+                new Evidence("file", "version", "1.3.0." + qualifier, Confidence.HIGH)));
+        assertTrue(dependency.contains(EvidenceType.PRODUCT,
+                new Evidence("file", "name", "library", Confidence.HIGH)));
+    }
 
     /**
      * Test of getName method, of class FileNameAnalyzer.

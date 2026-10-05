@@ -19,6 +19,9 @@ package org.owasp.dependencycheck.analyzer;
 
 import java.io.File;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.owasp.dependencycheck.BaseTest;
 import org.owasp.dependencycheck.dependency.Confidence;
 import org.owasp.dependencycheck.dependency.Dependency;
@@ -35,6 +38,36 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * @author Jeremy Long
  */
 class VersionFilterAnalyzerTest extends BaseTest {
+
+    @ParameterizedTest
+    @ValueSource(strings = {"alpha10", "beta2"})
+    void testAgreeingNumberedPrereleaseEvidencePreservesVersion(String qualifier) throws Exception {
+        final Dependency dependency = new Dependency();
+        dependency.addEvidence(EvidenceType.VERSION, "file", "version", "1.3.0." + qualifier, Confidence.HIGH);
+        dependency.addEvidence(EvidenceType.VERSION, "pom", "version", "1.3.0-" + qualifier, Confidence.HIGHEST);
+        final VersionFilterAnalyzer analyzer = new VersionFilterAnalyzer();
+        analyzer.initialize(getSettings());
+
+        analyzer.analyzeDependency(dependency, null);
+
+        assertEquals("1.3.0." + qualifier, dependency.getVersion());
+        assertEquals(2, dependency.getEvidence(EvidenceType.VERSION).size());
+    }
+
+    @ParameterizedTest
+    @CsvSource({"alpha10, alpha11", "beta2, beta3"})
+    void testDifferentNumberedPrereleaseEvidenceDoesNotAgree(String fileQualifier, String pomQualifier) throws Exception {
+        final Dependency dependency = new Dependency();
+        dependency.addEvidence(EvidenceType.VERSION, "file", "version", "1.3.0." + fileQualifier, Confidence.HIGH);
+        dependency.addEvidence(EvidenceType.VERSION, "pom", "version", "1.3.0-" + pomQualifier, Confidence.HIGHEST);
+        final VersionFilterAnalyzer analyzer = new VersionFilterAnalyzer();
+        analyzer.initialize(getSettings());
+
+        analyzer.analyzeDependency(dependency, null);
+
+        assertNull(dependency.getVersion());
+        assertEquals(2, dependency.getEvidence(EvidenceType.VERSION).size());
+    }
 
     /**
      * Test that the analyzer only accepts JAR files.
