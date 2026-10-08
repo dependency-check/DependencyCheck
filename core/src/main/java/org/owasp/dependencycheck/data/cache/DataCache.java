@@ -17,7 +17,10 @@
  */
 package org.owasp.dependencycheck.data.cache;
 
+import com.google.common.annotations.VisibleForTesting;
 import org.apache.commons.jcs3.access.CacheAccess;
+import org.apache.commons.jcs3.engine.behavior.ICacheElement;
+import org.apache.commons.jcs3.engine.behavior.IElementAttributes;
 
 /**
  * A generic wrapper for the Java Caching System (JCS).
@@ -32,6 +35,10 @@ public class DataCache<T> {
      * A reference to the JCS cache.
      */
     private final CacheAccess<String, T> cache;
+    /**
+     * The intended policy configured for the cache region; for reconciling to existing elements with legacy configuration
+     */
+    private final IElementAttributes regionAttributes;
 
     /**
      * Creates a new generic JCS wrapper.
@@ -40,6 +47,7 @@ public class DataCache<T> {
      */
     DataCache(CacheAccess<String, T> cache) {
         this.cache = cache;
+        this.regionAttributes = cache.getDefaultElementAttributes();
     }
 
     /**
@@ -49,7 +57,38 @@ public class DataCache<T> {
      * @return the cached object
      */
     public T get(String key) {
-        return cache.get(key);
+        final ICacheElement<String, T> element = cache.getCacheElement(key);
+        if (element == null) {
+            return null;
+        }
+        if (!regionAttributes.getIsEternal() && element.getElementAttributes().getIsEternal()) {
+            return repairToNonEternal(element);
+        }
+        return element.getVal();
+    }
+
+    /**
+     * Releases configured before 13.0.1 accidentally configured the cache regions such that elements were persisted
+     * to disk as eternal, so JCS would never expire them according to intended policy.
+     * This resets the element's attributes to the region's current expiry policy while retaining its
+     * original creation time: an element that is still within its lifetime is kept (and re-persisted with corrected
+     * attributes so that JCS manages its expiry from here on) rather than being discarded and re-fetched, while an
+     * element that has outlived the policy is removed.
+     *
+     * @param element the eternal element retrieved from the cache
+     * @return the cached object if it is still within its lifetime; otherwise {@code null}
+     */
+    private T repairToNonEternal(ICacheElement<String, T> element) {
+        final IElementAttributes attributes = element.getElementAttributes();
+        attributes.setIsEternal(regionAttributes.getIsEternal());
+        attributes.setMaxLife(regionAttributes.getMaxLife());
+        attributes.setIdleTime(regionAttributes.getIdleTime());
+        if (cache.getCacheControl().isExpired(element)) {
+            cache.remove(element.getKey());
+            return null;
+        }
+        cache.put(element.getKey(), element.getVal(), attributes);
+        return element.getVal();
     }
 
     /**
@@ -60,5 +99,10 @@ public class DataCache<T> {
      */
     public void put(String key, T content) {
         cache.put(key, content);
+    }
+
+    @VisibleForTesting
+    void put(String key, T content, IElementAttributes attributes) {
+        cache.put(key, content, attributes);
     }
 }
