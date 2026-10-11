@@ -29,6 +29,10 @@ import io.github.jeremylong.openvulnerability.client.nvd.Reference;
 import io.github.jeremylong.openvulnerability.client.nvd.VendorComment;
 import io.github.jeremylong.openvulnerability.client.nvd.Weakness;
 import org.junit.jupiter.api.Test;
+import org.owasp.dependencycheck.data.nvd.ecosystem.Ecosystem;
+import org.owasp.dependencycheck.dependency.VulnerableSoftwareBuilder;
+import us.springett.parsers.cpe.exceptions.CpeValidationException;
+import us.springett.parsers.cpe.values.Part;
 
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
@@ -116,6 +120,16 @@ class CveItemOperatorTest {
         boolean expResult = false;
         boolean result = instance.testCveCpeStartWithFilter(cve);
         assertEquals(expResult, result);
+    }
+
+    @Test
+    void testExtractEcosystemFromTargetSw() throws CpeValidationException {
+        CveItemOperator instance = new CveItemOperator("cpe:2.3:a:");
+        VulnerableSoftwareBuilder builder = new VulnerableSoftwareBuilder();
+        assertEquals(Ecosystem.RUST, instance.extractEcosystem(Ecosystem.JAVA,
+                builder.part(Part.APPLICATION).vendor("cache_project").product("cache").targetSw("rust").build()));
+        assertEquals(Ecosystem.JAVA, instance.extractEcosystem(Ecosystem.JAVA,
+                builder.part(Part.APPLICATION).vendor("cache_project").product("cache").targetSw("*").build()));
     }
 
 }

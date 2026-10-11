@@ -17,10 +17,9 @@
  */
 package org.owasp.dependencycheck.analyzer;
 
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 import javax.annotation.concurrent.ThreadSafe;
 
 import org.owasp.dependencycheck.Engine;
@@ -28,11 +27,11 @@ import org.owasp.dependencycheck.analyzer.exception.AnalysisException;
 import org.owasp.dependencycheck.analyzer.exception.LambdaExceptionWrapper;
 import org.owasp.dependencycheck.data.nvd.ecosystem.Ecosystem;
 import org.owasp.dependencycheck.data.nvdcve.CveDB;
+import org.owasp.dependencycheck.data.nvdcve.CveItemOperator;
 import org.owasp.dependencycheck.data.nvdcve.DatabaseException;
 import org.owasp.dependencycheck.dependency.Dependency;
 import org.owasp.dependencycheck.dependency.Vulnerability;
 import org.owasp.dependencycheck.dependency.Vulnerability.Source;
-import org.owasp.dependencycheck.dependency.VulnerableSoftware;
 import org.owasp.dependencycheck.dependency.naming.CpeIdentifier;
 import org.owasp.dependencycheck.utils.Settings;
 
@@ -45,6 +44,15 @@ import org.owasp.dependencycheck.utils.Settings;
  */
 @ThreadSafe
 public class NvdCveAnalyzer extends AbstractAnalyzer {
+
+    /**
+     * Ecosystems of language runtimes. Target software that names one of these
+     * does not apply to a dependency from another one. JavaScript is left out
+     * because JavaScript libraries are often bundled in other packages, such as
+     * webjars, NuGet packages and gems.
+     */
+    private static final Set<String> RUNTIME_ECOSYSTEMS = Set.of(Ecosystem.DOTNET, Ecosystem.GOLANG,
+            Ecosystem.JAVA, Ecosystem.PERL, Ecosystem.PHP, Ecosystem.PYTHON, Ecosystem.RUBY, Ecosystem.RUST);
 
     /**
      * Analyzes a dependency and attempts to determine if there are any CPE
@@ -142,49 +150,33 @@ public class NvdCveAnalyzer extends AbstractAnalyzer {
 
     /**
      * Filters the list of vulnerabilities for the given ecosystem compared to
-     * the target software from the NVD.
+     * the target software from the NVD. A vulnerability is kept if any of its
+     * vulnerable software matches. CveDB caches the list per CPE and shares it,
+     * and its vulnerabilities, with other dependencies, so neither is changed.
      *
      * @param ecosystem the dependency's ecosystem
      * @param vulnerabilities the list of vulnerabilities to filter
      * @return the filtered list of vulnerabilities
      */
-    private synchronized List<Vulnerability> filterEcosystem(String ecosystem, List<Vulnerability> vulnerabilities) {
-        final List<Vulnerability> remove = new ArrayList<>();
-        vulnerabilities.forEach((v) -> {
-            boolean found = false;
-            final Set<VulnerableSoftware> removeSoftware = new HashSet<>();
-            for (VulnerableSoftware s : v.getVulnerableSoftware()) {
-                if (ecosystemMatchesTargetSoftware(ecosystem, s.getTargetSw())) {
-                    found = true;
-                } else {
-                    removeSoftware.add(s);
-                }
-            }
-            if (found) {
-                if (!removeSoftware.isEmpty()) {
-                    v.removeVulnerableSoftware(removeSoftware);
-                }
-            } else {
-                remove.add(v);
-            }
-        });
-        if (!remove.isEmpty()) {
-            vulnerabilities.removeAll(remove);
-        }
-        return vulnerabilities;
+    static List<Vulnerability> filterEcosystem(String ecosystem, List<Vulnerability> vulnerabilities) {
+        return vulnerabilities.stream()
+                .filter(v -> v.getVulnerableSoftware().stream()
+                        .anyMatch(s -> ecosystemMatchesTargetSoftware(ecosystem, s.getTargetSw())))
+                .collect(Collectors.toList());
     }
 
     /**
-     * Determines if the target software matches the given ecosystem. Currently,
-     * this is very Node JS specific and broadly returns matches for everything
-     * else.
+     * Determines if the target software matches the given ecosystem. Node JS
+     * dependencies only match Node JS target software. Other dependencies do not
+     * match target software that names a different language runtime, such as
+     * <code>python</code> or <code>rust</code> for a Java dependency.
      *
      * @param ecosystem the ecosystem to match against
      * @param targetSoftware the target software from the NVD
      * @return <code>true</code> if there is a match; otherwise
      * <code>false</code>
      */
-    private boolean ecosystemMatchesTargetSoftware(String ecosystem, String targetSoftware) {
+    static boolean ecosystemMatchesTargetSoftware(String ecosystem, String targetSoftware) {
         if ("*".equals(targetSoftware) || "-".equals(targetSoftware)) {
             return true;
         }
@@ -200,6 +192,8 @@ public class NvdCveAnalyzer extends AbstractAnalyzer {
                     return false;
             }
         }
-        return true;
+        final String target = CveItemOperator.ecosystemOfTargetSw(targetSoftware.toLowerCase());
+        return ecosystem == null || target == null || ecosystem.equals(target)
+                || !RUNTIME_ECOSYSTEMS.contains(ecosystem) || !RUNTIME_ECOSYSTEMS.contains(target);
     }
 }
