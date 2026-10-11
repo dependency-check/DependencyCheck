@@ -126,6 +126,18 @@ public class CveItemOperator {
                 && "vm".equals(product)) {
             return Ecosystem.NATIVE;
         }
+        final String ecosystem = ecosystemOfTargetSw(targetSw);
+        return ecosystem != null ? ecosystem : baseEcosystem;
+    }
+
+    /**
+     * Determines the ecosystem named by the target software of a CPE.
+     *
+     * @param targetSw the target software
+     * @return the ecosystem, or <code>null</code> if the target software does
+     * not name one
+     */
+    public static String ecosystemOfTargetSw(String targetSw) {
         switch (targetSw) {
             case "asp.net"://.net
             case "c#"://.net
@@ -182,8 +194,10 @@ public class CveItemOperator {
                 return Ecosystem.PYTHON;
             case "ruby"://ruby
                 return Ecosystem.RUBY;
+            case "rust"://rust
+                return Ecosystem.RUST;
         }
-        return baseEcosystem;
+        return null;
     }
     //CSON: MissingSwitchDefault
 
