@@ -18,6 +18,8 @@
 package org.owasp.dependencycheck.utils;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.owasp.dependencycheck.BaseTest;
 
 import java.util.Arrays;
@@ -34,6 +36,44 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * @author Jeremy Long
  */
 class DependencyVersionTest extends BaseTest {
+
+    @ParameterizedTest
+    @CsvSource({
+        "1.3.0-alpha0, 1.3.0.alpha0",
+        "1.3.0-alpha9, 1.3.0.alpha9",
+        "1.3.0-alpha10, 1.3.0.alpha10",
+        "1.3.0-alpha11, 1.3.0.alpha11",
+        "1.3.0-ALPHA10, 1.3.0.alpha10",
+        "1.3.0-alpha-10, 1.3.0.alpha-10",
+        "1.3.0-alpha_10, 1.3.0.alpha_10",
+        "1.3.0.beta2, 1.3.0.beta2",
+        "1.3.0-BETA2, 1.3.0.beta2",
+        "1.3.0-beta-2, 1.3.0.beta-2",
+        "1.3.0-beta_2, 1.3.0.beta_2",
+        "3-alpha10, 3.alpha10"
+    })
+    void testNumberedPrereleaseQualifiersArePreserved(String input, String expected) {
+        assertEquals(Arrays.asList(expected.split("\\.")), new DependencyVersion(input).getVersionParts());
+    }
+
+    @ParameterizedTest
+    @CsvSource({
+        "1.3.0, 1.3.0",
+        "1.3.0-alpha, 1.3.0.alpha",
+        "1.3.0-beta, 1.3.0.beta",
+        "1.3.0-RC1, 1.3.0.rc1",
+        "1.3.0-M1, 1.3.0.m1",
+        "1.3.0-dev4, 1.3.0.dev4",
+        "1.3.0-SNAPSHOT, 1.3.0.snapshot",
+        "1.3.0-RELEASE, 1.3.0.release",
+        "1.2r1, 1.2.r1",
+        "x6.0, x6.0",
+        "8a, 8a",
+        "1.0.1n, 1.0.1n"
+    })
+    void testOtherVersionTokensAreUnchanged(String input, String expected) {
+        assertEquals(Arrays.asList(expected.split("\\.")), new DependencyVersion(input).getVersionParts());
+    }
 
     /**
      * Test of parseVersion method, of class DependencyVersion.
