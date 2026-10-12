@@ -19,6 +19,8 @@ package org.owasp.dependencycheck.maven;
 
 import io.github.jeremylong.openvulnerability.client.nvd.CvssV2;
 import io.github.jeremylong.openvulnerability.client.nvd.CvssV2Data;
+import org.apache.maven.model.Plugin;
+import org.apache.maven.plugin.MojoExecution;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.project.MavenProject;
 import org.junit.jupiter.api.Test;
@@ -30,6 +32,7 @@ import org.owasp.dependencycheck.dependency.Dependency;
 import org.owasp.dependencycheck.dependency.Vulnerability;
 import org.owasp.dependencycheck.exception.ExceptionCollection;
 import org.owasp.dependencycheck.utils.CvssUtil;
+import org.owasp.dependencycheck.utils.Settings;
 
 import java.io.File;
 import java.lang.reflect.Field;
@@ -37,6 +40,7 @@ import java.util.Locale;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -48,6 +52,12 @@ import static org.mockito.Mockito.doReturn;
  */
 @ExtendWith(MockitoExtension.class)
 class BaseDependencyCheckMojoTest extends BaseTest {
+
+    /**
+     * A test cannot set environment variables for its own JVM; PATH is present on every platform
+     * and stands in for the variable that would hold the secret.
+     */
+    private static final String SECRET_ENVIRONMENT_VARIABLE = "PATH";
 
     @Spy
     MavenProject project;
@@ -174,6 +184,72 @@ class BaseDependencyCheckMojoTest extends BaseTest {
         field.setAccessible(true);
         field.setFloat(mojo, threshold);
         return mojo;
+    }
+
+    /**
+     * The OSS Index password can be read from an environment variable.
+     *
+     * See https://github.com/dependency-check/DependencyCheck/issues/7642
+     */
+    @Test
+    void should_read_the_ossIndex_password_from_the_environment_variable() throws Exception {
+        assertNotNull(System.getenv(SECRET_ENVIRONMENT_VARIABLE));
+        final BaseDependencyCheckMojo mojo = mojoReadyToPopulateSettings();
+        setField(mojo, "ossIndexUsername", "user@example.com");
+        setField(mojo, "ossIndexPasswordEnvironmentVariable", SECRET_ENVIRONMENT_VARIABLE);
+
+        mojo.populateSettings();
+
+        assertEquals("user@example.com", mojo.getSettings().getString(Settings.KEYS.ANALYZER_OSSINDEX_USER));
+        assertEquals(System.getenv(SECRET_ENVIRONMENT_VARIABLE), mojo.getSettings().getString(Settings.KEYS.ANALYZER_OSSINDEX_PASSWORD));
+    }
+
+    /**
+     * As with the NVD API key, the environment variable takes precedence over the server id. The
+     * settings.xml is empty, so the server id alone would leave the password unset.
+     */
+    @Test
+    void should_prefer_the_environment_variable_over_the_ossIndex_server_id() throws Exception {
+        assertNotNull(System.getenv(SECRET_ENVIRONMENT_VARIABLE));
+        final BaseDependencyCheckMojo mojo = mojoReadyToPopulateSettings();
+        setField(mojo, "settingsXml", new org.apache.maven.settings.Settings());
+        setField(mojo, "ossIndexServerId", "ossindex");
+        setField(mojo, "ossIndexPasswordEnvironmentVariable", SECRET_ENVIRONMENT_VARIABLE);
+
+        mojo.populateSettings();
+
+        assertEquals(System.getenv(SECRET_ENVIRONMENT_VARIABLE), mojo.getSettings().getString(Settings.KEYS.ANALYZER_OSSINDEX_PASSWORD));
+    }
+
+    /**
+     * As with the NVD API key, a password configured directly takes precedence over the environment variable.
+     */
+    @Test
+    void should_prefer_the_configured_ossIndex_password_over_the_environment_variable() throws Exception {
+        final BaseDependencyCheckMojo mojo = mojoReadyToPopulateSettings();
+        setField(mojo, "ossIndexPassword", "configured-token");
+        setField(mojo, "ossIndexPasswordEnvironmentVariable", SECRET_ENVIRONMENT_VARIABLE);
+
+        mojo.populateSettings();
+
+        assertEquals("configured-token", mojo.getSettings().getString(Settings.KEYS.ANALYZER_OSSINDEX_PASSWORD));
+    }
+
+    /**
+     * Creates a mojo with just enough of the Maven context injected for {@code populateSettings()} to run.
+     */
+    private static BaseDependencyCheckMojo mojoReadyToPopulateSettings() throws Exception {
+        final BaseDependencyCheckMojo mojo = new BaseDependencyCheckMojoImpl();
+        setField(mojo, "project", new MavenProject());
+        setField(mojo, "mojoExecution", new MojoExecution(new Plugin(), "check", null));
+        setField(mojo, "mavenSettings", new org.apache.maven.settings.Settings());
+        return mojo;
+    }
+
+    private static void setField(BaseDependencyCheckMojo mojo, String name, Object value) throws Exception {
+        final Field field = BaseDependencyCheckMojo.class.getDeclaredField(name);
+        field.setAccessible(true);
+        field.set(mojo, value);
     }
 
     /**
