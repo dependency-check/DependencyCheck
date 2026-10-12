@@ -177,7 +177,7 @@ class AppTest extends BaseTest {
     @Test
     void testPopulatingNvdDatafeedStartYear() throws Exception {
         // GIVEN an update of the NVD data feed limited to the years from 2018 onwards
-        String[] args = {"--updateonly", "--nvdDatafeed", "https://example.com/nvdcve-{0}.json.gz", "--nvdStartYear", "2018"};
+        String[] args = {"--updateonly", "--nvdDatafeed", "https://example.com/nvdcve-{0}.json.gz", "--nvdDatafeedStartYear", "2018"};
 
         // WHEN parsing the CLI arguments
         final CliParser cli = new CliParser(getSettings());

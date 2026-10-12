@@ -174,10 +174,10 @@ public final class CliParser {
                 try {
                     final int i = Integer.parseInt(value);
                     if (i < 2002 || i > Year.now().getValue()) {
-                        throw new ParseException("Invalid Setting: nvdStartYear must be a year in the range [2002, current year].");
+                        throw new ParseException("Invalid Setting: nvdDatafeedStartYear must be a year in the range [2002, current year].");
                     }
                 } catch (NumberFormatException ex) {
-                    throw new ParseException("Invalid Setting: nvdStartYear must be a year in the range [2002, current year].");
+                    throw new ParseException("Invalid Setting: nvdDatafeedStartYear must be a year in the range [2002, current year].");
                 }
             }
         }
@@ -1239,7 +1239,7 @@ public final class CliParser {
         /**
          * The first year of the NVD API Data Feed to download.
          */
-        public static final String NVD_API_DATAFEED_START_YEAR = "nvdStartYear";
+        public static final String NVD_API_DATAFEED_START_YEAR = "nvdDatafeedStartYear";
         /**
          * The username for basic auth to web-hosted suppression files.
          */

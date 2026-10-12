@@ -157,32 +157,32 @@ class CliParserTest extends BaseTest {
     }
 
     /**
-     * Test of parse method with an nvdStartYear before the first year of the
+     * Test of parse method with an nvdDatafeedStartYear before the first year of the
      * NVD data feed.
      */
     @Test
-    void testParse_nvdStartYearBeforeDataFeed() {
+    void testParse_nvdDatafeedStartYearBeforeFirstYear() {
 
-        String[] args = {"--updateonly", "--nvdStartYear", "2001"};
+        String[] args = {"--updateonly", "--nvdDatafeedStartYear", "2001"};
 
         CliParser instance = new CliParser(getSettings());
         ParseException ex = assertThrows(ParseException.class, () -> instance.parse(args),
-                "an nvdStartYear before 2002 should have caused an exception");
-        assertTrue(ex.getMessage().contains("Invalid Setting: nvdStartYear"));
+                "an nvdDatafeedStartYear before 2002 should have caused an exception");
+        assertTrue(ex.getMessage().contains("Invalid Setting: nvdDatafeedStartYear"));
     }
 
     /**
-     * Test of parse method with an nvdStartYear in the future.
+     * Test of parse method with an nvdDatafeedStartYear in the future.
      */
     @Test
-    void testParse_nvdStartYearInFuture() {
+    void testParse_nvdDatafeedStartYearInFuture() {
 
-        String[] args = {"--updateonly", "--nvdStartYear", Year.now().plusYears(1).toString()};
+        String[] args = {"--updateonly", "--nvdDatafeedStartYear", Year.now().plusYears(1).toString()};
 
         CliParser instance = new CliParser(getSettings());
         ParseException ex = assertThrows(ParseException.class, () -> instance.parse(args),
-                "an nvdStartYear in the future should have caused an exception");
-        assertTrue(ex.getMessage().contains("Invalid Setting: nvdStartYear"));
+                "an nvdDatafeedStartYear in the future should have caused an exception");
+        assertTrue(ex.getMessage().contains("Invalid Setting: nvdDatafeedStartYear"));
     }
 
     /**
