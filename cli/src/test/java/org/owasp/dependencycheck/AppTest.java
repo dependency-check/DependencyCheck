@@ -169,6 +169,26 @@ class AppTest extends BaseTest {
         assertThat("Expected the suppression files to be set in the Settings with a separator", getSettings().getString(KEYS.SUPPRESSION_FILE), is("[\"first-file.xml\",\"another-file.xml\"]"));
     }
 
+    /**
+     * Assert that the NVD data feed start year can be set using the CLI.
+     *
+     * @throws Exception the unexpected {@link Exception}.
+     */
+    @Test
+    void testPopulatingNvdDatafeedStartYear() throws Exception {
+        // GIVEN an update of the NVD data feed limited to the years from 2018 onwards
+        String[] args = {"--updateonly", "--nvdDatafeed", "https://example.com/nvdcve-{0}.json.gz", "--nvdStartYear", "2018"};
+
+        // WHEN parsing the CLI arguments
+        final CliParser cli = new CliParser(getSettings());
+        cli.parse(args);
+        final App classUnderTest = new App(getSettings());
+        classUnderTest.populateSettings(cli);
+
+        // THEN the start year is set in the settings for use in the application core
+        assertThat("Expected the NVD data feed start year to be set in the Settings", getSettings().getInt(KEYS.NVD_API_DATAFEED_START_YEAR), is(2018));
+    }
+
 
     private boolean testBooleanProperties(String[] args, Map<String, Boolean> expected) throws FileNotFoundException, ParseException, InvalidSettingException {
         this.reloadSettings();
