@@ -171,7 +171,8 @@ public class GolangVulncheckAnalyzer extends AbstractFileTypeAnalyzer {
         try {
             process = launchGovulncheck(getSettings().getTempDirectory(), Collections.singletonList("-version"));
         } catch (AnalysisException ae) {
-            final String msg = String.format("Exception from govulncheck process: %s. Disabling %s", ae.getCause(), ANALYZER_NAME);
+            final Throwable reason = ae.getCause() == null ? ae : ae.getCause();
+            final String msg = String.format("Exception from govulncheck process: %s. Disabling %s", reason, ANALYZER_NAME);
             throw new InitializationException(msg, ae);
         } catch (IOException ex) {
             throw new InitializationException("Unable to create temporary file, the Golang Vulncheck Analyzer will be disabled", ex);
@@ -215,11 +216,13 @@ public class GolangVulncheckAnalyzer extends AbstractFileTypeAnalyzer {
             }
             final int exitValue = process.exitValue();
             // govulncheck exits 0 in JSON mode even when vulnerabilities are found; a non-zero
-            // code generally indicates a run problem (e.g. the module failed to build). The
-            // output has already been parsed at this point, so log rather than fail the scan.
+            // code indicates the analysis itself failed (e.g. the module failed to build), in
+            // which case the results are incomplete and the failure must not be hidden.
             if (exitValue != 0) {
-                LOGGER.warn("govulncheck returned exit code {} while analyzing '{}'. Results may be incomplete. {}",
-                        exitValue, dependency.getFilePath(), StringUtils.trimToEmpty(error));
+                final String details = StringUtils.isBlank(error) ? "" : "; " + error.trim();
+                final String msg = String.format("Error analyzing '%s'; unexpected exit code from govulncheck; exit code: %s%s",
+                        dependency.getFilePath(), exitValue, details);
+                throw new AnalysisException(msg);
             }
         } catch (InterruptedException ie) {
             Thread.currentThread().interrupt();

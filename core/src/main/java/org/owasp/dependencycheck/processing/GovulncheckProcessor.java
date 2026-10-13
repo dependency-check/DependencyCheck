@@ -22,7 +22,9 @@ import com.github.packageurl.PackageURL;
 import com.github.packageurl.PackageURLBuilder;
 
 import java.io.InputStream;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.owasp.dependencycheck.Engine;
@@ -50,8 +52,8 @@ import us.springett.parsers.cpe.values.Part;
 
 /**
  * Processor for the output of <code>govulncheck -json</code>. For each
- * vulnerability reported it adds a synthetic dependency representing the
- * vulnerable Go module and attaches the vulnerability to it. When an alias
+ * vulnerable Go module reported it adds a synthetic dependency and attaches
+ * every vulnerability found for that module/version to it. When an alias
  * (CVE) is already known to dependency-check the existing vulnerability record
  * is reused so the finding de-duplicates against other data sources.
  *
@@ -95,8 +97,15 @@ public class GovulncheckProcessor extends Processor<InputStream> {
     public void run() {
         try {
             final List<GovulncheckResult> results = GovulncheckJsonParser.process(getInput());
+            // several advisories can affect the same module/version; the virtual dependencies
+            // created for them are indistinguishable to Engine.addDependency, which would merge
+            // them without copying the vulnerabilities - so aggregate them here instead
+            final Map<String, Dependency> dependenciesByModule = new LinkedHashMap<>();
             for (GovulncheckResult result : results) {
-                processResult(result);
+                processResult(result, dependenciesByModule);
+            }
+            for (Dependency dependency : dependenciesByModule.values()) {
+                engine.addDependency(dependency);
             }
         } catch (AnalysisException ex) {
             this.analysisException = ex;
@@ -123,21 +132,29 @@ public class GovulncheckProcessor extends Processor<InputStream> {
     }
 
     /**
-     * Adds a dependency and vulnerability for a single govulncheck result.
+     * Adds the vulnerability for a single govulncheck result to the dependency
+     * representing the vulnerable module, creating the dependency if this is the
+     * first advisory seen for the module/version.
      *
      * @param result the parsed govulncheck result
+     * @param dependenciesByModule the dependencies created so far, keyed by
+     * module and version
      * @throws CpeValidationException thrown if the vulnerable software cannot be
      * built
      */
-    private void processResult(GovulncheckResult result) throws CpeValidationException {
+    private void processResult(GovulncheckResult result, Map<String, Dependency> dependenciesByModule) throws CpeValidationException {
         if (StringUtils.isBlank(result.getModuleName())) {
             LOGGER.debug("Skipping govulncheck result {} with no module information", result.getId());
             return;
         }
-        final Dependency dependency = createDependency(result);
+        final String key = result.getModuleName() + ':' + StringUtils.defaultString(result.getModuleVersion());
+        Dependency dependency = dependenciesByModule.get(key);
+        if (dependency == null) {
+            dependency = createDependency(result);
+            dependenciesByModule.put(key, dependency);
+        }
         final Vulnerability vulnerability = resolveVulnerability(result);
         dependency.addVulnerability(vulnerability);
-        engine.addDependency(dependency);
     }
 
     /**
@@ -162,7 +179,7 @@ public class GovulncheckProcessor extends Processor<InputStream> {
                             return existing;
                         }
                     } catch (DatabaseException ex) {
-                        LOGGER.debug("Unable to look up alias {} for govulncheck advisory {}", alias, result.getId());
+                        LOGGER.debug("Unable to look up alias {} for govulncheck advisory {}", alias, result.getId(), ex);
                     }
                 }
             }

@@ -32,8 +32,12 @@ import org.owasp.dependencycheck.utils.Settings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
@@ -122,21 +126,59 @@ class GolangVulncheckAnalyzerIT extends BaseDBTestCase {
     }
 
     /**
-     * When govulncheck is misconfigured (the configured path is not a valid
-     * executable) the analyzer must disable itself.
+     * When the configured path points at a file that is not the govulncheck
+     * executable the analyzer must disable itself; because the file exists it is
+     * used as configured and no fallback to the PATH occurs.
      */
     @Test
     void testInvalidGovulncheckExecutable() {
-        final String path = BaseTest.getResourceAsFile(this, "golang/vulncheck/go.mod").getAbsolutePath();
-        getSettings().setString(Settings.KEYS.ANALYZER_GOLANG_VULNCHECK_PATH, path);
-        analyzer.initialize(getSettings());
+        final String notAnExecutable = BaseTest.getResourceAsFile(this, "golang/vulncheck/go.mod").getAbsolutePath();
+        getSettings().setString(Settings.KEYS.ANALYZER_GOLANG_VULNCHECK_PATH, notAnExecutable);
+        final InitializationException thrown = assertThrows(InitializationException.class, () -> analyzer.prepare(null));
+        assertNotNull(thrown.getMessage());
+        assertFalse(analyzer.isEnabled());
+    }
+
+    /**
+     * A configured path that does not exist is ignored with a warning and
+     * `govulncheck` is looked up on the PATH, so the analyzer must end up in the
+     * same state as one with no configured path - enabled when govulncheck is
+     * installed, disabled when it is not.
+     *
+     * @throws Exception thrown if the temporary directory cannot be created or
+     * the analyzer cannot be closed
+     */
+    @Test
+    void testNonExistentGovulncheckPathFallsBackToPath() throws Exception {
+        final boolean enabledWithoutConfiguredPath = prepareQuietly(analyzer);
+
+        final File missing = new File(getSettings().getTempDirectory(), "no-such-govulncheck");
+        getSettings().setString(Settings.KEYS.ANALYZER_GOLANG_VULNCHECK_PATH, missing.getAbsolutePath());
+        final GolangVulncheckAnalyzer fallback = new GolangVulncheckAnalyzer();
         try {
-            analyzer.prepare(null);
-        } catch (InitializationException e) {
-            assertNotNull(e);
+            fallback.initialize(getSettings());
+            fallback.setFilesMatched(true);
+            assertEquals(enabledWithoutConfiguredPath, prepareQuietly(fallback),
+                    "a configured path that does not exist should fall back to `govulncheck` on the PATH");
         } finally {
-            assertFalse(analyzer.isEnabled());
+            fallback.close();
         }
+    }
+
+    /**
+     * Prepares the analyzer, swallowing the initialization exception that is
+     * thrown when govulncheck is not installed.
+     *
+     * @param toPrepare the analyzer to prepare
+     * @return whether the analyzer is enabled after preparation
+     */
+    private static boolean prepareQuietly(GolangVulncheckAnalyzer toPrepare) {
+        try {
+            toPrepare.prepare(null);
+        } catch (InitializationException e) {
+            LOGGER.debug("govulncheck is not available", e);
+        }
+        return toPrepare.isEnabled();
     }
 
     private static void assertEqualsIgnoringNull(String expected, String actual) {

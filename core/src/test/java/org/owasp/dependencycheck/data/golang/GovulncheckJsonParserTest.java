@@ -21,6 +21,7 @@ import org.junit.jupiter.api.Test;
 
 import java.io.InputStream;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -73,5 +74,50 @@ class GovulncheckJsonParserTest {
             assertNull(informational.getSymbol());
             assertTrue(informational.getAliases().contains("CVE-2021-38561"));
         }
+    }
+
+    /**
+     * A single advisory can affect more than one module (e.g. GO-2022-0969
+     * affects both the standard library and golang.org/x/net); every affected
+     * module must be reported.
+     */
+    @Test
+    void testProcessAdvisoryAffectingMultipleModules() throws Exception {
+        try (InputStream in = getClass().getClassLoader().getResourceAsStream("golang/govulncheck-multi-module.json")) {
+            assertNotNull(in, "test resource golang/govulncheck-multi-module.json was not found");
+            final List<GovulncheckResult> results = GovulncheckJsonParser.process(in);
+
+            // GO-2022-0969 for x/net and for the standard library, plus GO-2023-1988 for x/net
+            assertEquals(3, results.size());
+
+            final List<GovulncheckResult> multiModule = results.stream()
+                    .filter(r -> "GO-2022-0969".equals(r.getId()))
+                    .collect(Collectors.toList());
+            assertEquals(2, multiModule.size());
+
+            final GovulncheckResult net = findByIdAndModule(results, "GO-2022-0969", "golang.org/x/net");
+            assertNotNull(net);
+            assertEquals("0.1.0", net.getModuleVersion());
+            // the symbol-resolving finding is retained for the module
+            assertTrue(net.isCalled());
+            assertEquals("canonicalHeader", net.getSymbol());
+
+            final GovulncheckResult stdlib = findByIdAndModule(results, "GO-2022-0969", "stdlib");
+            assertNotNull(stdlib);
+            assertEquals("go1.19.3", stdlib.getModuleVersion());
+            assertFalse(stdlib.isCalled());
+            // the advisory metadata is shared by both findings
+            assertTrue(stdlib.getAliases().contains("CVE-2022-41717"));
+
+            final GovulncheckResult second = findByIdAndModule(results, "GO-2023-1988", "golang.org/x/net");
+            assertNotNull(second);
+            assertEquals("0.17.0", second.getFixedVersion());
+        }
+    }
+
+    private GovulncheckResult findByIdAndModule(List<GovulncheckResult> results, String id, String module) {
+        return results.stream()
+                .filter(r -> id.equals(r.getId()) && module.equals(r.getModuleName()))
+                .findFirst().orElse(null);
     }
 }

@@ -56,8 +56,10 @@ import org.slf4j.LoggerFactory;
  * calling package and function.</p>
  * <p>
  * This parser joins the two: it produces one {@link GovulncheckResult} per
- * advisory, selecting the most precise finding for the advisory (a
- * &quot;called&quot; finding is preferred over a module-only one).</p>
+ * advisory and affected module - a single advisory can affect several modules
+ * (for example GO-2022-0969 affects both {@code stdlib} and
+ * {@code golang.org/x/net}) - selecting the most precise finding for each
+ * module (a &quot;called&quot; finding is preferred over a module-only one).</p>
  *
  * @author Srinivas Chippagiri
  */
@@ -83,8 +85,9 @@ public final class GovulncheckJsonParser {
         LOGGER.debug("Beginning govulncheck output processing");
 
         final Map<String, JsonObject> advisories = new LinkedHashMap<>();
-        // preserve advisory encounter order for a stable report
-        final Map<String, JsonObject> bestFinding = new LinkedHashMap<>();
+        // advisory id -> affected module -> best finding for that module; the maps
+        // preserve encounter order for a stable report
+        final Map<String, Map<String, JsonObject>> bestFindings = new LinkedHashMap<>();
 
         // govulncheck emits a stream of indented JSON objects (json.MarshalIndent), one
         // message per object. Because string values never contain literal newlines, a line
@@ -96,7 +99,7 @@ public final class GovulncheckJsonParser {
             while ((line = reader.readLine()) != null) {
                 current.append(line).append('\n');
                 if ("}".equals(line)) {
-                    handleMessage(current.toString(), advisories, bestFinding);
+                    handleMessage(current.toString(), advisories, bestFindings);
                     current.setLength(0);
                 }
             }
@@ -109,9 +112,11 @@ public final class GovulncheckJsonParser {
         }
 
         final List<GovulncheckResult> results = new ArrayList<>();
-        for (Map.Entry<String, JsonObject> entry : bestFinding.entrySet()) {
+        for (Map.Entry<String, Map<String, JsonObject>> entry : bestFindings.entrySet()) {
             final JsonObject advisory = advisories.get(entry.getKey());
-            results.add(buildResult(entry.getKey(), advisory, entry.getValue()));
+            for (JsonObject finding : entry.getValue().values()) {
+                results.add(buildResult(entry.getKey(), advisory, finding));
+            }
         }
         return results;
     }
@@ -122,9 +127,11 @@ public final class GovulncheckJsonParser {
      *
      * @param message the JSON text of a single message object
      * @param advisories the map of advisory id to OSV record
-     * @param bestFinding the map of advisory id to the most precise finding
+     * @param bestFindings the map of advisory id to the most precise finding
+     * per affected module
      */
-    private static void handleMessage(String message, Map<String, JsonObject> advisories, Map<String, JsonObject> bestFinding) {
+    private static void handleMessage(String message, Map<String, JsonObject> advisories,
+            Map<String, Map<String, JsonObject>> bestFindings) {
         try (JsonReader reader = Json.createReader(new StringReader(message))) {
             final JsonObject wrapper = reader.readObject();
             if (wrapper.containsKey("osv")) {
@@ -136,11 +143,30 @@ public final class GovulncheckJsonParser {
             } else if (wrapper.containsKey("finding")) {
                 final JsonObject finding = wrapper.getJsonObject("finding");
                 final String id = finding.getString("osv", null);
-                if (id != null && isMorePrecise(finding, bestFinding.get(id))) {
-                    bestFinding.put(id, finding);
+                if (id != null) {
+                    // an advisory may affect more than one module; keep the best finding
+                    // for each so no affected module is dropped
+                    final Map<String, JsonObject> byModule = bestFindings.computeIfAbsent(id, key -> new LinkedHashMap<>());
+                    final String module = findingModule(finding);
+                    if (isMorePrecise(finding, byModule.get(module))) {
+                        byModule.put(module, finding);
+                    }
                 }
             }
         }
+    }
+
+    /**
+     * Returns the module a finding applies to; an empty string is used when the
+     * finding does not identify a module so that it can be used as a map key.
+     *
+     * @param finding the finding
+     * @return the module of the finding, or an empty string if unknown
+     */
+    private static String findingModule(JsonObject finding) {
+        final JsonObject frame = vulnerableFrame(finding);
+        final String module = frame == null ? null : frame.getString("module", null);
+        return module == null ? "" : module;
     }
 
     /**
