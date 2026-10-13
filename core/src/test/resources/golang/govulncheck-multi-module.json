@@ -1,0 +1,64 @@
+{
+	"osv": {
+		"id": "GO-2022-0969",
+		"aliases": [
+			"CVE-2022-41717",
+			"GHSA-xrjj-mj9h-534m"
+		],
+		"summary": "Excessive memory growth in net/http and golang.org/x/net/http2",
+		"details": "An attacker can cause excessive memory growth in a Go server accepting HTTP/2 requests.",
+		"references": [
+			{
+				"type": "REPORT",
+				"url": "https://go.dev/issue/56350"
+			}
+		]
+	}
+}
+{
+	"finding": {
+		"osv": "GO-2022-0969",
+		"fixed_version": "v0.4.0",
+		"trace": [
+			{
+				"module": "golang.org/x/net",
+				"version": "v0.1.0",
+				"package": "golang.org/x/net/http2",
+				"function": "canonicalHeader"
+			}
+		]
+	}
+}
+{
+	"finding": {
+		"osv": "GO-2022-0969",
+		"fixed_version": "go1.19.4",
+		"trace": [
+			{
+				"module": "stdlib",
+				"version": "go1.19.3"
+			}
+		]
+	}
+}
+{
+	"osv": {
+		"id": "GO-2023-1988",
+		"aliases": [
+			"CVE-2023-39325"
+		],
+		"summary": "Denial of service via HTTP/2 rapid reset"
+	}
+}
+{
+	"finding": {
+		"osv": "GO-2023-1988",
+		"fixed_version": "v0.17.0",
+		"trace": [
+			{
+				"module": "golang.org/x/net",
+				"version": "v0.1.0"
+			}
+		]
+	}
+}
