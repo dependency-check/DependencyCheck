@@ -37,6 +37,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.UncheckedIOException;
+import java.time.Year;
 import java.util.Comparator;
 
 /**
@@ -166,6 +167,17 @@ public final class CliParser {
                     }
                 } catch (NumberFormatException ex) {
                     throw new ParseException("Invalid Setting: nvdApiResultsPerPage must be a number in the range [1, 2000].");
+                }
+            }
+            value = line.getOptionValue(ARGUMENT.NVD_API_DATAFEED_START_YEAR);
+            if (value != null) {
+                try {
+                    final int i = Integer.parseInt(value);
+                    if (i < 2002 || i > Year.now().getValue()) {
+                        throw new ParseException("Invalid Setting: nvdDatafeedStartYear must be a year in the range [2002, current year].");
+                    }
+                } catch (NumberFormatException ex) {
+                    throw new ParseException("Invalid Setting: nvdDatafeedStartYear must be a year in the range [2002, current year].");
                 }
             }
         }
@@ -382,6 +394,8 @@ public final class CliParser {
                         "Credentials for basic authentication to the NVD API Datafeed."))
                 .addOption(newOptionWithArg(ARGUMENT.NVD_API_DATAFEED_BEARER_TOKEN, "token",
                         "Credentials for bearer authentication to the NVD API Datafeed."))
+                .addOption(newOptionWithArg(ARGUMENT.NVD_API_DATAFEED_START_YEAR, "year",
+                        "The first year of the NVD API Datafeed to download; earlier years are skipped."))
                 .addOption(newOptionWithArg(ARGUMENT.SUPPRESSION_FILE_USER, "user",
                         "Credentials for basic authentication to web-hosted suppression files."))
                 .addOption(newOptionWithArg(ARGUMENT.SUPPRESSION_FILE_PASSWORD, "password",
@@ -1222,6 +1236,10 @@ public final class CliParser {
          * The token for bearer auth to the CVE data.
          */
         public static final String NVD_API_DATAFEED_BEARER_TOKEN = "nvdBearerToken";
+        /**
+         * The first year of the NVD API Data Feed to download.
+         */
+        public static final String NVD_API_DATAFEED_START_YEAR = "nvdDatafeedStartYear";
         /**
          * The username for basic auth to web-hosted suppression files.
          */

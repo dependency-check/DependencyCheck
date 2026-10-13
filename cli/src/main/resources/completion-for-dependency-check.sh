@@ -97,6 +97,7 @@ _odc_completions()
             --nvdDatafeed <url>
             --nvdUser <user>
             --nvdPassword <password>
+            --nvdDatafeedStartYear <year>
             --nvdApiDelay <ms>
             --nvdValidForHours <hours>
         -o --out

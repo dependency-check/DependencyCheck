@@ -25,6 +25,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintStream;
 import java.io.StringWriter;
+import java.time.Year;
 import java.util.List;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
@@ -153,6 +154,35 @@ class CliParserTest extends BaseTest {
         assertFalse(instance.isGetVersion());
         assertFalse(instance.isGetHelp());
         assertFalse(instance.isRunScan());
+    }
+
+    /**
+     * Test of parse method with an nvdDatafeedStartYear before the first year of the
+     * NVD data feed.
+     */
+    @Test
+    void testParse_nvdDatafeedStartYearBeforeFirstYear() {
+
+        String[] args = {"--updateonly", "--nvdDatafeedStartYear", "2001"};
+
+        CliParser instance = new CliParser(getSettings());
+        ParseException ex = assertThrows(ParseException.class, () -> instance.parse(args),
+                "an nvdDatafeedStartYear before 2002 should have caused an exception");
+        assertTrue(ex.getMessage().contains("Invalid Setting: nvdDatafeedStartYear"));
+    }
+
+    /**
+     * Test of parse method with an nvdDatafeedStartYear in the future.
+     */
+    @Test
+    void testParse_nvdDatafeedStartYearInFuture() {
+
+        String[] args = {"--updateonly", "--nvdDatafeedStartYear", Year.now().plusYears(1).toString()};
+
+        CliParser instance = new CliParser(getSettings());
+        ParseException ex = assertThrows(ParseException.class, () -> instance.parse(args),
+                "an nvdDatafeedStartYear in the future should have caused an exception");
+        assertTrue(ex.getMessage().contains("Invalid Setting: nvdDatafeedStartYear"));
     }
 
     /**
