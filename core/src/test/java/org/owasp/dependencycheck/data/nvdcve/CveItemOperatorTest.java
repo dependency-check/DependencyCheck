@@ -29,6 +29,13 @@ import io.github.jeremylong.openvulnerability.client.nvd.Reference;
 import io.github.jeremylong.openvulnerability.client.nvd.VendorComment;
 import io.github.jeremylong.openvulnerability.client.nvd.Weakness;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
+import org.owasp.dependencycheck.data.nvd.ecosystem.Ecosystem;
+import org.owasp.dependencycheck.dependency.VulnerableSoftware;
+import org.owasp.dependencycheck.dependency.VulnerableSoftwareBuilder;
+import us.springett.parsers.cpe.exceptions.CpeValidationException;
+import us.springett.parsers.cpe.values.Part;
 
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
@@ -36,6 +43,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 /**
  *
@@ -118,4 +126,55 @@ class CveItemOperatorTest {
         assertEquals(expResult, result);
     }
 
+    /**
+     * Pins down the ecosystem stored for each target_sw value. A value that is
+     * not mapped keeps the base ecosystem, which is null here.
+     */
+    @ParameterizedTest
+    @CsvSource({
+        "asp.net, dotnet", "c#, dotnet", ".net, dotnet", "dotnetnuke, dotnet",
+        "android, java", "java, java",
+        "c/c++, native", "borland_c++, native", "visual_c++, native", "gnu_c++, native",
+        "linux_kernel, native", "linux, native", "unix, native", "suse_linux, native",
+        "redhat_enterprise_linux, native", "debian, native",
+        "coldfusion, coldfusion",
+        "ios, ios", "iphone, ios", "ipad, ios", "iphone_os, ios",
+        "jquery, js",
+        "node.js, nodejs", "nodejs, nodejs",
+        "perl, perl",
+        "joomla!, php", "joomla, php", "mybb, php", "simplesamlphp, php", "craft_cms, php",
+        "moodle, php", "phpcms, php", "buddypress, php", "typo3, php", "php, php",
+        "wordpress, php", "drupal, php", "mediawiki, php", "symfony, php", "openpne, php",
+        "vbulletin3, php", "vbulletin4, php",
+        "python, python",
+        "ruby, ruby",
+        "*,", "-,", "rust,", "go,", "golang,", "swift,", "elixir,", "jenkins,", "macos,", "windows,", "c++,"
+    })
+    void testExtractEcosystemFromTargetSw(String targetSw, String expected) throws CpeValidationException {
+        assertEquals(expected, extractEcosystem(null, "vendor", "product", targetSw));
+    }
+
+    @Test
+    void testExtractEcosystemKeepsTheBaseEcosystem() throws CpeValidationException {
+        assertEquals(Ecosystem.JAVA, extractEcosystem(Ecosystem.JAVA, "vendor", "product", "*"));
+        assertEquals(Ecosystem.JAVA, extractEcosystem(Ecosystem.JAVA, "vendor", "product", "rust"));
+        assertEquals(Ecosystem.PYTHON, extractEcosystem(Ecosystem.JAVA, "vendor", "product", "python"));
+    }
+
+    /**
+     * Pins down the vendor and product checks that run before target_sw.
+     */
+    @Test
+    void testExtractEcosystemFromVendorAndProduct() throws CpeValidationException {
+        assertNull(extractEcosystem(Ecosystem.JAVA, "apache", "zookeeper", "java"));
+        assertEquals(Ecosystem.NATIVE, extractEcosystem(Ecosystem.JAVA, "ibm", "java", "*"));
+        assertEquals(Ecosystem.NATIVE, extractEcosystem(null, "oracle", "vm", "*"));
+    }
+
+    private static String extractEcosystem(String baseEcosystem, String vendor, String product, String targetSw)
+            throws CpeValidationException {
+        final VulnerableSoftware software = new VulnerableSoftwareBuilder().part(Part.APPLICATION)
+                .vendor(vendor).product(product).targetSw(targetSw).build();
+        return new CveItemOperator("cpe:2.3:a:").extractEcosystem(baseEcosystem, software);
+    }
 }
