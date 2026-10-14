@@ -2270,4 +2270,11 @@
     <packageUrl regex="true">^pkg:maven/org\.springframework\.cloud/spring-cloud-starter-vault-config@.*$</packageUrl>
     <cpe regex="true">cpe:/a:vmware:spring_cloud_config(:.*)?$</cpe>
 </suppress>
+<suppress base="true">
+    <notes><![CDATA[
+    FP per issue #8842
+    ]]></notes>
+    <packageUrl regex="true">^pkg:nuget/NLog\.Targets\.ElasticSearch@.*$</packageUrl>
+    <cpe regex="true">cpe:/a:elastic:elasticsearch(:.*)?$</cpe>
+</suppress>
 </suppressions>
