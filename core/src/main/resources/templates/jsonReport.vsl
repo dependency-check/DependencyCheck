@@ -96,7 +96,7 @@
                         #foreach($id in $related.getSoftwareIdentifiers())
                             #if($foreach.count > 1),#end
                             {
-                                "id": "$id.value"
+                                "id": "$enc.json($id.value)"
                                 #if ($id.url),"url": "$enc.json($id.url)"#end
                                 #if ($id.notes),"notes": "$enc.json($id.notes)"#end
                             }
