@@ -2279,3 +2279,10 @@
     <packageUrl regex="true">^pkg:nuget/Microsoft\.Extensions\.Hosting\.Systemd@.*$</packageUrl>
     <cpe regex="true">cpe:/a:systemd_project:systemd(:.*)?$</cpe>
 </suppress>
+<suppress base="true">
+    <notes><![CDATA[
+    FP per issue #8843
+    ]]></notes>
+    <packageUrl regex="true">^pkg:nuget/System\.CommandLine@.*$</packageUrl>
+    <cpe regex="true">cpe:/a:line:line(:.*)?$</cpe>
+</suppress>
