@@ -2392,7 +2392,7 @@
         when the CVE is in the icu4j CPEs:
            cpe:2.3:a:icu-project:international_components_for_unicode:*:*:*:*:*:java:*:*
            cpe:2.3:a:unicode:international_components_for_unicode:*:*:*:*:*:java:*:*
-            --> https://nvd.nist.gov/vuln/search#/nvd/home?sortOrder=1&sortDirection=1&cpeFilterMode=applicability&cpeName=cpe:2.3:a:*:international_components_for_unicode:*:*:*:*:*:*:*:*&resultType=records
+            --> https://nvd.nist.gov/vuln/search?sortOrder=1&sortDirection=1&cpeFilterMode=applicability&cpeName=cpe:2.3:a:*:international_components_for_unicode:*:*:*:*:*:*:*:*&resultType=records
          We can suppress cpe cpe:/a:unicode:unicode which is the unicode specification
         ]]></notes>
         <packageUrl regex="true">^pkg:maven/(com\.ibm\.icu|org\.graalvm\.shadowed)/icu4j.*@.*$</packageUrl>
@@ -5269,8 +5269,8 @@
         <notes><![CDATA[
         FP per issue #7854 - protobuf-java has its own dedicated CPE at cpe:/a:google:protobuf-java - other language vulns are
         managed within the core CPE for those based on native implementations.
-        Correct CPE vulns: https://nvd.nist.gov/vuln/search#/nvd/home?cpeFilterMode=applicability&cpeName=cpe:2.3:a:*:protobuf-java:*:*:*:*:*:*:*:*&resultType=records
-        Wrong CPE vulns: https://nvd.nist.gov/vuln/search#/nvd/home?cpeFilterMode=applicability&cpeName=cpe:2.3:a:*:protobuf:*:*:*:*:*:*:*:*&resultType=records
+        Correct CPE vulns: https://nvd.nist.gov/vuln/search?cpeFilterMode=applicability&cpeName=cpe:2.3:a:*:protobuf-java:*:*:*:*:*:*:*:*&resultType=records
+        Wrong CPE vulns: https://nvd.nist.gov/vuln/search?cpeFilterMode=applicability&cpeName=cpe:2.3:a:*:protobuf:*:*:*:*:*:*:*:*&resultType=records
         ]]></notes>
         <packageUrl regex="true">^pkg:maven/com\.google\.protobuf/protobuf-.*@.*$</packageUrl>
         <cpe>cpe:/a:protobuf:protobuf:</cpe>
