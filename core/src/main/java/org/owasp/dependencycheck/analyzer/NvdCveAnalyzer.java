@@ -17,12 +17,6 @@
  */
 package org.owasp.dependencycheck.analyzer;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import javax.annotation.concurrent.ThreadSafe;
-
 import org.owasp.dependencycheck.Engine;
 import org.owasp.dependencycheck.analyzer.exception.AnalysisException;
 import org.owasp.dependencycheck.analyzer.exception.LambdaExceptionWrapper;
@@ -32,9 +26,12 @@ import org.owasp.dependencycheck.data.nvdcve.DatabaseException;
 import org.owasp.dependencycheck.dependency.Dependency;
 import org.owasp.dependencycheck.dependency.Vulnerability;
 import org.owasp.dependencycheck.dependency.Vulnerability.Source;
-import org.owasp.dependencycheck.dependency.VulnerableSoftware;
 import org.owasp.dependencycheck.dependency.naming.CpeIdentifier;
 import org.owasp.dependencycheck.utils.Settings;
+
+import javax.annotation.concurrent.ThreadSafe;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * NvdCveAnalyzer is a utility class that takes a project dependency and
@@ -80,7 +77,7 @@ public class NvdCveAnalyzer extends AbstractAnalyzer {
                     .map(i -> (CpeIdentifier) i)
                     .forEach(i -> {
                         try {
-                            final List<Vulnerability> vulns = cveDB.getVulnerabilities(i.getCpe());
+                            final List<Vulnerability> vulns = filterEcosystem(dependency.getEcosystem(), cveDB.getVulnerabilities(i.getCpe()));
                             dependency.addSuppressedVulnerabilities(vulns);
                         } catch (DatabaseException ex) {
                             throw new LambdaExceptionWrapper(new AnalysisException(ex));
@@ -149,29 +146,11 @@ public class NvdCveAnalyzer extends AbstractAnalyzer {
      * @return the filtered list of vulnerabilities
      */
     private synchronized List<Vulnerability> filterEcosystem(String ecosystem, List<Vulnerability> vulnerabilities) {
-        final List<Vulnerability> remove = new ArrayList<>();
-        vulnerabilities.forEach((v) -> {
-            boolean found = false;
-            final Set<VulnerableSoftware> removeSoftware = new HashSet<>();
-            for (VulnerableSoftware s : v.getVulnerableSoftware()) {
-                if (ecosystemMatchesTargetSoftware(ecosystem, s.getTargetSw())) {
-                    found = true;
-                } else {
-                    removeSoftware.add(s);
-                }
-            }
-            if (found) {
-                if (!removeSoftware.isEmpty()) {
-                    v.removeVulnerableSoftware(removeSoftware);
-                }
-            } else {
-                remove.add(v);
-            }
-        });
-        if (!remove.isEmpty()) {
-            vulnerabilities.removeAll(remove);
-        }
-        return vulnerabilities;
+        return vulnerabilities.stream()
+                .map(v -> v.asFilteredByVulnerableSoftware(s -> ecosystemMatchesTargetSoftware(ecosystem, s.getTargetSw())))
+                .filter(v -> !v.getVulnerableSoftware().isEmpty())
+                .collect(Collectors.toUnmodifiableList());
+
     }
 
     /**
