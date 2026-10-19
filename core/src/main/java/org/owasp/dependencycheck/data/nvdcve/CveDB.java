@@ -19,7 +19,6 @@ package org.owasp.dependencycheck.data.nvdcve;
 //CSOFF: AvoidStarImport
 
 import com.google.common.io.Resources;
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.github.jeremylong.openvulnerability.client.nvd.Config;
 import io.github.jeremylong.openvulnerability.client.nvd.CpeMatch;
 import io.github.jeremylong.openvulnerability.client.nvd.CvssV2;
@@ -88,6 +87,7 @@ import static org.owasp.dependencycheck.data.nvdcve.CveDB.PreparedStatementCveDb
  *
  * @author Jeremy Long
  */
+@SuppressWarnings("SameParameterValue")
 @ThreadSafe
 public final class CveDB implements AutoCloseable {
 
@@ -123,8 +123,7 @@ public final class CveDB implements AutoCloseable {
     /**
      * Cache for CVE lookup; used to speed up the vulnerability search process.
      */
-    @SuppressWarnings("unchecked")
-    private final Map<String, List<Vulnerability>> vulnerabilitiesForCpeCache = Collections.synchronizedMap(new ReferenceMap(HARD, SOFT));
+    private final Map<String, List<Vulnerability>> vulnerabilitiesForCpeCache = Collections.synchronizedMap(new ReferenceMap<>(HARD, SOFT));
     /**
      * The configured settings
      */
@@ -138,11 +137,11 @@ public final class CveDB implements AutoCloseable {
     /**
      * Flag indicating if the database is Oracle.
      */
-    private boolean isOracle = false;
+    private final boolean isOracle;
     /**
      * Flag indicating if the database is H2.
      */
-    private boolean isH2 = false;
+    private final boolean isH2;
 
     /**
      * Updates the EcoSystem Cache.
@@ -176,113 +175,30 @@ public final class CveDB implements AutoCloseable {
      * statement bundles "dbStatements*.properties".
      */
     enum PreparedStatementCveDb {
-        /**
-         * Key for SQL Statement.
-         */
         CLEANUP_ORPHANS,
-        /**
-         * Key for update ecosystem.
-         */
         UPDATE_ECOSYSTEM,
-        /**
-         * Key for update ecosystem.
-         */
         UPDATE_ECOSYSTEM2,
-        /**
-         * Key for SQL Statement.
-         */
         COUNT_CPE,
-        /**
-         * Key for SQL Statement.
-         */
         DELETE_VULNERABILITY,
-        /**
-         * Key for SQL Statement.
-         */
         INSERT_PROPERTY,
-        /**
-         * Key for SQL Statement.
-         */
         INSERT_CWE,
-        /**
-         * Key for SQL Statement.
-         */
         INSERT_REFERENCE,
-        /**
-         * Key for SQL Statement.
-         */
         INSERT_SOFTWARE,
-        /**
-         * Key for SQL Statement.
-         */
         MERGE_PROPERTY,
-        /**
-         * Key for SQL Statement.
-         */
         SELECT_CPE_ENTRIES,
-        /**
-         * Key for SQL Statement.
-         */
         SELECT_CVE_FROM_SOFTWARE,
-        /**
-         * Key for SQL Statement.
-         */
         SELECT_PROPERTIES,
-        /**
-         * Key for SQL Statement.
-         */
         SELECT_VULNERABILITY_CWE,
-        /**
-         * Key for SQL Statement.
-         */
         SELECT_REFERENCES,
-        /**
-         * Key for SQL Statement.
-         */
         SELECT_SOFTWARE,
-        /**
-         * Key for SQL Statement.
-         */
         SELECT_VENDOR_PRODUCT_LIST,
-        /**
-         * Key for SQL Statement.
-         */
         SELECT_VENDOR_PRODUCT_LIST_FOR_NODE,
-        /**
-         * Key for SQL Statement.
-         */
         SELECT_VULNERABILITY,
-        /**
-         * Key for SQL Statement.
-         */
         UPDATE_PROPERTY,
-        /**
-         * Key for SQL Statement.
-         */
         UPDATE_VULNERABILITY,
-        /**
-         * Key for SQL Statement.
-         */
         SELECT_CPE_ECOSYSTEM,
-        /**
-         * Key for SQL Statement.
-         */
         MERGE_CPE_ECOSYSTEM,
-        /**
-         * Key for SQL Statement.
-         */
-        DELETE_UNUSED_DICT_CPE,
-        /**
-         * Key for SQL Statement.
-         */
-        ADD_DICT_CPE,
-        /**
-         * Key for SQL Statement.
-         */
         SELECT_KNOWN_EXPLOITED_VULNERABILITIES,
-        /**
-         * Key for SQL Statement.
-         */
         MERGE_KNOWN_EXPLOITED
     }
 
@@ -434,7 +350,7 @@ public final class CveDB implements AutoCloseable {
      * @throws Throwable thrown if there is a problem
      */
     @Override
-    @SuppressWarnings("FinalizeDeclaration")
+    @SuppressWarnings({"FinalizeDeclaration", "removal"})
     protected void finalize() throws Throwable {
         LOGGER.debug("Entering finalize");
         close();
@@ -527,10 +443,10 @@ public final class CveDB implements AutoCloseable {
 
     /**
      * Returns the entire list of vendor/product combinations filtered for just
-     * Node JS related products.
+     * Node.js related products.
      *
-     * @return the list of vendor/product combinations that are known to be
-     * related to Node JS
+     * @return the set of vendor/product combinations that are known to be
+     * related to Node.js
      * @throws DatabaseException thrown when there is an error retrieving the
      * data from the DB
      */
@@ -720,7 +636,7 @@ public final class CveDB implements AutoCloseable {
     public Vulnerability getVulnerability(String cve, Connection conn) throws DatabaseException {
         final int cveId;
         final VulnerableSoftwareBuilder vulnerableSoftwareBuilder = new VulnerableSoftwareBuilder();
-        Vulnerability vuln = null;
+        Vulnerability vuln;
         try {
             try (PreparedStatement psV = getPreparedStatement(conn, SELECT_VULNERABILITY, cve); ResultSet rsV = psV.executeQuery()) {
                 if (rsV.next()) {
@@ -744,12 +660,12 @@ public final class CveDB implements AutoCloseable {
                         final CvssV2Data.CiaType integrityImpact = CvssV2Data.CiaType.fromValue(rsV.getString(16));
                         final CvssV2Data.CiaType availabilityImpact = CvssV2Data.CiaType.fromValue(rsV.getString(17));
                         final String vector = String.format("/AV:%s/AC:%s/Au:%s/C:%s/I:%s/A:%s",
-                                accessVector == null ? "" : accessVector.value().substring(0, 1),
-                                accessComplexity == null ? "" : accessComplexity.value().substring(0, 1),
-                                authentication == null ? "" : authentication.value().substring(0, 1),
-                                confidentialityImpact == null ? "" : confidentialityImpact.value().substring(0, 1),
-                                integrityImpact == null ? "" : integrityImpact.value().substring(0, 1),
-                                availabilityImpact == null ? "" : availabilityImpact.value().substring(0, 1));
+                                accessVector.vectorValue(),
+                                accessComplexity.vectorValue(),
+                                authentication.vectorValue(),
+                                confidentialityImpact.vectorValue(),
+                                integrityImpact.vectorValue(),
+                                availabilityImpact.vectorValue());
 
                         final CvssV2Data cvssData = new CvssV2Data(CvssV2Data.Version._2_0, vector, accessVector,
                                 accessComplexity, authentication, confidentialityImpact,
@@ -780,15 +696,15 @@ public final class CveDB implements AutoCloseable {
                         final CvssV3Data.CiaType availabilityImpact = CvssV3Data.CiaType.fromValue(rsV.getString(28));
                         final CvssV3Data.SeverityType baseSeverity = CvssV3Data.SeverityType.fromValue(rsV.getString(30));
                         final String vector = String.format("CVSS:%s/AV:%s/AC:%s/PR:%s/UI:%s/S:%s/C:%s/I:%s/A:%s",
-                                version == null ? "" : version,
-                                attackVector == null ? "" : attackVector.value().substring(0, 1),
-                                attackComplexity == null ? "" : attackComplexity.value().substring(0, 1),
-                                privilegesRequired == null ? "" : privilegesRequired.value().substring(0, 1),
-                                userInteraction == null ? "" : userInteraction.value().substring(0, 1),
-                                scope == null ? "" : scope.value().substring(0, 1),
-                                confidentialityImpact == null ? "" : confidentialityImpact.value().substring(0, 1),
-                                integrityImpact == null ? "" : integrityImpact.value().substring(0, 1),
-                                availabilityImpact == null ? "" : availabilityImpact.value().substring(0, 1));
+                                version.value(),
+                                attackVector.vectorValue(),
+                                attackComplexity.vectorValue(),
+                                privilegesRequired.vectorValue(),
+                                userInteraction.vectorValue(),
+                                scope.vectorValue(),
+                                confidentialityImpact.vectorValue(),
+                                integrityImpact.vectorValue(),
+                                availabilityImpact.vectorValue());
 
                         final CvssV3Data cvssData = new CvssV3Data(version, vector, attackVector, attackComplexity, privilegesRequired,
                                 userInteraction, scope, confidentialityImpact, integrityImpact, availabilityImpact,
@@ -815,8 +731,6 @@ public final class CveDB implements AutoCloseable {
 //                    65.v4baseScore, 66.v4baseSeverity, 67.v4threatScore, 68.v4threatSeverity, 69.v4environmentalScore, 70.v4environmentalSeverity
 //                    71.v4source, 72.v4type
                     if (rsV.getObject(33) != null) {
-                        String vectorString = null;
-
                         String value = rsV.getString(32);
                         final CvssV4Data.Version version = CvssV4Data.Version.fromValue(value);
                         CvssV4Data.AttackVectorType attackVector = null;
@@ -1007,7 +921,7 @@ public final class CveDB implements AutoCloseable {
                             environmentalSeverity = CvssV4Data.SeverityType.fromValue(value);
                         }
                         //initializing data twice to get the vector string. I really should have designed the object better...
-                        CvssV4Data data = new CvssV4Data(version, vectorString, attackVector, attackComplexity, attackRequirements, privilegesRequired,
+                        CvssV4Data data = new CvssV4Data(version, null, attackVector, attackComplexity, attackRequirements, privilegesRequired,
                                 userInteraction, vulnConfidentialityImpact, vulnIntegrityImpact, vulnAvailabilityImpact, subConfidentialityImpact,
                                 subIntegrityImpact, subAvailabilityImpact, exploitMaturity, confidentialityRequirement, integrityRequirement,
                                 availabilityRequirement, modifiedAttackVector, modifiedAttackComplexity, modifiedAttackRequirements,
@@ -1015,8 +929,7 @@ public final class CveDB implements AutoCloseable {
                                 modifiedVulnAvailabilityImpact, modifiedSubConfidentialityImpact, modifiedSubIntegrityImpact,
                                 modifiedSubAvailabilityImpact, safety, automatable, recovery, valueDensity, vulnerabilityResponseEffort,
                                 providerUrgency, baseScore, baseSeverity, threatScore, threatSeverity, environmentalScore, environmentalSeverity);
-                        vectorString = data.toString();
-                        data = new CvssV4Data(version, vectorString, attackVector, attackComplexity, attackRequirements, privilegesRequired,
+                        data = new CvssV4Data(version, data.toString(), attackVector, attackComplexity, attackRequirements, privilegesRequired,
                                 userInteraction, vulnConfidentialityImpact, vulnIntegrityImpact, vulnAvailabilityImpact, subConfidentialityImpact,
                                 subIntegrityImpact, subAvailabilityImpact, exploitMaturity, confidentialityRequirement, integrityRequirement,
                                 availabilityRequirement, modifiedAttackVector, modifiedAttackComplexity, modifiedAttackRequirements,
@@ -1201,11 +1114,11 @@ public final class CveDB implements AutoCloseable {
 // .          String 71.v4Source, String 72.v4type
             callUpdate.setString(1, cve.getCve().getId());
             callUpdate.setString(2, description);
-            Optional<CvssV2> optCvssv2 = null;
+            Optional<CvssV2> optCvssv2 = Optional.empty();
             if (cve.getCve().getMetrics() != null && cve.getCve().getMetrics().getCvssMetricV2() != null) {
-                optCvssv2 = cve.getCve().getMetrics().getCvssMetricV2().stream().sorted(Comparator.comparing(CvssV2::getType)).findFirst();
+                optCvssv2 = cve.getCve().getMetrics().getCvssMetricV2().stream().min(Comparator.comparing(CvssV2::getType));
             }
-            if (optCvssv2 != null && optCvssv2.isPresent()) {
+            if (optCvssv2.isPresent()) {
                 final CvssV2 cvssv2 = optCvssv2.get();
                 setUpdateColumn(callUpdate, 3, cvssv2.getBaseSeverity());
                 setUpdateColumn(callUpdate, 4, cvssv2.getExploitabilityScore());
@@ -1252,11 +1165,11 @@ public final class CveDB implements AutoCloseable {
             }
             Optional<CvssV3> optCvssv30 = Optional.empty();
             if (cve.getCve().getMetrics() != null && cve.getCve().getMetrics().getCvssMetricV30() != null) {
-                optCvssv30 = cve.getCve().getMetrics().getCvssMetricV30().stream().sorted(Comparator.comparing(CvssV3::getType)).findFirst();
+                optCvssv30 = cve.getCve().getMetrics().getCvssMetricV30().stream().min(Comparator.comparing(CvssV3::getType));
             }
             Optional<CvssV3> optCvssv31 = Optional.empty();
             if (cve.getCve().getMetrics() != null && cve.getCve().getMetrics().getCvssMetricV31() != null) {
-                optCvssv31 = cve.getCve().getMetrics().getCvssMetricV31().stream().sorted(Comparator.comparing(CvssV3::getType)).findFirst();
+                optCvssv31 = cve.getCve().getMetrics().getCvssMetricV31().stream().min(Comparator.comparing(CvssV3::getType));
             }
 
             CvssV3 cvssv3 = null;
@@ -1295,11 +1208,11 @@ public final class CveDB implements AutoCloseable {
                 callUpdate.setNull(31, java.sql.Types.VARCHAR);
             }
 
-            Optional<CvssV4> optCvssv4 = null;
+            Optional<CvssV4> optCvssv4 = Optional.empty();
             if (cve.getCve().getMetrics() != null && cve.getCve().getMetrics().getCvssMetricV40() != null) {
-                optCvssv4 = cve.getCve().getMetrics().getCvssMetricV40().stream().sorted(Comparator.comparing(CvssV4::getType)).findFirst();
+                optCvssv4 = cve.getCve().getMetrics().getCvssMetricV40().stream().min(Comparator.comparing(CvssV4::getType));
             }
-            if (optCvssv4 != null && optCvssv4.isPresent()) {
+            if (optCvssv4.isPresent()) {
                 final CvssV4 cvssv4 = optCvssv4.get();
                 setUpdateColumn(callUpdate, 32, cvssv4.getCvssData().getVersion());
                 setUpdateColumn(callUpdate, 33, cvssv4.getCvssData().getAttackVector());
@@ -1837,7 +1750,7 @@ public final class CveDB implements AutoCloseable {
      *
      * @param cpe the CPE for the given dependency
      * @param vulnerableSoftware a set of the vulnerable software
-     * @return true if the identified version is affected, otherwise false
+     * @return the matching software
      */
     VulnerableSoftware getMatchingSoftware(Cpe cpe, Set<VulnerableSoftware> vulnerableSoftware) {
         VulnerableSoftware matched = null;
@@ -1853,44 +1766,6 @@ public final class CveDB implements AutoCloseable {
             }
         }
         return matched;
-    }
-
-    /**
-     * This method is only referenced in unused code.
-     * <p>
-     * Deletes unused dictionary entries from the database.
-     * </p>
-     */
-    public void deleteUnusedCpe() {
-        clearCache();
-        try (Connection conn = databaseManager.getConnection(); PreparedStatement ps = getPreparedStatement(conn, DELETE_UNUSED_DICT_CPE)) {
-            ps.executeUpdate();
-        } catch (SQLException ex) {
-            LOGGER.error("Unable to delete CPE dictionary entries", ex);
-        }
-    }
-
-    /**
-     * This method is only referenced in unused code and will likely break on
-     * MySQL if ever used due to the MERGE statement.
-     * <p>
-     * Merges CPE entries into the database.
-     * </p>
-     *
-     * @param cpe the CPE identifier
-     * @param vendor the CPE vendor
-     * @param product the CPE product
-     */
-    public void addCpe(String cpe, String vendor, String product) {
-        clearCache();
-        try (Connection conn = databaseManager.getConnection(); PreparedStatement ps = getPreparedStatement(conn, ADD_DICT_CPE)) {
-            ps.setString(1, cpe);
-            ps.setString(2, vendor);
-            ps.setString(3, product);
-            ps.executeUpdate();
-        } catch (SQLException ex) {
-            LOGGER.error("Unable to add CPE dictionary entry", ex);
-        }
     }
 
     /**
@@ -2274,93 +2149,5 @@ public final class CveDB implements AutoCloseable {
         } else {
             ps.setString(i, value.value());
         }
-    }
-
-    /**
-     * Sets the float parameter on a prepared statement from a properties map.
-     *
-     * @param ps a prepared statement
-     * @param i the index of the property
-     * @param props the property collection
-     * @param key the property key
-     * @throws SQLException thrown if there is an error adding the property
-     */
-    private void setFloatValue(PreparedStatement ps, int i, Map<String, Object> props, String key) throws SQLException {
-        if (props != null && props.containsKey(key)) {
-            try {
-                ps.setFloat(i, Float.parseFloat(props.get(key).toString()));
-            } catch (NumberFormatException nfe) {
-                ps.setNull(i, java.sql.Types.FLOAT);
-            }
-        } else {
-            ps.setNull(i, java.sql.Types.FLOAT);
-        }
-    }
-
-    /**
-     * Sets the string parameter on a prepared statement from a properties map.
-     *
-     * @param ps a prepared statement
-     * @param i the index of the property
-     * @param props the property collection
-     * @param key the property key
-     * @throws SQLException thrown if there is an error adding the property
-     */
-    private void setStringValue(PreparedStatement ps, int i, Map<String, Object> props, String key) throws SQLException {
-        if (props != null && props.containsKey(key)) {
-            ps.setString(i, props.get(key).toString());
-        } else {
-            ps.setNull(i, java.sql.Types.VARCHAR);
-        }
-    }
-
-    /**
-     * Sets the boolean parameter on a prepared statement from a properties map.
-     *
-     * @param ps a prepared statement
-     * @param i the index of the property
-     * @param props the property collection
-     * @param key the property key
-     * @throws SQLException thrown if there is an error adding the property
-     */
-    private void setBooleanValue(PreparedStatement ps, int i, Map<String, Object> props, String key) throws SQLException {
-        if (props != null && props.containsKey(key)) {
-            ps.setBoolean(i, Boolean.parseBoolean(props.get(key).toString()));
-        } else {
-            ps.setNull(i, java.sql.Types.BOOLEAN);
-        }
-    }
-
-    /**
-     * Returns the Boolean value for the given index; if the value is null then
-     * null is returned.
-     *
-     * @param rs the record set
-     * @param index the parameter index
-     * @return the Boolean value; or null
-     * @throws SQLException thrown if there is an error obtaining the value
-     */
-    @SuppressFBWarnings("NP_BOOLEAN_RETURN_NULL")
-    private Boolean getBooleanValue(ResultSet rs, int index) throws SQLException {
-        if (rs.getObject(index) == null) {
-            return null;
-        }
-        return rs.getBoolean(index);
-    }
-
-    /**
-     * Returns the Float value for the given index; if the value is null then
-     * null is returned.
-     *
-     * @param rs the record set
-     * @param index the parameter index
-     * @return the Float value; or null
-     * @throws SQLException thrown if there is an error obtaining the value
-     */
-    private Float getFloatValue(ResultSet rs, int index) throws SQLException {
-        if (rs.getObject(index) == null) {
-            return null;
-        }
-        return rs.getFloat(index);
     }
 }
