@@ -18,10 +18,13 @@
 package org.owasp.dependencycheck.utils;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.owasp.dependencycheck.BaseTest;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 /**
@@ -29,6 +32,49 @@ import static org.junit.jupiter.api.Assertions.assertNull;
  * @author Jeremy Long
  */
 class DependencyVersionUtilTest extends BaseTest {
+
+    @ParameterizedTest
+    @CsvSource({
+        "1.3.0-alpha10, 1.3.0.alpha10",
+        "1.3.0-alpha11, 1.3.0.alpha11",
+        "logback-classic-1.3.0-alpha10.jar, 1.3.0.alpha10",
+        "library-1.3.0-ALPHA10.jar, 1.3.0.alpha10",
+        "library-1.3.0-alpha-10.jar, 1.3.0.alpha-10",
+        "library-1.3.0-alpha_10.jar, 1.3.0.alpha_10",
+        "library-1.3.0-beta2.jar, 1.3.0.beta2",
+        "library-1.3.0-beta-2.jar, 1.3.0.beta-2",
+        "library-1.3.0-beta_2.jar, 1.3.0.beta_2",
+        "library-3-alpha10.jar, 3.alpha10",
+        "library-3-beta2.jar, 3.beta2"
+    })
+    void testExtractNumberedPrereleaseQualifiers(String input, String expected) {
+        final DependencyVersion version = DependencyVersionUtil.parseVersion(input);
+        assertNotNull(version);
+        assertEquals(expected, version.toString());
+    }
+
+    @ParameterizedTest
+    @CsvSource({
+        "library-1.3.0-alpha.jar, 1.3.0.alpha",
+        "library-1.3.0-beta.jar, 1.3.0.beta",
+        "library-3-alpha.jar, 3.alpha",
+        "library-3-beta.jar, 3.beta",
+        "library-1.3.0-RC1.jar, 1.3.0.rc1",
+        "library-1.3.0-SNAPSHOT.jar, 1.3.0.snapshot"
+    })
+    void testExtractOtherQualifiersIsUnchanged(String input, String expected) {
+        final DependencyVersion version = DependencyVersionUtil.parseVersion(input);
+        assertNotNull(version);
+        assertEquals(expected, version.toString());
+    }
+
+    @Test
+    void testNumberedPrereleaseDoesNotConsumeAnotherVersion() {
+        final String input = "library-1.3.0-alpha10-other-2.0.jar";
+        assertNull(DependencyVersionUtil.parseVersion(input));
+        assertEquals("1.3.0.alpha10", DependencyVersionUtil.parseVersion(input, true).toString());
+        assertNull(DependencyVersionUtil.parseVersion("library-3-alpha10-other-4.jar"));
+    }
 
     /**
      * Test of parseVersion method, of class DependencyVersionUtil.

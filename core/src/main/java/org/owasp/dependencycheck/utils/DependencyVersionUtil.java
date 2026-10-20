@@ -37,7 +37,8 @@ public final class DependencyVersionUtil {
      * Regular expression to extract version numbers from file names.
      */
     private static final Pattern RX_VERSION = Pattern.compile(
-            "\\d+(\\.\\d+){1,6}([._-]?(snapshot|release|final|alpha|beta|rc$|[a-zA-Z]{1,3}[_-]?\\d{1,8}|[a-z]\\b|\\d{1,8}\\b))?",
+            "\\d+(\\.\\d+){1,6}([._-]?(snapshot|release|final|(?:alpha|beta)(?:[_-]?\\d{1,8})?"
+                    + "|rc$|[a-zA-Z]{1,3}[_-]?\\d{1,8}|[a-z]\\b|\\d{1,8}\\b))?",
             Pattern.CASE_INSENSITIVE);
     /**
      * Regular expression to extract a single version number without periods.
@@ -45,7 +46,8 @@ public final class DependencyVersionUtil {
      * version number using the previous regex.
      */
     private static final Pattern RX_SINGLE_VERSION = Pattern.compile(
-            "\\d+(\\.\\d+){0,6}([._-]?(snapshot|release|final|alpha|beta|rc$|[a-zA-Z]{1,3}[_-]?\\d{1,8}|[a-zA-Z]\\b))?");
+            "\\d+(\\.\\d+){0,6}([._-]?(snapshot|release|final|(?:alpha|beta)(?:[_-]?\\d{1,8})?"
+                    + "|rc$|[a-zA-Z]{1,3}[_-]?\\d{1,8}|[a-zA-Z]\\b))?");
 
     /**
      * Regular expression to extract the part before the version numbers if
