@@ -291,7 +291,7 @@ public final class Settings {
          */
         public static final String TEMP_DIRECTORY = "temp.directory";
         /**
-         * The maximum number of threads to allocate when downloading files.
+         * The maximum number of threads to allocate when downloading NVD datafeed files.
          */
         public static final String MAX_DOWNLOAD_THREAD_POOL_SIZE = "max.download.threads";
         /**

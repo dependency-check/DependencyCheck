@@ -18,6 +18,10 @@
 package org.owasp.dependencycheck.data.update.nvd.api;
 
 import io.github.jeremylong.openvulnerability.client.nvd.DefCveItem;
+import org.owasp.dependencycheck.data.nvd.ecosystem.CveEcosystemMapper;
+import org.owasp.dependencycheck.data.nvdcve.CveDB;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -27,11 +31,6 @@ import java.nio.file.Files;
 import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.zip.GZIPInputStream;
-
-import org.owasp.dependencycheck.data.nvd.ecosystem.CveEcosystemMapper;
-import org.owasp.dependencycheck.data.nvdcve.CveDB;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Stores a collection of NVD CVE Data from the NVD API into the database.
@@ -67,7 +66,12 @@ public class NvdApiProcessor implements Callable<NvdApiProcessor> {
     /**
      * Set when the update has been stopped and no more CVEs should be written.
      */
-    private final AtomicBoolean cancelled;
+    private final AtomicBoolean cancelled = new AtomicBoolean(false);
+
+    /**
+     * whether executing this processor should be delayed until the end, where possible.
+     */
+    private final boolean processLast;
 
     /**
      * Create a new processor to put the NVD data into the database.
@@ -75,13 +79,13 @@ public class NvdApiProcessor implements Callable<NvdApiProcessor> {
      * @param cveDB a reference to the database.
      * @param jsonFile the JSON data file to inject.
      * @param startTime the start time of the update process.
-     * @param cancelled set to <code>true</code> to stop before the next CVE is written.
+     * @param processLast whether executing this processor should be delayed until the end, where possible.
      */
-    public NvdApiProcessor(final CveDB cveDB, File jsonFile, long startTime, AtomicBoolean cancelled) {
+    public NvdApiProcessor(final CveDB cveDB, File jsonFile, long startTime, boolean processLast) {
         this.cveDB = cveDB;
         this.jsonFile = jsonFile;
         this.startTime = startTime;
-        this.cancelled = cancelled;
+        this.processLast = processLast;
     }
 
     /**
@@ -91,7 +95,7 @@ public class NvdApiProcessor implements Callable<NvdApiProcessor> {
      * @param jsonFile the JSON data file to inject.
      */
     public NvdApiProcessor(final CveDB cveDB, File jsonFile) {
-        this(cveDB, jsonFile, System.currentTimeMillis(), new AtomicBoolean(false));
+        this(cveDB, jsonFile, System.currentTimeMillis(), false);
     }
 
     @Override
@@ -137,5 +141,13 @@ public class NvdApiProcessor implements Callable<NvdApiProcessor> {
      */
     public long getDurationMillis() {
         return endTime - startTime;
+    }
+
+    public void cancel() {
+        cancelled.set(true);
+    }
+
+    public boolean shouldProcessLast() {
+        return processLast;
     }
 }
