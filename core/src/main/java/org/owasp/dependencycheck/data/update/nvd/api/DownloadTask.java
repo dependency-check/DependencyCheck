@@ -17,18 +17,17 @@
  */
 package org.owasp.dependencycheck.data.update.nvd.api;
 
-import java.io.File;
-import java.net.URL;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Future;
-import javax.annotation.concurrent.ThreadSafe;
 import org.apache.commons.lang3.StringUtils;
 import org.owasp.dependencycheck.data.nvdcve.CveDB;
 import org.owasp.dependencycheck.utils.Downloader;
 import org.owasp.dependencycheck.utils.Settings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.annotation.concurrent.ThreadSafe;
+import java.io.File;
+import java.net.URL;
+import java.util.concurrent.Callable;
 
 /**
  * A callable object to download the NVD API cache files and start the
@@ -37,7 +36,7 @@ import org.slf4j.LoggerFactory;
  * @author Jeremy Long
  */
 @ThreadSafe
-public class DownloadTask implements Callable<Future<NvdApiProcessor>> {
+public class DownloadTask implements Callable<NvdApiProcessor> {
 
     /**
      * The Logger.
@@ -47,10 +46,6 @@ public class DownloadTask implements Callable<Future<NvdApiProcessor>> {
      * The CVE DB to use when processing the files.
      */
     private final CveDB cveDB;
-    /**
-     * The processor service to pass the results of the download to.
-     */
-    private final ExecutorService processorService;
     /**
      * The NVD API Cache file URL.
      */
@@ -63,23 +58,20 @@ public class DownloadTask implements Callable<Future<NvdApiProcessor>> {
     /**
      * Simple constructor for the callable download task.
      *
-     * @param url the file to download
-     * @param processor the processor service to submit the downloaded files to
-     * @param cveDB the CVE DB to use to store the vulnerability data
+     * @param url      the file to download
+     * @param cveDB    the CVE DB to use to store the vulnerability data
      * @param settings a reference to the global settings object; this is
-     * necessary so that when the thread is started the dependencies have a
-     * correct reference to the global settings.
+     *                 necessary so that when the thread is started the dependencies have a
+     *                 correct reference to the global settings.
      */
-    public DownloadTask(String url, ExecutorService processor, CveDB cveDB, Settings settings) {
+    public DownloadTask(String url, CveDB cveDB, Settings settings) {
         this.url = url;
-        this.processorService = processor;
         this.cveDB = cveDB;
         this.settings = settings;
     }
 
-    @SuppressWarnings("BusyWait")
     @Override
-    public Future<NvdApiProcessor> call() throws Exception {
+    public NvdApiProcessor call() throws Exception {
         try {
             final URL u = new URL(url);
             LOGGER.info("Download Started for NVD Cache - {}", url);
@@ -87,12 +79,7 @@ public class DownloadTask implements Callable<Future<NvdApiProcessor>> {
             final File outputFile = settings.getTempFile("nvd-datafeed-", "json.gz");
             Downloader.getInstance().fetchFile(u, outputFile, true, Settings.KEYS.NVD_API_DATAFEED_USER, Settings.KEYS.NVD_API_DATAFEED_PASSWORD,
                     Settings.KEYS.NVD_API_DATAFEED_BEARER_TOKEN);
-            if (this.processorService == null) {
-                return null;
-            }
-            final NvdApiProcessor task = new NvdApiProcessor(cveDB, outputFile, startDownload);
-            final Future<NvdApiProcessor> val = this.processorService.submit(task);
-            return val;
+            return new NvdApiProcessor(cveDB, outputFile, startDownload, isModified());
         } catch (Throwable ex) {
             LOGGER.error("Error downloading NVD CVE - {} Reason: {}", url, ex.getMessage());
             throw ex;
@@ -108,7 +95,7 @@ public class DownloadTask implements Callable<Future<NvdApiProcessor>> {
      * @return <code>true</code> if the process task is for the modified data;
      * otherwise <code>false</code>
      */
-    public boolean isModified() {
+    private boolean isModified() {
         return StringUtils.containsIgnoreCase(url, "modified");
     }
 }

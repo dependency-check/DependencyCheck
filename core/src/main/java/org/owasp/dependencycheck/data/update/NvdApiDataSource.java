@@ -57,21 +57,19 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Properties;
-import java.util.Set;
+import java.util.SortedMap;
+import java.util.TreeMap;
+import java.util.concurrent.CompletionService;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorCompletionService;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 import java.util.function.Function;
 import java.util.zip.GZIPOutputStream;
 
@@ -90,7 +88,7 @@ public class NvdApiDataSource implements CachedWebDataSource {
     /**
      * The thread pool size to use for CPU-intense tasks.
      */
-    private static final int PROCESSING_THREAD_POOL_SIZE = Runtime.getRuntime().availableProcessors();
+    private static final int DEFAULT_PROCESSING_THREAD_POOL_SIZE = Runtime.getRuntime().availableProcessors();
     /**
      * The configured settings.
      */
@@ -139,50 +137,54 @@ public class NvdApiDataSource implements CachedWebDataSource {
                 urlData = urlData.withPattern(p -> p.orElse(cacheProperties.getProperty("prefix", FeedUrl.DEFAULT_FILE_PATTERN_PREFIX) + FeedUrl.DEFAULT_FILE_PATTERN_SUFFIX));
 
                 final ZonedDateTime now = ZonedDateTime.now(ZoneOffset.UTC);
-                final Map<String, String> updateable = getUpdatesNeeded(urlData, cacheProperties, now);
-                if (!updateable.isEmpty()) {
-                    final int max = settings.getInt(Settings.KEYS.MAX_DOWNLOAD_THREAD_POOL_SIZE, 1);
-                    final int downloadPoolSize = Math.min(Runtime.getRuntime().availableProcessors(), max);
-                    // going over 2 threads does not appear to improve performance
-                    final int execPoolSize = Math.min(PROCESSING_THREAD_POOL_SIZE, 2);
+                final SortedMap<String, String> updatable = getUpdatesNeeded(urlData, cacheProperties, now);
+                if (!updatable.isEmpty()) {
+                    final int downloadPoolSize = Math.min(
+                            Runtime.getRuntime().availableProcessors(),
+                            settings.getInt(Settings.KEYS.MAX_DOWNLOAD_THREAD_POOL_SIZE, 2)
+                    );
+                    // going over 2 threads does not appear to improve performance for the large data feed files
+                    final int processingPoolSize = Math.min(DEFAULT_PROCESSING_THREAD_POOL_SIZE, 2);
 
-                    ExecutorService processingExecutorService = null;
-                    ExecutorService downloadExecutorService = null;
+                    ExecutorService downloadExecutorService = Executors.newFixedThreadPool(downloadPoolSize);
+                    ExecutorService processingExecutorService = Executors.newFixedThreadPool(processingPoolSize);
                     try {
-                        downloadExecutorService = Executors.newFixedThreadPool(downloadPoolSize);
-                        processingExecutorService = Executors.newFixedThreadPool(execPoolSize);
+                        CompletionService<NvdApiProcessor> downloadCompletions = scheduleAllDownloads(updatable, downloadExecutorService);
+                        CompletionService<NvdApiProcessor> processorCompletions = new ExecutorCompletionService<>(processingExecutorService);
 
-                        DownloadTask runLast = null;
-                        final Set<Future<Future<NvdApiProcessor>>> downloadFutures = new HashSet<>(updateable.size());
-                        runLast = startDownloads(updateable, processingExecutorService, runLast, downloadFutures, downloadExecutorService);
+                        int awaitingProcessing = 0;
+                        Optional<NvdApiProcessor> processLast = Optional.empty();
 
-                        //complete downloads
-                        final Set<Future<NvdApiProcessor>> processFutures = new HashSet<>(updateable.size());
-                        for (Future<Future<NvdApiProcessor>> future : downloadFutures) {
-                            processDownload(future, processFutures);
+                        // Schedule processing as downloads complete, but delay the modified data until last if possible
+                        for (int i = 0; i < updatable.size(); i++) {
+                            NvdApiProcessor toBeProcessed = awaitNextCompletedDownload(downloadCompletions);
+
+                            if (toBeProcessed.shouldProcessLast()) {
+                                processLast = Optional.of(toBeProcessed);
+                            } else {
+                                awaitingProcessing++;
+                                processorCompletions.submit(toBeProcessed);
+                            }
                         }
-                        //process the data
-                        processFuture(processFutures);
-                        processFutures.clear();
+
+                        // Wait for all processing to complete
+                        for (int i = 0; i < awaitingProcessing; i++) {
+                            awaitNextProcessedDownload(processorCompletions);
+                        }
 
                         //download and process the modified as the last entry
-                        if (runLast != null) {
-                            final Future<Future<NvdApiProcessor>> modified = downloadExecutorService.submit(runLast);
-                            processDownload(modified, processFutures);
-                            processFuture(processFutures);
+                        if (processLast.isPresent()) {
+                            processorCompletions.submit(processLast.get());
+                            awaitNextProcessedDownload(processorCompletions);
                         }
 
                     } finally {
-                        if (processingExecutorService != null) {
-                            processingExecutorService.shutdownNow();
-                        }
-                        if (downloadExecutorService != null) {
-                            downloadExecutorService.shutdownNow();
-                        }
+                        processingExecutorService.shutdownNow();
+                        downloadExecutorService.shutdownNow();
                     }
                     updatesMade = true;
                 }
-                storeLastModifiedDates(now, cacheProperties, updateable);
+                storeLastModifiedDates(now, cacheProperties, updatable);
                 if (updatesMade) {
                     cveDb.persistEcosystemCache();
                 }
@@ -192,15 +194,6 @@ public class NvdApiDataSource implements CachedWebDataSource {
                     cveDb.cleanupDatabase();
                 }
             }
-        } catch (UpdateException ex) {
-            if (ex.getCause() != null && ex.getCause() instanceof DownloadFailedException) {
-                final String jre = System.getProperty("java.version");
-                if (jre == null || jre.startsWith("1.4") || jre.startsWith("1.5") || jre.startsWith("1.6") || jre.startsWith("1.7")) {
-                    LOGGER.error("An old JRE is being used ({} {}), and likely does not have the correct root certificates or algorithms "
-                            + "to connect to the NVD - consider upgrading your JRE.", System.getProperty("java.vendor"), jre);
-                }
-            }
-            throw ex;
         } catch (DatabaseException ex) {
             throw new UpdateException("Database Exception, unable to update the data to use the most current data.", ex);
         }
@@ -208,7 +201,7 @@ public class NvdApiDataSource implements CachedWebDataSource {
     }
 
     private void storeLastModifiedDates(final ZonedDateTime now, final Properties cacheProperties,
-            final Map<String, String> updateable) throws UpdateException {
+            final Map<String, String> updatable) {
 
         final ZonedDateTime lastModifiedRequest = DatabaseProperties.getTimestamp(cacheProperties,
                 NVD_API_CACHE_MODIFIED_DATE + ".modified");
@@ -218,52 +211,24 @@ public class NvdApiDataSource implements CachedWebDataSource {
         dbProperties.save(DatabaseProperties.NVD_API_LAST_CHECKED, now);
         dbProperties.save(DatabaseProperties.NVD_API_LAST_MODIFIED, lastModifiedRequest);
 
-        for (String entry : updateable.keySet()) {
+        for (String entry : updatable.keySet()) {
             final ZonedDateTime date = DatabaseProperties.getTimestamp(cacheProperties, NVD_API_CACHE_MODIFIED_DATE + "." + entry);
             dbProperties.save(DatabaseProperties.NVD_CACHE_LAST_MODIFIED + "." + entry, date);
         }
     }
 
-    private DownloadTask startDownloads(final Map<String, String> updateable, ExecutorService processingExecutorService, DownloadTask runLast,
-            final Set<Future<Future<NvdApiProcessor>>> downloadFutures, ExecutorService downloadExecutorService) throws UpdateException {
-        DownloadTask lastCall = runLast;
-        for (Map.Entry<String, String> cve : updateable.entrySet()) {
-            final DownloadTask call = new DownloadTask(cve.getValue(), processingExecutorService, cveDb, settings);
-            if (call.isModified()) {
-                lastCall = call;
-            } else {
-                final boolean added = downloadFutures.add(downloadExecutorService.submit(call));
-                if (!added) {
-                    throw new UpdateException("Unable to add the download task for " + cve);
-                }
-            }
+    private CompletionService<NvdApiProcessor> scheduleAllDownloads(final SortedMap<String, String> updatable, ExecutorService downloadExecutorService) throws UpdateException {
+        final CompletionService<NvdApiProcessor> downloadCompletions = new ExecutorCompletionService<>(downloadExecutorService);
+        for (Map.Entry<String, String> cve : updatable.entrySet()) {
+            final DownloadTask call = new DownloadTask(cve.getValue(), cveDb, settings);
+            downloadCompletions.submit(call);
         }
-        return lastCall;
+        return downloadCompletions;
     }
 
-    private void processFuture(final Set<Future<NvdApiProcessor>> processFutures) throws UpdateException {
-        //complete processing
-        for (Future<NvdApiProcessor> future : processFutures) {
-            try {
-                final NvdApiProcessor task = future.get();
-            } catch (InterruptedException ex) {
-                LOGGER.debug("Thread was interrupted during processing", ex);
-                Thread.currentThread().interrupt();
-                throw new UpdateException(ex);
-            } catch (ExecutionException ex) {
-                LOGGER.debug("Execution Exception during process", ex);
-                throw new UpdateException(ex);
-            }
-        }
-    }
-
-    private void processDownload(Future<Future<NvdApiProcessor>> future, final Set<Future<NvdApiProcessor>> processFutures) throws UpdateException {
-        final Future<NvdApiProcessor> task;
+    private NvdApiProcessor awaitNextCompletedDownload(CompletionService<NvdApiProcessor> downloadCompletions) throws UpdateException {
         try {
-            task = future.get();
-            if (task != null) {
-                processFutures.add(task);
-            }
+            return downloadCompletions.take().get();
         } catch (InterruptedException ex) {
             LOGGER.debug("Thread was interrupted during download", ex);
             Thread.currentThread().interrupt();
@@ -271,6 +236,19 @@ public class NvdApiDataSource implements CachedWebDataSource {
         } catch (ExecutionException ex) {
             LOGGER.debug("Thread was interrupted during download execution", ex);
             throw new UpdateException("The execution of the download was interrupted", ex);
+        }
+    }
+
+    private void awaitNextProcessedDownload(CompletionService<NvdApiProcessor> processorService) throws UpdateException {
+        try {
+            processorService.take().get();
+        } catch (InterruptedException ex) {
+            LOGGER.debug("Thread was interrupted during processing", ex);
+            Thread.currentThread().interrupt();
+            throw new UpdateException(ex);
+        } catch (ExecutionException ex) {
+            LOGGER.debug("Execution Exception during process", ex);
+            throw new UpdateException(ex);
         }
     }
 
@@ -333,18 +311,17 @@ public class NvdApiDataSource implements CachedWebDataSource {
             builder.withDelay(delay);
         }
 
-        ExecutorService processingExecutorService = null;
+        ExecutorService processingExecutorService = Executors.newFixedThreadPool(DEFAULT_PROCESSING_THREAD_POOL_SIZE);
         try {
-            processingExecutorService = Executors.newFixedThreadPool(PROCESSING_THREAD_POOL_SIZE);
-            final List<Future<NvdApiProcessor>> submitted = new ArrayList<>();
-            int max = -1;
-            int ctr = 0;
+            int totalBatches = 0;
+            CompletionService<NvdApiProcessor> processorCompletions = new ExecutorCompletionService<>(processingExecutorService);
             try (NvdCveClient api = builder.build()) {
+                int resultsAvailable = 0;
                 while (api.hasNext()) {
                     final Collection<DefCveItem> items = api.next();
-                    max = api.getTotalAvailable();
-                    if (ctr == 0) {
-                        LOGGER.info(String.format("NVD API has %,d records in this update", max));
+                    resultsAvailable = api.getTotalAvailable();
+                    if (totalBatches == 0) {
+                        LOGGER.info(String.format("NVD API has %,d records in this update", resultsAvailable));
                     }
                     if (items != null && !items.isEmpty()) {
                         final ObjectMapper objectMapper = new ObjectMapper();
@@ -352,15 +329,14 @@ public class NvdApiDataSource implements CachedWebDataSource {
                         final File outputFile = settings.getTempFile("nvd-data-", ".jsonarray.gz");
                         try (FileOutputStream fos = new FileOutputStream(outputFile); GZIPOutputStream out = new GZIPOutputStream(fos);) {
                             objectMapper.writeValue(out, items);
-                            final Future<NvdApiProcessor> f = processingExecutorService.submit(new NvdApiProcessor(cveDb, outputFile));
-                            submitted.add(f);
+                            processorCompletions.submit(new NvdApiProcessor(cveDb, outputFile));
                         }
-                        ctr += 1;
-                        if ((ctr % 5) == 0) {
+                        totalBatches += 1;
+                        if ((totalBatches % 5) == 0) {
                             //TODO get results per page from the API as it could adjust automatically
-                            final double percent = (double) (ctr * resultsPerPage) / max * 100;
+                            final double percent = (double) (totalBatches * resultsPerPage) / resultsAvailable * 100;
                             if (percent < 100) {
-                                LOGGER.info(String.format("Downloaded %,d/%,d (%.0f%%)", ctr * resultsPerPage, max, percent));
+                                LOGGER.info(String.format("Downloaded %,d/%,d (%.0f%%)", totalBatches * resultsPerPage, resultsAvailable, percent));
                             }
                         }
                     }
@@ -369,10 +345,10 @@ public class NvdApiDataSource implements CachedWebDataSource {
                         lastModifiedRequest = last;
                     }
                 }
+                LOGGER.info(String.format("Downloaded %,d/%,d (%.0f%%)", resultsAvailable, resultsAvailable, 100f));
 
             } catch (Exception e) {
-                if (e instanceof NvdApiException && (e.getMessage().equals("NVD Returned Status Code: 404")
-                        || e.getMessage().equals("NVD Returned Status Code: 403"))) {
+                if (e instanceof NvdApiException && e.getMessage().matches("NVD Returned Status Code: 40[34].*")) {
                     final String msg;
                     if (key != null) {
                         msg = "Error updating the NVD Data; the NVD returned a 403 or 404 error\n\nPlease ensure your API Key is valid; "
@@ -383,21 +359,17 @@ public class NvdApiDataSource implements CachedWebDataSource {
                         msg = "Error updating the NVD Data; the NVD returned a 403 or 404 error\n\nConsider using an NVD API Key; "
                                 + "see https://github.com/dependency-check/DependencyCheck?tab=readme-ov-file#nvd-api-key-highly-recommended";
                     }
-                    throw new UpdateException(msg);
+                    throw new UpdateException(msg, e);
                 } else {
                     throw new UpdateException("Error updating the NVD Data", e);
                 }
             }
-            LOGGER.info(String.format("Downloaded %,d/%,d (%.0f%%)", max, max, 100f));
-            max = submitted.size();
-            final boolean updated = max > 0;
-            ctr = 0;
-            for (Future<NvdApiProcessor> f : submitted) {
+
+            for (int processingBatch = 1; processingBatch <= totalBatches; processingBatch++) {
                 try {
-                    final NvdApiProcessor proc = f.get();
-                    ctr += 1;
-                    final double percent = (double) ctr / max * 100;
-                    LOGGER.info(String.format("Completed processing batch %d/%d (%.0f%%) in %,dms", ctr, max, percent, proc.getDurationMillis()));
+                    final NvdApiProcessor proc = processorCompletions.take().get();
+                    final double percent = (double) processingBatch / totalBatches * 100;
+                    LOGGER.info(String.format("Completed processing batch %d/%d (%.0f%%) in %,dms", processingBatch, totalBatches, percent, proc.getDurationMillis()));
                 } catch (InterruptedException ex) {
                     Thread.currentThread().interrupt();
                     throw new RuntimeException(ex);
@@ -410,11 +382,9 @@ public class NvdApiDataSource implements CachedWebDataSource {
                 dbProperties.save(DatabaseProperties.NVD_API_LAST_CHECKED, ZonedDateTime.now());
                 dbProperties.save(DatabaseProperties.NVD_API_LAST_MODIFIED, lastModifiedRequest);
             }
-            return updated;
+            return totalBatches > 0;
         } finally {
-            if (processingExecutorService != null) {
-                processingExecutorService.shutdownNow();
-            }
+            processingExecutorService.shutdownNow();
         }
     }
 
@@ -516,7 +486,7 @@ public class NvdApiDataSource implements CachedWebDataSource {
 
     /**
      * Determines if the index needs to be updated. This is done by fetching the
-     * NVD CVE meta data and checking the last update date. If the data needs to
+     * NVD CVE metadata and checking the last update date. If the data needs to
      * be refreshed this method will return the NvdCveUrl for the files that
      * need to be updated.
      *
@@ -524,12 +494,10 @@ public class NvdApiDataSource implements CachedWebDataSource {
      * @param cacheProperties the properties from the remote NVD API cache or data feed
      * @param now the start time of the update process
      * @return the map of key to URLs - where the key is the year or `modified`
-     * @throws UpdateException Is thrown if there is an issue with the last
-     * updated properties file
      */
-    protected final Map<String, String> getUpdatesNeeded(FeedUrl feedUrl, Properties cacheProperties, ZonedDateTime now) throws UpdateException {
+    protected final SortedMap<String, String> getUpdatesNeeded(FeedUrl feedUrl, Properties cacheProperties, ZonedDateTime now) {
         LOGGER.debug("starting getUpdatesNeeded() ...");
-        final Map<String, String> updates = new HashMap<>();
+        final SortedMap<String, String> updates = new TreeMap<>();
         if (dbProperties != null && !dbProperties.isEmpty()) {
             Pair<Integer, Integer> yearRange = FeedUrl.toYearRange(settings, now);
             int startYear = yearRange.getLeft();
