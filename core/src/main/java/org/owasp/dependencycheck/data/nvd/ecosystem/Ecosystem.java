@@ -17,6 +17,8 @@
  */
 package org.owasp.dependencycheck.data.nvd.ecosystem;
 
+import java.util.Locale;
+
 import org.owasp.dependencycheck.utils.Settings;
 
 /**
@@ -88,7 +90,6 @@ public final class Ecosystem {
      */
     public static final String DART = "dart";
 
-
     /**
      * A reference to the ODC settings.
      */
@@ -117,5 +118,101 @@ public final class Ecosystem {
      */
     public int getLuceneMaxQueryLimitFor(String ecosystem) {
         return settings.getInt(Settings.KEYS.MAX_QUERY_SIZE_PREFIX + ecosystem, defaultQuerySize);
+    }
+
+    /**
+     * Returns ecosystem a targetsw may belong to
+     *
+     * @param targetsw the targetsw
+     * @return Ecosystem the target software may belong to or Null otherwise.
+     */
+
+    public static String fromTargetSoftware(String targetSw) {
+        if (targetSw == null) {
+            return null;
+        }
+
+        final String normalized = targetSw.trim()
+                .toLowerCase(Locale.ROOT)
+                .replace("_", "")
+                .replace("-", "")
+                .replace(".", "");
+
+        switch (normalized) {
+            case "nodejs":
+            case "npm":
+                return NODEJS;
+
+            case "java":
+            case "jvm":
+                return JAVA;
+
+            case "python":
+            case "pypi":
+                return PYTHON;
+
+            case "php":
+            case "composer":
+                return PHP;
+
+            case "go":
+            case "golang":
+                return GOLANG;
+
+            case "dotnet":
+            case "nuget":
+                return DOTNET;
+
+            case "cargo":
+            case "rust":
+                return RUST;
+
+            case "ruby":
+            case "rubygems":
+                return RUBY;
+
+            case "ios":
+            case "iphoneos":
+                return IOS;
+
+            case "native":
+                return NATIVE;
+
+            case "coldfusion":
+            case "cfml":
+                return COLDFUSION;
+
+            case "perl":
+                return PERL;
+
+            case "elixir":
+                return ELIXIR;
+
+            case "dart":
+                return DART;
+
+            default:
+                return null;
+        }
+    }
+
+    /**
+     * Determines if ecosystem and targetsw are
+     * compatible based on runtime information.
+     *
+     *
+     * @param ecosystem      the dependency ecosystem
+     * @param targetSoftware the NVD target software
+     * @return false only when both runtimes are recognized and differ
+     */
+    public static boolean isCompatibleWithTargetSoftware(
+            String ecosystem, String targetSoftware) {
+
+        final String dependencyRuntime = fromTargetSoftware(ecosystem);
+        final String targetRuntime = fromTargetSoftware(targetSoftware);
+
+        return dependencyRuntime == null
+                || targetRuntime == null
+                || dependencyRuntime.equals(targetRuntime);
     }
 }
