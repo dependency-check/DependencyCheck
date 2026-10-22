@@ -2286,3 +2286,10 @@
     <packageUrl regex="true">^pkg:nuget/System\.CommandLine@.*$</packageUrl>
     <cpe regex="true">cpe:/a:line:line(:.*)?$</cpe>
 </suppress>
+<suppress base="true">
+    <notes><![CDATA[
+    FP per issue #8856
+    ]]></notes>
+    <packageUrl regex="true">^pkg:maven/com\.github\.oshi/oshi-core@.*$</packageUrl>
+    <cpe regex="true">cpe:/a:1e:platform(:.*)?$</cpe>
+</suppress>
