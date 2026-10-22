@@ -154,7 +154,7 @@ public class NvdCveAnalyzer extends AbstractAnalyzer {
             boolean found = false;
             final Set<VulnerableSoftware> removeSoftware = new HashSet<>();
             for (VulnerableSoftware s : v.getVulnerableSoftware()) {
-                if (ecosystemMatchesTargetSoftware(ecosystem, s.getTargetSw())) {
+                if (Ecosystem.isCompatibleWithTargetSoftware(ecosystem, s.getTargetSw())) {
                     found = true;
                 } else {
                     removeSoftware.add(s);
@@ -184,22 +184,5 @@ public class NvdCveAnalyzer extends AbstractAnalyzer {
      * @return <code>true</code> if there is a match; otherwise
      * <code>false</code>
      */
-    private boolean ecosystemMatchesTargetSoftware(String ecosystem, String targetSoftware) {
-        if ("*".equals(targetSoftware) || "-".equals(targetSoftware)) {
-            return true;
-        }
-        if (Ecosystem.NODEJS.equals(ecosystem)) {
-            switch (targetSoftware.toLowerCase()) {
-                case "nodejs":
-                case "node.js":
-                case "node_js":
-                case "npm":
-                case "node-js":
-                    return true;
-                default:
-                    return false;
-            }
-        }
-        return true;
-    }
+
 }
