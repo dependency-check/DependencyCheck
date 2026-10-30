@@ -775,6 +775,8 @@ public abstract class BaseDependencyCheckMojo extends AbstractMojo implements Ma
      * The id of a server defined in the settings.xml to authenticate Sonatype
      * OSS Index requests and profit from higher rate limits. Provide the OSS
      * account email address as username and password or API token as password.
+     * Is potentially overwritten by {@link #ossIndexPasswordEnvironmentVariable}
+     * or {@link #ossIndexPassword}.
      */
     @SuppressWarnings("CanBeFinal")
     @Parameter(property = "ossIndexServerId")
@@ -794,11 +796,26 @@ public abstract class BaseDependencyCheckMojo extends AbstractMojo implements Ma
      * OSS password or API token as an alternative to the indirection through
      * the ossIndexServerId (see above). Both ossIndexUsername and
      * ossIndexPassword must be set to use this approach instead of the server
-     * ID.
+     * ID. The parameters {@link #ossIndexPasswordEnvironmentVariable} or
+     * {@link #ossIndexServerId} should be used instead otherwise Maven debug
+     * logging could expose the password. This takes precedence over
+     * {@link #ossIndexServerId} and {@link #ossIndexPasswordEnvironmentVariable}.
      */
     @SuppressWarnings("CanBeFinal")
     @Parameter(property = "ossIndexPassword")
     private String ossIndexPassword;
+
+    /**
+     * The environment variable from which to retrieve the Sonatype Guide
+     * personal access token (or legacy OSS Index API token); used together
+     * with ossIndexUsername when that is set. Takes precedence over
+     * {@link #ossIndexServerId} but is potentially overwritten by
+     * {@link #ossIndexPassword}. This is the recommended option to pass the
+     * token in CI builds.
+     */
+    @SuppressWarnings("CanBeFinal")
+    @Parameter(property = "ossIndexPasswordEnvironmentVariable")
+    private String ossIndexPasswordEnvironmentVariable;
 
     /**
      * Whether we should only warn about Sonatype OSS Index remote errors
@@ -2483,7 +2500,13 @@ public abstract class BaseDependencyCheckMojo extends AbstractMojo implements Ma
         settings.setBooleanIfNotNull(Settings.KEYS.ANALYZER_OSSINDEX_ENABLED, ossIndexAnalyzerEnabled);
         settings.setStringIfNotEmpty(Settings.KEYS.ANALYZER_OSSINDEX_URL, ossIndexAnalyzerUrl);
         if (StringUtils.isEmpty(ossIndexPassword)) {
-            configureServerCredentialsUserPassOrApiKey(ossIndexServerId, Settings.KEYS.ANALYZER_OSSINDEX_USER, Settings.KEYS.ANALYZER_OSSINDEX_PASSWORD);
+            if (ossIndexPasswordEnvironmentVariable != null) {
+                settings.setStringIfNotEmpty(Settings.KEYS.ANALYZER_OSSINDEX_USER, ossIndexUsername);
+                settings.setStringIfNotEmpty(Settings.KEYS.ANALYZER_OSSINDEX_PASSWORD, System.getenv(ossIndexPasswordEnvironmentVariable));
+                getLog().debug("Using OSS Index password from environment variable " + ossIndexPasswordEnvironmentVariable);
+            } else {
+                configureServerCredentialsUserPassOrApiKey(ossIndexServerId, Settings.KEYS.ANALYZER_OSSINDEX_USER, Settings.KEYS.ANALYZER_OSSINDEX_PASSWORD);
+            }
         } else {
             settings.setStringIfNotEmpty(Settings.KEYS.ANALYZER_OSSINDEX_USER, ossIndexUsername);
             settings.setStringIfNotEmpty(Settings.KEYS.ANALYZER_OSSINDEX_PASSWORD, ossIndexPassword);
