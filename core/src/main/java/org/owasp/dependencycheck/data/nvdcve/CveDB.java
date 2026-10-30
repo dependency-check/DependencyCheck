@@ -623,12 +623,13 @@ public final class CveDB implements AutoCloseable {
      * @throws DatabaseException thrown if there is an exception retrieving data
      */
     public List<Vulnerability> getVulnerabilities(Cpe cpe) throws DatabaseException {
-        final List<Vulnerability> cachedVulnerabilities = vulnerabilitiesForCpeCache.get(cpe.toCpe23FS());
+        String cpe23fs = cpe.toCpe23FS();
+        final List<Vulnerability> cachedVulnerabilities = vulnerabilitiesForCpeCache.get(cpe23fs);
         if (cachedVulnerabilities != null) {
-            LOGGER.debug("Cache hit for {}", cpe.toCpe23FS());
-            return cachedVulnerabilities;
+            LOGGER.debug("Cache hit for {}", cpe23fs);
+            return Collections.unmodifiableList(cachedVulnerabilities);
         } else {
-            LOGGER.debug("Cache miss for {}", cpe.toCpe23FS());
+            LOGGER.debug("Cache miss for {}", cpe23fs);
         }
 
         final List<Vulnerability> vulnerabilities = new ArrayList<>();
@@ -688,9 +689,9 @@ public final class CveDB implements AutoCloseable {
                 }
             }
         } catch (SQLException ex) {
-            throw new DatabaseException("Exception retrieving vulnerability for " + cpe.toCpe23FS(), ex);
+            throw new DatabaseException("Exception retrieving vulnerability for " + cpe23fs, ex);
         }
-        vulnerabilitiesForCpeCache.put(cpe.toCpe23FS(), vulnerabilities);
+        vulnerabilitiesForCpeCache.put(cpe23fs, vulnerabilities);
         return vulnerabilities;
     }
 
