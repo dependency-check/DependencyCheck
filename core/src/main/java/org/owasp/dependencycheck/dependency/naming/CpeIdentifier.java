@@ -217,7 +217,7 @@ public class CpeIdentifier implements Identifier {
         // Use PercentCodec to force `*` to be encoded for CPE strings inside the URL. Technically '*' is not a reserved
         // character in the fragment of URLs, but not all browsers handle this consistently, so better to encode aggressively.
         // URlEncoder does not distinguish between parts of URLs appropriately, as well as not forcing encoding of these.
-        return String.format("https://nvd.nist.gov/vuln/search#/nvd/home?sortOrder=3&sortDirection=2&cpeFilterMode=applicability&resultType=records&cpeName=%s",
+        return String.format("https://nvd.nist.gov/vuln/search?sortOrder=3&sortDirection=2&cpeFilterMode=applicability&resultType=records&cpeName=%s",
                 PercentCodec.encode(cpe.toCpe23FS(), UTF_8));
     }
 

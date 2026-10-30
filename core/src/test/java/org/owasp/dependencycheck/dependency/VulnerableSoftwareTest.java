@@ -24,11 +24,8 @@ import us.springett.parsers.cpe.values.LogicalValue;
 import us.springett.parsers.cpe.values.Part;
 
 import java.net.URLDecoder;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
@@ -126,8 +123,8 @@ class VulnerableSoftwareTest extends BaseTest {
     @Test
     void testToNvdSearchUrl() throws Exception {
         String encodedURL = new VulnerableSoftwareBuilder().part(Part.APPLICATION).vendor("apache").version("1.2.3").build().toNvdSearchUrl();
-        assertEquals("https://nvd.nist.gov/vuln/search#/nvd/home?sortOrder=3&sortDirection=2&cpeFilterMode=applicability&resultType=records&cpeName=cpe%3A2.3%3Aa%3Aapache%3A%2A%3A1.2.3%3A%2A%3A%2A%3A%2A%3A%2A%3A%2A%3A%2A%3A%2A", encodedURL);
-        assertEquals("https://nvd.nist.gov/vuln/search#/nvd/home?sortOrder=3&sortDirection=2&cpeFilterMode=applicability&resultType=records&cpeName=cpe:2.3:a:apache:*:1.2.3:*:*:*:*:*:*:*", URLDecoder.decode(encodedURL, UTF_8));
+        assertEquals("https://nvd.nist.gov/vuln/search?sortOrder=3&sortDirection=2&cpeFilterMode=applicability&resultType=records&cpeName=cpe%3A2.3%3Aa%3Aapache%3A%2A%3A1.2.3%3A%2A%3A%2A%3A%2A%3A%2A%3A%2A%3A%2A%3A%2A", encodedURL);
+        assertEquals("https://nvd.nist.gov/vuln/search?sortOrder=3&sortDirection=2&cpeFilterMode=applicability&resultType=records&cpeName=cpe:2.3:a:apache:*:1.2.3:*:*:*:*:*:*:*", URLDecoder.decode(encodedURL, UTF_8));
     }
 
 }
