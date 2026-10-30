@@ -219,9 +219,11 @@ public final class Settings {
         public static final String NVD_API_DATAFEED_BEARER_TOKEN = "nvd.api.datafeed.bearertoken";
         /**
          * The starting year for the NVD CVE Data feed cache.
+         *
+         * @deprecated This property was generally unsafe to use, and is now unused by the code, to be removed in a later release.
          */
+        @Deprecated(since = "13.0.1", forRemoval = true)
         public static final String NVD_API_DATAFEED_START_YEAR = "nvd.api.datafeed.startyear";
-        //END NEW
         /**
          * The key to determine if the NVD CVE analyzer is enabled.
          */
