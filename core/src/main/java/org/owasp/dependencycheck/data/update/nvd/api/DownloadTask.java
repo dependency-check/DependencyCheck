@@ -22,6 +22,7 @@ import java.net.URL;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
+import java.util.concurrent.atomic.AtomicBoolean;
 import javax.annotation.concurrent.ThreadSafe;
 import org.apache.commons.lang3.StringUtils;
 import org.owasp.dependencycheck.data.nvdcve.CveDB;
@@ -59,6 +60,10 @@ public class DownloadTask implements Callable<Future<NvdApiProcessor>> {
      * A reference to the global settings object.
      */
     private final Settings settings;
+    /**
+     * Set when the update has been stopped and the download should not be processed.
+     */
+    private final AtomicBoolean cancelled;
 
     /**
      * Simple constructor for the callable download task.
@@ -69,12 +74,14 @@ public class DownloadTask implements Callable<Future<NvdApiProcessor>> {
      * @param settings a reference to the global settings object; this is
      * necessary so that when the thread is started the dependencies have a
      * correct reference to the global settings.
+     * @param cancelled set to <code>true</code> to skip processing the download
      */
-    public DownloadTask(String url, ExecutorService processor, CveDB cveDB, Settings settings) {
+    public DownloadTask(String url, ExecutorService processor, CveDB cveDB, Settings settings, AtomicBoolean cancelled) {
         this.url = url;
         this.processorService = processor;
         this.cveDB = cveDB;
         this.settings = settings;
+        this.cancelled = cancelled;
     }
 
     @SuppressWarnings("BusyWait")
@@ -87,10 +94,10 @@ public class DownloadTask implements Callable<Future<NvdApiProcessor>> {
             final File outputFile = settings.getTempFile("nvd-datafeed-", "json.gz");
             Downloader.getInstance().fetchFile(u, outputFile, true, Settings.KEYS.NVD_API_DATAFEED_USER, Settings.KEYS.NVD_API_DATAFEED_PASSWORD,
                     Settings.KEYS.NVD_API_DATAFEED_BEARER_TOKEN);
-            if (this.processorService == null) {
+            if (this.processorService == null || cancelled.get()) {
                 return null;
             }
-            final NvdApiProcessor task = new NvdApiProcessor(cveDB, outputFile, startDownload);
+            final NvdApiProcessor task = new NvdApiProcessor(cveDB, outputFile, startDownload, cancelled);
             final Future<NvdApiProcessor> val = this.processorService.submit(task);
             return val;
         } catch (Throwable ex) {
