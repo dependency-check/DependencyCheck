@@ -7,6 +7,10 @@
             <id>central</id>
             <username>${env.MAVEN_USERNAME}</username>
             <password>${env.MAVEN_PASSWORD}</password>
+            <!-- Maven 3.10+ only sends server credentials to declared origins; 'central' otherwise maps to repo.maven.apache.org -->
+            <repositoryOrigins>
+                <repositoryOrigin>https://central.sonatype.com</repositoryOrigin>
+            </repositoryOrigins>
         </server>
     </servers>
     <profiles>
