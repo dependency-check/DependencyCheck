@@ -36,7 +36,6 @@ import org.owasp.dependencycheck.utils.DateUtil;
 import org.owasp.dependencycheck.utils.DownloadFailedException;
 import org.owasp.dependencycheck.utils.Downloader;
 import org.owasp.dependencycheck.utils.InvalidSettingException;
-import org.owasp.dependencycheck.utils.Pair;
 import org.owasp.dependencycheck.utils.ResourceNotFoundException;
 import org.owasp.dependencycheck.utils.Settings;
 import org.owasp.dependencycheck.utils.TooManyRequestsException;
@@ -516,9 +515,8 @@ public class NvdApiDataSource implements CachedWebDataSource {
         LOGGER.debug("starting getUpdatesNeeded() ...");
         final SortedMap<String, String> updates = new TreeMap<>();
         if (dbProperties != null && !dbProperties.isEmpty()) {
-            Pair<Integer, Integer> yearRange = FeedUrl.toYearRange(settings, now);
-            int startYear = yearRange.getLeft();
-            int endYear = yearRange.getRight();
+            int startYear = FeedUrl.startYear();
+            int endYear = FeedUrl.endYear(now);
             boolean needsFullUpdate = false;
             for (int y = startYear; y <= endYear; y++) {
                 final ZonedDateTime val = dbProperties.getTimestamp(DatabaseProperties.NVD_CACHE_LAST_MODIFIED + "." + y);
@@ -604,7 +602,7 @@ public class NvdApiDataSource implements CachedWebDataSource {
         DatabaseProperties.setTimestamp(properties, NVD_API_CACHE_MODIFIED_DATE + ".modified", lmd);
         DatabaseProperties.setTimestamp(properties, NVD_API_CACHE_MODIFIED_DATE, lmd);
 
-        metaFeedUrl.getLastModifiedDatePropertiesByYear(this.settings, ZonedDateTime.now(ZoneOffset.UTC))
+        metaFeedUrl.getLastModifiedDatePropertiesByYear(ZonedDateTime.now(ZoneOffset.UTC))
                 .forEach((k, v) -> DatabaseProperties.setTimestamp(properties, k, v));
         return properties;
     }
@@ -691,13 +689,15 @@ public class NvdApiDataSource implements CachedWebDataSource {
             return new FeedUrl(baseUrl, pattern);
         }
 
-        private static @NonNull Pair<Integer, Integer> toYearRange(Settings settings, ZonedDateTime now) {
+        public static int startYear() {
+            return 2002;
+        }
+
+        private static int endYear(ZonedDateTime now) {
             // for establishing the current year use the timezone where the new year starts first
             // as from that moment on CNAs might start assigning CVEs with the new year depending
             // on the CNA's timezone
-            final int startYear = settings.getInt(Settings.KEYS.NVD_API_DATAFEED_START_YEAR, 2002);
-            final int endYear = now.withZoneSameInstant(ZONE_GLOBAL_EARLIEST).getYear();
-            return new Pair<>(startYear, endYear);
+            return now.withZoneSameInstant(ZONE_GLOBAL_EARLIEST).getYear();
         }
 
         private @NonNull ZonedDateTime getLastModifiedFor(int year) throws UpdateException {
@@ -715,10 +715,11 @@ public class NvdApiDataSource implements CachedWebDataSource {
             }
         }
 
-        Map<String, ZonedDateTime> getLastModifiedDatePropertiesByYear(Settings settings, ZonedDateTime now) throws UpdateException {
-            Pair<Integer, Integer> yearRange = toYearRange(settings, now);
+        Map<String, ZonedDateTime> getLastModifiedDatePropertiesByYear(ZonedDateTime now) throws UpdateException {
+            int startYear = startYear();
+            int endYear = endYear(now);
             Map<String, ZonedDateTime> lastModifiedDateProperties = new LinkedHashMap<>();
-            for (int y = yearRange.getLeft(); y <= yearRange.getRight(); y++) {
+            for (int y = startYear; y <= endYear; y++) {
                 try {
                     lastModifiedDateProperties.put(NVD_API_CACHE_MODIFIED_DATE + "." + y, getLastModifiedFor(y));
                 } catch (UpdateException e) {

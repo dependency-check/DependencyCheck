@@ -227,7 +227,7 @@ class NvdApiDataSourceTest {
             Map<String, ZonedDateTime> lastModifieds;
             NvdApiDataSource.FeedUrl feedUrl = extractFromUrlOptionalPattern("https://internal.server/nist/nvdcve-{0}.json.gz");
 
-            lastModifieds = feedUrl.getLastModifiedDatePropertiesByYear(new Settings(), until);
+            lastModifieds = feedUrl.getLastModifiedDatePropertiesByYear(until);
 
             assertThat(lastModifieds.values(), everyItem(Matchers.equalTo(ZonedDateTime.of(2013, 1, 1, 12, 0, 0, 0, ZoneOffset.UTC))));
             return lastModifieds;
