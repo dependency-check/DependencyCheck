@@ -19,12 +19,19 @@ package org.owasp.dependencycheck.utils;
 
 import org.apache.commons.io.filefilter.NameFileFilter;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 import org.owasp.dependencycheck.BaseTest;
 import org.owasp.dependencycheck.Engine;
 
 import java.io.File;
 import java.io.FilenameFilter;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
@@ -68,5 +75,73 @@ class ExtractionUtilTest extends BaseTest {
         FilenameFilter filter = new NameFileFilter("evil.txt");
         assertThrows(org.owasp.dependencycheck.utils.ExtractionException.class, () ->
             ExtractionUtil.extractFilesUsingFilter(archive, destination, filter));
+    }
+
+    @TempDir
+    Path tempDir;
+
+    private Path createArchive(String entryName, String content) throws Exception {
+        Path archive = tempDir.resolve("malicious-" + System.nanoTime() + ".zip");
+        try (ZipOutputStream zos = new ZipOutputStream(Files.newOutputStream(archive))) {
+            zos.putNextEntry(new ZipEntry(entryName));
+            zos.write(content.getBytes(java.nio.charset.StandardCharsets.UTF_8));
+            zos.closeEntry();
+        }
+        return archive;
+    }
+
+    private Path createDestination() throws Exception {
+        Path destination = tempDir.resolve("dest");
+        Files.createDirectories(destination);
+        Files.createDirectories(tempDir.resolve("destevil"));
+        return destination;
+    }
+
+    @Test
+    void testSiblingPrefixFileRejected() throws Exception {
+        Path destination = createDestination();
+        Path archive = createArchive("../destevil/evil.txt", "evil");
+        assertThrows(ExtractionException.class, () ->
+                ExtractionUtil.extractFiles(archive.toFile(), destination.toFile()));
+        assertFalse(Files.exists(tempDir.resolve("destevil/evil.txt")));
+    }
+
+    @Test
+    void testSiblingPrefixFileRejectedWithEngine() throws Exception {
+        Path destination = createDestination();
+        Path archive = createArchive("../destevil/evil.txt", "evil");
+        assertThrows(ExtractionException.class, () ->
+                ExtractionUtil.extractFiles(archive.toFile(), destination.toFile(), null));
+        assertFalse(Files.exists(tempDir.resolve("destevil/evil.txt")));
+    }
+
+    @Test
+    void testSiblingPrefixFileRejectedFromStream() throws Exception {
+        Path destination = createDestination();
+        Path archive = createArchive("../destevil/evil.txt", "evil");
+        try (InputStream input = Files.newInputStream(archive)) {
+            assertThrows(ExtractionException.class, () ->
+                    ExtractionUtil.extractFiles(input, destination.toFile()));
+        }
+        assertFalse(Files.exists(tempDir.resolve("destevil/evil.txt")));
+    }
+
+    @Test
+    void testSiblingPrefixFileRejectedUsingFilter() throws Exception {
+        Path destination = createDestination();
+        Path archive = createArchive("../destevil/evil.txt", "evil");
+        FilenameFilter filter = (dir, name) -> name.equals("evil.txt");
+        assertThrows(ExtractionException.class, () ->
+                ExtractionUtil.extractFilesUsingFilter(archive.toFile(), destination.toFile(), filter));
+        assertFalse(Files.exists(tempDir.resolve("destevil/evil.txt")));
+    }
+
+    @Test
+    void testSiblingPrefixDirectoryRejected() throws Exception {
+        Path destination = createDestination();
+        Path archive = createArchive("../destevil/newdir/", "");
+        assertThrows(ExtractionException.class, () ->
+                ExtractionUtil.extractFiles(archive.toFile(), destination.toFile()));
+        assertFalse(Files.exists(tempDir.resolve("destevil/newdir")));
     }
 }
