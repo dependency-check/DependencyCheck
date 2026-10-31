@@ -12,7 +12,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.owasp.dependencycheck.utils.Settings;
 import org.sonatype.ossindex.service.client.OssindexClientConfiguration;
 import org.sonatype.ossindex.service.client.cache.DirectoryCache;
-import org.sonatype.ossindex.service.client.marshal.GsonMarshaller;
 import org.sonatype.ossindex.service.client.marshal.Marshaller;
 import org.sonatype.ossindex.service.client.transport.Transport;
 
@@ -58,7 +57,7 @@ class OssIndexClientProviderTest {
             ODCConnectionTransport transport = assertTransportConfigured();
             assertThat(transport.getUserAgent().get(), matchesPattern("dependency-check/.+ \\(.*\\)"));
 
-            assertThat(marshallerCaptor.getValue(), instanceOf(GsonMarshaller.class));
+            assertThat(marshallerCaptor.getValue(), instanceOf(LenientGsonMarshaller.class));
         }
     }
 

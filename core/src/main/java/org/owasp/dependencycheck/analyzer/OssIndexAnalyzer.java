@@ -26,6 +26,7 @@ import org.owasp.dependencycheck.Engine;
 import org.owasp.dependencycheck.analyzer.exception.AnalysisException;
 import org.owasp.dependencycheck.data.ossindex.OssIndexClientProvider;
 import org.owasp.dependencycheck.dependency.Dependency;
+import org.owasp.dependencycheck.dependency.Reference;
 import org.owasp.dependencycheck.dependency.Vulnerability;
 import org.owasp.dependencycheck.dependency.VulnerableSoftware;
 import org.owasp.dependencycheck.dependency.VulnerableSoftwareBuilder;
@@ -51,10 +52,12 @@ import us.springett.parsers.cpe.values.Part;
 
 import javax.annotation.Nullable;
 import java.net.SocketTimeoutException;
+import java.net.URI;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
@@ -329,7 +332,8 @@ public class OssIndexAnalyzer extends AbstractAnalyzer {
                         }
 
                         // expose the URL to the package details for report generation
-                        id.setUrl(report.getReference().toString());
+                        Optional.ofNullable(report.getReference())
+                                .ifPresent(ref -> id.setUrl(ref.toString()));
 
                         report.getVulnerabilities().stream()
                                 .map((vuln) -> transform(report, vuln))
@@ -425,11 +429,15 @@ public class OssIndexAnalyzer extends AbstractAnalyzer {
             result.setUnscoredSeverity(Double.toString(cvssScore));
         }
         // generate a reference to the vulnerability details on OSS Index
-        result.addReference(REFERENCE_TYPE, source.getTitle(), source.getReference().toString());
+        Optional.ofNullable(source.getReference())
+                .ifPresent(ref -> result.addReference(REFERENCE_TYPE, source.getTitle(), ref.toString()));
 
         // generate references to other references reported by OSS Index
-        source.getExternalReferences().forEach(externalReference
-                -> result.addReference("OSSIndex", externalReference.toString(), externalReference.toString()));
+        source.getExternalReferences().stream()
+                .filter(Objects::nonNull)
+                .map(URI::toString)
+                .map(ref -> new Reference(REFERENCE_TYPE, ref, ref))
+                .forEach(result::addReference);
 
         // attach vulnerable software details as best we can
         final PackageUrl purl = report.getCoordinates();

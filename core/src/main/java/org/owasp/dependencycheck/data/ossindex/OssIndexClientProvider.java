@@ -27,7 +27,6 @@ import org.sonatype.ossindex.service.client.OssindexClient;
 import org.sonatype.ossindex.service.client.OssindexClientConfiguration;
 import org.sonatype.ossindex.service.client.cache.DirectoryCache;
 import org.sonatype.ossindex.service.client.internal.OssindexClientImpl;
-import org.sonatype.ossindex.service.client.marshal.GsonMarshaller;
 import org.sonatype.ossindex.service.client.marshal.Marshaller;
 import org.sonatype.ossindex.service.client.transport.AuthConfiguration;
 import org.sonatype.ossindex.service.client.transport.Transport;
@@ -110,7 +109,7 @@ public final class OssIndexClientProvider {
 
         final Transport transport = new ODCConnectionTransport(config, userAgent);
 
-        final Marshaller marshaller = new GsonMarshaller();
+        final Marshaller marshaller = new LenientGsonMarshaller();
 
         return newClientFor(config, transport, marshaller);
     }
