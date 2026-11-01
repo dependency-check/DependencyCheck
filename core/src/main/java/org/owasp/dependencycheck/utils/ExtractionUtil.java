@@ -36,6 +36,7 @@ import java.io.FileOutputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Path;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -87,38 +88,21 @@ public final class ExtractionUtil {
         if (archive == null || extractTo == null) {
             return;
         }
-        final String destPath;
-        try {
-            destPath = extractTo.getCanonicalPath();
-        } catch (IOException ex) {
-            throw new ExtractionException("Unable to extract files to destination path", ex);
-        }
+        final Path destinationPath = getDestinationPath(extractTo);
         ZipEntry entry;
         try (FileInputStream fis = new FileInputStream(archive);
                 BufferedInputStream bis = new BufferedInputStream(fis);
                 ZipInputStream zis = new ZipInputStream(bis)) {
             while ((entry = zis.getNextEntry()) != null) {
                 if (entry.isDirectory()) {
-                    final File d = new File(extractTo, entry.getName());
-                    if (!d.getCanonicalPath().startsWith(destPath)) {
-                        final String msg = String.format(
-                                "Archive (%s) contains a path that would be extracted outside of the target directory.",
-                                archive.getAbsolutePath());
-                        throw new ExtractionException(msg);
-                    }
+                    final File d = resolvePath(destinationPath, entry.getName()).toFile();
                     if (!d.exists() && !d.mkdirs()) {
                         final String msg = String.format("Unable to create '%s'.", d.getAbsolutePath());
                         throw new ExtractionException(msg);
                     }
                 } else {
-                    final File file = new File(extractTo, entry.getName());
+                    final File file = resolvePath(destinationPath, entry.getName()).toFile();
                     if (engine == null || engine.accept(file)) {
-                        if (!file.getCanonicalPath().startsWith(destPath)) {
-                            final String msg = String.format(
-                                    "Archive (%s) contains a file that would be extracted outside of the target directory.",
-                                    archive.getAbsolutePath());
-                            throw new ExtractionException(msg);
-                        }
                         try (FileOutputStream fos = new FileOutputStream(file)) {
                             IOUtils.copy(zis, fos);
                         } catch (FileNotFoundException ex) {
@@ -155,31 +139,19 @@ public final class ExtractionUtil {
         if (archive == null || extractTo == null) {
             return;
         }
-        final String destPath;
-        try {
-            destPath = extractTo.getCanonicalPath();
-        } catch (IOException ex) {
-            throw new ExtractionException("Unable to extract files to destination path", ex);
-        }
+        final Path destinationPath = getDestinationPath(extractTo);
         ZipEntry entry;
         try (BufferedInputStream bis = new BufferedInputStream(archive);
                 ZipInputStream zis = new ZipInputStream(bis)) {
             while ((entry = zis.getNextEntry()) != null) {
                 if (entry.isDirectory()) {
-                    final File d = new File(extractTo, entry.getName());
-                    if (!d.getCanonicalPath().startsWith(destPath)) {
-                        throw new ExtractionException("Archive contains a path that would be extracted outside of the target directory.");
-                    }
+                    final File d = resolvePath(destinationPath, entry.getName()).toFile();
                     if (!d.exists() && !d.mkdirs()) {
                         final String msg = String.format("Unable to create '%s'.", d.getAbsolutePath());
                         throw new ExtractionException(msg);
                     }
                 } else {
-                    final File file = new File(extractTo, entry.getName());
-                    if (!file.getCanonicalPath().startsWith(destPath)) {
-                        LOGGER.debug("ZipSlip detected\n-Destination: " + destPath + "\n-Path: " + file);
-                        throw new ExtractionException("Archive contains a file that would be extracted outside of the target directory.");
-                    }
+                    final File file = resolvePath(destinationPath, entry.getName()).toFile();
                     try (FileOutputStream fos = new FileOutputStream(file)) {
                         IOUtils.copy(zis, fos);
                     } catch (FileNotFoundException ex) {
@@ -238,17 +210,11 @@ public final class ExtractionUtil {
             throws ArchiveExtractionException {
         ArchiveEntry entry;
         try {
-            final String destPath = destination.getCanonicalPath();
+            final Path destinationPath = getDestinationPath(destination);
 
             while ((entry = input.getNextEntry()) != null) {
                 if (entry.isDirectory()) {
-                    final File dir = new File(destination, entry.getName());
-                    if (!dir.getCanonicalPath().startsWith(destPath)) {
-                        final String msg = String.format(
-                                "Archive contains a path (%s) that would be extracted outside of the target directory.",
-                                dir.getAbsolutePath());
-                        throw new AnalysisException(msg);
-                    }
+                    final File dir = resolvePath(destinationPath, entry.getName()).toFile();
                     if (!dir.exists() && !dir.mkdirs()) {
                         final String msg = String.format(
                                 "Unable to create directory '%s'.",
@@ -256,7 +222,7 @@ public final class ExtractionUtil {
                         throw new AnalysisException(msg);
                     }
                 } else {
-                    extractFile(input, destination, filter, entry);
+                    extractFile(input, destinationPath, filter, entry);
                 }
             }
         } catch (IOException | AnalysisException ex) {
@@ -277,19 +243,11 @@ public final class ExtractionUtil {
      * @throws ExtractionException thrown if there is an error reading from the
      * archive stream
      */
-    private static void extractFile(ArchiveInputStream input, File destination,
+    private static void extractFile(ArchiveInputStream input, Path destinationPath,
             FilenameFilter filter, ArchiveEntry entry) throws ExtractionException {
-        final File file = new File(destination, entry.getName());
+        final File file = resolvePath(destinationPath, entry.getName()).toFile();
         try {
             if (filter.accept(file.getParentFile(), file.getName())) {
-                final String destPath = destination.getCanonicalPath();
-                if (!file.getCanonicalPath().startsWith(destPath)) {
-                    LOGGER.debug("ZipSlip detected\n-Destination: " + destPath + "\n-Path: " + file);
-                    final String msg = String.format(
-                            "Archive contains a file (%s) that would be extracted outside of the target directory.",
-                            file.getAbsolutePath());
-                    throw new ExtractionException(msg);
-                }
                 LOGGER.debug("Extracting '{}'", file.getPath());
                 createParentFile(file);
 
@@ -306,6 +264,21 @@ public final class ExtractionUtil {
             final String msg = String.format("IO Exception while parsing file '%s'.", file.getName());
             throw new ExtractionException(msg, ex);
         }
+    }
+
+    private static Path getDestinationPath(File destination) {
+        return destination.toPath().toAbsolutePath().normalize();
+    }
+
+    private static Path resolvePath(Path destinationPath, String entryName) throws ExtractionException {
+        final Path target = destinationPath.resolve(entryName).normalize();
+        if (!target.startsWith(destinationPath)) {
+            final String msg = String.format(
+                    "Archive entry would be extracted outside of the target directory: %s",
+                    entryName);
+            throw new ExtractionException(msg);
+        }
+        return target;
     }
 
     /**
