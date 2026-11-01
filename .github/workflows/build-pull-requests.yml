@@ -34,7 +34,7 @@ jobs:
         with:
           dotnet-version: '8.0.x'
       - name: Set up JDKs
-        uses: actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6 # v6.0.1
+        uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad # v6.1.0
         with:
           java-version: | # last version takes precedence as default
             ${{ matrix.jdk_test_version }}
@@ -43,7 +43,7 @@ jobs:
           check-latest: true
           cache: 'maven'
           cache-dependency-path: '**/pom.xml'
-      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: 24
       - run: npm install -g corepack && corepack enable
@@ -61,29 +61,29 @@ jobs:
           # Command to be sent to SARIF Multitool
           command: 'validate core/target/test-reports/Report.sarif'
       - name: Upload SARIF file
-        uses: github/codeql-action/upload-sarif@2892aa5e19bbd11bc0cff5427e3b750a04d9e3c2 # v4.38.2
+        uses: github/codeql-action/upload-sarif@9b3254085494b55a0f7c4c2b3d2d52cc712ce370 # v4.39.1
         with:
           sarif_file: utils/target/spotbugsSarif.json
           category: spotbugs-utils
       - name: Upload SARIF file
-        uses: github/codeql-action/upload-sarif@2892aa5e19bbd11bc0cff5427e3b750a04d9e3c2 # v4.38.2
+        uses: github/codeql-action/upload-sarif@9b3254085494b55a0f7c4c2b3d2d52cc712ce370 # v4.39.1
         with:
           sarif_file: cli/target/spotbugsSarif.json
           category: spotbugs-cli
       - name: Upload SARIF file
-        uses: github/codeql-action/upload-sarif@2892aa5e19bbd11bc0cff5427e3b750a04d9e3c2 # v4.38.2
+        uses: github/codeql-action/upload-sarif@9b3254085494b55a0f7c4c2b3d2d52cc712ce370 # v4.39.1
         with:
           sarif_file: ant/target/spotbugsSarif.json
           category: spotbugs-ant
       - name: Upload SARIF file
-        uses: github/codeql-action/upload-sarif@2892aa5e19bbd11bc0cff5427e3b750a04d9e3c2 # v4.38.2
+        uses: github/codeql-action/upload-sarif@9b3254085494b55a0f7c4c2b3d2d52cc712ce370 # v4.39.1
         with:
           sarif_file: core/target/spotbugsSarif.json
           category: spotbugs-core
       - name: Archive Snapshot
         if: matrix.jdk_test_version == matrix.jdk_default_version
         id: archive-snapshot
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: archive-snapshot
           retention-days: 1
@@ -124,7 +124,7 @@ jobs:
         with:
           dotnet-version: '8.0.x'
       - name: Set up JDKs
-        uses: actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6 # v6.0.1
+        uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad # v6.1.0
         with:
           java-version: | # last version takes precedence as default
             ${{ matrix.jdk_test_version }}
@@ -133,7 +133,7 @@ jobs:
           check-latest: true
           cache: 'maven'
           cache-dependency-path: '**/pom.xml'
-      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: 24
       - run: npm install -g corepack && corepack enable
@@ -149,13 +149,13 @@ jobs:
       - name: Archive IT test logs
         id: archive-logs
         if: always()
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: it-test-logs-jdk-${{ matrix.jdk_test_version }}
           retention-days: 7
           path: maven/target/it/**/build.log
       - name: Upload SARIF file
-        uses: github/codeql-action/upload-sarif@2892aa5e19bbd11bc0cff5427e3b750a04d9e3c2 # v4.38.2
+        uses: github/codeql-action/upload-sarif@9b3254085494b55a0f7c4c2b3d2d52cc712ce370 # v4.39.1
         with:
           sarif_file: maven/target/spotbugsSarif.json
           category: spotbugs-maven
@@ -169,7 +169,7 @@ jobs:
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - name: Set up JDK
-        uses: actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6 # v6.0.1
+        uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad # v6.1.0
         with:
           java-version: '25'
           distribution: 'zulu'
@@ -181,7 +181,7 @@ jobs:
         run: |
             mvn -V -s settings.xml checkstyle:checkstyle-aggregate --no-transfer-progress --batch-mode -Dstyle.color=always
       - name: Upload SARIF file
-        uses: github/codeql-action/upload-sarif@2892aa5e19bbd11bc0cff5427e3b750a04d9e3c2 # v4.38.2
+        uses: github/codeql-action/upload-sarif@9b3254085494b55a0f7c4c2b3d2d52cc712ce370 # v4.39.1
         with:
           sarif_file: target/checkstyle-result.sarif
           category: checkstyle
@@ -197,7 +197,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - name: Set up JDK
-        uses: actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6 # v6.0.1
+        uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad # v6.1.0
         with:
           java-version: '25'
           distribution: 'zulu'
@@ -205,11 +205,11 @@ jobs:
           cache: 'maven'
           cache-dependency-path: '**/pom.xml'
       - name: Download release build
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
           name: archive-snapshot
       - name: Set up Docker
-        uses: docker/setup-docker-action@2bf61fb9464cc67f0cbdeabed6aa0380accd1c70 # v5.5.0
+        uses: docker/setup-docker-action@7ec28a010822b4626af4874f9448a4b05ac6f3e5 # v5.6.0
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4.4.1
       - name: Build Docker Image
