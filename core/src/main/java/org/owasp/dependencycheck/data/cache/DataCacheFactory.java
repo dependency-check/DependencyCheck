@@ -18,11 +18,9 @@
 package org.owasp.dependencycheck.data.cache;
 
 import io.github.jeremylong.jcs3.slf4j.Slf4jAdapter;
+import io.github.jeremylong.jcs3.slf4j.Slf4jLogFactory;
 import org.apache.commons.jcs3.JCS;
-import org.apache.commons.jcs3.access.CacheAccess;
 import org.apache.commons.jcs3.access.exception.CacheException;
-import org.apache.commons.jcs3.engine.CompositeCacheAttributes;
-import org.apache.commons.jcs3.engine.behavior.ICompositeCacheAttributes;
 import org.owasp.dependencycheck.data.nexus.MavenArtifact;
 import org.owasp.dependencycheck.data.nodeaudit.Advisory;
 import org.owasp.dependencycheck.utils.FileUtils;
@@ -79,10 +77,36 @@ public class DataCacheFactory {
         POM
     }
 
-    static {
-        System.setProperty("jcs.logSystem", "slf4j");
-        if (!LOGGER.isTraceEnabled()) {
-            Slf4jAdapter.muteLogging(true);
+    private static synchronized void ensureInitialized(Settings settings) {
+        if (!initialized) {
+            JCS.setLogSystem(new Slf4jLogFactory().getName());
+            if (!LOGGER.isTraceEnabled()) {
+                Slf4jAdapter.muteLogging(true);
+            }
+
+            final File cacheDirectory;
+            try {
+                cacheDirectory = new File(settings.getDataDirectory(), CACHE_DIRECTORY);
+            } catch (IOException ex) {
+                throw new CacheException("Unable to obtain disk cache directory path", ex);
+            }
+            if (!cacheDirectory.isDirectory() && !cacheDirectory.mkdirs()) {
+                throw new CacheException("Unable to create disk cache: " + cacheDirectory);
+            }
+            try (InputStream in = FileUtils.getResourceAsStream(CACHE_PROPERTIES)) {
+                final Properties properties = new Properties();
+                properties.load(in);
+                properties.put("jcs.auxiliary.ODC.attributes.DiskPath", cacheDirectory.getCanonicalPath());
+                for (CacheType t : CacheType.values()) {
+                    final File fp = new File(cacheDirectory, t.toString());
+                    properties.put("jcs.auxiliary." + t + ".attributes.DiskPath", fp.getCanonicalPath());
+                }
+
+                JCS.setConfigProperties(properties);
+                initialized = true;
+            } catch (IOException ex) {
+                throw new CacheException("Error creating disk cache", ex);
+            }
         }
     }
 
@@ -92,33 +116,7 @@ public class DataCacheFactory {
      * @param settings the configuration settings
      */
     public DataCacheFactory(Settings settings) {
-        synchronized (DataCacheFactory.class) {
-            if (!initialized) {
-                final File cacheDirectory;
-                try {
-                    cacheDirectory = new File(settings.getDataDirectory(), CACHE_DIRECTORY);
-                } catch (IOException ex) {
-                    throw new CacheException("Unable to obtain disk cache directory path", ex);
-                }
-                if (!cacheDirectory.isDirectory() && !cacheDirectory.mkdirs()) {
-                    throw new CacheException("Unable to create disk cache: " + cacheDirectory);
-                }
-                try (InputStream in = FileUtils.getResourceAsStream(CACHE_PROPERTIES)) {
-                    final Properties properties = new Properties();
-                    properties.load(in);
-                    properties.put("jcs.auxiliary.ODC.attributes.DiskPath", cacheDirectory.getCanonicalPath());
-                    for (CacheType t : CacheType.values()) {
-                        final File fp = new File(cacheDirectory, t.toString());
-                        properties.put("jcs.auxiliary." + t + ".attributes.DiskPath", fp.getCanonicalPath());
-                    }
-
-                    JCS.setConfigProperties(properties);
-                    initialized = true;
-                } catch (IOException ex) {
-                    throw new CacheException("Error creating disk cache", ex);
-                }
-            }
-        }
+        ensureInitialized(settings);
     }
 
     /**
@@ -128,13 +126,7 @@ public class DataCacheFactory {
      */
     public DataCache<List<Advisory>> getNodeAuditCache() {
         try {
-            final ICompositeCacheAttributes attr = new CompositeCacheAttributes();
-            attr.setUseDisk(true);
-            attr.setUseLateral(false);
-            attr.setUseRemote(false);
-            final CacheAccess<String, List<Advisory>> ca = JCS.getInstance("NODEAUDIT", attr);
-            final DataCache<List<Advisory>> dc = new DataCache<>(ca);
-            return dc;
+            return new DataCache<>(JCS.getInstance("NODEAUDIT"));
         } catch (Throwable ex) {
             //some reports of class not found exception, log and disable the cache.
             if (ex instanceof CacheException) {
@@ -152,13 +144,7 @@ public class DataCacheFactory {
      */
     public DataCache<Model> getPomCache() {
         try {
-            final ICompositeCacheAttributes attr = new CompositeCacheAttributes();
-            attr.setUseDisk(true);
-            attr.setUseLateral(false);
-            attr.setUseRemote(false);
-            final CacheAccess<String, Model> ca = JCS.getInstance("POM", attr);
-            final DataCache<Model> dc = new DataCache<>(ca);
-            return dc;
+            return new DataCache<>(JCS.getInstance("POM"));
         } catch (Throwable ex) {
             //some reports of class not found exception, log and disable the cache.
             if (ex instanceof CacheException) {
@@ -176,13 +162,7 @@ public class DataCacheFactory {
      */
     public DataCache<List<MavenArtifact>> getCentralCache() {
         try {
-            final ICompositeCacheAttributes attr = new CompositeCacheAttributes();
-            attr.setUseDisk(true);
-            attr.setUseLateral(false);
-            attr.setUseRemote(false);
-            final CacheAccess<String, List<MavenArtifact>> ca = JCS.getInstance("CENTRAL", attr);
-            final DataCache<List<MavenArtifact>> dc = new DataCache<>(ca);
-            return dc;
+            return new DataCache<>(JCS.getInstance("CENTRAL"));
         } catch (Throwable ex) {
             //some reports of class not found exception, log and disable the cache.
             if (ex instanceof CacheException) {
