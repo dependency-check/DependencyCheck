@@ -65,7 +65,7 @@ The following shows some other ways to add evidence
 ```
 
 
-The full schema for hints files can be found here: [dependency-hint.xsd](https://github.com/dependency-check/DependencyCheck/blob/main/core/src/main/resources/schema/dependency-hint.1.1.xsd "Hint Schema")
+The full schema for hints files can be found here: [dependency-hint.xsd](https://dependency-check.github.io/DependencyCheck/dependency-hint.1.4.xsd "Hint Schema")
 
 Please see the appropriate configuration option in each interfaces configuration guide:
 
