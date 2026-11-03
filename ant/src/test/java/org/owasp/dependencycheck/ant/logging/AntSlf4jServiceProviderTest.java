@@ -25,6 +25,8 @@ import java.net.URLClassLoader;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ServiceLoader;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.Task;
@@ -145,6 +147,25 @@ class AntSlf4jServiceProviderTest {
         logger.info("hello from SLF4J");
 
         verify(mockTask).log("hello from SLF4J", Project.MSG_INFO);
+    }
+
+    @Test
+    void testLogOutputOfWorkerThreadRoutedThroughAntTask() throws Exception {
+        Task mockTask = mock(Task.class);
+        AntTaskHolder.setTask(mockTask);
+
+        AntSlf4jServiceProvider provider = new AntSlf4jServiceProvider();
+        provider.initialize();
+        Logger logger = provider.getLoggerFactory().getLogger("test.worker");
+
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        try {
+            executor.submit(() -> logger.info("hello from worker")).get();
+        } finally {
+            executor.shutdown();
+        }
+
+        verify(mockTask).log("hello from worker", Project.MSG_INFO);
     }
 
     @Test
