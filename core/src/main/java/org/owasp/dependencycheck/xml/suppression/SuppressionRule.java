@@ -33,10 +33,12 @@ import javax.annotation.concurrent.NotThreadSafe;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  *
@@ -124,6 +126,13 @@ public class SuppressionRule {
     private boolean matched = false;
 
     /**
+     * The <code>cve</code>, <code>cwe</code> and <code>vulnerabilityName</code>
+     * entries of this rule that suppressed at least one vulnerability, as
+     * <code>kind:value</code>. Rules are processed by several threads at once.
+     */
+    private final Set<String> matchedEntries = Collections.newSetFromMap(new ConcurrentHashMap<>());
+
+    /**
      * Get the value of matched.
      *
      * @return the value of matched
@@ -139,6 +148,25 @@ public class SuppressionRule {
      */
     public void setMatched(boolean matched) {
         this.matched = matched;
+    }
+
+    /**
+     * Returns the <code>cve</code>, <code>cwe</code> and
+     * <code>vulnerabilityName</code> entries of this rule that did not
+     * suppress any vulnerability so far. A rule that suppressed some
+     * vulnerabilities may still contain such entries, e.g. because the
+     * vulnerability they were added for has been fixed in the meantime.
+     *
+     * @return the unused entries, formatted as <code>kind value</code>; empty
+     * if every entry was used
+     */
+    public List<String> getUnusedEntries() {
+        final List<String> unused = new ArrayList<>();
+        cve.stream().filter(e -> !matchedEntries.contains("cve:" + e)).forEach(e -> unused.add("cve " + e));
+        cwe.stream().filter(e -> !matchedEntries.contains("cwe:" + e)).forEach(e -> unused.add("cwe " + e));
+        vulnerabilityNames.stream().filter(e -> !matchedEntries.contains("vulnerabilityName:" + e.getValue()))
+                .forEach(e -> unused.add("vulnerabilityName " + e.getValue()));
+        return unused;
     }
 
     /**
@@ -605,6 +633,7 @@ public class SuppressionRule {
                     if (entry.equalsIgnoreCase(v.getName())) {
                         removeVulns.add(v);
                         remove = true;
+                        matchedEntries.add("cve:" + entry);
                         break;
                     }
                 }
@@ -614,6 +643,7 @@ public class SuppressionRule {
                         if (v.getCwes().stream().anyMatch(toTest -> toMatch.regionMatches(0, toTest, 0, toMatch.length()))) {
                             remove = true;
                             removeVulns.add(v);
+                            matchedEntries.add("cwe:" + entry);
                             break;
                         }
                     }
@@ -623,6 +653,7 @@ public class SuppressionRule {
                         if (entry.matches(v.getName())) {
                             remove = true;
                             removeVulns.add(v);
+                            matchedEntries.add("vulnerabilityName:" + entry.getValue());
                             break;
                         }
                     }

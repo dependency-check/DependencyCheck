@@ -338,6 +338,23 @@ class SuppressionRuleTest extends BaseTest {
         assertEquals(1, dependency.getSuppressedVulnerabilities().size());
     }
 
+    @Test
+    void testGetUnusedEntries() {
+        Dependency dependency = new Dependency();
+        dependency.addVulnerability(createVulnerability());
+        SuppressionRule instance = new SuppressionRule();
+        instance.addVulnerabilityName(PropertyType.of("CVE-2013-1337"));
+        instance.addVulnerabilityName(PropertyType.of("CVE-2013-1338"));
+        instance.addCve("CVE-2013-1339");
+
+        assertEquals(3, instance.getUnusedEntries().size());
+
+        instance.process(dependency);
+
+        assertTrue(instance.isMatched());
+        assertEquals(List.of("cve CVE-2013-1339", "vulnerabilityName CVE-2013-1338"), instance.getUnusedEntries());
+    }
+
     @ParameterizedTest
     @CsvSource(
             value = {
