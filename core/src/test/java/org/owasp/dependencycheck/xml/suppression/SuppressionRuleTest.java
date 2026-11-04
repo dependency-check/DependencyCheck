@@ -355,6 +355,22 @@ class SuppressionRuleTest extends BaseTest {
         assertEquals(List.of("cve CVE-2013-1339", "vulnerabilityName CVE-2013-1338"), instance.getUnusedEntries());
     }
 
+    @Test
+    void testGetUnusedEntriesWithCpe() throws CpeValidationException {
+        Dependency dependency = new Dependency();
+        dependency.addVulnerableSoftwareIdentifier(new CpeIdentifier("microsoft", ".net_framework", "4.5", Confidence.HIGH));
+        SuppressionRule instance = new SuppressionRule();
+        instance.addCpe(PropertyType.of("cpe:/a:microsoft:.net_framework:4.5"));
+        instance.addCpe(PropertyType.of("cpe:/a:microsoft:.net_framework:4.0"));
+
+        assertEquals(2, instance.getUnusedEntries().size());
+
+        instance.process(dependency);
+
+        assertTrue(instance.isMatched());
+        assertEquals(List.of("cpe cpe:/a:microsoft:.net_framework:4.0"), instance.getUnusedEntries());
+    }
+
     @ParameterizedTest
     @CsvSource(
             value = {
