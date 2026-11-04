@@ -338,6 +338,87 @@ class SuppressionRuleTest extends BaseTest {
         assertEquals(1, dependency.getSuppressedVulnerabilities().size());
     }
 
+    @Test
+    void testGetUnusedEntries() {
+        Dependency dependency = new Dependency();
+        dependency.addVulnerability(createVulnerability());
+        SuppressionRule instance = new SuppressionRule();
+        instance.addVulnerabilityName(PropertyType.of("CVE-2013-1337"));
+        instance.addVulnerabilityName(PropertyType.of("CVE-2013-1338"));
+        instance.addCve("CVE-2013-1339");
+
+        assertEquals(3, instance.getUnusedEntries().size());
+
+        instance.process(dependency);
+
+        assertTrue(instance.isMatched());
+        assertEquals(List.of("cve CVE-2013-1339", "vulnerabilityName CVE-2013-1338"), instance.getUnusedEntries());
+    }
+
+    @Test
+    void testGetUnusedEntriesWithCpe() throws CpeValidationException {
+        Dependency dependency = new Dependency();
+        dependency.addVulnerableSoftwareIdentifier(new CpeIdentifier("microsoft", ".net_framework", "4.5", Confidence.HIGH));
+        SuppressionRule instance = new SuppressionRule();
+        instance.addCpe(PropertyType.of("cpe:/a:microsoft:.net_framework:4.5"));
+        instance.addCpe(PropertyType.of("cpe:/a:microsoft:.net_framework:4.0"));
+
+        assertEquals(2, instance.getUnusedEntries().size());
+
+        instance.process(dependency);
+
+        assertTrue(instance.isMatched());
+        assertEquals(List.of("cpe cpe:/a:microsoft:.net_framework:4.0"), instance.getUnusedEntries());
+    }
+
+    @Test
+    void testGetUnusedEntriesWithDuplicates() {
+        Dependency dependency = new Dependency();
+        dependency.addVulnerability(createVulnerability());
+        SuppressionRule instance = new SuppressionRule();
+        instance.addCve("CVE-2013-1337");
+        instance.addCve("CVE-2013-1337");
+
+        instance.process(dependency);
+
+        // the second entry is redundant, the first one suppressed the vulnerability
+        assertEquals(List.of("cve CVE-2013-1337"), instance.getUnusedEntries());
+    }
+
+    @Test
+    void testGetUnusedEntriesWithSameValueButDifferentMatching() {
+        Dependency dependency = new Dependency();
+        dependency.addVulnerability(createVulnerability());
+        SuppressionRule instance = new SuppressionRule();
+        // same value, but only the second one matches the vulnerability "CVE-2013-1337"
+        instance.addVulnerabilityName(PropertyType.caseSensitive("cve-2013-1337"));
+        instance.addVulnerabilityName(PropertyType.of("cve-2013-1337"));
+
+        instance.process(dependency);
+
+        assertEquals(List.of("vulnerabilityName cve-2013-1337"), instance.getUnusedEntries());
+    }
+
+    @Test
+    void testGetUnusedEntriesWithTwoRulesForSameVulnerability() {
+        Dependency dependency = new Dependency();
+        dependency.addVulnerability(createVulnerability());
+        SuppressionRule first = new SuppressionRule();
+        first.addCve("CVE-2013-1337");
+        SuppressionRule second = new SuppressionRule();
+        second.addCve("CVE-2013-1337");
+
+        // the analyzers apply the rules one after the other
+        first.process(dependency);
+        second.process(dependency);
+
+        // the first rule removed the vulnerability, so the second one never sees it
+        assertTrue(first.isMatched());
+        assertTrue(first.getUnusedEntries().isEmpty());
+        assertFalse(second.isMatched());
+        assertEquals(List.of("cve CVE-2013-1337"), second.getUnusedEntries());
+    }
+
     @ParameterizedTest
     @CsvSource(
             value = {

@@ -6,6 +6,7 @@ import org.owasp.dependencycheck.Engine;
 import org.owasp.dependencycheck.analyzer.exception.AnalysisException;
 import org.owasp.dependencycheck.dependency.Confidence;
 import org.owasp.dependencycheck.dependency.Dependency;
+import org.owasp.dependencycheck.dependency.Vulnerability;
 import org.owasp.dependencycheck.dependency.naming.Identifier;
 import org.owasp.dependencycheck.dependency.naming.PurlIdentifier;
 import org.owasp.dependencycheck.utils.Settings;
@@ -84,6 +85,28 @@ class UnusedSuppressionRuleAnalyzerTest extends BaseTest {
         checkUnusedRules(shouldFail, 0, true, true, dependency10, dependency11);
     }
 
+    @Test
+    void testCheckUnusedEntriesOfMatchedRule() throws Exception {
+        Dependency dependency = getDependency("1.0");
+        Vulnerability vulnerability = new Vulnerability();
+        vulnerability.setName("CVE-2013-1337");
+        dependency.addVulnerability(vulnerability);
+
+        SuppressionRule rule = new SuppressionRule();
+        rule.addVulnerabilityName(PropertyType.of("CVE-2013-1337"));
+        rule.addVulnerabilityName(PropertyType.of("CVE-2013-1338"));
+        rule.process(dependency);
+
+        UnusedSuppressionRuleAnalyzer analyzer = getAnalyzer(false);
+        Engine engine = new Engine(getSettings());
+        engine.setDependencies(List.of(dependency));
+        engine.putObject(SUPPRESSION_OBJECT_KEY, new ArrayList<>(List.of(rule)));
+        analyzer.checkUnusedRules(engine);
+
+        // the rule suppressed a vulnerability, but one of its entries is obsolete
+        assertEquals(1, analyzer.getUnusedSuppressionRuleCount());
+    }
+
     private void checkUnusedRules(boolean shouldFail, int expectedCount,
                                   boolean withSuppressionRules, boolean matching,
                                   Dependency... dependencies) {
@@ -136,8 +159,15 @@ class UnusedSuppressionRuleAnalyzerTest extends BaseTest {
     private SuppressionRule getSuppressionRule(boolean matching) {
         SuppressionRule instance = new SuppressionRule();
         instance.addVulnerabilityName(PropertyType.of("CVE-2023-5072"));
+        if (matching) {
+            // let the entry suppress a vulnerability, as it does in a real run
+            Dependency vulnerable = new Dependency();
+            Vulnerability vulnerability = new Vulnerability();
+            vulnerability.setName("CVE-2023-5072");
+            vulnerable.addVulnerability(vulnerability);
+            instance.process(vulnerable);
+        }
         instance.setPackageUrl(PropertyType.regex("^pkg:maven/test." + PACKAGE_NAME + "." + matching));
-        instance.addCpe(PropertyType.of(PACKAGE_NAME));
         instance.setBase(false);
         instance.setMatched(matching);
         return instance;
