@@ -168,7 +168,6 @@ class UnusedSuppressionRuleAnalyzerTest extends BaseTest {
             instance.process(vulnerable);
         }
         instance.setPackageUrl(PropertyType.regex("^pkg:maven/test." + PACKAGE_NAME + "." + matching));
-        instance.addCpe(PropertyType.of(PACKAGE_NAME));
         instance.setBase(false);
         instance.setMatched(matching);
         return instance;

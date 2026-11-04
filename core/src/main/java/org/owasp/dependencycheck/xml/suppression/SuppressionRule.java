@@ -126,8 +126,8 @@ public class SuppressionRule {
     private boolean matched = false;
 
     /**
-     * The <code>cve</code>, <code>cwe</code> and <code>vulnerabilityName</code>
-     * entries of this rule that suppressed at least one vulnerability, as
+     * The <code>cpe</code>, <code>cve</code>, <code>cwe</code> and
+     * <code>vulnerabilityName</code> entries of this rule that matched, as
      * <code>kind:value</code>. Rules are processed by several threads at once.
      */
     private final Set<String> matchedEntries = Collections.newSetFromMap(new ConcurrentHashMap<>());
@@ -151,9 +151,9 @@ public class SuppressionRule {
     }
 
     /**
-     * Returns the <code>cve</code>, <code>cwe</code> and
-     * <code>vulnerabilityName</code> entries of this rule that did not
-     * suppress any vulnerability so far. A rule that suppressed some
+     * Returns the <code>cpe</code>, <code>cve</code>, <code>cwe</code> and
+     * <code>vulnerabilityName</code> entries of this rule that did not match
+     * anything so far. A rule that suppressed some
      * vulnerabilities may still contain such entries, e.g. because the
      * vulnerability they were added for has been fixed in the meantime.
      *
@@ -162,6 +162,8 @@ public class SuppressionRule {
      */
     public List<String> getUnusedEntries() {
         final List<String> unused = new ArrayList<>();
+        cpe.stream().filter(e -> !matchedEntries.contains("cpe:" + e.getValue()))
+                .forEach(e -> unused.add("cpe " + e.getValue()));
         cve.stream().filter(e -> !matchedEntries.contains("cve:" + e)).forEach(e -> unused.add("cve " + e));
         cwe.stream().filter(e -> !matchedEntries.contains("cwe:" + e)).forEach(e -> unused.add("cwe " + e));
         vulnerabilityNames.stream().filter(e -> !matchedEntries.contains("vulnerabilityName:" + e.getValue()))
@@ -611,6 +613,7 @@ public class SuppressionRule {
             for (Identifier i : dependency.getVulnerableSoftwareIdentifiers()) {
                 for (PropertyType c : this.cpe) {
                     if (identifierMatches(c, i)) {
+                        matchedEntries.add("cpe:" + c.getValue());
                         if (!isBase()) {
                             matched = true;
                             if (this.notes != null) {
