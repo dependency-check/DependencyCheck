@@ -127,10 +127,56 @@ public class SuppressionRule {
 
     /**
      * The <code>cpe</code>, <code>cve</code>, <code>cwe</code> and
-     * <code>vulnerabilityName</code> entries of this rule that matched, as
-     * <code>kind:value</code>. Rules are processed by several threads at once.
+     * <code>vulnerabilityName</code> entries of this rule that matched. Rules
+     * are processed by several threads at once.
      */
-    private final Set<String> matchedEntries = Collections.newSetFromMap(new ConcurrentHashMap<>());
+    private final Set<RuleEntry> matchedEntries = Collections.newSetFromMap(new ConcurrentHashMap<>());
+
+    /**
+     * The kinds of entries of a rule that are tracked for being used.
+     */
+    private enum EntryKind {
+        CPE("cpe"), CVE("cve"), CWE("cwe"), VULNERABILITY_NAME("vulnerabilityName");
+
+        private final String label;
+
+        EntryKind(String label) {
+            this.label = label;
+        }
+    }
+
+    /**
+     * Identifies one entry of a rule by its kind and its position in the list
+     * of entries of that kind. Entries with the same value, e.g. duplicates,
+     * are different entries.
+     */
+    private static final class RuleEntry {
+
+        private final EntryKind kind;
+        private final int index;
+
+        RuleEntry(EntryKind kind, int index) {
+            this.kind = kind;
+            this.index = index;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (this == obj) {
+                return true;
+            }
+            if (obj == null || getClass() != obj.getClass()) {
+                return false;
+            }
+            final RuleEntry that = (RuleEntry) obj;
+            return kind == that.kind && index == that.index;
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(kind, index);
+        }
+    }
 
     /**
      * Get the value of matched.
@@ -162,13 +208,25 @@ public class SuppressionRule {
      */
     public List<String> getUnusedEntries() {
         final List<String> unused = new ArrayList<>();
-        cpe.stream().filter(e -> !matchedEntries.contains("cpe:" + e.getValue()))
-                .forEach(e -> unused.add("cpe " + e.getValue()));
-        cve.stream().filter(e -> !matchedEntries.contains("cve:" + e)).forEach(e -> unused.add("cve " + e));
-        cwe.stream().filter(e -> !matchedEntries.contains("cwe:" + e)).forEach(e -> unused.add("cwe " + e));
-        vulnerabilityNames.stream().filter(e -> !matchedEntries.contains("vulnerabilityName:" + e.getValue()))
-                .forEach(e -> unused.add("vulnerabilityName " + e.getValue()));
+        for (int i = 0; i < cpe.size(); i++) {
+            addIfUnused(unused, EntryKind.CPE, i, cpe.get(i).getValue());
+        }
+        for (int i = 0; i < cve.size(); i++) {
+            addIfUnused(unused, EntryKind.CVE, i, cve.get(i));
+        }
+        for (int i = 0; i < cwe.size(); i++) {
+            addIfUnused(unused, EntryKind.CWE, i, cwe.get(i));
+        }
+        for (int i = 0; i < vulnerabilityNames.size(); i++) {
+            addIfUnused(unused, EntryKind.VULNERABILITY_NAME, i, vulnerabilityNames.get(i).getValue());
+        }
         return unused;
+    }
+
+    private void addIfUnused(List<String> unused, EntryKind kind, int index, String value) {
+        if (!matchedEntries.contains(new RuleEntry(kind, index))) {
+            unused.add(kind.label + " " + value);
+        }
     }
 
     /**
@@ -611,9 +669,9 @@ public class SuppressionRule {
         if (hasCpe()) {
             final Set<Identifier> removeIdentifiers = new HashSet<>();
             for (Identifier i : dependency.getVulnerableSoftwareIdentifiers()) {
-                for (PropertyType c : this.cpe) {
-                    if (identifierMatches(c, i)) {
-                        matchedEntries.add("cpe:" + c.getValue());
+                for (int idx = 0; idx < this.cpe.size(); idx++) {
+                    if (identifierMatches(this.cpe.get(idx), i)) {
+                        matchedEntries.add(new RuleEntry(EntryKind.CPE, idx));
                         if (!isBase()) {
                             matched = true;
                             if (this.notes != null) {
@@ -632,31 +690,31 @@ public class SuppressionRule {
             final Set<Vulnerability> removeVulns = new HashSet<>();
             for (Vulnerability v : dependency.getVulnerabilities()) {
                 boolean remove = false;
-                for (String entry : this.cve) {
-                    if (entry.equalsIgnoreCase(v.getName())) {
+                for (int idx = 0; idx < this.cve.size(); idx++) {
+                    if (this.cve.get(idx).equalsIgnoreCase(v.getName())) {
                         removeVulns.add(v);
                         remove = true;
-                        matchedEntries.add("cve:" + entry);
+                        matchedEntries.add(new RuleEntry(EntryKind.CVE, idx));
                         break;
                     }
                 }
                 if (!remove && this.cwe != null && !v.getCwes().isEmpty()) {
-                    for (String entry : this.cwe) {
-                        final String toMatch = String.format("CWE-%s", entry);
+                    for (int idx = 0; idx < this.cwe.size(); idx++) {
+                        final String toMatch = String.format("CWE-%s", this.cwe.get(idx));
                         if (v.getCwes().stream().anyMatch(toTest -> toMatch.regionMatches(0, toTest, 0, toMatch.length()))) {
                             remove = true;
                             removeVulns.add(v);
-                            matchedEntries.add("cwe:" + entry);
+                            matchedEntries.add(new RuleEntry(EntryKind.CWE, idx));
                             break;
                         }
                     }
                 }
                 if (!remove && v.getName() != null) {
-                    for (PropertyType entry : this.vulnerabilityNames) {
-                        if (entry.matches(v.getName())) {
+                    for (int idx = 0; idx < this.vulnerabilityNames.size(); idx++) {
+                        if (this.vulnerabilityNames.get(idx).matches(v.getName())) {
                             remove = true;
                             removeVulns.add(v);
-                            matchedEntries.add("vulnerabilityName:" + entry.getValue());
+                            matchedEntries.add(new RuleEntry(EntryKind.VULNERABILITY_NAME, idx));
                             break;
                         }
                     }
