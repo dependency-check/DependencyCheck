@@ -399,6 +399,26 @@ class SuppressionRuleTest extends BaseTest {
         assertEquals(List.of("vulnerabilityName cve-2013-1337"), instance.getUnusedEntries());
     }
 
+    @Test
+    void testGetUnusedEntriesWithTwoRulesForSameVulnerability() {
+        Dependency dependency = new Dependency();
+        dependency.addVulnerability(createVulnerability());
+        SuppressionRule first = new SuppressionRule();
+        first.addCve("CVE-2013-1337");
+        SuppressionRule second = new SuppressionRule();
+        second.addCve("CVE-2013-1337");
+
+        // the analyzers apply the rules one after the other
+        first.process(dependency);
+        second.process(dependency);
+
+        // the first rule removed the vulnerability, so the second one never sees it
+        assertTrue(first.isMatched());
+        assertTrue(first.getUnusedEntries().isEmpty());
+        assertFalse(second.isMatched());
+        assertEquals(List.of("cve CVE-2013-1337"), second.getUnusedEntries());
+    }
+
     @ParameterizedTest
     @CsvSource(
             value = {
