@@ -41,6 +41,7 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.annotation.concurrent.ThreadSafe;
@@ -450,6 +451,10 @@ public abstract class AbstractNpmAnalyzer extends AbstractFileTypeAnalyzer {
     protected void processResults(final List<Advisory> advisories, Engine engine,
             Dependency dependency, MultiValuedMap<String, String> dependencyMap)
             throws CpeValidationException {
+        // virtual dependencies created by this invocation, keyed by module name; used to attach
+        // additional advisories instead of creating duplicates that would later be merged with
+        // their vulnerabilities discarded when no installed version can be determined
+        final Map<String, Dependency> createdUnversioned = new HashMap<>();
         for (Advisory advisory : advisories) {
             //Create a new vulnerability out of the advisory returned by nsp.
             final Vulnerability vuln = new Vulnerability();
@@ -488,11 +493,16 @@ public abstract class AbstractNpmAnalyzer extends AbstractFileTypeAnalyzer {
             if (version == null && dependencyMap.containsKey(advisory.getModuleName())) {
                 version = determineVersionFromMap(advisory.getVulnerableVersions(), dependencyMap.get(advisory.getModuleName()));
             }
-            final Dependency existing = findDependency(engine, advisory.getModuleName(), version);
+            final Dependency existing = version == null
+                    ? createdUnversioned.get(advisory.getModuleName())
+                    : findDependency(engine, advisory.getModuleName(), version);
             if (existing == null) {
                 final Dependency nodeModule = createDependency(dependency, advisory.getModuleName(), version, "transitive");
                 nodeModule.addVulnerability(vuln);
                 engine.addDependency(nodeModule);
+                if (version == null) {
+                    createdUnversioned.put(advisory.getModuleName(), nodeModule);
+                }
             } else {
                 replaceOrAddVulnerability(existing, vuln);
             }
