@@ -23,6 +23,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.jspecify.annotations.NonNull;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import org.owasp.dependencycheck.Engine;
 import org.owasp.dependencycheck.analyzer.exception.AnalysisException;
 import org.owasp.dependencycheck.analyzer.exception.SearchException;
@@ -97,12 +100,107 @@ public class PnpmAuditAnalyzer extends AbstractNpmAnalyzer {
         }
         final List<Advisory> advisories;
         final MultiValuedMap<String, String> dependencyMap = new HashSetValuedHashMap<>();
+        try {
+            collectInstalledVersions(packageLock, dependencyMap);
+        } catch (IOException ex) {
+            LOGGER.warn("Unable to parse installed versions from {}; advisory version detection will "
+                    + "fall back to the audit findings only.", packageLock, ex);
+        }
         advisories = analyzePackage(packageLock, dependency);
         try {
             processResults(advisories, engine, dependency, dependencyMap);
         } catch (CpeValidationException ex) {
             throw new UnexpectedAnalysisException(ex);
         }
+    }
+
+    /**
+     * Collects the installed package versions from the {@code packages}
+     * section of a pnpm lock file into the given map of module name to
+     * installed versions. Supports the classic lockfile format
+     * ({@code /name/1.2.3}, lockfileVersion 5.x/6.x) and the modern format
+     * ({@code name@1.2.3}, lockfileVersion 9+), including scoped package
+     * names and peer-dependency suffixes.
+     *
+     * @param lockFile a reference to the pnpm-lock.yaml
+     * @param dependencyMap the map of module name to installed versions to
+     * populate
+     * @throws IOException thrown if the lock file cannot be read or parsed
+     */
+    static void collectInstalledVersions(File lockFile, MultiValuedMap<String, String> dependencyMap)
+            throws IOException {
+        final ObjectMapper yamlReader = new ObjectMapper(new YAMLFactory());
+        final JsonNode packages = yamlReader.readTree(lockFile).path("packages");
+        if (packages.isObject()) {
+            packages.fieldNames().forEachRemaining(key -> {
+                final String name = packageNameFromLockKey(key);
+                final String version = packageVersionFromLockKey(key);
+                if (name != null && version != null) {
+                    dependencyMap.put(name, version);
+                }
+            });
+        }
+    }
+
+    /**
+     * Extracts the package name from a pnpm lock file {@code packages} key.
+     *
+     * @param key the packages key (for example {@code /name/1.2.3},
+     * {@code /@scope/name/1.2.3}, {@code name@1.2.3} or
+     * {@code @scope/name@1.2.3}, optionally with a peer-dependency suffix)
+     * @return the package name, or {@code null} if the key cannot be parsed
+     */
+    static String packageNameFromLockKey(String key) {
+        final int idx = nameVersionSeparatorIndex(key);
+        return idx < 0 ? null : key.substring(key.startsWith("/") ? 1 : 0, idx);
+    }
+
+    /**
+     * Extracts the package version from a pnpm lock file {@code packages}
+     * key, stripping any peer-dependency suffix.
+     *
+     * @param key the packages key (for example {@code /name/1.2.3},
+     * {@code /@scope/name/1.2.3}, {@code name@1.2.3} or
+     * {@code @scope/name@1.2.3}, optionally with a peer-dependency suffix)
+     * @return the package version, or {@code null} if the key cannot be
+     * parsed
+     */
+    static String packageVersionFromLockKey(String key) {
+        final int idx = nameVersionSeparatorIndex(key);
+        if (idx < 0) {
+            return null;
+        }
+        String version = key.substring(idx + 1);
+        final int paren = version.indexOf('(');
+        if (paren >= 0) {
+            version = version.substring(0, paren);
+        }
+        final int underscore = version.indexOf('_');
+        if (underscore >= 0) {
+            version = version.substring(0, underscore);
+        }
+        return version.isEmpty() ? null : version;
+    }
+
+    /**
+     * Finds the index of the separator between the package name and version
+     * in a pnpm lock file {@code packages} key: the last {@code @} for the
+     * modern format, otherwise the last {@code /} for the classic format.
+     *
+     * @param key the packages key
+     * @return the separator index, or {@code -1} if the key cannot be parsed
+     */
+    private static int nameVersionSeparatorIndex(String key) {
+        final int paren = key.indexOf('(');
+        final String base = paren >= 0 ? key.substring(0, paren) : key;
+        if (base.startsWith("/")) {
+            // classic format: /name/version - scoped names contain an inner slash
+            final int slash = base.lastIndexOf('/');
+            return slash > 1 ? slash : -1;
+        }
+        // modern format: name@version - a leading @ denotes a scope
+        final int at = base.lastIndexOf('@');
+        return at > 0 ? at : -1;
     }
 
     @Override
