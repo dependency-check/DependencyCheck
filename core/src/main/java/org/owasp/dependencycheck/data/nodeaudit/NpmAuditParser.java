@@ -98,15 +98,36 @@ public class NpmAuditParser {
         advisory.setCwes(stringCwes);
 
         final JSONArray findings = object.optJSONArray("findings");
-        for (int i = 0; i < findings.length(); i++) {
-            final JSONObject finding = findings.getJSONObject(i);
-            final String version = finding.optString("version", null);
-            final JSONArray paths = finding.optJSONArray("paths");
-            for (int j = 0; j < paths.length(); j++) {
-                final String path = paths.getString(j);
-                if (path != null && path.equals(advisory.getModuleName())) {
-                    advisory.setVersion(version);
+        if (findings != null) {
+            String detectedVersion = null;
+            boolean ambiguous = false;
+            for (int i = 0; i < findings.length(); i++) {
+                final JSONObject finding = findings.getJSONObject(i);
+                final String version = finding.optString("version", null);
+                if (version == null) {
+                    continue;
                 }
+                final JSONArray paths = finding.optJSONArray("paths");
+                boolean candidate = paths == null || paths.length() == 0;
+                if (!candidate) {
+                    for (int j = 0; j < paths.length(); j++) {
+                        final String path = paths.getString(j);
+                        if (path != null && (path.equals(advisory.getModuleName())
+                                || path.endsWith(">" + advisory.getModuleName()))) {
+                            candidate = true;
+                        }
+                    }
+                }
+                if (candidate) {
+                    if (detectedVersion == null) {
+                        detectedVersion = version;
+                    } else if (!detectedVersion.equals(version)) {
+                        ambiguous = true;
+                    }
+                }
+            }
+            if (!ambiguous) {
+                advisory.setVersion(detectedVersion);
             }
         }
 
