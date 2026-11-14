@@ -1,0 +1,110 @@
+{
+  "version": "0.9.3",
+  "created_at": "2026-11-14 20:42:33 +0800",
+  "results": [
+    {
+      "type": "unpatched_gem",
+      "gem": {
+        "name": "actionview",
+        "version": "7.2.4"
+      },
+      "advisory": {
+        "path": "/home/user/.local/share/ruby-advisory-db/gems/actionview/GHSA-2p2f-4rq4-gjwc.yml",
+        "id": "GHSA-2p2f-4rq4-gjwc",
+        "url": "https://github.com/rails/rails/security/advisories/GHSA-2p2f-4rq4-gjwc",
+        "title": "Possible XSS vulnerability in Action View text helpers",
+        "date": "2026-11-04",
+        "description": "### Impact\n\nWith the HTML5 sanitizer (`Rails::HTML5::Sanitizer`, the default vendor on\nCRuby for applications using `load_defaults 7.1` or later), Nokogiri before\n1.19.5 serializes `<` and `>` unescaped inside attribute values. The Action\nView text helpers `highlight` and `simple_format` sanitize their input and\nthen process the resulting HTML as a string: `highlight` splits it on tag\nboundaries to insert matches, and `simple_format` splits it into paragraphs on\nblank lines. An unescaped `>` or a blank line inside an attribute value could\ncause markup in that value, which the sanitizer left inert, to be emitted as\nlive elements in the helper's `html_safe` output, possibly leading to XSS.\nApplications that use the HTML5 sanitizer and pass untrusted text to\n`highlight`, or to `simple_format` with `html_options`, are affected.\n\n### Details\n\nThe fixed releases require rails-html-sanitizer 1.7.2 or later, which requires\nLoofah 2.25.3 and Nokogiri 1.19.5. With these versions, the HTML5 sanitizer\nescapes `<` and `>` in attribute values as `&lt;` and `&gt;`, as the HTML4\nsanitizer already does. The parsed DOM is unchanged, but code or tests that\ncompare sanitized HTML as a string may see the new serialization.\n\n### Workarounds\n\nUpgrade Nokogiri to 1.19.5 or later; the escaping is in its HTML5 serializer,\nso no Rails upgrade is needed. Alternatively, use the HTML4 sanitizer by\nsetting `config.action_view.sanitizer_vendor = Rails::HTML4::Sanitizer`.\n\n### Releases\n\nThe fixed releases are available at the normal locations.\n\nPatches for those who cannot upgrade at once:\n- 8.1:\n  https://github.com/rails/rails/commit/adc3a32d4abea77ed3aacf6f5fb71cfc005bef73.patch\n- 8.0:\n  https://github.com/rails/rails/commit/009ea68342d05d02087c04dae7faaa4e4c1def11.patch\n\n### Credit\n\nThis issue was responsibly reported by HackerOne researcher\n[azaran](https://hackerone.com/azaran).\nThis issue was also found by the Anthropic OSS Scanner (ANT-2026-RTK47OH0).\n",
+        "cvss_v2": null,
+        "cvss_v3": 6.1,
+        "cve": null,
+        "osvdb": null,
+        "ghsa": "2p2f-4rq4-gjwc",
+        "unaffected_versions": [],
+        "patched_versions": [
+          "~> 8.0.5, >= 8.0.5.2",
+          ">= 8.1.4.1"
+        ],
+        "criticality": "medium"
+      }
+    },
+    {
+      "type": "unpatched_gem",
+      "gem": {
+        "name": "actionview",
+        "version": "7.2.4"
+      },
+      "advisory": {
+        "path": "/home/user/.local/share/ruby-advisory-db/gems/actionview/GHSA-68p9-83h6-5wpj.yml",
+        "id": "GHSA-68p9-83h6-5wpj",
+        "url": "https://github.com/rails/rails/security/advisories/GHSA-68p9-83h6-5wpj",
+        "title": "Possible XSS vulnerability in Action View tag helpers",
+        "date": "2026-11-04",
+        "description": "### Impact\n\nThe fix for\n[CVE-2026-33168](https://github.com/rails/rails/security/advisories/GHSA-v55j-83pf-r9cq)\nskips blank HTML attribute names in Action View tag helpers, but it tests the\nname before converting it to a string. A Symbol name made only of whitespace,\nsuch as `:\" \"`, is not blank, because `Symbol#blank?` is `Symbol#empty?`, so\nit reaches the attribute escaping, which emits an attribute with no name and\nproduces malformed HTML. The asset tag helpers, such as `image_tag`,\n`video_tag` and `audio_tag`, symbolize their options, so a whitespace String\nname passed to them takes the same path. A carefully crafted attribute value\ncould then be misinterpreted by the browser as a separate attribute name,\npossibly leading to XSS. Applications that allow users to specify custom HTML\nattribute names are affected.\n\n### Releases\n\nThe fixed releases are available at the normal locations.\n\nPatches for those who cannot upgrade at once:\n- 8.1:\n  https://github.com/rails/rails/commit/9190210606ffe52f92fdc75637f8ff69404f22c8.patch\n- 8.0:\n  https://github.com/rails/rails/commit/f47452533e1f28d847c63181b9d5f8b7243ef9a4.patch\n\n### Credit\n\nThis issue was responsibly reported by HackerOne researcher\n[thepo1es](https://hackerone.com/thepo1es).\n",
+        "cvss_v2": null,
+        "cvss_v3": 4.7,
+        "cve": null,
+        "osvdb": null,
+        "ghsa": "68p9-83h6-5wpj",
+        "unaffected_versions": [],
+        "patched_versions": [
+          "~> 8.0.5, >= 8.0.5.2",
+          ">= 8.1.4.1"
+        ],
+        "criticality": "medium"
+      }
+    },
+    {
+      "type": "unpatched_gem",
+      "gem": {
+        "name": "actionview",
+        "version": "7.2.4"
+      },
+      "advisory": {
+        "path": "/home/user/.local/share/ruby-advisory-db/gems/actionview/GHSA-rq8q-p985-fjq7.yml",
+        "id": "GHSA-rq8q-p985-fjq7",
+        "url": "https://github.com/rails/rails/security/advisories/GHSA-rq8q-p985-fjq7",
+        "title": "Possible XSS vulnerability in Action View strip_tags",
+        "date": "2026-11-04",
+        "description": "### Impact\n\n`strip_tags` in Action View returns its sanitized output marked `html_safe`,\nbut the underlying sanitizer encodes only `&`, `<` and `>`, leaving `\"` and\n`'` unencoded. Because ERB does not escape a string marked `html_safe`,\nuntrusted input passed through `strip_tags` and rendered inside a quoted HTML\nattribute value could close the attribute and add new attributes, possibly\nleading to XSS. Applications that render `strip_tags` output from untrusted\ninput inside an HTML attribute, for example in a `title` attribute or a\n`<meta content>` tag, are affected. Output rendered as element content is not\naffected.\n\n### Details\n\n`strip_tags` now encodes `\"` and `'` in its output, as well as `&`, `<` and\n`>`, without double-encoding existing entities. Applications that use\n`strip_tags` output outside HTML, such as in a text template or JSON, now see\n`&quot;` and `&#39;` where they saw `\"` and `'`; `CGI.unescapeHTML` decodes\nthem. See the Action View CHANGELOG.\n\n### Workarounds\n\nPass `strip_tags` output to an attribute through a tag helper, which escapes\nattribute values, for example `tag.a(title: strip_tags(user_input))`.\n\n### Releases\n\nThe fixed releases are available at the normal locations.\n\nPatches for those who cannot upgrade at once:\n- 8.1:\n  https://github.com/rails/rails/commit/568b19cb860322885593e308a7f27aceb779e9d7.patch\n- 8.0:\n  https://github.com/rails/rails/commit/c3772a10f405f9644125cbb484adfd2aa7a25a59.patch\n\n### Credit\n\nThis issue was responsibly reported by HackerOne researcher\n[lucasluitjes](https://hackerone.com/lucasluitjes).\n",
+        "cvss_v2": null,
+        "cvss_v3": 6.1,
+        "cve": null,
+        "osvdb": null,
+        "ghsa": "rq8q-p985-fjq7",
+        "unaffected_versions": [],
+        "patched_versions": [
+          "~> 8.0.5, >= 8.0.5.2",
+          ">= 8.1.4.1"
+        ],
+        "criticality": "medium"
+      }
+    },
+    {
+      "type": "unpatched_gem",
+      "gem": {
+        "name": "actionview",
+        "version": "7.2.4"
+      },
+      "advisory": {
+        "path": "/home/user/.local/share/ruby-advisory-db/gems/actionview/GHSA-v6rj-xm57-3p59.yml",
+        "id": "GHSA-v6rj-xm57-3p59",
+        "url": "https://github.com/rails/rails/security/advisories/GHSA-v6rj-xm57-3p59",
+        "title": "Possible XSS vulnerability in Action View highlight helper",
+        "date": "2026-11-04",
+        "description": "### Impact\n\n`ActionView::Helpers::TextHelper#highlight` substitutes each matched phrase\ninto the `:highlighter` string without escaping it and returns the result\nmarked HTML-safe. Because sanitizing leaves quote characters in text\nunescaped, a match substituted into a quoted attribute value of the\nhighlighter, such as the `<a href=\"search?q=\\1\">` form shown in the method's\ndocumentation, could end the attribute value and add attributes to the\nelement, possibly leading to XSS. Applications are affected when they pass a\n`:highlighter` that places a placeholder inside an attribute value and\nhighlight text or phrases that a user controls. The default `<mark>\\1</mark>`\nhighlighter and the block form are not affected.\n\n### Details\n\nThe fixed releases HTML-escape each group substituted into the `:highlighter`\nstring, so quotes in a match are rendered as `&quot;` and `&#39;`. Only the\nnumbered placeholders `\\0` to `\\9` are expanded; other `String#sub`\nreplacement escapes, such as `\\k<name>`, `\\&` and `\\\\`, are left as written. A\nmatch can no longer begin on the `>` that closes a preceding tag. Escaping\nmakes a placeholder safe as element content or inside a quoted attribute\nvalue, but not in an unquoted attribute value, a URL, JavaScript or CSS\ncontext, or an attribute whose value is HTML. See the Action View CHANGELOG\nfor details.\n\n### Workarounds\n\nUse a `:highlighter` that places the matched phrase only in element content,\nsuch as the default `<mark>\\1</mark>`.\n\n### Releases\n\nThe fixed releases are available at the normal locations.\n\nPatches for those who cannot upgrade at once:\n- 8.1:\n  https://github.com/rails/rails/commit/06938194b4fd59e1d2c8ab4a781f3c1e2b763425.patch\n- 8.0:\n  https://github.com/rails/rails/commit/c796f6198837479ada13290eb8fa767b5219a58a.patch\n\n### Credit\n\nThis issue was found by the Anthropic OSS Scanner (ANT-2026-THHUJQVO).\n",
+        "cvss_v2": null,
+        "cvss_v3": 6.1,
+        "cve": null,
+        "osvdb": null,
+        "ghsa": "v6rj-xm57-3p59",
+        "unaffected_versions": [],
+        "patched_versions": [
+          "~> 8.0.5, >= 8.0.5.2",
+          ">= 8.1.4.1"
+        ],
+        "criticality": "medium"
+      }
+    }
+  ]
+}

@@ -21,7 +21,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.owasp.dependencycheck.Engine;
 import org.owasp.dependencycheck.analyzer.exception.AnalysisException;
 import org.owasp.dependencycheck.data.nvd.ecosystem.Ecosystem;
-import org.owasp.dependencycheck.data.nvdcve.CveDB;
 import org.owasp.dependencycheck.dependency.Dependency;
 import org.owasp.dependencycheck.exception.InitializationException;
 import org.owasp.dependencycheck.processing.BundlerAuditProcessor;
@@ -38,7 +37,6 @@ import java.io.FileFilter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -74,26 +72,6 @@ public class RubyBundleAuditAnalyzer extends AbstractFileTypeAnalyzer {
      * The filter defining which files will be analyzed.
      */
     private static final FileFilter FILTER = FileFilterBuilder.newInstance().addFilenames("Gemfile.lock").build();
-    /**
-     * Name.
-     */
-    public static final String NAME = "Name: ";
-    /**
-     * Version.
-     */
-    public static final String VERSION = "Version: ";
-    /**
-     * Advisory.
-     */
-    public static final String ADVISORY = "Advisory: ";
-    /**
-     * CVE.
-     */
-    public static final String CVE = "CVE: ";
-    /**
-     * Criticality.
-     */
-    public static final String CRITICALITY = "Criticality: ";
 
     /**
      * If {@link #analyzeDependency(Dependency, Engine)} is called, then we have
@@ -199,7 +177,7 @@ public class RubyBundleAuditAnalyzer extends AbstractFileTypeAnalyzer {
      */
     @Override
     public void prepareFileTypeAnalyzer(Engine engine) throws InitializationException {
-        String bundleAuditVersionDetails;
+        final String bundleAuditVersionDetails;
         try {
             final Process process = launchBundleAudit(getSettings().getTempDirectory(), List.of("version"));
             try (ProcessReader processReader = new ProcessReader(process)) {
@@ -257,11 +235,11 @@ public class RubyBundleAuditAnalyzer extends AbstractFileTypeAnalyzer {
             needToDisableGemspecAnalyzer = false;
         }
         final File parentFile = dependency.getActualFile().getParentFile();
-        final List<String> bundleAuditArgs = Arrays.asList("check", "--verbose");
+        final List<String> bundleAuditArgs = Arrays.asList("check", "--format", "json");
 
         final Process process = launchBundleAudit(parentFile, bundleAuditArgs);
         try (BundlerAuditProcessor processor = new BundlerAuditProcessor(dependency, engine);
-                ProcessReader processReader = new ProcessReader(process, processor)) {
+             ProcessReader processReader = new ProcessReader(process, processor)) {
 
             processReader.readAll();
             final String error = processReader.getError();
