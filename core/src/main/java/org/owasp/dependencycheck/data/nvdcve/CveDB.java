@@ -31,6 +31,7 @@ import io.github.jeremylong.openvulnerability.client.nvd.DefCveItem;
 import io.github.jeremylong.openvulnerability.client.nvd.LangString;
 import io.github.jeremylong.openvulnerability.client.nvd.Node;
 import io.github.jeremylong.openvulnerability.client.nvd.Reference;
+import io.github.jeremylong.openvulnerability.client.nvd.ValueMappable;
 import io.github.jeremylong.openvulnerability.client.nvd.Weakness;
 import org.apache.commons.collections4.map.ReferenceMap;
 import org.owasp.dependencycheck.analyzer.exception.LambdaExceptionWrapper;
@@ -660,15 +661,8 @@ public final class CveDB implements AutoCloseable {
                         final CvssV2Data.CiaType confidentialityImpact = CvssV2Data.CiaType.fromValue(rsV.getString(15));
                         final CvssV2Data.CiaType integrityImpact = CvssV2Data.CiaType.fromValue(rsV.getString(16));
                         final CvssV2Data.CiaType availabilityImpact = CvssV2Data.CiaType.fromValue(rsV.getString(17));
-                        final String vector = String.format("/AV:%s/AC:%s/Au:%s/C:%s/I:%s/A:%s",
-                                accessVector.vectorValue(),
-                                accessComplexity.vectorValue(),
-                                authentication.vectorValue(),
-                                confidentialityImpact.vectorValue(),
-                                integrityImpact.vectorValue(),
-                                availabilityImpact.vectorValue());
 
-                        final CvssV2Data cvssData = new CvssV2Data(CvssV2Data.Version._2_0, vector, accessVector,
+                        final CvssV2Data cvssData = new CvssV2Data(CvssV2Data.Version._2_0, accessVector,
                                 accessComplexity, authentication, confidentialityImpact,
                                 integrityImpact, availabilityImpact, rsV.getDouble(11), rsV.getString(3),
                                 null, null, null, null, null, null, null, null, null, null);
@@ -682,11 +676,7 @@ public final class CveDB implements AutoCloseable {
                     //29.v3BaseScore, 30.v3BaseSeverity, 31.v3Version
                     if (rsV.getObject(21) != null) {
                         //some older test data may not correctly have the version set.
-                        String cveVersion = "3.1";
-                        if (rsV.getString(31) != null) {
-                            cveVersion = rsV.getString(31);
-                        }
-                        final CvssV3Data.Version version = CvssV3Data.Version.fromValue(cveVersion);
+                        final CvssV3Data.Version version = Optional.ofNullable(rsV.getString(31)).map(CvssV3Data.Version::fromValue).orElse(CvssV3Data.Version._3_1);
                         final CvssV3Data.AttackVectorType attackVector = CvssV3Data.AttackVectorType.fromValue(rsV.getString(21));
                         final CvssV3Data.AttackComplexityType attackComplexity = CvssV3Data.AttackComplexityType.fromValue(rsV.getString(22));
                         final CvssV3Data.PrivilegesRequiredType privilegesRequired = CvssV3Data.PrivilegesRequiredType.fromValue(rsV.getString(23));
@@ -696,18 +686,7 @@ public final class CveDB implements AutoCloseable {
                         final CvssV3Data.CiaType integrityImpact = CvssV3Data.CiaType.fromValue(rsV.getString(27));
                         final CvssV3Data.CiaType availabilityImpact = CvssV3Data.CiaType.fromValue(rsV.getString(28));
                         final CvssV3Data.SeverityType baseSeverity = CvssV3Data.SeverityType.fromValue(rsV.getString(30));
-                        final String vector = String.format("CVSS:%s/AV:%s/AC:%s/PR:%s/UI:%s/S:%s/C:%s/I:%s/A:%s",
-                                version.value(),
-                                attackVector.vectorValue(),
-                                attackComplexity.vectorValue(),
-                                privilegesRequired.vectorValue(),
-                                userInteraction.vectorValue(),
-                                scope.vectorValue(),
-                                confidentialityImpact.vectorValue(),
-                                integrityImpact.vectorValue(),
-                                availabilityImpact.vectorValue());
-
-                        final CvssV3Data cvssData = new CvssV3Data(version, vector, attackVector, attackComplexity, privilegesRequired,
+                        final CvssV3Data cvssData = new CvssV3Data(version, attackVector, attackComplexity, privilegesRequired,
                                 userInteraction, scope, confidentialityImpact, integrityImpact, availabilityImpact,
                                 rsV.getDouble(29), baseSeverity, CvssV3Data.ExploitCodeMaturityType.PROOF_OF_CONCEPT,
                                 CvssV3Data.RemediationLevelType.NOT_DEFINED, CvssV3Data.ConfidenceType.REASONABLE, 0.0,
@@ -921,16 +900,7 @@ public final class CveDB implements AutoCloseable {
                         if (value != null) {
                             environmentalSeverity = CvssV4Data.SeverityType.fromValue(value);
                         }
-                        //initializing data twice to get the vector string. I really should have designed the object better...
-                        CvssV4Data data = new CvssV4Data(version, null, attackVector, attackComplexity, attackRequirements, privilegesRequired,
-                                userInteraction, vulnConfidentialityImpact, vulnIntegrityImpact, vulnAvailabilityImpact, subConfidentialityImpact,
-                                subIntegrityImpact, subAvailabilityImpact, exploitMaturity, confidentialityRequirement, integrityRequirement,
-                                availabilityRequirement, modifiedAttackVector, modifiedAttackComplexity, modifiedAttackRequirements,
-                                modifiedPrivilegesRequired, modifiedUserInteraction, modifiedVulnConfidentialityImpact, modifiedVulnIntegrityImpact,
-                                modifiedVulnAvailabilityImpact, modifiedSubConfidentialityImpact, modifiedSubIntegrityImpact,
-                                modifiedSubAvailabilityImpact, safety, automatable, recovery, valueDensity, vulnerabilityResponseEffort,
-                                providerUrgency, baseScore, baseSeverity, threatScore, threatSeverity, environmentalScore, environmentalSeverity);
-                        data = new CvssV4Data(version, data.toString(), attackVector, attackComplexity, attackRequirements, privilegesRequired,
+                        CvssV4Data data = new CvssV4Data(version, attackVector, attackComplexity, attackRequirements, privilegesRequired,
                                 userInteraction, vulnConfidentialityImpact, vulnIntegrityImpact, vulnAvailabilityImpact, subConfidentialityImpact,
                                 subIntegrityImpact, subAvailabilityImpact, exploitMaturity, confidentialityRequirement, integrityRequirement,
                                 availabilityRequirement, modifiedAttackVector, modifiedAttackComplexity, modifiedAttackRequirements,
@@ -1826,39 +1796,7 @@ public final class CveDB implements AutoCloseable {
         }
     }
 
-    private void setUpdateColumn(PreparedStatement ps, int i, CvssV2Data.AuthenticationType value) throws SQLException {
-        if (value == null) {
-            ps.setNull(i, java.sql.Types.VARCHAR);
-        } else {
-            ps.setString(i, value.value());
-        }
-    }
-
-    private void setUpdateColumn(PreparedStatement ps, int i, CvssV2Data.CiaType value) throws SQLException {
-        if (value == null) {
-            ps.setNull(i, java.sql.Types.VARCHAR);
-        } else {
-            ps.setString(i, value.value());
-        }
-    }
-
-    private void setUpdateColumn(PreparedStatement ps, int i, CvssV2Data.Version value) throws SQLException {
-        if (value == null) {
-            ps.setNull(i, java.sql.Types.VARCHAR);
-        } else {
-            ps.setString(i, value.value());
-        }
-    }
-
-    private void setUpdateColumn(PreparedStatement ps, int i, CvssV2Data.AccessComplexityType value) throws SQLException {
-        if (value == null) {
-            ps.setNull(i, java.sql.Types.VARCHAR);
-        } else {
-            ps.setString(i, value.value());
-        }
-    }
-
-    private void setUpdateColumn(PreparedStatement ps, int i, CvssV2Data.AccessVectorType value) throws SQLException {
+    private void setUpdateColumn(PreparedStatement ps, int i, ValueMappable value) throws SQLException {
         if (value == null) {
             ps.setNull(i, java.sql.Types.VARCHAR);
         } else {
@@ -1874,14 +1812,6 @@ public final class CveDB implements AutoCloseable {
         }
     }
 
-    private void setUpdateColumn(PreparedStatement ps, int i, CvssV4.Type value) throws SQLException {
-        if (value == null) {
-            ps.setNull(i, java.sql.Types.VARCHAR);
-        } else {
-            ps.setString(i, value.value());
-        }
-    }
-
     private void setUpdateColumn(PreparedStatement ps, int i, Boolean value) throws SQLException {
         if (value == null) {
             //TODO this is may also be an issue for MS SQL, if an issue is created we'll just need
@@ -1893,262 +1823,6 @@ public final class CveDB implements AutoCloseable {
             }
         } else {
             ps.setBoolean(i, value);
-        }
-    }
-
-    private void setUpdateColumn(PreparedStatement ps, int i, CvssV3Data.AttackVectorType value) throws SQLException {
-        if (value == null) {
-            ps.setNull(i, java.sql.Types.VARCHAR);
-        } else {
-            ps.setString(i, value.value());
-        }
-    }
-
-    private void setUpdateColumn(PreparedStatement ps, int i, CvssV3Data.AttackComplexityType value) throws SQLException {
-        if (value == null) {
-            ps.setNull(i, java.sql.Types.VARCHAR);
-        } else {
-            ps.setString(i, value.value());
-        }
-    }
-
-    private void setUpdateColumn(PreparedStatement ps, int i, CvssV3Data.PrivilegesRequiredType value) throws SQLException {
-        if (value == null) {
-            ps.setNull(i, java.sql.Types.VARCHAR);
-        } else {
-            ps.setString(i, value.value());
-        }
-    }
-
-    private void setUpdateColumn(PreparedStatement ps, int i, CvssV3Data.UserInteractionType value) throws SQLException {
-        if (value == null) {
-            ps.setNull(i, java.sql.Types.VARCHAR);
-        } else {
-            ps.setString(i, value.value());
-        }
-    }
-
-    private void setUpdateColumn(PreparedStatement ps, int i, CvssV3Data.ScopeType value) throws SQLException {
-        if (value == null) {
-            ps.setNull(i, java.sql.Types.VARCHAR);
-        } else {
-            ps.setString(i, value.value());
-        }
-    }
-
-    private void setUpdateColumn(PreparedStatement ps, int i, CvssV3Data.SeverityType value) throws SQLException {
-        if (value == null) {
-            ps.setNull(i, java.sql.Types.VARCHAR);
-        } else {
-            ps.setString(i, value.value());
-        }
-    }
-
-    private void setUpdateColumn(PreparedStatement ps, int i, CvssV3Data.CiaType value) throws SQLException {
-        if (value == null) {
-            ps.setNull(i, java.sql.Types.VARCHAR);
-        } else {
-            ps.setString(i, value.value());
-        }
-    }
-
-    private void setUpdateColumn(PreparedStatement ps, int i, CvssV3Data.Version value) throws SQLException {
-        if (value == null) {
-            ps.setNull(i, java.sql.Types.VARCHAR);
-        } else {
-            ps.setString(i, value.value());
-        }
-    }
-
-    private void setUpdateColumn(PreparedStatement ps, int i, CvssV4Data.Version value) throws SQLException  {
-        if (value == null) {
-            ps.setNull(i, java.sql.Types.VARCHAR);
-        } else {
-            ps.setString(i, value.value());
-        }
-    }
-
-    private void setUpdateColumn(PreparedStatement ps, int i, CvssV4Data.AttackVectorType value) throws SQLException {
-        if (value == null) {
-            ps.setNull(i, java.sql.Types.VARCHAR);
-        } else {
-            ps.setString(i, value.value());
-        }
-    }
-
-    private void setUpdateColumn(PreparedStatement ps, int i, CvssV4Data.AttackComplexityType value) throws SQLException  {
-        if (value == null) {
-            ps.setNull(i, java.sql.Types.VARCHAR);
-        } else {
-            ps.setString(i, value.value());
-        }
-    }
-
-    private void setUpdateColumn(PreparedStatement ps, int i, CvssV4Data.AttackRequirementsType value) throws SQLException  {
-        if (value == null) {
-            ps.setNull(i, java.sql.Types.VARCHAR);
-        } else {
-            ps.setString(i, value.value());
-        }
-    }
-
-    private void setUpdateColumn(PreparedStatement ps, int i, CvssV4Data.PrivilegesRequiredType value) throws SQLException  {
-        if (value == null) {
-            ps.setNull(i, java.sql.Types.VARCHAR);
-        } else {
-            ps.setString(i, value.value());
-        }
-    }
-
-    private void setUpdateColumn(PreparedStatement ps, int i, CvssV4Data.UserInteractionType value)  throws SQLException {
-        if (value == null) {
-            ps.setNull(i, java.sql.Types.VARCHAR);
-        } else {
-            ps.setString(i, value.value());
-        }
-    }
-
-    private void setUpdateColumn(PreparedStatement ps, int i, CvssV4Data.CiaType value)  throws SQLException {
-        if (value == null) {
-            ps.setNull(i, java.sql.Types.VARCHAR);
-        } else {
-            ps.setString(i, value.value());
-        }
-    }
-
-    private void setUpdateColumn(PreparedStatement ps, int i, CvssV4Data.ExploitMaturityType value)  throws SQLException {
-        if (value == null) {
-            ps.setNull(i, java.sql.Types.VARCHAR);
-        } else {
-            ps.setString(i, value.value());
-        }
-    }
-
-    private void setUpdateColumn(PreparedStatement ps, int i, CvssV4Data.CiaRequirementType value) throws SQLException  {
-        if (value == null) {
-            ps.setNull(i, java.sql.Types.VARCHAR);
-        } else {
-            ps.setString(i, value.value());
-        }
-    }
-
-    private void setUpdateColumn(PreparedStatement ps, int i, CvssV4Data.ModifiedAttackVectorType value) throws SQLException  {
-        if (value == null) {
-            ps.setNull(i, java.sql.Types.VARCHAR);
-        } else {
-            ps.setString(i, value.value());
-        }
-    }
-
-    private void setUpdateColumn(PreparedStatement ps, int i, CvssV4Data.ModifiedAttackComplexityType value) throws SQLException  {
-        if (value == null) {
-            ps.setNull(i, java.sql.Types.VARCHAR);
-        } else {
-            ps.setString(i, value.value());
-        }
-    }
-
-    private void setUpdateColumn(PreparedStatement ps, int i, CvssV4Data.ModifiedAttackRequirementsType value)  throws SQLException {
-        if (value == null) {
-            ps.setNull(i, java.sql.Types.VARCHAR);
-        } else {
-            ps.setString(i, value.value());
-        }
-    }
-
-    private void setUpdateColumn(PreparedStatement ps, int i, CvssV4Data.ModifiedPrivilegesRequiredType value)  throws SQLException {
-        if (value == null) {
-            ps.setNull(i, java.sql.Types.VARCHAR);
-        } else {
-            ps.setString(i, value.value());
-        }
-    }
-
-    private void setUpdateColumn(PreparedStatement ps, int i, CvssV4Data.ModifiedUserInteractionType value)  throws SQLException {
-        if (value == null) {
-            ps.setNull(i, java.sql.Types.VARCHAR);
-        } else {
-            ps.setString(i, value.value());
-        }
-    }
-
-    private void setUpdateColumn(PreparedStatement ps, int i, CvssV4Data.ModifiedCiaType value) throws SQLException  {
-        if (value == null) {
-            ps.setNull(i, java.sql.Types.VARCHAR);
-        } else {
-            ps.setString(i, value.value());
-        }
-    }
-
-    private void setUpdateColumn(PreparedStatement ps, int i, CvssV4Data.ModifiedSubCType value) throws SQLException  {
-        if (value == null) {
-            ps.setNull(i, java.sql.Types.VARCHAR);
-        } else {
-            ps.setString(i, value.value());
-        }
-    }
-
-    private void setUpdateColumn(PreparedStatement ps, int i, CvssV4Data.ModifiedSubIaType value) throws SQLException  {
-        if (value == null) {
-            ps.setNull(i, java.sql.Types.VARCHAR);
-        } else {
-            ps.setString(i, value.value());
-        }
-    }
-
-    private void setUpdateColumn(PreparedStatement ps, int i, CvssV4Data.SafetyType value) throws SQLException  {
-        if (value == null) {
-            ps.setNull(i, java.sql.Types.VARCHAR);
-        } else {
-            ps.setString(i, value.value());
-        }
-    }
-
-    private void setUpdateColumn(PreparedStatement ps, int i, CvssV4Data.AutomatableType value) throws SQLException  {
-        if (value == null) {
-            ps.setNull(i, java.sql.Types.VARCHAR);
-        } else {
-            ps.setString(i, value.value());
-        }
-    }
-
-    private void setUpdateColumn(PreparedStatement ps, int i, CvssV4Data.RecoveryType value)  throws SQLException {
-        if (value == null) {
-            ps.setNull(i, java.sql.Types.VARCHAR);
-        } else {
-            ps.setString(i, value.value());
-        }
-    }
-
-    private void setUpdateColumn(PreparedStatement ps, int i, CvssV4Data.ValueDensityType value) throws SQLException  {
-        if (value == null) {
-            ps.setNull(i, java.sql.Types.VARCHAR);
-        } else {
-            ps.setString(i, value.value());
-        }
-    }
-
-    private void setUpdateColumn(PreparedStatement ps, int i, CvssV4Data.VulnerabilityResponseEffortType value) throws SQLException  {
-        if (value == null) {
-            ps.setNull(i, java.sql.Types.VARCHAR);
-        } else {
-            ps.setString(i, value.value());
-        }
-    }
-
-    private void setUpdateColumn(PreparedStatement ps, int i, CvssV4Data.ProviderUrgencyType value) throws SQLException  {
-        if (value == null) {
-            ps.setNull(i, java.sql.Types.VARCHAR);
-        } else {
-            ps.setString(i, value.value());
-        }
-    }
-
-    private void setUpdateColumn(PreparedStatement ps, int i, CvssV4Data.SeverityType value) throws SQLException  {
-        if (value == null) {
-            ps.setNull(i, java.sql.Types.VARCHAR);
-        } else {
-            ps.setString(i, value.value());
         }
     }
 }
