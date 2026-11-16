@@ -17,6 +17,8 @@
  */
 package org.owasp.dependencycheck.analyzer;
 
+import io.github.jeremylong.openvulnerability.client.nvd.CvssV3;
+import io.github.jeremylong.openvulnerability.client.nvd.CvssV3Data;
 import org.apache.commons.collections4.multimap.HashSetValuedHashMap;
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONException;
@@ -28,6 +30,7 @@ import org.owasp.dependencycheck.analyzer.exception.UnexpectedAnalysisException;
 import org.owasp.dependencycheck.data.nodeaudit.Advisory;
 import org.owasp.dependencycheck.dependency.Dependency;
 import org.owasp.dependencycheck.exception.InitializationException;
+import org.owasp.dependencycheck.utils.CvssUtil;
 import org.owasp.dependencycheck.utils.FileFilterBuilder;
 import org.owasp.dependencycheck.utils.Settings;
 import org.owasp.dependencycheck.utils.processing.ProcessReader;
@@ -288,7 +291,7 @@ public class YarnAuditAnalyzer extends AbstractNpmAnalyzer {
         return builder;
     }
 
-    private static List<Advisory> parseAdvisoryJsons(List<JSONObject> advisoryJsons) throws JSONException {
+    static List<Advisory> parseAdvisoryJsons(List<JSONObject> advisoryJsons) throws JSONException {
         final List<Advisory> advisories = new ArrayList<>();
         for (JSONObject advisoryJson : advisoryJsons) {
             final var advisory = new Advisory();
@@ -300,6 +303,7 @@ public class YarnAuditAnalyzer extends AbstractNpmAnalyzer {
             final var issue = object.optString("Issue", null);
             final var severity = object.optString("Severity", null);
             final var vulnerableVersions = object.optString("Vulnerable Versions", null);
+            final var cvssV3 = severityToCvssV3(severity);
             final var treeVersions = object.optJSONArray("Tree Versions");
             final var treeVersionsLength = treeVersions == null ? 0 : treeVersions.length();
             final var versions = new ArrayList<String>();
@@ -314,6 +318,7 @@ public class YarnAuditAnalyzer extends AbstractNpmAnalyzer {
                 advisory.setTitle(issue);
                 advisory.setOverview("URL:" + url + "ID: " + id);
                 advisory.setSeverity(severity);
+                advisory.setCvssV3(cvssV3);
                 advisory.setVulnerableVersions(vulnerableVersions);
                 advisory.setModuleName(moduleName);
                 advisory.setVersion(version);
@@ -333,5 +338,53 @@ public class YarnAuditAnalyzer extends AbstractNpmAnalyzer {
             return null;
         }
         return url.substring(lastSlashIndex + 1);
+    }
+
+    /**
+     * `yarn npm audit` only reports a textual severity label (e.g.
+     * "critical", "high", "moderate", "low") and never a numeric CVSS score
+     * or vector, unlike the legacy npm audit bulk API. Without a numeric
+     * score {@code failBuildOnCVSS} (and any other CVSS-based threshold)
+     * cannot ever trigger for Yarn Berry findings, so vulnerabilities are
+     * effectively unscored and unenforceable.
+     * <p>
+     * This maps the reported severity label onto a representative CVSSv3
+     * base score/severity, in the same spirit as the estimated scores
+     * {@code BundlerAuditProcessor} assigns for `bundler-audit` findings
+     * that lack a numeric score.
+     *
+     * @param severity the textual severity reported by `yarn npm audit`
+     * (e.g. "critical", "high", "moderate", "low"); case-insensitive
+     * @return a {@link CvssV3} with an estimated base score/severity set,
+     * or {@code null} if the severity is blank or not recognized
+     */
+    static CvssV3 severityToCvssV3(String severity) {
+        if (StringUtils.isBlank(severity)) {
+            return null;
+        }
+        final Double baseScore;
+        switch (severity.trim().toLowerCase()) {
+            case "critical":
+                baseScore = 9.5;
+                break;
+            case "high":
+                baseScore = 8.0;
+                break;
+            case "moderate":
+            case "medium":
+                baseScore = 5.5;
+                break;
+            case "low":
+                baseScore = 2.0;
+                break;
+            default:
+                LOGGER.debug("Unrecognized yarn audit severity '{}'; no CVSS score estimated.", severity);
+                return null;
+        }
+        final CvssV3Data.SeverityType baseSeverity = CvssUtil.cvssV3ScoreToSeverity(baseScore);
+        final CvssV3Data data = new CvssV3Data(CvssV3Data.Version._3_1, null, null, null, null, null, null, null, null, null,
+                baseScore, baseSeverity, null, null, null, null, null, null, null, null, null, null, null, null, null, null,
+                null, null, null, null);
+        return new CvssV3(null, null, data, null, null);
     }
 }
