@@ -509,6 +509,8 @@ public final class Settings {
          * The path to mix_audit, if available.
          */
         public static final String ANALYZER_MIX_AUDIT_PATH = "analyzer.mix.audit.path";
+        /** Enables the Rust Cargo Audit analyzer. */
+        public static final String ANALYZER_CARGO_AUDIT_ENABLED = "analyzer.cargo.audit.enabled";
         /**
          * The properties key for whether the Golang Mod analyzer is enabled.
          */
