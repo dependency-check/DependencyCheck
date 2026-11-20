@@ -2321,4 +2321,11 @@
     <cpe regex="true">cpe:/a:obs-server:obs-server(:.*)?$</cpe>
 </suppress>
 
+<suppress base="true">
+    <notes><![CDATA[
+    FP per issue #8908
+    ]]></notes>
+    <packageUrl regex="true">^pkg:maven/org\.apache\.commons/commons-jcs3-core@.*$</packageUrl>
+    <cpe regex="true">cpe:/a:apache:commons_net(:.*)?$</cpe>
+</suppress>
 </suppressions>
