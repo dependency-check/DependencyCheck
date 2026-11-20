@@ -36,6 +36,9 @@ import java.io.FileOutputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.InvalidPathException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -87,9 +90,9 @@ public final class ExtractionUtil {
         if (archive == null || extractTo == null) {
             return;
         }
-        final String destPath;
+        final Path destPath;
         try {
-            destPath = extractTo.getCanonicalPath();
+            destPath = canonicalPath(extractTo);
         } catch (IOException ex) {
             throw new ExtractionException("Unable to extract files to destination path", ex);
         }
@@ -100,7 +103,7 @@ public final class ExtractionUtil {
             while ((entry = zis.getNextEntry()) != null) {
                 if (entry.isDirectory()) {
                     final File d = new File(extractTo, entry.getName());
-                    if (!d.getCanonicalPath().startsWith(destPath)) {
+                    if (!canonicalPath(d).startsWith(destPath)) {
                         final String msg = String.format(
                                 "Archive (%s) contains a path that would be extracted outside of the target directory.",
                                 archive.getAbsolutePath());
@@ -113,7 +116,7 @@ public final class ExtractionUtil {
                 } else {
                     final File file = new File(extractTo, entry.getName());
                     if (engine == null || engine.accept(file)) {
-                        if (!file.getCanonicalPath().startsWith(destPath)) {
+                        if (!canonicalPath(file).startsWith(destPath)) {
                             final String msg = String.format(
                                     "Archive (%s) contains a file that would be extracted outside of the target directory.",
                                     archive.getAbsolutePath());
@@ -155,9 +158,9 @@ public final class ExtractionUtil {
         if (archive == null || extractTo == null) {
             return;
         }
-        final String destPath;
+        final Path destPath;
         try {
-            destPath = extractTo.getCanonicalPath();
+            destPath = canonicalPath(extractTo);
         } catch (IOException ex) {
             throw new ExtractionException("Unable to extract files to destination path", ex);
         }
@@ -167,7 +170,7 @@ public final class ExtractionUtil {
             while ((entry = zis.getNextEntry()) != null) {
                 if (entry.isDirectory()) {
                     final File d = new File(extractTo, entry.getName());
-                    if (!d.getCanonicalPath().startsWith(destPath)) {
+                    if (!canonicalPath(d).startsWith(destPath)) {
                         throw new ExtractionException("Archive contains a path that would be extracted outside of the target directory.");
                     }
                     if (!d.exists() && !d.mkdirs()) {
@@ -176,7 +179,7 @@ public final class ExtractionUtil {
                     }
                 } else {
                     final File file = new File(extractTo, entry.getName());
-                    if (!file.getCanonicalPath().startsWith(destPath)) {
+                    if (!canonicalPath(file).startsWith(destPath)) {
                         LOGGER.debug("ZipSlip detected\n-Destination: " + destPath + "\n-Path: " + file);
                         throw new ExtractionException("Archive contains a file that would be extracted outside of the target directory.");
                     }
@@ -238,12 +241,13 @@ public final class ExtractionUtil {
             throws ArchiveExtractionException {
         ArchiveEntry entry;
         try {
-            final String destPath = destination.getCanonicalPath();
+            final Path destPath = canonicalPath(destination);
 
             while ((entry = input.getNextEntry()) != null) {
                 if (entry.isDirectory()) {
-                    final File dir = new File(destination, entry.getName());
-                    if (!dir.getCanonicalPath().startsWith(destPath)) {
+                    final Path dirPath = resolveEntry(entry, destPath);
+                    final File dir = dirPath.toFile();
+                    if (!canonicalPath(dir).startsWith(destPath)) {
                         final String msg = String.format(
                                 "Archive contains a path (%s) that would be extracted outside of the target directory.",
                                 dir.getAbsolutePath());
@@ -256,7 +260,7 @@ public final class ExtractionUtil {
                         throw new AnalysisException(msg);
                     }
                 } else {
-                    extractFile(input, destination, filter, entry);
+                    extractFile(input, destPath, filter, entry);
                 }
             }
         } catch (IOException | AnalysisException ex) {
@@ -271,29 +275,30 @@ public final class ExtractionUtil {
      * directory structure.
      *
      * @param input the archive input stream
-     * @param destination where to write the file
+     * @param destinationPath the canonical path of the destination to write
+     * the file to
      * @param filter the file filter to apply to the files being extracted
      * @param entry the entry from the archive to extract
      * @throws ExtractionException thrown if there is an error reading from the
      * archive stream
      */
-    private static void extractFile(ArchiveInputStream input, File destination,
+    private static void extractFile(ArchiveInputStream input, Path destinationPath,
             FilenameFilter filter, ArchiveEntry entry) throws ExtractionException {
-        final File file = new File(destination, entry.getName());
+        final File file = new File(destinationPath.toFile(), entry.getName());
         try {
             if (filter.accept(file.getParentFile(), file.getName())) {
-                final String destPath = destination.getCanonicalPath();
-                if (!file.getCanonicalPath().startsWith(destPath)) {
-                    LOGGER.debug("ZipSlip detected\n-Destination: " + destPath + "\n-Path: " + file);
+                final Path targetPath = resolveEntry(entry, destinationPath);
+                if (!canonicalPath(targetPath.toFile()).startsWith(destinationPath)) {
+                    LOGGER.debug("ZipSlip detected\n-Destination: " + destinationPath + "\n-Path: " + targetPath);
                     final String msg = String.format(
                             "Archive contains a file (%s) that would be extracted outside of the target directory.",
-                            file.getAbsolutePath());
+                            targetPath.toString());
                     throw new ExtractionException(msg);
                 }
-                LOGGER.debug("Extracting '{}'", file.getPath());
-                createParentFile(file);
+                LOGGER.debug("Extracting '{}'", targetPath);
+                createParentFile(targetPath.toFile());
 
-                try (FileOutputStream fos = new FileOutputStream(file)) {
+                try (FileOutputStream fos = new FileOutputStream(targetPath.toFile())) {
                     IOUtils.copy(input, fos);
                 } catch (FileNotFoundException ex) {
                     LOGGER.debug("", ex);
@@ -305,6 +310,51 @@ public final class ExtractionUtil {
             LOGGER.debug("", ex);
             final String msg = String.format("IO Exception while parsing file '%s'.", file.getName());
             throw new ExtractionException(msg, ex);
+        }
+    }
+
+    /**
+     * Returns the canonical path of the given file as a {@link Path}. Using
+     * {@link Path#startsWith(Path)} for the containment checks compares path
+     * components instead of raw strings, so a sibling directory whose name
+     * merely shares a string prefix with the destination (for example
+     * {@code dest-evil} under a destination {@code dest}) cannot bypass the
+     * check, while canonicalization still resolves symlinks.
+     *
+     * @param file the file whose canonical path is returned
+     * @return the canonical path of the file
+     * @throws IOException thrown if the canonical path cannot be determined
+     * or is not a valid path
+     */
+    private static Path canonicalPath(final File file) throws IOException {
+        try {
+            return Paths.get(file.getCanonicalPath());
+        } catch (final InvalidPathException ex) {
+            throw new IOException("Invalid path: " + file.getPath(), ex);
+        }
+    }
+
+    /**
+     * Resolves an archive entry within the destination directory using
+     * {@link ArchiveEntry#resolveIn(Path)}, which normalizes the entry name
+     * and rejects paths that would escape the destination. Malformed entry
+     * names that cannot be resolved as a {@link Path} are reported as
+     * {@link IOException} so they are handled like other extraction errors.
+     * The resolved path is still checked against the canonical destination
+     * path by the caller, as {@code resolveIn} compares purely lexical
+     * paths and does not resolve symlinks.
+     *
+     * @param entry the archive entry to resolve
+     * @param destinationPath the canonical path of the destination directory
+     * @return the path of the entry resolved within the destination
+     * @throws IOException thrown if the entry name is invalid or resolves
+     * outside of the destination directory
+     */
+    private static Path resolveEntry(final ArchiveEntry entry, final Path destinationPath) throws IOException {
+        try {
+            return entry.resolveIn(destinationPath);
+        } catch (final InvalidPathException ex) {
+            throw new IOException("Invalid path in archive entry: " + entry.getName(), ex);
         }
     }
 
