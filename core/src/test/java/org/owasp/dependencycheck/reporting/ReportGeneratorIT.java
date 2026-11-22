@@ -26,6 +26,7 @@ import org.owasp.dependencycheck.dependency.Dependency;
 import org.owasp.dependencycheck.exception.ExceptionCollection;
 import org.owasp.dependencycheck.utils.DownloadFailedException;
 import org.owasp.dependencycheck.utils.Settings;
+import org.owasp.dependencycheck.utils.TooManyRequestsException;
 
 import javax.xml.XMLConstants;
 import javax.xml.transform.stream.StreamSource;
@@ -38,9 +39,11 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assumptions.assumeFalse;
 
 /**
  *
@@ -152,6 +155,7 @@ class ReportGeneratorIT extends BaseDBTestCase {
 
 
     private void generateReport(Settings settings, File writeTo, File writeJsonTo, File writeHtmlTo, File writeJunitTo, File writeCsvTo, File writeSarifTo, File suppressionFile){
+        final AtomicBoolean rateLimited = new AtomicBoolean();
         assertDoesNotThrow(() -> {
             //first check parent folder
             createParentFolder(writeTo);
@@ -177,7 +181,15 @@ class ReportGeneratorIT extends BaseDBTestCase {
                 engine.scan(axis);
                 engine.scan(jetty);
                 engine.scan(nodeTest);
-                engine.analyzeDependencies();
+                try {
+                    engine.analyzeDependencies();
+                } catch (ExceptionCollection exceptions) {
+                    if (isRateLimited(exceptions)) {
+                        rateLimited.set(true);
+                        return;
+                    }
+                    throw exceptions;
+                }
 
                 vulnCount = countVulns(engine.getDependencies());
                 ExceptionCollection exceptions = new ExceptionCollection();
@@ -206,6 +218,25 @@ class ReportGeneratorIT extends BaseDBTestCase {
             int linesWritten = countLines(writeCsvTo);
             assertEquals(vulnCount + 1, linesWritten);
         });
+        assumeFalse(rateLimited.get(), "Skipping test because a remote API returned 429 Too Many Requests");
+    }
+
+    /**
+     * Determines if any of the analysis exceptions were caused by a remote API
+     * returning 429 Too Many Requests.
+     *
+     * @param exceptions the exceptions thrown during analysis
+     * @return true if a remote API rate limited the analysis
+     */
+    private boolean isRateLimited(ExceptionCollection exceptions) {
+        for (Throwable ex : exceptions.getExceptions()) {
+            for (Throwable cause = ex; cause != null; cause = cause.getCause()) {
+                if (cause instanceof TooManyRequestsException) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     /**
