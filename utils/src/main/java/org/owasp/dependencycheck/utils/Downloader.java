@@ -24,6 +24,7 @@ import org.apache.hc.client5.http.auth.Credentials;
 import org.apache.hc.client5.http.auth.CredentialsStore;
 import org.apache.hc.client5.http.auth.UsernamePasswordCredentials;
 import org.apache.hc.client5.http.config.ConnectionConfig;
+import org.apache.hc.client5.http.impl.DefaultHttpRequestRetryStrategy;
 import org.apache.hc.client5.http.impl.auth.BasicAuthCache;
 import org.apache.hc.client5.http.impl.auth.BasicScheme;
 import org.apache.hc.client5.http.impl.auth.SystemDefaultCredentialsProvider;
@@ -48,6 +49,8 @@ import org.apache.hc.core5.http.io.entity.BasicHttpEntity;
 import org.apache.hc.core5.http.io.entity.StringEntity;
 import org.apache.hc.core5.http.message.BasicClassicHttpRequest;
 import org.apache.hc.core5.http.message.BasicClassicHttpResponse;
+import org.apache.hc.core5.http.protocol.HttpContext;
+import org.apache.hc.core5.util.TimeValue;
 import org.jspecify.annotations.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -123,6 +126,26 @@ public final class Downloader {
     private static final Logger LOGGER = LoggerFactory.getLogger(Downloader.class);
 
     /**
+     * HttpClient's default retry strategy, except that the wait before
+     * automatically re-executing a 429 or 503 response is capped. Without the
+     * cap HttpClient sleeps for the full Retry-After the server asks for, so a
+     * single request could stall for minutes before the caller sees the
+     * response. Callers decide whether to wait longer from
+     * {@link TooManyRequestsException#getRetryAfter()}.
+     */
+    private static final DefaultHttpRequestRetryStrategy RETRY_STRATEGY = new DefaultHttpRequestRetryStrategy() {
+        /**
+         * The longest wait before an automatic retry.
+         */
+        private final TimeValue maxRetryInterval = TimeValue.ofSeconds(3);
+
+        @Override
+        public TimeValue getRetryInterval(HttpResponse response, int execCount, HttpContext context) {
+            return super.getRetryInterval(response, execCount, context).min(maxRetryInterval);
+        }
+    };
+
+    /**
      * The singleton instance of the downloader
      */
     private static final Downloader INSTANCE = new Downloader();
@@ -151,10 +174,12 @@ public final class Downloader {
         //TODO: ensure proper closure and eviction policy
         httpClientBuilder = HttpClientBuilder.create()
                 .useSystemProperties()
+                .setRetryStrategy(RETRY_STRATEGY)
                 .setConnectionManager(connectionManager)
                 .setConnectionManagerShared(true);
         httpClientBuilderExplicitNoproxy = HttpClientBuilder.create()
                 .useSystemProperties()
+                .setRetryStrategy(RETRY_STRATEGY)
                 .setConnectionManager(connectionManager)
                 .setConnectionManagerShared(true)
                 .setProxySelector(new ProxySelector() {

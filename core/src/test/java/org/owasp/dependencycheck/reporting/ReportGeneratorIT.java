@@ -222,18 +222,36 @@ class ReportGeneratorIT extends BaseDBTestCase {
     }
 
     /**
-     * Determines if any of the analysis exceptions were caused by a remote API
-     * returning 429 Too Many Requests.
+     * Determines if the analysis failed only because a remote API returned 429
+     * Too Many Requests: the collection is not fatal and every exception in it
+     * was caused by rate limiting.
      *
      * @param exceptions the exceptions thrown during analysis
-     * @return true if a remote API rate limited the analysis
+     * @return true if rate limiting is the only reason the analysis failed
      */
     private boolean isRateLimited(ExceptionCollection exceptions) {
+        if (exceptions.isFatal() || exceptions.getExceptions().isEmpty()) {
+            return false;
+        }
         for (Throwable ex : exceptions.getExceptions()) {
-            for (Throwable cause = ex; cause != null; cause = cause.getCause()) {
-                if (cause instanceof TooManyRequestsException) {
-                    return true;
-                }
+            if (!isCausedByTooManyRequests(ex)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Determines if the exception has a TooManyRequestsException in its cause
+     * chain.
+     *
+     * @param ex the exception to check
+     * @return true if rate limiting caused the exception
+     */
+    private boolean isCausedByTooManyRequests(Throwable ex) {
+        for (Throwable cause = ex; cause != null; cause = cause.getCause()) {
+            if (cause instanceof TooManyRequestsException) {
+                return true;
             }
         }
         return false;
