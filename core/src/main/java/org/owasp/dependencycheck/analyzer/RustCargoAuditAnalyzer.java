@@ -95,12 +95,13 @@ public class RustCargoAuditAnalyzer extends AbstractFileTypeAnalyzer {
         command.addAll(args);
         try {
             final Process process = new ProcessBuilder(command).directory(directory).start();
-            final ProcessReader reader = new ProcessReader(process);
-            reader.readAll();
-            if (process.exitValue() > 1 || reader.getOutput().isBlank()) {
-                throw new AnalysisException("cargo audit failed: " + reader.getError());
+            try (ProcessReader reader = new ProcessReader(process)) {
+                reader.readAll();
+                if (process.exitValue() > 1 || reader.getOutput().isBlank()) {
+                    throw new AnalysisException("cargo audit failed: " + reader.getError());
+                }
+                return reader.getOutput();
             }
-            return reader.getOutput();
         } catch (IOException ex) {
             throw new AnalysisException("Could not run cargo audit", ex);
         } catch (InterruptedException ex) {
