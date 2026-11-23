@@ -97,6 +97,7 @@ public class RustCargoAuditAnalyzer extends AbstractFileTypeAnalyzer {
             final Process process = new ProcessBuilder(command).directory(directory).start();
             try (ProcessReader reader = new ProcessReader(process)) {
                 reader.readAll();
+                // Exit code 1 means findings; errors with code 1 give no output
                 if (process.exitValue() > 1 || reader.getOutput().isBlank()) {
                     throw new AnalysisException("cargo audit failed: " + reader.getError());
                 }
