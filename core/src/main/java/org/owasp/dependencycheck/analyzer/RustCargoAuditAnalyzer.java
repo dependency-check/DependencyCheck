@@ -48,6 +48,7 @@ public class RustCargoAuditAnalyzer extends AbstractFileTypeAnalyzer {
 
     private static final FileFilter FILTER = FileFilterBuilder.newInstance().addFilenames("Cargo.lock").build();
     private static final ObjectMapper MAPPER = new ObjectMapper();
+    private boolean fetch;
 
     @Override
     protected FileFilter getFileFilter() {
@@ -70,6 +71,12 @@ public class RustCargoAuditAnalyzer extends AbstractFileTypeAnalyzer {
     }
 
     @Override
+    public boolean supportsParallelProcessing() {
+        // The first audit fetches the advisory database for all others
+        return false;
+    }
+
+    @Override
     protected void prepareFileTypeAnalyzer(Engine engine) throws InitializationException {
         try {
             run(null, List.of("--version"));
@@ -77,6 +84,7 @@ public class RustCargoAuditAnalyzer extends AbstractFileTypeAnalyzer {
             setEnabled(false);
             throw new InitializationException("Install cargo-audit to analyze Cargo.lock files", ex);
         }
+        fetch = getSettings().getBoolean(Settings.KEYS.AUTO_UPDATE, true);
     }
 
     private String run(File directory, List<String> args) throws AnalysisException {
@@ -104,8 +112,13 @@ public class RustCargoAuditAnalyzer extends AbstractFileTypeAnalyzer {
     @Override
     protected void analyzeDependency(Dependency dependency, Engine engine) throws AnalysisException {
         final File lockfile = dependency.getActualFile();
+        final List<String> args = new ArrayList<>(List.of("--json", "--file", lockfile.getAbsolutePath()));
+        if (!fetch) {
+            args.add("--no-fetch");
+        }
+        fetch = false;
         // Runs from the project folder to use its .cargo/audit.toml
-        final String output = run(lockfile.getParentFile(), List.of("--json", "--file", lockfile.getAbsolutePath()));
+        final String output = run(lockfile.getParentFile(), args);
         for (Dependency crate : parseReport(output, dependency, engine.getDatabase())) {
             engine.addDependency(crate);
         }
