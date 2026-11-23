@@ -43,11 +43,26 @@ import org.owasp.dependencycheck.utils.FileFilterBuilder;
 import org.owasp.dependencycheck.utils.Settings;
 import org.owasp.dependencycheck.utils.processing.ProcessReader;
 
+/**
+ * Runs cargo-audit on Cargo.lock files and adds the vulnerable crates as
+ * dependencies.
+ *
+ * @author Rubin Simons
+ */
 @Experimental
 public class RustCargoAuditAnalyzer extends AbstractFileTypeAnalyzer {
 
+    /**
+     * The file filter for Cargo.lock files.
+     */
     private static final FileFilter FILTER = FileFilterBuilder.newInstance().addFilenames("Cargo.lock").build();
+    /**
+     * The mapper for cargo-audit JSON reports.
+     */
     private static final ObjectMapper MAPPER = new ObjectMapper();
+    /**
+     * Whether the next audit fetches the advisory database.
+     */
     private boolean fetch;
 
     @Override
@@ -87,6 +102,14 @@ public class RustCargoAuditAnalyzer extends AbstractFileTypeAnalyzer {
         fetch = getSettings().getBoolean(Settings.KEYS.AUTO_UPDATE, true);
     }
 
+    /**
+     * Runs cargo-audit and returns its standard output.
+     *
+     * @param directory the working directory, or null for the current one
+     * @param args the arguments to cargo-audit
+     * @return the standard output
+     * @throws AnalysisException if cargo-audit could not run or failed
+     */
     private String run(File directory, List<String> args) throws AnalysisException {
         final String path = getSettings().getString(Settings.KEYS.ANALYZER_CARGO_AUDIT_PATH);
         final List<String> command = new ArrayList<>();
@@ -127,6 +150,15 @@ public class RustCargoAuditAnalyzer extends AbstractFileTypeAnalyzer {
         engine.removeDependency(dependency);
     }
 
+    /**
+     * Parses a cargo-audit JSON report into a dependency per vulnerable crate.
+     *
+     * @param output the cargo-audit JSON report
+     * @param lockfile the Cargo.lock dependency
+     * @param database the database to find CVE records in, or null
+     * @return the vulnerable crates
+     * @throws AnalysisException if the report is not valid
+     */
     Collection<Dependency> parseReport(String output, Dependency lockfile, CveDB database) throws AnalysisException {
         final Map<String, Dependency> crates = new LinkedHashMap<>();
         try {
@@ -142,6 +174,14 @@ public class RustCargoAuditAnalyzer extends AbstractFileTypeAnalyzer {
         return crates.values();
     }
 
+    /**
+     * Creates the vulnerability for an advisory. Uses the CVE record from the
+     * database if the advisory has a known CVE alias.
+     *
+     * @param advisory the advisory
+     * @param database the database to find CVE records in, or null
+     * @return the vulnerability
+     */
     private Vulnerability vulnerability(JsonNode advisory, CveDB database) {
         final String id = advisory.required("id").asText();
         Vulnerability vulnerability = null;
@@ -169,6 +209,15 @@ public class RustCargoAuditAnalyzer extends AbstractFileTypeAnalyzer {
         return vulnerability;
     }
 
+    /**
+     * Returns the dependency for the crate of a finding, creating it once.
+     *
+     * @param crates the crate dependencies, keyed by package URL
+     * @param lockfile the Cargo.lock dependency
+     * @param finding the finding
+     * @return the crate dependency
+     * @throws MalformedPackageURLException if the package URL is not valid
+     */
     private Dependency dependency(Map<String, Dependency> crates, Dependency lockfile, JsonNode finding) throws MalformedPackageURLException {
         final JsonNode pkg = finding.required("package");
         final String name = pkg.required("name").asText();
