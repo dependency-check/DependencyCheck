@@ -517,6 +517,7 @@ public final class CliParser {
                 .addOption(newOption(ARGUMENT.DISABLE_CMAKE, "Disable the Cmake Analyzer."))
                 .addOption(newOption(ARGUMENT.DISABLE_PY_PKG, "Disable the Python Package Analyzer."))
                 .addOption(newOption(ARGUMENT.DISABLE_MIX_AUDIT, "Disable the Elixir mix_audit Analyzer."))
+                .addOption(newOption(ARGUMENT.DISABLE_CARGO_AUDIT, "Disable the Rust cargo-audit Analyzer."))
                 .addOption(newOption(ARGUMENT.DISABLE_RUBYGEMS, "Disable the Ruby Gemspec Analyzer."))
                 .addOption(newOption(ARGUMENT.DISABLE_BUNDLE_AUDIT, "Disable the Ruby Bundler-Audit Analyzer."))
                 .addOption(newOption(ARGUMENT.DISABLE_FILENAME, "Disable the File Name Analyzer."))
@@ -1314,6 +1315,10 @@ public final class CliParser {
          * Disables the Elixir mix audit Analyzer.
          */
         public static final String DISABLE_MIX_AUDIT = "disableMixAudit";
+        /**
+         * Disables the Rust cargo audit Analyzer.
+         */
+        public static final String DISABLE_CARGO_AUDIT = "disableCargoAudit";
         /**
          * Disables the Golang Dependency Analyzer.
          */

@@ -33,6 +33,7 @@ _odc_completions()
             --disableCmake
             --disableCocoapodsAnalyzer
             --disableCarthageAnalyzer
+            --disableCargoAudit
             --disableComposer
             --disableDart
             --disableFileName

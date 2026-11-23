@@ -593,6 +593,8 @@ public class App {
                 !cli.isDisabled(CliParser.ARGUMENT.DISABLE_FILENAME, Settings.KEYS.ANALYZER_FILE_NAME_ENABLED));
         settings.setBoolean(Settings.KEYS.ANALYZER_MIX_AUDIT_ENABLED,
                 !cli.isDisabled(CliParser.ARGUMENT.DISABLE_MIX_AUDIT, Settings.KEYS.ANALYZER_MIX_AUDIT_ENABLED));
+        settings.setBoolean(Settings.KEYS.ANALYZER_CARGO_AUDIT_ENABLED,
+                !cli.isDisabled(CliParser.ARGUMENT.DISABLE_CARGO_AUDIT, Settings.KEYS.ANALYZER_CARGO_AUDIT_ENABLED));
         settings.setBoolean(Settings.KEYS.ANALYZER_OPENSSL_ENABLED,
                 !cli.isDisabled(CliParser.ARGUMENT.DISABLE_OPENSSL, Settings.KEYS.ANALYZER_OPENSSL_ENABLED));
         settings.setBoolean(Settings.KEYS.ANALYZER_COMPOSER_LOCK_ENABLED,
