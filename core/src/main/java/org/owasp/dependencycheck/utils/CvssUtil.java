@@ -49,6 +49,18 @@ public final class CvssUtil {
     private static final List<String> BASE_METRICS_V3 = Arrays.asList("AV", "AC", "PR", "UI", "S", "C", "I", "A");
 
     /**
+     * The CVSS v3.1 base metric weights. "CIA" holds the weights of the
+     * C, I and A metrics; "/S:C" marks the PR weights for a changed scope.
+     */
+    private static final Map<String, Double> WEIGHTS_V3 = Map.ofEntries(
+            Map.entry("AV:N", 0.85), Map.entry("AV:A", 0.62), Map.entry("AV:L", 0.55), Map.entry("AV:P", 0.2),
+            Map.entry("AC:L", 0.77), Map.entry("AC:H", 0.44),
+            Map.entry("PR:N", 0.85), Map.entry("PR:L", 0.62), Map.entry("PR:H", 0.27),
+            Map.entry("PR:N/S:C", 0.85), Map.entry("PR:L/S:C", 0.68), Map.entry("PR:H/S:C", 0.5),
+            Map.entry("UI:N", 0.85), Map.entry("UI:R", 0.62),
+            Map.entry("CIA:H", 0.56), Map.entry("CIA:L", 0.22), Map.entry("CIA:N", 0.0));
+
+    /**
      * The CVSS V2 Metrics required for the vector string to be complete.
      */
     private static final List<String> BASE_METRICS_V2 = Arrays.asList("AV", "AC", "Au", "C", "I", "A");
@@ -181,17 +193,59 @@ public final class CvssUtil {
     }
 
     /**
-     * Convert a CVSSv3 vector String into a CvssV3 Object.
+     * Convert a CVSSv3 vector String into a CvssV3 Object. The base score is
+     * calculated from the base metrics, as specified in CVSS v3.1.
      *
      * @param vectorString the vector string
-     * @param baseScore the base score
      * @return the CVSSv3 object
      */
-    public static CvssV3 vectorToCvssV3(String vectorString, Double baseScore) {
+    public static CvssV3 vectorToCvssV3(String vectorString) {
+        final Map<String, String> m = parseCvssV3Metrics(vectorString);
+        final boolean changed = "C".equals(m.get("S"));
+        final double iss = 1 - (1 - weight("CIA:" + m.get("C")))
+                * (1 - weight("CIA:" + m.get("I"))) * (1 - weight("CIA:" + m.get("A")));
+        final double impact = changed ? 7.52 * (iss - 0.029) - 3.25 * Math.pow(iss - 0.02, 15) : 6.42 * iss;
+        final double exploitability = 8.22 * weight("AV:" + m.get("AV")) * weight("AC:" + m.get("AC"))
+                * weight("PR:" + m.get("PR") + (changed ? "/S:C" : "")) * weight("UI:" + m.get("UI"));
+        final double score = impact <= 0 ? 0 : roundUp(Math.min((changed ? 1.08 : 1) * (impact + exploitability), 10));
+        return vectorToCvssV3(vectorString, score);
+    }
+
+    /**
+     * Returns the CVSS v3 weight of a base metric value.
+     *
+     * @param key the metric and value, for example "AV:N"
+     * @return the weight
+     */
+    private static double weight(String key) {
+        final Double weight = WEIGHTS_V3.get(key);
+        if (weight == null) {
+            throw new IllegalArgumentException("Not a valid CVSSv3 metric value: " + key);
+        }
+        return weight;
+    }
+
+    /**
+     * Rounds up to one decimal, as specified in CVSS v3.1 appendix A.
+     *
+     * @param value the value to round up
+     * @return the rounded value
+     */
+    private static double roundUp(double value) {
+        final long scaled = Math.round(value * 100_000);
+        return scaled % 10_000 == 0 ? scaled / 100_000.0 : (Math.floor(scaled / 10_000.0) + 1) / 10.0;
+    }
+
+    /**
+     * Parses the metrics of a CVSSv3 vector String.
+     *
+     * @param vectorString the vector string
+     * @return the metrics, keyed by metric name
+     */
+    private static Map<String, String> parseCvssV3Metrics(String vectorString) {
         if (!vectorString.startsWith("CVSS:3")) {
             throw new IllegalArgumentException("Not a valid CVSSv3 vector string: " + vectorString);
         }
-        final String versionString = vectorString.substring(5, vectorString.indexOf('/'));
         final String[] metricStrings = vectorString.substring(vectorString.indexOf('/') + 1).split("/");
         final HashMap<String, String> metrics = new HashMap<>();
         for (int i = 0; i < metricStrings.length; i++) {
@@ -208,7 +262,19 @@ public final class CvssUtil {
                     String.format("Not a valid CVSSv3 vector string '%s'; missing one or more required Base Metrics;",
                             vectorString));
         }
+        return metrics;
+    }
 
+    /**
+     * Convert a CVSSv3 vector String into a CvssV3 Object.
+     *
+     * @param vectorString the vector string
+     * @param baseScore the base score
+     * @return the CVSSv3 object
+     */
+    public static CvssV3 vectorToCvssV3(String vectorString, Double baseScore) {
+        final Map<String, String> metrics = parseCvssV3Metrics(vectorString);
+        final String versionString = vectorString.substring(5, vectorString.indexOf('/'));
         final CvssV3Data.Version version = CvssV3Data.Version.fromValue(versionString);
         //"CVSS:3.1\/AV:L\/AC:L\/PR:L\/UI:N\/S:U\/C:N\/I:N\/A:H"
         final CvssV3Data.AttackVectorType attackVector = CvssV3Data.AttackVectorType.fromValue(metrics.get("AV"));

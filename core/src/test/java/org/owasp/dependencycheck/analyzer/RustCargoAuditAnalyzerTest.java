@@ -49,7 +49,22 @@ class RustCargoAuditAnalyzerTest {
         assertEquals("pkg:cargo/smallvec@0.6.9", smallvec.getPackagePath());
         assertEquals(3, smallvec.getVulnerabilities().size());
         assertTrue(smallvec.getVulnerabilities().contains(cve));
-        assertTrue(smallvec.getVulnerabilities().stream().anyMatch(v -> v.getName().equals("RUSTSEC-2021-0003")));
+        assertTrue(cve.getReferences().stream().anyMatch(r -> r.getName().equals("RUSTSEC-2019-0009")));
+        final Vulnerability rustsec = smallvec.getVulnerabilities().stream()
+                .filter(v -> v.getName().equals("RUSTSEC-2021-0003")).findFirst().orElseThrow();
+        assertEquals(Vulnerability.Source.RUSTSEC, rustsec.getSource());
+        assertEquals(9.8, rustsec.getCvssV3().getCvssData().getBaseScore());
+        assertTrue(rustsec.getDescription().startsWith("Buffer overflow in SmallVec::insert_many\n\n"));
+    }
+
+    @Test
+    void acceptsAnAdvisoryWithoutCvss() throws Exception {
+        final String report = "{\"vulnerabilities\":{\"list\":[{\"package\":{\"name\":\"a\",\"version\":\"1.0.0\"},"
+                + "\"advisory\":{\"id\":\"RUSTSEC-2026-0001\",\"title\":\"t\",\"description\":\"d\",\"aliases\":[],\"cvss\":null}}]}}";
+        final Vulnerability vulnerability = analyzer.parseReport(report, lockfile, null)
+                .iterator().next().getVulnerabilities().iterator().next();
+        assertNull(vulnerability.getCvssV3());
+        assertEquals("UNKNOWN", vulnerability.getUnscoredSeverity());
     }
 
     @Test

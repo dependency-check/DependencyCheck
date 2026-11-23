@@ -37,6 +37,7 @@ import org.owasp.dependencycheck.dependency.Vulnerability;
 import org.owasp.dependencycheck.dependency.naming.PurlIdentifier;
 import org.owasp.dependencycheck.exception.InitializationException;
 import org.owasp.dependencycheck.utils.Checksum;
+import org.owasp.dependencycheck.utils.CvssUtil;
 import org.owasp.dependencycheck.utils.FileFilterBuilder;
 import org.owasp.dependencycheck.utils.Settings;
 import org.owasp.dependencycheck.utils.processing.ProcessReader;
@@ -137,8 +138,13 @@ public class RustCargoAuditAnalyzer extends AbstractFileTypeAnalyzer {
             vulnerability = new Vulnerability();
             vulnerability.setSource(Vulnerability.Source.RUSTSEC);
             vulnerability.setName(id);
-            vulnerability.setDescription(advisory.required("description").asText());
-            vulnerability.setUnscoredSeverity("UNKNOWN");
+            vulnerability.setDescription(advisory.required("title").asText() + "\n\n" + advisory.required("description").asText());
+            final String cvss = advisory.path("cvss").textValue();
+            if (cvss != null && cvss.startsWith("CVSS:3")) {
+                vulnerability.setCvssV3(CvssUtil.vectorToCvssV3(cvss));
+            } else {
+                vulnerability.setUnscoredSeverity("UNKNOWN");
+            }
         }
         vulnerability.addReference("RustSec", id, "https://rustsec.org/advisories/" + id + ".html");
         return vulnerability;
