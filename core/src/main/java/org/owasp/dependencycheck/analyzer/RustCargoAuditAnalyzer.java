@@ -122,6 +122,7 @@ public class RustCargoAuditAnalyzer extends AbstractFileTypeAnalyzer {
         for (Dependency crate : parseReport(output, dependency, engine.getDatabase())) {
             engine.addDependency(crate);
         }
+        engine.removeDependency(dependency);
     }
 
     Collection<Dependency> parseReport(String output, Dependency lockfile, CveDB database) throws AnalysisException {
