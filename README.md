@@ -104,6 +104,7 @@ experimental and require the experimental analyzers to be enabled.
 4. The analysis of `npm`, `pnpm`, and `yarn` projects requires `npm`, `pnpm`, or `yarn` to be installed.
    - The analysis performed utilize the respective `audit` feature of each.
 5. The analysis of Ruby is a wrapper around `bundle-audit`, which must be installed.
+6. The analysis of Rust is a wrapper around `cargo-audit`, which must be installed.
 
 ## Current Releases
 
