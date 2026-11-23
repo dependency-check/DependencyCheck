@@ -332,6 +332,10 @@ public class Check extends Update {
      */
     private Boolean cargoAuditAnalyzerEnabled;
     /**
+     * Sets the path for the cargo-audit binary.
+     */
+    private String cargoAuditPath;
+    /**
      * Sets the path for the bundle-audit binary.
      */
     private String bundleAuditPath;
@@ -1081,6 +1085,15 @@ public class Check extends Update {
     public void setCargoAuditAnalyzerEnabled(Boolean cargoAuditAnalyzerEnabled) {
         this.cargoAuditAnalyzerEnabled = cargoAuditAnalyzerEnabled;
     }
+
+    /**
+     * Sets the path to the cargo-audit executable.
+     *
+     * @param cargoAuditPath the path to the cargo-audit executable
+     */
+    public void setCargoAuditPath(String cargoAuditPath) {
+        this.cargoAuditPath = cargoAuditPath;
+    }
     /**
      * Set the value of centralAnalyzerEnabled.
      *
@@ -1540,6 +1553,7 @@ public class Check extends Update {
         getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_MIX_AUDIT_ENABLED, mixAuditAnalyzerEnabled);
         getSettings().setStringIfNotNull(Settings.KEYS.ANALYZER_MIX_AUDIT_PATH, mixAuditPath);
         getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_CARGO_AUDIT_ENABLED, cargoAuditAnalyzerEnabled);
+        getSettings().setStringIfNotNull(Settings.KEYS.ANALYZER_CARGO_AUDIT_PATH, cargoAuditPath);
         getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_NUSPEC_ENABLED, nuspecAnalyzerEnabled);
         getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_NUGETCONF_ENABLED, nugetconfAnalyzerEnabled);
         getSettings().setBooleanIfNotNull(Settings.KEYS.ANALYZER_LIBMAN_ENABLED, libmanAnalyzerEnabled);

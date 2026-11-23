@@ -845,6 +845,13 @@ public abstract class BaseDependencyCheckMojo extends AbstractMojo implements Ma
     private Boolean cargoAuditAnalyzerEnabled;
 
     /**
+     * Sets the path for the cargo-audit binary.
+     */
+    @SuppressWarnings("CanBeFinal")
+    @Parameter(property = "cargoAuditPath")
+    private String cargoAuditPath;
+
+    /**
      * Whether or not the Ruby Bundle Audit Analyzer is enabled.
      */
     @Parameter(property = "bundleAuditAnalyzerEnabled")
@@ -2497,6 +2504,7 @@ public abstract class BaseDependencyCheckMojo extends AbstractMojo implements Ma
         settings.setBooleanIfNotNull(Settings.KEYS.ANALYZER_MIX_AUDIT_ENABLED, mixAuditAnalyzerEnabled);
         settings.setStringIfNotNull(Settings.KEYS.ANALYZER_MIX_AUDIT_PATH, mixAuditPath);
         settings.setBooleanIfNotNull(Settings.KEYS.ANALYZER_CARGO_AUDIT_ENABLED, cargoAuditAnalyzerEnabled);
+        settings.setStringIfNotNull(Settings.KEYS.ANALYZER_CARGO_AUDIT_PATH, cargoAuditPath);
         settings.setBooleanIfNotNull(Settings.KEYS.ANALYZER_BUNDLE_AUDIT_ENABLED, bundleAuditAnalyzerEnabled);
         settings.setStringIfNotNull(Settings.KEYS.ANALYZER_BUNDLE_AUDIT_PATH, bundleAuditPath);
         settings.setStringIfNotNull(Settings.KEYS.ANALYZER_BUNDLE_AUDIT_WORKING_DIRECTORY, bundleAuditWorkingDirectory);

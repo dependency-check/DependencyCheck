@@ -683,6 +683,8 @@ public class App {
                 cli.getStringArgument(CliParser.ARGUMENT.ARTIFACTORY_BEARER_TOKEN));
         settings.setStringIfNotEmpty(Settings.KEYS.ANALYZER_MIX_AUDIT_PATH,
                 cli.getStringArgument(CliParser.ARGUMENT.PATH_TO_MIX_AUDIT));
+        settings.setStringIfNotEmpty(Settings.KEYS.ANALYZER_CARGO_AUDIT_PATH,
+                cli.getStringArgument(CliParser.ARGUMENT.PATH_TO_CARGO_AUDIT));
         settings.setStringIfNotEmpty(Settings.KEYS.ANALYZER_BUNDLE_AUDIT_PATH,
                 cli.getStringArgument(CliParser.ARGUMENT.PATH_TO_BUNDLE_AUDIT));
         settings.setStringIfNotEmpty(Settings.KEYS.ANALYZER_BUNDLE_AUDIT_WORKING_DIRECTORY,

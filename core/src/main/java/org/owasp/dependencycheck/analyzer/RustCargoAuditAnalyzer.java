@@ -22,8 +22,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.packageurl.MalformedPackageURLException;
 import java.io.FileFilter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import org.owasp.dependencycheck.Engine;
 import org.owasp.dependencycheck.analyzer.exception.AnalysisException;
@@ -68,14 +70,19 @@ public class RustCargoAuditAnalyzer extends AbstractFileTypeAnalyzer {
     @Override
     protected void prepareFileTypeAnalyzer(Engine engine) throws InitializationException {
         try {
-            run("cargo", "audit", "--version");
+            run(List.of("--version"));
         } catch (AnalysisException ex) {
             setEnabled(false);
             throw new InitializationException("Install cargo-audit to analyze Cargo.lock files", ex);
         }
     }
 
-    private String run(String... command) throws AnalysisException {
+    private String run(List<String> args) throws AnalysisException {
+        final String path = getSettings().getString(Settings.KEYS.ANALYZER_CARGO_AUDIT_PATH);
+        final List<String> command = new ArrayList<>();
+        command.add(path == null ? "cargo" : path);
+        command.add("audit");
+        command.addAll(args);
         try {
             final Process process = new ProcessBuilder(command).start();
             final ProcessReader reader = new ProcessReader(process);
@@ -94,7 +101,7 @@ public class RustCargoAuditAnalyzer extends AbstractFileTypeAnalyzer {
 
     @Override
     protected void analyzeDependency(Dependency dependency, Engine engine) throws AnalysisException {
-        final String output = run("cargo", "audit", "--json", "--file", dependency.getActualFile().getAbsolutePath());
+        final String output = run(List.of("--json", "--file", dependency.getActualFile().getAbsolutePath()));
         for (Dependency crate : parseReport(output, dependency, engine.getDatabase())) {
             engine.addDependency(crate);
         }
