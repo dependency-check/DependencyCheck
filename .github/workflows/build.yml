@@ -71,7 +71,7 @@ jobs:
           MAVEN_GPG_PASSPHRASE: ${{ secrets.GPG_PRIVATE_KEY_PASSWORD }}
           NVD_API_KEY: ${{ secrets.NVD_API_KEY }}
         run: >
-          mvn -V -s settings.xml 
+          ./mvnw -V -s settings.xml 
           clean verify -PFullIntegrationTesting
           -Dtoolchain.jdk.test.version=${{ matrix.jdk_test_version }} -Dtoolchain.jdk.test.home="$JAVA_HOME_${{ matrix.jdk_test_version }}_X64"
           ${{ matrix.jdk_test_version == matrix.jdk_default_version && 'source:jar javadoc:jar site' || '' }}
@@ -144,7 +144,7 @@ jobs:
         run: ./docker-build.sh
       - name: build scan target
         run: >
-          mvn -V -s settings.xml -pl cli -am 
+          ./mvnw -V -s settings.xml -pl cli -am 
           package -DskipTests=true
           --no-transfer-progress --batch-mode -Dstyle.color=always
       - name: Test Docker Image

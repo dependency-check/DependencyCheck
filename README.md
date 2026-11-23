@@ -185,7 +185,6 @@ For instructions on the use of the Ant Task, please see the [dependency-check-an
 
 For installation to pass, you must have the following components installed:
 * Java: `java -version` 25.0
-* Maven: `mvn -version` 3.6.3 and higher
 
 Tests cases require:
 * dotnet core version 8.0
@@ -208,13 +207,13 @@ git clone --depth 1 https://github.com/dependency-check/DependencyCheck
 
 On *nix
 ```
-$ mvn -s settings.xml install
+$ ./mvnw -s settings.xml install
 $ ./cli/target/release/bin/dependency-check.sh -h
 $ ./cli/target/release/bin/dependency-check.sh --out . --scan ./src/test/resources
 ```
 On Windows
 ```
-> mvn -s settings.xml install
+> ./mvnw -s settings.xml install
 > .\cli\target\release\bin\dependency-check.bat -h
 > .\cli\target\release\bin\dependency-check.bat --out . --scan ./src/test/resources
 ```
@@ -223,7 +222,7 @@ Then load the resulting 'dependency-check-report.html' into your favorite browse
 
 #### Building without running tests
 To speed up your turnaround cycle times, you can also compile without running the tests each time:  
-`mvn -s settings.xml install -DskipTests=true`
+`./mvnw -s settings.xml install -DskipTests=true`
 
 Please remember to at least run the tests once before opening the PR. :) 
 
@@ -328,10 +327,10 @@ docker run --rm ^
 Building From Source
 --------------------
 
-To build dependency-check (using Java 11) run the command:
+To build dependency-check run the command:
 
 ```
-mvn -s settings.xml install
+./mvnw -s settings.xml install
 ```
 
 Running dependency-check on dependency-check
@@ -343,7 +342,7 @@ the `test-dependencies` profile. To run dependency-check against itself simple
 exclude the `test-dependencies` profile:
 
 ```shell
-mvn org.owasp:dependency-check-maven:aggregate -P-test-dependencies -DskipProvidedScope=true
+./mvnw org.owasp:dependency-check-maven:aggregate -P-test-dependencies -DskipProvidedScope=true
 ```
 
 Building the documentation
@@ -351,7 +350,7 @@ Building the documentation
 
 The documentation on the [github pages](https://dependency-check.github.io/DependencyCheck/) is generated from this repository:
 
-    mvn -s settings.xml site site:stage
+    ./mvnw -s settings.xml site site:stage
 
 Once done, point your browser to `./target/staging/index.html`.
 
@@ -360,7 +359,7 @@ Building The Docker Image
 To build dependency-check docker image run the command:
 
 ```
-mvn -s settings.xml install
+./mvnw -s settings.xml install
 ./docker-build.sh
 ```
 

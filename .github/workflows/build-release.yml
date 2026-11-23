@@ -64,7 +64,7 @@ jobs:
           git config user.name "GitHub Actions"
       - name: Get version
         run: |
-          VERSION=$( mvn help:evaluate -Dexpression=project.version -q -DforceStdout )
+          VERSION=$( ./mvnw help:evaluate -Dexpression=project.version -q -DforceStdout )
           echo "VERSION=$VERSION"
       - name: Build Release with Maven
         id: build-release
@@ -75,7 +75,7 @@ jobs:
           MAVEN_GPG_PASSPHRASE: ${{ secrets.GPG_PRIVATE_KEY_PASSWORD }}
           NVD_API_KEY: ${{ secrets.NVD_API_KEY }}
         run: >
-          mvn -V -s settings.xml
+          ./mvnw -V -s settings.xml
           clean verify -PFullIntegrationTesting
           source:jar javadoc:jar site
           -Prelease gpg:sign deploy site:stage 
@@ -146,7 +146,7 @@ jobs:
         run: ./docker-build.sh
       - name: build scan target
         run: >
-          mvn -V -s settings.xml -pl cli -am 
+          ./mvnw -V -s settings.xml -pl cli -am 
           package -DskipTests=true
           --no-transfer-progress --batch-mode -Dstyle.color=always
       - name: Test Docker Image
@@ -166,7 +166,7 @@ jobs:
       - name: Get version
         id: get-version
         run: |
-          VERSION=$( mvn help:evaluate -Dexpression=project.version -q -DforceStdout )
+          VERSION=$( ./mvnw help:evaluate -Dexpression=project.version -q -DforceStdout )
           echo "VERSION=$VERSION" >> $GITHUB_ENV
       - name: Download release build
         uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
