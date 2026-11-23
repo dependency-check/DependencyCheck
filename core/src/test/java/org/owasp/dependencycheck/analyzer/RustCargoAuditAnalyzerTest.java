@@ -47,7 +47,7 @@ class RustCargoAuditAnalyzerTest {
         assertEquals(1, crates.size());
         final Dependency smallvec = crates.iterator().next();
         assertEquals("pkg:cargo/smallvec@0.6.9", smallvec.getPackagePath());
-        assertEquals(2, smallvec.getVulnerabilities().size());
+        assertEquals(3, smallvec.getVulnerabilities().size());
         assertTrue(smallvec.getVulnerabilities().contains(cve));
         assertTrue(smallvec.getVulnerabilities().stream().anyMatch(v -> v.getName().equals("RUSTSEC-2021-0003")));
     }

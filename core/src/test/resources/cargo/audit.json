@@ -1,21 +1,286 @@
 {
+  "database": {
+    "advisory-count": 1562,
+    "last-commit": "43b5554d9d64ca91c8d0839b7150d4f8ee490cdc",
+    "last-updated": "2026-11-23T10:36:07+01:00"
+  },
+  "lockfile": {
+    "dependency-count": 3
+  },
+  "settings": {
+    "target_arch": [],
+    "target_os": [],
+    "severity": null,
+    "ignore": [],
+    "informational_warnings": [
+      "unmaintained",
+      "unsound",
+      "notice"
+    ]
+  },
   "vulnerabilities": {
+    "found": true,
+    "count": 3,
     "list": [
       {
-        "package": {"name": "smallvec", "version": "0.6.9"},
-        "advisory": {"id": "RUSTSEC-2019-0009", "description": "Double free", "aliases": ["CVE-2019-15551"]}
+        "advisory": {
+          "id": "RUSTSEC-2019-0009",
+          "package": "smallvec",
+          "title": "Double-free and use-after-free in SmallVec::grow()",
+          "description": "Attempting to call `grow` on a spilled SmallVec with a value equal to the current capacity causes it to free the existing data. This performs a double free immediately and may lead to use-after-free on subsequent accesses to the SmallVec contents.\n\nAn attacker that controls the value passed to `grow` may exploit this flaw to obtain memory contents or gain remote code execution.\n\nCredits to [@ehuss](https://github.com/ehuss) for discovering, reporting and fixing the bug.",
+          "date": "2019-06-06",
+          "aliases": [
+            "CVE-2019-15551",
+            "GHSA-mm7v-vpv8-xfc3"
+          ],
+          "related": [],
+          "collection": "crates",
+          "categories": [],
+          "keywords": [
+            "double free",
+            "use after free",
+            "arbitrary code execution"
+          ],
+          "cvss": "CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
+          "informational": null,
+          "references": [],
+          "source": null,
+          "url": "https://github.com/servo/rust-smallvec/issues/148",
+          "withdrawn": null,
+          "license": "CC0-1.0",
+          "expect-deleted": false
+        },
+        "versions": {
+          "patched": [
+            ">=0.6.10"
+          ],
+          "unaffected": [
+            "<0.6.5"
+          ]
+        },
+        "affected": {
+          "arch": [],
+          "os": [],
+          "functions": {
+            "smallvec::SmallVec::grow": [
+              "<0.6.10, >=0.6.5"
+            ]
+          }
+        },
+        "package": {
+          "name": "smallvec",
+          "version": "0.6.9",
+          "source": "registry+https://github.com/rust-lang/crates.io-index",
+          "checksum": null,
+          "replace": null
+        }
       },
       {
-        "package": {"name": "smallvec", "version": "0.6.9"},
-        "advisory": {"id": "RUSTSEC-2021-0003", "description": "Buffer overflow", "aliases": []}
+        "advisory": {
+          "id": "RUSTSEC-2021-0003",
+          "package": "smallvec",
+          "title": "Buffer overflow in SmallVec::insert_many",
+          "description": "A bug in the `SmallVec::insert_many` method caused it to allocate a buffer that was smaller than needed.  It then wrote past the end of the buffer, causing a buffer overflow and memory corruption on the heap.\n\nThis bug was only triggered if the iterator passed to `insert_many` yielded more items than the lower bound returned from its `size_hint` method.\n \nThe flaw was corrected in smallvec 0.6.14 and 1.6.1, by ensuring that additional space is always reserved for each item inserted.  The fix also simplified the implementation of `insert_many` to use less unsafe code, so it is easier to verify its correctness.\n\nThank you to Yechan Bae ([@Qwaz](https://github.com/Qwaz)) and the Rust group at Georgia Tech\u2019s SSLab for finding and reporting this bug.",
+          "date": "2021-01-08",
+          "aliases": [
+            "CVE-2021-25900",
+            "GHSA-43w2-9j62-hq99"
+          ],
+          "related": [],
+          "collection": "crates",
+          "categories": [
+            "memory-corruption"
+          ],
+          "keywords": [
+            "buffer-overflow",
+            "heap-overflow",
+            "unsound"
+          ],
+          "cvss": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
+          "informational": null,
+          "references": [],
+          "source": null,
+          "url": "https://github.com/servo/rust-smallvec/issues/252",
+          "withdrawn": null,
+          "license": "CC0-1.0",
+          "expect-deleted": false
+        },
+        "versions": {
+          "patched": [
+            ">=0.6.14, <1.0.0",
+            ">=1.6.1"
+          ],
+          "unaffected": [
+            "<0.6.3"
+          ]
+        },
+        "affected": {
+          "arch": [],
+          "os": [],
+          "functions": {
+            "smallvec::SmallVec::insert_many": [
+              ">=0.6.3, <0.6.14",
+              ">=1.0.0, <1.6.1"
+            ]
+          }
+        },
+        "package": {
+          "name": "smallvec",
+          "version": "0.6.9",
+          "source": "registry+https://github.com/rust-lang/crates.io-index",
+          "checksum": null,
+          "replace": null
+        }
+      },
+      {
+        "advisory": {
+          "id": "RUSTSEC-2019-0012",
+          "package": "smallvec",
+          "title": "Memory corruption in SmallVec::grow()",
+          "description": "Attempting to call `grow` on a spilled SmallVec with a value less than the current capacity causes corruption of memory allocator data structures.\n\nAn attacker that controls the value passed to `grow` may exploit this flaw to obtain memory contents or gain remote code execution.\n\nCredits to [@ehuss](https://github.com/ehuss) for discovering, reporting and fixing the bug.",
+          "date": "2019-07-19",
+          "aliases": [
+            "CVE-2019-15554",
+            "GHSA-69gw-hgj3-45m7"
+          ],
+          "related": [],
+          "collection": "crates",
+          "categories": [
+            "code-execution",
+            "memory-corruption"
+          ],
+          "keywords": [],
+          "cvss": "CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
+          "informational": null,
+          "references": [],
+          "source": null,
+          "url": "https://github.com/servo/rust-smallvec/issues/149",
+          "withdrawn": null,
+          "license": "CC0-1.0",
+          "expect-deleted": false
+        },
+        "versions": {
+          "patched": [
+            ">=0.6.10"
+          ],
+          "unaffected": [
+            "<0.6.3"
+          ]
+        },
+        "affected": {
+          "arch": [],
+          "os": [],
+          "functions": {
+            "smallvec::SmallVec::grow": [
+              "<0.6.10, >=0.6.3"
+            ]
+          }
+        },
+        "package": {
+          "name": "smallvec",
+          "version": "0.6.9",
+          "source": "registry+https://github.com/rust-lang/crates.io-index",
+          "checksum": null,
+          "replace": null
+        }
       }
     ]
   },
   "warnings": {
-    "unmaintained": [{
-      "package": {"name": "paste", "version": "1.0.15"},
-      "kind": "unmaintained",
-      "advisory": {"id": "RUSTSEC-2024-0436", "title": "paste - no longer maintained"}
-    }]
+    "unmaintained": [
+      {
+        "kind": "unmaintained",
+        "package": {
+          "name": "paste",
+          "version": "1.0.15",
+          "source": "registry+https://github.com/rust-lang/crates.io-index",
+          "checksum": null,
+          "replace": null
+        },
+        "advisory": {
+          "id": "RUSTSEC-2024-0436",
+          "package": "paste",
+          "title": "paste - no longer maintained",
+          "description": "The creator of the crate `paste` has stated in the [`README.md`](https://github.com/dtolnay/paste/blob/master/README.md) \nthat this project is not longer maintained as well as archived the repository\n\n## Possible Alternative(s)\n\n- [`pastey`]: a fork of paste and is aimed to be a drop-in replacement with additional features for paste crate\n- [`with_builtin_macros`]: crate providing a [superset of `paste`'s functionality including general `macro_rules!` eager expansions](https://docs.rs/with_builtin_macros/0.1.0/with_builtin_macros/macro.with_eager_expansions.html)  and `concat!`/`concat_idents!` macros\n\n[`pastey`]: https://crates.io/crates/pastey\n[`with_builtin_macros`]: https://crates.io/crates/with_builtin_macros",
+          "date": "2024-10-07",
+          "aliases": [],
+          "related": [],
+          "collection": "crates",
+          "categories": [],
+          "keywords": [],
+          "cvss": null,
+          "informational": "unmaintained",
+          "references": [],
+          "source": null,
+          "url": "https://github.com/dtolnay/paste",
+          "withdrawn": null,
+          "license": "CC0-1.0",
+          "expect-deleted": false
+        },
+        "affected": null,
+        "versions": {
+          "patched": [],
+          "unaffected": []
+        }
+      }
+    ],
+    "unsound": [
+      {
+        "kind": "unsound",
+        "package": {
+          "name": "smallvec",
+          "version": "0.6.9",
+          "source": "registry+https://github.com/rust-lang/crates.io-index",
+          "checksum": null,
+          "replace": null
+        },
+        "advisory": {
+          "id": "RUSTSEC-2018-0018",
+          "package": "smallvec",
+          "title": "smallvec creates uninitialized value of any type",
+          "description": "Affected versions of this crate called `mem::uninitialized()` to create values of a user-supplied type `T`.\nThis is unsound e.g. if `T` is a reference type (which must be non-null and thus may not remain uninitialized).\n \nThe flaw was corrected by avoiding the use of `mem::uninitialized()`, using `MaybeUninit` instead.",
+          "date": "2018-09-25",
+          "aliases": [
+            "CVE-2018-25023",
+            "GHSA-55m5-whcv-c49c",
+            "GHSA-66p5-j55p-32r9"
+          ],
+          "related": [],
+          "collection": "crates",
+          "categories": [],
+          "keywords": [],
+          "cvss": null,
+          "informational": "unsound",
+          "references": [],
+          "source": null,
+          "url": "https://github.com/servo/rust-smallvec/issues/126",
+          "withdrawn": null,
+          "license": "CC0-1.0",
+          "expect-deleted": false
+        },
+        "affected": null,
+        "versions": {
+          "patched": [
+            ">=0.6.13"
+          ],
+          "unaffected": []
+        }
+      }
+    ],
+    "yanked": [
+      {
+        "kind": "yanked",
+        "package": {
+          "name": "smallvec",
+          "version": "0.6.9",
+          "source": "registry+https://github.com/rust-lang/crates.io-index",
+          "checksum": null,
+          "replace": null
+        },
+        "advisory": null,
+        "affected": null,
+        "versions": null
+      }
+    ]
   }
 }
