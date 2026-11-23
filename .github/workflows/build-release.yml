@@ -75,7 +75,7 @@ jobs:
           MAVEN_GPG_PASSPHRASE: ${{ secrets.GPG_PRIVATE_KEY_PASSWORD }}
           NVD_API_KEY: ${{ secrets.NVD_API_KEY }}
         run: >
-          ./mvnw -V -s settings.xml
+          ./mvnw -V
           clean verify -PFullIntegrationTesting
           source:jar javadoc:jar site
           -Prelease gpg:sign deploy site:stage 
@@ -146,7 +146,7 @@ jobs:
         run: ./docker-build.sh
       - name: build scan target
         run: >
-          ./mvnw -V -s settings.xml -pl cli -am 
+          ./mvnw -V -pl cli -am 
           package -DskipTests=true
           --no-transfer-progress --batch-mode -Dstyle.color=always
       - name: Test Docker Image

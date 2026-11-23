@@ -58,7 +58,7 @@ jobs:
     #    uses a compiled language
 
     - run: >
-        ./mvnw -s settings.xml
+        ./mvnw -V
         clean package -DskipTests=true
         --no-transfer-progress --batch-mode -Dstyle.color=always
 

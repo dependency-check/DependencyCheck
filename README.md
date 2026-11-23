@@ -207,13 +207,13 @@ git clone --depth 1 https://github.com/dependency-check/DependencyCheck
 
 On *nix
 ```
-$ ./mvnw -s settings.xml install
+$ ./mvnw install
 $ ./cli/target/release/bin/dependency-check.sh -h
 $ ./cli/target/release/bin/dependency-check.sh --out . --scan ./src/test/resources
 ```
 On Windows
 ```
-> ./mvnw -s settings.xml install
+> ./mvnw install
 > .\cli\target\release\bin\dependency-check.bat -h
 > .\cli\target\release\bin\dependency-check.bat --out . --scan ./src/test/resources
 ```
@@ -222,7 +222,7 @@ Then load the resulting 'dependency-check-report.html' into your favorite browse
 
 #### Building without running tests
 To speed up your turnaround cycle times, you can also compile without running the tests each time:  
-`./mvnw -s settings.xml install -DskipTests=true`
+`./mvnw install -DskipTests=true`
 
 Please remember to at least run the tests once before opening the PR. :) 
 
@@ -235,7 +235,7 @@ Step by step:
 - `+ (Add new configuration) -> Maven`
 - Give the Configuration a name, e.g. `Run tests`
 - Choose working directory, e.g. `core`
-- In `command line`, enter `-DforkCount=0 -f pom.xml -s ../settings.xml test`
+- In `command line`, enter `-DforkCount=0 -f pom.xml test`
 - Press `OK`
 - `Run -> Debug`, then choose the newly created run configuration
 
@@ -245,7 +245,7 @@ IntelliJ will now execute the test run for the `core` subproject with enabled de
 If you would like to speed up your turnaround cycle times, you can also just test one function or one test class.  
 This works by adding `-Dtest=MyTestClass` or `-Dtest=MyTestClass#myTestFunction` to the run configuration. The complete command line in the run configuration then would be:
 
-`-Dtest=MyTestClass#myTestFunction -DforkCount=0 -f pom.xml -s ../settings.xml test`
+`-Dtest=MyTestClass#myTestFunction -DforkCount=0 -f pom.xml test`
 
 
 ### Docker
@@ -330,7 +330,7 @@ Building From Source
 To build dependency-check run the command:
 
 ```
-./mvnw -s settings.xml install
+./mvnw install
 ```
 
 Running dependency-check on dependency-check
@@ -350,7 +350,7 @@ Building the documentation
 
 The documentation on the [github pages](https://dependency-check.github.io/DependencyCheck/) is generated from this repository:
 
-    ./mvnw -s settings.xml site site:stage
+    ./mvnw site site:stage
 
 Once done, point your browser to `./target/staging/index.html`.
 
@@ -359,7 +359,7 @@ Building The Docker Image
 To build dependency-check docker image run the command:
 
 ```
-./mvnw -s settings.xml install
+./mvnw install
 ./docker-build.sh
 ```
 
