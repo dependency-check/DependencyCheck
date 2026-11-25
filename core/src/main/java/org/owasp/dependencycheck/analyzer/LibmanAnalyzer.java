@@ -40,6 +40,7 @@ import jakarta.json.JsonArray;
 import jakarta.json.JsonException;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonReader;
+import jakarta.json.JsonValue;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
@@ -170,24 +171,36 @@ public class LibmanAnalyzer extends AbstractFileTypeAnalyzer {
         try (JsonReader jsonReader = Json.createReader(Files.newInputStream(dependencyFile.toPath()))) {
             final JsonObject json = jsonReader.readObject();
 
-            final String libmanVersion = json.getString("version");
+            final String libmanVersion = json.getString("version", null);
 
             if (!"1.0".equals(libmanVersion)) {
                 LOGGER.warn("The Libman analyzer currently only supports Libman version 1.0");
                 return;
             }
 
-            final String defaultProvider = json.getString("defaultProvider");
-            final JsonArray libraries = json.getJsonArray("libraries");
+            final String defaultProvider = json.getString("defaultProvider", null);
+            final JsonValue librariesValue = json.get("libraries");
+            if (!(librariesValue instanceof JsonArray)) {
+                return;
+            }
+            final JsonArray libraries = (JsonArray) librariesValue;
 
             libraries.forEach(e -> {
+                if (!(e instanceof JsonObject)) {
+                    return;
+                }
                 final JsonObject reference = (JsonObject) e;
 
                 final String provider = reference.getString("provider", defaultProvider);
-                final String library = reference.getString("library");
+                final String library = reference.getString("library", null);
 
                 if ("filesystem".equals(provider)) {
                     LOGGER.warn("Unable to determine name and version for filesystem package: {}", library);
+                    return;
+                }
+
+                if (library == null) {
+                    LOGGER.warn("Unable to parse library entry with missing library property");
                     return;
                 }
 
