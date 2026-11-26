@@ -150,7 +150,8 @@ a score threshold.  Vulnerabilities that have any score below this threshold wil
 Suppressions can also be configured per CVSS score version.  In the example that follows a vulnerability
 will be suppressed only if its CVSS v2 score is below 7, its CVSS v3 score is below 8,
 and its CVSS v4 score is below 9.  If the vulnerability does not have a score for a given
-version the threshold not be applied to the suppression decision.  If you specify a cvssScore 
+version the threshold not be applied to the suppression decision.  A vulnerability that has no score
+for any of the configured versions is not suppressed.  If you specify a cvssScore 
 element and cvssVnScore elements, the later will be ignored.
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
