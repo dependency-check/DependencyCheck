@@ -22,6 +22,30 @@ import com.github.packageurl.PackageURL;
 import com.github.packageurl.PackageURLBuilder;
 import com.google.common.base.Strings;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.jsoup.Jsoup;
+import org.owasp.dependencycheck.Engine;
+import org.owasp.dependencycheck.analyzer.exception.AnalysisException;
+import org.owasp.dependencycheck.data.nvd.ecosystem.Ecosystem;
+import org.owasp.dependencycheck.dependency.Confidence;
+import org.owasp.dependencycheck.dependency.Dependency;
+import org.owasp.dependencycheck.dependency.EvidenceType;
+import org.owasp.dependencycheck.dependency.naming.GenericIdentifier;
+import org.owasp.dependencycheck.dependency.naming.Identifier;
+import org.owasp.dependencycheck.dependency.naming.PurlIdentifier;
+import org.owasp.dependencycheck.exception.InitializationException;
+import org.owasp.dependencycheck.utils.FileFilterBuilder;
+import org.owasp.dependencycheck.utils.FileUtils;
+import org.owasp.dependencycheck.utils.Settings;
+import org.owasp.dependencycheck.xml.pom.Developer;
+import org.owasp.dependencycheck.xml.pom.License;
+import org.owasp.dependencycheck.xml.pom.Model;
+import org.owasp.dependencycheck.xml.pom.PomUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.File;
 import java.io.FileFilter;
 import java.io.FileInputStream;
@@ -51,29 +75,7 @@ import java.util.jar.Manifest;
 import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 
-import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.io.IOUtils;
-import org.jsoup.Jsoup;
-import org.owasp.dependencycheck.Engine;
-import org.owasp.dependencycheck.analyzer.exception.AnalysisException;
-import org.owasp.dependencycheck.data.nvd.ecosystem.Ecosystem;
-import org.owasp.dependencycheck.dependency.Confidence;
-import org.owasp.dependencycheck.dependency.Dependency;
-import org.owasp.dependencycheck.dependency.EvidenceType;
-import org.owasp.dependencycheck.dependency.naming.GenericIdentifier;
-import org.owasp.dependencycheck.dependency.naming.Identifier;
-import org.owasp.dependencycheck.dependency.naming.PurlIdentifier;
-import org.owasp.dependencycheck.exception.InitializationException;
-import org.owasp.dependencycheck.utils.FileFilterBuilder;
-import org.owasp.dependencycheck.utils.FileUtils;
-import org.owasp.dependencycheck.utils.Settings;
-import org.owasp.dependencycheck.xml.pom.Developer;
-import org.owasp.dependencycheck.xml.pom.License;
-import org.owasp.dependencycheck.xml.pom.Model;
-import org.owasp.dependencycheck.xml.pom.PomUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static org.owasp.dependencycheck.dependency.Dependency.HTML_DETECTION_PATTERN;
 
 /**
  * Used to load a JAR file and collect information that can be used to determine
@@ -180,10 +182,6 @@ public class JarAnalyzer extends AbstractFileTypeAnalyzer {
      * item in some manifest, should be considered medium confidence.
      */
     private static final String BUNDLE_NAME = "Bundle-Name"; //: Struts 2 Core
-    /**
-     * A pattern to detect HTML within text.
-     */
-    private static final Pattern HTML_DETECTION_PATTERN = Pattern.compile("\\<[a-z]+.*/?\\>", Pattern.CASE_INSENSITIVE);
     /**
      * The name of the analyzer.
      */
@@ -686,17 +684,16 @@ public class JarAnalyzer extends AbstractFileTypeAnalyzer {
         if (addAsIdentifier && isMainPom) {
             Identifier id = null;
             try {
-                if (originalArtifactID != null && originalArtifactID.matches(VALID_NAME)
-                        && originalGroupID != null && originalGroupID.matches(VALID_NAME)) {
+                if (originalArtifactID != null && originalArtifactID.matches(VALID_NAME) && originalGroupID.matches(VALID_NAME)) {
                     final PackageURL purl = PackageURLBuilder.aPackageURL().withType("maven").withNamespace(originalGroupID)
                             .withName(originalArtifactID).withVersion(version).build();
                     id = new PurlIdentifier(purl, Confidence.HIGH);
                 } else {
-                    LOGGER.debug("Invalid maven identifier identified: " + originalGroupID + ":" + originalArtifactID);
+                    LOGGER.debug("Invalid maven identifier identified: {}:{}", originalGroupID, originalArtifactID);
                 }
             } catch (MalformedPackageURLException ex) {
                 final String gav = String.format("%s:%s:%s", originalGroupID, originalArtifactID, version);
-                LOGGER.debug("Error building package url for " + gav + "; using generic identifier instead.", ex);
+                LOGGER.debug("Error building package url for {}; using generic identifier instead.", gav, ex);
                 id = new GenericIdentifier("maven:" + gav, Confidence.HIGH);
             }
             if (id != null) {
@@ -733,18 +730,6 @@ public class JarAnalyzer extends AbstractFileTypeAnalyzer {
             addMatchingValues(classes, pomName, dependency, EvidenceType.PRODUCT);
         }
 
-        //Description
-        final String description = pom.getDescription();
-        if (description != null && !description.isEmpty()
-                && !description.startsWith("POM was created by")
-                && !description.startsWith("Sonatype helps open source projects")
-                && !description.endsWith("project for Spring Boot")) {
-            foundSomething = true;
-            final String trimmedDescription = addDescription(dependency, description, "pom", "description");
-            addMatchingValues(classes, trimmedDescription, dependency, EvidenceType.VENDOR);
-            addMatchingValues(classes, trimmedDescription, dependency, EvidenceType.PRODUCT);
-        }
-
         String projectURL = pom.getProjectURL();
         if (projectURL != null && !projectURL.trim().isEmpty()) {
             if (projectURL.startsWith("https://github.com/") || projectURL.startsWith("https://gitlab.com/")) {
@@ -759,18 +744,6 @@ public class JarAnalyzer extends AbstractFileTypeAnalyzer {
 
         if (pom.getDevelopers() != null && !pom.getDevelopers().isEmpty()) {
             for (Developer dev : pom.getDevelopers()) {
-                if (!Strings.isNullOrEmpty(dev.getId())) {
-                    dependency.addEvidence(EvidenceType.VENDOR, "pom", "developer id", dev.getId(), Confidence.MEDIUM);
-                    dependency.addEvidence(EvidenceType.PRODUCT, "pom", "developer id", dev.getId(), Confidence.LOW);
-                }
-                if (!Strings.isNullOrEmpty(dev.getName())) {
-                    dependency.addEvidence(EvidenceType.VENDOR, "pom", "developer name", dev.getName(), Confidence.MEDIUM);
-                    dependency.addEvidence(EvidenceType.PRODUCT, "pom", "developer name", dev.getName(), Confidence.LOW);
-                }
-                if (!Strings.isNullOrEmpty(dev.getEmail())) {
-                    dependency.addEvidence(EvidenceType.VENDOR, "pom", "developer email", dev.getEmail(), Confidence.LOW);
-                    dependency.addEvidence(EvidenceType.PRODUCT, "pom", "developer email", dev.getEmail(), Confidence.LOW);
-                }
                 if (!Strings.isNullOrEmpty(dev.getOrganizationUrl())) {
                     dependency.addEvidence(EvidenceType.VENDOR, "pom", "developer org URL", dev.getOrganizationUrl(), Confidence.MEDIUM);
                     dependency.addEvidence(EvidenceType.PRODUCT, "pom", "developer org URL", dev.getOrganizationUrl(), Confidence.LOW);
@@ -962,12 +935,6 @@ public class JarAnalyzer extends AbstractFileTypeAnalyzer {
                             addMatchingValues(classInformation, value, dependency, EvidenceType.PRODUCT);
                         } else if (key.contains("license")) {
                             addLicense(dependency, value);
-                        } else if (key.contains("description")) {
-                            if (!value.startsWith("Sonatype helps open source projects")) {
-                                final String trimmedDescription = addDescription(dependency, value, "manifest", key);
-                                addMatchingValues(classInformation, trimmedDescription, dependency, EvidenceType.VENDOR);
-                                addMatchingValues(classInformation, trimmedDescription, dependency, EvidenceType.PRODUCT);
-                            }
                         } else {
                             dependency.addEvidence(EvidenceType.PRODUCT, source, key, value, Confidence.LOW);
                             dependency.addEvidence(EvidenceType.VENDOR, source, key, value, Confidence.LOW);
@@ -1019,69 +986,6 @@ public class JarAnalyzer extends AbstractFileTypeAnalyzer {
         return foundSomething;
     }
     //CSON: MethodLength
-
-    /**
-     * Adds a description to the given dependency. If the description contains
-     * one of the following strings beyond 100 characters, then the description
-     * used will be trimmed to that position:
-     * <ul><li>"such as"</li><li>"like "</li><li>"will use "</li><li>"* uses
-     * "</li></ul>
-     *
-     * @param dependency a dependency
-     * @param description the description
-     * @param source the source of the evidence
-     * @param key the "name" of the evidence
-     * @return if the description is trimmed, the trimmed version is returned;
-     * otherwise the original description is returned
-     */
-    public static String addDescription(Dependency dependency, String description, String source, String key) {
-        if (dependency.getDescription() == null) {
-            dependency.setDescription(description);
-        }
-        String desc;
-        if (HTML_DETECTION_PATTERN.matcher(description).find()) {
-            desc = Jsoup.parse(description).text();
-        } else {
-            desc = description;
-        }
-        dependency.setDescription(desc);
-        if (desc.length() > 100) {
-            desc = desc.replaceAll("\\s\\s+", " ");
-            final int posSuchAs = desc.toLowerCase().indexOf("such as ", 100);
-            final int posLike = desc.toLowerCase().indexOf("like ", 100);
-            final int posWillUse = desc.toLowerCase().indexOf("will use ", 100);
-            final int posUses = desc.toLowerCase().indexOf(" uses ", 100);
-
-            int pos = -1;
-            pos = Math.max(pos, posSuchAs);
-            if (pos >= 0 && posLike >= 0) {
-                pos = Math.min(pos, posLike);
-            } else {
-                pos = Math.max(pos, posLike);
-            }
-            if (pos >= 0 && posWillUse >= 0) {
-                pos = Math.min(pos, posWillUse);
-            } else {
-                pos = Math.max(pos, posWillUse);
-            }
-            if (pos >= 0 && posUses >= 0) {
-                pos = Math.min(pos, posUses);
-            } else {
-                pos = Math.max(pos, posUses);
-            }
-            if (pos > 0) {
-                desc = desc.substring(0, pos) + "...";
-            }
-//            //no longer add description directly. Use matching terms in other parts of the evidence collection
-//            //but description adds too many FP
-//            dependency.addEvidence(EvidenceType.PRODUCT, source, key, desc, Confidence.LOW);
-//            dependency.addEvidence(EvidenceType.VENDOR, source, key, desc, Confidence.LOW);
-//        } else {
-//            dependency.addEvidence(EvidenceType.PRODUCT, source, key, desc, Confidence.MEDIUM);
-//            dependency.addEvidence(EvidenceType.VENDOR, source, key, desc, Confidence.MEDIUM);
-        }
-        return desc;
-    }
 
     /**
      * Adds a license to the given dependency.
@@ -1265,7 +1169,7 @@ public class JarAnalyzer extends AbstractFileTypeAnalyzer {
                             || (pos > 0 && !Character.isLetterOrDigit(value.charAt(pos - 1))
                             && (pos + key.length() == value.length() || (key.length() < value.length()
                             && !Character.isLetterOrDigit(value.charAt(pos + key.length())))))) {
-                        dep.addEvidence(type, "jar", "package name", key, Confidence.HIGHEST);
+                        dep.addEvidence(type, "jar", "package name", key, Confidence.MEDIUM);
                     }
                 }
             }
@@ -1421,7 +1325,7 @@ public class JarAnalyzer extends AbstractFileTypeAnalyzer {
          *
          * @return the value of packageStructure
          */
-        public ArrayList<String> getPackageStructure() {
+        public List<String> getPackageStructure() {
             return packageStructure;
         }
     }
