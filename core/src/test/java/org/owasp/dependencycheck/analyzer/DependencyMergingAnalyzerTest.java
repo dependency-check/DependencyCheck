@@ -104,6 +104,9 @@ class DependencyMergingAnalyzerTest extends BaseTest {
         relatedDependency.addEvidence(EvidenceType.VERSION, "test", "version", "1.0", Confidence.HIGHEST);
         relatedDependency.setName("related");
         relatedDependency.addProjectReference("related");
+        final org.owasp.dependencycheck.dependency.Vulnerability vuln =
+                new org.owasp.dependencycheck.dependency.Vulnerability("GHSA-35jh-r3h4-6jhm");
+        relatedDependency.addVulnerability(vuln);
         Set<Dependency> dependenciesToRemove = new HashSet<>();
         DependencyMergingAnalyzer.mergeDependencies(dependency, relatedDependency, dependenciesToRemove);
         assertTrue(dependenciesToRemove.contains(relatedDependency));
@@ -112,6 +115,7 @@ class DependencyMergingAnalyzerTest extends BaseTest {
         assertEquals(1, dependency.getEvidence(EvidenceType.VERSION).size());
         assertEquals(1, dependency.getRelatedDependencies().size());
         assertEquals(0, relatedDependency.getRelatedDependencies().size());
+        assertTrue(dependency.getVulnerabilities().contains(vuln));
     }
 
     /**

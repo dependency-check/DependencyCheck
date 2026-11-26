@@ -291,9 +291,12 @@ public abstract class AbstractNpmAnalyzer extends AbstractFileTypeAnalyzer {
      */
     protected Dependency findDependency(Engine engine, String name, String version) {
         for (Dependency d : engine.getDependencies()) {
-            if (NPM_DEPENDENCY_ECOSYSTEM.equals(d.getEcosystem()) && name.equals(d.getName()) && version != null && d.getVersion() != null) {
-                final String dependencyVersion = d.getVersion();
-                if (DependencyBundlingAnalyzer.npmVersionsMatch(version, dependencyVersion)) {
+            if (NPM_DEPENDENCY_ECOSYSTEM.equals(d.getEcosystem()) && name.equals(d.getName())) {
+                if (version == null && d.getVersion() == null) {
+                    return d;
+                }
+                if (version != null && d.getVersion() != null
+                        && DependencyBundlingAnalyzer.npmVersionsMatch(version, d.getVersion())) {
                     return d;
                 }
             }
@@ -458,8 +461,10 @@ public abstract class AbstractNpmAnalyzer extends AbstractFileTypeAnalyzer {
             vuln.setUnscoredSeverity(advisory.getSeverity());
             vuln.setCvssV3(advisory.getCvssV3());
             vuln.setSource(Vulnerability.Source.NPM);
-            for (String cwe : advisory.getCwes()) {
-                vuln.addCwe(cwe);
+            if (advisory.getCwes() != null) {
+                for (String cwe : advisory.getCwes()) {
+                    vuln.addCwe(cwe);
+                }
             }
             if (advisory.getReferences() != null) {
                 final String[] references = advisory.getReferences().split("\\n");

@@ -115,10 +115,11 @@ public class DependencyBundlingAnalyzer extends AbstractDependencyComparingAnaly
         if (hashesMatch(dependency, nextDependency)) {
             if (!containedInWar(dependency.getFilePath())
                     && !containedInWar(nextDependency.getFilePath())) {
+                final boolean copyVulnsAndIds = dependency.isVirtual() || nextDependency.isVirtual();
                 if (firstPathIsShortest(dependency.getFilePath(), nextDependency.getFilePath())) {
-                    mergeDependencies(dependency, nextDependency, dependenciesToRemove);
+                    mergeDependencies(dependency, nextDependency, dependenciesToRemove, copyVulnsAndIds);
                 } else {
-                    mergeDependencies(nextDependency, dependency, dependenciesToRemove);
+                    mergeDependencies(nextDependency, dependency, dependenciesToRemove, copyVulnsAndIds);
                     return true; //since we merged into the next dependency - skip forward to the next in mainIterator
                 }
             }

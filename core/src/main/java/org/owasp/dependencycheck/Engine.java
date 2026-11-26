@@ -240,7 +240,7 @@ public class Engine implements FileFilter, AutoCloseable {
                         && existing.getDisplayFileName() != null
                         && existing.getDisplayFileName().equals(dependency.getDisplayFileName())
                         && identifiersMatch(existing.getSoftwareIdentifiers(), dependency.getSoftwareIdentifiers())) {
-                    DependencyBundlingAnalyzer.mergeDependencies(existing, dependency, null);
+                    DependencyBundlingAnalyzer.mergeDependencies(existing, dependency, null, true);
                     return;
                 }
             }

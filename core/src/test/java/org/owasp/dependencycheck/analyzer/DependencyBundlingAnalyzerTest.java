@@ -281,4 +281,55 @@ class DependencyBundlingAnalyzerTest extends BaseTest {
         result = instance.isWebJar(left, right);
         assertEquals(expResult, result);
     }
+
+    @Test
+    void testEvaluateDependenciesPreservesVulnerabilitiesOnNpmAndVirtualMerges() throws MalformedPackageURLException {
+        final DependencyBundlingAnalyzer instance = new DependencyBundlingAnalyzer();
+        final org.owasp.dependencycheck.dependency.Vulnerability vuln1 =
+                new org.owasp.dependencycheck.dependency.Vulnerability("GHSA-35jh-r3h4-6jhm");
+        final org.owasp.dependencycheck.dependency.Vulnerability vuln2 =
+                new org.owasp.dependencycheck.dependency.Vulnerability("GHSA-jf85-cpcp-j695");
+
+        final Dependency pkgJsonDep = new Dependency(new File("/project/package.json"), false);
+        pkgJsonDep.setEcosystem(AbstractNpmAnalyzer.NPM_DEPENDENCY_ECOSYSTEM);
+        pkgJsonDep.setName("lodash");
+        pkgJsonDep.setVersion("4.17.11");
+        pkgJsonDep.addVulnerability(vuln1);
+
+        final Dependency lockDep = new Dependency(new File("/project/pnpm-lock.yaml?lodash"), true);
+        lockDep.setEcosystem(AbstractNpmAnalyzer.NPM_DEPENDENCY_ECOSYSTEM);
+        lockDep.setName("lodash");
+        lockDep.setVersion("4.17.11");
+        lockDep.addSoftwareIdentifier(new PurlIdentifier("npm", "lodash", "4.17.11", Confidence.HIGHEST));
+        lockDep.addVulnerability(vuln2);
+
+        final java.util.Set<Dependency> toRemove = new java.util.HashSet<>();
+        instance.evaluateDependencies(pkgJsonDep, lockDep, toRemove);
+
+        assertTrue(toRemove.contains(lockDep));
+        assertEquals(2, pkgJsonDep.getVulnerabilities().size());
+        assertTrue(pkgJsonDep.getVulnerabilities().contains(vuln1));
+        assertTrue(pkgJsonDep.getVulnerabilities().contains(vuln2));
+        assertFalse(pkgJsonDep.getSoftwareIdentifiers().isEmpty());
+
+        final Dependency virtual1 = new Dependency(new File("/a/pnpm-lock.yaml?lodash"), true);
+        virtual1.setSha1sum("sha1-same");
+        virtual1.setSha256sum("sha256-same");
+        virtual1.setMd5sum("md5-same");
+        virtual1.addVulnerability(vuln1);
+
+        final Dependency virtual2 = new Dependency(new File("/a/sub/pnpm-lock.yaml?lodash"), true);
+        virtual2.setSha1sum("sha1-same");
+        virtual2.setSha256sum("sha256-same");
+        virtual2.setMd5sum("md5-same");
+        virtual2.addVulnerability(vuln2);
+
+        final java.util.Set<Dependency> hashToRemove = new java.util.HashSet<>();
+        instance.evaluateDependencies(virtual1, virtual2, hashToRemove);
+
+        assertTrue(hashToRemove.contains(virtual2));
+        assertEquals(2, virtual1.getVulnerabilities().size());
+        assertTrue(virtual1.getVulnerabilities().contains(vuln1));
+        assertTrue(virtual1.getVulnerabilities().contains(vuln2));
+    }
 }

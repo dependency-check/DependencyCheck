@@ -101,6 +101,38 @@ class EngineTest extends BaseDBTestCase {
     }
 
     @Test
+    void testAddDependencyMergingVirtualDependenciesPreservesVulnerabilities() throws Exception {
+        try (Engine instance = new Engine(getSettings())) {
+            final Dependency first = new Dependency(new File("pnpm-lock.yaml?lodash"), true);
+            first.setSha256sum("abc123");
+            first.setSha1sum("def456");
+            first.addSoftwareIdentifier(new org.owasp.dependencycheck.dependency.naming.PurlIdentifier(
+                    "npm", "lodash", "4.17.11", org.owasp.dependencycheck.dependency.Confidence.HIGHEST));
+            final org.owasp.dependencycheck.dependency.Vulnerability vuln1 =
+                    new org.owasp.dependencycheck.dependency.Vulnerability("GHSA-35jh-r3h4-6jhm");
+            first.addVulnerability(vuln1);
+
+            final Dependency second = new Dependency(new File("pnpm-lock.yaml?lodash"), true);
+            second.setSha256sum("abc123");
+            second.setSha1sum("def456");
+            second.addSoftwareIdentifier(new org.owasp.dependencycheck.dependency.naming.PurlIdentifier(
+                    "npm", "lodash", "4.17.11", org.owasp.dependencycheck.dependency.Confidence.HIGHEST));
+            final org.owasp.dependencycheck.dependency.Vulnerability vuln2 =
+                    new org.owasp.dependencycheck.dependency.Vulnerability("GHSA-jf85-cpcp-j695");
+            second.addVulnerability(vuln2);
+
+            instance.addDependency(first);
+            instance.addDependency(second);
+
+            final Dependency[] deps = instance.getDependencies();
+            assertEquals(1, deps.length);
+            assertEquals(2, deps[0].getVulnerabilities().size());
+            assertTrue(deps[0].getVulnerabilities().contains(vuln1));
+            assertTrue(deps[0].getVulnerabilities().contains(vuln2));
+        }
+    }
+
+    @Test
     void testDatabaseRemainsOpenAfterUpdateFailure(@TempDir Path tempDir) throws Exception {
         try (URLClassLoader serviceLoader = onlyFailingUpdateSources(tempDir);
                 Engine instance = new Engine(serviceLoader, getSettings())) {

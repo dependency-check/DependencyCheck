@@ -19,15 +19,17 @@ package org.owasp.dependencycheck.data.nodeaudit;
 
 import io.github.jeremylong.openvulnerability.client.nvd.CvssV3;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
-
+import org.owasp.dependencycheck.utils.CvssUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.List;
-import org.json.JSONException;
-import org.owasp.dependencycheck.utils.CvssUtil;
+import java.util.Set;
 
 /**
  * Parser for NPM Audit API response. This parser is derived from:
@@ -57,67 +59,131 @@ public class NpmAuditParser {
         final Iterator<?> keys = jsonAdvisories.keys();
         while (keys.hasNext()) {
             final String key = (String) keys.next();
-            final Advisory advisory = parseAdvisory(jsonAdvisories.getJSONObject(key));
+            advisories.addAll(parseAdvisory(jsonAdvisories.getJSONObject(key)));
+        }
+        return advisories;
+    }
+
+    /**
+     * Parses an advisory from Node Audit or pnpm audit JSON, emitting one
+     * {@link Advisory} per distinct version present in {@code findings} (or a
+     * single {@link Advisory} with {@code version == null} if no version is
+     * specified).
+     *
+     * @param object the JSON object containing the advisory
+     * @return the list of parsed {@link Advisory} objects
+     * @throws org.json.JSONException thrown if the JSON is not of the expected
+     * schema
+     */
+    private List<Advisory> parseAdvisory(JSONObject object) throws JSONException {
+        final List<String> stringCwes = parseCwes(object);
+        final List<String> stringCves = parseCves(object);
+        final CvssV3 cvssV3 = parseCvssV3(object);
+        final Set<String> versions = parseFindingVersions(object);
+
+        final List<Advisory> advisories = new ArrayList<>(versions.size());
+        for (String version : versions) {
+            final Advisory advisory = new Advisory();
+            advisory.setGhsaId(object.getString("github_advisory_id"));
+            advisory.setOverview(object.optString("overview", null));
+            advisory.setReferences(object.optString("references", null));
+            advisory.setCreated(object.optString("created", null));
+            advisory.setUpdated(object.optString("updated", null));
+            advisory.setRecommendation(object.optString("recommendation", null));
+            advisory.setTitle(object.optString("title", null));
+            advisory.setModuleName(object.optString("module_name", null));
+            advisory.setVulnerableVersions(object.optString("vulnerable_versions", null));
+            advisory.setPatchedVersions(object.optString("patched_versions", null));
+            advisory.setAccess(object.optString("access", null));
+            advisory.setSeverity(object.optString("severity", null));
+            advisory.setCwes(stringCwes);
+            advisory.setVersion(version);
+            if (stringCves != null) {
+                advisory.setCves(stringCves);
+            }
+            if (cvssV3 != null) {
+                advisory.setCvssV3(cvssV3);
+            }
             advisories.add(advisory);
         }
         return advisories;
     }
 
     /**
-     * Parses the advisory from Node Audit.
+     * Extracts CWE identifiers from the advisory JSON, supporting both array
+     * and scalar string representations.
      *
-     * @param object the JSON object containing the advisory
-     * @return the Advisory object
-     * @throws org.json.JSONException thrown if the JSON is not of the expected
-     * schema
+     * @param object the advisory JSON object
+     * @return list of CWE strings
      */
-    private Advisory parseAdvisory(JSONObject object) throws JSONException {
-        final Advisory advisory = new Advisory();
-        advisory.setGhsaId(object.getString("github_advisory_id"));
-        advisory.setOverview(object.optString("overview", null));
-        advisory.setReferences(object.optString("references", null));
-        advisory.setCreated(object.optString("created", null));
-        advisory.setUpdated(object.optString("updated", null));
-        advisory.setRecommendation(object.optString("recommendation", null));
-        advisory.setTitle(object.optString("title", null));
-        //advisory.setFoundBy(object.optString("author", null));
-        //advisory.setReportedBy(object.optString("author", null));
-        advisory.setModuleName(object.optString("module_name", null));
-        advisory.setVulnerableVersions(object.optString("vulnerable_versions", null));
-        advisory.setPatchedVersions(object.optString("patched_versions", null));
-        advisory.setAccess(object.optString("access", null));
-        advisory.setSeverity(object.optString("severity", null));
-
+    private List<String> parseCwes(JSONObject object) {
         final JSONArray jsonCwes = object.optJSONArray("cwe");
         final List<String> stringCwes = new ArrayList<>();
         if (jsonCwes != null) {
             for (int j = 0; j < jsonCwes.length(); j++) {
                 stringCwes.add(jsonCwes.getString(j));
             }
+        } else {
+            final String cwe = object.optString("cwe", null);
+            if (cwe != null && !cwe.isEmpty()) {
+                stringCwes.add(cwe);
+            }
         }
-        advisory.setCwes(stringCwes);
+        return stringCwes;
+    }
 
+    /**
+     * Extracts CVE identifiers from the advisory JSON.
+     *
+     * @param object the advisory JSON object
+     * @return list of CVE strings, or {@code null} if {@code cves} is absent
+     */
+    private List<String> parseCves(JSONObject object) {
+        final JSONArray jsonCves = object.optJSONArray("cves");
+        if (jsonCves == null) {
+            return null;
+        }
+        final List<String> stringCves = new ArrayList<>();
+        for (int j = 0; j < jsonCves.length(); j++) {
+            stringCves.add(jsonCves.getString(j));
+        }
+        return stringCves;
+    }
+
+    /**
+     * Extracts distinct affected package versions from {@code findings}.
+     *
+     * @param object the advisory JSON object
+     * @return non-empty set of versions (containing {@code null} if no versions
+     * were present in {@code findings})
+     */
+    private Set<String> parseFindingVersions(JSONObject object) {
+        final Set<String> versions = new LinkedHashSet<>();
         final JSONArray findings = object.optJSONArray("findings");
-        for (int i = 0; i < findings.length(); i++) {
-            final JSONObject finding = findings.getJSONObject(i);
-            final String version = finding.optString("version", null);
-            final JSONArray paths = finding.optJSONArray("paths");
-            for (int j = 0; j < paths.length(); j++) {
-                final String path = paths.getString(j);
-                if (path != null && path.equals(advisory.getModuleName())) {
-                    advisory.setVersion(version);
+        if (findings != null) {
+            for (int i = 0; i < findings.length(); i++) {
+                final JSONObject finding = findings.optJSONObject(i);
+                if (finding != null) {
+                    final String version = finding.optString("version", null);
+                    if (version != null && !version.isEmpty()) {
+                        versions.add(version);
+                    }
                 }
             }
         }
-
-        final JSONArray jsonCves = object.optJSONArray("cves");
-        final List<String> stringCves = new ArrayList<>();
-        if (jsonCves != null) {
-            for (int j = 0; j < jsonCves.length(); j++) {
-                stringCves.add(jsonCves.getString(j));
-            }
-            advisory.setCves(stringCves);
+        if (versions.isEmpty()) {
+            versions.add(null);
         }
+        return versions;
+    }
+
+    /**
+     * Extracts CVSSv3 metadata from the advisory JSON when available.
+     *
+     * @param object the advisory JSON object
+     * @return parsed {@link CvssV3} or {@code null}
+     */
+    private CvssV3 parseCvssV3(JSONObject object) {
         final JSONObject jsonCvss = object.optJSONObject("cvss");
         if (jsonCvss != null) {
             double baseScore = -1.0;
@@ -133,10 +199,9 @@ public class NpmAuditParser {
             if (baseScore >= 0.0) {
                 final String vector = jsonCvss.optString("vectorString");
                 if (vector != null && !"null".equals(vector)) {
-                    if (vector.startsWith("CVSS:3") && baseScore >= 0.0) {
+                    if (vector.startsWith("CVSS:3")) {
                         try {
-                            final CvssV3 cvss = CvssUtil.vectorToCvssV3(vector, baseScore);
-                            advisory.setCvssV3(cvss);
+                            return CvssUtil.vectorToCvssV3(vector, baseScore);
                         } catch (IllegalArgumentException iae) {
                             LOGGER.warn("Invalid CVSS vector format encountered in NPM Audit results '{}': {} ", vector, iae.getMessage());
                         }
@@ -148,6 +213,6 @@ public class NpmAuditParser {
                 }
             }
         }
-        return advisory;
+        return null;
     }
 }
