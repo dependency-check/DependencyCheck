@@ -100,20 +100,17 @@ public class JarAnalyzer extends AbstractFileTypeAnalyzer {
      * creating temporary directories.
      */
     private static final AtomicInteger DIR_COUNT = new AtomicInteger(0);
-    /**
-     * The system independent newline character.
-     */
-    private static final String NEWLINE = System.getProperty("line.separator");
-    /**
-     * A list of values in the manifest to ignore as they only result in false
-     * positives.
-     */
-    private static final Set<String> IGNORE_VALUES = newHashSet(
-            "Sun Java System Application Server");
+
     /**
      * A list of elements in the manifest to ignore.
      */
     private static final Set<String> IGNORE_KEYS = newHashSet(
+            Attributes.Name.SIGNATURE_VERSION.toString().toLowerCase(Locale.ROOT),
+            Attributes.Name.MANIFEST_VERSION.toString().toLowerCase(Locale.ROOT),
+            Attributes.Name.SPECIFICATION_TITLE.toString().toLowerCase(Locale.ROOT),
+            Attributes.Name.SPECIFICATION_VERSION.toString().toLowerCase(Locale.ROOT),
+            Attributes.Name.SPECIFICATION_VENDOR.toString().toLowerCase(Locale.ROOT),
+            Attributes.Name.MAIN_CLASS.toString().toLowerCase(Locale.ROOT),
             "built-by",
             "created-by",
             "builtby",
@@ -140,7 +137,6 @@ public class JarAnalyzer extends AbstractFileTypeAnalyzer {
             "ignorepackage",
             "exportpackage",
             "sealed",
-            "manifest-version",
             "archiver-version",
             "manifestversion",
             "archiverversion",
@@ -174,10 +170,6 @@ public class JarAnalyzer extends AbstractFileTypeAnalyzer {
      * item in some manifest, should be considered medium confidence.
      */
     private static final String BUNDLE_VERSION = "Bundle-Version"; //: 2.1.2
-    /**
-     * item in some manifest, should be considered medium confidence.
-     */
-    private static final String BUNDLE_DESCRIPTION = "Bundle-Description"; //: Apache Struts 2
     /**
      * item in some manifest, should be considered medium confidence.
      */
@@ -835,8 +827,6 @@ public class JarAnalyzer extends AbstractFileTypeAnalyzer {
                 return false;
             }
             String source = "Manifest";
-            String specificationVersion = null;
-            boolean hasImplementationVersion = false;
             Attributes atts = manifest.getMainAttributes();
             for (Entry<Object, Object> entry : atts.entrySet()) {
                 String key = entry.getKey().toString();
@@ -847,18 +837,14 @@ public class JarAnalyzer extends AbstractFileTypeAnalyzer {
                 if (value.startsWith("git@github.com:") || value.startsWith("git@gitlab.com:")) {
                     value = value.substring(15);
                 }
-                if (IGNORE_VALUES.contains(value)) {
-                    continue;
-                } else if (key.equalsIgnoreCase(Attributes.Name.IMPLEMENTATION_TITLE.toString())) {
+
+                if (key.equalsIgnoreCase(Attributes.Name.IMPLEMENTATION_TITLE.toString())) {
                     foundSomething = true;
                     dependency.addEvidence(EvidenceType.PRODUCT, source, key, value, Confidence.HIGH);
                     addMatchingValues(classInformation, value, dependency, EvidenceType.PRODUCT);
                 } else if (key.equalsIgnoreCase(Attributes.Name.IMPLEMENTATION_VERSION.toString())) {
-                    hasImplementationVersion = true;
                     foundSomething = true;
                     dependency.addEvidence(EvidenceType.VERSION, source, key, value, Confidence.HIGH);
-                } else if ("specification-version".equalsIgnoreCase(key)) {
-                    specificationVersion = value;
                 } else if (key.equalsIgnoreCase(Attributes.Name.IMPLEMENTATION_VENDOR.toString())) {
                     foundSomething = true;
                     dependency.addEvidence(EvidenceType.VENDOR, source, key, value, Confidence.HIGH);
@@ -882,19 +868,12 @@ public class JarAnalyzer extends AbstractFileTypeAnalyzer {
                 } else if (key.equalsIgnoreCase(BUNDLE_VERSION)) {
                     foundSomething = true;
                     dependency.addEvidence(EvidenceType.VERSION, source, key, value, Confidence.HIGH);
-                } else if (key.equalsIgnoreCase(Attributes.Name.MAIN_CLASS.toString())) {
-                    //noinspection UnnecessaryContinue
-                    continue;
-                    //skipping main class as if this has important information to add it will be added during class name analysis...
-                } else if ("implementation-url".equalsIgnoreCase(key)
-                        && value != null
-                        && value.startsWith("https://projects.spring.io/spring-boot/#/spring-boot-starter-parent/parent/")) {
-                    continue;
                 } else {
                     key = key.toLowerCase();
                     if (!IGNORE_KEYS.contains(key)
                             && !key.endsWith("jdk")
                             && !key.contains("lastmodified")
+                            && !key.contains("description")
                             && !key.endsWith("package")
                             && !key.endsWith("classpath")
                             && !key.endsWith("class-path")
@@ -905,9 +884,7 @@ public class JarAnalyzer extends AbstractFileTypeAnalyzer {
                             && !isPackage(key, value)) {
                         foundSomething = true;
                         if (key.contains("version")) {
-                            if (!key.contains("specification")) {
-                                dependency.addEvidence(EvidenceType.VERSION, source, key, value, Confidence.MEDIUM);
-                            }
+                            dependency.addEvidence(EvidenceType.VERSION, source, key, value, Confidence.MEDIUM);
                         } else if ("build-id".equals(key)) {
                             int pos = value.indexOf('(');
                             if (pos > 0) {
@@ -971,16 +948,8 @@ public class JarAnalyzer extends AbstractFileTypeAnalyzer {
                         foundSomething = true;
                         dependency.addEvidence(EvidenceType.VENDOR, source, key, value, Confidence.MEDIUM);
                         addMatchingValues(classInformation, value, dependency, EvidenceType.VENDOR);
-                    } else if (key.equalsIgnoreCase(Attributes.Name.SPECIFICATION_TITLE.toString())) {
-                        foundSomething = true;
-                        dependency.addEvidence(EvidenceType.PRODUCT, source, key, value, Confidence.MEDIUM);
-                        addMatchingValues(classInformation, value, dependency, EvidenceType.PRODUCT);
                     }
                 }
-            }
-            if (specificationVersion != null && !hasImplementationVersion) {
-                foundSomething = true;
-                dependency.addEvidence(EvidenceType.VERSION, source, "specification-version", specificationVersion, Confidence.HIGH);
             }
         }
         return foundSomething;
@@ -997,7 +966,7 @@ public class JarAnalyzer extends AbstractFileTypeAnalyzer {
         if (d.getLicense() == null) {
             d.setLicense(license);
         } else if (!d.getLicense().contains(license)) {
-            d.setLicense(d.getLicense() + NEWLINE + license);
+            d.setLicense(d.getLicense() + System.lineSeparator() + license);
         }
     }
 
