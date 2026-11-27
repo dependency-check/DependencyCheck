@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
-function mvn_prop() { mvn help:evaluate -q --non-recursive -DforceStdout -Dexpression="$1"; }
+function mvn_prop() { ./mvnw help:evaluate -q --non-recursive -DforceStdout -Dexpression="$1"; }
 read -r VERSION POSTGRES_DRIVER_VERSION MYSQL_DRIVER_VERSION <<< "$(mvn_prop project.version) $(mvn_prop driver.postgresql.version) $(mvn_prop driver.mysql.version)"
 
 if [[ $VERSION = *"SNAPSHOT"* ]]; then

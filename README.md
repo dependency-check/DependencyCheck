@@ -1,7 +1,5 @@
 [![Maven Central](https://img.shields.io/maven-central/v/org.owasp/dependency-check-maven.svg)](https://mvnrepository.com/artifact/org.owasp/dependency-check-maven) [![Build and Deploy Snapshot](https://github.com/dependency-check/DependencyCheck/actions/workflows/build.yml/badge.svg)](https://github.com/dependency-check/DependencyCheck/actions/workflows/build.yml) [![CII Best Practices](https://bestpractices.coreinfrastructure.org/projects/843/badge)](https://bestpractices.coreinfrastructure.org/projects/843) [![Apache 2.0 License](https://img.shields.io/badge/license-Apache%202-blue.svg)](https://www.apache.org/licenses/LICENSE-2.0.txt)
 
-[![Black Hat Arsenal](https://raw.githubusercontent.com/toolswatch/badges/master/arsenal/usa/2018.svg?sanitize=true)](https://www.blackhat.com/us-18/arsenal.html#jeremy-long) [![Black Hat Arsenal](https://raw.githubusercontent.com/toolswatch/badges/master/arsenal/usa/2015.svg?sanitize=true)](https://www.blackhat.com/us-15/arsenal.html#jeremy-long) [![Black Hat Arsenal](https://raw.githubusercontent.com/toolswatch/badges/master/arsenal/usa/2014.svg?sanitize=true)](https://www.blackhat.com/us-14/arsenal.html#Long) [![Black Hat Arsenal](https://raw.githubusercontent.com/toolswatch/badges/master/arsenal/usa/2013.svg?sanitize=true)](https://www.blackhat.com/us-13/arsenal.html#Long)
-
 # Dependency-Check
 
 Dependency-Check is a Software Composition Analysis (SCA) tool that attempts to detect publicly disclosed vulnerabilities contained within a project's dependencies. It does this by determining if there is a Common Platform Enumeration (CPE) identifier for a given dependency. If found, it will generate a report linking to the associated CVE entries.
@@ -185,7 +183,6 @@ For instructions on the use of the Ant Task, please see the [dependency-check-an
 
 For installation to pass, you must have the following components installed:
 * Java: `java -version` 25.0
-* Maven: `mvn -version` 3.6.3 and higher
 
 Tests cases require:
 * dotnet core version 8.0
@@ -208,13 +205,13 @@ git clone --depth 1 https://github.com/dependency-check/DependencyCheck
 
 On *nix
 ```
-$ mvn -s settings.xml install
+$ ./mvnw install
 $ ./cli/target/release/bin/dependency-check.sh -h
 $ ./cli/target/release/bin/dependency-check.sh --out . --scan ./src/test/resources
 ```
 On Windows
 ```
-> mvn -s settings.xml install
+> ./mvnw install
 > .\cli\target\release\bin\dependency-check.bat -h
 > .\cli\target\release\bin\dependency-check.bat --out . --scan ./src/test/resources
 ```
@@ -223,7 +220,7 @@ Then load the resulting 'dependency-check-report.html' into your favorite browse
 
 #### Building without running tests
 To speed up your turnaround cycle times, you can also compile without running the tests each time:  
-`mvn -s settings.xml install -DskipTests=true`
+`./mvnw install -DskipTests=true`
 
 Please remember to at least run the tests once before opening the PR. :) 
 
@@ -236,7 +233,7 @@ Step by step:
 - `+ (Add new configuration) -> Maven`
 - Give the Configuration a name, e.g. `Run tests`
 - Choose working directory, e.g. `core`
-- In `command line`, enter `-DforkCount=0 -f pom.xml -s ../settings.xml test`
+- In `command line`, enter `-DforkCount=0 -f pom.xml test`
 - Press `OK`
 - `Run -> Debug`, then choose the newly created run configuration
 
@@ -246,7 +243,7 @@ IntelliJ will now execute the test run for the `core` subproject with enabled de
 If you would like to speed up your turnaround cycle times, you can also just test one function or one test class.  
 This works by adding `-Dtest=MyTestClass` or `-Dtest=MyTestClass#myTestFunction` to the run configuration. The complete command line in the run configuration then would be:
 
-`-Dtest=MyTestClass#myTestFunction -DforkCount=0 -f pom.xml -s ../settings.xml test`
+`-Dtest=MyTestClass#myTestFunction -DforkCount=0 -f pom.xml test`
 
 
 ### Docker
@@ -328,10 +325,10 @@ docker run --rm ^
 Building From Source
 --------------------
 
-To build dependency-check (using Java 11) run the command:
+To build dependency-check run the command:
 
 ```
-mvn -s settings.xml install
+./mvnw install
 ```
 
 Running dependency-check on dependency-check
@@ -343,7 +340,7 @@ the `test-dependencies` profile. To run dependency-check against itself simple
 exclude the `test-dependencies` profile:
 
 ```shell
-mvn org.owasp:dependency-check-maven:aggregate -P-test-dependencies -DskipProvidedScope=true
+./mvnw org.owasp:dependency-check-maven:aggregate -P-test-dependencies -DskipProvidedScope=true
 ```
 
 Building the documentation
@@ -351,7 +348,7 @@ Building the documentation
 
 The documentation on the [github pages](https://dependency-check.github.io/DependencyCheck/) is generated from this repository:
 
-    mvn -s settings.xml site site:stage
+    ./mvnw site site:stage
 
 Once done, point your browser to `./target/staging/index.html`.
 
@@ -360,7 +357,7 @@ Building The Docker Image
 To build dependency-check docker image run the command:
 
 ```
-mvn -s settings.xml install
+./mvnw install
 ./docker-build.sh
 ```
 

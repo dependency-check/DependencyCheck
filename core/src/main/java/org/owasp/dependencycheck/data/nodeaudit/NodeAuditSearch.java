@@ -22,6 +22,7 @@ import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.security.SecureRandom;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.concurrent.ThreadSafe;
@@ -76,6 +77,11 @@ public class NodeAuditSearch {
      * Used for logging.
      */
     private static final Logger LOGGER = LoggerFactory.getLogger(NodeAuditSearch.class);
+    /**
+     * The longest Retry-After wait to honor; longer requested waits fail the
+     * request instead of stalling the scan.
+     */
+    private static final Duration MAX_RETRY_AFTER = Duration.ofSeconds(60);
     /**
      * Persisted disk cache for `npm audit` results.
      */
@@ -170,7 +176,16 @@ public class NodeAuditSearch {
                 cache.put(key, advisories);
             }
             return advisories;
-        } catch (RuntimeException | URISyntaxException | TooManyRequestsException | ResourceNotFoundException ex) {
+        } catch (TooManyRequestsException ex) {
+            LOGGER.debug("Node Audit API returned `429 Too Many Requests` - retrying request.");
+            final SearchException failure = new SearchException("Could not connect to Node Audit API: " + ex.getMessage(), ex);
+            final Duration retryAfter = ex.getRetryAfter();
+            if (retryAfter != null && retryAfter.compareTo(MAX_RETRY_AFTER) > 0) {
+                LOGGER.debug("Node Audit API asked to retry after {} - not waiting that long.", retryAfter);
+                throw failure;
+            }
+            return retrySubmitPackage(packageJson, key, count, retryAfter, failure);
+        } catch (RuntimeException | URISyntaxException | ResourceNotFoundException ex) {
             LOGGER.debug("Error connecting to Node Audit API. Error: {}",
                     ex.getMessage());
             throw new SearchException("Could not connect to Node Audit API: " + ex.getMessage(), ex);
@@ -181,17 +196,8 @@ public class NodeAuditSearch {
                     case 503:
                         LOGGER.debug("Node Audit API returned `{} {}` - retrying request.",
                                 hre.getStatusCode(), hre.getReasonPhrase());
-                        if (count < 5) {
-                            final int next = count + 1;
-                            try {
-                                Thread.sleep(1500L * next);
-                            } catch (InterruptedException ex) {
-                                Thread.currentThread().interrupt();
-                                throw new UnexpectedAnalysisException(ex);
-                            }
-                            return submitPackage(packageJson, key, next);
-                        }
-                        throw new SearchException("Could not perform Node Audit analysis - service returned a 503.", e);
+                        return retrySubmitPackage(packageJson, key, count, null,
+                                new SearchException("Could not perform Node Audit analysis - service returned a 503.", e));
                     case 400:
                         LOGGER.debug("Invalid payload submitted to Node Audit API. Received response code: {} {}",
                                 hre.getStatusCode(), hre.getReasonPhrase());
@@ -206,6 +212,36 @@ public class NodeAuditSearch {
                 throw new IOException("Could not connect to Node Audit API", e);
             }
         }
+    }
+
+    /**
+     * Waits and resubmits the package to the Node Audit API, or throws the
+     * given failure once the retries are exhausted.
+     *
+     * @param packageJson the package.json file retrieved from the Dependency
+     * @param key the key for the cache entry
+     * @param count the current retry count
+     * @param delay how long to wait before retrying; null to use a linear
+     * backoff
+     * @param failure the exception to throw when no retries remain
+     * @return a List of zero or more Advisory object
+     * @throws SearchException if Node Audit API is unable to analyze the
+     * package
+     * @throws IOException if it's unable to connect to Node Audit API
+     */
+    private List<Advisory> retrySubmitPackage(JsonObject packageJson, String key, int count, Duration delay,
+            SearchException failure) throws SearchException, IOException {
+        if (count >= 5) {
+            throw failure;
+        }
+        final int next = count + 1;
+        try {
+            Thread.sleep(delay != null ? delay.toMillis() : 1500L * next);
+        } catch (InterruptedException ex) {
+            Thread.currentThread().interrupt();
+            throw new UnexpectedAnalysisException(ex);
+        }
+        return submitPackage(packageJson, key, next);
     }
 
     /**
