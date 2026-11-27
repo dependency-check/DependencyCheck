@@ -671,6 +671,15 @@ public class SuppressionRule {
             Double v3Score = v.getCvssV3() != null ? v.getCvssV3().getCvssData().getBaseScore() : null;
             Double v4Score = v.getCvssV4() != null ? v.getCvssV4().getCvssData().getBaseScore() : null;
 
+            // at least one configured threshold must have a score of the same version to compare against,
+            // otherwise there is nothing to base the suppression on
+            final boolean hasComparableScore = (hasCvssV2Below() && v2Score != null)
+                    || (hasCvssV3Below() && v3Score != null)
+                    || (hasCvssV4Below() && v4Score != null);
+            if (!hasComparableScore) {
+                return false;
+            }
+
             // only if all version indicate suppression will the vulnerability be suppressed
             // so if we are missing data (score or threshold) for a specific version we assume suppression
             boolean cvssV2CheckSuppressing = v2Score == null || v2Score < v2SuppressionThreshold;

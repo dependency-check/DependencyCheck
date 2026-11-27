@@ -391,9 +391,75 @@ class SuppressionRuleTest extends BaseTest {
         // rule with only a V3 threshold
         SuppressionRule rule = new SuppressionRule();
         rule.addCvssV3Below(7.0);
+        rule.process(dependency);
 
         assertEquals(1, dependency.getVulnerabilities().size(),
                 "Since threshold and score versions are different versions the vuln should not be suppressed");
+    }
+
+    @ParameterizedTest
+    @CsvSource({"2", "4"})
+    void testThresholdWithoutScoreOfSameVersionDoesNotSuppress(int thresholdVersion) {
+        // vuln with only a cvss v3 score, like most NVD entries published since 2022
+        Dependency dependency = createDependencyWithCvssV3Only(9.8);
+
+        // rule with only a v2 or v4 threshold
+        SuppressionRule rule = new SuppressionRule();
+        if (thresholdVersion == 2) {
+            rule.addCvssV2Below(4.0);
+        } else {
+            rule.addCvssV4Below(4.0);
+        }
+        rule.process(dependency);
+
+        assertEquals(1, dependency.getVulnerabilities().size(),
+                "A threshold without a score of the same version should not suppress the vuln");
+        assertEquals(0, dependency.getSuppressedVulnerabilities().size());
+    }
+
+    @ParameterizedTest
+    @CsvSource({"2", "3", "4"})
+    void testThresholdDoesNotSuppressVulnerabilityWithoutScores(int thresholdVersion) {
+        File spring = BaseTest.getResourceAsFile(this, "maven-lib/spring-security-web-3.0.0.RELEASE.jar");
+        Dependency dependency = new Dependency(spring);
+        dependency.addVulnerability(new Vulnerability());
+
+        SuppressionRule rule = new SuppressionRule();
+        if (thresholdVersion == 2) {
+            rule.addCvssV2Below(4.0);
+        } else if (thresholdVersion == 3) {
+            rule.addCvssV3Below(4.0);
+        } else {
+            rule.addCvssV4Below(4.0);
+        }
+        rule.process(dependency);
+
+        assertEquals(1, dependency.getVulnerabilities().size(),
+                "A vuln without any score should not be suppressed by a score threshold");
+        assertEquals(0, dependency.getSuppressedVulnerabilities().size());
+    }
+
+    @Test
+    void testMissingScoreOfOneConfiguredVersionStillSuppresses() {
+        Dependency dependency = createDependencyWithCvssV3Only(5.0);
+
+        // the v3 score is below its threshold, the missing v2 score does not prevent suppression
+        SuppressionRule rule = new SuppressionRule();
+        rule.addCvssV2Below(7.0);
+        rule.addCvssV3Below(7.0);
+        rule.process(dependency);
+
+        assertEquals(0, dependency.getVulnerabilities().size());
+        assertEquals(1, dependency.getSuppressedVulnerabilities().size());
+    }
+
+    private Dependency createDependencyWithCvssV3Only(double score) {
+        File spring = BaseTest.getResourceAsFile(this, "maven-lib/spring-security-web-3.0.0.RELEASE.jar");
+        Dependency dependency = new Dependency(spring);
+        Vulnerability v = new Vulnerability();
+        v.setCvssV3(CvssUtil.vectorToCvssV3("CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H", score));
+        dependency.addVulnerability(v);
+        return dependency;
     }
 
     @Test
