@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
-VERSION="$(mvn help:evaluate -q --non-recursive -DforceStdout -Dexpression=project.version)"
+VERSION="$(./mvnw help:evaluate -q --non-recursive -DforceStdout -Dexpression=project.version)"
 
 OWASPDC_DIRECTORY=$HOME/OWASP-Dependency-Check
 DATA_DIRECTORY="$OWASPDC_DIRECTORY/data"

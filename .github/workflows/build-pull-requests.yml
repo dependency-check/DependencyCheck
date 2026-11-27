@@ -50,7 +50,7 @@ jobs:
       - name: Build/Test with Maven
         id: build
         run: >
-          mvn -V -s settings.xml -pl '!maven' -am 
+          ./mvnw -V -pl '!maven' -am 
           clean verify
           -Dtoolchain.jdk.test.version=${{ matrix.jdk_test_version }} -Dtoolchain.jdk.test.home="$JAVA_HOME_${{ matrix.jdk_test_version }}_X64" 
           ${{ matrix.jdk_test_version == matrix.jdk_default_version && 'source:jar javadoc:jar site' || '' }}
@@ -142,7 +142,7 @@ jobs:
         env:
           NVD_API_KEY: ${{ secrets.NVD_API_KEY }}
         run: >
-          mvn -V -s settings.xml -pl maven -am 
+          ./mvnw -V -pl maven -am 
           clean verify -DskipTests=true -PFullIntegrationTesting
           -Dtoolchain.jdk.test.version=${{ matrix.jdk_test_version }} -Dtoolchain.jdk.test.home="$JAVA_HOME_${{ matrix.jdk_test_version }}_X64"
           --no-transfer-progress --batch-mode -Dstyle.color=always
@@ -178,8 +178,10 @@ jobs:
           cache-dependency-path: '**/pom.xml'
       - name: Checkstyle
         id: checkstyle
-        run: |
-            mvn -V -s settings.xml checkstyle:checkstyle-aggregate --no-transfer-progress --batch-mode -Dstyle.color=always
+        run: >
+          ./mvnw -V
+          checkstyle:checkstyle-aggregate -DskipTests=true
+          --no-transfer-progress --batch-mode -Dstyle.color=always
       - name: Upload SARIF file
         uses: github/codeql-action/upload-sarif@33d7b85da1a04171e211befe2c739303b9a4c066 # v4.39.3
         with:
@@ -216,7 +218,7 @@ jobs:
         run: ./docker-build.sh
       - name: build scan target
         run: >
-          mvn -V -s settings.xml -pl cli -am 
+          ./mvnw -V -pl cli -am 
           package -DskipTests=true
           --no-transfer-progress --batch-mode -Dstyle.color=always
       - name: Test Docker Image

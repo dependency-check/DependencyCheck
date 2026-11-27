@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
-VERSION="$(mvn help:evaluate -q --non-recursive -DforceStdout -Dexpression=project.version)"
+VERSION="$(./mvnw help:evaluate -q --non-recursive -DforceStdout -Dexpression=project.version)"
 
 SCAN_TARGET="./cli/target/release/lib"
 
