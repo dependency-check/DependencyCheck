@@ -20,6 +20,29 @@ package org.owasp.dependencycheck.analyzer;
 import com.github.packageurl.MalformedPackageURLException;
 import com.github.packageurl.PackageURL;
 import com.github.packageurl.PackageURLBuilder;
+import org.apache.commons.io.filefilter.NameFileFilter;
+import org.apache.commons.io.filefilter.SuffixFileFilter;
+import org.apache.commons.lang3.StringUtils;
+import org.owasp.dependencycheck.Engine;
+import org.owasp.dependencycheck.analyzer.exception.AnalysisException;
+import org.owasp.dependencycheck.data.nvd.ecosystem.Ecosystem;
+import org.owasp.dependencycheck.dependency.Confidence;
+import org.owasp.dependencycheck.dependency.Dependency;
+import org.owasp.dependencycheck.dependency.EvidenceType;
+import org.owasp.dependencycheck.dependency.naming.GenericIdentifier;
+import org.owasp.dependencycheck.dependency.naming.PurlIdentifier;
+import org.owasp.dependencycheck.exception.InitializationException;
+import org.owasp.dependencycheck.utils.ExtractionException;
+import org.owasp.dependencycheck.utils.ExtractionUtil;
+import org.owasp.dependencycheck.utils.FileFilterBuilder;
+import org.owasp.dependencycheck.utils.FileUtils;
+import org.owasp.dependencycheck.utils.PyPACoreMetadataParser;
+import org.owasp.dependencycheck.utils.Settings;
+import org.owasp.dependencycheck.utils.UrlStringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.annotation.concurrent.ThreadSafe;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileFilter;
@@ -28,30 +51,7 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
-import org.apache.commons.io.filefilter.NameFileFilter;
-import org.apache.commons.io.filefilter.SuffixFileFilter;
-import org.apache.commons.lang3.StringUtils;
-import org.owasp.dependencycheck.Engine;
-import org.owasp.dependencycheck.analyzer.exception.AnalysisException;
-import org.owasp.dependencycheck.dependency.Confidence;
-import org.owasp.dependencycheck.dependency.Dependency;
-import org.owasp.dependencycheck.utils.PyPACoreMetadataParser;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import org.owasp.dependencycheck.exception.InitializationException;
-import org.owasp.dependencycheck.utils.ExtractionException;
-import org.owasp.dependencycheck.utils.ExtractionUtil;
-import org.owasp.dependencycheck.utils.FileFilterBuilder;
-import org.owasp.dependencycheck.utils.FileUtils;
-import org.owasp.dependencycheck.utils.Settings;
-import org.owasp.dependencycheck.utils.UrlStringUtils;
 import java.util.concurrent.atomic.AtomicInteger;
-import javax.annotation.concurrent.ThreadSafe;
-import org.owasp.dependencycheck.data.nvd.ecosystem.Ecosystem;
-import org.owasp.dependencycheck.dependency.EvidenceType;
-import org.owasp.dependencycheck.dependency.naming.GenericIdentifier;
-import org.owasp.dependencycheck.dependency.naming.PurlIdentifier;
 
 /**
  * Used to analyze a Wheel or egg distribution files, or their contents in
@@ -289,7 +289,7 @@ public class PythonDistributionAnalyzer extends AbstractFileTypeAnalyzer {
      * @param dependency the dependency being analyzed
      * @param file a reference to the manifest/properties file
      */
-    private static void collectWheelMetadata(Dependency dependency, File file) throws AnalysisException {
+    private void collectWheelMetadata(Dependency dependency, File file) throws AnalysisException {
         final Properties headers = PyPACoreMetadataParser.getProperties(file);
         final String version = addPropertyToEvidence(dependency, EvidenceType.VERSION, Confidence.HIGHEST, headers, "Version");
         final String name = addPropertyToEvidence(dependency, EvidenceType.VENDOR, Confidence.HIGHEST, headers, "Name");
@@ -309,7 +309,7 @@ public class PythonDistributionAnalyzer extends AbstractFileTypeAnalyzer {
         addPropertyToEvidence(dependency, EvidenceType.VENDOR, Confidence.LOW, headers, "Author");
         final String summary = headers.getProperty("Summary", null);
         if (StringUtils.isNotBlank(summary)) {
-            JarAnalyzer.addDescription(dependency, summary, METADATA, "summary");
+            dependency.setDescriptionSanitized(summary);
         }
 
         try {
