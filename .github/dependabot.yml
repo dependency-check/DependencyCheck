@@ -2,8 +2,14 @@ version: 2
 updates:
   - package-ecosystem: "maven"
     directory: "/"
+    open-pull-requests-limit: 20
     schedule:
-      interval: "daily"
+      interval: "weekly"
+      day: "friday"
+    groups:
+      dev-deps:
+        dependency-type: development
+        patterns: [ "*" ]
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
@@ -14,4 +20,5 @@ updates:
   - package-ecosystem: "docker"
     directory: "/"
     schedule:
-     interval: "daily"
+      interval: "weekly"
+      day: "friday"

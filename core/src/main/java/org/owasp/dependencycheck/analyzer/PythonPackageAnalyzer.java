@@ -246,11 +246,9 @@ public class PythonPackageAnalyzer extends AbstractFileTypeAnalyzer {
             final String source = file.getName();
             gatherEvidence(dependency, EvidenceType.VERSION, VERSION_PATTERN, contents,
                     source, "SourceVersion", Confidence.MEDIUM);
-            addSummaryInfo(dependency, SUMMARY_PATTERN, 4, contents,
-                    source, "summary");
+            addSummaryInfo(dependency, SUMMARY_PATTERN, 4, contents);
             if (INIT_PY_FILTER.accept(file)) {
-                addSummaryInfo(dependency, MODULE_DOCSTRING, 2,
-                        contents, source, "docstring");
+                addSummaryInfo(dependency, MODULE_DOCSTRING, 2, contents);
             }
             gatherEvidence(dependency, EvidenceType.PRODUCT, TITLE_PATTERN, contents,
                     source, "SourceTitle", Confidence.LOW);
@@ -289,16 +287,12 @@ public class PythonPackageAnalyzer extends AbstractFileTypeAnalyzer {
      * @param pattern the pattern used to perform analysis
      * @param group the group from the pattern that indicates the data to use
      * @param contents the data being analyzed
-     * @param source the source name to use when recording the evidence
-     * @param key the key name to use when recording the evidence
      */
-    private void addSummaryInfo(Dependency dependency, Pattern pattern,
-                                int group, String contents, String source, String key) {
+    private void addSummaryInfo(Dependency dependency, Pattern pattern, int group, String contents) {
         final Matcher matcher = pattern.matcher(contents);
         final boolean found = matcher.find();
         if (found) {
-            JarAnalyzer.addDescription(dependency, matcher.group(group),
-                    source, key);
+            dependency.setDescriptionSanitized(matcher.group(group));
         }
     }
 

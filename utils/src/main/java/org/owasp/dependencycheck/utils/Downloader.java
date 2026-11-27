@@ -24,6 +24,7 @@ import org.apache.hc.client5.http.auth.Credentials;
 import org.apache.hc.client5.http.auth.CredentialsStore;
 import org.apache.hc.client5.http.auth.UsernamePasswordCredentials;
 import org.apache.hc.client5.http.config.ConnectionConfig;
+import org.apache.hc.client5.http.impl.DefaultHttpRequestRetryStrategy;
 import org.apache.hc.client5.http.impl.auth.BasicAuthCache;
 import org.apache.hc.client5.http.impl.auth.BasicScheme;
 import org.apache.hc.client5.http.impl.auth.SystemDefaultCredentialsProvider;
@@ -33,6 +34,7 @@ import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
 import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManager;
 import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManagerBuilder;
 import org.apache.hc.client5.http.protocol.HttpClientContext;
+import org.apache.hc.client5.http.utils.DateUtils;
 import org.apache.hc.core5.http.ClassicHttpResponse;
 import org.apache.hc.core5.http.ContentType;
 import org.apache.hc.core5.http.Header;
@@ -40,12 +42,15 @@ import org.apache.hc.core5.http.HttpEntity;
 import org.apache.hc.core5.http.HttpException;
 import org.apache.hc.core5.http.HttpHeaders;
 import org.apache.hc.core5.http.HttpHost;
+import org.apache.hc.core5.http.HttpResponse;
 import org.apache.hc.core5.http.Method;
 import org.apache.hc.core5.http.io.HttpClientResponseHandler;
 import org.apache.hc.core5.http.io.entity.BasicHttpEntity;
 import org.apache.hc.core5.http.io.entity.StringEntity;
 import org.apache.hc.core5.http.message.BasicClassicHttpRequest;
 import org.apache.hc.core5.http.message.BasicClassicHttpResponse;
+import org.apache.hc.core5.http.protocol.HttpContext;
+import org.apache.hc.core5.util.TimeValue;
 import org.jspecify.annotations.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -67,6 +72,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -119,6 +126,26 @@ public final class Downloader {
     private static final Logger LOGGER = LoggerFactory.getLogger(Downloader.class);
 
     /**
+     * HttpClient's default retry strategy, except that the wait before
+     * automatically re-executing a 429 or 503 response is capped. Without the
+     * cap HttpClient sleeps for the full Retry-After the server asks for, so a
+     * single request could stall for minutes before the caller sees the
+     * response. Callers decide whether to wait longer from
+     * {@link TooManyRequestsException#getRetryAfter()}.
+     */
+    private static final DefaultHttpRequestRetryStrategy RETRY_STRATEGY = new DefaultHttpRequestRetryStrategy() {
+        /**
+         * The longest wait before an automatic retry.
+         */
+        private final TimeValue maxRetryInterval = TimeValue.ofSeconds(3);
+
+        @Override
+        public TimeValue getRetryInterval(HttpResponse response, int execCount, HttpContext context) {
+            return super.getRetryInterval(response, execCount, context).min(maxRetryInterval);
+        }
+    };
+
+    /**
      * The singleton instance of the downloader
      */
     private static final Downloader INSTANCE = new Downloader();
@@ -147,10 +174,12 @@ public final class Downloader {
         //TODO: ensure proper closure and eviction policy
         httpClientBuilder = HttpClientBuilder.create()
                 .useSystemProperties()
+                .setRetryStrategy(RETRY_STRATEGY)
                 .setConnectionManager(connectionManager)
                 .setConnectionManagerShared(true);
         httpClientBuilderExplicitNoproxy = HttpClientBuilder.create()
                 .useSystemProperties()
+                .setRetryStrategy(RETRY_STRATEGY)
                 .setConnectionManager(connectionManager)
                 .setConnectionManagerShared(true)
                 .setProxySelector(new ProxySelector() {
@@ -401,6 +430,7 @@ public final class Downloader {
      */
     public void fetchFile(URL url, File outputPath, boolean useProxy) throws DownloadFailedException,
             TooManyRequestsException, ResourceNotFoundException, URLConnectionFailureException {
+        final HttpClientContext context = getPreEmptiveAuthContext();
         try {
             if ("file".equals(url.getProtocol())) {
                 final Path p = Paths.get(url.toURI());
@@ -410,11 +440,11 @@ public final class Downloader {
                 req = new BasicClassicHttpRequest(Method.GET, url.toURI());
                 try (CloseableHttpClient hc = useProxy ? httpClientBuilder.build() : httpClientBuilderExplicitNoproxy.build()) {
                     final SaveToFileResponseHandler responseHandler = new SaveToFileResponseHandler(outputPath);
-                    hc.execute(req, getPreEmptiveAuthContext(), responseHandler);
+                    hc.execute(req, context, responseHandler);
                 }
             }
         } catch (HttpResponseException hre) {
-            wrapAndThrowHttpResponseException(url.toString(), hre);
+            wrapAndThrowHttpResponseException(url.toString(), hre, context);
         } catch (SSLHandshakeException ex) {
             if (ex.getMessage().contains("unable to find valid certification path to requested target")) {
                 final String msg = String.format("Unable to connect to '%s' - the Java trust store does not contain a trusted root for the cert. "
@@ -429,16 +459,46 @@ public final class Downloader {
         }
     }
 
-    private static void wrapAndThrowHttpResponseException(String url, HttpResponseException hre)
+    private static void wrapAndThrowHttpResponseException(String url, HttpResponseException hre, HttpClientContext context)
             throws ResourceNotFoundException, TooManyRequestsException, DownloadFailedException {
         final String messageFormat = "%s - Server status: %d - Server reason: %s";
         switch (hre.getStatusCode()) {
             case 404:
                 throw new ResourceNotFoundException(String.format(messageFormat, url, hre.getStatusCode(), hre.getReasonPhrase()), hre);
             case 429:
-                throw new TooManyRequestsException(String.format(messageFormat, url, hre.getStatusCode(), hre.getReasonPhrase()), hre);
+                throw new TooManyRequestsException(String.format(messageFormat, url, hre.getStatusCode(), hre.getReasonPhrase()), hre,
+                        getRetryAfter(context));
             default:
                 throw new DownloadFailedException(String.format(messageFormat, url, hre.getStatusCode(), hre.getReasonPhrase()), hre);
+        }
+    }
+
+    /**
+     * Reads the Retry-After header from the last response received in the
+     * given context. The header holds either a number of seconds or an HTTP
+     * date.
+     *
+     * @param context the context the request was executed with
+     * @return how long the server asked the client to wait, or null when the
+     * response has no usable Retry-After header
+     */
+    private static Duration getRetryAfter(HttpClientContext context) {
+        final HttpResponse response = context.getResponse();
+        final Header header = response == null ? null : response.getFirstHeader(HttpHeaders.RETRY_AFTER);
+        if (header == null || header.getValue() == null) {
+            return null;
+        }
+        final String value = header.getValue().trim();
+        try {
+            return Duration.ofSeconds(Math.max(0, Long.parseLong(value)));
+        } catch (NumberFormatException ex) {
+            final Instant date = DateUtils.parseStandardDate(value);
+            if (date == null) {
+                LOGGER.debug("Ignoring unparseable Retry-After header: {}", value);
+                return null;
+            }
+            final Duration wait = Duration.between(Instant.now(), date);
+            return wait.isNegative() ? Duration.ZERO : wait;
         }
     }
 
@@ -474,8 +534,8 @@ public final class Downloader {
         if (!("http".equals(theProtocol) || "https".equals(theProtocol))) {
             throw new DownloadFailedException("Unsupported protocol in the URL; only file, http and https are supported");
         }
+        final HttpClientContext dedicatedAuthContext = HttpClientContext.create();
         try {
-            final HttpClientContext dedicatedAuthContext = HttpClientContext.create();
             final CredentialsStore dedicatedCredentialStore = new SystemDefaultCredentialsProvider();
             final AuthCache dedicatedAuthCache = new BasicAuthCache();
             configureCredentials(url, url.toString(), userKey, passwordKey, tokenKey, dedicatedCredentialStore, dedicatedAuthCache);
@@ -490,7 +550,7 @@ public final class Downloader {
                 hc.execute(req, dedicatedAuthContext, responseHandler);
             }
         } catch (HttpResponseException hre) {
-            wrapAndThrowHttpResponseException(url.toString(), hre);
+            wrapAndThrowHttpResponseException(url.toString(), hre, dedicatedAuthContext);
         } catch (SSLHandshakeException ex) {
             if (ex.getMessage().contains("unable to find valid certification path to requested target")) {
                 final String msg = String.format("Unable to connect to '%s' - the Java trust store does not contain a trusted root for the cert. "
@@ -532,6 +592,7 @@ public final class Downloader {
      */
     public String postBasedFetchContent(URI url, String payload, ContentType payloadType, List<Header> hdr)
             throws DownloadFailedException, TooManyRequestsException, ResourceNotFoundException, URLConnectionFailureException {
+        final HttpClientContext context = getPreEmptiveAuthContext();
         try {
             if (url.getScheme() == null || !url.getScheme().toLowerCase(Locale.ROOT).matches("^https?")) {
                 throw new IllegalArgumentException("Unsupported protocol in the URL; only http and https are supported");
@@ -544,12 +605,12 @@ public final class Downloader {
                 }
                 final String result;
                 try (CloseableHttpClient hc = httpClientBuilder.build()) {
-                    result = hc.execute(req, getPreEmptiveAuthContext(), new BasicHttpClientResponseHandler());
+                    result = hc.execute(req, context, new BasicHttpClientResponseHandler());
                 }
                 return result;
             }
         } catch (HttpResponseException hre) {
-            wrapAndThrowHttpResponseException(url.toString(), hre);
+            wrapAndThrowHttpResponseException(url.toString(), hre, context);
             throw new InternalError("wrapAndThrowHttpResponseException will always throw an exception but Java compiler fails to spot it");
         } catch (SSLHandshakeException ex) {
             if (ex.getMessage().contains("unable to find valid certification path to requested target")) {
@@ -595,6 +656,7 @@ public final class Downloader {
      */
     public String fetchContent(URL url, boolean useProxy, Charset charset)
             throws DownloadFailedException, TooManyRequestsException, ResourceNotFoundException {
+        final HttpClientContext context = getPreEmptiveAuthContext();
         try {
             final String result;
             if ("file".equals(url.getProtocol())) {
@@ -606,12 +668,12 @@ public final class Downloader {
                 try (CloseableHttpClient hc = useProxy ? httpClientBuilder.build() : httpClientBuilderExplicitNoproxy.build()) {
                     req.addHeader(HttpHeaders.ACCEPT_CHARSET, charset.name());
                     final ExplicitCharsetToStringResponseHandler responseHandler = new ExplicitCharsetToStringResponseHandler(charset);
-                    result = hc.execute(req, getPreEmptiveAuthContext(), responseHandler);
+                    result = hc.execute(req, context, responseHandler);
                 }
             }
             return result;
         } catch (HttpResponseException hre) {
-            wrapAndThrowHttpResponseException(url.toString(), hre);
+            wrapAndThrowHttpResponseException(url.toString(), hre, context);
             throw new InternalError("wrapAndThrowHttpResponseException will always throw an exception but Java compiler fails to spot it");
         } catch (RuntimeException | URISyntaxException | IOException ex) {
             final String msg = format("Download failed, error downloading '%s'; %s", url, ex.getMessage());
@@ -704,6 +766,7 @@ public final class Downloader {
      */
     public <T> T fetchAndHandle(@NonNull CloseableHttpClient client, @NonNull URL url, @NonNull HttpClientResponseHandler<T> handler,
                                 @NonNull List<Header> hdr) throws IOException, TooManyRequestsException, ResourceNotFoundException {
+        final HttpClientContext context = getPreEmptiveAuthContext();
         try {
             final String theProtocol = url.getProtocol();
             if (!("http".equals(theProtocol) || "https".equals(theProtocol))) {
@@ -713,7 +776,6 @@ public final class Downloader {
             for (Header h : hdr) {
                 req.addHeader(h);
             }
-            final HttpClientContext context = getPreEmptiveAuthContext();
             return client.execute(req, context, handler);
         } catch (HttpResponseException hre) {
             final String messageFormat = "%s - Server status: %d - Server reason: %s";
@@ -724,7 +786,8 @@ public final class Downloader {
                 case 404:
                     throw new ResourceNotFoundException(String.format(messageFormat, url, hre.getStatusCode(), hre.getReasonPhrase()));
                 case 429:
-                    throw new TooManyRequestsException(String.format(messageFormat, url, hre.getStatusCode(), hre.getReasonPhrase()));
+                    throw new TooManyRequestsException(String.format(messageFormat, url, hre.getStatusCode(), hre.getReasonPhrase()), hre,
+                            getRetryAfter(context));
                 default:
                     throw new IOException(String.format(messageFormat, url, hre.getStatusCode(), hre.getReasonPhrase()));
             }
