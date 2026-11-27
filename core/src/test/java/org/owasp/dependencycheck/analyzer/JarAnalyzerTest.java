@@ -20,6 +20,7 @@ package org.owasp.dependencycheck.analyzer;
 import org.junit.jupiter.api.Test;
 import org.owasp.dependencycheck.BaseTest;
 import org.owasp.dependencycheck.Engine;
+import org.owasp.dependencycheck.dependency.Confidence;
 import org.owasp.dependencycheck.dependency.Dependency;
 import org.owasp.dependencycheck.dependency.Evidence;
 import org.owasp.dependencycheck.dependency.EvidenceType;
@@ -122,20 +123,20 @@ class JarAnalyzerTest extends BaseTest {
 
         final List<JarAnalyzer.ClassNameInformation> classNames = instance.collectClassNames(dependency);
 
-        JarAnalyzer.addMatchingValues(classNames, "thevelocity", dependency, EvidenceType.VENDOR);
-        JarAnalyzer.addMatchingValues(classNames, "freemarkercore", dependency, EvidenceType.VENDOR);
-        JarAnalyzer.addMatchingValues(classNames, "the defaultpropertiesprovidertest", dependency, EvidenceType.VENDOR);
-        JarAnalyzer.addMatchingValues(classNames, "thedefaultpropertiesprovider test", dependency, EvidenceType.VENDOR);
-        JarAnalyzer.addMatchingValues(classNames, "thedefaultpropertiesprovidertest", dependency, EvidenceType.VENDOR);
+        JarAnalyzer.addMatchedPackageEvidence(EvidenceType.VENDOR, "thevelocity", Confidence.MEDIUM, dependency, classNames);
+        JarAnalyzer.addMatchedPackageEvidence(EvidenceType.VENDOR, "freemarkercore", Confidence.MEDIUM, dependency, classNames);
+        JarAnalyzer.addMatchedPackageEvidence(EvidenceType.VENDOR, "the defaultpropertiesprovidertest", Confidence.MEDIUM, dependency, classNames);
+        JarAnalyzer.addMatchedPackageEvidence(EvidenceType.VENDOR, "thedefaultpropertiesprovider test", Confidence.MEDIUM, dependency, classNames);
+        JarAnalyzer.addMatchedPackageEvidence(EvidenceType.VENDOR, "thedefaultpropertiesprovidertest", Confidence.MEDIUM, dependency, classNames);
 
         assertFalse(dependency.getEvidence(EvidenceType.VENDOR).toString().toLowerCase().contains("velocity"));
         assertFalse(dependency.getEvidence(EvidenceType.VENDOR).toString().toLowerCase().contains("freemarker"));
         assertFalse(dependency.getEvidence(EvidenceType.VENDOR).toString().toLowerCase().contains("defaultpropertiesprovider"));
 
-        JarAnalyzer.addMatchingValues(classNames, "strutsexception", dependency, EvidenceType.VENDOR);
-        JarAnalyzer.addMatchingValues(classNames, "the velocity", dependency, EvidenceType.VENDOR);
-        JarAnalyzer.addMatchingValues(classNames, "freemarker core", dependency, EvidenceType.VENDOR);
-        JarAnalyzer.addMatchingValues(classNames, "the defaultpropertiesprovider test", dependency, EvidenceType.VENDOR);
+        JarAnalyzer.addMatchedPackageEvidence(EvidenceType.VENDOR, "strutsexception", Confidence.MEDIUM, dependency, classNames);
+        JarAnalyzer.addMatchedPackageEvidence(EvidenceType.VENDOR, "the velocity", Confidence.MEDIUM, dependency, classNames);
+        JarAnalyzer.addMatchedPackageEvidence(EvidenceType.VENDOR, "freemarker core", Confidence.MEDIUM, dependency, classNames);
+        JarAnalyzer.addMatchedPackageEvidence(EvidenceType.VENDOR, "the defaultpropertiesprovider test", Confidence.MEDIUM, dependency, classNames);
 
         assertTrue(dependency.getEvidence(EvidenceType.VENDOR).toString().toLowerCase().contains("strutsexception"));
         assertTrue(dependency.getEvidence(EvidenceType.VENDOR).toString().toLowerCase().contains("velocity"));
