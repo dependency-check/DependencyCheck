@@ -18,6 +18,7 @@
 package org.owasp.dependencycheck.utils;
 
 import javax.annotation.concurrent.ThreadSafe;
+import java.time.Duration;
 
 /**
  * An exception used when the server has blocked the requests due to too many requests.
@@ -33,10 +34,17 @@ public class TooManyRequestsException extends Exception {
     private static final long serialVersionUID = 4044042874643986535L;
 
     /**
+     * How long the server asked the client to wait before retrying, from the
+     * Retry-After header; null when the server did not say.
+     */
+    private final Duration retryAfter;
+
+    /**
      * Creates a new TooManyRequestsException.
      */
     public TooManyRequestsException() {
         super();
+        retryAfter = null;
     }
 
     /**
@@ -46,6 +54,7 @@ public class TooManyRequestsException extends Exception {
      */
     public TooManyRequestsException(String msg) {
         super(msg);
+        retryAfter = null;
     }
 
     /**
@@ -55,6 +64,7 @@ public class TooManyRequestsException extends Exception {
      */
     public TooManyRequestsException(Throwable ex) {
         super(ex);
+        retryAfter = null;
     }
 
     /**
@@ -65,5 +75,30 @@ public class TooManyRequestsException extends Exception {
      */
     public TooManyRequestsException(String msg, Throwable ex) {
         super(msg, ex);
+        retryAfter = null;
+    }
+
+    /**
+     * Creates a new TooManyRequestsException.
+     *
+     * @param msg a message for the exception.
+     * @param ex the cause of the exception.
+     * @param retryAfter how long the server asked the client to wait before
+     * retrying; null when the server did not say.
+     */
+    public TooManyRequestsException(String msg, Throwable ex, Duration retryAfter) {
+        super(msg, ex);
+        this.retryAfter = retryAfter;
+    }
+
+    /**
+     * Returns how long the server asked the client to wait before retrying,
+     * from the Retry-After header.
+     *
+     * @return the requested wait, or null when the server did not send a
+     * usable Retry-After header
+     */
+    public Duration getRetryAfter() {
+        return retryAfter;
     }
 }
