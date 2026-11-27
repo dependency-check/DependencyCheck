@@ -23,12 +23,14 @@ import org.apache.tools.ant.Task;
  * Holds a reference to the current Ant Task for logging. Replaces the old
  * StaticLoggerBinder singleton pattern used with SLF4J 1.x.
  * <p>
- * Uses ThreadLocal to ensure thread-safety when Ant runs tasks in parallel.
+ * Uses an InheritableThreadLocal to ensure thread-safety when Ant runs tasks in
+ * parallel, while still routing log messages of the worker threads started by
+ * the task (e.g. the analysis threads of the engine) through that task.
  * </p>
  */
 public final class AntTaskHolder {
 
-    private static final ThreadLocal<Task> task = new ThreadLocal<>();
+    private static final InheritableThreadLocal<Task> task = new InheritableThreadLocal<>();
 
     private AntTaskHolder() {
     }

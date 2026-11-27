@@ -291,7 +291,6 @@ public class YarnAuditAnalyzer extends AbstractNpmAnalyzer {
     private static List<Advisory> parseAdvisoryJsons(List<JSONObject> advisoryJsons) throws JSONException {
         final List<Advisory> advisories = new ArrayList<>();
         for (JSONObject advisoryJson : advisoryJsons) {
-            final var advisory = new Advisory();
             final var object = advisoryJson.getJSONObject("children");
             final var moduleName = advisoryJson.optString("value", null);
             final var id = object.get("ID");
@@ -310,6 +309,9 @@ public class YarnAuditAnalyzer extends AbstractNpmAnalyzer {
                 versions.add(null);
             }
             for (String version : versions) {
+                // Each installed version needs its own Advisory instance; reusing one instance
+                // across versions made every entry end up reporting the last version only.
+                final var advisory = new Advisory();
                 advisory.setGhsaId(ghsaId);
                 advisory.setTitle(issue);
                 advisory.setOverview("URL:" + url + "ID: " + id);

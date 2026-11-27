@@ -2018,12 +2018,12 @@ public abstract class BaseDependencyCheckMojo extends AbstractMojo implements Ma
                     id = new GenericIdentifier("maven:" + key, Confidence.HIGHEST);
                 }
                 d.addSoftwareIdentifier(id);
-                //TODO unify the setName/version and package path - they are equivelent ideas submitted by two seperate committers
+                //TODO unify the setName/version and package path - they are equivalent ideas submitted by two separate committers
                 d.setName(String.format("%s:%s", prj.getGroupId(), prj.getArtifactId()));
                 d.setVersion(prj.getVersion());
                 d.setPackagePath(displayName);
                 if (prj.getDescription() != null) {
-                    JarAnalyzer.addDescription(d, prj.getDescription(), "project", "description");
+                    d.setDescriptionSanitized(prj.getDescription());
                 }
                 for (License l : prj.getLicenses()) {
                     final StringBuilder license = new StringBuilder();
