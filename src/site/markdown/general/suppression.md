@@ -130,7 +130,7 @@ It is also possible to set an expiration date for a suppression rule:
 </suppressions>
 ```
 
-Suppressions can also be configured based on CVSS scores.  The element cvssScore specifies
+Suppressions can also be configured based on CVSS scores.  The element cvssBelow specifies
 a score threshold.  Vulnerabilities that have any score below this threshold will be suppressed.
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -138,11 +138,11 @@ a score threshold.  Vulnerabilities that have any score below this threshold wil
               xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
               xsi:schemaLocation="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.4.xsd
                                   https://dependency-check.github.io/DependencyCheck/dependency-suppression.1.4.xsd">
-    <suppress until="2020-01-01Z">
+    <suppress>
         <notes><![CDATA[
         Suppress any vulnerability with a score below 7
         ]]></notes>
-        <cvssScore>7</cvssScore>
+        <cvssBelow>7</cvssBelow>
     </suppress>
 </suppressions>
 ```
@@ -150,26 +150,26 @@ a score threshold.  Vulnerabilities that have any score below this threshold wil
 Suppressions can also be configured per CVSS score version.  In the example that follows a vulnerability
 will be suppressed only if its CVSS v2 score is below 7, its CVSS v3 score is below 8,
 and its CVSS v4 score is below 9.  If the vulnerability does not have a score for a given
-version the threshold not be applied to the suppression decision.  If you specify a cvssScore 
-element and cvssVnScore elements, the later will be ignored.
+version the threshold will not be applied to the suppression decision.  If you specify a cvssBelow
+element and cvssV2Below, cvssV3Below or cvssV4Below elements, the latter will be ignored.
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <suppressions xmlns="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.4.xsd"
               xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
               xsi:schemaLocation="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.4.xsd
                                   https://dependency-check.github.io/DependencyCheck/dependency-suppression.1.4.xsd">
-    <suppress until="2020-01-01Z">
+    <suppress>
         <notes><![CDATA[
         Suppress any vulnerability with different threshold per CVSS version
         ]]></notes>
-        <cvssV2Score>7</cvssV2Score>
-        <cvssV3Score>8</cvssV3Score>
-        <cvssV4Score>9</cvssV4Score>
+        <cvssV2Below>7</cvssV2Below>
+        <cvssV3Below>8</cvssV3Below>
+        <cvssV4Below>9</cvssV4Below>
     </suppress>
 </suppressions>
 ```
 
-The full schema for suppression files can be found here: [suppression.xsd](https://dependency-check.github.io/DependencyCheck/dependency-suppression.1.3.xsd "Suppression Schema")
+The full schema for suppression files can be found here: [suppression.xsd](https://dependency-check.github.io/DependencyCheck/dependency-suppression.1.4.xsd "Suppression Schema")
 
 Please see the appropriate configuration option in each interfaces configuration guide:
 
