@@ -20,11 +20,17 @@ package org.owasp.dependencycheck.dependency;
 import com.github.packageurl.MalformedPackageURLException;
 import com.github.packageurl.PackageURL;
 import com.google.common.collect.ImmutableSortedSet;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.jsoup.Jsoup;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
+import org.owasp.dependencycheck.analyzer.exception.UnexpectedAnalysisException;
 import org.owasp.dependencycheck.data.nexus.MavenArtifact;
+import org.owasp.dependencycheck.dependency.naming.CpeIdentifier;
+import org.owasp.dependencycheck.dependency.naming.Identifier;
+import org.owasp.dependencycheck.dependency.naming.PurlIdentifier;
 import org.owasp.dependencycheck.utils.Checksum;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,12 +49,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
-import org.apache.commons.lang3.StringUtils;
-
-import org.owasp.dependencycheck.analyzer.exception.UnexpectedAnalysisException;
-import org.owasp.dependencycheck.dependency.naming.CpeIdentifier;
-import org.owasp.dependencycheck.dependency.naming.Identifier;
-import org.owasp.dependencycheck.dependency.naming.PurlIdentifier;
+import java.util.regex.Pattern;
 
 /**
  * A program dependency. This object is one of the core components within
@@ -81,6 +82,11 @@ public class Dependency extends EvidenceCollection implements Serializable {
      * The SHA256 hashing function.
      */
     private static final HashingFunction SHA256_HASHING_FUNCTION = Checksum::getSHA256Checksum;
+    /**
+     * A pattern to detect HTML within text.
+     */
+    public static final Pattern HTML_DETECTION_PATTERN = Pattern.compile("<[a-z]+.*/?>", Pattern.CASE_INSENSITIVE);
+
     /**
      * A list of Identifiers.
      */
@@ -690,6 +696,20 @@ public class Dependency extends EvidenceCollection implements Serializable {
      */
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    /**
+     * Adds a description to the given dependency, extracting test from HTML if the
+     * value looks like it contains HTML.
+     *
+     * @param description the description
+     */
+    public void setDescriptionSanitized(String description) {
+        if (description != null && HTML_DETECTION_PATTERN.matcher(description).find()) {
+            setDescription(Jsoup.parse(description).text());
+        } else {
+            setDescription(description);
+        }
     }
 
     /**
