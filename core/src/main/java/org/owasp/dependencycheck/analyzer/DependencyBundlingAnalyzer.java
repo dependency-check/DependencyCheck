@@ -103,6 +103,26 @@ public class DependencyBundlingAnalyzer extends AbstractDependencyComparingAnaly
     }
 
     /**
+     * Determines whether two dependencies carry the same suppression state. Bundling runs in
+     * the final analysis phase, after the suppression analyzers have moved findings out of the
+     * active collections, so both dependencies have to be in the same state before they are
+     * merged - otherwise the merge would either hide a suppressed finding or report one
+     * finding as both active and suppressed. See #5031.
+     *
+     * @param dependency the first dependency
+     * @param nextDependency the second dependency
+     * @return true if both dependencies carry the same suppressed identifiers and the same
+     * suppressed vulnerabilities; otherwise false
+     */
+    protected static boolean suppressionStateMatches(final Dependency dependency, final Dependency nextDependency) {
+        if (dependency == null || nextDependency == null) {
+            return false;
+        }
+        return dependency.getSuppressedVulnerabilities().equals(nextDependency.getSuppressedVulnerabilities())
+                && dependency.getSuppressedIdentifiers().equals(nextDependency.getSuppressedIdentifiers());
+    }
+
+    /**
      * Evaluates the dependencies
      *
      * @param dependency a dependency to compare
@@ -112,6 +132,14 @@ public class DependencyBundlingAnalyzer extends AbstractDependencyComparingAnaly
      */
     @Override
     protected boolean evaluateDependencies(final Dependency dependency, final Dependency nextDependency, final Set<Dependency> dependenciesToRemove) {
+        // Suppression rules are matched per file (sha1, file path, file name, package url) and
+        // are applied before this analyzer runs. Two dependencies that would otherwise be
+        // bundled can therefore carry different suppression state; merging them would either
+        // report one finding as both active and suppressed or hide a suppressed finding.
+        // Keeping both dependencies preserves the suppression state of each file - see #5031.
+        if (!suppressionStateMatches(dependency, nextDependency)) {
+            return false;
+        }
         if (hashesMatch(dependency, nextDependency)) {
             if (!containedInWar(dependency.getFilePath())
                     && !containedInWar(nextDependency.getFilePath())) {
