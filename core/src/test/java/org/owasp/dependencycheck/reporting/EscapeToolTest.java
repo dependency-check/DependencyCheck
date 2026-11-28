@@ -123,6 +123,19 @@ class EscapeToolTest {
     }
 
     /**
+     * Test of json method for non-String values, which Velocity passes for
+     * enums and numbers, of class EscapeTool.
+     */
+    @Test
+    void testJsonObject() {
+        EscapeTool instance = new EscapeTool();
+        assertEquals(null, instance.json((Object) null));
+        assertEquals("NETWORK", instance.json((Object) "NETWORK"));
+        assertEquals("a\\\"b<c\\\\d", instance.json((Object) "a\"b<c\\d"));
+        assertEquals("6.1", instance.json((Object) 6.1));
+    }
+
+    /**
      * Test of csv method, of class EscapeTool.
      */
     @Test

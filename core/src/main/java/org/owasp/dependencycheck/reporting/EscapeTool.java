@@ -94,7 +94,7 @@ public class EscapeTool {
     }
 
     public String json(Object o) {
-        return xml(o == null ? null : o.toString());
+        return json(o == null ? null : o.toString());
     }
 
     /**
