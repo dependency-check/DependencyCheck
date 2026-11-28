@@ -34,7 +34,6 @@
                 #end
                 #if($rule.cvssv3BaseSeverity)
                     "cvssv3_baseScore": $rule.cvssv3BaseScore,
-                    "security-severity": "$rule.cvssv3BaseScore",
                     "cvssv3_attackVector": "$!enc.json($rule.cvssv3AttackVector)",
                     "cvssv3_attackComplexity": "$!enc.json($rule.cvssv3AttackComplexity)",
                     "cvssv3_privilegesRequired": "$!enc.json($rule.cvssv3PrivilegesRequired)",
@@ -50,8 +49,14 @@
                 #end
                 #if($rule.cvssv4Vector)
                 "cvssv4_baseScore": $rule.cvssv4BaseScore,
-                "security-severity": "$rule.cvssv4BaseScore",
                 "cvssv4_vector": "$enc.json($rule.cvssv4Vector)",
+                #end
+                #if($rule.cvssv4BaseScore)
+                "security-severity": "$rule.cvssv4BaseScore",
+                #elseif($rule.cvssv3BaseSeverity)
+                "security-severity": "$rule.cvssv3BaseScore",
+                #elseif($rule.cvssv2Severity)
+                "security-severity": "$rule.cvssv2Score",
                 #end
                 "source": "$enc.json($rule.getSource())"
               }

@@ -17,6 +17,8 @@
  */
 package org.owasp.dependencycheck.reporting;
 
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.jeremylong.openvulnerability.client.nvd.CvssV2;
 import io.github.jeremylong.openvulnerability.client.nvd.CvssV2Data;
@@ -60,7 +62,11 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
  */
 class ReportGeneratorScoreOnlyCvssTest extends BaseTest {
 
-    private static final ObjectMapper MAPPER = new ObjectMapper();
+    /**
+     * Rejects duplicate keys, which parsers otherwise silently resolve.
+     */
+    private static final ObjectMapper MAPPER = new ObjectMapper()
+            .enable(JsonParser.Feature.STRICT_DUPLICATE_DETECTION);
 
     @TempDir
     Path tempDir;
@@ -119,6 +125,9 @@ class ReportGeneratorScoreOnlyCvssTest extends BaseTest {
                     assertDoesNotThrow(() -> MAPPER.readTree(content), format + " is not valid JSON");
                     assertFalse(content.matches("(?s).*\\$!?(enc|rule|vuln|vulnerability)\\..*"),
                             format + " contains unrendered template references");
+                    if (format == ReportGenerator.Format.SARIF) {
+                        assertSecuritySeverity(versions, MAPPER.readTree(content));
+                    }
                     break;
                 case XML:
                     validateXml(report);
@@ -126,6 +135,28 @@ class ReportGeneratorScoreOnlyCvssTest extends BaseTest {
                 default:
                     break;
             }
+        }
+    }
+
+    /**
+     * The SARIF security-severity is taken from the highest CVSS version with
+     * a score: CVSS v4, then CVSS v3, then CVSS v2.
+     */
+    private static void assertSecuritySeverity(String versions, JsonNode sarif) {
+        final JsonNode properties = sarif.at("/runs/0/tool/driver/rules/0/properties");
+        final JsonNode severity = properties.get("security-severity");
+        switch (versions) {
+            case "v4":
+            case "all":
+                assertEquals("8.7", severity.asText());
+                assertEquals(8.7, properties.get("cvssv4_baseScore").asDouble(), 0.0);
+                break;
+            case "v3":
+                assertEquals("6.1", severity.asText());
+                break;
+            default:
+                assertEquals("5.0", severity.asText());
+                break;
         }
     }
 
