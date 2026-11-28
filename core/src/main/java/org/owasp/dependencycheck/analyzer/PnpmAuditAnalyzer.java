@@ -17,6 +17,9 @@
  */
 package org.owasp.dependencycheck.analyzer;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import org.apache.commons.collections4.MultiValuedMap;
 import org.apache.commons.collections4.multimap.HashSetValuedHashMap;
 import org.apache.commons.lang3.StringUtils;
@@ -45,7 +48,9 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import static org.owasp.dependencycheck.utils.FileUtils.existsWithContent;
 
@@ -95,9 +100,9 @@ public class PnpmAuditAnalyzer extends AbstractNpmAnalyzer {
         if (!existsWithContent(packageLock) || !shouldProcess(packageLock)) {
             return;
         }
-        final List<Advisory> advisories;
-        final MultiValuedMap<String, String> dependencyMap = new HashSetValuedHashMap<>();
-        advisories = analyzePackage(packageLock, dependency);
+        final boolean skipDevDependencies = getSettings().getBoolean(Settings.KEYS.ANALYZER_NODE_AUDIT_SKIPDEV, false);
+        final MultiValuedMap<String, String> dependencyMap = buildDependencyMap(packageLock, skipDevDependencies);
+        final List<Advisory> advisories = analyzePackage(packageLock, dependency, skipDevDependencies);
         try {
             processResults(advisories, engine, dependency, dependencyMap);
         } catch (CpeValidationException ex) {
@@ -258,18 +263,16 @@ public class PnpmAuditAnalyzer extends AbstractNpmAnalyzer {
      * @param lockFile a reference to the pnpm-lock.yaml
      * @param dependency a reference to the dependency-object for the
      * pnpm-lock.yaml
+     * @param skipDevDependencies whether dev dependencies should be skipped
      * @return a list of advisories
      * @throws AnalysisException thrown when there is an error creating or
      * submitting the npm audit API payload
      */
     private List<Advisory> analyzePackage(final File lockFile,
-            Dependency dependency)
+            Dependency dependency, boolean skipDevDependencies)
             throws AnalysisException {
         try {
-            final boolean skipDevDependencies = getSettings().getBoolean(Settings.KEYS.ANALYZER_NODE_AUDIT_SKIPDEV, false);
-
             // Use pnpm directly to fetch audit.json
-            // Retrieves the contents of package-lock.json from the Dependency
             final JSONObject auditJson = fetchPnpmAuditJson(dependency, skipDevDependencies);
             // Submits the package payload to the nsp check service
             return getAuditParser().parse(auditJson);
@@ -281,6 +284,104 @@ public class PnpmAuditAnalyzer extends AbstractNpmAnalyzer {
             LOGGER.error("PnpmAuditAnalyzer failed on {}", dependency.getActualFilePath());
             throw ex;
         }
+    }
+
+    /**
+     * Builds a map of module names to installed versions from {@code pnpm-lock.yaml}
+     * (supporting v5, v6, and v9+ lockfile formats) as a fallback when an advisory
+     * omits an explicit finding version.
+     *
+     * @param lockFile the {@code pnpm-lock.yaml} file
+     * @param skipDevDependencies whether entries marked {@code dev: true} should be skipped
+     * @return map of package names to resolved versions
+     */
+    MultiValuedMap<String, String> buildDependencyMap(final File lockFile, final boolean skipDevDependencies) {
+        final MultiValuedMap<String, String> dependencyMap = new HashSetValuedHashMap<>();
+        final ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
+        try {
+            final JsonNode root = mapper.readTree(lockFile);
+            if (root == null) {
+                return dependencyMap;
+            }
+            final JsonNode packages = root.get("packages");
+            if (packages == null || !packages.isObject()) {
+                return dependencyMap;
+            }
+            final Iterator<Map.Entry<String, JsonNode>> fields = packages.fields();
+            while (fields.hasNext()) {
+                final Map.Entry<String, JsonNode> entry = fields.next();
+                final JsonNode packageInfo = entry.getValue();
+                if (skipDevDependencies && packageInfo != null && packageInfo.path("dev").asBoolean(false)) {
+                    continue;
+                }
+                addLockPackageEntry(entry.getKey(), dependencyMap);
+            }
+        } catch (IOException ex) {
+            LOGGER.debug("Unable to parse {} for dependency version fallback", lockFile, ex);
+        }
+        return dependencyMap;
+    }
+
+    /**
+     * Parses a {@code pnpm-lock.yaml} {@code packages} key across v5
+     * ({@code /pkg/1.0.0}, {@code /@scope/pkg/1.0.0}), v6 ({@code /pkg@1.0.0}),
+     * and v9 ({@code pkg@1.0.0}) formats and adds it to {@code dependencyMap}.
+     *
+     * @param packageKey the YAML key under {@code packages}
+     * @param dependencyMap the target map of package names to versions
+     */
+    private void addLockPackageEntry(final String packageKey, final MultiValuedMap<String, String> dependencyMap) {
+        if (packageKey == null || packageKey.isEmpty()) {
+            return;
+        }
+        String normalized = packageKey.startsWith("/") ? packageKey.substring(1) : packageKey;
+        final int parenIdx = normalized.indexOf('(');
+        if (parenIdx > 0) {
+            normalized = normalized.substring(0, parenIdx);
+        }
+        final int splitIdx = findNameVersionSeparator(normalized);
+        if (splitIdx <= 0 || splitIdx >= normalized.length() - 1) {
+            return;
+        }
+        final String name = normalized.substring(0, splitIdx);
+        String version = normalized.substring(splitIdx + 1);
+        final int underscoreIdx = version.indexOf('_');
+        if (underscoreIdx > 0) {
+            version = version.substring(0, underscoreIdx);
+        }
+        if (!name.isEmpty() && !name.contains(":")
+                && !version.isEmpty() && !version.contains(":") && !version.contains("/")) {
+            dependencyMap.put(name, version);
+        }
+    }
+
+    /**
+     * Finds the index separating the npm package name and version in a normalized
+     * pnpm lockfile package key.
+     *
+     * @param normalized the normalized lockfile key without leading slash or peer parens
+     * @return the separator index, or {@code -1} if invalid
+     */
+    private int findNameVersionSeparator(final String normalized) {
+        final int searchStart;
+        if (normalized.startsWith("@")) {
+            final int scopeSlash = normalized.indexOf('/');
+            if (scopeSlash <= 1) {
+                return -1;
+            }
+            searchStart = scopeSlash + 2;
+        } else {
+            searchStart = 1;
+        }
+        final int atIdx = normalized.indexOf('@', searchStart);
+        final int slashIdx = normalized.indexOf('/', searchStart);
+        if (slashIdx >= searchStart && (atIdx < 0 || slashIdx < atIdx)) {
+            return slashIdx;
+        }
+        if (atIdx >= searchStart) {
+            return atIdx;
+        }
+        return -1;
     }
 
     @NonNull

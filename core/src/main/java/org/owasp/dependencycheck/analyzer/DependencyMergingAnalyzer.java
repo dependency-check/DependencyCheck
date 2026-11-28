@@ -159,7 +159,14 @@ public class DependencyMergingAnalyzer extends AbstractDependencyComparingAnalyz
             relatedDependency.getRelatedDependencies()
                     .forEach(dependency::addRelatedDependency);
             relatedDependency.clearRelatedDependencies();
+            relatedDependency.getSoftwareIdentifiers()
+                    .forEach(dependency::addSoftwareIdentifier);
+            relatedDependency.getVulnerableSoftwareIdentifiers()
+                    .forEach(dependency::addVulnerableSoftwareIdentifier);
+            relatedDependency.getVulnerabilities()
+                    .forEach(dependency::addVulnerability);
             dependency.addAllProjectReferences(relatedDependency.getProjectReferences());
+            dependency.addAllIncludedBy(relatedDependency.getIncludedBy());
             if (dependenciesToRemove != null) {
                 dependenciesToRemove.add(relatedDependency);
             }
