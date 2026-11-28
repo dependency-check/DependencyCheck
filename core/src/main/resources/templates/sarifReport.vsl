@@ -24,26 +24,26 @@
               "properties": {
                 #if($rule.cvssv2Severity)
                     "cvssv2_score": $rule.cvssv2Score,
-                    "cvssv2_accessVector": "$enc.json($rule.cvssv2AccessVector)",
-                    "cvssv2_accessComplexity": "$enc.json($rule.cvssv2AccessComplexity)",
-                    "cvssv2_authenticationr": "$enc.json($rule.cvssv2Authentication)",
-                    "cvssv2_confidentialityImpact": "$enc.json($rule.cvssv2ConfidentialityImpact)",
-                    "cvssv2_integrityImpact": "$enc.json($rule.cvssv2IntegrityImpact)",
-                    "cvssv2_availabilityImpact": "$enc.json($rule.cvssv2AvailabilityImpact)",
-                    "cvssv2_severity": "$enc.json($rule.cvssv2Severity)",
+                    "cvssv2_accessVector": "$!enc.json($rule.cvssv2AccessVector)",
+                    "cvssv2_accessComplexity": "$!enc.json($rule.cvssv2AccessComplexity)",
+                    "cvssv2_authenticationr": "$!enc.json($rule.cvssv2Authentication)",
+                    "cvssv2_confidentialityImpact": "$!enc.json($rule.cvssv2ConfidentialityImpact)",
+                    "cvssv2_integrityImpact": "$!enc.json($rule.cvssv2IntegrityImpact)",
+                    "cvssv2_availabilityImpact": "$!enc.json($rule.cvssv2AvailabilityImpact)",
+                    "cvssv2_severity": "$!enc.json($rule.cvssv2Severity)",
                 #end
                 #if($rule.cvssv3BaseSeverity)
                     "cvssv3_baseScore": $rule.cvssv3BaseScore,
                     "security-severity": "$rule.cvssv3BaseScore",
-                    "cvssv3_attackVector": "$enc.json($rule.cvssv3AttackVector)",
-                    "cvssv3_attackComplexity": "$enc.json($rule.cvssv3AttackComplexity)",
-                    "cvssv3_privilegesRequired": "$enc.json($rule.cvssv3PrivilegesRequired)",
-                    "cvssv3_userInteraction": "$enc.json($rule.cvssv3UserInteraction)",
-                    "cvssv3_scope": "$enc.json($rule.cvssv3Scope)",
-                    "cvssv3_confidentialityImpact": "$enc.json($rule.cvssv3ConfidentialityImpact)",
-                    "cvssv3_integrityImpact": "$enc.json($rule.cvssv3IntegrityImpact)",
-                    "cvssv3_availabilityImpact": "$enc.json($rule.cvssv3AvailabilityImpact)",
-                    "cvssv3_baseSeverity": "$enc.json($rule.cvssv3BaseSeverity)",
+                    "cvssv3_attackVector": "$!enc.json($rule.cvssv3AttackVector)",
+                    "cvssv3_attackComplexity": "$!enc.json($rule.cvssv3AttackComplexity)",
+                    "cvssv3_privilegesRequired": "$!enc.json($rule.cvssv3PrivilegesRequired)",
+                    "cvssv3_userInteraction": "$!enc.json($rule.cvssv3UserInteraction)",
+                    "cvssv3_scope": "$!enc.json($rule.cvssv3Scope)",
+                    "cvssv3_confidentialityImpact": "$!enc.json($rule.cvssv3ConfidentialityImpact)",
+                    "cvssv3_integrityImpact": "$!enc.json($rule.cvssv3IntegrityImpact)",
+                    "cvssv3_availabilityImpact": "$!enc.json($rule.cvssv3AvailabilityImpact)",
+                    "cvssv3_baseSeverity": "$!enc.json($rule.cvssv3BaseSeverity)",
                     #if($rule.cvssv3ExploitabilityScore)"cvssv3_exploitabilityScore": "$enc.json($rule.cvssv3ExploitabilityScore)",#end
                     #if($rule.cvssv3ImpactScore)"cvssv3_impactScore": "$enc.json($rule.cvssv3ImpactScore)",#end
                     #if($rule.cvssv3Version)"cvssv3_version": "$enc.json($rule.cvssv3Version)",#end
