@@ -17,6 +17,7 @@ _odc_completions()
             --artifactoryUsername
             --bundleAudit
             --bundleAuditWorkingDirectory
+            --cargoAudit
         -c --connectiontimeout
             --connectionString
         -d --data
@@ -33,6 +34,7 @@ _odc_completions()
             --disableCmake
             --disableCocoapodsAnalyzer
             --disableCarthageAnalyzer
+            --disableCargoAudit
             --disableComposer
             --disableDart
             --disableFileName
@@ -131,7 +133,7 @@ _odc_completions()
 
 
     case "${prev}" in
-        -s|--scan|-o|--out|-d|--data|--bundleAudit|--bundleAuditWorkingDirectory|--dbDriverPath|--dotnet|--go|-P|--propertyfile|--suppression|--hint|-l|--log|--yarn)
+        -s|--scan|-o|--out|-d|--data|--bundleAudit|--bundleAuditWorkingDirectory|--cargoAudit|--dbDriverPath|--dotnet|--go|-P|--propertyfile|--suppression|--hint|-l|--log|--yarn)
             COMPREPLY=( $(compgen -f -o default -- ${cur}) )
             return 0
             ;;
