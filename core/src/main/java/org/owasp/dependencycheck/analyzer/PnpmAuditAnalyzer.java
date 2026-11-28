@@ -369,16 +369,16 @@ public class PnpmAuditAnalyzer extends AbstractNpmAnalyzer {
             if (scopeSlash <= 1) {
                 return -1;
             }
-            searchStart = scopeSlash + 1;
+            searchStart = scopeSlash + 2;
         } else {
             searchStart = 1;
         }
         final int atIdx = normalized.indexOf('@', searchStart);
         final int slashIdx = normalized.indexOf('/', searchStart);
-        if (slashIdx > searchStart && (atIdx < 0 || slashIdx < atIdx)) {
+        if (slashIdx >= searchStart && (atIdx < 0 || slashIdx < atIdx)) {
             return slashIdx;
         }
-        if (atIdx > searchStart) {
+        if (atIdx >= searchStart) {
             return atIdx;
         }
         return -1;

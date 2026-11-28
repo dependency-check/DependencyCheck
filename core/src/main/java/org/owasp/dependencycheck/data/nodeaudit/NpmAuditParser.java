@@ -121,15 +121,27 @@ public class NpmAuditParser {
         final List<String> stringCwes = new ArrayList<>();
         if (jsonCwes != null) {
             for (int j = 0; j < jsonCwes.length(); j++) {
-                stringCwes.add(jsonCwes.getString(j));
+                addCwes(jsonCwes.getString(j), stringCwes);
             }
         } else {
             final String cwe = object.optString("cwe", null);
             if (cwe != null && !cwe.isEmpty()) {
-                stringCwes.add(cwe);
+                addCwes(cwe, stringCwes);
             }
         }
         return stringCwes;
+    }
+
+    private void addCwes(final String rawCwe, final List<String> stringCwes) {
+        if (rawCwe != null && !rawCwe.isEmpty()) {
+            final String[] parts = rawCwe.split(",");
+            for (String part : parts) {
+                final String trimmed = part.trim();
+                if (!trimmed.isEmpty()) {
+                    stringCwes.add(trimmed);
+                }
+            }
+        }
     }
 
     /**

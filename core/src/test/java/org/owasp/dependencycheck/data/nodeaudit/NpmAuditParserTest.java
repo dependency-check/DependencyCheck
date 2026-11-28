@@ -109,4 +109,25 @@ class NpmAuditParserTest extends BaseTest {
         assertEquals(1, advisories.size());
         assertNull(advisories.get(0).getVersion());
     }
+
+    @Test
+    void testParseSplitsCommaSeparatedCwes() {
+        final String auditJson = "{\n"
+                + "  \"advisories\": {\n"
+                + "    \"1\": {\n"
+                + "      \"module_name\": \"lodash\",\n"
+                + "      \"github_advisory_id\": \"GHSA-1111-2222-3333\",\n"
+                + "      \"vulnerable_versions\": \"<4.17.21\",\n"
+                + "      \"severity\": \"high\",\n"
+                + "      \"cwe\": \"CWE-77, CWE-94\"\n"
+                + "    }\n"
+                + "  }\n"
+                + "}";
+
+        final NpmAuditParser parser = new NpmAuditParser();
+        final List<Advisory> advisories = parser.parse(new JSONObject(auditJson));
+
+        assertEquals(1, advisories.size());
+        assertEquals(List.of("CWE-77", "CWE-94"), advisories.get(0).getCwes());
+    }
 }

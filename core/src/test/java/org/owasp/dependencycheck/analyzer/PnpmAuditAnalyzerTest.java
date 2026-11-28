@@ -176,4 +176,27 @@ class PnpmAuditAnalyzerTest extends BaseTest
             assertEquals("4.17.11", engine.getDependencies()[0].getVersion());
         }
     }
+
+    @Test
+    void testBuildDependencyMapSingleCharPackageNames(@org.junit.jupiter.api.io.TempDir java.nio.file.Path tempDir) throws IOException {
+        final PnpmAuditAnalyzer analyzer = new PnpmAuditAnalyzer();
+        final File lock = tempDir.resolve("pnpm-lock-single-char.yaml").toFile();
+        java.nio.file.Files.writeString(lock.toPath(),
+                "lockfileVersion: '6.0'\n"
+                        + "packages:\n"
+                        + "  /q@1.5.1:\n"
+                        + "    dev: false\n"
+                        + "  /d/1.0.0:\n"
+                        + "    dev: false\n"
+                        + "  /@scope/q@2.0.0:\n"
+                        + "    dev: false\n"
+                        + "  /@scope/x/3.0.0:\n"
+                        + "    dev: false\n",
+                StandardCharsets.UTF_8);
+        final MultiValuedMap<String, String> map = analyzer.buildDependencyMap(lock, false);
+        assertThat(map.get("q").contains("1.5.1"), is(true));
+        assertThat(map.get("d").contains("1.0.0"), is(true));
+        assertThat(map.get("@scope/q").contains("2.0.0"), is(true));
+        assertThat(map.get("@scope/x").contains("3.0.0"), is(true));
+    }
 }
