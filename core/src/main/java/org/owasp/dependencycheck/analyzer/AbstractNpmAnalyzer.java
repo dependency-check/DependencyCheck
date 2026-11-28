@@ -21,21 +21,40 @@ import com.github.packageurl.MalformedPackageURLException;
 import com.github.packageurl.PackageURL;
 import com.github.packageurl.PackageURL.StandardTypes;
 import com.github.packageurl.PackageURLBuilder;
-import org.semver4j.Semver;
-import org.semver4j.SemverException;
+import org.apache.commons.collections4.MultiValuedMap;
+import org.apache.commons.lang3.StringUtils;
 import org.owasp.dependencycheck.Engine;
+import org.owasp.dependencycheck.analyzer.exception.AnalysisException;
+import org.owasp.dependencycheck.analyzer.exception.UnexpectedAnalysisException;
 import org.owasp.dependencycheck.data.nodeaudit.Advisory;
 import org.owasp.dependencycheck.data.nodeaudit.NodeAuditSearch;
+import org.owasp.dependencycheck.data.nvd.ecosystem.Ecosystem;
 import org.owasp.dependencycheck.dependency.Confidence;
 import org.owasp.dependencycheck.dependency.Dependency;
+import org.owasp.dependencycheck.dependency.EvidenceType;
 import org.owasp.dependencycheck.dependency.Vulnerability;
 import org.owasp.dependencycheck.dependency.VulnerableSoftware;
 import org.owasp.dependencycheck.dependency.VulnerableSoftwareBuilder;
+import org.owasp.dependencycheck.dependency.naming.GenericIdentifier;
+import org.owasp.dependencycheck.dependency.naming.Identifier;
+import org.owasp.dependencycheck.dependency.naming.PurlIdentifier;
 import org.owasp.dependencycheck.exception.InitializationException;
+import org.owasp.dependencycheck.utils.Checksum;
 import org.owasp.dependencycheck.utils.InvalidSettingException;
 import org.owasp.dependencycheck.utils.Settings;
+import org.semver4j.Semver;
+import org.semver4j.SemverException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import us.springett.parsers.cpe.exceptions.CpeValidationException;
+import us.springett.parsers.cpe.values.Part;
+
+import javax.annotation.concurrent.ThreadSafe;
+import jakarta.json.JsonArray;
+import jakarta.json.JsonObject;
+import jakarta.json.JsonString;
+import jakarta.json.JsonValue;
+import jakarta.json.JsonValue.ValueType;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -43,26 +62,6 @@ import java.net.URL;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import javax.annotation.concurrent.ThreadSafe;
-import jakarta.json.Json;
-import jakarta.json.JsonArray;
-import jakarta.json.JsonObject;
-import jakarta.json.JsonObjectBuilder;
-import jakarta.json.JsonString;
-import jakarta.json.JsonValue;
-import jakarta.json.JsonValue.ValueType;
-import org.apache.commons.collections4.MultiValuedMap;
-import org.apache.commons.lang3.StringUtils;
-import org.owasp.dependencycheck.analyzer.exception.AnalysisException;
-import org.owasp.dependencycheck.analyzer.exception.UnexpectedAnalysisException;
-import org.owasp.dependencycheck.data.nvd.ecosystem.Ecosystem;
-import org.owasp.dependencycheck.dependency.EvidenceType;
-import org.owasp.dependencycheck.dependency.naming.GenericIdentifier;
-import org.owasp.dependencycheck.dependency.naming.Identifier;
-import org.owasp.dependencycheck.dependency.naming.PurlIdentifier;
-import org.owasp.dependencycheck.utils.Checksum;
-import us.springett.parsers.cpe.exceptions.CpeValidationException;
-import us.springett.parsers.cpe.values.Part;
 
 /**
  * An abstract NPM analyzer that contains common methods for concrete
@@ -180,49 +179,6 @@ public abstract class AbstractNpmAnalyzer extends AbstractFileTypeAnalyzer {
         }
         nodeModule.addSoftwareIdentifier(id);
         return nodeModule;
-    }
-
-    /**
-     * Processes a part of package.json (as defined by JsonArray) and update the
-     * specified dependency with relevant info.
-     *
-     * @param engine the dependency-check engine
-     * @param dependency the Dependency to update
-     * @param jsonArray the jsonArray to parse
-     * @param depType the dependency type
-     */
-    protected void processPackage(Engine engine, Dependency dependency, JsonArray jsonArray, String depType) {
-        final JsonObjectBuilder builder = Json.createObjectBuilder();
-        jsonArray.getValuesAs(JsonString.class).forEach((str) -> builder.add(str.toString(), ""));
-        final JsonObject jsonObject = builder.build();
-        processPackage(engine, dependency, jsonObject, depType);
-    }
-
-    /**
-     * Processes a part of package.json (as defined by JsonObject) and update
-     * the specified dependency with relevant info.
-     *
-     * @param engine the dependency-check engine
-     * @param dependency the Dependency to update
-     * @param jsonObject the jsonObject to parse
-     * @param depType the dependency type
-     */
-    protected void processPackage(Engine engine, Dependency dependency, JsonObject jsonObject, String depType) {
-        for (int i = 0; i < jsonObject.size(); i++) {
-            jsonObject.forEach((name, value) -> {
-                String version = "";
-                if (value != null && value.getValueType() == ValueType.STRING) {
-                    version = ((JsonString) value).getString();
-                }
-                final Dependency existing = findDependency(engine, name, version);
-                if (existing == null) {
-                    final Dependency nodeModule = createDependency(dependency, name, version, depType);
-                    engine.addDependency(nodeModule);
-                } else {
-                    existing.addProjectReference(dependency.getName() + ": " + depType);
-                }
-            });
-        }
     }
 
     /**
@@ -455,8 +411,8 @@ public abstract class AbstractNpmAnalyzer extends AbstractFileTypeAnalyzer {
             final Vulnerability vuln = new Vulnerability();
             vuln.setDescription(advisory.getOverview());
             vuln.setName(String.valueOf(advisory.getGhsaId()));
-            vuln.setUnscoredSeverity(advisory.getSeverity());
             vuln.setCvssV3(advisory.getCvssV3());
+            vuln.calculateUnscoredSeverityFrom(advisory.getSeverity());
             vuln.setSource(Vulnerability.Source.NPM);
             for (String cwe : advisory.getCwes()) {
                 vuln.addCwe(cwe);
@@ -508,12 +464,9 @@ public abstract class AbstractNpmAnalyzer extends AbstractFileTypeAnalyzer {
      */
     protected void replaceOrAddVulnerability(Dependency dependency, Vulnerability vuln) {
         final boolean found = vuln.getSource() == Vulnerability.Source.NPM
-                && dependency.getVulnerabilities().stream().anyMatch(existing -> {
-                    return existing.getReferences().stream().anyMatch(ref -> {
-                        return ref.getName() != null
-                                && ref.getName().equals("https://nodesecurity.io/advisories/" + vuln.getName());
-                    });
-                });
+                && dependency.getVulnerabilities().stream()
+                .anyMatch(existing -> existing.getReferences().stream()
+                        .anyMatch(ref -> ref.getName() != null && ref.getName().equals("https://nodesecurity.io/advisories/" + vuln.getName())));
         if (!found) {
             dependency.addVulnerability(vuln);
         }
@@ -548,7 +501,7 @@ public abstract class AbstractNpmAnalyzer extends AbstractFileTypeAnalyzer {
                     return v;
                 }
             } catch (SemverException ex) {
-                LOGGER.debug("invalid semver: " + v);
+                LOGGER.debug("invalid semver: {}", v);
             }
         }
         return availableVersions.iterator().next();

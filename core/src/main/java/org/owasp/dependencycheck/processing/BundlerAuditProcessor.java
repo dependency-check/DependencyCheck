@@ -20,15 +20,16 @@ package org.owasp.dependencycheck.processing;
 import com.github.packageurl.MalformedPackageURLException;
 import com.github.packageurl.PackageURL;
 import com.github.packageurl.PackageURLBuilder;
-import io.github.jeremylong.openvulnerability.client.nvd.CvssV2;
-import io.github.jeremylong.openvulnerability.client.nvd.CvssV2Data;
+import org.jspecify.annotations.NonNull;
 import org.owasp.dependencycheck.Engine;
-import org.owasp.dependencycheck.data.nvdcve.CveDB;
-import org.owasp.dependencycheck.data.nvdcve.DatabaseException;
+import org.owasp.dependencycheck.analyzer.exception.AnalysisException;
+import org.owasp.dependencycheck.data.ruby.BundleAuditJsonParser;
+import org.owasp.dependencycheck.data.ruby.BundleAuditJsonParser.Advisory;
+import org.owasp.dependencycheck.data.ruby.BundleAuditJsonParser.Gem;
+import org.owasp.dependencycheck.data.ruby.BundleAuditJsonParser.Report;
 import org.owasp.dependencycheck.dependency.Confidence;
 import org.owasp.dependencycheck.dependency.Dependency;
 import org.owasp.dependencycheck.dependency.EvidenceType;
-import org.owasp.dependencycheck.dependency.Reference;
 import org.owasp.dependencycheck.dependency.Vulnerability;
 import org.owasp.dependencycheck.dependency.VulnerableSoftware;
 import org.owasp.dependencycheck.dependency.VulnerableSoftwareBuilder;
@@ -41,24 +42,21 @@ import org.slf4j.LoggerFactory;
 import us.springett.parsers.cpe.exceptions.CpeValidationException;
 import us.springett.parsers.cpe.values.Part;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.Reader;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
-import static org.owasp.dependencycheck.analyzer.RubyBundleAuditAnalyzer.ADVISORY;
-import static org.owasp.dependencycheck.analyzer.RubyBundleAuditAnalyzer.CRITICALITY;
-import static org.owasp.dependencycheck.analyzer.RubyBundleAuditAnalyzer.CVE;
+import static java.util.Objects.requireNonNullElse;
 import static org.owasp.dependencycheck.analyzer.RubyBundleAuditAnalyzer.DEPENDENCY_ECOSYSTEM;
-import static org.owasp.dependencycheck.analyzer.RubyBundleAuditAnalyzer.NAME;
-import static org.owasp.dependencycheck.analyzer.RubyBundleAuditAnalyzer.VERSION;
 
 /**
- * Processor for the output of bundler-audit.
+ * Processor for the JSON output of `bundle-audit check --format json`.
  *
  * @author Jeremy Long
  */
@@ -83,6 +81,10 @@ public class BundlerAuditProcessor extends Processor<InputStream> {
     /**
      * Temporary storage for an exception if it occurs during the processing.
      */
+    private AnalysisException analysisException;
+    /**
+     * Temporary storage for an exception if it occurs during the processing.
+     */
     private CpeValidationException cpeException;
 
     /**
@@ -100,14 +102,20 @@ public class BundlerAuditProcessor extends Processor<InputStream> {
      * Throws any exceptions that occurred during processing.
      *
      * @throws IOException thrown if an IO Exception occurred
+     * @throws AnalysisException thrown if the bundle-audit output could not be
+     * parsed
      * @throws CpeValidationException thrown if a CPE validation exception
      * occurred
      */
     @Override
-    public void close() throws IOException, CpeValidationException {
+    public void close() throws IOException, AnalysisException, CpeValidationException {
         if (ioException != null) {
-            addSuppressedExceptions(ioException, cpeException);
+            addSuppressedExceptions(ioException, analysisException, cpeException);
             throw ioException;
+        }
+        if (analysisException != null) {
+            addSuppressedExceptions(analysisException, cpeException);
+            throw analysisException;
         }
         if (cpeException != null) {
             throw cpeException;
@@ -116,216 +124,141 @@ public class BundlerAuditProcessor extends Processor<InputStream> {
 
     @Override
     public void run() {
-        final String parentName = gemDependency.getActualFile().getParentFile().getName();
-        final String fileName = gemDependency.getFileName();
-        final String filePath = gemDependency.getFilePath();
-        Dependency dependency = null;
-        Vulnerability vulnerability = null;
-        String gem = null;
-        final Map<String, Dependency> map = new HashMap<>();
-        boolean appendToDescription = false;
-
-        try (InputStreamReader ir = new InputStreamReader(getInput(), StandardCharsets.UTF_8); BufferedReader br = new BufferedReader(ir)) {
-
-            String nextLine;
-            while ((nextLine = br.readLine()) != null) {
-                if (nextLine.startsWith(NAME)) {
-                    appendToDescription = false;
-                    gem = nextLine.substring(NAME.length());
-                    if (!map.containsKey(gem)) {
-                        map.put(gem, createDependencyForGem(engine, gemDependency.getActualFile(), parentName, fileName, filePath, gem));
-                    }
-                    dependency = map.get(gem);
-                    LOGGER.debug("bundle-audit ({}): {}", parentName, nextLine);
-                } else if (nextLine.startsWith(VERSION)) {
-                    vulnerability = createVulnerability(parentName, dependency, gem, nextLine);
-                } else if (nextLine.startsWith(ADVISORY) || nextLine.startsWith(CVE)) {
-                    setVulnerabilityName(parentName, dependency, vulnerability, nextLine);
-                } else if (nextLine.startsWith(CRITICALITY)) {
-                    addCriticalityToVulnerability(parentName, vulnerability, nextLine);
-                } else if (nextLine.startsWith("URL: ")) {
-                    addReferenceToVulnerability(parentName, vulnerability, nextLine);
-                } else if (nextLine.startsWith("Description:") || nextLine.startsWith("Title:")) {
-                    appendToDescription = true;
-                    if (null != vulnerability) {
-                        vulnerability.setDescription("*** Vulnerability obtained from bundle-audit verbose report. "
-                                + "Title link may not work. CPE below is guessed. CVSS score is estimated (-1.0 "
-                                + " indicates unknown). See link below for full details. *** ");
-                    }
-                } else if (appendToDescription && null != vulnerability) {
-                    vulnerability.setDescription(vulnerability.getDescription() + nextLine + "\n");
-                }
-            }
+        try (Reader reader = new InputStreamReader(getInput(), StandardCharsets.UTF_8)) {
+            processResults(BundleAuditJsonParser.parse(reader));
         } catch (IOException ex) {
             this.ioException = ex;
+        } catch (AnalysisException ex) {
+            this.analysisException = ex;
         } catch (CpeValidationException ex) {
             this.cpeException = ex;
         }
     }
 
     /**
-     * Sets the vulnerability name.
+     * Creates a dependency for each affected gem and attaches a vulnerability
+     * for each advisory reported against it.
      *
-     * @param parentName the parent name
-     * @param dependency the dependency
-     * @param vulnerability the vulnerability
-     * @param nextLine the line to parse
+     * @param report the parsed bundle-audit report
+     * @throws IOException thrown if a dependency could not be created
+     * @throws CpeValidationException thrown if the vulnerable software entry
+     * could not be built
      */
-    private void setVulnerabilityName(String parentName, Dependency dependency, Vulnerability vulnerability, String nextLine) {
-        final String advisory;
-        if (nextLine.startsWith(CVE)) {
-            advisory = nextLine.substring(CVE.length());
-        } else {
-            advisory = nextLine.substring(ADVISORY.length());
+    private void processResults(Report report) throws IOException, CpeValidationException {
+        final String parentName = gemDependency.getActualFile().getParentFile().getName();
+        final Map<String, Dependency> dependencies = new HashMap<>();
+        for (BundleAuditJsonParser.GemResult result : report.getUnpatchedGems()) {
+            final Gem gem = result.getGem();
+            final Advisory advisory = result.getAdvisory();
+            LOGGER.debug("bundle-audit ({}): {} {} {}", parentName, gem.getName(), gem.getVersion(), advisory.getId());
+            dependencies.computeIfAbsent(gem.getName(), k -> createDependencyForGem(parentName, gem))
+                    .addVulnerability(createVulnerability(gem, advisory));
         }
-        if (null != vulnerability) {
-            vulnerability.setName(advisory);
-        }
-        if (null != dependency) {
-            dependency.addVulnerability(vulnerability);
-        }
-        LOGGER.debug("bundle-audit ({}): {}", parentName, nextLine);
     }
 
     /**
-     * Adds a reference to the vulnerability.
+     * Creates a vulnerability from a bundle-audit advisory.
      *
-     * @param parentName the parent name
-     * @param vulnerability the vulnerability
-     * @param nextLine the line to parse
-     */
-    private void addReferenceToVulnerability(String parentName, Vulnerability vulnerability, String nextLine) {
-        final String url = nextLine.substring("URL: ".length());
-        if (null != vulnerability) {
-            final Reference ref = new Reference();
-            ref.setName(vulnerability.getName());
-            ref.setSource("bundle-audit");
-            ref.setUrl(url);
-            vulnerability.addReference(ref);
-        }
-        LOGGER.debug("bundle-audit ({}): {}", parentName, nextLine);
-    }
-
-    /**
-     * Adds the criticality to the vulnerability
-     *
-     * @param parentName the parent name
-     * @param vulnerability the vulnerability
-     * @param nextLine the line to parse
-     */
-    private void addCriticalityToVulnerability(String parentName, Vulnerability vulnerability, String nextLine) {
-        if (null != vulnerability) {
-            final String criticality = nextLine.substring(CRITICALITY.length()).trim();
-            Double score = -1.0;
-            Vulnerability v = null;
-            final CveDB cvedb = engine.getDatabase();
-            if (cvedb != null) {
-                try {
-                    v = cvedb.getVulnerability(vulnerability.getName());
-                } catch (DatabaseException ex) {
-                    LOGGER.debug("Unable to look up vulnerability {}", vulnerability.getName());
-                }
-            }
-            if (v != null && (v.getCvssV2() != null || v.getCvssV3() != null)) {
-                if (v.getCvssV2() != null) {
-                    vulnerability.setCvssV2(v.getCvssV2());
-                }
-                if (v.getCvssV3() != null) {
-                    vulnerability.setCvssV3(v.getCvssV3());
-                }
-            } else {
-                if ("High".equalsIgnoreCase(criticality)) {
-                    score = 8.5;
-                } else if ("Medium".equalsIgnoreCase(criticality)) {
-                    score = 5.5;
-                } else if ("Low".equalsIgnoreCase(criticality)) {
-                    score = 2.0;
-                }
-                LOGGER.debug("bundle-audit vulnerability missing CVSS data: {}", vulnerability.getName());
-                final CvssV2Data cvssData = new CvssV2Data(CvssV2Data.Version._2_0, null, null, null, null, null, null, null, score, criticality.toUpperCase(),
-                        null, null, null, null, null, null, null, null, null, null);
-                final CvssV2 cvssV2 = new CvssV2(null, null, cvssData, criticality.toUpperCase(), null, null, null, null, null, null, null);
-                vulnerability.setCvssV2(cvssV2);
-                vulnerability.setUnscoredSeverity(null);
-            }
-        }
-        LOGGER.debug("bundle-audit ({}): {}", parentName, nextLine);
-    }
-
-    /**
-     * Creates a vulnerability.
-     *
-     * @param parentName the parent name
-     * @param dependency the dependency
-     * @param gem the gem name
-     * @param nextLine the line to parse
+     * @param gem the affected gem
+     * @param advisory the advisory
      * @return the vulnerability
      * @throws CpeValidationException thrown if there is an error building the
-     * CPE vulnerability object
+     * vulnerable software entry
      */
-    private Vulnerability createVulnerability(String parentName, Dependency dependency, String gem, String nextLine) throws CpeValidationException {
-        Vulnerability vulnerability = null;
-        if (null != dependency) {
-            final String version = nextLine.substring(VERSION.length());
-            dependency.addEvidence(EvidenceType.VERSION,
-                    "bundler-audit",
-                    "Version",
-                    version,
-                    Confidence.HIGHEST);
-            dependency.setVersion(version);
-            dependency.setName(gem);
-            try {
-                final PackageURL purl = PackageURLBuilder.aPackageURL().withType("gem").withName(dependency.getName())
-                        .withVersion(dependency.getVersion()).build();
-                dependency.addSoftwareIdentifier(new PurlIdentifier(purl, Confidence.HIGHEST));
-            } catch (MalformedPackageURLException ex) {
-                LOGGER.debug("Unable to build package url for python", ex);
-                final GenericIdentifier id = new GenericIdentifier("gem:" + dependency.getName() + "@" + dependency.getVersion(),
-                        Confidence.HIGHEST);
-                dependency.addSoftwareIdentifier(id);
-            }
-
-            vulnerability = new Vulnerability(); // don't add to dependency until we have name set later
-            vulnerability.setSource(Vulnerability.Source.BUNDLEAUDIT);
-            final VulnerableSoftwareBuilder builder = new VulnerableSoftwareBuilder();
-            final VulnerableSoftware vs = builder.part(Part.APPLICATION)
-                    .vendor(gem)
-                    .product(String.format("%s_project", gem))
-                    .version(version).build();
-            vulnerability.addVulnerableSoftware(vs);
-            vulnerability.setMatchedVulnerableSoftware(vs);
-            vulnerability.setUnscoredSeverity("UNKNOWN");
+    private Vulnerability createVulnerability(Gem gem, Advisory advisory) throws CpeValidationException {
+        final Vulnerability vulnerability = new Vulnerability(advisory.determineName());
+        vulnerability.setSource(Vulnerability.Source.BUNDLEAUDIT);
+        vulnerability.setDescription(advisory.determineDescription());
+        if (advisory.getUrl() != null) {
+            vulnerability.addReference(Advisory.SOURCE, vulnerability.getName(), advisory.getUrl());
         }
-        LOGGER.debug("bundle-audit ({}): {}", parentName, nextLine);
+        addReferences(vulnerability, advisory);
+
+        advisory.toCvssV2().ifPresent(vulnerability::setCvssV2);
+        advisory.toCvssV3().ifPresent(vulnerability::setCvssV3);
+        advisory.toCvssV4().ifPresent(vulnerability::setCvssV4);
+        Optional.ofNullable(advisory.getCveId()).ifPresent(cveId -> preferCvssScoresFromNvd(vulnerability, cveId));
+        vulnerability.calculateUnscoredSeverityFrom(requireNonNullElse(advisory.getCriticality(), "UNKNOWN"));
+
+        final VulnerableSoftware vs = new VulnerableSoftwareBuilder().part(Part.APPLICATION)
+                .vendor(gem.getName())
+                .product(String.format("%s_project", gem.getName()))
+                .version(gem.getVersion()).build();
+        vulnerability.addVulnerableSoftware(vs);
+        vulnerability.setMatchedVulnerableSoftware(vs);
         return vulnerability;
     }
 
     /**
-     * Creates the dependency based off of the gem.
+     * Attaches the identifiers that were not selected as the canonical name
+     * (see {@link Advisory#determineName()}) as references so that they remain
+     * visible in the report.
      *
-     * @param engine the engine used for scanning
-     * @param gemFile the gem file
-     * @param parentName the gem parent
-     * @param fileName the file name
-     * @param filePath the file path
-     * @param gem the gem name
-     * @return the dependency to add
-     * @throws IOException thrown if a temporary gem file could not be written
+     * @param vulnerability the vulnerability
+     * @param advisory the advisory
      */
-    private Dependency createDependencyForGem(Engine engine, File gemFile, String parentName, String fileName,
-            String filePath, String gem) throws IOException {
+    private static void addReferences(Vulnerability vulnerability, Advisory advisory) {
+        final String ghsaId = advisory.getGhsaId();
+        if (ghsaId != null && !ghsaId.equals(vulnerability.getName())) {
+            vulnerability.addReference(Advisory.SOURCE, ghsaId, advisory.getGhsaUrl());
+        }
+        final String osvdbId = advisory.getOsvdbId();
+        if (osvdbId != null && !osvdbId.equals(vulnerability.getName())) {
+            //OSVDB is defunct - there is no URL to link to
+            vulnerability.addReference(Advisory.SOURCE, osvdbId, null);
+        }
+    }
+
+    /**
+     * Replaces the CVSS scores taken from bundle-audit with those from the NVD
+     * for each CVSS version the NVD has scored. Versions the NVD has not scored
+     * keep the bundle-audit score, if any. Nothing changes if the CVE is not in
+     * the local NVD data.
+     *
+     * @param vulnerability the vulnerability
+     * @param cveId the CVE identifier
+     */
+    private void preferCvssScoresFromNvd(Vulnerability vulnerability, @NonNull String cveId) {
+        Optional.ofNullable(engine.getDatabase())
+                .map(cvedb -> cvedb.getVulnerability(cveId))
+                .ifPresent(nvd -> {
+                    Optional.ofNullable(nvd.getCvssV2()).ifPresent(vulnerability::setCvssV2);
+                    Optional.ofNullable(nvd.getCvssV3()).ifPresent(vulnerability::setCvssV3);
+                    Optional.ofNullable(nvd.getCvssV4()).ifPresent(vulnerability::setCvssV4);
+                });
+    }
+
+    /**
+     * Creates the dependency for an affected gem and adds it to the engine.
+     *
+     * @param parentName the name of the directory containing the Gemfile.lock
+     * @param affected the affected gem
+     * @return the dependency
+     */
+    private Dependency createDependencyForGem(String parentName, Gem affected) {
+        final String gem = affected.getName();
+        final String version = affected.getVersion();
+        final File gemFile = gemDependency.getActualFile();
+        final String fileName = gemDependency.getFileName();
         final String displayFileName = String.format("%s%c%s:%s", parentName, File.separatorChar, fileName, gem);
         final Dependency dependency = new Dependency(gemFile, true);
-        dependency.setSha1sum(Checksum.getSHA1Checksum(displayFileName));
         dependency.setEcosystem(DEPENDENCY_ECOSYSTEM);
-        dependency.addEvidence(EvidenceType.PRODUCT, "bundler-audit", "Name", gem, Confidence.HIGHEST);
-        dependency.addEvidence(EvidenceType.VENDOR, "bundler-audit", "Name", gem, Confidence.HIGH);
-        //TODO add package URL - note, this may require parsing the gemfile.lock and getting the version for each entry
-
+        dependency.setName(gem);
+        dependency.setVersion(version);
+        dependency.addEvidence(EvidenceType.PRODUCT, Advisory.SOURCE, "Name", gem, Confidence.HIGHEST);
+        dependency.addEvidence(EvidenceType.VENDOR, Advisory.SOURCE, "Name", gem, Confidence.HIGH);
+        dependency.addEvidence(EvidenceType.VERSION, Advisory.SOURCE, "Version", version, Confidence.HIGHEST);
+        try {
+            final PackageURL purl = PackageURLBuilder.aPackageURL().withType("gem").withName(gem).withVersion(version).build();
+            dependency.addSoftwareIdentifier(new PurlIdentifier(purl, Confidence.HIGHEST));
+        } catch (MalformedPackageURLException ex) {
+            LOGGER.debug("Unable to build package url for gem", ex);
+            dependency.addSoftwareIdentifier(new GenericIdentifier("gem:" + gem + "@" + version, Confidence.HIGHEST));
+        }
         dependency.setDisplayFileName(displayFileName);
         dependency.setFileName(fileName);
-        dependency.setFilePath(filePath);
-        //sha1sum is used for anchor links in the HtML report
+        dependency.setFilePath(gemDependency.getFilePath());
+        //sha1sum is used for anchor links in the HTML report
         dependency.setSha1sum(Checksum.getSHA1Checksum(displayFileName));
         engine.addDependency(dependency);
         return dependency;

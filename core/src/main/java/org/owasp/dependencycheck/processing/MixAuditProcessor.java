@@ -20,18 +20,11 @@ package org.owasp.dependencycheck.processing;
 import com.github.packageurl.MalformedPackageURLException;
 import com.github.packageurl.PackageURL;
 import com.github.packageurl.PackageURLBuilder;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
 import org.owasp.dependencycheck.Engine;
-import static org.owasp.dependencycheck.analyzer.ElixirMixAuditAnalyzer.DEPENDENCY_ECOSYSTEM;
 import org.owasp.dependencycheck.analyzer.exception.AnalysisException;
 import org.owasp.dependencycheck.data.elixir.MixAuditJsonParser;
 import org.owasp.dependencycheck.data.elixir.MixAuditResult;
 import org.owasp.dependencycheck.dependency.Confidence;
-
 import org.owasp.dependencycheck.dependency.Dependency;
 import org.owasp.dependencycheck.dependency.EvidenceType;
 import org.owasp.dependencycheck.dependency.Vulnerability;
@@ -45,6 +38,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import us.springett.parsers.cpe.exceptions.CpeValidationException;
 import us.springett.parsers.cpe.values.Part;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
+
+import static org.owasp.dependencycheck.analyzer.ElixirMixAuditAnalyzer.DEPENDENCY_ECOSYSTEM;
 
 /**
  * Processor for the output of `mix_audit`.
