@@ -39,6 +39,8 @@ import jakarta.json.Json;
 import jakarta.json.JsonException;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonReader;
+import jakarta.json.JsonString;
+import jakarta.json.JsonValue;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileFilter;
@@ -48,7 +50,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.util.Set;
+import java.util.Map;
 
 import static org.owasp.dependencycheck.utils.FileUtils.existsWithContent;
 
@@ -72,6 +74,10 @@ public class PipfilelockAnalyzer extends AbstractFileTypeAnalyzer {
      * "Pipfile.lock" file.
      */
     private static final String LOCKFILE = "Pipfile.lock";
+    /**
+     * Sections in a {@code Pipfile.lock} that declare Python dependencies.
+     */
+    private static final String[] LOCK_SECTIONS = {"default", "develop"};
 
     /**
      * The identifiedPackage of the analyzer.
@@ -146,49 +152,90 @@ public class PipfilelockAnalyzer extends AbstractFileTypeAnalyzer {
                 JsonReader jsonReader = Json.createReader(in)) {
 
             final JsonObject jsonLock = jsonReader.readObject();
-            final JsonObject develop = jsonLock.getJsonObject("develop");
-            final Set<String> keys = develop.keySet();
-            for (String identifiedPackage : keys) {
-                final JsonObject dep = develop.getJsonObject(identifiedPackage);
-                final String selectedVersion = dep.getString("version", "").trim();
-                if (selectedVersion.startsWith("==") && selectedVersion.length() > 2) {
-                    final String identifiedVersion = selectedVersion.substring(2).trim();
-                    LOGGER.debug("package, version: {} {}", identifiedPackage, identifiedVersion);
-
-                    final Dependency d = new Dependency(dependency.getActualFile(), true);
-                    d.setName(identifiedPackage);
-                    d.setVersion(identifiedVersion);
-                    try {
-                        final PackageURL purl = PackageURLBuilder.aPackageURL()
-                                .withType("pypi")
-                                .withName(identifiedPackage)
-                                .withVersion(identifiedVersion)
-                                .build();
-                        d.addSoftwareIdentifier(new PurlIdentifier(purl, Confidence.HIGHEST));
-                    } catch (MalformedPackageURLException ex) {
-                        LOGGER.debug("Unable to build package url for pypi", ex);
-                        d.addSoftwareIdentifier(new GenericIdentifier("pypi:" + identifiedPackage + "@" + identifiedVersion, Confidence.HIGH));
-                    }
-                    d.setPackagePath(String.format("%s:%s", identifiedPackage, identifiedVersion));
-                    d.setEcosystem(PythonDistributionAnalyzer.DEPENDENCY_ECOSYSTEM);
-                    final String filePath = String.format("%s:%s/%s", dependency.getFilePath(), identifiedPackage, identifiedVersion);
-                    d.setFilePath(filePath);
-                    d.setSha1sum(Checksum.getSHA1Checksum(filePath));
-                    d.setSha256sum(Checksum.getSHA256Checksum(filePath));
-                    d.setMd5sum(Checksum.getMD5Checksum(filePath));
-                    d.addEvidence(EvidenceType.VENDOR, LOCKFILE, "vendor", identifiedPackage, Confidence.HIGHEST);
-                    d.addEvidence(EvidenceType.PRODUCT, LOCKFILE, "product", identifiedPackage, Confidence.HIGHEST);
-                    d.addEvidence(EvidenceType.VERSION, LOCKFILE, "version", identifiedVersion, Confidence.HIGHEST);
-                    engine.addDependency(d);
-                } else {
-                    LOGGER.debug("Skipping `{}`: Unknown version `{}` in `{}`", identifiedPackage, selectedVersion, dependency.getActualFilePath());
-                }
+            for (String sectionName : LOCK_SECTIONS) {
+                analyzeSection(dependency, engine, jsonLock, sectionName);
             }
         } catch (FileNotFoundException ex) {
             throw new RuntimeException(ex);
         } catch (IOException | JsonException ex) {
             throw new RuntimeException(ex);
         }
+    }
+
+    /**
+     * Analyzes dependencies declared under a single section of a parsed
+     * {@code Pipfile.lock}.
+     *
+     * @param dependency the {@code Pipfile.lock} dependency being analyzed
+     * @param engine the analysis engine to register discovered dependencies with
+     * @param jsonLock the parsed root JSON object of {@code Pipfile.lock}
+     * @param sectionName the section name to inspect (e.g., {@code "default"} or {@code "develop"})
+     */
+    private void analyzeSection(Dependency dependency, Engine engine, JsonObject jsonLock, String sectionName) {
+        final JsonValue sectionValue = jsonLock.get(sectionName);
+        if (!(sectionValue instanceof JsonObject)) {
+            return;
+        }
+        final JsonObject section = (JsonObject) sectionValue;
+        for (Map.Entry<String, JsonValue> entry : section.entrySet()) {
+            final String identifiedPackage = entry.getKey();
+            final JsonValue depValue = entry.getValue();
+            if (!(depValue instanceof JsonObject)) {
+                LOGGER.debug("Skipping `{}` in `{}` section `{}`: Entry is not a JSON object",
+                        identifiedPackage, dependency.getActualFilePath(), sectionName);
+                continue;
+            }
+            final JsonObject dep = (JsonObject) depValue;
+            final String selectedVersion = extractSelectedVersion(dep);
+            if (selectedVersion.startsWith("==") && selectedVersion.length() > 2) {
+                final String identifiedVersion = selectedVersion.substring(2).trim();
+                LOGGER.debug("package, version: {} {}", identifiedPackage, identifiedVersion);
+
+                final Dependency d = new Dependency(dependency.getActualFile(), true);
+                d.setName(identifiedPackage);
+                d.setVersion(identifiedVersion);
+                try {
+                    final PackageURL purl = PackageURLBuilder.aPackageURL()
+                            .withType("pypi")
+                            .withName(identifiedPackage)
+                            .withVersion(identifiedVersion)
+                            .build();
+                    d.addSoftwareIdentifier(new PurlIdentifier(purl, Confidence.HIGHEST));
+                } catch (MalformedPackageURLException ex) {
+                    LOGGER.debug("Unable to build package url for pypi", ex);
+                    d.addSoftwareIdentifier(new GenericIdentifier(
+                            "pypi:" + identifiedPackage + "@" + identifiedVersion, Confidence.HIGH));
+                }
+                d.setPackagePath(String.format("%s:%s", identifiedPackage, identifiedVersion));
+                d.setEcosystem(PythonDistributionAnalyzer.DEPENDENCY_ECOSYSTEM);
+                final String filePath = String.format("%s:%s/%s", dependency.getFilePath(), identifiedPackage, identifiedVersion);
+                d.setFilePath(filePath);
+                d.setSha1sum(Checksum.getSHA1Checksum(filePath));
+                d.setSha256sum(Checksum.getSHA256Checksum(filePath));
+                d.setMd5sum(Checksum.getMD5Checksum(filePath));
+                d.addEvidence(EvidenceType.VENDOR, LOCKFILE, "vendor", identifiedPackage, Confidence.HIGHEST);
+                d.addEvidence(EvidenceType.PRODUCT, LOCKFILE, "product", identifiedPackage, Confidence.HIGHEST);
+                d.addEvidence(EvidenceType.VERSION, LOCKFILE, "version", identifiedVersion, Confidence.HIGHEST);
+                engine.addDependency(d);
+            } else {
+                LOGGER.debug("Skipping `{}`: Unknown version `{}` in `{}`",
+                        identifiedPackage, selectedVersion, dependency.getActualFilePath());
+            }
+        }
+    }
+
+    /**
+     * Extracts the pinned version specifier string from a Pipfile.lock package entry.
+     *
+     * @param dep the JSON object representing a package entry
+     * @return the trimmed version specifier, or an empty string if absent or non-string
+     */
+    private String extractSelectedVersion(JsonObject dep) {
+        final JsonValue versionValue = dep.get("version");
+        if (versionValue instanceof JsonString) {
+            return ((JsonString) versionValue).getString().trim();
+        }
+        return "";
     }
 
     /**
