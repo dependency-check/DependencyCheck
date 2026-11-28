@@ -593,6 +593,8 @@ public class App {
                 !cli.isDisabled(CliParser.ARGUMENT.DISABLE_FILENAME, Settings.KEYS.ANALYZER_FILE_NAME_ENABLED));
         settings.setBoolean(Settings.KEYS.ANALYZER_MIX_AUDIT_ENABLED,
                 !cli.isDisabled(CliParser.ARGUMENT.DISABLE_MIX_AUDIT, Settings.KEYS.ANALYZER_MIX_AUDIT_ENABLED));
+        settings.setBoolean(Settings.KEYS.ANALYZER_CARGO_AUDIT_ENABLED,
+                !cli.isDisabled(CliParser.ARGUMENT.DISABLE_CARGO_AUDIT, Settings.KEYS.ANALYZER_CARGO_AUDIT_ENABLED));
         settings.setBoolean(Settings.KEYS.ANALYZER_OPENSSL_ENABLED,
                 !cli.isDisabled(CliParser.ARGUMENT.DISABLE_OPENSSL, Settings.KEYS.ANALYZER_OPENSSL_ENABLED));
         settings.setBoolean(Settings.KEYS.ANALYZER_COMPOSER_LOCK_ENABLED,
@@ -681,6 +683,8 @@ public class App {
                 cli.getStringArgument(CliParser.ARGUMENT.ARTIFACTORY_BEARER_TOKEN));
         settings.setStringIfNotEmpty(Settings.KEYS.ANALYZER_MIX_AUDIT_PATH,
                 cli.getStringArgument(CliParser.ARGUMENT.PATH_TO_MIX_AUDIT));
+        settings.setStringIfNotEmpty(Settings.KEYS.ANALYZER_CARGO_AUDIT_PATH,
+                cli.getStringArgument(CliParser.ARGUMENT.PATH_TO_CARGO_AUDIT));
         settings.setStringIfNotEmpty(Settings.KEYS.ANALYZER_BUNDLE_AUDIT_PATH,
                 cli.getStringArgument(CliParser.ARGUMENT.PATH_TO_BUNDLE_AUDIT));
         settings.setStringIfNotEmpty(Settings.KEYS.ANALYZER_BUNDLE_AUDIT_WORKING_DIRECTORY,

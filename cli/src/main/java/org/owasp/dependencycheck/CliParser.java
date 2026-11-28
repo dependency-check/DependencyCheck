@@ -427,6 +427,8 @@ public final class CliParser {
                 .addOption(newOptionWithArg(ARGUMENT.PATH_TO_BUNDLE_AUDIT_WORKING_DIRECTORY, "path",
                         "The path to working directory that the bundle-audit command should be executed from when "
                                 + "doing Gem bundle analysis."))
+                .addOption(newOptionWithArg(ARGUMENT.PATH_TO_CARGO_AUDIT, "path",
+                        "The path to cargo-audit for Cargo.lock analysis."))
                 .addOption(newOptionWithArg(ARGUMENT.CENTRAL_URL, "url",
                         "Alternative URL for Maven Central Search. If not set the public Sonatype Maven Central will be used."))
                 .addOption(newOptionWithArg(ARGUMENT.CENTRAL_USERNAME, "username",
@@ -517,6 +519,7 @@ public final class CliParser {
                 .addOption(newOption(ARGUMENT.DISABLE_CMAKE, "Disable the Cmake Analyzer."))
                 .addOption(newOption(ARGUMENT.DISABLE_PY_PKG, "Disable the Python Package Analyzer."))
                 .addOption(newOption(ARGUMENT.DISABLE_MIX_AUDIT, "Disable the Elixir mix_audit Analyzer."))
+                .addOption(newOption(ARGUMENT.DISABLE_CARGO_AUDIT, "Disable the Rust cargo-audit Analyzer."))
                 .addOption(newOption(ARGUMENT.DISABLE_RUBYGEMS, "Disable the Ruby Gemspec Analyzer."))
                 .addOption(newOption(ARGUMENT.DISABLE_BUNDLE_AUDIT, "Disable the Ruby Bundler-Audit Analyzer."))
                 .addOption(newOption(ARGUMENT.DISABLE_FILENAME, "Disable the File Name Analyzer."))
@@ -1315,6 +1318,10 @@ public final class CliParser {
          */
         public static final String DISABLE_MIX_AUDIT = "disableMixAudit";
         /**
+         * Disables the Rust cargo audit Analyzer.
+         */
+        public static final String DISABLE_CARGO_AUDIT = "disableCargoAudit";
+        /**
          * Disables the Golang Dependency Analyzer.
          */
         public static final String DISABLE_GO_DEP = "disableGolangDep";
@@ -1605,6 +1612,11 @@ public final class CliParser {
          * analysis.
          */
         public static final String PATH_TO_MIX_AUDIT = "mixAudit";
+        /**
+         * The CLI argument name for setting the path to cargo-audit for Rust
+         * analysis.
+         */
+        public static final String PATH_TO_CARGO_AUDIT = "cargoAudit";
         /**
          * The CLI argument to enable the experimental analyzers.
          */

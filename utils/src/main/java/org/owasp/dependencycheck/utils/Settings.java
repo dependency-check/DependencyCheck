@@ -510,6 +510,15 @@ public final class Settings {
          */
         public static final String ANALYZER_MIX_AUDIT_PATH = "analyzer.mix.audit.path";
         /**
+         * The properties key for whether the Rust cargo audit analyzer is
+         * enabled.
+         */
+        public static final String ANALYZER_CARGO_AUDIT_ENABLED = "analyzer.cargo.audit.enabled";
+        /**
+         * The path to cargo-audit, if available.
+         */
+        public static final String ANALYZER_CARGO_AUDIT_PATH = "analyzer.cargo.audit.path";
+        /**
          * The properties key for whether the Golang Mod analyzer is enabled.
          */
         public static final String ANALYZER_GOLANG_MOD_ENABLED = "analyzer.golang.mod.enabled";

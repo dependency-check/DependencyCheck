@@ -114,6 +114,23 @@ class CvssUtilTest {
     }
 
     /**
+     * Test of vectorToCvssV3 method without a base score, of class CvssUtil.
+     */
+    @Test
+    void testVectorToCvssV3CalculatesBaseScore() {
+        assertEquals(9.8, CvssUtil.vectorToCvssV3("CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H").getCvssData().getBaseScore(), 0);
+        assertEquals(10.0, CvssUtil.vectorToCvssV3("CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:C/C:H/I:H/A:H").getCvssData().getBaseScore(), 0);
+        assertEquals(9.9, CvssUtil.vectorToCvssV3("CVSS:3.0/AV:N/AC:L/PR:L/UI:N/S:C/C:H/I:H/A:H").getCvssData().getBaseScore(), 0);
+        assertEquals(7.5, CvssUtil.vectorToCvssV3("CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:N/A:N").getCvssData().getBaseScore(), 0);
+        assertEquals(6.1, CvssUtil.vectorToCvssV3("CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:C/C:L/I:L/A:N").getCvssData().getBaseScore(), 0);
+        assertEquals(5.5, CvssUtil.vectorToCvssV3("CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:N/I:N/A:H").getCvssData().getBaseScore(), 0);
+        assertEquals(0.0, CvssUtil.vectorToCvssV3("CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:N").getCvssData().getBaseScore(), 0);
+        assertEquals(CvssV3Data.SeverityType.CRITICAL,
+                CvssUtil.vectorToCvssV3("CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H").getCvssData().getBaseSeverity());
+        assertThrows(IllegalArgumentException.class, () -> CvssUtil.vectorToCvssV3("CVSS:3.1/AV:X/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H"));
+    }
+
+    /**
      * Test of cvssV4ScoreToSeverity method, of class CvssUtil.
      */
     @Test

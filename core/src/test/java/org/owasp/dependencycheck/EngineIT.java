@@ -99,6 +99,7 @@ class EngineIT extends BaseDBTestCase {
         getSettings().setBoolean(Settings.KEYS.ANALYZER_EXPERIMENTAL_ENABLED, true);
         getSettings().setBoolean(Settings.KEYS.ANALYZER_BUNDLE_AUDIT_ENABLED, false);
         getSettings().setBoolean(Settings.KEYS.ANALYZER_MIX_AUDIT_ENABLED, false);
+        getSettings().setBoolean(Settings.KEYS.ANALYZER_CARGO_AUDIT_ENABLED, false);
         try (Engine instance = new Engine(getSettings())) {
             instance.scan(testClasses);
             assertTrue(instance.getDependencies().length > 0);

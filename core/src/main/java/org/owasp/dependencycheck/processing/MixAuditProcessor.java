@@ -199,7 +199,7 @@ public class MixAuditProcessor extends Processor<InputStream> {
         vulnerability.addVulnerableSoftware(vs);
         vulnerability.setMatchedVulnerableSoftware(vs);
 
-        vulnerability.setUnscoredSeverity("UNKOWN");
+        vulnerability.setUnscoredSeverity("UNKNOWN");
         vulnerability.setDescription(result.getDescription());
         vulnerability.setName(result.getCve());
 
